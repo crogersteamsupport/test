@@ -441,6 +441,11 @@ namespace TeamSupport.Data
       TicketTypes ticketTypes = new TicketTypes(loginUser);
       ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
 
+      //List<ReportSelectedField> fields = tabularReport.Fields.ToList();
+      //ReportSelectedField ticketID = new ReportSelectedField();
+      //  ticketID.FieldID
+
+        
       foreach (ReportSelectedField field in tabularReport.Fields)
       {
 
@@ -525,11 +530,27 @@ namespace TeamSupport.Data
           }
         }
 
+        if (tabularReport.Subcategory == 70)
+        {
+            string dueDateField = hiddenTable.TableName + "DueDate";
+                dueDateField = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
+              dueDateField,
+              offset < TimeSpan.Zero ? "-" : "+",
+              Math.Abs(offset.Hours),
+              Math.Abs(offset.Minutes));
+                builder.Append(string.Format(", {0} AS [hiddenDueDate]", dueDateField));
+        }
+
       }
       builder.Append(" " + sub.BaseQuery);
 
       ReportTable mainTable = tables.FindByReportTableID(sub.ReportCategoryTableID);
       builder.Append(" WHERE (" + mainTable.TableName + "." + mainTable.OrganizationIDFieldName + " = @OrganizationID)");
+      if (tabularReport.Subcategory == 70)
+      {
+          builder.Append(" AND (" + mainTable.TableName + ".ViewerID = @UserID)");
+      }
+
       if (isSchemaOnly) builder.Append(" AND (0=1)");
     }
 

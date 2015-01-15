@@ -259,7 +259,12 @@ ReportPage = function () {
     $('.report-list').on('click', '.report-list-title a', function (e) {
         e.preventDefault();
         var report = $(this).parents('.report-item').data('o');
-        top.Ts.MainPage.openReport($(this).parents('.report-item').data('o'));
+        if (report.ReportType == 5) {
+            window.location.assign("/vcr/1_9_0/pages/TicketView.html?ReportID=" + report.ReportID);
+        }
+        else {
+            top.Ts.MainPage.openReport($(this).parents('.report-item').data('o'));
+        }
     });
 
     function updateToolbar() {

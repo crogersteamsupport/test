@@ -96,7 +96,6 @@ $(document).ready(function () {
         }
         $('.report-class-item.' + _typeClass).show();
         $('.report-setup').show();
-
         if (type == 2) {
             if (_report && _report.ReportDef) {
                 $('#external-url').val(_report.ReportDef);
@@ -111,13 +110,18 @@ $(document).ready(function () {
             if (_report && _report.ReportDef) {
                 _report.Def = JSON.parse(_report.ReportDef);
             }
-            top.Ts.Services.Reports.GetCategories(loadCats);
 
-            var option = $('<option/>').attr('value', 25).text('Tickets');
+            var option = $('<option/>').attr('value', 32).text('Tickets');
             option.prop('selected', true);
             $('#selectCat').append(option);
-            $('#selectCat').val(25);
-            $('#selectSubCat').val(47);
+
+            var subOption = $('<option/>').attr('value', 70).text('Tickets2');
+            subOption.prop('selected', true);
+            $('#selectSubCat').append(subOption);
+
+            $('#selectCat').val(32);
+            $('#selectSubCat').val(70);
+
             if (top.Ts.System.User.IsSystemAdmin == true) {
                 $('.report-class-tickets-privacy').show();
             }
@@ -548,6 +552,7 @@ $(document).ready(function () {
         }
 
         function closeReport(report) {
+            debugger
             var result = '/vcr/1_9_0/pages/';
             function getReportUrl() {
                 switch (_reportType) {
@@ -560,10 +565,9 @@ $(document).ready(function () {
                     case 4:
                         return 'Reports_View_Tabular.html?ReportID=' + _reportID;
                     case 5:
-                        return 'Reports_View_Tickets.html?ReportID=' + _reportID;
+                        return 'TicketView.html?ReportID=' + _reportID;
                 }
             }
-
             if (!report) // canceled
             {
                 if (_reportID) // go back to report
@@ -573,7 +577,10 @@ $(document).ready(function () {
                     result = result + 'reports.html';
                 }
             } else { // saved
-                if (_reportID) // go back to report
+                if (_reportType == 5) {
+                    result = result + 'TicketView.html?ReportID=' + report.ReportID;
+                }
+                else if (_reportID) // go back to report
                 {
                     result = result + getReportUrl();
                 } else { // go back to list AND open tab

@@ -88,7 +88,7 @@
                     { id: "IsSubscribed", name: "Subscribed", field: "IsSubscribed", maxWidth: 24, sortable: true, formatter: isSubscribedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
                     { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' }
 	                ];
-                }
+            }
 
             var columns = new Array();
             columns = getDefaultColumns();
@@ -241,6 +241,7 @@
         });
     });
 
+
     $('.reports-export-excel').click(function (e) {
         e.preventDefault();
         //'../dc/1078/reports/95'
@@ -350,10 +351,6 @@
 
     var moveFormatter = function (row, cell, value, columnDef, ticket) {
         return '<i class="fa fa-bars"></i>'
-    };
-
-    var linkFormatter = function (row, cell, value, columnDef, ticket) {
-        return '<a href="#" class="cell-link" data-id="' + columnDef.id + '" data-row="' + row + '">' + ticket[columnDef.id] + '</a>'
     };
 
     var openTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {

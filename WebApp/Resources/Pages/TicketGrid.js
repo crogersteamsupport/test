@@ -21,7 +21,7 @@ $(document).ready(function () {
 
     
 
-});
+}); 
 
 function onShow() {
     ticketGrid.refresh();
@@ -829,7 +829,7 @@ TicketGrid = function (options) {
         }
     });
 
-    grid.onClick.subscribe(function (e, args) {debugger
+    grid.onClick.subscribe(function (e, args) {
         var cell = args.cell;
         var row = args.row;
         var ticket = loader.data[row];
@@ -1126,7 +1126,7 @@ TicketGrid.prototype = {
                 $('.grid-ticket').toggleClass('grid-compact', self.options.isCompact == true);
                 self._grid.setOptions({ rowHeight: (self.options.isCompact == true ? 24 : 32) });
                 
-
+                debugger
                 var newColumns = [];
                 var allColumns = self.getAllColumns();
                 var qCol = null;
