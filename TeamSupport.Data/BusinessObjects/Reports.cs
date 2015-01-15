@@ -532,13 +532,20 @@ namespace TeamSupport.Data
 
         if (tabularReport.Subcategory == 70)
         {
-            string dueDateField = hiddenTable.TableName + "DueDate";
+            string dueDateField = hiddenTable.TableName + ".DueDate";
                 dueDateField = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
-              dueDateField,
-              offset < TimeSpan.Zero ? "-" : "+",
-              Math.Abs(offset.Hours),
-              Math.Abs(offset.Minutes));
-                builder.Append(string.Format(", {0} AS [hiddenDueDate]", dueDateField));
+                dueDateField,
+                offset < TimeSpan.Zero ? "-" : "+",
+                Math.Abs(offset.Hours),
+                Math.Abs(offset.Minutes));
+            builder.Append(string.Format(", {0} AS [hiddenDueDate]", dueDateField));
+
+            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "SlaWarningTime", hiddenTable.TableName));
+            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "SlaViolationTime", hiddenTable.TableName));
+            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "IsRead", hiddenTable.TableName));
+            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "IsClosed", hiddenTable.TableName));
+            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "UserID", hiddenTable.TableName));
+
         }
 
       }
