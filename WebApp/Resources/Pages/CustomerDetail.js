@@ -1216,7 +1216,6 @@ $(document).ready(function () {
                 if (window.parent.document.getElementById('iframe-mniCustomers'))
                     window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
                 top.Ts.MainPage.closeNewCustomerTab(organizationID);
-                alert(e);
             });
         }
     });
@@ -1945,10 +1944,10 @@ $(document).ready(function () {
                 //$('#tblProducts > tbody:last').append('<tr><td><a href="#" id='+ product.ProductID +'><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td></td></tr>');
             }
 
-            $('.products-loading').hide();
-            $('.products-empty').hide();
-            if (product.length == 0) {
-                $('.products-empty').show();
+            $('.customers-loading').hide();
+            $('.customers-empty').hide();
+            if (product.length > 0) {
+                $('.customers-empty').show();
             }
         });
 
