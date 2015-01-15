@@ -1292,8 +1292,11 @@ namespace TeamSupport.ServiceLibrary
         foreach (User user in users) {
            if ((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications)))
           {
-            AddUser(userList, user, true);
-            Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+              if (user.ReceiveUnassignedGroupEmails == true)
+              {
+                  AddUser(userList, user, true);
+                  Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+              }
           }
           else
           {
@@ -1306,17 +1309,7 @@ namespace TeamSupport.ServiceLibrary
             RemoveBusinessHoursUsers(userList, ticket);
         }
 
-         foreach (User user in users)
-         {
-             if (ticket.UserID == null)
-             {
-                 if (user.ReceiveUnassignedGroupEmails == false)                 
-                 {
-                     RemoveUser(userList, user.UserID);
-                     Logs.WriteEventFormat("{0} ({1}) <{2}> was removed from the list (ReceiveUnassignedGroupEmails = false", user.DisplayName, user.UserID.ToString(), user.Email);
-                 }
-             }
-         }
+         
 
       } 
     }
