@@ -440,11 +440,6 @@ namespace TeamSupport.Data
       TimeSpan offset = loginUser.Offset;
       TicketTypes ticketTypes = new TicketTypes(loginUser);
       ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
-
-      //List<ReportSelectedField> fields = tabularReport.Fields.ToList();
-      //ReportSelectedField ticketID = new ReportSelectedField();
-      //  ticketID.FieldID
-
         
       foreach (ReportSelectedField field in tabularReport.Fields)
       {
@@ -456,7 +451,14 @@ namespace TeamSupport.Data
           string fieldName = DataUtils.GetReportPrimaryKeyFieldName(customField.RefType);
           if (fieldName != "")
           {
+            //handle the ticket views custom fields
+            if (tabularReport.Subcategory == 70)
+            {
+                fieldName = "UserTicketsView.TicketID";
+            }
+
             fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
+
             if (customField.FieldType == CustomFieldType.DateTime)
             {
               fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
