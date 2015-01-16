@@ -384,30 +384,37 @@ namespace TeamSupport.ServiceLibrary
           Logs.WriteEvent("Processing New Ticket");
           AddMessageNewTicket(ticket, modifier, ticketOrganization);
         }
-        // web hooks
-        if (!_isDebug && ticket.OrganizationID == 1078)
+        try
         {
-          if (ticket.TicketSeverityID == 3169 && (oldTicketSeverityID == null || oldTicketSeverityID != 3169))
-          {
-            SendUrgentTicketToSlack(ticket.GetTicketView());
-          }
-
-          if (status.IsEmailResponse)
-          {
-            if (oldTicketStatusID == null)
+            // web hooks
+            if (!_isDebug && ticket.OrganizationID == 1078)
             {
-              SendCustomerRespondedToSlack(ticket.GetTicketView());
-            }
-            else
-            {
-              TicketStatus oldStatus = TicketStatuses.GetTicketStatus(LoginUser, (int)oldTicketStatusID);
-              if (oldStatus != null && !oldStatus.IsEmailResponse)
-              {
-                SendCustomerRespondedToSlack(ticket.GetTicketView());
-              }
+                if (ticket.TicketSeverityID == 3169 && (oldTicketSeverityID == null || oldTicketSeverityID != 3169))
+                {
+                    SendUrgentTicketToSlack(ticket.GetTicketView());
+                }
 
+                if (status.IsEmailResponse)
+                {
+                    if (oldTicketStatusID == null)
+                    {
+                        SendCustomerRespondedToSlack(ticket.GetTicketView());
+                    }
+                    else
+                    {
+                        TicketStatus oldStatus = TicketStatuses.GetTicketStatus(LoginUser, (int)oldTicketStatusID);
+                        if (oldStatus != null && !oldStatus.IsEmailResponse)
+                        {
+                            SendCustomerRespondedToSlack(ticket.GetTicketView());
+                        }
+
+                    }
+                }
             }
-          }
+        }
+        catch (Exception)
+        {
+
         }
       }
       catch (Exception ex)
@@ -869,6 +876,7 @@ namespace TeamSupport.ServiceLibrary
                 catch (Exception ex)
                 {
                     Logs.WriteException(ex);
+                    ExceptionLogs.LogException(LoginUser, ex, "AddMessagePortalTicketModified", ticket.Row);
                 }
             }
 
@@ -1290,13 +1298,10 @@ namespace TeamSupport.ServiceLibrary
         Users users = new Users(LoginUser);
         users.LoadByGroupID((int)ticket.GroupID);
         foreach (User user in users) {
-           if ((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications)))
+           if (ticket.UserHasRights(user) && ((ticket.UserID != null && user.ReceiveAllGroupNotifications) || (ticket.UserID == null && user.ReceiveUnassignedGroupEmails)))
           {
-              if (user.ReceiveUnassignedGroupEmails == true)
-              {
-                  AddUser(userList, user, true);
-                  Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
-              }
+            AddUser(userList, user, true);
+            Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
           }
           else
           {
