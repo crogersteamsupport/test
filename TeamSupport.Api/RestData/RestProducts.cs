@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using System.Data;
+using System.Data.SqlClient;
 using TeamSupport.Data;
 using System.Net;
 
@@ -64,6 +65,35 @@ namespace TeamSupport.Api
       item.Collection.Save();
       item.UpdateCustomFieldsFromXml(command.Data);
       return Products.GetProduct(command.LoginUser, item.ProductID).GetXml("Product", true);
+    }
+
+    public static string DeleteProduct(RestCommand command, int id)
+    {
+        Product item = Products.GetProduct(command.LoginUser, id);
+        if (item == null) throw new RestException(HttpStatusCode.BadRequest);
+        if (item.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+        string result = item.GetXml("Product", true);
+
+        Products products = new Products(command.LoginUser);
+        using (SqlCommand dbCommand = new SqlCommand())
+        {
+            dbCommand.CommandText = "DELETE FROM OrganizationProducts WHERE (ProductID = @ProductID)";
+            dbCommand.CommandType = CommandType.Text;
+            dbCommand.Parameters.Clear();
+            dbCommand.Parameters.AddWithValue("@ProductID", id);
+            products.ExecuteNonQuery(dbCommand, "OrganizationProducts");
+
+            dbCommand.CommandText = "UPDATE Tickets SET ProductID = null, ReportedVersionID = null, SolvedVersionID = null WHERE (ProductID = @ProductID)";
+            dbCommand.CommandType = CommandType.Text;
+            dbCommand.Parameters.Clear();
+            dbCommand.Parameters.AddWithValue("@ProductID", id);
+            products.ExecuteNonQuery(dbCommand, "Tickets");
+
+        }
+
+        item.Delete();
+        item.Collection.Save();
+        return result;
     }
 
     public static string GetOrganizationProducts(RestCommand command, int organizationID)

@@ -411,6 +411,8 @@ namespace TeamSupport.Api
           case "/assets/{id}/tickets/{id}/": data = RestAssets.DeleteTicketAsset(_command, GetId(1), GetId(3)); break;
           case "/assets/{id}/attachments/{id}/": data = RestAttachments.DeleteAttachment(_command, GetId(1), GetId(3)); break;
           case "/users/{id}/": RestUsers.DeleteUser(_command, GetId(1)); break;
+          case "/products/{id}/": data = RestProducts.DeleteProduct(_command, GetId(1)); break;
+          case "/products/{id}/versions/{id}/": data = RestVersions.DeleteVersion(_command, GetId(3)); break;
           default: throw new RestException(HttpStatusCode.NotFound);
         }
       }
