@@ -456,6 +456,13 @@ namespace TeamSupport.Data
             {
                 fieldName = "UserTicketsView.TicketID";
             }
+            //handle SLA Report Custom Fields
+            else if (tabularReport.Subcategory == 69)
+            {
+                fieldName = "SlaViolationHistoryView.TicketID";
+            }
+              
+
 
             fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
 
