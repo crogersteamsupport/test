@@ -552,7 +552,6 @@ $(document).ready(function () {
         }
 
         function closeReport(report) {
-            debugger
             var result = '/vcr/1_9_0/pages/';
             function getReportUrl() {
                 switch (_reportType) {
@@ -578,7 +577,9 @@ $(document).ready(function () {
                 }
             } else { // saved
                 if (_reportType == 5) {
-                    result = result + 'TicketView.html?ReportID=' + report.ReportID;
+                    result = result + 'reports.html';
+                    top.Ts.MainPage.openTicketView(report.ReportID);
+                    //result = result + 'TicketView.html?ReportID=' + report.ReportID;
                 }
                 else if (_reportID) // go back to report
                 {

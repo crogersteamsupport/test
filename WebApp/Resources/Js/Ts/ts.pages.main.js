@@ -550,6 +550,11 @@ Ts.Pages.Main.prototype = {
                     self.openNewAsset(assetID);
                 }
 
+                var reportID = Ts.Utils.getQueryValue('reportID');
+                if (reportID) {
+                    self.openTicketView(reportID);
+                }
+
             });
         }
 
@@ -1476,6 +1481,11 @@ Ts.Pages.Main.prototype = {
         this.MainMenu.find('mniTicketTags', 'tickettags').select();
         var element = $('.main-tab-content-item:visible');
         $(element).children('iframe').attr('src', 'Frames/TicketTags.aspx?TagID=' + tagID);
+    },
+    openTicketView: function (ReportID) {
+        this.MainMenu.find('mniTicketViews', 'tickets').select();
+        var element = $('.main-tab-content-item:visible');
+        $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/TicketView.html?ReportID=' + ReportID);
     },
     addDebugStatus: function (text) {
         $('.status-debug').text(text);
