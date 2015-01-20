@@ -11,7 +11,7 @@ Ts.Ui.MenuTree = function (element) {
 Ts.Ui.MenuTree.prototype = {
   constructor: Ts.Ui.MenuTree,
   getElement: function () { return this._element; },
-  add: function (parent, id, type, caption, imageUrl, data) {debugger
+  add: function (parent, id, type, caption, imageUrl, data) {
     var html = '<li class="ts-menutree-item menutree-item-' + type + '-' + id + '">' +
               '<div class="ui-corner-allx">' +
               '<img />' +

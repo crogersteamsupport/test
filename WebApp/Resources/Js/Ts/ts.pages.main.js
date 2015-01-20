@@ -586,9 +586,9 @@ Ts.Pages.Main.prototype = {
                     refreshID = result.RefreshID;
 
                     if (result.MyUnreadTicketCount > 0) {
-                        $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets (' + result.MyUnreadTicketCount + ')').css('font-weight', 'bold');
+                        $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets (' + result.MyUnreadTicketCount + ')').css('font-weight', 'bold');
                     } else {
-                        $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets').css('font-weight', 'normal');
+                        $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets').css('font-weight', 'normal');
                     }
 
                 }
@@ -666,6 +666,7 @@ Ts.Pages.Main.prototype = {
         }
 
         function openMenuItem(item) {
+            debugger
             var mainTab = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main);
             var caption = item.getCaption();
             if (caption.indexOf('My Tickets') == 0) caption = 'My Tickets';
@@ -1514,9 +1515,9 @@ Ts.Pages.Main.prototype = {
     updateMyOpenTicketReadCount: function () {
         Ts.Services.Tickets.GetMyOpenReadCount(function (result) {
             if (result > 0) {
-                $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets (' + result + ')').css('font-weight', 'bold');
+                $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets (' + result + ')').css('font-weight', 'bold');
             } else {
-                $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets').css('font-weight', 'normal');
+                $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets').css('font-weight', 'normal');
             }
         });
     },
