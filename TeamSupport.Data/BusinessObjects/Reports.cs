@@ -565,9 +565,53 @@ namespace TeamSupport.Data
       if (tabularReport.Subcategory == 70)
       {
           builder.Append(" AND (" + mainTable.TableName + ".ViewerID = @UserID)");
+
+          GetUserRightsClause(loginUser, command, builder, mainTable.TableName);
+
       }
 
       if (isSchemaOnly) builder.Append(" AND (0=1)");
+    }
+
+    private static void GetUserRightsClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, string mainTableName)
+    {
+        string rightsClause = "";
+
+        User user = Users.GetUser(loginUser, loginUser.UserID);
+        switch (user.TicketRights)
+        {
+            case TicketRightType.All:
+                break;
+            case TicketRightType.Assigned:
+                builder.Append(" AND (" + mainTableName + ".UserID = @UserID OR " + mainTableName + ".IsKnowledgeBase=1) ");
+                break;
+            case TicketRightType.Groups:
+                rightsClause = @" AND ({0}
+              ({1}.UserID = @UserID) OR
+              ({1}.IsKnowledgeBase = 1) OR
+              ({1}.UserID IS NULL AND {1}.GroupID IS NULL)) ";
+                Groups groups = new Groups(loginUser);
+                groups.LoadByUserID(loginUser.UserID);
+                List<int> groupList = new List<int>();
+                foreach (Group group in groups)
+                {
+                    groupList.Add(group.GroupID);
+                }
+                string groupString = groupList.Count < 1 ? "" : string.Format("({1}.GroupID IN ({0})) OR ", DataUtils.IntArrayToCommaString(groupList.ToArray()), mainTableName);
+                builder.Append(string.Format(rightsClause, groupString, mainTableName));
+                break;
+            case TicketRightType.Customers:
+                rightsClause = @" AND (TicketID in (
+            SELECT ot.TicketID FROM OrganizationTickets ot
+            INNER JOIN UserRightsOrganizations uro ON ot.OrganizationID = uro.OrganizationID 
+            WHERE uro.UserID = @UserID) OR
+            {0}.UserID = @UserID OR
+            {0}.IsKnowledgeBase = 1)";
+                builder.Append(string.Format(rightsClause, mainTableName));
+                break;
+            default:
+                break;
+        }
     }
 
     private static void GetWhereClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters)

@@ -666,7 +666,6 @@ Ts.Pages.Main.prototype = {
         }
 
         function openMenuItem(item) {
-            debugger
             var mainTab = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main);
             var caption = item.getCaption();
             if (caption.indexOf('My Tickets') == 0) caption = 'My Tickets';
