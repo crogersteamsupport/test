@@ -173,7 +173,7 @@ TicketGrid = function (options) {
     });
 
 
-    $('.ticket-menu-actions li > a').click(function (e) {
+    $('.ticket-menu-actions li > a').click(function (e) {debugger
         e.preventDefault();
         var el = $(this);
         var ids = getSelectedIDs();
@@ -433,7 +433,7 @@ TicketGrid = function (options) {
         var rows = grid.getSelectedRows();
         for (var i = 0, l = rows.length; i < l; i++) {
             var ticket = loader.data[rows[i]];
-            if (ticket) selectedRowIds.push(ticket.TicketID);
+            if (ticket) selectedRowIds.push(ticket.hiddenTicketID);
         }
         return selectedRowIds;
 
@@ -980,7 +980,7 @@ TicketGrid = function (options) {
         }
     });
 
-    grid.onClick.subscribe(function (e, args) {
+    grid.onClick.subscribe(function (e, args) {debugger
         var cell = args.cell;
         var row = args.row;
         var ticket = loader.data[row];
@@ -995,7 +995,7 @@ TicketGrid = function (options) {
                 }
                 else {
                     ticket.IsRead = setRead;
-                    top.Ts.Services.Tickets.SetTicketRead(ticket.TicketID, ticket.IsRead, function () {
+                    top.Ts.Services.Tickets.SetTicketRead(ticket.hiddenTicketID, ticket.IsRead, function () {
                         top.Ts.MainPage.updateMyOpenTicketReadCount();
                     });
                     if (ticket.IsRead) {
@@ -1023,7 +1023,7 @@ TicketGrid = function (options) {
                 }
                 else {
                     ticket.IsFlagged = setIsFlagged;
-                    top.Ts.Services.Tickets.SetTicketFlag(ticket.TicketID, ticket.IsFlagged, function () {
+                    top.Ts.Services.Tickets.SetTicketFlag(ticket.hiddenTicketID, ticket.IsFlagged, function () {
                         grid.invalidateRow(row);
                         grid.updateRow(row);
                         grid.render();
@@ -1042,7 +1042,7 @@ TicketGrid = function (options) {
                 }
                 else {
                     ticket.IsEnqueued = setIsEnqueued;
-                    top.Ts.Services.Tickets.SetUserQueue(ticket.TicketID, setIsEnqueued, function () {
+                    top.Ts.Services.Tickets.SetUserQueue(ticket.hiddenTicketID, setIsEnqueued, function () {
                         grid.invalidateRow(row);
                         grid.updateRow(row);
                         grid.render();
@@ -1060,7 +1060,7 @@ TicketGrid = function (options) {
                 }
                 else {
                     ticket.IsSubscribed = setIsSubscribed;
-                    top.Ts.Services.Tickets.SetSubscribed(ticket.TicketID, ticket.IsSubscribed, null, function () {
+                    top.Ts.Services.Tickets.SetSubscribed(ticket.hiddenTicketID, ticket.IsSubscribed, null, function () {
                         grid.invalidateRow(row);
                         grid.updateRow(row);
                         grid.render();

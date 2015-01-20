@@ -2083,6 +2083,56 @@ ORDER BY r.Name
         }
     }
 
+    public void LoadAllPrivateTicketViews(int organizationID, int userID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2.LastName AS Editor,
+(SELECT TOP 1 rv.DateViewed FROM ReportViews rv WHERE rv.ReportID = r.ReportID AND rv.UserID = @UserID ORDER BY rv.DateViewed DESC) AS LastViewed,
+ISNULL((SELECT rus.Settings FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), '') AS Settings,
+ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
+ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsHidden,
+(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS Folder
+FROM Reports r
+LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
+LEFT JOIN Users u2 ON u2.UserID = r.EditorID
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL)) AND (r.CreatorID = @UserID AND r.IsPrivate = 1) AND ReportDefType = 5
+AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
+ORDER BY r.Name
+";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@UserID", userID);
+            Fill(command);
+        }
+    }
+
+    public void LoadAllPublicTicketViews(int organizationID, int userID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2.LastName AS Editor,
+(SELECT TOP 1 rv.DateViewed FROM ReportViews rv WHERE rv.ReportID = r.ReportID AND rv.UserID = @UserID ORDER BY rv.DateViewed DESC) AS LastViewed,
+ISNULL((SELECT rus.Settings FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), '') AS Settings,
+ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
+ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsHidden,
+(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS Folder
+FROM Reports r
+LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
+LEFT JOIN Users u2 ON u2.UserID = r.EditorID
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL)) AND (r.IsPrivate = 0) AND ReportDefType = 5
+AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
+ORDER BY r.Name
+";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@UserID", userID);
+            Fill(command);
+        }
+    }
+
     public void LoadCustomReports() 
     {
       using (SqlCommand command = new SqlCommand())

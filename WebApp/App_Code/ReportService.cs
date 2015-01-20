@@ -231,6 +231,21 @@ namespace TSWebServices
       }
 
       [WebMethod]
+      public string GetTicketViews()
+      {
+          List<ReportItem> result = new List<ReportItem>();
+          Reports reports = new Reports(TSAuthentication.GetLoginUser());
+          reports.LoadAllTicketViews(TSAuthentication.OrganizationID, TSAuthentication.UserID);
+
+          foreach (Report report in reports)
+          {
+              result.Add(new ReportItem(report, false));
+          }
+
+          return JsonConvert.SerializeObject(result);
+      }
+
+      [WebMethod]
       public string GetReportsByFolder(int folderID)
       {
         List<ReportItem> result = new List<ReportItem>();

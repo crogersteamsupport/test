@@ -1483,7 +1483,7 @@ Ts.Pages.Main.prototype = {
         $(element).children('iframe').attr('src', 'Frames/TicketTags.aspx?TagID=' + tagID);
     },
     openTicketView: function (ReportID) {
-        this.MainMenu.find('mniTicketViews', 'tickets').select();
+        //this.MainMenu.find('mniTicketViews', 'tickets').select();
         var element = $('.main-tab-content-item:visible');
         $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/TicketView.html?ReportID=' + ReportID);
     },
