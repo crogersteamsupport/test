@@ -77,7 +77,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.InitialResponseViolationDate == null || Math.Abs(((DateTime)notification.InitialResponseViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse, notification);
             notification.InitialResponseViolationDate = notifyTime;
           }
         }
@@ -90,7 +90,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.InitialResponseWarningDate == null || Math.Abs(((DateTime)notification.InitialResponseWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse, notification);
             notification.InitialResponseWarningDate = notifyTime;
           }
         }
@@ -105,7 +105,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.LastActionViolationDate == null || Math.Abs(((DateTime)notification.LastActionViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction, notification);
             notification.LastActionViolationDate = notifyTime;
           }
         }
@@ -118,7 +118,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.LastActionWarningDate == null || Math.Abs(((DateTime)notification.LastActionWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction, notification);
             notification.LastActionWarningDate = notifyTime;
           }
         }
@@ -133,7 +133,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.TimeClosedViolationDate == null || Math.Abs(((DateTime)notification.TimeClosedViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed, notification);
             notification.TimeClosedViolationDate = notifyTime;
           }
         }
@@ -146,7 +146,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.TimeClosedWarningDate == null || Math.Abs(((DateTime)notification.TimeClosedWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed, notification);
             notification.TimeClosedWarningDate = notifyTime;
           }
         }
@@ -161,15 +161,26 @@ namespace TeamSupport.ServiceLibrary
     }
 
 
-    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType)
+    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType, SlaNotification notification)
     {
       Users users = new Users(LoginUser);
       User user = null;
 
-      
-      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(LoginUser, ticketID);
-      if (ticket == null) return;
+      string violationType = "";
+      switch (slaViolationType)
+      {
+        case SlaViolationType.InitialResponse: violationType = "Initial Resoponse"; break;
+        case SlaViolationType.LastAction: violationType = "Last Action"; break;
+        case SlaViolationType.TimeClosed: violationType = "Time to Close"; break;
+        default: break;
+      }
 
+      Logs.WriteLine();
+      Logs.WriteEvent("***** Procdessing TicketID: " + ticketID.ToString());
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(LoginUser, ticketID);
+      if (ticket == null) { Logs.WriteEvent("Ticket is NULL, exiting"); return; }
+
+      
       if (!isWarning)
       {
         SlaViolationHistoryItem history = (new SlaViolationHistory(LoginUser)).AddNewSlaViolationHistoryItem();
@@ -186,16 +197,14 @@ namespace TeamSupport.ServiceLibrary
       
 
 
-      string violationType = "";
-      switch (slaViolationType)
-      {
-        case SlaViolationType.InitialResponse: violationType = "Initial Resoponse"; break;
-        case SlaViolationType.LastAction: violationType = "Last Action"; break;
-        case SlaViolationType.TimeClosed: violationType = "Time to Close"; break;
-        default: break;
-      }
+
       Logs.WriteEvent(string.Format("NOTIFYING TicketID:{0}  TicketNumber:{1}  OrganizationID:{2} ", ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.OrganizationID.ToString()));
       Logs.WriteEvent(string.Format("User:{1}  Group:{2}  IsWarning:{3}  NoficationType:{4}", ticketID.ToString(), useUser.ToString(), useGroup.ToString(), isWarning.ToString(), slaViolationType));
+      Logs.WriteEvent("Ticket Data:");
+      Logs.WriteData(ticket.Row);
+      Logs.WriteEvent("Notification Data:");
+      Logs.WriteData(notification.Row);
+
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, violationType + " SLA violation occured");
 
       MailMessage message = EmailTemplates.GetSlaEmail(LoginUser, ticket, violationType, isWarning);
