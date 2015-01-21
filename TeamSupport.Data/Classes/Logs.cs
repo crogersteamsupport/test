@@ -88,7 +88,7 @@ namespace TeamSupport.Data
 
           foreach (string file in files)
           {
-            if (File.GetLastWriteTime(file) < DateTime.Now.AddDays(-7)) File.Delete(file);
+            if (File.GetLastWriteTime(file) < DateTime.Now.AddDays(-30)) File.Delete(file);
           }
         
         }

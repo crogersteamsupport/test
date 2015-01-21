@@ -254,19 +254,23 @@ namespace TeamSupport.ServiceLibrary
         foreach (Organization customer in customers)
         {
           Logs.WriteEvent("-- Customer: " + customer.Name);
-          if (customer.SlaLevelID == null)
+          if (customer.SlaLevelID != null)
           {
-            Logs.WriteEvent("No SLALevelID"); return;
-          }
-          SlaLevel level = SlaLevels.GetSlaLevel(LoginUser, (int)customer.SlaLevelID);
-          Logs.WriteEvent("SLA Level: " + level.Name);
-          SlaTriggers triggers = new SlaTriggers(LoginUser);
-          triggers.LoadByTicketTypeAndSeverity(level.SlaLevelID, ticket.TicketTypeID, ticket.TicketSeverityID);
+            SlaLevel level = SlaLevels.GetSlaLevel(LoginUser, (int)customer.SlaLevelID);
+            Logs.WriteEvent("SLA Level: " + level.Name);
+            SlaTriggers triggers = new SlaTriggers(LoginUser);
+            triggers.LoadByTicketTypeAndSeverity(level.SlaLevelID, ticket.TicketTypeID, ticket.TicketSeverityID);
 
-          foreach (SlaTrigger trigger in triggers)
-          {
-            Logs.WriteData(trigger.Row);
+            foreach (SlaTrigger trigger in triggers)
+            {
+              Logs.WriteData(trigger.Row);
+            }          
           }
+          else
+          {
+            Logs.WriteEvent("No SLA Level Assigned to " + customer.Name);
+          }
+  
         }
 
         if (org.InternalSlaLevelID != null)
