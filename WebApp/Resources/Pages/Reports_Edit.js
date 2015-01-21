@@ -579,7 +579,7 @@ $(document).ready(function () {
             } else { // saved
                 if (_reportType == 5) {
                     if (_reportID) {
-                        result = result + 'reports.html';
+                        result = result + getReportUrl();
                         var isPrivate = $('.report-privacy').val();
                         top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
                     }
@@ -587,7 +587,6 @@ $(document).ready(function () {
                         result = result + 'reports.html';
                         var isPrivate = $('.report-privacy').val();
                         top.Ts.MainPage.addNewTicketView(report, isPrivate);
-                        top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
                     }
 
 

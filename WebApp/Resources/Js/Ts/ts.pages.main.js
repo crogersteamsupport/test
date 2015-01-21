@@ -1481,28 +1481,26 @@ Ts.Pages.Main.prototype = {
         $(element).children('iframe').attr('src', 'Frames/TicketTags.aspx?TagID=' + tagID);
     },
     openTicketView: function (ReportID, isPrivate) {
+        if (isPrivate == "true") {
+            var myMenu = $('.menutree-item-mytickets-mniMyTickets').find('span.ui-icon.ui-icon-carat-1-e');
+            myMenu.removeClass("ui-icon-carat-1-e").addClass("ui-icon-carat-1-s");
 
-        this.MainMenu.find('mniTickets', 'tickets').select();
+            var myMenuItems = $('.menutree-item-tickets-mniMyTickets').find('ul.ui-helper-hidden');
+            myMenuItems.show();
+
+        }
+        else {
+            var allMenu = $('.menutree-item-tickets-mniTickets').find('span.ui-icon.ui-icon-carat-1-e');
+            allMenu.removeClass("ui-icon-carat-1-e").addClass("ui-icon-carat-1-s");
+
+            var allMenuItems = $('.menutree-item-tickets-mniTickets').find('ul.ui-helper-hidden');
+            allMenuItems.show();
+        }
+
+        this.MainMenu.find('mniTicketView_' + ReportID, 'tickettype').select();
         var element = $('.main-tab-content-item:visible');
         $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/TicketView.html?ReportID=' + ReportID);
     },
-//    openTicketView: function (ReportID, isPrivate) {
-//        debugger
-//        if (isPrivate == "false") {
-//            var myMenu = $('.menutree-item-mytickets-mniMyTickets').find('span.ui-icon.ui-icon-carat-1-e');
-//            myMenu.removeClass("ui-icon.ui-icon-carat-1-e").addClass("ui-icon.ui-icon-carat-1-s");
-
-//        }
-//        else {
-//                var allMenu = $('.menutree-item-tickets-mniTickets').find('span.ui-icon.ui-icon-carat-1-e');
-//            allMenu.removeClass("ui-icon.ui-icon-carat-1-e").addClass("ui-icon.ui-icon-carat-1-s");
-
-//        }
-
-//        this.MainMenu.find('mniTicketView_' + ReportID, 'tickettype').select();
-//        var element = $('.main-tab-content-item:visible');
-//        $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/TicketView.html?ReportID=' + ReportID);
-//    },
     addDebugStatus: function (text) {
         $('.status-debug').text(text);
     },
@@ -1547,6 +1545,7 @@ Ts.Pages.Main.prototype = {
                 parent = self.MainMenu.getByID('mniTickets');
             }
             self.MainMenu.add(parent, result.ID, result.Type, result.Caption, result.ImageUrl, JSON.parse(result.Data));
+            top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
         });
     },
     updateMenu: function () {

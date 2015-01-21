@@ -239,7 +239,7 @@
     }
 
 
-    function saveColumns() {
+    function saveColumns() {debugger
         var columns = _grid.getColumns();
         _report.Settings.Columns = new Array();
         _report.Settings.forceFitColumns = _grid.getOptions().forceFitColumns == true;

@@ -1126,7 +1126,6 @@ TicketGrid.prototype = {
                 $('.grid-ticket').toggleClass('grid-compact', self.options.isCompact == true);
                 self._grid.setOptions({ rowHeight: (self.options.isCompact == true ? 24 : 32) });
                 
-                debugger
                 var newColumns = [];
                 var allColumns = self.getAllColumns();
                 var qCol = null;

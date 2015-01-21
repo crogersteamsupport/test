@@ -41,6 +41,7 @@ TicketGrid = function (options) {
     this.options = $.extend({}, this.defaults, options);
     self._reportID = parseInt(top.Ts.Utils.getQueryValue('ReportID', window));
     var _reportID = self._reportID;
+    self._report = new Array();
     function saveOptions() {
         top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Settings', JSON.stringify(self.options));
     }
@@ -173,7 +174,7 @@ TicketGrid = function (options) {
     });
 
 
-    $('.ticket-menu-actions li > a').click(function (e) {debugger
+    $('.ticket-menu-actions li > a').click(function (e) {
         e.preventDefault();
         var el = $(this);
         var ids = getSelectedIDs();
@@ -562,6 +563,10 @@ TicketGrid = function (options) {
     top.Ts.Utils.webMethod("ReportService", "GetReport", {
         "reportID": this._reportID
     }, function (report) {
+        self._report = report;
+        self._report.Def = JSON.parse(report.ReportDef);
+        self._report.Settings = report.UserSettings == '' ? new Object() : JSON.parse(report.UserSettings);
+
         if ((top.Ts.System.User.IsSystemAdmin != false || report.CreatorID == top.Ts.System.User.UserID) && report.ReportType != 3 && report.OrganizationID != null) {
             $('.reports-edit').show();
         }
@@ -941,24 +946,34 @@ TicketGrid = function (options) {
     });
 
     grid.onColumnsReordered.subscribe(function (e, args) { saveColumns(); });
-    $('.slick-columnpicker').on('mouseleave', function (e) { setTimeout(saveColumns, 1000); });
 
     grid.onColumnsResized.subscribe(function (e, args) { saveColumns(); });
 
-    function saveColumns(callback) {
+    function saveUserSettings(callback) {
+        top.Ts.Utils.webMethod("ReportService", "SaveUserSettings",
+            {
+                "reportID": self._report.ReportID,
+                "data": JSON.stringify(self._report.Settings)
+            },
+            function () { if (callback) callback(); },
+            function (error) { }
+        );
+    }
+
+
+    function saveColumns() {debugger
         var columns = grid.getColumns();
-        var info = new Object();
-        info.columns = [];
-        info.forceFitColumns = grid.getOptions().forceFitColumns == true;
+        self._report.Settings.Columns = new Array();
+        self._report.Settings.forceFitColumns = grid.getOptions().forceFitColumns == true;
 
         for (var i = 0; i < columns.length; i++) {
             var item = new Object();
             item.id = columns[i].id;
             item.width = columns[i].width;
-            info.columns.push(item);
+            self._report.Settings.Columns.push(item);
         }
-        info.version = 1;
-        top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Columns', JSON.stringify(info), callback);
+
+        saveUserSettings();
     }
 
     $('.grid-ticket').on('click', 'a.cell-link', function (e) {
@@ -980,7 +995,7 @@ TicketGrid = function (options) {
         }
     });
 
-    grid.onClick.subscribe(function (e, args) {debugger
+    grid.onClick.subscribe(function (e, args) {
         var cell = args.cell;
         var row = args.row;
         var ticket = loader.data[row];
@@ -1125,7 +1140,7 @@ TicketGrid = function (options) {
     });
 
     grid.onDblClick.subscribe(function (e, args) {
-        top.Ts.MainPage.openTicket(loader.data[args.row].TicketNumber, true);
+        top.Ts.MainPage.openTicketByID(loader.data[args.row].hiddenTicketID, true);
     });
 
     grid.onActiveCellChanged.subscribe(function (e, o) {
@@ -1297,6 +1312,26 @@ TicketGrid.prototype = {
             openCol.IsCustomField = false;
             newColumns.push(self.createColumnObject(openCol));
 
+
+            if (self._report.Settings.Columns) {
+                for (var i = 0; i < self._report.Settings.Columns.length; i++) {
+                    if (self._report.Settings.Columns[i].id == 'checked') {
+                    }
+                    else {
+
+                        for (var a = 0; a < repCols.length; a++) {
+                            var repCol = repCols[a];
+
+                            if (repCol.Name == self._report.Settings.Columns[i].id) {
+                                repCols.splice(a, 1);
+                                var col = self.createColumnObject(repCol);
+                                newColumns.push(col)
+                            }
+                        }
+                    }
+                }
+            }
+
             for (var i = 0; i < repCols.length; i++) {
                 var col = self.createColumnObject(repCols[i]);
                 if (col.isFirst) {
@@ -1306,6 +1341,7 @@ TicketGrid.prototype = {
                     newColumns.push(col);
                 }
             }
+
             if (newColumns.length > 0) self.setTicketColumns(newColumns);
         });
     }
