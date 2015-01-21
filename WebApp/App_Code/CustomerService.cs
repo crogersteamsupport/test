@@ -2440,9 +2440,9 @@ namespace TSWebServices
 
                 total = ratings.Count;
 
-                results.Add((int)((negativeRating / total) * 100));
-                results.Add((int)((neutralRating / total) * 100));
-                results.Add((int)((positiveRating / total) * 100));
+                results.Add((int)(Math.Ceiling(negativeRating / total) * 100));
+                results.Add((int)(Math.Ceiling(neutralRating / total) * 100));
+                results.Add((int)(Math.Ceiling(positiveRating / total) * 100));
             }
             else
             {
@@ -2496,9 +2496,9 @@ namespace TSWebServices
                 }
 
                 total = aru.Count;
-                results.Add((int)((negativeRating / total) * 100));
-                results.Add((int)((neutralRating / total) * 100));
-                results.Add((int)((positiveRating / total) * 100));
+                results.Add((int)(Math.Ceiling(negativeRating / total) * 100));
+                results.Add((int)(Math.Ceiling(neutralRating / total) * 100));
+                results.Add((int)(Math.Ceiling(positiveRating / total) * 100));
             }
             else
             {
