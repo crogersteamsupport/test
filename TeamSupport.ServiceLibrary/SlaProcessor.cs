@@ -23,11 +23,7 @@ namespace TeamSupport.ServiceLibrary
 
         Tickets tickets = new Tickets(LoginUser);
         tickets.LoadAllUnnotifiedAndExpiredSla();
-        Logs.WriteLine();
-        Logs.WriteLine();
-        Logs.WriteEvent("*************** Processing " + tickets.Count.ToString() + " Tickets ***************", true);
-        Logs.WriteLine();
-        Logs.WriteLine();
+
         foreach (Ticket ticket in tickets)
         {
           if (IsStopped) break;
