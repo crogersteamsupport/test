@@ -259,7 +259,7 @@ Namespace TeamSupport
               Log.Write("No JiraKey. Creating issue...")
               URI = _baseURI + "/issue"
               ticketData = New StringBuilder()
-              ticketData.Append(GetTicketData(ticket))
+              ticketData.Append(GetTicketData(ticket, issueFields))
               issue = GetAPIJObject(URI, "POST", ticketData.ToString())
               'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
               URI = _baseURI + "/issue/" + issue("key").ToString()
@@ -549,12 +549,12 @@ Namespace TeamSupport
           Return result
         End Function
 
-        Private Function GetTicketData(ByVal ticket As TicketsViewItem) As String
-          Dim result As StringBuilder = new StringBuilder()
+            Private Function GetTicketData(ByVal ticket As TicketsViewItem, ByRef fields As JObject) As String
+                Dim result As StringBuilder = New StringBuilder()
                 Dim customField As StringBuilder = New StringBuilder()
-                customField = BuildCustomFields(ticket)
-          result.Append("{")
-          result.Append("""fields"":{")
+                customField = BuildRequiredFields(ticket, fields)
+                result.Append("{")
+                result.Append("""fields"":{")
                 result.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """,")
                 result.Append("""issuetype"":{""name"":""" + ticket.TicketTypeName + """},")
                 If customField.ToString().Trim().Length > 0 Then
@@ -568,28 +568,7 @@ Namespace TeamSupport
 
                 Return result.ToString()
             End Function
-            Private Function GetCustomJiraFields() As JArray
-                Dim URI As String = _baseURI + "/field"
-                'View an example of this response in 
-                'https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Discovering+meta-data+for+creating+issues
 
-                Dim result As JArray = Nothing
-                Try
-
-                    result = GetAPIJArray(URI, "GET", String.Empty)
-
-                Catch ex As Exception
-                    Log.Write("Exception raised attempting to get Custom Jira Fields.")
-                    Log.Write(ex.Message)
-                    Log.Write("URI: " + URI)
-
-
-                    Throw New Exception("Custom Fields Exception")
-
-                End Try
-
-                Return result
-            End Function
           Private Function GetIssueFields(ByVal ticket As TicketsViewItem) As JObject
             Dim issueTypeName As String = ticket.TicketTypeName
             Dim projectKey As String = GetProjectKey(ticket.ProductName)
@@ -597,6 +576,7 @@ Namespace TeamSupport
               _baseURI + 
               "/issue/createmeta?projectKeys=" + 
               projectKey.ToUpper() + 
+              "&issuetypeNames=" + issueTypeName +
               "&expand=projects.issuetypes.fields" 
               'View an example of this response in 
               'https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Discovering+meta-data+for+creating+issues
@@ -1120,37 +1100,57 @@ Namespace TeamSupport
           Return result
             End Function
 
-            Private Function BuildCustomFields(ByVal ticket As TicketsViewItem)
+            Private Function BuildRequiredFields(ByVal ticket As TicketsViewItem, ByRef fields As JObject)
                 Dim result As StringBuilder = New StringBuilder()
-               
-                Dim customFields As New CRMLinkFields(User)
-                customFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
-                Dim CustomJiraFields = GetCustomJiraFields()
 
-                For Each customField In customFields
-                    If customField.CustomFieldID.HasValue Then
+                Try
+                    Dim customMappingFields As New CRMLinkFields(User)
+                    customMappingFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
 
-                        For Each customJiraField In CustomJiraFields
-
-                            If customField.CRMFieldName.ToString().ToLower() = customJiraField("name").ToString().ToLower() Then
-                                'Get CustomField Value
-                                Dim findCustom As New CustomValues(User)
-                                Dim thisCustom As CustomValue
-
-                                findCustom.LoadByFieldID(customField.CustomFieldID, ticket.TicketID)
-                                If findCustom.Count > 0 Then
-                                    thisCustom = findCustom(0)
-                                    If result.ToString().Trim().Length > 0 Then
-                                        result.Append(",")
-                                    End If
-                                    result.Append("""" + customJiraField("id").ToString().ToLower() + """:{""value"":""" + thisCustom.Value.ToString() + """}")
-                                End If
-
+                    For Each field As KeyValuePair(Of String, JToken) In fields
+                        If field.Value("required") Then
+                            If field.Key = "summary" OrElse field.Key = "issuetype" OrElse field.Key = "project" OrElse field.Key = "description" Then
+                                Continue For
                             End If
-                        Next
-                    End If
-                Next
 
+                            Dim value As String = Nothing
+
+                            Dim cRMLinkField As CRMLinkField = customMappingFields.FindByCRMFieldName(field.Value("name").ToString())
+                            If cRMLinkField IsNot Nothing Then
+                                If cRMLinkField.CustomFieldID IsNot Nothing Then
+                                    Dim findCustom As New CustomValues(User)
+                                    findCustom.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
+                                    If findCustom.Count > 0 Then
+                                        value = GetDataLineValue(field.Key.ToString(), field.Value("schema")("custom"), findCustom(0).Value)
+                                    Else
+                                        Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), findCustom.Count = 0))
+                                    End If
+                                ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
+                                    If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
+                                        value = GetDataLineValue(field.Key.ToString(), field.Value("schema")("custom"), ticket.Row(cRMLinkField.TSFieldName))
+                                    Else
+                                        Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Row(cRMLinkField.TSFieldName) Is Nothing))
+                                    End If
+                                Else
+                                    Log.Write(
+                                      "TicketID " + ticket.TicketID.ToString() + "'s field '" + field.Value("name").ToString() + "' was not included because custom field " +
+                                      cRMLinkField.CRMFieldID.ToString() + " CustomFieldID and TSFieldName are null.")
+                                End If
+                            End If
+
+                            If value IsNot Nothing Then
+                                If result.ToString().Trim().Length > 0 Then
+                                    result.Append(",")
+                                End If
+                                result.Append("""" + field.Key.ToString() + """:" + value)
+                            Else
+                                Log.Write("No value foud for the required field " + field.Value("name").ToString())
+                            End If
+                        End If
+                    Next
+                Catch ex As Exception
+                    Log.Write("The following building required fields: " + ex.ToString() + ex.StackTrace)
+                End Try
 
                 Return result
             End Function
