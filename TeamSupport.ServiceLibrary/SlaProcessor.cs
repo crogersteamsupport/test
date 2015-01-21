@@ -275,110 +275,16 @@ namespace TeamSupport.ServiceLibrary
 
     }
     /*
-    private void NotifyViolationOld(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType SlaViolationType)
+    private void UpdateBusinessHoursForDLSFix()
     {
-      MailMessage message = new MailMessage();
+      Organizations customers = new Organizations(LoginUser);
+      customers.LoadTeamSupportCustomers();
 
-      Users users = new Users(LoginUser);
-      User user = null;
-      Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
-      if (ticket == null) return;
-
-      if (ticket.GroupID != null && useGroup)
+      foreach (Organization customer in customers)
       {
-        users.LoadByGroupID((int)ticket.GroupID);
+        customer.BusinessDayStart = new DateTime(DateTime.Now.ye
       }
-
-      if (ticket.UserID != null && useUser && users.FindByUserID((int)ticket.UserID) == null)
-      {
-        user = Users.GetUser(LoginUser, (int)ticket.UserID);
-      }
-
-      message.From = new MailAddress(Organizations.GetOrganization(LoginUser, ticket.OrganizationID).GetReplyToAddress());
-      foreach (User item in users)
-      {
-        message.To.Add(new MailAddress(item.Email, item.FirstLastName));
-      }
-
-      if (user != null)
-        message.To.Add(new MailAddress(user.Email, user.FirstLastName));
-
-      if (isWarning)
-        message.Subject = "Warning: Ticket [{0}] is about to violate an SLA";
-      else
-        message.Subject = "Violation: Ticket [{0}] has violated an SLA";
-
-      message.Subject = string.Format(message.Subject, ticket.TicketNumber);
-
-      string link = "<div><a href=\"" + SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com") + "?TicketID={0}\" target=\"TSMain\">Ticket {1}: {2}</a></div>";
-      StringBuilder builder = new StringBuilder();
-      string description = "";
-      if (!isWarning)
-      {
-        switch (SlaViolationType)
-        {
-          case SlaViolationType.InitialResponse: 
-            builder.Append("<div>The following ticket has violated an initial response Service Level Agreement.</div>");
-            description = "SLA Violation: Initial Resoponse";
-            break;
-          case SlaViolationType.LastAction: 
-            builder.Append("<div>The following ticket has violated a last action Service Level Agreement.</div>");
-            description = "SLA Violation: Last Action";
-            break;
-          case SlaViolationType.TimeClosed: 
-            builder.Append("<div>The following ticket has violated a time to close Service Level Agreement.</div>");
-            description = "SLA Violation: Time to Close";
-            break;
-          default:
-            break;
-        }
-        
-      }
-      else
-      {
-        switch (SlaViolationType)
-        {
-          case SlaViolationType.InitialResponse: 
-            builder.Append("<div>The following ticket is about to violate an initial response Service Level Agreement.</div>"); 
-            description = "SLA Warning: Initial Response";
-            break;
-          case SlaViolationType.LastAction: 
-            builder.Append("<div>The following ticket is about to violate a last action Service Level Agreement.</div>"); 
-            description = "SLA Warning: Last Action";
-            break;
-          case SlaViolationType.TimeClosed: 
-            builder.Append("<div>The following ticket is about to violate a time to close Service Level Agreement.</div>");
-            description = "SLA Warning: Time to Close";
-            break;
-          default:
-            break;
-        }
-        
-      }
-
-      builder.Append(string.Format(link, ticket.TicketID, ticket.TicketNumber, ticket.Name));
-
-      message.IsBodyHtml = true;
-      message.Body = builder.ToString();
-      SendMessage(ticket.OrganizationID,  description, message);
-
-    }
-
-    private void SendMessage(int organizationID, string description, MailMessage message)
-    {
-      StringBuilder builder = new StringBuilder();
-      builder.AppendLine("<span class=\"TeamSupportStart\">&nbsp</span>");
-
-      builder.AppendLine(message.Body);
-      builder.AppendLine("<span class=\"TeamSupportEnd\">&nbsp</span>");
-
-      message.Body = builder.ToString();
-
-      if (message.To.Count > 0)
-      { 
-        Emails.AddEmail(LoginUser, organizationID, null, description, message);
-      }
-    }
-*/
+    
+    }*/
   }
 }

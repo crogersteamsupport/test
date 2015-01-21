@@ -1784,6 +1784,16 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       }
     }
 
+    public void LoadTeamSupportCustomers()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Organizations WHERE ParentID = 1";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
+
     public void LoadBySignUpToken(string token) {
       using (SqlCommand command = new SqlCommand())
       {

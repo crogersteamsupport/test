@@ -36,10 +36,11 @@ AND st.SlaLevelID = @SlaLevelID";
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT st.*, ts.Position, ts.Name AS Severity  
+        command.CommandText = @"
+
+SELECT * 
 FROM SlaTriggers st 
-LEFT JOIN TicketSeverities ts ON ts.TicketSeverityID = st.TicketSeverityID
-WHERE st.TicketType = @TicketType
+WHERE st.TicketTypeID = @TicketType
 AND st.TicketSeverityID = @TicketSeverityID
 AND st.OrganizationID = @OrganizationID
 AND st.SlaLevelID = @SlaLevelID";
