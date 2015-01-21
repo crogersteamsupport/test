@@ -258,7 +258,7 @@ namespace TeamSupport.ServiceLibrary
         SlaLevel level = SlaLevels.GetSlaLevel(LoginUser, (int)customer.SlaLevelID);
         Logs.WriteEvent("SLA Level: " + level.Name);
         SlaTriggers triggers = new SlaTriggers(LoginUser);
-        triggers.LoadByTicketTypeAndSeverity(ticket.OrganizationID, level.SlaLevelID, ticket.TicketTypeID, ticket.TicketSeverityID);
+        triggers.LoadByTicketTypeAndSeverity(level.SlaLevelID, ticket.TicketTypeID, ticket.TicketSeverityID);
 
         foreach (SlaTrigger trigger in triggers)
         {

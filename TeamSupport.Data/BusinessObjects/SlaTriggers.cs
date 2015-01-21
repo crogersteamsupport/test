@@ -32,7 +32,7 @@ AND st.SlaLevelID = @SlaLevelID";
       }
     }
 
-    public void LoadByTicketTypeAndSeverity(int organizationID, int slaLevelID, int ticketTypeID, int ticketSeverityID)
+    public void LoadByTicketTypeAndSeverity(int slaLevelID, int ticketTypeID, int ticketSeverityID)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -42,13 +42,11 @@ SELECT *
 FROM SlaTriggers st 
 WHERE st.TicketTypeID = @TicketType
 AND st.TicketSeverityID = @TicketSeverityID
-AND st.OrganizationID = @OrganizationID
 AND st.SlaLevelID = @SlaLevelID";
 
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@SlaLevelID", slaLevelID);
         command.Parameters.AddWithValue("@TicketType", ticketTypeID);
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@TicketSeverityID", ticketSeverityID);
         Fill(command);
       }
