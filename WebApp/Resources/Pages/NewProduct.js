@@ -62,15 +62,17 @@ $(document).ready(function () {
   LoadVersionCustomControls();
 
   function LoadProducts() {
-    var products = top.Ts.Cache.getProducts();
-    for (var i = 0; i < products.length; i++) {
-        if (defaultProduct == products[i].ProductID) {
-            $('<option>').attr('value', products[i].ProductID).attr('selected', 'selected').text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
+    top.Ts.Services.Products.GetProducts(function (products) {
+
+        for (var i = 0; i < products.length; i++) {
+            if (defaultProduct == products[i].ProductID) {
+                $('<option>').attr('value', products[i].ProductID).attr('selected', 'selected').text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
+            }
+            else {
+                $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
+            }
         }
-        else {
-            $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
-        }
-    }
+    });
   }
 
   function LoadStatuses() {

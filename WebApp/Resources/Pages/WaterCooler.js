@@ -345,7 +345,7 @@ $(document).ready(function () {
         })
         .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
         .cluetip(clueTipOptions)
-        .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + users[i].Avatar + '">' + users[i].Name + '</a>')
+        .html('<a class="ui-state-default ts-link" href="#" onclick="return false;"><img class="chatavatar" src="' + users[i].Avatar + '">' + users[i].Name + '</a>')
         .appendTo($('.sidebarusers'));
         }
     });
