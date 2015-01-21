@@ -190,16 +190,6 @@ namespace TeamSupport.ServiceLibrary
 
       Actions actions = new Actions(LoginUser);
       actions.LoadLatestByTicket(ticket.TicketID, false);
-      
-
-
-
-      Logs.WriteEvent(string.Format("NOTIFYING TicketID:{0}  TicketNumber:{1}  OrganizationID:{2} ", ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.OrganizationID.ToString()));
-      Logs.WriteEvent(string.Format("User:{1}  Group:{2}  IsWarning:{3}  NoficationType:{4}", ticketID.ToString(), useUser.ToString(), useGroup.ToString(), isWarning.ToString(), slaViolationType));
-      Logs.WriteEvent("Ticket Data:");
-      Logs.WriteData(ticket.Row);
-      Logs.WriteEvent("Notification Data:");
-      Logs.WriteData(notification.Row);
 
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, violationType + " SLA violation occured");
 
@@ -232,6 +222,55 @@ namespace TeamSupport.ServiceLibrary
       {
         Email email = Emails.AddEmail(LoginUser, ticket.OrganizationID, null, "Sla Message", message);
         Logs.WriteEvent("Email Added (EmailID: " + email.EmailID.ToString() + ")", true);        
+      }
+
+      try
+      {
+
+
+      TimeZoneInfo tz = null;
+      Organization org = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
+      if (org.TimeZoneID != null) { tz = System.TimeZoneInfo.FindSystemTimeZoneById(org.TimeZoneID); }
+      if (tz == null)
+      {
+        Logs.WriteEvent("Timezone is null, using system's");
+        tz = System.TimeZoneInfo.Local;
+      }
+      Logs.WriteEvent("Is DLS: " + tz.IsDaylightSavingTime(DateTime.UtcNow).ToString());
+      Logs.WriteEvent(tz.DisplayName);
+      Logs.WriteEvent("Supports DLS: " + tz.SupportsDaylightSavingTime.ToString());
+      Logs.WriteEvent("UTC: " + DateTime.UtcNow.ToString());
+      Logs.WriteEvent(string.Format("NOTIFYING TicketID:{0}  TicketNumber:{1}  OrganizationID:{2} ", ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.OrganizationID.ToString()));
+      Logs.WriteEvent(string.Format("User:{1}  Group:{2}  IsWarning:{3}  NoficationType:{4}", ticketID.ToString(), useUser.ToString(), useGroup.ToString(), isWarning.ToString(), slaViolationType));
+      Logs.WriteEvent("Ticket Data:");
+      Logs.WriteData(ticket.Row);
+      Logs.WriteEvent("Notification Data:");
+      Logs.WriteData(notification.Row);
+      Logs.WriteEvent("Oranization Data: ");
+      Logs.WriteData(org.Row);
+      Organizations customers = new Organizations(LoginUser);
+      customers.LoadByTicketID(ticket.TicketID);
+
+      foreach (Organization customer in customers)
+      {
+        Logs.WriteEvent("-- Customer: " + customer.Name);
+        if (customer.SlaLevelID == null) { Logs.WriteEvent("No SLALevelID"); return; }
+        SlaLevel level = SlaLevels.GetSlaLevel(LoginUser, (int)customer.SlaLevelID);
+        Logs.WriteEvent("SLA Level: " + level.Name);
+        SlaTriggers triggers = new SlaTriggers(LoginUser);
+        triggers.LoadByTicketTypeAndSeverity(ticket.OrganizationID, level.SlaLevelID, ticket.TicketTypeID, ticket.TicketSeverityID);
+
+        foreach (SlaTrigger trigger in triggers)
+        {
+          Logs.WriteData(trigger.Row);
+        }
+
+      }
+      }
+      catch (Exception ex)
+      {
+        Logs.WriteEvent("Logging Exception:");
+        Logs.WriteException(ex);
       }
 
     }

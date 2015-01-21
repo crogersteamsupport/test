@@ -32,6 +32,27 @@ AND st.SlaLevelID = @SlaLevelID";
       }
     }
 
+    public void LoadByTicketTypeAndSeverity(int organizationID, int slaLevelID, int ticketTypeID, int ticketSeverityID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"SELECT st.*, ts.Position, ts.Name AS Severity  
+FROM SlaTriggers st 
+LEFT JOIN TicketSeverities ts ON ts.TicketSeverityID = st.TicketSeverityID
+WHERE st.TicketType = @TicketType
+AND st.TicketSeverityID = @TicketSeverityID
+AND st.OrganizationID = @OrganizationID
+AND st.SlaLevelID = @SlaLevelID";
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@SlaLevelID", slaLevelID);
+        command.Parameters.AddWithValue("@TicketType", ticketTypeID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@TicketSeverityID", ticketSeverityID);
+        Fill(command);
+      }
+    }
+
     public static void DeleteByTicketTypeID(LoginUser loginUser, int ticketTypeID)
     {
       SlaTriggers triggers = new SlaTriggers(loginUser);
