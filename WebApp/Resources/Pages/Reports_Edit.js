@@ -47,6 +47,7 @@ $(document).ready(function () {
             }
 
             $('.report-name').val(report.Name);
+            $('.report-privacy').val(report.IsPrivate.toString());
             initReport();
         });
     } else if (_reportType != null) {
@@ -577,9 +578,19 @@ $(document).ready(function () {
                 }
             } else { // saved
                 if (_reportType == 5) {
-                    result = result + 'reports.html';
-                    top.Ts.MainPage.openTicketView(report.ReportID);
-                    //result = result + 'TicketView.html?ReportID=' + report.ReportID;
+                    if (_reportID) {
+                        result = result + 'reports.html';
+                        var isPrivate = $('.report-privacy').val();
+                        top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
+                    }
+                    else {
+                        result = result + 'reports.html';
+                        var isPrivate = $('.report-privacy').val();
+                        top.Ts.MainPage.addNewTicketView(report, isPrivate);
+                        top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
+                    }
+
+
                 }
                 else if (_reportID) // go back to report
                 {

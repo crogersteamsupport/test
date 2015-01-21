@@ -2602,6 +2602,7 @@ IF @@ROWCOUNT=0
           this.Editor = (report.Row.Table.Columns.IndexOf("Editor") < 0 || report.Row["Editor"] == DBNull.Value ? "" : (string)report.Row["Editor"]);
           this.EditorID = report.EditorID;
           this.FolderID = (report.Row.Table.Columns.IndexOf("Folder") < 0 || report.Row["Folder"] == DBNull.Value ? null : (int?)report.Row["Folder"]);
+          this.IsPrivate = (report.Row.Table.Columns.IndexOf("IsPrivate") < 0 || report.Row["IsPrivate"] == DBNull.Value ? false : (bool)report.Row["IsPrivate"]);
           if ((int)report.ReportDefType < 0)
           {
             if (!string.IsNullOrWhiteSpace(report.ExternalURL))
@@ -2647,6 +2648,7 @@ IF @@ROWCOUNT=0
         [DataMember] public DateTime? LastViewed { get; set; }
         [DataMember] public DateTime DateEdited { get; set; }
         [DataMember] public int? FolderID { get; set; }
+        [DataMember] public bool IsPrivate { get; set; }
       }
  
       [DataContract]

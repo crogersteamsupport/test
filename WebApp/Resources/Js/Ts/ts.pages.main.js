@@ -677,8 +677,6 @@ Ts.Pages.Main.prototype = {
             mainTab.select();
         }
 
-
-
         this.MainMenu = new Ts.Ui.MenuTree($('.main-menutree')[0]);
         this.MainMenu.bind('afterSelect', openMenuItem);
         this.MainMenu.bind('beforeSelect', beforeMenuItemSelect);
@@ -1482,11 +1480,29 @@ Ts.Pages.Main.prototype = {
         var element = $('.main-tab-content-item:visible');
         $(element).children('iframe').attr('src', 'Frames/TicketTags.aspx?TagID=' + tagID);
     },
-    openTicketView: function (ReportID) {
-        //this.MainMenu.find('mniTicketViews', 'tickets').select();
+    openTicketView: function (ReportID, isPrivate) {
+
+        this.MainMenu.find('mniTickets', 'tickets').select();
         var element = $('.main-tab-content-item:visible');
         $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/TicketView.html?ReportID=' + ReportID);
     },
+//    openTicketView: function (ReportID, isPrivate) {
+//        debugger
+//        if (isPrivate == "false") {
+//            var myMenu = $('.menutree-item-mytickets-mniMyTickets').find('span.ui-icon.ui-icon-carat-1-e');
+//            myMenu.removeClass("ui-icon.ui-icon-carat-1-e").addClass("ui-icon.ui-icon-carat-1-s");
+
+//        }
+//        else {
+//                var allMenu = $('.menutree-item-tickets-mniTickets').find('span.ui-icon.ui-icon-carat-1-e');
+//            allMenu.removeClass("ui-icon.ui-icon-carat-1-e").addClass("ui-icon.ui-icon-carat-1-s");
+
+//        }
+
+//        this.MainMenu.find('mniTicketView_' + ReportID, 'tickettype').select();
+//        var element = $('.main-tab-content-item:visible');
+//        $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/TicketView.html?ReportID=' + ReportID);
+//    },
     addDebugStatus: function (text) {
         $('.status-debug').text(text);
     },
@@ -1518,6 +1534,35 @@ Ts.Pages.Main.prototype = {
             } else {
                 $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets').css('font-weight', 'normal');
             }
+        });
+    },
+    addNewTicketView: function (report, isPrivate) {
+        var self = this;
+        Ts.Services.System.GetNewTicketViewMenuItem(report.ReportID, function (result) {
+            var parent;
+            if (isPrivate == "true") {
+                parent = self.MainMenu.getByID('mniMyTickets');
+            }
+            else {
+                parent = self.MainMenu.getByID('mniTickets');
+            }
+            self.MainMenu.add(parent, result.ID, result.Type, result.Caption, result.ImageUrl, JSON.parse(result.Data));
+        });
+    },
+    updateMenu: function () {
+        var self = this;
+        $(".main-menutree").empty();
+        Ts.Services.System.GetMainMenuItems(function (result) {
+            function updateMenuItems(items, parent) {
+                for (var i = 0; i < items.length; i++) {
+                    var item = self.MainMenu.add(parent, items[i].ID, items[i].Type, items[i].Caption, items[i].ImageUrl, JSON.parse(items[i].Data));
+                    if (items.length > 0) {
+                        updateMenuItems(items[i].Items, item);
+                    }
+                }
+            }
+            updateMenuItems(result, null);
+            self.updateMyOpenTicketReadCount();
         });
     },
     editReminder: function (reminder, doSave, callback) {

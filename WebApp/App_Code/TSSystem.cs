@@ -99,6 +99,15 @@ namespace TSWebServices
       HttpContext.Current.Session.Abandon();
       FormsAuthentication.SignOut();
     }
+    [WebMethod]
+    public TsMenuItem GetNewTicketViewMenuItem(int reportID)
+    {
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        Report report = Reports.GetReport(loginUser, reportID, loginUser.UserID);
+
+        string data = @"{{""ContentUrl"":""{0}"",""PaneInfoUrl"":""{1}""}}";
+        return new TsMenuItem("tickettype", "mniTicketView_" + report.ReportID.ToString(), report.Name, "vcr/1_9_0/images/nav/20/tickets.png", string.Format(data, "vcr/1_9_0/Pages/TicketView.html?ReportID=" + report.ReportID.ToString(), "vcr/1_9_0/PaneInfo/Reports.html"));
+    }
 
     [WebMethod]
     public TsMenuItem[] GetMainMenuItems()

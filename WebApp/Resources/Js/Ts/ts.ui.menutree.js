@@ -31,7 +31,7 @@ Ts.Ui.MenuTree.prototype = {
     else {
       list = $(this._element).children('ul');
       if (list.length < 1) { list = $(this._element).append('<ul></ul').children('ul'); }
-    }
+  } 
     list.append(html);
 
     var item = this.find(id, type);
