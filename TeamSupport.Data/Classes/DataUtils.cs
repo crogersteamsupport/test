@@ -386,6 +386,11 @@ namespace TeamSupport.Data
       }
     }
 
+    public static int GetQuarter(DateTime dateTime)
+    {
+        return (dateTime.Month - 1) / 3 + 1;
+    }
+
     public static ReferenceType TableNameToReferenceType(string tableName)
     {
       ReferenceType result = ReferenceType.None;

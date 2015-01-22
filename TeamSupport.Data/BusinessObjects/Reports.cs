@@ -819,10 +819,10 @@ namespace TeamSupport.Data
               break;
 
             case "CURRENT QUARTER":
-              builder.Append(string.Format("(DATEPART(quarter, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, GetQuarter(DateTime.Now), DateTime.Now.Year));
+              builder.Append(string.Format("(DATEPART(quarter, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, DataUtils.GetQuarter(DateTime.Now), DateTime.Now.Year));
               break;
             case "PREVIOUS QUARTER":
-              int prevQuarter = GetQuarter(DateTime.Now) - 1;
+              int prevQuarter = DataUtils.GetQuarter(DateTime.Now) -1;
               int prevYear = DateTime.Now.Year;
               if (prevQuarter < 1) 
               {
@@ -832,7 +832,7 @@ namespace TeamSupport.Data
               builder.Append(string.Format("(DATEPART(quarter, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, prevQuarter, prevYear));
               break;
             case "NEXT QUARTER": 
-              int nextQuarter = GetQuarter(DateTime.Now) + 1;
+              int nextQuarter = DataUtils.GetQuarter(DateTime.Now) + 1;
               int nextYear = DateTime.Now.Year;
               if (nextQuarter > 4)
               {
@@ -962,15 +962,7 @@ namespace TeamSupport.Data
 
     public static int GetQuarter(DateTime date)
     {
-      if (date.Month >= 4 && date.Month <= 6)
-        return 1;
-      else if (date.Month >= 7 && date.Month <= 9)
-        return 2;
-      else if (date.Month >= 10 && date.Month <= 12)
-        return 3;
-      else
-        return 4;
-
+        return (date.Month - 1) / 3 + 1;
     }
 
     private static void GetSummarySql(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, int? reportID, bool useUserFilter, bool useDefaultOrderBy)
