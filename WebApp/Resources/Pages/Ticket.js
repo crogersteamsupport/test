@@ -140,6 +140,22 @@ $(document).ready(function () {
 
     top.Ts.Services.Customers.GetDateFormat(true, function (format) {
         dateFormat = format.replace("yyyy", "yy");
+        if (dateFormat.length < 8)
+        {
+            var dateArr = dateFormat.split('/');
+            if (dateArr[0].length < 2)
+            {
+                dateArr[0] = dateArr[0] + dateArr[0];
+            }
+            if (dateArr[1].length < 2) {
+                dateArr[1] = dateArr[1] + dateArr[1];
+            }
+            if (dateArr[2].length < 2) {
+                dateArr[1] = dateArr[1] + dateArr[1];
+            }
+            dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
+        }
+
     });
 
     $('.ticket-rail .collapsable')
@@ -2095,26 +2111,44 @@ $(document).ready(function () {
 
     $('button').button();
 
+    //$('#calendarLink').click(function (e) {
+    //    e.preventDefault();
+    //    e.stopPropagation();
+    //    top.Ts.System.logAction('Ticket - Calendar Clicked');
+    //    $('#divCalendar').show();
+    //    //$('#divWaterCooler').hide();
+    //    //$('#divActions').hide();
+    //    //$('#divFooter').hide();
+    //    //$('#calendarLink').addClass("activelink");
+    //    //$('#watercoolerLink').removeClass("activelink");
+    //    //$('#actionsLink').removeClass("activelink");
+    //    //$('.ticket-action-add').hide();
+    //});
+
     $('#watercoolerLink').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - WC Clicked');
-        $('#divWaterCooler').toggle();
-        $('#divActions').toggle();
-        $('#divFooter').toggle();
-        $('#watercoolerLink').toggleClass("activelink");
-        $('#actionsLink').toggleClass("activelink");
+        //$('#divCalendar').hide();
+        $('#divWaterCooler').show();
+        $('#divActions').hide();
+        $('#divFooter').hide();
+        //$('#calendarLink').removeClass("activelink");
+        $('#watercoolerLink').addClass("activelink");
+        $('#actionsLink').removeClass("activelink");
         $('.ticket-action-add').toggle();
     });
     $('#actionsLink').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        $('#divWaterCooler').toggle();
-        $('#divActions').toggle();
-        $('#divFooter').toggle();
-        $('#watercoolerLink').toggleClass("activelink");
-        $('#actionsLink').toggleClass("activelink");
-        $('.ticket-action-add').toggle();
+        //$('#divCalendar').hide();
+        $('#divWaterCooler').hide();
+        $('#divActions').show();
+        $('#divFooter').show();
+        //$('#calendarLink').removeClass("activelink");
+        $('#watercoolerLink').removeClass("activelink");
+        $('#actionsLink').addClass("activelink");
+        $('.ticket-action-add').show();
     });
 
     $('.ticket-panel-content').bind('scroll', function () {
@@ -3444,6 +3478,7 @@ var loadTicket = function (ticketNumber, refresh) {
             $('#isTicketPortal').removeClass('ui-state-default ts-link');
             $('#isTicketPortal').addClass('disabledlink');
         }
+
         if (!top.Ts.System.User.ChangeKbVisibility && !top.Ts.System.User.IsSystemAdmin) {
             $('#isTicketKB').removeClass('ui-state-default ts-link');
             $('#isTicketKB').addClass('disabledlink');
@@ -3452,6 +3487,7 @@ var loadTicket = function (ticketNumber, refresh) {
         }
 
         $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=0&pageid=" + _ticketNumber);
+        
         top.Ts.Services.Tickets.GetTicketWaterCoolerCount(_ticketNumber, function (result) {
             $('#watercoolerLink').html('Water Cooler (' + result + ')')
         });
