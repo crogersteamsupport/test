@@ -531,12 +531,13 @@ namespace TeamSupport.Data
         if (!string.IsNullOrWhiteSpace(hiddenTable.LookupKeyFieldName))
         {
           builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", hiddenTable.LookupKeyFieldName, hiddenTable.TableName));
-          if (sub.ReportTableID != null)
-          {
+        }
+
+        if (sub.ReportTableID != null)
+        {
             hiddenTable = tables.FindByReportTableID((int)sub.ReportTableID);
             if (!string.IsNullOrWhiteSpace(hiddenTable.LookupKeyFieldName))
-              builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", hiddenTable.LookupKeyFieldName, hiddenTable.TableName));
-          }
+                builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", hiddenTable.LookupKeyFieldName, hiddenTable.TableName));
         }
 
         if (tabularReport.Subcategory == 70)

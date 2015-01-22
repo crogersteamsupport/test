@@ -363,7 +363,7 @@
     }
 
 
-    var openFormatter = function (row, cell, value, columnDef, dataContext) {
+    var openFormatter = function (row, cell, value, columnDef, dataContext) {debugger
         if (columnDef.openField == "TicketID") {
             return '<a href="#" onclick="top.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "OrganizationID") {
