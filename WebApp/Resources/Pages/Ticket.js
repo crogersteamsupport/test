@@ -2537,7 +2537,7 @@ var initEditor = function (element, init) {
       moxiemanager_fullscreen: false,
       moxiemanager_title: top.Ts.System.Organization.Name,
       moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
-      paste_data_images: true,
+      paste_data_images: false,
       moxiemanager_image_settings: {
           moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
           extensions: 'gif,jpg,jpeg,png'
