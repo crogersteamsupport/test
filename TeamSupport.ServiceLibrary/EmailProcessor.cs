@@ -421,9 +421,9 @@ namespace TeamSupport.ServiceLibrary
                 }
             }
         }
-        catch (Exception)
+        catch (Exception exHooks)
         {
-
+          Logs.WriteException(exHooks);
         }
       }
       catch (Exception ex)
