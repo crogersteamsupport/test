@@ -4377,7 +4377,7 @@ var isFormValid = function(callback) {
         }
 
         $('.ticket-widget-customers').removeClass('ui-corner-all ui-state-error');
-        if (requireNewTicketCustomer == "True" && $('.newticket-kb').prop('checked') == false)) {
+        if (requireNewTicketCustomer == "True" && $('.newticket-kb').prop('checked') == false) {
             var customerCount = $('.ticket-customer-company').length + $('.ticket-customer-contact').length;
             if (customerCount < 1) {
                 $('.ticket-widget-customers').addClass('ui-corner-all ui-state-error');
