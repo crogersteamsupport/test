@@ -542,9 +542,14 @@ namespace TeamSupport.ServiceLibrary
                 }
             }
 
-            if (ticket.GroupID != null && oldGroupID != null)
+            // After the AddMessageInternalTicketModified method call the AddTicketOwners it checks if isNew or the owner changed (oldUserID != null) or the group changed (oldGroupID != null)
+            // if so it removes the users added by the AddTicketOwners assuming they were already added by this method.
+            // The problem is that this method is only adding when the group changed (oldGroupID != null).
+            // In case the group hasn't changed, then neither this nor the AddMessageInternalTicketModified include the group users.
+            // To fix this I'm changing to add the group users as long as there is a group to notify regardless if it has been changed or not.
+            if (ticket.GroupID != null)
             {
-                Logs.WriteEvent("Ticket.GroupID is not null AND oldGroupID is not null");
+                Logs.WriteEvent("Ticket.GroupID is not null");
                 Group owner = Groups.GetGroup(LoginUser, (int)ticket.GroupID);
                 Logs.WriteEventFormat("Group Owner: {0} ({1})", owner.Name, owner.GroupID.ToString());
                 List<UserEmail> list = new List<UserEmail>();
