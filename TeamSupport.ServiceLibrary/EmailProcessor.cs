@@ -288,13 +288,22 @@ namespace TeamSupport.ServiceLibrary
       {
         message.To.Clear();
         Logs.WriteEvent(string.Format("Adding email address [{0}]", address.ToString()));
-        message.To.Add(new MailAddress(address.Address.Replace("<", "").Replace(">", ""), address.DisplayName));
+        message.To.Add(GetMailAddress(address.Address, address.DisplayName));
         Logs.WriteEvent(string.Format("Successfuly added email address [{0}]", address.ToString()));
         message.HeadersEncoding = Encoding.UTF8;
         message.Body = body;
         message.Subject = subject;
         Logs.WriteEvent(string.Format("Adding ReplyTo Address[{0}]", replyAddress.Replace("<","").Replace(">","")));
-        message.From = new MailAddress(replyAddress);
+        MailAddress replyMailAddress = null;
+        try
+        {
+          replyMailAddress = GetMailAddress(replyAddress);
+        }
+        catch (Exception)
+        {
+          replyMailAddress = GetMailAddress(organization.GetReplyToAddress());
+        }
+        message.From = replyMailAddress;
         EmailTemplates.ReplaceMailAddressParameters(message);
         Emails.AddEmail(LoginUser, organizationID, _currentEmailPostID, description, message, attachments, timeToSend);
         if (message.Subject == null) message.Subject = "";
@@ -533,7 +542,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         Logs.WriteEvent("Getting Ticket Assignment Email");
                         MailMessage message = EmailTemplates.GetTicketAssignmentUser(LoginUser, modifierName, ticket.GetTicketView());
-                        message.To.Add(new MailAddress(owner.Email, owner.FirstLastName));
+                        message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                         message.Subject = message.Subject + subject;
                         Logs.WriteEvent("Added to ticket log");
                         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + message.To[0].DisplayName);
@@ -826,7 +835,7 @@ namespace TeamSupport.ServiceLibrary
                         message.Body = body;
                         message.Subject = subject;
                         message.To.Clear();
-                        MailAddress mailAddress = new MailAddress(userEmail.Address.Replace("<","").Replace(">",""), userEmail.Name);
+                        MailAddress mailAddress = GetMailAddress(userEmail.Address, userEmail.Name);
                         message.To.Add(mailAddress);
                         message.HeadersEncoding = Encoding.UTF8;
                         ContactsViewItem contact = ContactsView.GetContactsViewItem(_loginUser, userEmail.UserID);
@@ -930,7 +939,7 @@ namespace TeamSupport.ServiceLibrary
             User owner = Users.GetUser(LoginUser, (int)ticket.UserID);
 
             MailMessage message = EmailTemplates.GetTicketUpdateRequest(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), ticket.GetTicketView(), true);
-            message.To.Add(new MailAddress(owner.Email, owner.FirstLastName));
+            message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
             message.Subject = message.Subject + " [pvt]";
 
             foreach (MailAddress mailAddress in message.To)
@@ -981,7 +990,7 @@ namespace TeamSupport.ServiceLibrary
         try
         {
           MailMessage message = EmailTemplates.GetTicketSendEmail(LoginUser, sender.GetUserView(), ticket.GetTicketView(), item.Trim(), introduction);
-          message.To.Add(new MailAddress(item.Trim()));
+          message.To.Add(GetMailAddress(item.Trim()));
           message.Subject = message.Subject;
 
           foreach (MailAddress mailAddress in message.To)
@@ -1040,7 +1049,7 @@ namespace TeamSupport.ServiceLibrary
 
       }
 
-      MailAddress modifierAddress = (modifier == null) ? new MailAddress(ticket.PortalEmail) : new MailAddress(modifier.Email, modifier.FirstLastName);
+      MailAddress modifierAddress = (modifier == null) ? GetMailAddress(ticket.PortalEmail) : GetMailAddress(modifier.Email, modifier.FirstLastName);
 
       if (modifier != null && modifier.OrganizationID == ticketOrganization.OrganizationID) // internal
       {
@@ -1076,13 +1085,13 @@ namespace TeamSupport.ServiceLibrary
       User user = Users.GetUser(LoginUser, userID);
       Organization organization = Organizations.GetOrganization(LoginUser, user.OrganizationID);
       MailMessage message = EmailTemplates.GetSignUpNotification(LoginUser, user);
-      message.From = new MailAddress("sales@teamsupport.com", "TeamSupport.com");
+      message.From = GetMailAddress("sales@teamsupport.com", "TeamSupport.com");
 
       string[] addresses = SystemSettings.ReadString(LoginUser, "SignUpNotifications", "").Split('|');
       if (addresses != null && addresses.Length < 1) return;
       foreach (string address in addresses)
       {
-        message.To.Add(new MailAddress(address));
+        message.To.Add(GetMailAddress(address));
       }
 
       AddMessage(1078, "New Internal Sign Up", message);
@@ -1095,9 +1104,9 @@ namespace TeamSupport.ServiceLibrary
 
       string from = "sales@teamsupport.com";
       MailMessage message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 10);
-      message.To.Add(new MailAddress(user.Email));
-      message.Bcc.Add(new MailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
-      message.From = new MailAddress(from);
+      message.To.Add(GetMailAddress(user.Email));
+      message.Bcc.Add(GetMailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
+      message.From = GetMailAddress(from);
       AddMessage(1078, "New Sign Up - Welcome [" + organization.Name + "]", message);
       /*
       message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 27);
@@ -1107,10 +1116,10 @@ namespace TeamSupport.ServiceLibrary
       AddMessage(1078, "New Sign Up - Check In[" + organization.Name + "]", message, null, null, DateTime.UtcNow.AddDays(1));
       */
       message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 28);
-      message.To.Add(new MailAddress(user.Email));
-      message.Bcc.Add(new MailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
+      message.To.Add(GetMailAddress(user.Email));
+      message.Bcc.Add(GetMailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
       //message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
-      message.From = new MailAddress(from);
+      message.From = GetMailAddress(from);
       AddMessage(1078, "New Sign Up - Notice [" + organization.Name + "]", message, null, null, DateTime.UtcNow.AddDays(10));
          
     }
@@ -1119,7 +1128,7 @@ namespace TeamSupport.ServiceLibrary
     {
       User user = Users.GetUser(LoginUser, userID);
       MailMessage message = EmailTemplates.GetWelcomeTSUser(LoginUser, user.GetUserView(), password);
-      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
       AddMessage(user.OrganizationID, "Welcome New User [" + user.FirstLastName + "]", message);
     }
 
@@ -1128,7 +1137,7 @@ namespace TeamSupport.ServiceLibrary
       User user = Users.GetUser(LoginUser, userID);
       Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
       MailMessage message = EmailTemplates.GetWelcomePortalUser(LoginUser, user.GetUserView(), password);
-      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
       AddMessage(organization.OrganizationID, "Welcome New Portal User [" + user.FirstLastName + "]", message);
     }
 
@@ -1137,8 +1146,8 @@ namespace TeamSupport.ServiceLibrary
       User user = Users.GetUser(LoginUser, userID);
 
       MailMessage message = EmailTemplates.GetResetPasswordTS(LoginUser, user.GetUserView(), password);
-      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
-      message.From = new MailAddress("support@teamsupport.com", "TeamSupport.com");
+      message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
+      message.From = GetMailAddress("support@teamsupport.com", "TeamSupport.com");
       AddMessage(user.OrganizationID, "Reset TS Password [" + user.FirstLastName + "]", message);
     }
 
@@ -1147,7 +1156,7 @@ namespace TeamSupport.ServiceLibrary
       User user = (User)Users.GetUser(LoginUser, userID);
       Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
       MailMessage message = EmailTemplates.GetResetPasswordPortal(LoginUser, user.GetUserView(), password);
-      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
       AddMessage(organization.OrganizationID, "Reset Portal Password [" + user.FirstLastName + "]", message);
     }
 
@@ -1156,7 +1165,7 @@ namespace TeamSupport.ServiceLibrary
       User user = (User)Users.GetUser(LoginUser, userID);
       Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
       MailMessage message = EmailTemplates.GetChangedPasswordPortal(LoginUser, user.GetUserView());
-      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
       AddMessage(organization.OrganizationID, "Portal Password Changed [" + user.FirstLastName + "]", message);
     }
 
@@ -1164,8 +1173,8 @@ namespace TeamSupport.ServiceLibrary
     {
       User user = (User)Users.GetUser(LoginUser, userID);
       MailMessage message = EmailTemplates.GetChangedPasswordTS(LoginUser, user.GetUserView());
-      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
-      message.From = new MailAddress("support@teamsupport.com", "TeamSupport.com");
+      message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
+      message.From = GetMailAddress("support@teamsupport.com", "TeamSupport.com");
       AddMessage(user.OrganizationID, "TS Password Changed [" + user.FirstLastName + "]", message);
     }
 
@@ -1404,6 +1413,31 @@ namespace TeamSupport.ServiceLibrary
     
     
     }
+
+    private MailAddress GetMailAddress(string address) 
+    {
+      return new MailAddress(FixMailAddress(address));
+    }
+    private MailAddress GetMailAddress(string address, string displayName)
+    {
+      return new MailAddress(FixMailAddress(address), FixMailName(displayName));
+    }
+    private MailAddress GetMailAddress(string address, string displayName, Encoding displayNameEncoding)
+    {
+      return new MailAddress(FixMailAddress(address), FixMailName(displayName), displayNameEncoding);
+    }
+
+    private string FixMailAddress(string address)
+    {
+      return address.Replace("<", "").Replace(">", "");
+    }
+
+    private string FixMailName(string displayName)
+    {
+      return displayName.Replace("<", "").Replace(">", ""); 
+    }
+
+
 
     #endregion
 
