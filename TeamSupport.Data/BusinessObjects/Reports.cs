@@ -554,6 +554,7 @@ namespace TeamSupport.Data
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "SlaViolationTime", hiddenTable.TableName));
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "IsRead", hiddenTable.TableName));
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "IsClosed", hiddenTable.TableName));
+            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "TicketTypeID", hiddenTable.TableName));
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "UserID", hiddenTable.TableName));
 
         }

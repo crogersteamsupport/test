@@ -287,8 +287,8 @@ TicketGrid = function (options) {
             for (var i = 0, l = rows.length; i < l; i++) {
                 var ticket = loader.data[rows[i]];
                 if (ticket) {
-                    if (ticketTypes.indexOf(ticket.TicketTypeID) < 0) {
-                        ticketTypes.push(ticket.TicketTypeID);
+                    if (ticketTypes.indexOf(ticket.hiddenTicketTypeID) < 0) {
+                        ticketTypes.push(ticket.hiddenTicketTypeID);
                     }
                 }
             }
@@ -863,6 +863,8 @@ TicketGrid = function (options) {
         else if (low == 'ticketnumber') {
             column.formatter = linkFormatter;
             column.cssClass = 'ticket-grid-cell-ticketnumber';
+        } else if (low == 'duedate') {
+            column.formatter = dueDateTicketColumnFormatter;
         } else if (repCol.DataType == "datetime") {
             column.formatter = dateFormatter;
         } else if (repCol.DataType == "float") {

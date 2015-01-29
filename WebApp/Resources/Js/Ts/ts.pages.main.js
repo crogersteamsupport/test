@@ -1530,7 +1530,6 @@ Ts.Pages.Main.prototype = {
         $(element).children('iframe').attr('src', 'Frames/TicketTags.aspx?TagID=' + tagID);
     },
     openTicketView: function (ReportID, isPrivate) {
-        debugger
         if (isPrivate.toString() == "true") {
             var myMenu = $('.menutree-item-mytickets-mniMyTickets').find('span.ui-icon.ui-icon-carat-1-e');
             myMenu.removeClass("ui-icon-carat-1-e").addClass("ui-icon-carat-1-s");

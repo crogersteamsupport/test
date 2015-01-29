@@ -835,7 +835,6 @@ TicketGrid = function (options) {
         var ticket = loader.data[row];
         var ids = getSelectedIDs();
         var data = JSON.stringify(ids);
-
         switch (grid.getColumns()[cell].id) {
             case "IsRead":
                 var setRead = !ticket.IsRead;
