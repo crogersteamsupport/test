@@ -260,7 +260,7 @@ ReportPage = function () {
         e.preventDefault();
         var report = $(this).parents('.report-item').data('o');
         if (report.ReportType == 5) {
-            window.location.assign("/vcr/1_9_0/pages/TicketView.html?ReportID=" + report.ReportID);
+            top.Ts.MainPage.openTicketView(report.ReportID, report.IsPrivate);
         }
         else {
             top.Ts.MainPage.openReport($(this).parents('.report-item').data('o'));

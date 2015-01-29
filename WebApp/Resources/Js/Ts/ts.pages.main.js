@@ -1530,11 +1530,12 @@ Ts.Pages.Main.prototype = {
         $(element).children('iframe').attr('src', 'Frames/TicketTags.aspx?TagID=' + tagID);
     },
     openTicketView: function (ReportID, isPrivate) {
-        if (isPrivate == "true") {
+        debugger
+        if (isPrivate.toString() == "true") {
             var myMenu = $('.menutree-item-mytickets-mniMyTickets').find('span.ui-icon.ui-icon-carat-1-e');
             myMenu.removeClass("ui-icon-carat-1-e").addClass("ui-icon-carat-1-s");
 
-            var myMenuItems = $('.menutree-item-tickets-mniMyTickets').find('ul.ui-helper-hidden');
+            var myMenuItems = $('.menutree-item-mytickets-mniMyTickets').find('ul.ui-helper-hidden');
             myMenuItems.show();
 
         }

@@ -812,7 +812,7 @@ TicketGrid = function (options) {
         column.name = repCol.Name.replace(/[_]/g, ' ');
         column.field = repCol.Name;
         column.fieldID = repCol.FieldID;
-        column.width = 250;
+        column.width = repCol.width || 250;
         column.sortable = true;
         column.unselectable = false;
         column.isCustomField = repCol.IsCustomField;
@@ -961,7 +961,7 @@ TicketGrid = function (options) {
     }
 
 
-    function saveColumns() {debugger
+    function saveColumns() {
         var columns = grid.getColumns();
         self._report.Settings.Columns = new Array();
         self._report.Settings.forceFitColumns = grid.getOptions().forceFitColumns == true;
@@ -1318,12 +1318,12 @@ TicketGrid.prototype = {
                     if (self._report.Settings.Columns[i].id == 'checked') {
                     }
                     else {
-
                         for (var a = 0; a < repCols.length; a++) {
                             var repCol = repCols[a];
 
                             if (repCol.Name == self._report.Settings.Columns[i].id) {
                                 repCols.splice(a, 1);
+                                repCol.width = self._report.Settings.Columns[i].width;
                                 var col = self.createColumnObject(repCol);
                                 newColumns.push(col)
                             }
