@@ -172,11 +172,20 @@ public partial class Dialogs_Organization : BaseDialogPage
     {
         cbRequireProduct.Checked = organization.ProductRequired;
         cbRequireProductVersion.Checked = organization.ProductVersionRequired;
+        if (organization.OrganizationID == 13679)
+        {
+            cbUseProductFamilies.Checked = organization.UseProductFamilies;
+        }
+        else
+        {
+            cbUseProductFamilies.Visible = false;
+        }
     }
     else
     {
         cbRequireProduct.Visible = false;
         cbRequireProductVersion.Visible = false;
+        cbUseProductFamilies.Visible = false;
     }
 
     if (string.IsNullOrEmpty(organization.TimeZoneID))
@@ -263,6 +272,8 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     organization.ProductRequired = cbRequireProduct.Checked;
     organization.ProductVersionRequired = cbRequireProductVersion.Checked;
+
+    organization.UseProductFamilies = cbUseProductFamilies.Checked;
 
     try
     {

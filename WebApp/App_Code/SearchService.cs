@@ -1454,6 +1454,16 @@ SELECT
       return null;
     }
 
+    [WebMethod]
+    public ProductFamilyProxy[] SearchProductFamilies(string searchTerm, int from)
+    {
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        ProductFamilies productFamilies = new ProductFamilies(TSAuthentication.GetLoginUser());
+        productFamilies.LoadBySearchTerm(searchTerm, from, loginUser.OrganizationID);
+
+        return productFamilies.GetProductFamilyProxies();
+    }
+
   }
 
   

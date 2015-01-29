@@ -1213,6 +1213,14 @@ namespace TSWebServices
         cols.Save();
     }
 
+    [WebMethod]
+    public ProductFamilyProxy[] LoadOrgProductFamilies(int organizationID)
+    {
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        ProductFamilies productFamilies = new ProductFamilies(loginUser);
+        productFamilies.LoadByOrganizationID(loginUser.OrganizationID);
+        return productFamilies.GetProductFamilyProxies();
+    }
 
   }
 

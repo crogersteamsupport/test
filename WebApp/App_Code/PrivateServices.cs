@@ -655,6 +655,21 @@ namespace TeamSupport.Services
     }
 
     [WebMethod(true)]
+    public void DeleteProductFamily(int productFamilyID)
+    {
+        if (!UserSession.CurrentUser.IsSystemAdmin) return;
+        try
+        {
+            ProductFamilies.DeleteProductFamily(UserSession.LoginUser, productFamilyID);
+        }
+        catch (Exception ex)
+        {
+            DataUtils.LogException(UserSession.LoginUser, ex);
+        }
+    }
+
+
+    [WebMethod(true)]
     public void DeleteGroup(int groupID)
     {
       if (!UserSession.CurrentUser.IsSystemAdmin) return;

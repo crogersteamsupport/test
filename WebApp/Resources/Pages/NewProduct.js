@@ -13,6 +13,11 @@ $(document).ready(function () {
   var _organizatinID = -1;
   var _isAdmin = top.Ts.System.User.IsSystemAdmin && (_organizatinID != top.Ts.System.User.OrganizationID);
 
+  if (top.Ts.System.Organization.UseProductFamilies) {
+      LoadProductFamilies();
+      $('#productFamilyRow').show();
+  }
+
   $('body').layout({
     defaults: {
       spacing_open: 0,
@@ -75,6 +80,14 @@ $(document).ready(function () {
     });
   }
 
+  function LoadProductFamilies() {
+      top.Ts.Services.Organizations.LoadOrgProductFamilies(top.Ts.System.Organization.OrganizationID, function (productFamilies) {
+          for (var i = 0; i < productFamilies.length; i++) {
+              $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlProductFamily');
+          }
+      });
+  }
+
   function LoadStatuses() {
     var productVersionStatuses = top.Ts.Cache.getProductVersionStatuses();
     for (var i = 0; i < productVersionStatuses.length; i++) {
@@ -134,6 +147,10 @@ $(document).ready(function () {
       top.Ts.System.logAction('New Product Page - Added New Product');
       productInfo.Name = $("#inputName").val();
       productInfo.Description = $("#Description").val();
+
+      if ($("#ddlProductFamily").val() != -1) {
+          productInfo.ProductFamilyID = $("#ddlProductFamily").val();
+      }
 
       productInfo.Fields = new Array();
       $('.customField:visible').each(function () {

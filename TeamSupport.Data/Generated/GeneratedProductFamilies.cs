@@ -8,28 +8,28 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class Product : BaseItem
+  public partial class ProductFamily : BaseItem
   {
-    private Products _products;
+    private ProductFamilies _productFamilies;
     
-    public Product(DataRow row, Products products): base(row, products)
+    public ProductFamily(DataRow row, ProductFamilies productFamilies): base(row, productFamilies)
     {
-      _products = products;
+      _productFamilies = productFamilies;
     }
 	
     #region Properties
     
-    public Products Collection
+    public ProductFamilies Collection
     {
-      get { return _products; }
+      get { return _productFamilies; }
     }
         
     
     
     
-    public int ProductID
+    public int ProductFamilyID
     {
-      get { return (int)Row["ProductID"]; }
+      get { return (int)Row["ProductFamilyID"]; }
     }
     
 
@@ -40,23 +40,11 @@ namespace TeamSupport.Data
       set { Row["Description"] = CheckValue("Description", value); }
     }
     
-    public string ImportID
-    {
-      get { return Row["ImportID"] != DBNull.Value ? (string)Row["ImportID"] : null; }
-      set { Row["ImportID"] = CheckValue("ImportID", value); }
-    }
-    
-    public int? ProductFamilyID
-    {
-      get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
-      set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
-    }
-    
 
     
-    public bool NeedsIndexing
+    public int NeedsIndexing
     {
-      get { return (bool)Row["NeedsIndexing"]; }
+      get { return (int)Row["NeedsIndexing"]; }
       set { Row["NeedsIndexing"] = CheckValue("NeedsIndexing", value); }
     }
     
@@ -121,9 +109,9 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class Products : BaseCollection, IEnumerable<Product>
+  public partial class ProductFamilies : BaseCollection, IEnumerable<ProductFamily>
   {
-    public Products(LoginUser loginUser): base (loginUser)
+    public ProductFamilies(LoginUser loginUser): base (loginUser)
     {
     }
 
@@ -131,19 +119,19 @@ namespace TeamSupport.Data
 
     public override string TableName
     {
-      get { return "Products"; }
+      get { return "ProductFamilies"; }
     }
     
     public override string PrimaryKeyFieldName
     {
-      get { return "ProductID"; }
+      get { return "ProductFamilyID"; }
     }
 
 
 
-    public Product this[int index]
+    public ProductFamily this[int index]
     {
-      get { return new Product(Table.Rows[index], this); }
+      get { return new ProductFamily(Table.Rows[index], this); }
     }
     
 
@@ -151,25 +139,25 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(Product product);
-    partial void AfterRowInsert(Product product);
-    partial void BeforeRowEdit(Product product);
-    partial void AfterRowEdit(Product product);
-    partial void BeforeRowDelete(int productID);
-    partial void AfterRowDelete(int productID);    
+    partial void BeforeRowInsert(ProductFamily productFamily);
+    partial void AfterRowInsert(ProductFamily productFamily);
+    partial void BeforeRowEdit(ProductFamily productFamily);
+    partial void AfterRowEdit(ProductFamily productFamily);
+    partial void BeforeRowDelete(int productFamilyID);
+    partial void AfterRowDelete(int productFamilyID);    
 
-    partial void BeforeDBDelete(int productID);
-    partial void AfterDBDelete(int productID);    
+    partial void BeforeDBDelete(int productFamilyID);
+    partial void AfterDBDelete(int productFamilyID);    
 
     #endregion
 
     #region Public Methods
 
-    public ProductProxy[] GetProductProxies()
+    public ProductFamilyProxy[] GetProductFamilyProxies()
     {
-      List<ProductProxy> list = new List<ProductProxy>();
+      List<ProductFamilyProxy> list = new List<ProductFamilyProxy>();
 
-      foreach (Product item in this)
+      foreach (ProductFamily item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -177,9 +165,9 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int productID)
+    public virtual void DeleteFromDB(int productFamilyID)
     {
-      BeforeDBDelete(productID);
+      BeforeDBDelete(productFamilyID);
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
         connection.Open();
@@ -188,31 +176,31 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
-        deleteCommand.Parameters.Add("ProductID", SqlDbType.Int);
-        deleteCommand.Parameters["ProductID"].Value = productID;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ProductFamilies] WHERE ([ProductFamilyID] = @ProductFamilyID);";
+        deleteCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int);
+        deleteCommand.Parameters["ProductFamilyID"].Value = productFamilyID;
 
-        BeforeRowDelete(productID);
+        BeforeRowDelete(productFamilyID);
         deleteCommand.ExecuteNonQuery();
 		connection.Close();
         if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
-        AfterRowDelete(productID);
+        AfterRowDelete(productFamilyID);
       }
-      AfterDBDelete(productID);
+      AfterDBDelete(productFamilyID);
       
     }
 
     public override void Save(SqlConnection connection)    {
-		//SqlTransaction transaction = connection.BeginTransaction("ProductsSave");
+		//SqlTransaction transaction = connection.BeginTransaction("ProductFamiliesSave");
 		SqlParameter tempParameter;
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Products] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [ProductFamilyID] = @ProductFamilyID  WHERE ([ProductID] = @ProductID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ProductFamilies] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing  WHERE ([ProductFamilyID] = @ProductFamilyID);";
 
 		
-		tempParameter = updateCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
+		tempParameter = updateCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -226,21 +214,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
+		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Description", SqlDbType.VarChar, 1024);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 500);
+		tempParameter = updateCommand.Parameters.Add("Description", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -261,14 +242,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
+		tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -280,21 +254,14 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Products] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [ProductFamilyID]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ProductFamilies] (    [OrganizationID],    [Name],    [Description],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing]) VALUES ( @OrganizationID, @Name, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
+		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -325,21 +292,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 500);
+		tempParameter = insertCommand.Parameters.Add("Description", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Description", SqlDbType.VarChar, 1024);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
+		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -359,22 +319,22 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
-		deleteCommand.Parameters.Add("ProductID", SqlDbType.Int);
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ProductFamilies] WHERE ([ProductFamilyID] = @ProductFamilyID);";
+		deleteCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int);
 
 		try
 		{
-		  foreach (Product product in this)
+		  foreach (ProductFamily productFamily in this)
 		  {
-			if (product.Row.RowState == DataRowState.Added)
+			if (productFamily.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(product);
+			  BeforeRowInsert(productFamily);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = product.Row[parameter.ParameterName];
+				  parameter.Value = productFamily.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -382,30 +342,30 @@ namespace TeamSupport.Data
 			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
 
 			  insertCommand.ExecuteNonQuery();
-			  Table.Columns["ProductID"].AutoIncrement = false;
-			  Table.Columns["ProductID"].ReadOnly = false;
+			  Table.Columns["ProductFamilyID"].AutoIncrement = false;
+			  Table.Columns["ProductFamilyID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				product.Row["ProductID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(product);
+				productFamily.Row["ProductFamilyID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(productFamily);
 			}
-			else if (product.Row.RowState == DataRowState.Modified)
+			else if (productFamily.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(product);
+			  BeforeRowEdit(productFamily);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = product.Row[parameter.ParameterName];
+				parameter.Value = productFamily.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(product);
+			  AfterRowEdit(productFamily);
 			}
-			else if (product.Row.RowState == DataRowState.Deleted)
+			else if (productFamily.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)product.Row["ProductID", DataRowVersion.Original];
-			  deleteCommand.Parameters["ProductID"].Value = id;
+			  int id = (int)productFamily.Row["ProductFamilyID", DataRowVersion.Original];
+			  deleteCommand.Parameters["ProductFamilyID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
@@ -425,10 +385,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (Product product in this)
+      foreach (ProductFamily productFamily in this)
       {
-        if (product.Row.Table.Columns.Contains("CreatorID") && (int)product.Row["CreatorID"] == 0) product.Row["CreatorID"] = LoginUser.UserID;
-        if (product.Row.Table.Columns.Contains("ModifierID")) product.Row["ModifierID"] = LoginUser.UserID;
+        if (productFamily.Row.Table.Columns.Contains("CreatorID") && (int)productFamily.Row["CreatorID"] == 0) productFamily.Row["CreatorID"] = LoginUser.UserID;
+        if (productFamily.Row.Table.Columns.Contains("ModifierID")) productFamily.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -441,45 +401,45 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public Product FindByProductID(int productID)
+    public ProductFamily FindByProductFamilyID(int productFamilyID)
     {
-      foreach (Product product in this)
+      foreach (ProductFamily productFamily in this)
       {
-        if (product.ProductID == productID)
+        if (productFamily.ProductFamilyID == productFamilyID)
         {
-          return product;
+          return productFamily;
         }
       }
       return null;
     }
 
-    public virtual Product AddNewProduct()
+    public virtual ProductFamily AddNewProductFamily()
     {
-      if (Table.Columns.Count < 1) LoadColumns("Products");
+      if (Table.Columns.Count < 1) LoadColumns("ProductFamilies");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new Product(row, this);
+      return new ProductFamily(row, this);
     }
     
-    public virtual void LoadByProductID(int productID)
+    public virtual void LoadByProductFamilyID(int productFamilyID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [ProductFamilyID] FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductFamilyID], [OrganizationID], [Name], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing] FROM [dbo].[ProductFamilies] WHERE ([ProductFamilyID] = @ProductFamilyID);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("ProductID", productID);
+        command.Parameters.AddWithValue("ProductFamilyID", productFamilyID);
         Fill(command);
       }
     }
     
-    public static Product GetProduct(LoginUser loginUser, int productID)
+    public static ProductFamily GetProductFamily(LoginUser loginUser, int productFamilyID)
     {
-      Products products = new Products(loginUser);
-      products.LoadByProductID(productID);
-      if (products.IsEmpty)
+      ProductFamilies productFamilies = new ProductFamilies(loginUser);
+      productFamilies.LoadByProductFamilyID(productFamilyID);
+      if (productFamilies.IsEmpty)
         return null;
       else
-        return products[0];
+        return productFamilies[0];
     }
     
     
@@ -487,13 +447,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<Product> Members
+    #region IEnumerable<ProductFamily> Members
 
-    public IEnumerator<Product> GetEnumerator()
+    public IEnumerator<ProductFamily> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new Product(row, this);
+        yield return new ProductFamily(row, this);
       }
     }
 

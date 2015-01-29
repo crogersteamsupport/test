@@ -108,6 +108,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? DateLastIndexed { get; set; }
     [DataMember] public bool HideDismissNonAdmins { get; set; }
     [DataMember] public int? CustDistIndexTrend { get; set; }
+    [DataMember] public bool UseProductFamilies { get; set; }
           
   }
   
@@ -116,6 +117,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.UseProductFamilies = this.UseProductFamilies;
       result.CustDistIndexTrend = this.CustDistIndexTrend;
       result.HideDismissNonAdmins = this.HideDismissNonAdmins;
       result.IsValidated = this.IsValidated;

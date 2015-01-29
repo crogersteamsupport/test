@@ -485,6 +485,113 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByProductFamilyIDLimit(int productFamilyID, int start)
+    {
+        int end = start + 49;
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        SELECT
+          *
+        FROM
+        (
+          SELECT
+            *, 
+            ROW_NUMBER() OVER (ORDER BY DateModified Desc) AS rownum  
+          FROM
+          (
+            SELECT
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+              ActionLogs al
+              JOIN ProductFamilies pf
+                ON al.RefType = 44
+                AND al.RefID = pf.ProductFamilyID
+              LEFT JOIN Users u 
+                ON u.UserID = al.CreatorID
+            WHERE 
+              pf.ProductFamilyID = @ProductFamilyID
+                                
+            UNION 
+                                
+            SELECT
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+              ActionLogs al
+              JOIN Products p
+                ON al.RefType = 13
+                AND al.RefID = p.ProductID
+              LEFT JOIN Users u 
+                ON u.UserID = al.CreatorID
+            WHERE 
+              p.ProductFamilyID = @ProductFamilyID
+                                
+            UNION 
+                                
+            SELECT 
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM 
+              ActionLogs al
+              LEFT JOIN Users u ON u.UserID = al.CreatorID
+              JOIN Tickets t 
+                ON t.TicketID = al.RefID
+                AND al.RefType = 17
+              JOIN Products p
+                ON t.ProductID = p.ProductID
+            WHERE
+              p.ProductFamilyID = @ProductFamilyID
+                                
+            UNION 
+                                
+            SELECT 
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+              ActionLogs al
+              LEFT JOIN Users u ON u.UserID = al.CreatorID
+              JOIN Actions a 
+                ON a.ActionID = al.RefID
+                AND al.RefType = 0
+              JOIN Tickets t
+                ON t.TicketID = a.TicketID
+              JOIN Products p
+                ON t.ProductID = p.ProductID
+            WHERE
+              p.ProductFamilyID = @ProductFamilyID
+                                
+            UNION 
+
+            SELECT 
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM 
+              ActionLogs al
+              LEFT JOIN Users u ON u.UserID = al.CreatorID
+              JOIN ProductVersions pv
+                ON pv.ProductVersionID = al.RefID
+                AND al.RefType = 14
+              JOIN Products p
+                ON pv.ProductID = p.ProductID
+            WHERE
+              p.ProductFamilyID = @ProductFamilyID
+          ) as temp
+        ) as results
+        WHERE
+          rownum between @start and @end
+				ORDER BY
+          rownum ASC
+        ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            command.Parameters.AddWithValue("@start", start);
+            command.Parameters.AddWithValue("@end", end);
+            Fill(command);
+        }
+    }
+
     public void LoadByUserID(int userID)
     {
       using (SqlCommand command = new SqlCommand())

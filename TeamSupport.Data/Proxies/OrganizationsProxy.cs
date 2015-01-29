@@ -107,6 +107,7 @@ namespace TeamSupport.Data
     public bool HideDismissNonAdmins { get; set; }
     [DataMember]
     public int? CustDistIndexTrend { get; set; }          
+    [DataMember] public bool UseProductFamilies { get; set; }
   }
   
   public partial class Organization : BaseItem
@@ -114,6 +115,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.UseProductFamilies = this.UseProductFamilies;
       result.CustDistIndexTrend = this.CustDistIndexTrend;
       result.HideDismissNonAdmins = this.HideDismissNonAdmins;
       result.AddEmailViaTS = this.AddEmailViaTS;

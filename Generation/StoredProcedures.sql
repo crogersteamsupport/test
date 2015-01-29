@@ -1,1330 +1,595 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
+    [ProductID],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets]
-  FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID]
+  FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ContactsView]
+  INSERT INTO [dbo].[Products]
   (
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets])
+    [ProductFamilyID])
   VALUES (
-    @Email,
-    @FirstName,
-    @UserID,
-    @Name,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @IsActive,
-    @MarkDeleted,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ActivatedOn,
-    @DeactivatedOn,
     @OrganizationID,
-    @Organization,
-    @LastVersion,
+    @Name,
+    @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @OrganizationParentID,
-    @CryptedPassword,
-    @SalesForceID,
     @NeedsIndexing,
-    @OrganizationActive,
-    @OrganizationSAExpirationDate,
-    @PortalLimitOrgTickets)
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
+  @ProductID int,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ContactsView]
+  UPDATE [dbo].[Products]
   SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [Name] = @Name,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
     [OrganizationID] = @OrganizationID,
-    [Organization] = @Organization,
-    [LastVersion] = @LastVersion,
+    [Name] = @Name,
+    [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [OrganizationParentID] = @OrganizationParentID,
-    [CryptedPassword] = @CryptedPassword,
-    [SalesForceID] = @SalesForceID,
     [NeedsIndexing] = @NeedsIndexing,
-    [OrganizationActive] = @OrganizationActive,
-    [OrganizationSAExpirationDate] = @OrganizationSAExpirationDate,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+  DELETE FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
+    [ProductID],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets]
-  FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID]
+  FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ContactsView]
+  INSERT INTO [dbo].[Products]
   (
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets])
+    [ProductFamilyID])
   VALUES (
-    @Email,
-    @FirstName,
-    @UserID,
-    @Name,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @IsActive,
-    @MarkDeleted,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ActivatedOn,
-    @DeactivatedOn,
     @OrganizationID,
-    @Organization,
-    @LastVersion,
+    @Name,
+    @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @OrganizationParentID,
-    @CryptedPassword,
-    @SalesForceID,
     @NeedsIndexing,
-    @OrganizationActive,
-    @OrganizationSAExpirationDate,
-    @PortalLimitOrgTickets)
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
+  @ProductID int,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ContactsView]
+  UPDATE [dbo].[Products]
   SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [Name] = @Name,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
     [OrganizationID] = @OrganizationID,
-    [Organization] = @Organization,
-    [LastVersion] = @LastVersion,
+    [Name] = @Name,
+    [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [OrganizationParentID] = @OrganizationParentID,
-    [CryptedPassword] = @CryptedPassword,
-    [SalesForceID] = @SalesForceID,
     [NeedsIndexing] = @NeedsIndexing,
-    [OrganizationActive] = @OrganizationActive,
-    [OrganizationSAExpirationDate] = @OrganizationSAExpirationDate,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+  DELETE FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
+    [ProductID],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets]
-  FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID]
+  FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ContactsView]
+  INSERT INTO [dbo].[Products]
   (
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets])
+    [ProductFamilyID])
   VALUES (
-    @Email,
-    @FirstName,
-    @UserID,
-    @Name,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @IsActive,
-    @MarkDeleted,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ActivatedOn,
-    @DeactivatedOn,
     @OrganizationID,
-    @Organization,
-    @LastVersion,
+    @Name,
+    @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @OrganizationParentID,
-    @CryptedPassword,
-    @SalesForceID,
     @NeedsIndexing,
-    @OrganizationActive,
-    @OrganizationSAExpirationDate,
-    @PortalLimitOrgTickets)
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
+  @ProductID int,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ContactsView]
+  UPDATE [dbo].[Products]
   SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [Name] = @Name,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
     [OrganizationID] = @OrganizationID,
-    [Organization] = @Organization,
-    [LastVersion] = @LastVersion,
+    [Name] = @Name,
+    [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [OrganizationParentID] = @OrganizationParentID,
-    [CryptedPassword] = @CryptedPassword,
-    [SalesForceID] = @SalesForceID,
     [NeedsIndexing] = @NeedsIndexing,
-    [OrganizationActive] = @OrganizationActive,
-    [OrganizationSAExpirationDate] = @OrganizationSAExpirationDate,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+  DELETE FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
+    [ProductID],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets]
-  FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID]
+  FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ContactsView]
+  INSERT INTO [dbo].[Products]
   (
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets])
+    [ProductFamilyID])
   VALUES (
-    @Email,
-    @FirstName,
-    @UserID,
-    @Name,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @IsActive,
-    @MarkDeleted,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ActivatedOn,
-    @DeactivatedOn,
     @OrganizationID,
-    @Organization,
-    @LastVersion,
+    @Name,
+    @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @OrganizationParentID,
-    @CryptedPassword,
-    @SalesForceID,
     @NeedsIndexing,
-    @OrganizationActive,
-    @OrganizationSAExpirationDate,
-    @PortalLimitOrgTickets)
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
+  @ProductID int,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ContactsView]
+  UPDATE [dbo].[Products]
   SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [Name] = @Name,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
     [OrganizationID] = @OrganizationID,
-    [Organization] = @Organization,
-    [LastVersion] = @LastVersion,
+    [Name] = @Name,
+    [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [OrganizationParentID] = @OrganizationParentID,
-    [CryptedPassword] = @CryptedPassword,
-    [SalesForceID] = @SalesForceID,
     [NeedsIndexing] = @NeedsIndexing,
-    [OrganizationActive] = @OrganizationActive,
-    [OrganizationSAExpirationDate] = @OrganizationSAExpirationDate,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+  DELETE FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
+    [ProductID],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets]
-  FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID]
+  FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ContactsView]
+  INSERT INTO [dbo].[Products]
   (
-    [Email],
-    [FirstName],
-    [UserID],
-    [Name],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [IsActive],
-    [MarkDeleted],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ActivatedOn],
-    [DeactivatedOn],
     [OrganizationID],
-    [Organization],
-    [LastVersion],
+    [Name],
+    [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [OrganizationParentID],
-    [CryptedPassword],
-    [SalesForceID],
     [NeedsIndexing],
-    [OrganizationActive],
-    [OrganizationSAExpirationDate],
-    [PortalLimitOrgTickets])
+    [ProductFamilyID])
   VALUES (
-    @Email,
-    @FirstName,
-    @UserID,
-    @Name,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @IsActive,
-    @MarkDeleted,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ActivatedOn,
-    @DeactivatedOn,
     @OrganizationID,
-    @Organization,
-    @LastVersion,
+    @Name,
+    @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @OrganizationParentID,
-    @CryptedPassword,
-    @SalesForceID,
     @NeedsIndexing,
-    @OrganizationActive,
-    @OrganizationSAExpirationDate,
-    @PortalLimitOrgTickets)
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
 
 (
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @UserID int,
-  @Name varchar(201),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
+  @ProductID int,
   @OrganizationID int,
-  @Organization varchar(255),
-  @LastVersion varchar(50),
+  @Name varchar(255),
+  @Description varchar(1024),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int,
-  @OrganizationParentID int,
-  @CryptedPassword varchar(255),
-  @SalesForceID varchar(8000),
   @NeedsIndexing bit,
-  @OrganizationActive bit,
-  @OrganizationSAExpirationDate datetime,
-  @PortalLimitOrgTickets bit
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ContactsView]
+  UPDATE [dbo].[Products]
   SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [Name] = @Name,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
     [OrganizationID] = @OrganizationID,
-    [Organization] = @Organization,
-    [LastVersion] = @LastVersion,
+    [Name] = @Name,
+    [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [OrganizationParentID] = @OrganizationParentID,
-    [CryptedPassword] = @CryptedPassword,
-    [SalesForceID] = @SalesForceID,
     [NeedsIndexing] = @NeedsIndexing,
-    [OrganizationActive] = @OrganizationActive,
-    [OrganizationSAExpirationDate] = @OrganizationSAExpirationDate,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets
-  WHERE ([UserID] = @UserID)
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([ProductID] = @ProductID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteContactsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProduct
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteContactsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProduct
 
 (
-  @UserID int
+  @ProductID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ContactsView]
-  WHERE ([UserID] = @UserID)
+  DELETE FROM [dbo].[Products]
+  WHERE ([ProductID] = @ProductID)
 GO
 
 

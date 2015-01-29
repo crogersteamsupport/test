@@ -283,3 +283,5 @@ Ts.Ui.Tabs.Tab.Type.Product = 'product';
 Ts.Ui.Tabs.Tab.Type.NewProduct = 'new_product';
 Ts.Ui.Tabs.Tab.Type.ProductVersion = 'product_version';
 Ts.Ui.Tabs.Tab.Type.NewProductVersion = 'new_product_version';
+Ts.Ui.Tabs.Tab.Type.NewProductFamily = 'new_product_family';
+Ts.Ui.Tabs.Tab.Type.ProductFamily = 'product_family';

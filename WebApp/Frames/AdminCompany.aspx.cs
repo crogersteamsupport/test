@@ -173,6 +173,8 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Show Group Members First in Ticket Assignment List:", organization.ShowGroupMembersFirstInTicketAssignmentList.ToString() });
     table.Rows.Add(new string[] { "Update Ticket Children Group With Parent:", organization.UpdateTicketChildrenGroupWithParent.ToString() });
     table.Rows.Add(new string[] { "Hide Alert Dismiss for Non Admins:", organization.HideDismissNonAdmins.ToString() });
+    if (organization.OrganizationID == 13679)
+    table.Rows.Add(new string[] { "Use Product Families:", organization.UseProductFamilies.ToString() });
 
     
     rptProperties.DataSource = table;

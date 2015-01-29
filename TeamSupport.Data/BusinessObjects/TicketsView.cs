@@ -212,6 +212,31 @@ namespace TeamSupport.Data
       }
     }
 
+    public int GetProductFamilyTicketCount(int productFamilyID, int closed)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        SELECT 
+          COUNT(*) 
+        FROM 
+          TicketsView tv 
+          JOIN Products p
+            ON tv.ProductID = p.ProductID            
+        WHERE 
+          p.ProductFamilyID = @ProductFamilyID
+          AND tv.IsClosed = @closed
+        ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            command.Parameters.AddWithValue("@closed", closed);
+            object o = ExecuteScalar(command);
+            if (o == null || o == DBNull.Value) return 0;
+            return (int)o;
+        }
+    }
+
+
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -287,6 +312,27 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
         Fill(command);
       }
+    }
+
+    public void LoadLatest5ProductFamilyTickets(int productFamilyID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        SELECT 
+          top 5 tv.* 
+        FROM 
+          TicketsView tv 
+          JOIN Products p
+            ON tv.ProductID = p.ProductID           
+        WHERE 
+          p.ProductFamilyID = @ProductFamilyID 
+        ORDER BY 
+          TicketNumber desc";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            Fill(command);
+        }
     }
 
     public void LoadRelated(int ticketID)

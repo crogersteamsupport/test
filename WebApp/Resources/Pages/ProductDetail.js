@@ -81,6 +81,7 @@ $(document).ready(function () {
       if (e.target.innerHTML == "Details") {
           createTestChart();
           LoadCustomProperties();
+          LoadProperties();
           _viewingCustomers = false;
           _viewingInventory = false;
           _viewingVersions = false;
@@ -307,6 +308,16 @@ $(document).ready(function () {
     });
   }
 
+  function LoadProperties() {
+      if (top.Ts.System.Organization.UseProductFamilies) {
+          $('#productInfoBox').show();
+          top.Ts.Services.Products.GetProperties(_productID, function (result) {
+              $('#fieldProductFamily').text(result.ProductFamily);
+              $('#fieldProductFamily').data('field', result.prodproxy.ProductFamilyID);
+          });
+      }
+  }
+
   var historyLoaded = 0;
 
   $('#historyToggle').on('click', function () {
@@ -436,6 +447,58 @@ $(document).ready(function () {
       })
       $('#productEdit').addClass("disabled");
   });
+
+  $('#fieldProductFamily').click(function (e) {
+      e.preventDefault();
+      if (!$(this).hasClass('editable'))
+          return false;
+      var header = $(this).hide();
+      top.Ts.System.logAction('Product Detail - Edit Product Family');
+      var container = $('<div>')
+        .insertAfter(header);
+
+      var container1 = $('<div>')
+          .addClass('col-xs-9')
+        .appendTo(container);
+
+      var select = $('<select>').addClass('form-control').attr('id', 'ddlProductFamily').appendTo(container1);
+      top.Ts.Services.Organizations.LoadOrgProductFamilies(top.Ts.System.Organization.OrganizationID, function (productFamilies) {
+          $('<option>').attr('value', '-1').text('Unassigned').appendTo(select);
+          for (var i = 0; i < productFamilies.length; i++) {
+              var opt = $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]);
+              if (header.data('field') == productFamilies[i].ProductFamilyID)
+                  opt.attr('selected', 'selected');
+              opt.appendTo(select);
+          }
+      });
+
+
+      $('<i>')
+        .addClass('col-xs-1 fa fa-times')
+        .click(function (e) {
+            $(this).closest('div').remove();
+            header.show();
+            $('#productEdit').removeClass("disabled");
+        })
+        .insertAfter(container1);
+      $('#ddlProductFamily').on('change', function () {
+          var value = $(this).val();
+          var name = this.options[this.selectedIndex].innerHTML;
+          container.remove();
+          top.Ts.System.logAction('Product Detail - Save Product Family Edit');
+          top.Ts.Services.Products.SetProductFamily(_productID, value, function (result) {
+              header.data('field', result);
+              header.text(name);
+              header.show();
+              $('#productEdit').removeClass("disabled");
+          }, function () {
+              alert("There was a problem saving your product property.");
+              $('#productEdit').removeClass("disabled");
+          });
+      });
+      $('#productEdit').addClass("disabled");
+  });
+
 
   $('.version-action-add').click(function (e) {
       e.preventDefault();

@@ -349,6 +349,40 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByProductFamilyIDLimit(int productFamilyID, int start)
+    {
+        int end = start + 10;
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        WITH OrderedProduct AS
+        (
+	        SELECT 
+		        ProductID, 
+		        ROW_NUMBER() OVER (ORDER BY Name ASC) AS rownum
+	        FROM 
+		        Products 
+	        WHERE 
+		        ProductFamilyID = @ProductFamilyID 
+        ) 
+        SELECT 
+          p.*
+        FROM
+          Products p
+          JOIN OrderedProduct op
+            ON p.ProductID = op.ProductID
+        WHERE 
+	        op.rownum BETWEEN @start and @end
+        ORDER BY
+          p.Name ASC";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            command.Parameters.AddWithValue("@start", start);
+            command.Parameters.AddWithValue("@end", end);
+            Fill(command);
+        }
+    }
+
   }
 
   public class ProductSearch

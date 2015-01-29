@@ -1742,6 +1742,60 @@ AND u.OrganizationID = @OrganizationID
       }
     }
 
+    public static int GetProductFamilyOpenTicketCount(LoginUser loginUser, int productFamilyID, int ticketTypeID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        SELECT
+          COUNT(*) 
+        FROM 
+          Tickets t 
+          JOIN TicketStatuses ts 
+            ON ts.TicketStatusID = t.TicketStatusID 
+          JOIN Products p 
+            ON t.ProductID = p.ProductID 
+        WHERE 
+          t.TicketTypeID = @TicketTypeID
+          AND ts.IsClosed = 0
+          AND p.ProductFamilyID = @ProductFamilyID
+        ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+
+            Tickets tickets = new Tickets(loginUser);
+            return (int)tickets.ExecuteScalar(command, "Tickets");
+        }
+    }
+
+    public static int GetProductFamilyClosedTicketCount(LoginUser loginUser, int productFamilyID, int ticketTypeID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        SELECT
+          COUNT(*)
+        FROM
+          Tickets t
+          JOIN TicketStatuses ts
+            ON ts.TicketStatusID = t.TicketStatusID
+          JOIN Products p 
+            ON t.ProductID = p.ProductID 
+        WHERE 
+          t.TicketTypeID = @TicketTypeID
+          AND ts.IsClosed = 1
+          AND p.ProductFamilyID = @ProductFamilyID
+        ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+
+            Tickets tickets = new Tickets(loginUser);
+            return (int)tickets.ExecuteScalar(command, "Tickets");
+        }
+    }
+
     public void LoadByGroupUnassigned(int userID, int top)
     {
       using (SqlCommand command = new SqlCommand())

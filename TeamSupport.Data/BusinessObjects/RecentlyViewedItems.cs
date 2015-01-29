@@ -61,10 +61,28 @@ namespace TeamSupport.Data
         using (SqlCommand command = new SqlCommand())
         {
           command.CommandText =
-            @"SELECT TOP 5 * FROM RecentlyViewedItems
-                WHERE (UserID = @UserID) 
-                AND refType IN (13,14)
-                ORDER BY DateViewed Desc";
+            @"SELECT
+                TOP 5 
+                rvi.* 
+              FROM
+                RecentlyViewedItems rvi
+                JOIN Users u
+                  ON rvi.UserID = u.UserID
+                JOIN Organizations o
+                  ON u.OrganizationID = o.OrganizationID
+              WHERE
+                rvi.UserID = @UserID 
+                AND 
+                (
+                  rvi.refType IN (13,14)
+                  OR
+                  (
+                    rvi.refType = 44
+                    AND o.UseProductFamilies = 1
+                  )
+                )
+              ORDER BY 
+                rvi.DateViewed DESC";
           command.CommandType = CommandType.Text;
           command.Parameters.AddWithValue("@UserID", userID);
           Fill(command);

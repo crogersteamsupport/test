@@ -9,38 +9,34 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(ProductProxy))]
-  public class ProductProxy
+  [KnownType(typeof(ProductFamilyProxy))]
+  public class ProductFamilyProxy
   {
-    public ProductProxy() {}
-    [DataMember] public int ProductID { get; set; }
+    public ProductFamilyProxy() {}
+    [DataMember] public int ProductFamilyID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public string Description { get; set; }
-    [DataMember] public string ImportID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
-    [DataMember] public bool NeedsIndexing { get; set; }
-    [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public int NeedsIndexing { get; set; }
           
   }
   
-  public partial class Product : BaseItem
+  public partial class ProductFamily : BaseItem
   {
-    public ProductProxy GetProxy()
+    public ProductFamilyProxy GetProxy()
     {
-      ProductProxy result = new ProductProxy();
-      result.ProductFamilyID = this.ProductFamilyID;
+      ProductFamilyProxy result = new ProductFamilyProxy();
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.ImportID = this.ImportID;
       result.Description = this.Description;
       result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
-      result.ProductID = this.ProductID;
+      result.ProductFamilyID = this.ProductFamilyID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);

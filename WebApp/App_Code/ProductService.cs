@@ -90,6 +90,39 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public ProductFamilyProxy GetProductFamily(int productFamilyID)
+    {
+        ProductFamily productFamily = ProductFamilies.GetProductFamily(TSAuthentication.GetLoginUser(), productFamilyID);
+        if (productFamily == null || productFamily.OrganizationID != TSAuthentication.OrganizationID) return null;
+        return productFamily.GetProxy();
+    }
+
+    [WebMethod]
+    public ProdProp GetProperties(int productID)
+    {
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        Products products = new Products(loginUser);
+        products.LoadByProductID(productID);
+        ProductFamilies productFamilies = new ProductFamilies(loginUser);
+
+        ProdProp prodProp = new ProdProp();
+
+        if (products.IsEmpty) return null;
+
+        string productFamily = "Empty";
+        if (products[0].ProductFamilyID != null)
+        {
+            productFamilies.LoadByProductFamilyID((int)products[0].ProductFamilyID);
+            productFamily = productFamilies.IsEmpty ? "" : productFamilies[0].Name;
+        }
+        prodProp.ProductFamily = productFamily;
+        prodProp.prodproxy = products[0].GetProxy();
+
+        return prodProp;
+
+    }
+
+    [WebMethod]
     public AttachmentProxy[] GetAttachments(int versionID)
     {
       Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
@@ -136,18 +169,60 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string GetFamilyShortNameFromID(int productFamilyID)
+    {
+        ProductFamilies productFamilies = new ProductFamilies(TSAuthentication.GetLoginUser());
+        productFamilies.LoadByProductFamilyID(productFamilyID);
+
+        if (productFamilies.IsEmpty) return "N/A";
+
+        if (productFamilies[0].Name.Length > 10)
+            return productFamilies[0].Name.Substring(0, 10).ToString() + "...";
+        else
+            return productFamilies[0].Name.ToString();
+    }
+
+    [WebMethod]
     public string UpdateRecentlyViewed(string viewid)
     {
       int refType, refID;
 
-      if (viewid.StartsWith("v"))
-        refType = (int)ReferenceType.ProductVersions;
-      else
-        refType = (int)ReferenceType.Products;
-
       refID = Convert.ToInt32(viewid.Substring(1));
 
-      RecentlyViewedItem recent = (new RecentlyViewedItems(TSAuthentication.GetLoginUser()).AddNewRecentlyViewedItem());
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+      if (viewid.StartsWith("v"))
+      {
+          refType = (int)ReferenceType.ProductVersions;
+          ProductVersions pv = new ProductVersions(loginUser);
+          pv.LoadByProductVersionID(refID);
+          if (pv.IsEmpty)
+          {
+              return GetRecentlyViewed();
+          }
+      }
+      else if (viewid.StartsWith("p"))
+      {
+          refType = (int)ReferenceType.Products;
+          Products p = new Products(loginUser);
+          p.LoadByProductID(refID);
+          if (p.IsEmpty)
+          {
+              return GetRecentlyViewed();
+          }
+      }
+      else
+      {
+          refType = (int)ReferenceType.ProductFamilies;
+          ProductFamilies pf = new ProductFamilies(loginUser);
+          pf.LoadByProductFamilyID(refID);
+          if (pf.IsEmpty)
+          {
+              return GetRecentlyViewed();
+          }
+      }
+
+      RecentlyViewedItem recent = (new RecentlyViewedItems(loginUser).AddNewRecentlyViewedItem());
 
 
       recent.RefID = refID;
@@ -190,7 +265,7 @@ namespace TSWebServices
           </li>";
         return string.Format(recentHTML, pv[0].ProductVersionID, pv[0].VersionNumber);
       }
-      else
+      else if (recent.RefType == (int)ReferenceType.Products)
       {
         Products p = new Products(TSAuthentication.GetLoginUser());
         p.LoadByProductID(recent.RefID);
@@ -202,6 +277,19 @@ namespace TSWebServices
           </li>";
 
         return string.Format(recentHTML, p[0].ProductID, p[0].Name);
+      }
+      else
+      {
+          ProductFamilies pf = new ProductFamilies(TSAuthentication.GetLoginUser());
+          pf.LoadByProductFamilyID(recent.RefID);
+          recentHTML = @" 
+          <li>
+            <div class=""recent-info"">
+              <h4><a class=""productfamilylink"" data-productfamilyid=""{0}"" href=""""><i class=""fa fa-umbrella color-magenta""></i>{1}</a></h4>
+            </div>
+          </li>";
+
+          return string.Format(recentHTML, pf[0].ProductFamilyID, pf[0].Name);
       }
     }
 
@@ -226,6 +314,7 @@ namespace TSWebServices
       product.OrganizationID = loginUser.OrganizationID;
       product.Name = info.Name;
       product.Description = info.Description;
+      product.ProductFamilyID = info.ProductFamilyID;
       product.Collection.Save();
 
       string description = String.Format("{0} created {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, product.Name);
@@ -321,6 +410,64 @@ namespace TSWebServices
       }
 
       return productVersion.ProductVersionID;
+
+    }
+
+    [WebMethod]
+    public int SaveProductFamily(string data)
+    {
+        NewProductFamilySave info;
+        try
+        {
+            info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewProductFamilySave>(data);
+        }
+        catch (Exception e)
+        {
+            return -1;
+        }
+
+        ProductFamily productFamily;
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        ProductFamilies productfamilies = new ProductFamilies(loginUser);
+
+        productFamily = productfamilies.AddNewProductFamily();
+        productFamily.OrganizationID = loginUser.OrganizationID;
+        productFamily.Name = info.Name;
+        productFamily.Description = info.Description;
+        productFamily.Collection.Save();
+
+        string description = String.Format("{0} created {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productFamily.Name);
+        ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamily.ProductFamilyID, description);
+
+        //foreach (CustomFieldSaveInfo field in info.Fields)
+        //{
+        //    CustomValue customValue = CustomValues.GetValue(loginUser, field.CustomFieldID, productFamily.ProductFamilyID);
+        //    if (field.Value == null)
+        //    {
+        //        customValue.Value = "";
+        //    }
+        //    else
+        //    {
+        //        if (customValue.FieldType == CustomFieldType.DateTime)
+        //        {
+        //            customValue.Value = ((DateTime)field.Value).ToString();
+        //            //DateTime dt;
+        //            //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+        //            //{
+        //            //    customValue.Value = dt.ToUniversalTime().ToString();
+        //            //}
+        //        }
+        //        else
+        //        {
+        //            customValue.Value = field.Value.ToString();
+        //        }
+
+        //    }
+
+        //    customValue.Collection.Save();
+        //}
+
+        return productFamily.ProductFamilyID;
 
     }
 
@@ -448,6 +595,40 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string LoadFamilyChartData(int productFamilyID, bool open)
+    {
+
+        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        organizations.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+
+        TicketTypes ticketTypes = new TicketTypes(TSAuthentication.GetLoginUser());
+        ticketTypes.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID, organizations[0].ProductType);
+
+        int total = 0;
+        StringBuilder chartString = new StringBuilder("");
+
+        foreach (TicketType ticketType in ticketTypes)
+        {
+            int count;
+            if (open)
+                count = Tickets.GetProductFamilyOpenTicketCount(TSAuthentication.GetLoginUser(), productFamilyID, ticketType.TicketTypeID);
+            else
+                count = Tickets.GetProductFamilyClosedTicketCount(TSAuthentication.GetLoginUser(), productFamilyID, ticketType.TicketTypeID);
+            total += count;
+
+            if (count > 0)
+                chartString.AppendFormat("{0},{1},", ticketType.Name.Replace(",", ""), count.ToString().Replace(",", ""));
+            //chartString.AppendFormat("['{0}',{1}],",ticketType.Name, count.ToString());
+        }
+        if (chartString.ToString().EndsWith(","))
+        {
+            chartString.Remove(chartString.Length - 1, 1);
+        }
+
+        return chartString.ToString();
+    }
+
+    [WebMethod]
     public string GetProductTickets(int productID, int closed)
     {
       TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
@@ -461,6 +642,14 @@ namespace TSWebServices
       Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
 
       return tickets.GetProductVersionTicketCount(productVersionID, closed).ToString();
+    }
+
+    [WebMethod]
+    public string GetProductFamilyTickets(int productFamilyID, int closed)
+    {
+        TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+
+        return tickets.GetProductFamilyTicketCount(productFamilyID, closed).ToString();
     }
 
     [WebMethod]
@@ -479,6 +668,15 @@ namespace TSWebServices
       actionLogs.LoadByProductVersionIDLimit(productVersionID, start);
 
       return actionLogs.GetActionLogProxies();
+    }
+
+    [WebMethod]
+    public ActionLogProxy[] LoadFamilyHistory(int productFamilyID, int start)
+    {
+        ActionLogs actionLogs = new ActionLogs(TSAuthentication.GetLoginUser());
+        actionLogs.LoadByProductFamilyIDLimit(productFamilyID, start);
+
+        return actionLogs.GetActionLogProxies();
     }
 
     [WebMethod]
@@ -505,6 +703,17 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string SetFamilyName(int productFamilyID, string value)
+    {
+        ProductFamily pf = ProductFamilies.GetProductFamily(TSAuthentication.GetLoginUser(), productFamilyID);
+        pf.Name = value;
+        pf.Collection.Save();
+        string description = String.Format("{0} set product family name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.ProductFamilies, productFamilyID, description);
+        return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
     public string SetDescription(int productID, string value)
     {
       Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), productID);
@@ -525,6 +734,38 @@ namespace TSWebServices
       string description = String.Format("{0} set product version description to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.ProductVersions, productVersionID, description);
       return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
+    public string SetFamilyDescription(int productFamilyID, string value)
+    {
+        ProductFamily pf = ProductFamilies.GetProductFamily(TSAuthentication.GetLoginUser(), productFamilyID);
+        pf.Description = value;
+        pf.Collection.Save();
+        string description = String.Format("{0} set product description to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.ProductFamilies, productFamilyID, description);
+        return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
+    public int SetProductFamily(int productID, int value)
+    {
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        Product p = Products.GetProduct(loginUser, productID);
+        if (value == -1)
+        {
+          p.ProductFamilyID = null;
+        }
+        else
+        {
+          p.ProductFamilyID = value;
+        }
+        p.Collection.Save();
+        ProductFamilies pf = new ProductFamilies(loginUser);
+        pf.LoadByProductFamilyID(value);
+        string description = String.Format("{0} set product family as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, pf.IsEmpty ? "Unassigned" : pf[0].Name);
+        ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, productID, description);
+        return value;
     }
 
     [WebMethod]
@@ -564,6 +805,37 @@ namespace TSWebServices
       }
 
       return htmlresults.ToString();
+    }
+
+    [WebMethod]
+    public string LoadFamilyProducts(int productFamilyID, int start)
+    {
+        StringBuilder htmlresults = new StringBuilder("");
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        Products products = new Products(loginUser);
+        products.LoadByProductFamilyIDLimit(productFamilyID, start);
+
+        foreach (Product product in products)
+        {
+            htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <a href='#' id='{0}' class='productlink'>
+                              <h4 class='list-group-item-heading'>{1}</h4>
+                            </a>
+                            <div class='row'>
+                                <div class='col-xs-6'>
+                                    <p class='list-group-item-text'>{2} Open Tickets</p>
+                                    <p class='list-group-item-text'>{3} Closed Tickets</p>                            
+                                </div>
+                            </div>
+                            </div>"
+
+                , product.ProductID
+                , product.Name
+                , GetProductTickets(product.ProductID, 0)
+                , GetProductTickets(product.ProductID, 1));
+        }
+
+        return htmlresults.ToString();
     }
 
     [WebMethod]
@@ -914,6 +1186,7 @@ namespace TSWebServices
       public NewProductSave() { }
       [DataMember] public string Name { get; set; }
       [DataMember] public string Description { get; set; }
+      [DataMember] public int? ProductFamilyID { get; set; }
       [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
   }
 
@@ -956,4 +1229,22 @@ namespace TSWebServices
 
   }
 
+  public class NewProductFamilySave
+  {
+      public NewProductFamilySave() { }
+      [DataMember]
+      public string Name { get; set; }
+      [DataMember]
+      public string Description { get; set; }
+      [DataMember]
+      public List<CustomFieldSaveInfo> Fields { get; set; }
+  }
+
+  public class ProdProp
+  {
+      [DataMember]
+      public ProductProxy prodproxy { get; set; }
+      [DataMember]
+      public string ProductFamily { get; set; }
+  }
 }

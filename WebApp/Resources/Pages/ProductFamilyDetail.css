@@ -1,9 +1,7 @@
 ﻿body {
 }
 
-.control-label{font-weight:normal;color:#888;text-align:left;font-size:12px}
-
-#productName{
+#productFamilyName{
     margin: 0 0 0 15px;
     font-size: 24px;
 }
@@ -35,7 +33,7 @@
 
 #fieldDescription {padding-left: 10px;}
 
-.versionList {padding-top: 30px;}
+.productList {padding-top: 30px;}
 
 #tblProducts i {cursor:pointer;}
 

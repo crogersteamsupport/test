@@ -741,6 +741,12 @@ Ts.Pages.Main.prototype = {
                         case Ts.Ui.Tabs.Tab.Type.Product:
                             div = $('.main-tab-Product');
                             break;
+                        case Ts.Ui.Tabs.Tab.Type.NewProductFamily:
+                            div = $('.main-tab-newProductFamily');
+                            break;
+                        case Ts.Ui.Tabs.Tab.Type.ProductFamily:
+                            div = $('.main-tab-ProductFamily');
+                            break;
                         default:
                     }
 
@@ -1108,6 +1114,49 @@ Ts.Pages.Main.prototype = {
                         div.show();
                     }
                     $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');
+                    break;
+                case Ts.Ui.Tabs.Tab.Type.NewProductFamily:
+                    div = $('.main-tab-content .main-ticket-newProductFamily');
+                    if (div.length < 1) {
+                        var query = '';
+                        if (tab.getData()) query = tab.getData();
+                        div = $('<div>')
+                  .addClass('main-tab-content-item main-tab-newProductFamily main-ticket-newProductFamily')
+                  .appendTo('.main-tab-content');
+
+                        $('<iframe>')
+                  .attr('frameborder', 0)
+                  .attr('scrolling', 'no')
+                  .appendTo(div)
+                  .attr('src', 'vcr/1_9_0/Pages/NewProductFamily.html' + query);
+                    }
+                    else {
+                        div.show();
+                    }
+                    $('.main-info-content').load('vcr/1_9_0/PaneInfo/ProductFamilies.html');
+                    break;
+                case Ts.Ui.Tabs.Tab.Type.ProductFamily:
+                    var productFamilyID = tab.getId();
+                    top.privateServices.SetUserSetting('SelectedProductFamilyID', productFamilyID);
+                    div = $('.main-tab-content .main-Product-Family-' + productFamilyID);
+                    if (div.length < 1) {
+                        var query = '';
+                        if (tab.getData()) query = tab.getData();
+                        div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-Product-Family main-Product-Family-' + productFamilyID)
+                    .appendTo('.main-tab-content');
+
+                        $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .attr('id', 'iframe-o-' + productFamilyID)
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_9_0/Pages/ProductFamilyDetail.html' + query);
+                    }
+                    else {
+                        div.show();
+                    }
+                    $('.main-info-content').load('vcr/1_9_0/PaneInfo/ProductFamily.html');
                     break;
 
                 default:
@@ -1812,6 +1861,44 @@ Ts.Pages.Main.prototype = {
     },
     closeNewProductVersionTab: function (productVersionID) {
         var tab = this.MainTabs.find(productVersionID, Ts.Ui.Tabs.Tab.Type.ProductVersion);
+        if (tab) {
+            this.closeTab(tab);
+            tab.remove();
+        }
+    },
+
+    newProductFamily: function (tab, productFamilyID) {
+        var query;
+        if (tab != undefined)
+            query = "?open=" + tab + "&productfamilyid=" + productFamilyID;
+        this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewProductFamily, 'newProductFamily', 'Add Product Family', true, true, true, null, null, query, null);
+    },
+    closenewProductFamilyTab: function () {
+        var tab = this.MainTabs.find('newProductFamily', Ts.Ui.Tabs.Tab.Type.NewProductFamily);
+        if (tab) {
+            this.closeTab(tab);
+            tab.remove();
+        }
+    },
+    openNewProductFamily: function (productFamilyID) {
+        var query = "?productfamilyid=" + productFamilyID;
+        top.Ts.Services.Products.GetFamilyShortNameFromID(productFamilyID, function (result) {
+            if (result == 'N/A') {
+                alert('This product family has been deleted.');
+                closeNewProductFamilyTab(productFamilyID);
+            }
+            else {
+                this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.ProductFamily, productFamilyID, result, true, true, false, null, null, query, null);
+            }
+        });
+
+    },
+    closeNewProductFamily: function (productFamilyID) {
+        var div = $('.main-tab-content .main-Product-Family-' + productFamilyID);
+        div.remove();
+    },
+    closeNewProductFamilyTab: function (productFamilyID) {
+        var tab = this.MainTabs.find(productFamilyID, Ts.Ui.Tabs.Tab.Type.ProductFamily);
         if (tab) {
             this.closeTab(tab);
             tab.remove();

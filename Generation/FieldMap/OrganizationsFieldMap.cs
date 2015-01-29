@@ -108,6 +108,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DateLastIndexed", "DateLastIndexed", false, false, false);
       _fieldMap.AddMap("HideDismissNonAdmins", "HideDismissNonAdmins", false, false, false);
       _fieldMap.AddMap("CustDistIndexTrend", "CustDistIndexTrend", false, false, false);
+      _fieldMap.AddMap("UseProductFamilies", "UseProductFamilies", false, false, false);
             
     }
   }
