@@ -1863,6 +1863,10 @@ namespace TeamSupport.Data
         {
           result.Append(ch);
         }
+        else if ( ch == '\n')
+        {
+            result.Append("\\n");
+        }
       }
 
       //The single quote is supported in json and do not need to be scaped.
@@ -1873,6 +1877,7 @@ namespace TeamSupport.Data
         Replace(@"\""", @"""").
         //Replace(@"\'", @"'").
         Replace(@"\", @"\\").
+        Replace(@"\\n", @"\n").
         Replace(@"""", @"\""");
         //Replace(@"'", @"\'");
 

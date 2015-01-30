@@ -1012,7 +1012,7 @@ Namespace TeamSupport
           Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer) As String
             Dim result As StringBuilder = New StringBuilder()
             result.Append("{")
-              result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() +": ")
+                result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() + ":\n\n")
                 result.Append(DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription))))
             result.Append("""}")
             Return result.ToString()
