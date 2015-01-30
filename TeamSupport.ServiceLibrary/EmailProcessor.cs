@@ -1282,24 +1282,27 @@ namespace TeamSupport.ServiceLibrary
     private void AddTicketOwners(List<UserEmail> userList, Ticket ticket, bool? receiveTicketNotifications = null)
     {
       Logs.WriteEvent("Adding Ticket Owners");
+        //It has been identified that unassigned tickets are passing the ticket.UserID != null condition.
+        //Therefore we'll check against the user object instead. To do so, we are renaming and moving this variable declaration outside the condition check.
+      User ticketAssignedUser = null;
       if (ticket.UserID != null)
       {
-          User user = Users.GetUser(LoginUser, (int)ticket.UserID);
-          if (user != null)
+          ticketAssignedUser = Users.GetUser(LoginUser, (int)ticket.UserID);
+          if (ticketAssignedUser != null)
           {
               if (receiveTicketNotifications != null)
               {
-                  if (user.ReceiveTicketNotifications == (bool)receiveTicketNotifications)
+                  if (ticketAssignedUser.ReceiveTicketNotifications == (bool)receiveTicketNotifications)
                   {
-                      AddUser(userList, user, true);
-                      Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
+                      AddUser(userList, ticketAssignedUser, true);
+                      Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
                   }
-                  Logs.WriteEventFormat("Owner Skipped due to receiveTicketNotifications: {0} ({1})", user.DisplayName, user.UserID.ToString());
+                  Logs.WriteEventFormat("Owner Skipped due to receiveTicketNotifications: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
               }
               else
               {
-                  AddUser(userList, user, true);
-                  Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
+                  AddUser(userList, ticketAssignedUser, true);
+                  Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
               }
           }
       }
@@ -1312,7 +1315,7 @@ namespace TeamSupport.ServiceLibrary
         Users users = new Users(LoginUser);
         users.LoadByGroupID((int)ticket.GroupID);
         foreach (User user in users) {
-           if (ticket.UserHasRights(user) && ((ticket.UserID != null && user.ReceiveAllGroupNotifications) || (ticket.UserID == null && user.ReceiveUnassignedGroupEmails)))
+           if (ticket.UserHasRights(user) && ((ticketAssignedUser != null && user.ReceiveAllGroupNotifications) || (ticketAssignedUser == null && user.ReceiveUnassignedGroupEmails)))
           {
             AddUser(userList, user, true);
             Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
