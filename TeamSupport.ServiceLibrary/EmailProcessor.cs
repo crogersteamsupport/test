@@ -551,12 +551,7 @@ namespace TeamSupport.ServiceLibrary
                 }
             }
 
-            // After the AddMessageInternalTicketModified method call the AddTicketOwners it checks if isNew or the owner changed (oldUserID != null) or the group changed (oldGroupID != null)
-            // if so it removes the users added by the AddTicketOwners assuming they were already added by this method.
-            // The problem is that this method is only adding when the group changed (oldGroupID != null).
-            // In case the group hasn't changed, then neither this nor the AddMessageInternalTicketModified include the group users.
-            // To fix this I'm changing to add the group users as long as there is a group to notify regardless if it has been changed or not.
-            if (ticket.GroupID != null)
+            if (ticket.GroupID != null && oldGroupID != null)
             {
                 Logs.WriteEvent("Ticket.GroupID is not null");
                 Group owner = Groups.GetGroup(LoginUser, (int)ticket.GroupID);
@@ -608,13 +603,22 @@ namespace TeamSupport.ServiceLibrary
           AddTicketSubscribers(userList, ticket);
           List<string> fileNames = new List<string>();
 
-          if (isNew || oldUserID != null || oldGroupID != null) // assignment already sent
+          if (oldGroupID != null) // group assignment already sent
           {
               List<UserEmail> removeList = new List<UserEmail>();
               AddTicketOwners(removeList, ticket, true);
               foreach (UserEmail item in removeList)
               {
-                  RemoveUser(userList, item.UserID);
+                  if (ticket.UserID != null && ticket.UserID == item.UserID)
+                  {
+                      // We're only removing the group users.
+                      // The ticket user persist.
+                      // It will be removed if necessary, below.
+                  }
+                  else
+                  {
+                      RemoveUser(userList, item.UserID);
+                  }
               }
           }
 
