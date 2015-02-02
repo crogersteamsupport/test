@@ -317,9 +317,12 @@ ReportPage = function () {
         var item = $('.report-active');
         if (item.length < 1) return;
         var report = item.data('o');
-        top.Ts.Services.Reports.CloneReport(report.ReportID, function (report) {
+        top.Ts.Services.Reports.CloneReport(report.ReportID, function (clone) {
             if (report != null) {
-                getNewReportItem(report).hide().insertAfter(item).fadeIn("slow");
+                getNewReportItem(clone).hide().insertAfter(item).fadeIn("slow");
+                if (clone.ReportType == 5) {
+                    top.Ts.MainPage.addNewTicketView(clone, clone.IsPrivate, false);
+                }
             }
         });
     });

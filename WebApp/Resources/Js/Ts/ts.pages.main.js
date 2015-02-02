@@ -1545,7 +1545,7 @@ Ts.Pages.Main.prototype = {
             var allMenuItems = $('.menutree-item-tickets-mniTickets').find('ul.ui-helper-hidden');
             allMenuItems.show();
         }
-
+        debugger
         this.MainMenu.find('mniTicketView_' + ReportID, 'tickettype').select();
         var element = $('.main-tab-content-item:visible');
         $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/TicketView.html?ReportID=' + ReportID);
@@ -1583,18 +1583,40 @@ Ts.Pages.Main.prototype = {
             }
         });
     },
-    addNewTicketView: function (report, isPrivate) {
+    addNewTicketView: function (report, isPrivate, open) {
         var self = this;
         Ts.Services.System.GetNewTicketViewMenuItem(report.ReportID, function (result) {
             var parent;
-            if (isPrivate == "true") {
+            if (isPrivate.toString() == "true") {
                 parent = self.MainMenu.getByID('mniMyTickets');
             }
             else {
                 parent = self.MainMenu.getByID('mniTickets');
             }
             self.MainMenu.add(parent, result.ID, result.Type, result.Caption, result.ImageUrl, JSON.parse(result.Data));
-            top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
+
+            if (open) {
+                top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
+            }
+        });
+    },
+    updateTicketViewItem: function (report, isPrivate, open) {
+        var self = this;
+        Ts.Services.System.GetNewTicketViewMenuItem(report.ReportID, function (result) {
+            var parent;
+            if (isPrivate.toString() == "true") {
+                parent = self.MainMenu.getByID('mniMyTickets');
+            }
+            else {
+                parent = self.MainMenu.getByID('mniTickets');
+            }
+
+            $(".menutree-item-tickettype-mniTicketView_" + report.ReportID).remove();
+            self.MainMenu.add(parent, result.ID, result.Type, result.Caption, result.ImageUrl, JSON.parse(result.Data));
+
+            if (open) {
+                top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
+            }
         });
     },
     updateMenu: function () {

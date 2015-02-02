@@ -581,12 +581,12 @@ $(document).ready(function () {
                     if (_reportID) {
                         result = result + getReportUrl();
                         var isPrivate = $('.report-privacy').val();
-                        top.Ts.MainPage.openTicketView(report.ReportID, isPrivate);
+                        top.Ts.MainPage.updateTicketViewItem(report, isPrivate, true);
                     }
                     else {
                         result = result + 'reports.html';
                         var isPrivate = $('.report-privacy').val();
-                        top.Ts.MainPage.addNewTicketView(report, isPrivate);
+                        top.Ts.MainPage.addNewTicketView(report, isPrivate, true);
                     }
 
 

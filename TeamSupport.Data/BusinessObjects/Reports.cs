@@ -1465,6 +1465,7 @@ namespace TeamSupport.Data
       report.CreatorID = this.Collection.LoginUser.UserID;
       report.ReportDefType = this.ReportDefType;
       report.ReportDef = this.ReportDef;
+      report.IsPrivate = this.IsPrivate;
       reports.Save();
 
       return report.ReportID;
