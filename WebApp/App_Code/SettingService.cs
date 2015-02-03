@@ -85,11 +85,15 @@ namespace TSWebServices
       {
         Session["isLoggedIn"] = "true";
         Session["user"] = UserSession.LoginUser.UserID.ToString();
-        Directory.CreateDirectory("C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images");
-        Directory.CreateDirectory("C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/documents");
+        string root = SystemSettings.ReadString(UserSession.LoginUser, "FilePath", "C:\\TSData");
+        root = Path.Combine(root, "WikiDocs\\" + UserSession.LoginUser.OrganizationID);
 
-        Session["moxiemanager.filesystem.rootpath"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID;
-        Session["moxiemanager.filesystem.local.wwwroot"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID;
+
+        Directory.CreateDirectory(Path.Combine(root, "images"));
+        Directory.CreateDirectory(Path.Combine(root, "documents"));
+
+        Session["moxiemanager.filesystem.rootpath"] = root;
+        Session["moxiemanager.filesystem.local.wwwroot"] = root;
         Session["moxiemanager.filesystem.local.urlprefix"] = "{proto}://{host}/Wiki/WikiDocs/" + UserSession.LoginUser.OrganizationID;
       }
     }
