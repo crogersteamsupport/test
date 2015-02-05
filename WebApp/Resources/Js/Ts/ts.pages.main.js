@@ -33,7 +33,7 @@ Ts.Pages.Main.prototype = {
         var self = this;
         var tmrChat = null;
         var chatInterval = 5000;
-        var tmrStatus = setInterval(getUserStatusUpdate, 20000);
+        var tmrStatus = setInterval(getUserStatusUpdate, 60000);
         var tmrFlash = setInterval(flashTitle, 1250);
         var lastChatMessageID = -1;
         var lastChatRequestID = -1;
@@ -560,9 +560,16 @@ Ts.Pages.Main.prototype = {
 
 
         function getUserStatusUpdate() {
+            req = $.ajax({
+                type: "POST",
+                url: "/userstatus/" + Ts.System.getSessionID(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: callback,
+                error: function (xhr, status, error) { }
+            });
 
-            Ts.Services.System.GetUserStatusUpdate(Ts.System.getSessionID(), function (result) {
-
+            function callback(result) {
                 if (result != null) {
                     if (result.IsExpired == true) {
                         window.location = 'AnotherSession.aspx';
@@ -583,20 +590,27 @@ Ts.Pages.Main.prototype = {
 
                     $('.status-expiration').text('Expires @ ' + result.ExpireTime);
                     $('.status-version').html('Version: ' + result.Version);
-                    refreshID = result.RefreshID;
-
-                    if (result.MyUnreadTicketCount > 0) {
-                        $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets (' + result.MyUnreadTicketCount + ')').css('font-weight', 'bold');
-                    } else {
-                        $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets').css('font-weight', 'normal');
-                    }
-
                 }
-            });
+            }
+
+
         }
 
         function getChatUpdates() {
-            Ts.Services.System.GetChatUpdate(lastChatMessageID, lastChatRequestID, function (result) {
+            var params = { "lastChatMessageID": lastChatMessageID, "lastChatRequestID": lastChatRequestID };
+
+            req = $.ajax({
+                type: "POST",
+                url: "/chatstatus",
+                data: JSON.stringify(params),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: callback,
+                error: function (xhr, status, error) { }
+            });
+            
+            function callback(result)
+            {
                 var menuID = self.MainMenu.getSelected().getId();
                 var isMain = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
                 if ((!isMain || menuID != 'mniChat') && (chatMessageCount < result.ChatMessageCount || chatRequestCount < result.ChatRequestCount)) {
@@ -641,7 +655,7 @@ Ts.Pages.Main.prototype = {
 
                     window.focus();
                 }
-            });
+            }
         }
 
         function flashTitle() {

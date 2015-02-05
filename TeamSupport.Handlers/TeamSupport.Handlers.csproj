@@ -139,8 +139,9 @@
   <ItemGroup>
     <Compile Include="ChartHandler.cs" />
     <Compile Include="ContentHandler.cs" />
-    <Compile Include="SignUpHandler.cs" />
     <Compile Include="UserStatusHandler.cs" />
+    <Compile Include="SignUpHandler.cs" />
+    <Compile Include="ChatStatusHandler.cs" />
     <Compile Include="HighCharts\ExportChart.cs" />
     <Compile Include="HighCharts\Exporter.cs" />
     <Compile Include="HighCharts\Page.cs">

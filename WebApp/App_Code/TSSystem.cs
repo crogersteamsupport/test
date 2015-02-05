@@ -340,7 +340,7 @@ namespace TSWebServices
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Organization org = TSAuthentication.GetOrganization(loginUser);
-      return ChatRequests.GetRequestCountInLastDays(loginUser, loginUser.OrganizationID, 180) > 0 || org.DateCreated.AddDays(-30) > DateTime.UtcNow ? 3500 : 30000;
+      return ChatRequests.GetRequestCountInLastDays(loginUser, loginUser.OrganizationID, 180) > 0 || org.DateCreated.AddDays(-30) > DateTime.UtcNow ? 7000 : 30000;
     }
 
     [WebMethod]
