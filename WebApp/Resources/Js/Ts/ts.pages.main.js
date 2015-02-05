@@ -590,6 +590,13 @@ Ts.Pages.Main.prototype = {
 
                     $('.status-expiration').text('Expires @ ' + result.ExpireTime);
                     $('.status-version').html('Version: ' + result.Version);
+                    refreshID = result.RefreshID;
+
+                    if (result.MyUnreadTicketCount > 0) {
+                        $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets (' + result.MyUnreadTicketCount + ')').css('font-weight', 'bold');
+                    } else {
+                        $('.menutree-item-mytickets-mniMyTickets a').first().text('My Tickets').css('font-weight', 'normal');
+                    }
                 }
             }
 
