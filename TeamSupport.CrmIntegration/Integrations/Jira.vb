@@ -1324,6 +1324,10 @@ Namespace TeamSupport
                     End If
                 Next
 
+                If result.Length = 0 Then
+                    result.Append(fieldKey)
+                End If
+
                 Return result.ToString()
             End Function
 
