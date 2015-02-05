@@ -32,7 +32,7 @@ Ts.Pages.Main.prototype = {
     init: function () {
         var self = this;
         var tmrChat = null;
-        var chatInterval = 5000;
+        var chatInterval = 10000;
         var tmrStatus = setInterval(getUserStatusUpdate, 60000);
         var tmrFlash = setInterval(flashTitle, 1250);
         var lastChatMessageID = -1;
@@ -283,7 +283,7 @@ Ts.Pages.Main.prototype = {
         Ts.Services.System.GetChatInterval(function (result) {
             chatInterval = result;
             loadUserStatus();
-            chatInterval = 5000;
+            chatInterval = 10000;
         });
 
 
