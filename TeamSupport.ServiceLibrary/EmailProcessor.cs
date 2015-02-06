@@ -1119,13 +1119,14 @@ namespace TeamSupport.ServiceLibrary
       message.From = new MailAddress("eharrington@teamsupport.com", "Eric Harrington");
       AddMessage(1078, "New Sign Up - Check In[" + organization.Name + "]", message, null, null, DateTime.UtcNow.AddDays(1));
       */
+      /*
       message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 28);
       message.To.Add(GetMailAddress(user.Email));
       message.Bcc.Add(GetMailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
       //message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
       message.From = GetMailAddress(from);
       AddMessage(1078, "New Sign Up - Notice [" + organization.Name + "]", message, null, null, DateTime.UtcNow.AddDays(10));
-         
+         */
     }
 
     public void ProcessWelcomeTSUser(int userID, string password)
