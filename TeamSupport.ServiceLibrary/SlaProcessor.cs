@@ -27,6 +27,7 @@ namespace TeamSupport.ServiceLibrary
           if (DateTime.Now.Subtract(_lastDLSAdjustment).TotalMinutes > 60 && DateTime.Now.Minute > 5 && DateTime.Now.Minute < 30)
           {
             Logs.WriteEvent("Update business hours for DSL");
+            _lastDLSAdjustment = DateTime.Now;
             UpdateBusinessHoursForDLSFix();
           }
         }
@@ -316,15 +317,11 @@ namespace TeamSupport.ServiceLibrary
 
       foreach (Organization customer in customers)
       {
-        if (customer.OrganizationID == 13679)
-        {
           DateTime today = DateTime.Now;
           DateTime start = customer.BusinessDayEnd;
           DateTime end = customer.BusinessDayStart;
           customer.BusinessDayStart = new DateTime(today.Year, today.Month, today.Day, start.Hour, start.Minute, 0);
           customer.BusinessDayEnd = new DateTime(today.Year, today.Month, today.Day, end.Hour, end.Minute, 0);
-
-        }
       }
       customers.Save();
     }
