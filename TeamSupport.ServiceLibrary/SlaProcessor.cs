@@ -12,6 +12,8 @@ namespace TeamSupport.ServiceLibrary
   [Serializable]
   public class SlaProcessor : ServiceThread
   {
+    DateTime _lastDLSAdjustment = DateTime.MinValue;
+
     public SlaProcessor()
     {
     }
@@ -20,6 +22,18 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
+        try
+        {
+          if (DateTime.Now.Subtract(_lastDLSAdjustment).TotalMinutes > 60 && DateTime.Now.Minute > 5 && DateTime.Now.Minute < 30)
+          {
+            Logs.WriteEvent("Update business hours for DSL");
+            UpdateBusinessHoursForDLSFix();
+          }
+        }
+        catch (Exception)
+        {
+        }
+
 
         Tickets tickets = new Tickets(LoginUser);
         tickets.LoadAllUnnotifiedAndExpiredSla();
@@ -36,7 +50,6 @@ namespace TeamSupport.ServiceLibrary
         ExceptionLogs.LogException(LoginUser, ex, "SLA Processor", "Sync");
       }
     }
-
 
     private void ProcessTicket(Ticket ticket)
     {
@@ -155,7 +168,6 @@ namespace TeamSupport.ServiceLibrary
     {
       return (DateTime.UtcNow - notifyTime).TotalDays >= 1;
     }
-
 
     private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType, SlaNotification notification)
     {
@@ -296,7 +308,7 @@ namespace TeamSupport.ServiceLibrary
       }
 
     }
-    /*
+    
     private void UpdateBusinessHoursForDLSFix()
     {
       Organizations customers = new Organizations(LoginUser);
@@ -304,9 +316,17 @@ namespace TeamSupport.ServiceLibrary
 
       foreach (Organization customer in customers)
       {
-        customer.BusinessDayStart = new DateTime(DateTime.Now.ye
+        if (customer.OrganizationID == 13679)
+        {
+          DateTime today = DateTime.Now;
+          DateTime start = customer.BusinessDayEnd;
+          DateTime end = customer.BusinessDayStart;
+          customer.BusinessDayStart = new DateTime(today.Year, today.Month, today.Day, start.Hour, start.Minute, 0);
+          customer.BusinessDayEnd = new DateTime(today.Year, today.Month, today.Day, end.Hour, end.Minute, 0);
+
+        }
       }
-    
-    }*/
+      customers.Save();
+    }
   }
 }
