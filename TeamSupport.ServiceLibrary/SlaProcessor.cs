@@ -321,10 +321,26 @@ namespace TeamSupport.ServiceLibrary
         if (customer.OrganizationID == 13679)
         {
           DateTime today = DateTime.Now;
-          DateTime start = customer.BusinessDayEnd;
-          DateTime end = customer.BusinessDayStart;
+          TimeZoneInfo tz = System.TimeZoneInfo.Local;
+          if (!string.IsNullOrWhiteSpace(customer.TimeZoneID))
+          {
+            tz = System.TimeZoneInfo.FindSystemTimeZoneById(customer.TimeZoneID);
+          }
+
+          /*Logs.WriteEvent("Start UTC: " + customer.BusinessDayStartUtc.ToString());
+          Logs.WriteEvent("End UTC: " + custo);
+          Logs.WriteEvent("Start Local");
+          Logs.WriteEvent("End Local");
+          */
+          DateTime start = TimeZoneInfo.ConvertTimeFromUtc(customer.BusinessDayStartUtc, tz);
+          DateTime end = TimeZoneInfo.ConvertTimeFromUtc(customer.BusinessDayEndUtc, tz); 
           customer.BusinessDayStart = (new DateTime(today.Year, today.Month, today.Day, start.Hour, start.Minute, 0)).ToUniversalTime();
           customer.BusinessDayEnd = (new DateTime(today.Year, today.Month, today.Day, end.Hour, end.Minute, 0)).ToUniversalTime();
+          /*Logs.WriteEvent("New Start");
+          Logs.WriteEvent("New End");
+          Logs.WriteEvent("");
+          Logs.WriteEvent("");
+           */
 
         }
       }
