@@ -24,8 +24,7 @@ namespace TeamSupport.ServiceLibrary
       {
         try
         {
-          UpdateBusinessHoursForDLSFix();
-          if (DateTime.Now.Subtract(_lastDLSAdjustment).TotalMinutes > 60 && DateTime.Now.Minute > 5 && DateTime.Now.Minute < 30)
+          if (DateTime.Now.Subtract(_lastDLSAdjustment).TotalMinutes > 60 && DateTime.Now.Minute > 2 && DateTime.Now.Minute < 30)
           {
             Logs.WriteEvent("Update business hours for DSL");
             _lastDLSAdjustment = DateTime.Now;
@@ -35,7 +34,6 @@ namespace TeamSupport.ServiceLibrary
         catch (Exception)
         {
         }
-
 
         Tickets tickets = new Tickets(LoginUser);
         tickets.LoadAllUnnotifiedAndExpiredSla();
@@ -318,31 +316,19 @@ namespace TeamSupport.ServiceLibrary
 
       foreach (Organization customer in customers)
       {
-        if (customer.OrganizationID == 13679)
+        if (customer.OrganizationID != 13679) continue;
+        TimeZoneInfo tz = System.TimeZoneInfo.Local;
+        if (!string.IsNullOrWhiteSpace(customer.TimeZoneID))
         {
-          DateTime today = DateTime.Now;
-          TimeZoneInfo tz = System.TimeZoneInfo.Local;
-          if (!string.IsNullOrWhiteSpace(customer.TimeZoneID))
-          {
-            tz = System.TimeZoneInfo.FindSystemTimeZoneById(customer.TimeZoneID);
-          }
-
-          /*Logs.WriteEvent("Start UTC: " + customer.BusinessDayStartUtc.ToString());
-          Logs.WriteEvent("End UTC: " + custo);
-          Logs.WriteEvent("Start Local");
-          Logs.WriteEvent("End Local");
-          */
-          DateTime start = TimeZoneInfo.ConvertTimeFromUtc(customer.BusinessDayStartUtc, tz);
-          DateTime end = TimeZoneInfo.ConvertTimeFromUtc(customer.BusinessDayEndUtc, tz); 
-          customer.BusinessDayStart = (new DateTime(today.Year, today.Month, today.Day, start.Hour, start.Minute, 0)).ToUniversalTime();
-          customer.BusinessDayEnd = (new DateTime(today.Year, today.Month, today.Day, end.Hour, end.Minute, 0)).ToUniversalTime();
-          /*Logs.WriteEvent("New Start");
-          Logs.WriteEvent("New End");
-          Logs.WriteEvent("");
-          Logs.WriteEvent("");
-           */
-
+          tz = System.TimeZoneInfo.FindSystemTimeZoneById(customer.TimeZoneID);
         }
+
+        DateTime today = DateTime.Now;
+        DateTime start = TimeZoneInfo.ConvertTimeFromUtc(customer.BusinessDayStartUtc, tz); 
+        DateTime end = TimeZoneInfo.ConvertTimeFromUtc(customer.BusinessDayEndUtc, tz);
+
+        customer.BusinessDayStart = TimeZoneInfo.ConvertTimeToUtc(new DateTime(today.Year, today.Month, today.Day, start.Hour, start.Minute, 0), tz);
+        customer.BusinessDayEnd = TimeZoneInfo.ConvertTimeToUtc(new DateTime(today.Year, today.Month, today.Day, end.Hour, end.Minute, 0), tz);
       }
       customers.Save();
     }
