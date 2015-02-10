@@ -53,6 +53,16 @@ namespace TeamSupport.Handlers
           try
           {
             User user = Users.GetUser(LoginUser.Anonymous, TSAuthentication.UserID);
+
+            if (user == null)
+            {
+              context.Response.ContentType = "text/plain";
+              context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+              context.Response.ClearContent();
+              context.Response.End();
+              return;
+            }
+
             user.UpdatePing();
 
             LoginUser loginUser = new LoginUser(user.UserID, user.OrganizationID, null);

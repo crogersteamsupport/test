@@ -70,6 +70,15 @@ namespace TeamSupport.Handlers
       context.Response.AddHeader("Expires", "-1");
       context.Response.AddHeader("Pragma", "no-cache");
 
+      if (TSAuthentication.Ticket == null)
+      {
+        context.Response.ContentType = "text/plain";
+        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+        context.Response.ClearContent();
+        context.Response.End();
+        return;
+      }
+
       string sessionID = context.Request.Url.Segments[context.Request.Url.Segments.Length - 1];
      
       TsMainPageUpdate update = new TsMainPageUpdate();
