@@ -1053,16 +1053,35 @@ namespace TeamSupport.Data
           {
             if (i > 0) builder.Append(",");
             string value = reader[i].ToString();
-            if (value.Length > 8000) value = value.Substring(0, 8000);
 
-            if (DateTime.TryParse(value, out dateValue))
+            try
             {
-              value = TimeZoneInfo.ConvertTimeFromUtc(dateValue, loginUser.TimeZoneInfo).ToString(loginUser.CultureInfo);
-            }
-              
-            value = "\"" + value.Replace("\"", "\"\"") + "\"";
+              if (value.Length > 8000) value = value.Substring(0, 8000);
 
-            if (replaceNewLineWithHtml) value = value.Replace(Environment.NewLine, "<br />");
+              try
+              {
+                if (DateTime.TryParse(value, out dateValue))
+                {
+                  value = TimeZoneInfo.ConvertTimeFromUtc(dateValue, loginUser.TimeZoneInfo).ToString(loginUser.CultureInfo);
+                }
+              }
+              catch (Exception)
+              {
+                
+              }
+
+              value = "\"" + value.Replace("\"", "\"\"") + "\"";
+
+              if (replaceNewLineWithHtml) value = value.Replace(Environment.NewLine, "<br />");
+
+            }
+            catch (Exception ex)
+            {
+              ex.Data.Add("value", value);
+              ExceptionLogs.LogException(loginUser, ex, "CommandToCsv");
+              value = "\"\""; 
+            }
+
             Encoding ascii = Encoding.GetEncoding("us-ascii", new EncoderReplacementFallback("*"), new DecoderReplacementFallback("*"));
             //Encoding utf8 = Encoding.GetEncoding("utf-8", new EncoderReplacementFallback("*"), new DecoderReplacementFallback("*"));
             builder.Append(ascii.GetString(ascii.GetBytes(value)));
