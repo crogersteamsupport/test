@@ -38,6 +38,15 @@ namespace TeamSupport.Handlers
       context.Response.AddHeader("Expires", "-1");
       context.Response.AddHeader("Pragma", "no-cache");
 
+      if (TSAuthentication.Ticket == null)
+      {
+        context.Response.ContentType = "text/plain";
+        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+        context.Response.ClearContent();
+        context.Response.End();
+        return;
+      }
+
       TsChatUpdate update = new TsChatUpdate();
 
       using (Stream receiveStream = context.Request.InputStream)
