@@ -1913,6 +1913,17 @@ WHERE RowNum BETWEEN @From AND @To";
         sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
         isDesc = false;
       }
+
+      switch (sortField)
+      {
+          case "Severity":
+              sortField = "SeverityPosition";
+              break;
+          case "Status":
+              sortField = "StatusPosition";
+              break;
+      }
+
       command.Parameters.AddWithValue("@From", from);
       command.Parameters.AddWithValue("@To", to);
       report.GetCommand(command, includeHiddenFields, false, useUserFilter);
