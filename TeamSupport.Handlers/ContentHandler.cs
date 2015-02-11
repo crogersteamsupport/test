@@ -334,8 +334,9 @@ namespace TeamSupport.Handlers
         { "9", "FF5722" }
       };
 
-      string color = d[initial];
-      return color != null ? ColorTranslator.FromHtml("#" + color) : ColorTranslator.FromHtml("#999");
+
+      string color = d.ContainsKey(initial) ? d[initial] : "999999";
+      return ColorTranslator.FromHtml("#" + color);
           
     }
 
