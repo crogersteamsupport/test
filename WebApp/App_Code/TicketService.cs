@@ -3466,7 +3466,6 @@ namespace TSWebServices
         return "";
     }
 
-
     [WebMethod]
     public void MergeTickets(int winningTicketID, int losingTicketID)
     {

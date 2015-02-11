@@ -59,10 +59,10 @@
                 $('.reports-header i').addClass('fa-globe color-blue');
                 break;
             case 3:
-                $('.reports-header i').addClass('fa-wrench color-orange');
+                $('.reports-header i').addClass('fa-wrench color-darkorange');
                 break;
             case 4:
-                $('.reports-header i').addClass('fa-tasks color-yellow');
+                $('.reports-header i').addClass('fa-tasks color-amber');
                 break;
             default:
         }
@@ -466,7 +466,7 @@
               .addClass('report-header-filter')
               .insertAfter(this)
               .click(function (e) {
-                  $(this).addClass('color-orange');
+                  $(this).addClass('color-darkorange');
                   var columnDef = $(this).parent().data("column");
                   $('.filter-modal').modal('show');
                   e.preventDefault();

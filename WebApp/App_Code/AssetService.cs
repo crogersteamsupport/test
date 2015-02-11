@@ -578,7 +578,7 @@ namespace TSWebServices
       {
         case "2":
           icon = "fa-home";
-          color = "color-yellow";
+          color = "color-amber";
           break;
         case "3":
           icon = "fa-trash-o";

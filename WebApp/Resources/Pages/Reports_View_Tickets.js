@@ -370,7 +370,7 @@
     };
 
     var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-yellow" title="Click to unsubscribe to this ticket"></i>'
+        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-amber" title="Click to unsubscribe to this ticket"></i>'
     };
 
 
@@ -609,7 +609,7 @@
               .addClass('report-header-filter')
               .insertAfter(this)
               .click(function (e) {
-                  $(this).addClass('color-orange');
+                  $(this).addClass('color-darkorange');
                   var columnDef = $(this).parent().data("column");
                   $('.filter-modal').modal('show');
                   e.preventDefault();

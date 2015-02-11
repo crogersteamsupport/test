@@ -113,7 +113,7 @@
         icon.addClass('fa-truck');
         break;
       case "2":
-        circle.addClass('color-yellow');
+          circle.addClass('color-amber');
         icon.addClass('fa-home');
         break;
       case "3":

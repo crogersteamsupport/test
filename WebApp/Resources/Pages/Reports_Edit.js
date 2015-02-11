@@ -85,7 +85,7 @@ $(document).ready(function () {
                 break;
             case 4:
                 _typeClass = 'report-class-summary';
-                $('.reports-header i').addClass('fa-tasks color-yellow');
+                $('.reports-header i').addClass('fa-tasks color-amber');
                 $('.report-title').text(_report ? _report.Name : 'New Summary Report');
                 break;
             case 5:

@@ -357,10 +357,10 @@ ReportPage = function () {
         var isFavorite = item.find('.report-list-star i').hasClass('fa-star');
         top.Ts.Services.Reports.SetFavorite(report.ReportID, !isFavorite, function () {
             if (isFavorite) {
-                item.find('.report-list-star i').removeClass('fa-star color-yellow').addClass('fa-star-o');
+                item.find('.report-list-star i').removeClass('fa-star color-amber').addClass('fa-star-o');
             }
             else {
-                item.find('.report-list-star i').removeClass('fa-star-o').addClass('fa-star color-yellow');
+                item.find('.report-list-star i').removeClass('fa-star-o').addClass('fa-star color-amber');
             }
         });
     });
@@ -509,7 +509,7 @@ ReportPage = function () {
         item.attr('data-isstock', report.OrganizationID ? 0 : 1);
         item.attr('data-reporttype', report.ReportType);
         item.find('.report-list-title a').text(report.Name);
-        item.find('.report-list-star i').addClass(report.IsFavorite == true ? 'fa-star color-yellow' : 'fa-star-o');
+        item.find('.report-list-star i').addClass(report.IsFavorite == true ? 'fa-star color-amber' : 'fa-star-o');
         item.find('.report-list-owner').text(report.Creator);
         var name = isTsReport ? "" : (report.EditorID == top.Ts.System.User.UserID ? "me" : report.Editor);
         item.find('.report-list-modified').html('<span>' + top.Ts.Utils.getDateString(report.DateEdited, true, false, true) + '</span> <span class="text-muted">' + name + '</span>');
@@ -517,8 +517,8 @@ ReportPage = function () {
         switch (report.ReportType) {
             case 1: item.find('.report-list-title i').addClass('fa-bar-chart-o color-green'); break;
             case 2: item.find('.report-list-title i').addClass('fa-globe color-blue'); break;
-            case 3: item.find('.report-list-title i').addClass('fa-wrench color-orange'); break;
-            case 4: item.find('.report-list-title i').addClass('fa-tasks color-yellow'); break;
+            case 3: item.find('.report-list-title i').addClass('fa-wrench color-darkorange'); break;
+            case 4: item.find('.report-list-title i').addClass('fa-tasks color-amber'); break;
             case 5: item.find('.report-list-title i').addClass('fa-list'); break;
             default: item.find('.report-list-title i').addClass('fa-table color-red');
         }
