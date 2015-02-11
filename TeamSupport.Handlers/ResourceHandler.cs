@@ -59,13 +59,10 @@ namespace TeamSupport.Handlers
         }
 
         string fileName = builder.ToString();
-        //context.Response.ContentType = "text/html";
-        //context.Response.Write(fileName);
         context.Response.ContentType = DataUtils.MimeTypeFromFileName(fileName);
         context.Response.Cache.SetCacheability(HttpCacheability.Public);
         context.Response.Cache.SetExpires(DateTime.Now.AddHours(8));
         context.Response.Cache.SetMaxAge(new TimeSpan(8, 0, 0));
-        //context.Response.Cache.SetLastModified(File.GetLastWriteTimeUtc(fileName));
         DateTime lastWriteDate = File.GetLastWriteTimeUtc(fileName);
         context.Response.Headers["Last-Modified"] = lastWriteDate.ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
         try
@@ -78,7 +75,7 @@ namespace TeamSupport.Handlers
             return;
           }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
 
         }

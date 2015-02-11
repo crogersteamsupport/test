@@ -217,14 +217,12 @@ namespace TeamSupport.Handlers
     private void ProcessUserAvatar(HttpContext context, string[] segments, int organizationID)
     {
 
-      context.Response.AddHeader("ContentType", "image/jpg");
       int userID = int.Parse(segments[2]);
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
       string imagePath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages);
       string cachePath = Path.Combine(imagePath, "cache");
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-      
       
       cacheFileName = Path.Combine(cachePath, userID.ToString()+"-"+size.ToString()+".jpg");
       // found the last cache
@@ -292,7 +290,6 @@ namespace TeamSupport.Handlers
       return;
 
     }
-
    
     private static Color GetInitialColor(string initial)
     {
