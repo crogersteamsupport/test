@@ -361,10 +361,14 @@ namespace TeamSupport.Handlers
               StringFormat strFormat = new StringFormat();
               strFormat.Alignment = StringAlignment.Center;
               strFormat.LineAlignment = StringAlignment.Center;
-              System.Drawing.FontFamily fam = new System.Drawing.FontFamily("Roboto");
-              if (fam.GetName(0).IndexOf("Roboto") < 0)
+              System.Drawing.FontFamily fontFamily;
+              try
               {
-                fam = new System.Drawing.FontFamily("Arial");
+                fontFamily = new System.Drawing.FontFamily("Roboto");
+              }
+              catch (Exception)
+              {
+                fontFamily = new System.Drawing.FontFamily("Arial");
               }
 
               int fontSize = 8;
@@ -372,11 +376,11 @@ namespace TeamSupport.Handlers
               double maxSize = size * 0.7;
               while (true)
               {
-                font = new Font(fam, fontSize);
+                font = new Font(fontFamily, fontSize);
                 SizeF sizeF = gr.MeasureString("X", font);
                 if ((sizeF.Height > maxSize && sizeF.Width > maxSize) || fontSize > 100)
                 {
-                  font = new Font(fam, fontSize - 1);
+                  font = new Font(fontFamily, fontSize - 1);
                   break;
                 }
                 fontSize++;
