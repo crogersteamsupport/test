@@ -68,6 +68,7 @@ namespace TeamSupport.Handlers
             case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
             case "avatar": ProcessAvatar(context, segments.ToArray(), organizationID); break;
             case "useravatar": ProcessUserAvatar(context, segments.ToArray(), organizationID); break;
+            case "initialavatar": ProcessInitialAvatar(context, segments.ToArray(), organizationID); break;
             case "agentrating": ProcessRatingImages(context, segments.ToArray(), organizationID); break;
             case "productcustomers": ProcessProductCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
             case "productversioncustomers": ProcessProductVersionCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
@@ -216,7 +217,7 @@ namespace TeamSupport.Handlers
     private void ProcessUserAvatar(HttpContext context, string[] segments, int organizationID)
     {
 
-      context.Response.AddHeader("ContentType", "image/png");
+      context.Response.AddHeader("ContentType", "image/jpg");
       int userID = int.Parse(segments[2]);
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
@@ -225,8 +226,7 @@ namespace TeamSupport.Handlers
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
       
       
-      cacheFileName = Path.Combine(cachePath, userID.ToString()+"-"+size.ToString()+".png");
-      
+      cacheFileName = Path.Combine(cachePath, userID.ToString()+"-"+size.ToString()+".jpg");
       // found the last cache
       if (File.Exists(cacheFileName)) 
       {
@@ -241,9 +241,9 @@ namespace TeamSupport.Handlers
         // original image, resize, make circle, cache it
         using (Image image = Image.FromFile(originalFileName))
         using (Image scaledImage = ScaleImage(image, size, size))
-        using (Image roundImage = MakeRound(scaledImage))
+        using (Image croppedImage = CropImage(scaledImage, size))
         {
-           roundImage.Save(cacheFileName, ImageFormat.Png);
+          croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
         }
         WriteImage(context, cacheFileName);
         return;
@@ -256,15 +256,44 @@ namespace TeamSupport.Handlers
       if (!string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
       else if (!string.IsNullOrWhiteSpace(user.LastName)) initial = user.LastName.Substring(0, 1).ToUpper();
       
-      using (Image initialImage = MakeInitialCircle(initial, GetInitialColor(initial), size))
+      using (Image initialImage = MakeInitialSquare(initial, GetInitialColor(initial), size))
       {
-        initialImage.Save(cacheFileName, ImageFormat.Png);
+        initialImage.Save(cacheFileName, ImageFormat.Jpeg);
       }
       WriteImage(context, cacheFileName);
       return;
       
     }
 
+    private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)
+    {
+
+      context.Response.AddHeader("ContentType", "image/jpg");
+      string initial = segments[2].Substring(0, 1).ToUpper();
+      int size = int.Parse(segments[3]);
+      string cacheFileName = "";
+      string imagePath = AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.ProfileImages);
+      string cachePath = Path.Combine(imagePath, "cache");
+      if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+
+
+      cacheFileName = Path.Combine(cachePath, initial + "-" + size.ToString() + ".jpg");
+      // found the last cache
+      if (File.Exists(cacheFileName))
+      {
+        WriteImage(context, cacheFileName);
+        return;
+      }
+
+      using (Image initialImage = MakeInitialSquare(initial, GetInitialColor(initial), size))
+      {
+        initialImage.Save(cacheFileName, ImageFormat.Jpeg);
+      }
+      WriteImage(context, cacheFileName);
+      return;
+
+    }
+    
     private static Color GetInitialColor(string initial)
     {
       
@@ -311,6 +340,53 @@ namespace TeamSupport.Handlers
       string color = d[initial];
       return color != null ? ColorTranslator.FromHtml("#" + color) : ColorTranslator.FromHtml("#999");
           
+    }
+
+    public static Image MakeInitialSquare(string initial, Color color, int size)
+    {
+      Bitmap bmp = new Bitmap(size, size, PixelFormat.Format32bppPArgb);
+      GraphicsPath gp = new GraphicsPath();
+      using (Graphics gr = Graphics.FromImage(bmp))
+      {
+        gr.Clear(Color.Transparent);
+        using (gp)
+        {
+          using (gr)
+          {
+            //using (Pen pen = new Pen(color, 3))
+            using (Brush brush = new SolidBrush(color))
+            {
+              gr.FillRectangle(brush, 0, 0, size, size);
+              gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+              StringFormat strFormat = new StringFormat();
+              strFormat.Alignment = StringAlignment.Center;
+              strFormat.LineAlignment = StringAlignment.Center;
+              System.Drawing.FontFamily fam = new System.Drawing.FontFamily("Roboto");
+              if (fam.GetName(0).IndexOf("Roboto") < 0)
+              {
+                fam = new System.Drawing.FontFamily("Arial");
+              }
+
+              int fontSize = 8;
+              Font font = null;
+              double maxSize = size * 0.7;
+              while (true)
+              {
+                font = new Font(fam, fontSize);
+                SizeF sizeF = gr.MeasureString("X", font);
+                if ((sizeF.Height > maxSize && sizeF.Width > maxSize) || fontSize > 100)
+                {
+                  font = new Font(fam, fontSize - 1);
+                  break;
+                }
+                fontSize++;
+              }
+              gr.DrawString(initial, font, Brushes.White, new Rectangle(0, (int)(size * 0.06), size, size), strFormat);
+            }
+          }
+        }
+      }
+      return bmp;
     }
 
     public static Image MakeInitialCircle(string initial, Color color, int size)
@@ -369,15 +445,28 @@ namespace TeamSupport.Handlers
       return bmp;
     }
 
+    public static Image CropImage(Image image, int size)
+    {
+      Bitmap newImage = new Bitmap(size, size);
+      Rectangle cropRect = image.Width > image.Height ? new Rectangle((int)((image.Width - size) / 2), 0, size, size) : new Rectangle(0, 0, size, size);
+
+      using (Graphics g = Graphics.FromImage(newImage))
+      {
+        g.DrawImage(image, new Rectangle(0, 0, newImage.Width, newImage.Height),
+                         cropRect,
+                         GraphicsUnit.Pixel);
+      }
+      return newImage;
+    }
+
     public static Image ScaleImage(Image image, int maxWidth, int maxHeight)
     {
       var ratioX = (double)maxWidth / image.Width;
       var ratioY = (double)maxHeight / image.Height;
-      var ratio = Math.Min(ratioX, ratioY);
+      var ratio = Math.Max(ratioX, ratioY);
 
       var newWidth = (int)(image.Width * ratio);
       var newHeight = (int)(image.Height * ratio);
-
       var newImage = new Bitmap(newWidth, newHeight);
       Graphics.FromImage(newImage).DrawImage(image, 0, 0, newWidth, newHeight);
       return newImage;
