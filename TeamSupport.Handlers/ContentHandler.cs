@@ -129,7 +129,6 @@ namespace TeamSupport.Handlers
       if (File.Exists(fileName)) WriteImage(context, fileName);
     }
 
-
     private void ProcessRatingImages(HttpContext context, string[] segments, int organizationID)
     {
         StringBuilder builder = new StringBuilder();
@@ -230,7 +229,7 @@ namespace TeamSupport.Handlers
       // found the last cache
       if (File.Exists(cacheFileName)) 
       {
-        WriteImage(context, cacheFileName);
+        WriteImageResponse(context, cacheFileName);
         return;
       }
       
@@ -245,7 +244,7 @@ namespace TeamSupport.Handlers
         {
           croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
         }
-        WriteImage(context, cacheFileName);
+        WriteImageResponse(context, cacheFileName);
         return;
       }
       // no picture found, make a circle with first initial and cache it
@@ -260,7 +259,7 @@ namespace TeamSupport.Handlers
       {
         initialImage.Save(cacheFileName, ImageFormat.Jpeg);
       }
-      WriteImage(context, cacheFileName);
+      WriteImageResponse(context, cacheFileName);
       return;
       
     }
@@ -268,7 +267,6 @@ namespace TeamSupport.Handlers
     private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)
     {
 
-      context.Response.AddHeader("ContentType", "image/jpg");
       string initial = segments[2].Substring(0, 1).ToUpper();
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
@@ -281,7 +279,7 @@ namespace TeamSupport.Handlers
       // found the last cache
       if (File.Exists(cacheFileName))
       {
-        WriteImage(context, cacheFileName);
+        WriteImageResponse(context, cacheFileName);
         return;
       }
 
@@ -289,9 +287,35 @@ namespace TeamSupport.Handlers
       {
         initialImage.Save(cacheFileName, ImageFormat.Jpeg);
       }
-      WriteImage(context, cacheFileName);
+      WriteImageResponse(context, cacheFileName);
       return;
 
+    }
+
+    private static void WriteImageResponse(HttpContext context, string imageFileName)
+    {
+      context.Response.Cache.SetCacheability(HttpCacheability.Public);
+      context.Response.Cache.SetExpires(DateTime.Now.AddHours(8));
+      context.Response.Cache.SetMaxAge(new TimeSpan(8, 0, 0));
+      context.Response.Headers["Last-Modified"] = File.GetLastWriteTimeUtc(imageFileName).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
+      string ext = Path.GetExtension(imageFileName).ToLower().Substring(1);
+      using (Image image = new Bitmap(imageFileName))
+      {
+        context.Response.ContentType = "image/" + ext;
+        System.Drawing.Imaging.ImageFormat format;
+        switch (ext)
+        {
+          case "png": format = System.Drawing.Imaging.ImageFormat.Png; break;
+          case "gif": format = System.Drawing.Imaging.ImageFormat.Gif; break;
+          case "jpg": format = System.Drawing.Imaging.ImageFormat.Jpeg; break;
+          case "bmp": format = System.Drawing.Imaging.ImageFormat.Bmp; break;
+          case "ico": format = System.Drawing.Imaging.ImageFormat.Icon; break;
+          default: format = System.Drawing.Imaging.ImageFormat.Jpeg; break;
+        }
+        MemoryStream stream = new MemoryStream();
+        image.Save(stream, format);
+        stream.WriteTo(context.Response.OutputStream);
+      }
     }
     
     private static Color GetInitialColor(string initial)
