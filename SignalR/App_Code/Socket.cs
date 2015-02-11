@@ -15,26 +15,27 @@ using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
 using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
-
+using System.Configuration;
 
 /// <summary>
 /// Summary description for Socket
 /// </summary>
 public class Socket : Hub
 {
+    string connString = ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
 
     public Socket()
     {
     }
 
-    public override Task OnDisconnected()
+    public override Task OnDisconnected(bool closed)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
             var context = GlobalHost.ConnectionManager.GetHubContext<TicketSocket>();
 
-            LoginUser nulluser = new LoginUser(-1, -1);
-            Users u = new Users(nulluser);
+            Users u = new Users(loginUser);
             u.LoadByChatID(Context.ConnectionId);
             if (!u.IsEmpty)
             {
@@ -47,27 +48,32 @@ public class Socket : Hub
                 context.Clients.All.ticketViewingRemove(null, u[0].UserID.ToString());
             }
             Clients.All.serverleave(Context.ConnectionId, DateTime.Now.ToString());
-
-            return base.OnDisconnected();
+            Console.WriteLine(Context.ConnectionId + " has disconnected");
+            return base.OnDisconnected(closed);
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.Disconnect");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.Disconnect");
             return null;
         }
     }
 
     public override Task OnConnected()
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+
+            Console.WriteLine(loginUser.GetUserFullName() + " has connected as " + Context.ConnectionId);
+
             Clients.All.joined(Context.ConnectionId, DateTime.Now.ToString());
-            Groups.Add(Context.ConnectionId, TSAuthentication.OrganizationID.ToString());
+            Groups.Add(Context.ConnectionId, Context.QueryString["organizationID"].ToString());
             return base.OnConnected();
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.Connect");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.Connect");
             return null;
         }
     }
@@ -92,6 +98,8 @@ public class Socket : Hub
 
     public void Send(string message)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
+        loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
         try
         {
             // Call the addMessage method on all clients
@@ -99,32 +107,39 @@ public class Socket : Hub
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.Send");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.Send");
         }
     }
 
     public void SendChat(string message, int userID, string name)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
-            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+            User u = Users.GetUser(loginUser, userID);
+            Console.WriteLine("message from " + loginUser.UserID + " to " + u.FirstLastName);
             Clients.All.addMessage("message from " + Context.ConnectionId + " to " + u.FirstLastName);
-            Clients.Client(u.AppChatID).chatMessage(HtmlToText.ConvertHtml(message), TSAuthentication.GetLoginUser().UserID, name);
+            Clients.Client(u.AppChatID).chatMessage(HtmlToText.ConvertHtml(message), loginUser.UserID, name);
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.SendChat");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.SendChat");
         }
     }
 
-    public void login(int userID)
+    public void login()
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
-            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+            User u = Users.GetUser(loginUser, loginUser.UserID);
             u.AppChatID = Context.ConnectionId;
             u.AppChatStatus = true;
             u.Collection.Save();
+
+            Console.WriteLine(u.FirstLastName + " has logged in to org " + u.OrganizationID.ToString());
 
             Groups.Add(Context.ConnectionId, u.OrganizationID.ToString());
             Clients.All.testupdateusers("Update users for  " + u.OrganizationID.ToString());
@@ -132,35 +147,37 @@ public class Socket : Hub
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.login");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.login");
         }
     }
 
     public void NewThread(int messageID, string organizationID)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
             WaterCoolerThread thread = new WaterCoolerThread();
 
-            WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+            WaterCoolerView wcv = new WaterCoolerView(loginUser);
             wcv.LoadByMessageID(messageID);
 
-            WaterCoolerView replies = new WaterCoolerView(TSAuthentication.GetLoginUser());
+            WaterCoolerView replies = new WaterCoolerView(loginUser);
             replies.LoadReplies(messageID);
 
-            WatercoolerAttachments wcgroups = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            WatercoolerAttachments wcgroups = new WatercoolerAttachments(loginUser);
             wcgroups.LoadByType(messageID, WaterCoolerAttachmentType.Group);
 
-            WatercoolerAttachments wctickets = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            WatercoolerAttachments wctickets = new WatercoolerAttachments(loginUser);
             wctickets.LoadByType(messageID, WaterCoolerAttachmentType.Ticket);
 
-            WatercoolerAttachments wcprods = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            WatercoolerAttachments wcprods = new WatercoolerAttachments(loginUser);
             wcprods.LoadByType(messageID, WaterCoolerAttachmentType.Product);
 
-            WatercoolerAttachments wccompany = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            WatercoolerAttachments wccompany = new WatercoolerAttachments(loginUser);
             wccompany.LoadByType(messageID, WaterCoolerAttachmentType.Company);
 
-            WatercoolerAttachments wcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            WatercoolerAttachments wcuseratt = new WatercoolerAttachments(loginUser);
             wcuseratt.LoadByType(messageID, WaterCoolerAttachmentType.User);
 
             thread.Message = wcv.GetWaterCoolerViewItemProxies()[0];
@@ -182,22 +199,22 @@ public class Socket : Hub
                 int parentThreadID = (int)thread.Message.MessageParent;
 
                 WaterCoolerThread parentThread = new WaterCoolerThread();
-                WaterCoolerView parentThreadwcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+                WaterCoolerView parentThreadwcv = new WaterCoolerView(loginUser);
                 parentThreadwcv.LoadByMessageID(parentThreadID);
 
-                WatercoolerAttachments parentThreadwcgroups = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                WatercoolerAttachments parentThreadwcgroups = new WatercoolerAttachments(loginUser);
                 parentThreadwcgroups.LoadByType(parentThreadID, WaterCoolerAttachmentType.Group);
 
-                WatercoolerAttachments parentThreadwctickets = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                WatercoolerAttachments parentThreadwctickets = new WatercoolerAttachments(loginUser);
                 parentThreadwctickets.LoadByType(parentThreadID, WaterCoolerAttachmentType.Ticket);
 
-                WatercoolerAttachments parentThreadwcprods = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                WatercoolerAttachments parentThreadwcprods = new WatercoolerAttachments(loginUser);
                 parentThreadwcprods.LoadByType(parentThreadID, WaterCoolerAttachmentType.Product);
 
-                WatercoolerAttachments parentThreadwccompany = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                WatercoolerAttachments parentThreadwccompany = new WatercoolerAttachments(loginUser);
                 parentThreadwccompany.LoadByType(parentThreadID, WaterCoolerAttachmentType.Company);
 
-                WatercoolerAttachments parentThreadwcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                WatercoolerAttachments parentThreadwcuseratt = new WatercoolerAttachments(loginUser);
                 parentThreadwcuseratt.LoadByType(parentThreadID, WaterCoolerAttachmentType.User);
 
                 parentThread.Message = parentThreadwcv.GetWaterCoolerViewItemProxies()[0];
@@ -212,41 +229,47 @@ public class Socket : Hub
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.NewThread");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.NewThread");
         }
     }
 
     public void Del(int messageID)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
-            WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+            WaterCoolerView wcv = new WaterCoolerView(loginUser);
             wcv.LoadByMessageID(messageID);
 
             Clients.All.deleteMessage(messageID, wcv[0].MessageParent);
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.Del");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.Del");
         }
     }
 
     public void AddLike(WatercoolerLikProxy[] likes, int messageID, int messageParentID, string orgID)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
             Clients.Group(orgID).updateLikes(likes, messageID, messageParentID);
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.AddLike");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.AddLike");
         }
     }
 
     public void CurrentUsers()
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
             LoginUser nulluser = new LoginUser(-1, -1);
             Users u = new Users(nulluser);
 
@@ -254,24 +277,25 @@ public class Socket : Hub
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.CurrentUsers");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.CurrentUsers");
         }
     }
 }
 
-
 public class TicketSocket : Hub
 {
+    string connString = ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
+
     public TicketSocket()
     {
     }
 
-    public override Task OnDisconnected()
+    public override Task OnDisconnected(bool closed)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
-            LoginUser nulluser = new LoginUser(-1, -1);
-            Users u = new Users(nulluser);
+            Users u = new Users(loginUser);
             u.LoadByChatID(Context.ConnectionId);
             if (!u.IsEmpty)
             {
@@ -281,45 +305,52 @@ public class TicketSocket : Hub
             }
             Clients.All.serverleave(Context.ConnectionId, DateTime.Now.ToString());
 
-            return base.OnDisconnected();
+            return base.OnDisconnected(closed);
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.Disconnect");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.Disconnect");
             return null;
         }
     }
 
     public override Task OnConnected()
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
             Clients.All.joined(Context.ConnectionId, DateTime.Now.ToString());
-            Groups.Add(Context.ConnectionId, TSAuthentication.OrganizationID.ToString());
+            Groups.Add(Context.ConnectionId, loginUser.OrganizationID.ToString());
             return base.OnConnected();
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.Connect");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.Connect");
             return null;
         }
     }
 
     public void Send(string message)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
         {
+            loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
             // Call the addMessage method on all clients
             Clients.All.addMessage(message);
         }
         catch (Exception ex)
         {
-            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Socket.Send");
+            ExceptionLogs.LogException(loginUser, ex, "Socket.Send");
         }
     }
 
     public void TicketUpdate(string ticketNum, string updateType, string modUser)
     {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
+        loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+
         string changeType = "";
         //Change types
         switch (updateType)
@@ -397,23 +428,26 @@ public class TicketSocket : Hub
 
 
         //Group(TSAuthentication.OrganizationID.ToString())
-        Clients.Group(TSAuthentication.OrganizationID.ToString(), Context.ConnectionId).DisplayTicketUpdate(ticketNum, updateString);
+        Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).DisplayTicketUpdate(ticketNum, updateString);
     }
 
     public void getTicketViewing(string ticketID)
     {
-        Clients.Group(TSAuthentication.OrganizationID.ToString(), Context.ConnectionId).getTicketViewing(ticketID);
-        ticketViewingAdd(ticketID, TSAuthentication.UserID.ToString());
+        LoginUser loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+        Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).getTicketViewing(ticketID);
+        ticketViewingAdd(ticketID, loginUser.UserID.ToString());
     }
 
     public void ticketViewingAdd(string ticketID, string userID)
     {
-        Clients.Group(TSAuthentication.OrganizationID.ToString(), Context.ConnectionId).ticketViewingAdd(ticketID, userID);
+        LoginUser loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+        Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).ticketViewingAdd(ticketID, userID);
     }
 
     public void ticketViewingRemove(string ticketNum, string userID)
     {
-        Clients.Group(TSAuthentication.OrganizationID.ToString(), Context.ConnectionId).ticketViewingRemove(ticketNum, userID);
+        LoginUser loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+        Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).ticketViewingRemove(ticketNum, userID);
     }
 
 }
