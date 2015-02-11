@@ -115,10 +115,22 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         }
     }
 
+    private void RemoveCachedImages(string avatarPath, int userID)
+    {
+      string pattern =  userID.ToString() + "-*.*";
+      string path = Path.Combine(avatarPath, "cache");
+      string[] files = Directory.GetFiles(path, pattern, SearchOption.TopDirectoryOnly);
+      foreach (String file in files)
+      {
+        File.Delete(file);
+      }
+    }
+
     public override bool Save()
     {
         String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
         string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
+        RemoveCachedImages(path, _userID);
 
         if (img1.Value != "")
         {

@@ -23,6 +23,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Web.Security;
 using OfficeOpenXml;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
 
 namespace TeamSupport.Handlers
 {
@@ -64,6 +67,7 @@ namespace TeamSupport.Handlers
             case "ticketexport": ProcessTicketExport(context); break;
             case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
             case "avatar": ProcessAvatar(context, segments.ToArray(), organizationID); break;
+            case "useravatar": ProcessUserAvatar(context, segments.ToArray(), organizationID); break;
             case "agentrating": ProcessRatingImages(context, segments.ToArray(), organizationID); break;
             case "productcustomers": ProcessProductCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
             case "productversioncustomers": ProcessProductVersionCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
@@ -207,6 +211,176 @@ namespace TeamSupport.Handlers
             fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), path);
         }
         if (File.Exists(fileName)) WriteImage(context, fileName);
+    }
+
+    private void ProcessUserAvatar(HttpContext context, string[] segments, int organizationID)
+    {
+
+      context.Response.AddHeader("ContentType", "image/png");
+      int userID = int.Parse(segments[2]);
+      int size = int.Parse(segments[3]);
+      string cacheFileName = "";
+      string imagePath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages);
+      string cachePath = Path.Combine(imagePath, "cache");
+      if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+      
+      
+      cacheFileName = Path.Combine(cachePath, userID.ToString()+"-"+size.ToString()+".png");
+      
+      // found the last cache
+      if (File.Exists(cacheFileName)) 
+      {
+        WriteImage(context, cacheFileName);
+        return;
+      }
+      
+      //New image, check if one has been uploaded
+      string originalFileName = AttachmentPath.GetImageFileName(imagePath, userID.ToString() + "avatar");
+      if (File.Exists(originalFileName))
+      {
+        // original image, resize, make circle, cache it
+        using (Image image = Image.FromFile(originalFileName))
+        using (Image scaledImage = ScaleImage(image, size, size))
+        using (Image roundImage = MakeRound(scaledImage))
+        {
+           roundImage.Save(cacheFileName, ImageFormat.Png);
+        }
+        WriteImage(context, cacheFileName);
+        return;
+      }
+      // no picture found, make a circle with first initial and cache it
+
+      User user = Users.GetUser(LoginUser.Anonymous, userID);
+      string initial = "A";
+
+      if (!string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
+      else if (!string.IsNullOrWhiteSpace(user.LastName)) initial = user.LastName.Substring(0, 1).ToUpper();
+      
+      using (Image initialImage = MakeInitialCircle(initial, GetInitialColor(initial), size))
+      {
+        initialImage.Save(cacheFileName, ImageFormat.Png);
+      }
+      WriteImage(context, cacheFileName);
+      return;
+      
+    }
+
+    private static Color GetInitialColor(string initial)
+    {
+      
+      Dictionary<string, string> d = new Dictionary<string, string>()
+      {
+        { "A", "F44336" },
+        { "B", "E91E63" },
+        { "C", "BA55D3" },
+        { "D", "9C27B0" },
+        { "E", "673AB7" },
+        { "F", "3F51B5" },
+        { "G", "3276B1" },
+        { "H", "03A9F4" },
+        { "I", "00BCD4" },
+        { "J", "009688" },
+        { "K", "4CAF50" },
+        { "L", "8BC34A" },
+        { "M", "CDDC39" },
+        { "N", "FFEB3B" },
+        { "O", "FFC107" },
+        { "P", "FF9800" },
+        { "Q", "FF5722" },
+        { "R", "795548" },
+        { "S", "607D8B" },
+        { "T", "F44336" },
+        { "U", "E91E63" },
+        { "V", "BA55D3" },
+        { "W", "9C27B0" },
+        { "X", "673AB7" },
+        { "Y", "3F51B5" },
+        { "Z", "3276B1" },
+        { "0", "03A9F4" },
+        { "1", "00BCD4" },
+        { "2", "009688" },
+        { "3", "4CAF50" },
+        { "4", "8BC34A" },
+        { "5", "CDDC39" },
+        { "6", "FFEB3B" },
+        { "7", "FFC107" },
+        { "8", "FF9800" },
+        { "9", "FF5722" }
+      };
+
+      string color = d[initial];
+      return color != null ? ColorTranslator.FromHtml("#" + color) : ColorTranslator.FromHtml("#999");
+          
+    }
+
+    public static Image MakeInitialCircle(string initial, Color color, int size)
+    {
+      Bitmap bmp = new Bitmap(size, size, PixelFormat.Format32bppPArgb);
+      GraphicsPath gp = new GraphicsPath();
+      using (Graphics gr = Graphics.FromImage(bmp))
+      {
+        gr.Clear(Color.Transparent);
+        using (gp)
+        {
+          using (gr)
+          {
+            gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            gr.CompositingQuality = CompositingQuality.HighQuality;
+            gr.SmoothingMode = SmoothingMode.AntiAlias;
+            using (Pen pen = new Pen(color, 3))
+            using (Brush brush = new SolidBrush(color))
+            {
+              gr.DrawEllipse(pen, 1, 1, size-3, size-3);
+              gr.FillEllipse(brush, 1,1,size-3, size-3);
+              gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+              StringFormat strFormat = new StringFormat();
+              strFormat.Alignment = StringAlignment.Center;
+              strFormat.LineAlignment = StringAlignment.Center;
+              gr.DrawString(initial, new Font("Arial", 28), Brushes.White, new Rectangle(0, 3, size, size), strFormat);
+            }
+          }
+        }
+      }
+      return bmp;
+    }
+
+    public static Image MakeRound(Image img)
+    {
+      Bitmap bmp = new Bitmap(img.Width, img.Height, PixelFormat.Format32bppPArgb);
+      GraphicsPath gp = new GraphicsPath();
+      using (Graphics gr = Graphics.FromImage(bmp))
+      {
+        gr.Clear(Color.Transparent);
+        using (gp)
+        {
+          gp.AddEllipse(0, 0, img.Width, img.Height);
+          using (gr)
+          {
+            gr.SetClip(gp);
+            gr.DrawImage(img, Point.Empty);
+            Pen pen = new Pen(Color.FromArgb(255, 255, 255, 255), 3);
+            gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            gr.CompositingQuality = CompositingQuality.HighQuality;
+            gr.SmoothingMode = SmoothingMode.AntiAlias;
+            gr.DrawEllipse(pen, 0, 0, img.Width, img.Height);
+          }
+        }
+      }
+      return bmp;
+    }
+
+    public static Image ScaleImage(Image image, int maxWidth, int maxHeight)
+    {
+      var ratioX = (double)maxWidth / image.Width;
+      var ratioY = (double)maxHeight / image.Height;
+      var ratio = Math.Min(ratioX, ratioY);
+
+      var newWidth = (int)(image.Width * ratio);
+      var newHeight = (int)(image.Height * ratio);
+
+      var newImage = new Bitmap(newWidth, newHeight);
+      Graphics.FromImage(newImage).DrawImage(image, 0, 0, newWidth, newHeight);
+      return newImage;
     }
 
     private void ProcessAttachment(HttpContext context, int attachmentID)
