@@ -746,6 +746,22 @@ namespace TeamSupport.Handlers
 
     private void WriteImage(HttpContext context, string fileName)
     {
+      DateTime lastWriteDate = File.GetLastWriteTimeUtc(fileName);
+      try
+      {
+        if (context.Request.Headers["If-Modified-Since"] != null && lastWriteDate.Subtract(DateTime.Parse(context.Request.Headers["If-Modified-Since"]).ToUniversalTime()).TotalSeconds < 5)
+        {
+          context.Response.StatusCode = 304;
+          context.Response.SuppressContent = true;
+          context.Response.End();
+          return;
+        }
+      }
+      catch (Exception ex)
+      {
+        
+      }
+
       string ext = Path.GetExtension(fileName).ToLower().Substring(1);
       using (Image image = new Bitmap(fileName))
       {
@@ -753,7 +769,7 @@ namespace TeamSupport.Handlers
         context.Response.Cache.SetCacheability(HttpCacheability.Public);
         context.Response.Cache.SetExpires(DateTime.Now.AddHours(8));
         context.Response.Cache.SetMaxAge(new TimeSpan(8, 0, 0));
-        context.Response.Headers["Last-Modified"] = File.GetLastWriteTimeUtc(fileName).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
+        context.Response.Headers["Last-Modified"] = lastWriteDate.ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
         System.Drawing.Imaging.ImageFormat format;
         switch (ext)
         {
