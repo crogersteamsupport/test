@@ -54,8 +54,6 @@ namespace TeamSupport.Handlers
           if (s == "dc") flag = true;
         }
 
-        System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
-        if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
         int organizationID = -1;
         if (int.TryParse(segments[0], out organizationID))
         {
@@ -163,6 +161,9 @@ namespace TeamSupport.Handlers
 
     private void ProcessChat(HttpContext context, string command, int organizationID)
     {
+      System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
+      if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
       if (command == "image")
       {
         bool isAvailable = ChatRequests.IsOperatorAvailable(LoginUser.Anonymous, organizationID);
@@ -229,7 +230,7 @@ namespace TeamSupport.Handlers
       // found the last cache
       if (File.Exists(cacheFileName)) 
       {
-        WriteImageResponse(context, cacheFileName);
+        WriteImage(context, cacheFileName);
         return;
       }
       
@@ -244,7 +245,7 @@ namespace TeamSupport.Handlers
         {
           croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
         }
-        WriteImageResponse(context, cacheFileName);
+        WriteImage(context, cacheFileName);
         return;
       }
       // no picture found, make a circle with first initial and cache it
@@ -259,7 +260,7 @@ namespace TeamSupport.Handlers
       {
         initialImage.Save(cacheFileName, ImageFormat.Jpeg);
       }
-      WriteImageResponse(context, cacheFileName);
+      WriteImage(context, cacheFileName);
       return;
       
     }
@@ -279,7 +280,7 @@ namespace TeamSupport.Handlers
       // found the last cache
       if (File.Exists(cacheFileName))
       {
-        WriteImageResponse(context, cacheFileName);
+        WriteImage(context, cacheFileName);
         return;
       }
 
@@ -287,37 +288,12 @@ namespace TeamSupport.Handlers
       {
         initialImage.Save(cacheFileName, ImageFormat.Jpeg);
       }
-      WriteImageResponse(context, cacheFileName);
+      WriteImage(context, cacheFileName);
       return;
 
     }
 
-    private static void WriteImageResponse(HttpContext context, string imageFileName)
-    {
-      context.Response.Cache.SetCacheability(HttpCacheability.Public);
-      context.Response.Cache.SetExpires(DateTime.Now.AddHours(8));
-      context.Response.Cache.SetMaxAge(new TimeSpan(8, 0, 0));
-      context.Response.Headers["Last-Modified"] = File.GetLastWriteTimeUtc(imageFileName).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
-      string ext = Path.GetExtension(imageFileName).ToLower().Substring(1);
-      using (Image image = new Bitmap(imageFileName))
-      {
-        context.Response.ContentType = "image/" + ext;
-        System.Drawing.Imaging.ImageFormat format;
-        switch (ext)
-        {
-          case "png": format = System.Drawing.Imaging.ImageFormat.Png; break;
-          case "gif": format = System.Drawing.Imaging.ImageFormat.Gif; break;
-          case "jpg": format = System.Drawing.Imaging.ImageFormat.Jpeg; break;
-          case "bmp": format = System.Drawing.Imaging.ImageFormat.Bmp; break;
-          case "ico": format = System.Drawing.Imaging.ImageFormat.Icon; break;
-          default: format = System.Drawing.Imaging.ImageFormat.Jpeg; break;
-        }
-        MemoryStream stream = new MemoryStream();
-        image.Save(stream, format);
-        stream.WriteTo(context.Response.OutputStream);
-      }
-    }
-    
+   
     private static Color GetInitialColor(string initial)
     {
       
@@ -502,6 +478,8 @@ namespace TeamSupport.Handlers
 
     private void ProcessAttachment(HttpContext context, int attachmentID)
     {
+      System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
+      if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
       //http://127.0.0.1/tsdev/dc/attachments/7401
       //https://app.teamsupport.com/dc/attachments/{AttachmentID}
@@ -575,7 +553,6 @@ namespace TeamSupport.Handlers
       string openType = "inline";
       string fileType = attachment.FileType;
 
-      System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
       if (browser.Browser == "IE")
       {
         if (attachment.FileType.ToLower().IndexOf("audio") > -1)
@@ -598,6 +575,9 @@ namespace TeamSupport.Handlers
 
     private void ProcessTicketExport(HttpContext context)
     {
+      System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
+      if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+      
       string value = context.Request.QueryString["filter"];
       try
       {
@@ -636,6 +616,8 @@ namespace TeamSupport.Handlers
 
     private void ProcessReport(HttpContext context, int reportID, string type)
     {
+      System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
+      if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
       //http://127.0.0.1/tsdev/dc/1078/reports/7401
       Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID, TSAuthentication.UserID);
@@ -771,6 +753,7 @@ namespace TeamSupport.Handlers
         context.Response.Cache.SetCacheability(HttpCacheability.Public);
         context.Response.Cache.SetExpires(DateTime.Now.AddHours(8));
         context.Response.Cache.SetMaxAge(new TimeSpan(8, 0, 0));
+        context.Response.Headers["Last-Modified"] = File.GetLastWriteTimeUtc(fileName).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
         System.Drawing.Imaging.ImageFormat format;
         switch (ext)
         {
@@ -792,6 +775,9 @@ namespace TeamSupport.Handlers
   
     private void ProcessProductCustomers(HttpContext context, int productID, string type)
     {
+      System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
+      if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+      
       if (productID > 0)
       {
         LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -851,6 +837,9 @@ namespace TeamSupport.Handlers
 
     private void ProcessProductVersionCustomers(HttpContext context, int productVersionID, string type)
     {
+      System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
+      if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
       if (productVersionID > 0)
       {
         LoginUser loginUser = TSAuthentication.GetLoginUser();
