@@ -21,7 +21,8 @@ using TidyNet;
 using ImageResizer;
 using System.Net;
 using Newtonsoft.Json;
-
+using System.Linq;
+using System.Diagnostics;
 
 namespace TSWebServices
 {
@@ -1123,39 +1124,19 @@ namespace TSWebServices
 
         if (!ticket.IsEmpty && ticket[0].UserID != null)
         {
-            try
-            {
-                int userID = (int)ticket[0].UserID;
-                List<GroupProxy> groupProxies = new List<GroupProxy>();
+            int userID = (int)ticket[0].UserID;
+            List<GroupProxy> groupProxies = new List<GroupProxy>();
 
-                Groups orgGroups = new Groups(TSAuthentication.GetLoginUser());
-                orgGroups.LoadByNotUserID(userID, TSAuthentication.OrganizationID);
+            Groups orgGroups = new Groups(TSAuthentication.GetLoginUser());
+            orgGroups.LoadByNotUserID(userID, TSAuthentication.OrganizationID);
 
-                Groups userGroups = new Groups(TSAuthentication.GetLoginUser());
-                userGroups.LoadByUserID(userID);
+            Groups userGroups = new Groups(TSAuthentication.GetLoginUser());
+            userGroups.LoadByUserID(userID);
 
-                GroupProxy lineBreak = new GroupProxy();
-                lineBreak.Name = "─────────────";
+            groupProxies.AddRange(userGroups.GetGroupProxies().OrderBy(ug => ug.Name));
+            groupProxies.AddRange(orgGroups.GetGroupProxies().OrderBy(og => og.Name));
 
-                List<GroupProxy> userGroupProxies = new List<GroupProxy>();
-                userGroupProxies.AddRange(userGroups.GetGroupProxies());
-                userGroupProxies.Sort((x, y) => string.Compare(x.Name, y.Name));
-
-                List<GroupProxy> orgGroupProxies = new List<GroupProxy>();
-                orgGroupProxies.AddRange(orgGroups.GetGroupProxies());
-                orgGroupProxies.Sort((x, y) => string.Compare(x.Name, y.Name));
-
-                groupProxies.AddRange(userGroupProxies);
-                groupProxies.Add(lineBreak);
-                groupProxies.AddRange(orgGroupProxies);
-                return groupProxies.ToArray();
-            }
-            catch (Exception)
-            {
-                Groups groups = new Groups(TSAuthentication.GetLoginUser());
-                groups.LoadByOrganizationID(TSAuthentication.OrganizationID);
-                return groups.GetGroupProxies();
-            }
+            return groupProxies.ToArray();
         }
         else
         {

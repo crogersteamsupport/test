@@ -140,11 +140,9 @@ $(document).ready(function () {
 
     top.Ts.Services.Customers.GetDateFormat(true, function (format) {
         dateFormat = format.replace("yyyy", "yy");
-        if (dateFormat.length < 8)
-        {
+        if (dateFormat.length < 8) {
             var dateArr = dateFormat.split('/');
-            if (dateArr[0].length < 2)
-            {
+            if (dateArr[0].length < 2) {
                 dateArr[0] = dateArr[0] + dateArr[0];
             }
             if (dateArr[1].length < 2) {
@@ -1312,29 +1310,28 @@ $(document).ready(function () {
               parent.show().find('img').show();
               var value = '';
               if (input.val()) {
-                  if (dateFormat.indexOf("m") != 0)
-                  {
-                    var dateArr = input.val().split('/');
-                    if (dateFormat.indexOf("d") == 0)
-                        var day = dateArr[0];
-                    if (dateFormat.indexOf("y") == 0)
-                        var year = dateArr[0];
-                    if (dateFormat.indexOf("m") == 3)
-                        var month = dateArr[1];
+                  if (dateFormat.indexOf("m") != 0) {
+                      var dateArr = input.val().split('/');
+                      if (dateFormat.indexOf("d") == 0)
+                          var day = dateArr[0];
+                      if (dateFormat.indexOf("y") == 0)
+                          var year = dateArr[0];
+                      if (dateFormat.indexOf("m") == 3)
+                          var month = dateArr[1];
 
-                    var timeSplit = dateArr[2].split(' ');
-                    if (dateFormat.indexOf("y") == 6)
-                        var year = timeSplit[0];
-                    else
-                        var day = timeSplit[0];
+                      var timeSplit = dateArr[2].split(' ');
+                      if (dateFormat.indexOf("y") == 6)
+                          var year = timeSplit[0];
+                      else
+                          var day = timeSplit[0];
 
-                    var theTime = timeSplit[1];
+                      var theTime = timeSplit[1];
 
-                    var formattedDate = month + "/" + day + "/" + year + " " + theTime;
-                    value = top.Ts.Utils.getMsDate(formattedDate);
+                      var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+                      value = top.Ts.Utils.getMsDate(formattedDate);
                   }
                   else
-                  value = top.Ts.Utils.getMsDate(input.val());
+                      value = top.Ts.Utils.getMsDate(input.val());
               }
               container.remove();
               //how can i check if the date is in the past
@@ -1355,7 +1352,7 @@ $(document).ready(function () {
                   var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                   var anchor = parent.find('a');
                   anchor.text((date === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                  _dueDate = top.Ts.Utils.getMsDate(value);//result;
+                  _dueDate = top.Ts.Utils.getMsDate(value); //result;
                   if (date != null && date < Date.now()) {
                       parent.addClass('nonrequired-field-error ui-corner-all');
                       anchor.addClass('nonrequired-field-error-font');
@@ -1513,138 +1510,140 @@ $(document).ready(function () {
         select.combobox('search', '');
     });
 
-//    $('#ticketGroup')
-//    .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-//    .click(function (e) {
-//        e.preventDefault();
-//        e.stopPropagation();
-//        //removeComboBoxes();
-//        var parent = $(this).closest('.ticket-name-value').hide();
-//        var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
-//        var groups;
-
-//        top.Ts.Services.Tickets.GetTicketGroups(_ticketID, function (result) {
-//            groups = result;
-//            var unassigned = new Object();
-//            unassigned.GroupID = null;
-//            unassigned.Name = "Unassigned";
-//            var select = $('<select>').appendTo(container);
-//            var option = $('<option>').text(unassigned.Name).appendTo(select).data('group', unassigned);
-//            if ($(this).text() === unassigned.Name) {
-//                option.attr('selected', 'selected');
-//            }
-//            for (var i = 0; i < groups.length; i++) {
-//                var option = $('<option>').text(groups[i].Name).appendTo(select).data('group', groups[i]);
-//                if ($(this).text() === groups[i].Name) {
-//                    option.attr('selected', 'selected');
-//                }
-//            }
-//            select.combobox({
-//                selected: function (e, ui) {
-//                    parent.show().find('img').show();
-//                    var group = $(ui.item).data('group');
-//                    top.Ts.System.logAction('Ticket - Group Changed');
-//                    top.Ts.Services.Tickets.SetTicketGroup(_ticketID, group.GroupID, function (result) {
-//                        if (result !== null) {
-//                            $('#ticketGroup').text(result == "" ? 'Unassigned' : result);
-//                            parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
-//                            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
-//                            _ticketGroupID = group.GroupID;
-//                            if (_ticketGroupID != null) {
-//                                top.Ts.Services.Users.GetGroupUsers(_ticketGroupID, function (result) {
-//                                    _ticketGroupUsers = result;
-//                                });
-//                            }
-//                            else {
-//                                _ticketGroupUsers = null;
-//                            }
-//                        }
-//                        else {
-//                            parent.show().find('img').hide();
-//                        }
-//                        if (top.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
-//                            top.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, group.GroupID);
-//                        }
-//                    },
-//              function (error) {
-//                  parent.show().find('img').hide();
-//                  alert('There was an error setting the group.');
-//              });
-//                    container.remove();
-//                },
-//                close: function (e, ui) {
-//                    //removeComboBoxes();
-//                }
-//            });
-//            select.combobox('search', '');
-//        });
-
-
-
-    //    });
     $('#ticketGroup')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        removeComboBoxes();
-        var parent = $(this).closest('.ticket-name-value').hide();
-        var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
-        var select = $('<select>').appendTo(container);
-        var groups = top.Ts.Cache.getTicketGroups();
-        var unassigned = new Object();
-        unassigned.GroupID = null;
-        unassigned.Name = "Unassigned";
-        var option = $('<option>').text(unassigned.Name).appendTo(select).data('group', unassigned);
-        if ($(this).text() === unassigned.Name) {
-            option.attr('selected', 'selected');
-        }
-        for (var i = 0; i < groups.length; i++) {
-            var option = $('<option>').text(groups[i].Name).appendTo(select).data('group', groups[i]);
-            if ($(this).text() === groups[i].Name) {
+        var self = $(this);
+
+        top.Ts.Services.Tickets.GetTicketGroups(_ticketID, function (result) {
+            removeComboBoxes();
+            var parent = self.closest('.ticket-name-value').hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+            var groups;
+            groups = result;
+            var unassigned = new Object();
+            unassigned.GroupID = null;
+            unassigned.Name = "Unassigned";
+            var select = $('<select>').appendTo(container);
+            var option = $('<option>').text(unassigned.Name).appendTo(select).data('group', unassigned);
+            if ($(this).text() === unassigned.Name) {
                 option.attr('selected', 'selected');
             }
-        }
-
-        select.combobox({
-            selected: function (e, ui) {
-                parent.show().find('img').show();
-                var group = $(ui.item).data('group');
-                top.Ts.System.logAction('Ticket - Group Changed');
-                top.Ts.Services.Tickets.SetTicketGroup(_ticketID, group.GroupID, function (result) {
-                    if (result !== null) {
-                        $('#ticketGroup').text(result == "" ? 'Unassigned' : result);
-                        parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
-                        _ticketGroupID = group.GroupID;
-                        if (_ticketGroupID != null) {
-                            top.Ts.Services.Users.GetGroupUsers(_ticketGroupID, function (result) {
-                                _ticketGroupUsers = result;
-                            });
+            for (var i = 0; i < groups.length; i++) {
+                var option = $('<option>').text(groups[i].Name).appendTo(select).data('group', groups[i]);
+                if ($(this).text() === groups[i].Name) {
+                    option.attr('selected', 'selected');
+                }
+            }
+            select.combobox({
+                selected: function (e, ui) {
+                    parent.show().find('img').show();
+                    var group = $(ui.item).data('group');
+                    top.Ts.System.logAction('Ticket - Group Changed');
+                    top.Ts.Services.Tickets.SetTicketGroup(_ticketID, group.GroupID, function (result) {
+                        if (result !== null) {
+                            $('#ticketGroup').text(result == "" ? 'Unassigned' : result);
+                            parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+                            _ticketGroupID = group.GroupID;
+                            if (_ticketGroupID != null) {
+                                top.Ts.Services.Users.GetGroupUsers(_ticketGroupID, function (result) {
+                                    _ticketGroupUsers = result;
+                                });
+                            }
+                            else {
+                                _ticketGroupUsers = null;
+                            }
                         }
                         else {
-                            _ticketGroupUsers = null;
+                            parent.show().find('img').hide();
                         }
-                    }
-                    else {
-                        parent.show().find('img').hide();
-                    }
-                    if (top.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
-                        top.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, group.GroupID);
-                    }
+                        if (top.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
+                            top.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, group.GroupID);
+                        }
+                    },
+              function (error) {
+                  parent.show().find('img').hide();
+                  alert('There was an error setting the group.');
+              });
+                    container.remove();
                 },
-          function (error) {
-              parent.show().find('img').hide();
-              alert('There was an error setting the group.');
-          });
-                container.remove();
-            },
-            close: function (e, ui) {
-                removeComboBoxes();
-            }
+                close: function (e, ui) {
+                    removeComboBoxes();
+                }
+            });
+            select.combobox('search', '');
         });
-        select.combobox('search', '');
+
+
+
     });
+    //    $('#ticketGroup')
+    //    .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+    //    .click(function (e) {
+    //        e.preventDefault();
+    //        e.stopPropagation();
+    //        removeComboBoxes();
+    //        var parent = $(this).closest('.ticket-name-value').hide();
+    //        var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+    //        var select = $('<select>').appendTo(container);
+    //        var groups = top.Ts.Cache.getTicketGroups();
+
+    //        var unassigned = new Object();
+    //        unassigned.GroupID = null;
+    //        unassigned.Name = "Unassigned";
+    //        var option = $('<option>').text(unassigned.Name).appendTo(select).data('group', unassigned);
+    //        if ($(this).text() === unassigned.Name) {
+    //            option.attr('selected', 'selected');
+    //        }
+    //        for (var i = 0; i < groups.length; i++) {
+    //            var option = $('<option>').text(groups[i].Name).appendTo(select).data('group', groups[i]);
+    //            if ($(this).text() === groups[i].Name) {
+    //                option.attr('selected', 'selected');
+    //            }
+    //        }
+
+    //        select.combobox({
+    //            selected: function (e, ui) {
+    //                parent.show().find('img').show();
+    //                var group = $(ui.item).data('group');
+    //                top.Ts.System.logAction('Ticket - Group Changed');
+    //                top.Ts.Services.Tickets.SetTicketGroup(_ticketID, group.GroupID, function (result) {
+    //                    if (result !== null) {
+    //                        $('#ticketGroup').text(result == "" ? 'Unassigned' : result);
+    //                        parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+    //                        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+    //                        _ticketGroupID = group.GroupID;
+    //                        if (_ticketGroupID != null) {
+    //                            top.Ts.Services.Users.GetGroupUsers(_ticketGroupID, function (result) {
+    //                                _ticketGroupUsers = result;
+    //                            });
+    //                        }
+    //                        else {
+    //                            _ticketGroupUsers = null;
+    //                        }
+    //                    }
+    //                    else {
+    //                        parent.show().find('img').hide();
+    //                    }
+    //                    if (top.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
+    //                        top.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, group.GroupID);
+    //                    }
+    //                },
+    //          function (error) {
+    //              parent.show().find('img').hide();
+    //              alert('There was an error setting the group.');
+    //          });
+    //                container.remove();
+    //            },
+    //            close: function (e, ui) {
+    //                removeComboBoxes();
+    //            }
+    //        });
+    //        select.combobox('search', '');
+    //    });
 
     $('#product')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')

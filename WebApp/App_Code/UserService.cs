@@ -15,7 +15,6 @@ using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
 using System.Globalization;
 using System.Linq;
-using System.Diagnostics;
 
 namespace TSWebServices
 {
@@ -251,8 +250,6 @@ namespace TSWebServices
         [WebMethod]
         public GroupProxy[] GetTicketGroups()
         {
-            var watch = Stopwatch.StartNew();
-
             Groups groups = new Groups(TSAuthentication.GetLoginUser());
             groups.LoadByOrganizationID(TSAuthentication.OrganizationID);
             List<GroupProxy> proxies = groups.GetGroupProxies().OrderBy(gp => gp.Name).ToList();
