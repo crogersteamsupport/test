@@ -358,6 +358,24 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void AdminDeleteOrganization(int organizationID, string password)
+    {
+      if (TSAuthentication.OrganizationID == 1078)
+      {
+        string crtyped = FormsAuthentication.HashPasswordForStoringInConfigFile(password.Trim(), "MD5");
+        User eric = Users.GetUser(TSAuthentication.GetLoginUser(), 43);
+        User kevin = Users.GetUser(TSAuthentication.GetLoginUser(), 34);
+        if (crtyped == eric.CryptedPassword || crtyped == kevin.CryptedPassword)
+        {
+          Organizations.DeleteOrganizationAndAllReleatedData(TSAuthentication.GetLoginUser(), organizationID);
+          return;
+        }
+        throw new Exception("Invalid Password");
+      }
+
+    }
+
+    [WebMethod]
     public void SetShowWelcomePage(int organizationID)
     {
       if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;

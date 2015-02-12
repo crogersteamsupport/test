@@ -185,6 +185,17 @@
         }
       });
 
+      $('.action-delete').click(function (e) {
+        e.preventDefault();
+        var org = $('.org-info').data('o');
+        var pw = prompt("Enter your password.", "");
+        if (pw != null) {
+          top.Ts.Services.Organizations.AdminDeleteOrganization(org.OrganizationID, pw, function () {
+            window.location = window.location;
+          }, function () { alert("Invalid Password."); });
+        }
+      });
+
       $('.action-api').click(function (e) {
         e.preventDefault();
         var org = $('.org-info').data('o');
@@ -261,6 +272,7 @@
             <div class="org-info" style="display: none;">
               <div class="btn-group org-tools">
                 <button class="btn btn-warning action-toggle-active">Disable</button>
+                <button class="btn btn-danger action-delete">Delete</button>
                 <button class="btn btn-default action-rename">Rename</button>
                 <button class="btn btn-default action-index">Rebuild Indexes</button>
                 <button class="btn btn-default action-seats">Change Seat Count</button>

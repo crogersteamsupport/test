@@ -220,8 +220,7 @@ namespace TeamSupport.Handlers
       int userID = int.Parse(segments[2]);
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
-      string imagePath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages);
-      string cachePath = Path.Combine(imagePath, "cache");
+      string cachePath = Path.Combine(GetImageCachePath(), "Avatars\\" + organizationID.ToString());
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
       
       cacheFileName = Path.Combine(cachePath, userID.ToString()+"-"+size.ToString()+".jpg");
@@ -233,7 +232,7 @@ namespace TeamSupport.Handlers
       }
       
       //New image, check if one has been uploaded
-      string originalFileName = AttachmentPath.GetImageFileName(imagePath, userID.ToString() + "avatar");
+      string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), userID.ToString() + "avatar");
       if (File.Exists(originalFileName))
       {
         // original image, resize, make circle, cache it
@@ -269,8 +268,7 @@ namespace TeamSupport.Handlers
       string initial = segments[2].Substring(0, 1).ToUpper();
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
-      string imagePath = AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.ProfileImages);
-      string cachePath = Path.Combine(imagePath, "cache");
+      string cachePath = Path.Combine(GetImageCachePath(), "Initials");
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
 
@@ -472,6 +470,13 @@ namespace TeamSupport.Handlers
       var newImage = new Bitmap(newWidth, newHeight);
       Graphics.FromImage(newImage).DrawImage(image, 0, 0, newWidth, newHeight);
       return newImage;
+    }
+
+    private static string GetImageCachePath()
+    {
+      string result = System.Web.Configuration.WebConfigurationManager.AppSettings["ImageCachePath"];
+      return result == null ? "C:\\TSCache" : result;
+    
     }
 
     private void ProcessAttachment(HttpContext context, int attachmentID)
