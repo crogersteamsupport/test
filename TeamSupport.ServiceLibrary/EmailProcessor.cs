@@ -1437,12 +1437,12 @@ namespace TeamSupport.ServiceLibrary
 
     private string FixMailAddress(string address)
     {
-      return address.Replace("<", "").Replace(">", "");
+      return address.Replace("<", "").Replace(">", "").Replace("|", " ");
     }
 
     private string FixMailName(string displayName)
     {
-      return displayName.Replace("<", "").Replace(">", ""); 
+      return displayName.Replace("<", "").Replace(">", "").Replace("|", " "); 
     }
 
 
