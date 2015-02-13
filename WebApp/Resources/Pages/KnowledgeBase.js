@@ -195,7 +195,7 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
     categoryID = tickets.CategoryID;
     if (inSubcategoryPage == null) {
       if (tickets.Count > 0) {
-        onShowAllClickHandler = 'GetSubCategoryPage(' + tickets.CategoryID + ', \'' + tickets.CategoryName + '\', \'' + tickets.ParentCategoryName + '\');';
+          onShowAllClickHandler = 'GetSubCategoryPage(' + tickets.CategoryID + ', \'' + tickets.CategoryName + '\', \'' + tickets.ParentCategoryName + '\'); return false;';
         $('#catID-' + categoryID).append($('<li class="nav-header"><a href="#" class="ts-link" onclick="' + onShowAllClickHandler + '">' + tickets.CategoryName + ' (' + tickets.Count + ')</a></li>'));
       }
       else {
@@ -209,7 +209,7 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
   else {
     if (inSubcategoryPage == null) {
       if (tickets.Count > 0) {
-        onShowAllClickHandler = 'GetSubCategoryPage(null, null, null);';
+          onShowAllClickHandler = 'GetSubCategoryPage(null, null, null); return false;';
         $('#UncategorizedHeader').html('<h1><a href="#" onclick="' + onShowAllClickHandler + '">Uncategorized (' + tickets.Count + ')</a></h1>');
       }
       else {
@@ -235,7 +235,7 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
   var iconPath = "/vcr/1_5_6/images/nav/16/file.png";
 
   for (var i = 0; i < tickets.Items.length; i++) {
-    var onClickHandler  = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true)";
+      var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
     var text            = tickets.Items[i].Name;
 
     html =
@@ -272,7 +272,7 @@ function BuildNewArticles(tickets) {
   var html = 
     '<li>' +
       '<h1>' +
-        '<a href="#" onclick="GetSubCategoryPage(null, \'New Articles\', null);">' +
+        '<a href="#" onclick="GetSubCategoryPage(null, \'New Articles\', null); return false;">' +
           'New Articles' +
         '</a>' +
       '</h1>' +
@@ -282,7 +282,7 @@ function BuildNewArticles(tickets) {
   var iconPath = "/vcr/1_5_6/images/nav/16/file.png";
 
   for (var i = 0; i < tickets.Items.length; i++) {
-    var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true)";
+      var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
     var text = tickets.Items[i].Name;
 
     html =
@@ -299,7 +299,7 @@ function BuildNewArticles(tickets) {
   if (tickets.Count > 5) {
     html =
         '<li>' +
-          '<a href="#" onclick="GetSubCategoryPage(null, \'New Articles\', null);" class="ts-link allLink">>> See all...</a>' +
+          '<a href="#" onclick="GetSubCategoryPage(null, \'New Articles\', null); return false;" class="ts-link allLink">>> See all...</a>' +
         '</li>';
 
     $('#NewArticles').append(html);
@@ -313,7 +313,7 @@ function BuildRecentlyModifiedArticles(tickets) {
   var html =
     '<li>' +
       '<h1>' +
-        '<a href="#" onclick="GetSubCategoryPage(null, \'Recently Modified Articles\', null);">' +
+        '<a href="#" onclick="GetSubCategoryPage(null, \'Recently Modified Articles\', null); return false;">' +
           'Recently Modified Articles' +
         '</a>' +
       '</h1>' +
@@ -324,7 +324,7 @@ function BuildRecentlyModifiedArticles(tickets) {
   var iconPath = "/vcr/1_5_6/images/nav/16/file.png";
 
   for (var i = 0; i < tickets.Items.length; i++) {
-    var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true)";
+      var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
     var text = tickets.Items[i].Name;
 
     html =
@@ -341,7 +341,7 @@ function BuildRecentlyModifiedArticles(tickets) {
   if (tickets.Count > 5) {
     html =
       '<li>' +
-        '<a href="#" onclick="GetSubCategoryPage(null, \'Recently Modified Articles\', null);" class="ts-link allLink">>> See all...</a>' +
+        '<a href="#" onclick="GetSubCategoryPage(null, \'Recently Modified Articles\', null); return false;" class="ts-link allLink">>> See all...</a>' +
       '</li>';
 
     $('#RecentlyModifiedArticles').append(html);
@@ -447,7 +447,7 @@ function appendTicketsToSection(tickets, inSubcategoryPage) {
   var iconPath = "/vcr/1_5_6/images/nav/16/file.png";
 
   for (var i = 0; i < tickets.Items.length; i++) {
-    var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true)";
+      var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
     var text = tickets.Items[i].Name;
 
     html =
