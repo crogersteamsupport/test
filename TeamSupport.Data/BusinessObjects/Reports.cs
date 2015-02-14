@@ -402,7 +402,14 @@ namespace TeamSupport.Data
       }
       else
       {
-        GetWhereClause(loginUser, command, builder, tabularReport.Filters);
+
+        string primaryTableKeyFieldName = null;
+        if (tabularReport.Subcategory == 70)
+        {
+            primaryTableKeyFieldName = "UserTicketsView.TicketID";
+        }
+
+        GetWhereClause(loginUser, command, builder, tabularReport.Filters, primaryTableKeyFieldName);
         if (useUserFilter && reportID != null)
         {
           Report report = Reports.GetReport(loginUser, (int)reportID, loginUser.UserID);
@@ -456,12 +463,6 @@ namespace TeamSupport.Data
             {
                 fieldName = "UserTicketsView.TicketID";
             }
-            //handle SLA Report Custom Fields
-            else if (tabularReport.Subcategory == 69)
-            {
-                fieldName = "SlaViolationHistoryView.TicketID";
-            }
-              
 
 
             fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
@@ -616,37 +617,37 @@ namespace TeamSupport.Data
         }
     }
 
-    private static void GetWhereClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters)
+    private static void GetWhereClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, string primaryTableKeyName = null)
     {
-      if (filters != null ) WriteFilters(loginUser, command, builder, filters, null);
+        if (filters != null) WriteFilters(loginUser, command, builder, filters, null, primaryTableKeyName);
     }
 
-    private static void WriteFilters(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter)
+    private static void WriteFilters(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter, string primaryTableKeyName = null)
     {
       foreach (ReportFilter filter in filters)
       {
         if (filter.Conditions.Length < 1) continue;
 
         builder.Append(string.Format(" {0} (", parentFilter == null ? "AND" : parentFilter.Conjunction.ToUpper()));
-        WriteFilter(loginUser, command, builder, filter);
-        WriteFilters(loginUser, command, builder, filter.Filters, filter);
+        WriteFilter(loginUser, command, builder, filter, primaryTableKeyName);
+        WriteFilters(loginUser, command, builder, filter.Filters, filter, primaryTableKeyName);
         builder.Append(")");
       }
     }
 
-    private static void WriteFilter(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter filter)
+    private static void WriteFilter(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter filter, string primaryTableKeyName = null)
     {
       for (int i = 0; i < filter.Conditions.Length; i++)
       {
         ReportFilterCondition condition = filter.Conditions[i];
         if (i > 0) builder.Append(string.Format(" {0} ", filter.Conjunction.ToUpper()));
         builder.Append("(");
-        WriteFilterCondition(loginUser, command, builder, condition);
+        WriteFilterCondition(loginUser, command, builder, condition, primaryTableKeyName);
         builder.Append(")");
       }
     }
 
-    private static void WriteFilterCondition(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilterCondition condition)
+    private static void WriteFilterCondition(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilterCondition condition, string primaryTableKeyName = null)
     {
       string fieldName = "";
       string dataType;
@@ -662,7 +663,12 @@ namespace TeamSupport.Data
         {
           CustomField customField = TeamSupport.Data.CustomFields.GetCustomField(loginUser, condition.FieldID);
           if (customField == null) return;
-          fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, DataUtils.GetReportPrimaryKeyFieldName(customField.RefType), true, false);
+          
+          //assign the primary key to a variable and update it with the passed in value if present
+          string PrimaryTableKeyName = DataUtils.GetReportPrimaryKeyFieldName(customField.RefType);
+          if (primaryTableKeyName != null) PrimaryTableKeyName = primaryTableKeyName;
+
+          fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, PrimaryTableKeyName, true, false);
           switch (customField.FieldType)
           {
             case CustomFieldType.DateTime:
