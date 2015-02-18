@@ -802,7 +802,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Users u WHERE (u.OrganizationID = @OrganizationID) AND (u.IsActive = 1) AND (u.MarkDeleted = 0) AND (1 not in (SELECT 1 FROM GroupUsers gu WHERE gu.GroupID = @GroupID AND gu.UserID = u.UserID))";
+          command.CommandText = "SELECT * FROM Users u WHERE (u.OrganizationID = @OrganizationID) AND (u.IsActive = 1) AND (u.MarkDeleted = 0) AND (1 not in (SELECT 1 FROM GroupUsers gu WHERE gu.GroupID = @GroupID AND gu.UserID = u.UserID)) order by LastName asc";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@GroupID", groupID);
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
