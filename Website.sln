@@ -40,7 +40,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TeamSupport.Signalr", "http://localhost:35835", "{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}"
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		ProjectReferences = "{1943ac11-1f2d-4b85-9f0f-4d67284814be}|TeamSupport.Data.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_35835"
 		Debug.AspNetCompiler.PhysicalPath = "TeamSupport.Signalr\"
