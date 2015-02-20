@@ -3,7 +3,7 @@ var chatHubClient = $.connection.socket;
 var ticketSocket = $.connection.ticketSocket;
 var notify = false;
 
-function loadSignalR() { 
+function loadSignalR(url) { 
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
             $(this).jPlayer("setMedia", {
@@ -16,7 +16,7 @@ function loadSignalR() {
 
     //Debug reasons
     //$.connection.hub.logging = true;
-    $.connection.hub.url = "signalr/signalr";
+    $.connection.hub.url = url;
     // Start the connection only if on main wc page
 
     $.connection.hub.qs = "userID=" + top.Ts.System.User.UserID + "&organizationID=" + top.Ts.System.User.OrganizationID;

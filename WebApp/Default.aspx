@@ -55,7 +55,7 @@
   <!-- End Apptegic Code -->
 
   <script type="text/javascript" language="javascript">
-
+    
     var g_uac = ''
 
     var privateServices;
@@ -79,12 +79,12 @@
       g_PrivateServices = privateServices = new TeamSupport.Services.PrivateServices();
       g_PrivateServices.set_defaultSucceededCallback(function (result) { });
       g_PrivateServices.set_defaultFailedCallback(function (error, userContext, methodName) { });
-
+      var signalRUrl = $("#SignalRUrl").val(); 
       if (BrowserDetect.browser != 'Safari' || BrowserDetect.isMobile != 1) {
         try {
-          $.getScript("signalr/signalr/hubs", function (data, textStatus, jqxhr) {
+          $.getScript(signalRUrl + "/hubs", function (data, textStatus, jqxhr) {
             $.getScript("vcr/1_9_0/Js/ts/ts.wc.signalr.js", function (data, textStatus, jqxhr) {
-              if (loadSignalR) { loadSignalR(); }
+              if (loadSignalR) { loadSignalR(signalRUrl); }
 
             });
           });
@@ -145,6 +145,7 @@
       </compositescript>
   </asp:ScriptManager>
   <asp:HiddenField ID="fieldSID" runat="server" Value="1234"></asp:HiddenField>
+  <asp:HiddenField ID="SignalRUrl" runat="server" Value=""></asp:HiddenField>
   <div id="jquery_jplayer_1"></div>
   <div class="main-loading ts-loading">
   </div>

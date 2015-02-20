@@ -9,6 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Handlers", "Tea
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebApp", "WebApp\", "{FE81BB07-5E84-4DBA-9A7A-76F47826EBB9}"
 	ProjectSection(WebsiteProperties) = preProject
+		Frontpage = "false"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		ProjectReferences = "{CC4D311A-D6EA-4113-B648-537824E3B5D7}|TeamSupport.Api.dll;{1943AC11-1F2D-4B85-9F0F-4D67284814BE}|TeamSupport.Data.dll;{7B8AA298-9F29-4CB1-979B-18CC31DF76B1}|TeamSupport.Handlers.dll;{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}|TeamSupport.WebUtils.dll;{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}|TeamSupport.JIRA.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/WebApp"
@@ -25,31 +26,9 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebApp", "WebApp\", "{FE81B
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "58276"
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{833DA5CD-B005-4E9A-8D9A-74E9698FDA0B}"
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SignalR", "SignalR\", "{47E8C60C-4A4B-4761-A155-54D9DB774626}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		ProjectReferences = "{1943AC11-1F2D-4B85-9F0F-4D67284814BE}|TeamSupport.Data.dll;{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}|TeamSupport.WebUtils.dll;"
-		Debug.AspNetCompiler.VirtualPath = "/SignalR"
-		Debug.AspNetCompiler.PhysicalPath = "SignalR\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\SignalR\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/SignalR"
-		Release.AspNetCompiler.PhysicalPath = "SignalR\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\SignalR\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "60957"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.WebUtils", "TeamSupport.WebUtils\TeamSupport.WebUtils.csproj", "{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}"
 EndProject
@@ -193,30 +172,6 @@ Global
 		{FE81BB07-5E84-4DBA-9A7A-76F47826EBB9}.Release|Win32.ActiveCfg = Debug|Any CPU
 		{FE81BB07-5E84-4DBA-9A7A-76F47826EBB9}.Release|x64.ActiveCfg = Debug|Any CPU
 		{FE81BB07-5E84-4DBA-9A7A-76F47826EBB9}.Release|x86.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.dtSearch Internal Debug|.NET.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.dtSearch Internal Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.dtSearch Internal Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.dtSearch Internal Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.dtSearch Internal Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.dtSearch Internal Debug|Win32.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.dtSearch Internal Debug|x64.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.dtSearch Internal Debug|x86.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Release|.NET.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Release|Win32.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Release|x64.ActiveCfg = Debug|Any CPU
-		{47E8C60C-4A4B-4761-A155-54D9DB774626}.Release|x86.ActiveCfg = Debug|Any CPU
 		{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}.Debug|.NET.ActiveCfg = Debug|x86
 		{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU

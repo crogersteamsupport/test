@@ -803,11 +803,6 @@
     <Content Include="bin\x86\Debug\TeamSupport.Data.pdb" />
     <Content Include="bin\x86\Debug\TidyNet.dll" />
     <Content Include="bin\x86\Debug\TidyNet.pdb" />
-    <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.6.4.js" />
-    <Content Include="Scripts\jquery-1.6.4.min.js" />
-    <Content Include="Scripts\jquery.signalR-1.1.4.js" />
-    <Content Include="Scripts\jquery.signalR-1.1.4.min.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />
