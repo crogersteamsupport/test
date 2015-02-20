@@ -41,6 +41,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TeamSupport.Signalr", "http
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		ProjectReferences = "{1943ac11-1f2d-4b85-9f0f-4d67284814be}|TeamSupport.Data.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_35835"
 		Debug.AspNetCompiler.PhysicalPath = "TeamSupport.Signalr\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_35835\"
