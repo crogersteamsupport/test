@@ -24,6 +24,7 @@
 
     <script type="text/javascript">
         $(function () {
+            $.connection.hub.logging = true;
             var chat = $.connection.chatHub;
             chat.client.broadcastMessage = function (name, message) {
                 var encodedName = $('<div />').text(name).html();
