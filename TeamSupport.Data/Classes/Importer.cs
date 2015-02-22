@@ -1674,9 +1674,13 @@ AND a.OrganizationID = @OrganizationID
       if (table == null) return;
 
       Users users = new Users(_loginUser);
-      Users contacts = new Users(_loginUser);
       users.LoadByOrganizationID(_organizationID, false);
-      contacts.LoadContacts(_organizationID, false);
+
+      Users contacts = new Users(_loginUser);
+      contacts.LoadByOrganizationID(_organizationID, false);
+      IdList contactIDs = GetIdList(contacts);
+      contacts = null;
+      GC.WaitForPendingFinalizers();
 
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
@@ -1699,23 +1703,27 @@ AND a.OrganizationID = @OrganizationID
 
 
         string creatorString = row["CreatorID"].ToString().Trim();
-        User creator = null;
+        int? creatorID = null;
         if (creatorString != "")
         {
-          creator = users.FindByImportID(creatorString);
+          User creator = users.FindByImportID(creatorString);
           if (creator == null)
           {
-            creator = contacts.FindByImportID(creatorString);
+            creatorID = GetListID(contactIDs, creatorString);
+          }
+          else
+          {
+            creatorID = creator.UserID;
           }
         }
 
-        int creatorID = creator == null ? -1 : creator.UserID;
+        creatorID = creatorID == null ? -1 : creatorID;
 
         TeamSupport.Data.Action action = actions.AddNewAction();
 
         action.SystemActionTypeID = GetSystemActionTypeID(row["ActionType"].ToString());
         action.ActionTypeID = GetActionTypeID(actionTypes, row["ActionType"].ToString());
-        action.CreatorID = creatorID;
+        action.CreatorID = (int)creatorID;
         action.DateCreated = (DateTime)GetDBDate(row["DateCreated"].ToString().Trim(), false);
         action.DateModified = DateTime.UtcNow;
         action.DateStarted = GetDBDate(row["DateStarted"].ToString().Trim(), true);
