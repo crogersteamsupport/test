@@ -1573,6 +1573,13 @@ AND a.OrganizationID = @OrganizationID
             if (parentCatName == null)
             {
               cat = kbCats.FindByName(catName, -1);
+              if (cat == null) { 
+              // craete cat
+                AddKnowledgeBaseCategory(null, catName);
+                kbCats = new KnowledgeBaseCategories(_loginUser);
+                kbCats.LoadAllCategories(_organizationID);
+                cat = kbCats.FindByName(catName, -1);
+              }
             }
             else
             {
@@ -1581,11 +1588,15 @@ AND a.OrganizationID = @OrganizationID
               {
                 cat = kbCats.FindByName(catName, parent.CategoryID);
               }
-            }
-
-            if (cat == null)
-            {
-              _log.AppendMessage("Ticket category not found for ticket " + ticketNumber.ToString() + " category: " + catName);
+              else
+              {
+                // create parent 
+                KnowledgeBaseCategory parentCat = AddKnowledgeBaseCategory(null, parentCatName);
+                AddKnowledgeBaseCategory(parentCat.CategoryID, catName);
+                kbCats = new KnowledgeBaseCategories(_loginUser);
+                kbCats.LoadAllCategories(_organizationID);
+                cat = kbCats.FindByName(catName, parentCat.CategoryID);
+              }
             }
           }
 
@@ -1625,6 +1636,36 @@ AND a.OrganizationID = @OrganizationID
 
       _log.AppendMessage(count.ToString() + " " + ticketType.Name + " Imported.");
 
+    }
+
+    public KnowledgeBaseCategory AddKnowledgeBaseCategory(int? parentID, string name)
+    {
+      KnowledgeBaseCategory cat = (new KnowledgeBaseCategories(_loginUser)).AddNewKnowledgeBaseCategory();
+      cat.OrganizationID = _organizationID;
+      cat.CategoryName = name;
+      cat.ParentID = parentID ?? -1;
+      cat.Position = GetKnowledgeBaseCategoryMaxPosition(parentID) + 1;
+      cat.VisibleOnPortal = true;
+      cat.Collection.Save();
+      return cat;
+    }
+
+    private int GetKnowledgeBaseCategoryMaxPosition(int? parentID)
+    {
+      parentID = parentID ?? -1;
+
+      KnowledgeBaseCategories cats = new KnowledgeBaseCategories(_loginUser);
+      if (parentID < 0) cats.LoadCategories(_organizationID);
+      else cats.LoadSubcategories((int)parentID);
+
+      int max = -1;
+
+      foreach (KnowledgeBaseCategory cat in cats)
+      {
+        if (cat.Position != null && cat.Position > max) max = (int)cat.Position;
+      }
+
+      return max;
     }
 
     private void ImportActions()
