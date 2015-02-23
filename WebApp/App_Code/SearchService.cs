@@ -1254,7 +1254,13 @@ namespace TSWebServices
       string pageQuery = @"
 WITH 
 q AS ({0}),
-r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [NAME] ASC) AS 'RowNum' FROM q)
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY 
+    CASE 
+        WHEN [NAME] IS NULL THEN 1 
+        WHEN [NAME] = ''    THEN 2 
+        ELSE 3 
+    END DESC, 
+    [NAME] ASC) AS 'RowNum' FROM q)
 SELECT * INTO #X FROM r
 WHERE RowNum BETWEEN @From AND @To
 

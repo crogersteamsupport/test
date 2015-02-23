@@ -151,7 +151,7 @@
         $('<a>')
           .attr('href', '#')
           .addClass('contactlink')
-          .text(isNullOrWhiteSpace(item.fName) && isNullOrWhiteSpace(item.lName) ? 'Unnamed Contact' : item.fName + ' ' + item.lName)
+          .text(isNullOrWhiteSpace(item.fName) && isNullOrWhiteSpace(item.lName) ? 'Unnamed Contact' : item.lName + ', ' + item.fName)
           .data('userid', item.userID)
           .appendTo($('<h4>').appendTo(el));
         var list = $('<ul>').appendTo(el);
