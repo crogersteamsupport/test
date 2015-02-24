@@ -15,7 +15,8 @@ public partial class Tips_Asset : System.Web.UI.Page
       if (Request["AssetID"] == null) EndResponse("Invalid Asset");
 
       int assetID = int.Parse(Request["AssetID"]);
-      Asset asset = Assets.GetAsset(TSAuthentication.GetLoginUser(), assetID);
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset asset = Assets.GetAsset(loginUser, assetID);
       if (asset == null) EndResponse("Invalid Asset");
 
       if (asset.OrganizationID != TSAuthentication.OrganizationID) EndResponse("Invalid Asset");
@@ -38,14 +39,15 @@ public partial class Tips_Asset : System.Web.UI.Page
 
       if (asset.ProductID != null)
       {
-        Product product = Products.GetProduct(TSAuthentication.GetLoginUser(), (int) asset.ProductID);
+        Product product = Products.GetProduct(loginUser, (int) asset.ProductID);
         if (product != null) props.Append(string.Format("<dt>{0}</dt><dd>{1}</dd>", "Product", product.Name));
       }
 
-      if (asset.AssignedTo != null)
+      if (asset.Location.Trim() == "1")
       {
-        User user = Users.GetUser(TSAuthentication.GetLoginUser(), (int)asset.AssignedTo);
-        if (user != null) props.Append(string.Format("<dt>{0}</dt><dd>{1}</dd>", "Assigned To", user.FirstLastName));
+          AssetAssignmentsView assetAssignments = new AssetAssignmentsView(loginUser);
+          assetAssignments.LoadByAssetID(assetID);
+          if (assetAssignments.Count > 0) props.Append(string.Format("<dt>{0}</dt><dd>{1}</dd>", "Assigned To", assetAssignments[0].NameAssignedTo));
       }
      
 
