@@ -615,6 +615,38 @@ namespace TeamSupport.Data
             default:
                 break;
         }
+
+        Organizations organization = new Organizations(loginUser);
+        organization.LoadByOrganizationID(loginUser.OrganizationID);
+        if (organization.Count > 0 && organization[0].UseProductFamilies)
+        {
+            switch (user.ProductFamiliesRights)
+            {
+                case ProductFamiliesRightType.AllFamilies:
+                    break;
+                case ProductFamiliesRightType.SomeFamilies:
+                    rightsClause = @" AND (
+                    TicketID IN 
+                    (
+                        SELECT 
+                            t.TicketID 
+                        FROM 
+                            Tickets t
+                            JOIN Products p
+                                ON t.ProductID = p.ProductID
+                            JOIN UserRightsProductFamilies urpf
+                                ON p.ProductFamilyID = urpf.ProductFamilyID 
+                        WHERE 
+                            urpf.UserID = @UserID
+                    ) 
+                    OR {0}.UserID = @UserID 
+                )";
+                    builder.Append(string.Format(rightsClause, mainTableName));
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private static void GetWhereClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, string primaryTableKeyName = null)

@@ -84,6 +84,7 @@ namespace TSWebServices
                                          ref selectWaterCoolerFields);
 
         SqlCommand command = new SqlCommand();
+        TeamSupport.Data.User user = Users.GetUser(loginUser, loginUser.UserID);
 
         if (searchStandardFilter.Tickets || searchStandardFilter.KnowledgeBase)
         {
@@ -91,7 +92,14 @@ namespace TSWebServices
 
           if (dtSearchTicketsResultsList.Count > 0)
           {
+            if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+            {
+                ticketsQuery = GetProductFamilyTicketsQuery(searchTerm, loginUser, selectTicketsFields);
+            }
+            else
+            {
             ticketsQuery = GetTicketsQuery(searchTerm, loginUser, selectTicketsFields);
+            }
 
             SqlParameter dtSearchTicketsResultsTable = new SqlParameter("@dtSearchTicketsResultsTable", SqlDbType.Structured);
             dtSearchTicketsResultsTable.TypeName = "dtSearch_results_tbltype";
@@ -154,7 +162,14 @@ namespace TSWebServices
               includesPreviousQuery = true;
             }
 
+            if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+            {
+                productVersionsQuery = GetProductVersionsWithinProductFamilyQuery(includesPreviousQuery, loginUser, selectProductVersionsFields);
+            }
+            else
+            {
             productVersionsQuery = GetProductVersionsQuery(includesPreviousQuery, loginUser, selectProductVersionsFields);
+            }
 
             SqlParameter dtSearchProductVersionsResultsTable = new SqlParameter("@dtSearchProductVersionsResultsTable", SqlDbType.Structured);
             dtSearchProductVersionsResultsTable.TypeName = "dtSearch_results_tbltype";
@@ -433,6 +448,43 @@ namespace TSWebServices
       return result;
     }
 
+    // This method is written under the assumption the user.ProductFamiliesRights is not AllFamilies.
+    private string GetProductFamilyTicketsQuery(string searchTerm, LoginUser loginUser, string selectTicketsFields)
+    {
+        string result = @"
+        SELECT
+          tv.TicketID
+          , 17
+          , dtrt.relevance
+          , tv.DateModified
+          {0}
+        FROM
+          dbo.TicketsView tv
+          JOIN Organizations o
+            ON tv.OrganizationID = o.OrganizationID
+          LEFT JOIN Products p
+            ON tv.ProductID = p.ProductID
+          LEFT JOIN UserRightsProductFamilies urpf
+            ON p.ProductFamilyID = urpf.ProductFamilyID
+          JOIN @dtSearchTicketsResultsTable dtrt
+            ON tv.TicketID = dtrt.recordID
+	        {1}
+        WHERE
+          (
+            o.UseProductFamilies = 0 
+            OR tv.UserID = " + loginUser.UserID + @" 
+            OR urpf.UserID = " + loginUser.UserID + @"
+          )
+          {2}
+      ";
+
+        string joinClause = GetJoinClause(loginUser);
+
+        string whereClause = TicketsView.GetSearchResultsWhereClause(loginUser);
+
+        return string.Format(result, selectTicketsFields, joinClause, whereClause);
+    }
+
     private string GetTicketsQuery(string searchTerm, LoginUser loginUser, string selectTicketsFields)
     {
       string result = @"
@@ -526,6 +578,46 @@ namespace TSWebServices
       resultBuilder.Append(NotesView.GetSearchResultsWhereClause(loginUser));
 
       return resultBuilder.ToString();
+    }
+
+    private string GetProductVersionsWithinProductFamilyQuery(bool includePreviousQuery, LoginUser loginUser, string selectProductVersionsFields)
+    {
+        StringBuilder resultBuilder = new StringBuilder();
+
+        if (includePreviousQuery)
+        {
+            resultBuilder.Append(" UNION ");
+        }
+
+        resultBuilder.Append(@"
+        SELECT
+          pvv.ProductVersionID
+          , 14
+          , dpvrt.relevance
+          , pvv.DateModified");
+        resultBuilder.Append(selectProductVersionsFields);
+
+        resultBuilder.Append(@"
+        FROM
+          dbo.ProductVersionsView pvv
+          JOIN Organizations o
+            ON pvv.OrganizationID = o.OrganizationID
+          LEFT JOIN Products p
+            ON pvv.ProductID = p.ProductID
+          LEFT JOIN UserRightsProductFamilies urpf
+            ON p.ProductFamilyID = urpf.ProductFamilyID
+          JOIN @dtSearchProductVersionsResultsTable dpvrt
+            ON pvv.ProductVersionID = dpvrt.RecordID
+        WHERE
+          (
+            o.UseProductFamilies = 0 
+            OR urpf.UserID = " + loginUser.UserID + @"
+          )
+      ");
+
+        resultBuilder.Append(ProductVersionsView.GetSearchResultsWhereClause(loginUser));
+
+        return resultBuilder.ToString();
     }
 
     private string GetProductVersionsQuery(bool includePreviousQuery, LoginUser loginUser, string selectProductVersionsFields)
@@ -1193,6 +1285,38 @@ namespace TSWebServices
         {
           job.IndexesToSearch.Add(DataUtils.GetProductVersionsIndexPath(loginUser));
         }
+
+        User user = Users.GetUser(loginUser, loginUser.UserID);
+        if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+        {
+            Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+            if (organization.UseProductFamilies)
+            {
+                ProductFamilies userRightsProductFamilies = new ProductFamilies(loginUser);
+                userRightsProductFamilies.LoadByUserRights(loginUser.UserID);
+                if (userRightsProductFamilies.Count > 0)
+                {
+                    StringBuilder conditions = new StringBuilder();
+                    //conditions.Append(" (");
+                    //conditions.Append(" (OrganizationID::" + user.OrganizationID.ToString() + ") ");
+                    for (int i = 0; i < userRightsProductFamilies.Count; i++)
+                    {
+                        if (i > 0)
+                        {
+                            conditions.Append("OR ");
+                        }
+                        conditions.Append("(ProductFamilyID::" + userRightsProductFamilies[i].ProductFamilyID.ToString() + ") ");
+                    }
+                    //conditions.Append(") ");
+                    job.BooleanConditions = conditions.ToString();
+                }
+                else
+                {
+                    return job.Results;
+                }
+            }
+        }
+
 
         job.Execute();
         if (searchTerm == "xfirstword")

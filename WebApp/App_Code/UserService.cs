@@ -82,6 +82,16 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void SetProductFamiliesRights(int userID, int value)
+        {
+            if (!TSAuthentication.IsSystemAdmin) return;
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return;
+            user.ProductFamiliesRights = (ProductFamiliesRightType)value;
+            user.Collection.Save();
+        }
+
+        [WebMethod]
         public void SetTicketRights(int userID, int value)
         {
           if (!TSAuthentication.IsSystemAdmin) return;
@@ -1037,6 +1047,44 @@ namespace TSWebServices
             return orgs.GetOrganizationProxies();
           }
           return null;
+        }
+
+        [WebMethod]
+        public ProductFamilyProxy[] GetUserProductFamilies(int userID)
+        {
+            ProductFamilies productFamilies = new ProductFamilies(TSAuthentication.GetLoginUser());
+            productFamilies.LoadByUserRights(userID);
+            return productFamilies.GetProductFamilyProxies();
+        }
+
+        [WebMethod]
+        public ProductFamilyProxy[] RemoveUserProductFamily(int userID, int productFamilyID)
+        {
+
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+            {
+                user.Collection.RemoveUserProductFamily(userID, productFamilyID);
+                ProductFamilies productFamilies = new ProductFamilies(TSAuthentication.GetLoginUser());
+                productFamilies.LoadByUserRights(userID);
+                return productFamilies.GetProductFamilyProxies();
+            }
+            return null;
+
+        }
+
+        [WebMethod]
+        public ProductFamilyProxy[] AddUserProductFamily(int userID, int productFamilyID)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+            {
+                user.Collection.AddUserProductFamily(userID, productFamilyID);
+                ProductFamilies productFamilies = new ProductFamilies(TSAuthentication.GetLoginUser());
+                productFamilies.LoadByUserRights(userID);
+                return productFamilies.GetProductFamilyProxies();
+            }
+            return null;
         }
 
         [WebMethod]

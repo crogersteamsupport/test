@@ -94,6 +94,7 @@ namespace TeamSupport.Data
     [DataMember] public bool CanCreateVersions { get; set; }
     [DataMember] public bool CanEditProducts { get; set; }
     [DataMember] public bool CanEditVersions { get; set; }
+    [DataMember] public ProductFamiliesRightType ProductFamiliesRights { get; set; }
           
   }
   
@@ -103,6 +104,7 @@ namespace TeamSupport.Data
     {
 
       UserProxy result = new UserProxy();
+      result.ProductFamiliesRights = this.ProductFamiliesRights;
       result.DisableExporting = this.DisableExporting;
       result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;
       result.UserCanPinAction = this.UserCanPinAction;

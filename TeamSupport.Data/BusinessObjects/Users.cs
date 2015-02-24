@@ -798,6 +798,42 @@ namespace TeamSupport.Data
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
     }
 
+    public void AddUserProductFamily(int userID, int productFamilyID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "INSERT INTO UserRightsProductFamilies (UserID, ProductFamilyID) VALUES (@UserID, @ProductFamilyID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            command.Parameters.AddWithValue("@UserID", userID);
+            ExecuteNonQuery(command);
+        }
+
+        User user = (User)Users.GetUser(LoginUser, userID);
+        ProductFamily productFamily = ProductFamilies.GetProductFamily(LoginUser, productFamilyID);
+        string description = string.Format("Added product family '{0}' to user '{1}'.", productFamily.Name, user.FirstLastName);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamilyID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+    }
+
+    public void RemoveUserProductFamily(int userID, int productFamilyID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "DELETE FROM UserRightsProductFamilies WHERE UserID=@UserID AND ProductFamilyID=@ProductFamilyID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            command.Parameters.AddWithValue("@UserID", userID);
+            ExecuteNonQuery(command);
+        }
+
+        User user = (User)Users.GetUser(LoginUser, userID);
+        ProductFamily productFamily = ProductFamilies.GetProductFamily(LoginUser, productFamilyID);
+        string description = string.Format("Removed product family '{0}' from user '{1}'.", productFamily.Name, user.FirstLastName);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamilyID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+    }
+
     public void LoadByNotGroupID(int groupID, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())

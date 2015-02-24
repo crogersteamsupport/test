@@ -192,6 +192,62 @@ namespace TeamSupport.Data
 
       return resultBuilder.ToString();
     }
+
+    public static ProductVersionsViewItem GetProductVersionsViewItemByUserRights(LoginUser loginUser, int productVersionID)
+    {
+        ProductVersionsView productVersionsView = new ProductVersionsView(loginUser);
+        productVersionsView.LoadByProductVersionIDAndUserRights(productVersionID, loginUser.UserID);
+        if (productVersionsView.IsEmpty)
+            return null;
+        else
+            return productVersionsView[0];
+    }
+      
+      public virtual void LoadByProductVersionIDAndUserRights(int productVersionID, int userID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SET NOCOUNT OFF; 
+                SELECT
+                    pvv.[ProductVersionID]
+                    , pvv.[ProductID]
+                    , pvv.[ProductVersionStatusID]
+                    , pvv.[VersionNumber]
+                    , pvv.[ReleaseDate]
+                    , pvv.[IsReleased]
+                    , pvv.[Description]
+                    , pvv.[ImportID]
+                    , pvv.[DateCreated]
+                    , pvv.[DateModified]
+                    , pvv.[CreatorID]
+                    , pvv.[ModifierID]
+                    , pvv.[NeedsIndexing]
+                    , pvv.[VersionStatus]
+                    , pvv.[ProductName]
+                    , pvv.[OrganizationID]
+                    , pvv.[ProductFamilyID]
+                FROM 
+                    [dbo].[ProductVersionsView] pvv
+                    JOIN Products p
+                        ON pvv.ProductID = p.ProductID
+                    JOIN Organizations o
+                        ON p.OrganizationID = o.OrganizationID
+                WHERE 
+                    pvv.[ProductVersionID] = @ProductVersionID
+                    AND
+                    (
+                        o.UseProductFamilies = 0
+                        OR (EXISTS (SELECT * FROM Users WHERE UserID = @UserID AND (ProductFamiliesRights < 1)))
+                        OR pvv.ProductFamilyID IN (SELECT ProductFamilyID FROM UserRightsProductFamilies WHERE UserID = @UserID)
+                    );
+            ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("ProductVersionID", productVersionID);
+            command.Parameters.AddWithValue("UserID", userID);
+            Fill(command);
+        }
+    }
   }
   
 }

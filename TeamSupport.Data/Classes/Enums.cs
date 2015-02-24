@@ -83,6 +83,12 @@ namespace TeamSupport.Data
     Customers = 3
   }
 
+  public enum ProductFamiliesRightType
+  {
+      AllFamilies = 0,
+      SomeFamilies = 1
+  }
+
   public enum ChatRequestType
   { 
     External = 0,

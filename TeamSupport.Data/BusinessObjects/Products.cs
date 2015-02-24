@@ -81,6 +81,44 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByOrganizationIDAndUserRights(int organizationID, int userID, string orderBy = "Name")
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT
+                    p.*
+                FROM 
+                    Products p
+                    JOIN Organizations o
+                        ON p.OrganizationID = o.OrganizationID
+                WHERE 
+                    p.OrganizationID = @OrganizationID
+                    AND
+                    (
+                        o.UseProductFamilies = 0
+                        OR EXISTS (SELECT UserID FROM Users WHERE UserID = @UserID AND ProductFamiliesRights = 0)
+                        OR p.ProductID IN 
+                        (
+                            SELECT
+                                ip.ProductID
+                            FROM
+                                Products ip
+                                JOIN UserRightsProductFamilies urpf
+                                    ON ip.ProductFamilyID = urpf.ProductFamilyID
+                            WHERE
+                                urpf.UserID = @UserID
+                        )
+                    )
+                ORDER BY " + orderBy;
+            command.CommandText = InjectCustomFields(command.CommandText, "ProductID", ReferenceType.Products);
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@UserID", userID);
+            Fill(command);
+        }
+    }
+
     public void LoadByTicketID(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -383,6 +421,53 @@ namespace TeamSupport.Data
         }
     }
 
+    public static Product GetProductByUserRights(LoginUser loginUser, int productID)
+    {
+        Products products = new Products(loginUser);
+        products.LoadByProductIDAndUserRights(productID, loginUser.UserID);
+        if (products.IsEmpty)
+            return null;
+        else
+            return products[0];
+    }
+      
+      public virtual void LoadByProductIDAndUserRights(int productID, int userID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SET NOCOUNT OFF; 
+                SELECT 
+                    p.[ProductID]
+                    , p.[OrganizationID]
+                    , p.[Name]
+                    , p.[Description]
+                    , p.[ImportID]
+                    , p.[DateCreated]
+                    , p.[DateModified]
+                    , p.[CreatorID]
+                    , p.[ModifierID]
+                    , p.[NeedsIndexing]
+                    , p.[ProductFamilyID] 
+                FROM 
+                    [dbo].[Products] p
+                    JOIN Organizations o
+                        ON p.OrganizationID = o.OrganizationID
+                WHERE
+                    p.[ProductID] = @ProductID
+                    AND
+                    (
+                        o.UseProductFamilies = 0
+                        OR (EXISTS (SELECT * FROM Users WHERE UserID = @UserID AND (ProductFamiliesRights < 1)))
+                        OR p.ProductFamilyID IN (SELECT ProductFamilyID FROM UserRightsProductFamilies WHERE UserID=@UserID)
+                    );
+            ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("ProductID", productID);
+            command.Parameters.AddWithValue("UserID", userID);
+            Fill(command);
+        }
+    }    
   }
 
   public class ProductSearch

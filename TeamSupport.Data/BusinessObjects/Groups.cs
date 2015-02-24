@@ -119,14 +119,23 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT g.*, (SELECT COUNT(*) FROM TicketGridView tgv WHERE (tgv.GroupID = g.GroupID) AND (tgv.IsClosed = 0)) AS TicketCount
-                                FROM Groups g
-                                WHERE (g.OrganizationID = @OrganizationID) 
-                                AND (
-                                  g.GroupID IN (SELECT GroupID FROM GroupUsers gu WHERE gu.UserID=@UserID) OR 
-                                  (EXISTS (SELECT * FROM Users WHERE UserID=@UserID AND (IsSystemAdmin = 1 OR TicketRights < 1)))
-                                )
-                                ORDER BY Name";
+        command.CommandText = @"
+            SELECT
+                g.*, 
+                (SELECT COUNT(*) FROM TicketGridView tgv WHERE (tgv.GroupID = g.GroupID) AND (tgv.IsClosed = 0)) AS TicketCount
+            FROM
+                Groups g
+                JOIN Organizations o
+                    ON g.OrganizationID = o.OrganizationID
+            WHERE
+                g.OrganizationID = @OrganizationID
+                AND (
+                    g.GroupID IN (SELECT GroupID FROM GroupUsers gu WHERE gu.UserID=@UserID)
+                    OR (EXISTS (SELECT * FROM Users WHERE UserID=@UserID AND (IsSystemAdmin = 1 OR TicketRights < 1)))
+                    OR (o.UseProductFamilies = 1 AND EXISTS (SELECT * FROM Users WHERE UserID=@UserID AND ProductFamiliesRights < 1))
+                )
+            ORDER BY
+                Name";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@UserID", userID);

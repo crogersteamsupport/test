@@ -43,6 +43,14 @@ namespace TeamSupport.Data
 
     public static bool UserHasRights(User user, int? groupID, int? userID, int? ticketID, bool isKB)
     {
+        if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+        {
+            if (ticketID != null && !Ticket.UserHasProductFamilyRights(user, (int)ticketID))
+            {
+                return false;
+            }
+        }
+        
       if (isKB) return true;
 
       if (user.TicketRights == TicketRightType.Assigned && (userID == null || userID != user.UserID)) return false;
@@ -91,6 +99,35 @@ AND ot.TicketID = @TicketID
     public bool UserHasRights(User user)
     {
       return UserHasRights(user, this.GroupID, this.UserID, this.TicketID, this.IsKnowledgeBase);
+    }
+
+    public static bool UserHasProductFamilyRights(User user, int ticketID)
+    {
+        SqlCommand command = new SqlCommand();
+        command.CommandText = @"
+            SELECT
+                COUNT(*) 
+            FROM 
+                Users u           
+                JOIN Organizations o
+                    ON u.OrganizationID = o.OrganizationID 
+                LEFT JOIN UserRightsProductFamilies urpf
+                    ON u.UserID = urpf.UserID 
+                LEFT JOIN Products p
+                    ON urpf.ProductFamilyID = p.ProductFamilyID
+                LEFT JOIN Tickets t
+                    ON p.ProductID = t.ProductID
+            WHERE
+                u.UserID = @UserID
+                AND
+                (
+                    o.UseProductFamilies = 0
+                    OR t.TicketID = @TicketID
+                )              
+        ";
+        command.Parameters.AddWithValue("UserID", user.UserID);
+        command.Parameters.AddWithValue("TicketID", ticketID);
+        return SqlExecutor.ExecuteInt(user.Collection.LoginUser, command) > 0;
     }
 
     public void FullReadFromXml(string data, bool isInsert, ref string description, ref int? contactID)

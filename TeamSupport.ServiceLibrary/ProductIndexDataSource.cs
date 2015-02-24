@@ -42,6 +42,10 @@ namespace TeamSupport.ServiceLibrary
         _docFields.Clear();
         AddDocField("ProductID", product.ProductID);
         AddDocField("Name", product.Name);
+          if (product.ProductFamilyID != null)
+          {
+              AddDocField("ProductFamilyID", (int)product.ProductFamilyID);
+          }
         DocDisplayName = product.Name;
 
         ProductSearch productItem = new ProductSearch(product);

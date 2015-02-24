@@ -877,6 +877,38 @@ namespace TeamSupport.Data
         default:
           break;
       }
+
+      Organizations organization = new Organizations(loginUser);
+      organization.LoadByOrganizationID(loginUser.OrganizationID);
+      if (organization.Count > 0 && organization[0].UseProductFamilies)
+      {
+          switch (user.ProductFamiliesRights)
+          {
+              case ProductFamiliesRightType.AllFamilies:
+                  break;
+              case ProductFamiliesRightType.SomeFamilies:
+                  rightsClause = @" AND (
+                    TicketID IN 
+                    (
+                        SELECT 
+                            t.TicketID 
+                        FROM 
+                            Tickets t
+                            JOIN Products p
+                                ON t.ProductID = p.ProductID
+                            JOIN UserRightsProductFamilies urpf
+                                ON p.ProductFamilyID = urpf.ProductFamilyID 
+                        WHERE 
+                            urpf.UserID = {0}
+                    ) 
+                    OR tv.UserID = {0} 
+                  )";
+                  builder.Append(string.Format(rightsClause, loginUser.UserID.ToString()));
+                  break;
+              default:
+                  break;
+          }
+      }
     }
 
     public static SearchResults GetQuickSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
@@ -1004,6 +1036,28 @@ namespace TeamSupport.Data
 
         conditions.Append(") ");
       }
+
+      if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+      {
+          Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+          if (organization.UseProductFamilies)
+          {
+              ProductFamilies userRightsProductFamilies = new ProductFamilies(loginUser);
+              userRightsProductFamilies.LoadByUserRights(loginUser.UserID);
+              if (userRightsProductFamilies.Count > 0)
+              {
+                  if (conditions.Length > 0) conditions.Append(" AND");
+                  conditions.Append(" (");
+                  conditions.Append(" (UserID::" + user.UserID.ToString() + ") ");
+                  foreach (ProductFamily productFamily in userRightsProductFamilies)
+                  {
+                      conditions.Append("OR (ProductFamilyID::" + productFamily.ProductFamilyID.ToString() + ") ");
+                  }
+                  conditions.Append(") ");
+              }
+          }
+      }
+        
     }
 
     public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser)

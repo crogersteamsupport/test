@@ -87,6 +87,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("JiraKey", "JiraKey", false, false, false);
       _fieldMap.AddMap("JiraLinkURL", "JiraLinkURL", false, false, false);
       _fieldMap.AddMap("JiraStatus", "JiraStatus", false, false, false);
+      _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
             
     }
   }
