@@ -1528,12 +1528,12 @@ $(document).ready(function () {
             unassigned.Name = "Unassigned";
             var select = $('<select>').appendTo(container);
             var option = $('<option>').text(unassigned.Name).appendTo(select).data('group', unassigned);
-            if ($(this).text() === unassigned.Name) {
+            if (self.text() === unassigned.Name) {
                 option.attr('selected', 'selected');
             }
             for (var i = 0; i < groups.length; i++) {
                 var option = $('<option>').text(groups[i].Name).appendTo(select).data('group', groups[i]);
-                if ($(this).text() === groups[i].Name) {
+                if (self.text() === groups[i].Name) {
                     option.attr('selected', 'selected');
                 }
             }
