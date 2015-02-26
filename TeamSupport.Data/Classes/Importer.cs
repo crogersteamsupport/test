@@ -1962,12 +1962,16 @@ AND a.OrganizationID = @OrganizationID
 
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
+      IdList userList = GetIdList(users);
+      users = null;
+      GC.WaitForPendingFinalizers();
+
 
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
-
-      IdList userList = GetIdList(users);
       IdList orgList = GetIdList(organizations);
+      organizations = null;
+      GC.WaitForPendingFinalizers();
 
 
       Addresses addresses = new Addresses(_loginUser);
@@ -2048,15 +2052,19 @@ AND a.OrganizationID = @OrganizationID
 
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
+      IdList userList = GetIdList(users);
+      users = null;
+      GC.WaitForPendingFinalizers();
 
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
+      IdList orgList = GetIdList(organizations);
+      organizations = null;
+      GC.WaitForPendingFinalizers();
 
       PhoneTypes phoneTypes = new PhoneTypes(_loginUser);
       phoneTypes.LoadAllPositions(_organizationID);
 
-      IdList userList = GetIdList(users);
-      IdList orgList = GetIdList(organizations);
 
       PhoneNumbers phoneNumbers = new PhoneNumbers(_loginUser);
       int count = 0;
@@ -2229,10 +2237,14 @@ AND a.OrganizationID = @OrganizationID
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
       IdList organizationIDs = GetIdList(organizations);
+      organizations = null;
+      GC.WaitForPendingFinalizers();
 
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
       IdList ticketIDs = GetIdList(tickets);
+      tickets = null;
+      GC.WaitForPendingFinalizers();
 
       foreach (DataRow row in table.Rows)
       {
@@ -2379,10 +2391,14 @@ AND a.OrganizationID = @OrganizationID
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
       IdList userIDs = GetIdList(users);
+      users = null;
+      GC.WaitForPendingFinalizers();
 
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
       IdList ticketIDs = GetIdList(tickets);
+      tickets = null;
+      GC.WaitForPendingFinalizers();
 
       foreach (DataRow row in table.Rows)
       {
