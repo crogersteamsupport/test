@@ -1701,6 +1701,12 @@ AND a.OrganizationID = @OrganizationID
           continue;
         }
 
+        string desc = ConvertHtmlLineBreaks(row["Description"].ToString().Trim());
+        if (desc == "")
+        {
+          _log.AppendError(row, "No Description");
+        }
+
 
         string creatorString = row["CreatorID"].ToString().Trim();
         int? creatorID = null;
@@ -1727,8 +1733,7 @@ AND a.OrganizationID = @OrganizationID
         action.DateCreated = (DateTime)GetDBDate(row["DateCreated"].ToString().Trim(), false);
         action.DateModified = DateTime.UtcNow;
         action.DateStarted = GetDBDate(row["DateStarted"].ToString().Trim(), true);
-        string desc = ConvertHtmlLineBreaks(row["Description"].ToString().Trim());
-        action.Description = desc == "" ? "Comment" : desc;
+        action.Description = desc;
         action.ActionSource = "Import";
         action.IsVisibleOnPortal = row["VisibleOnPortal"].ToString().ToLower().IndexOf("t") > -1;
         action.ModifierID = _loginUser.UserID;
