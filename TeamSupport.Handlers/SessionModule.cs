@@ -49,6 +49,7 @@ namespace TeamSupport.Handlers
         if (path.IndexOf("signout") > -1) return;
 
         bool isSessionValid = true;
+        /*
         if (app.Context.Request.HttpMethod == "POST")
         {
           var bytes = new byte[request.InputStream.Length];
@@ -57,6 +58,7 @@ namespace TeamSupport.Handlers
           string content = Encoding.ASCII.GetString(bytes);
           isSessionValid = content.ToLower().IndexOf(TSAuthentication.SessionID.ToLower()) > -1;
         }
+         */
 
         if (TSAuthentication.Ticket == null || TSAuthentication.Ticket.Expired || !isSessionValid)
         {
