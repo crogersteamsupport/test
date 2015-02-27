@@ -122,9 +122,9 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NewtonSoft.Json\Bin\Net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="OpenPop">
       <HintPath>..\packages\OpenPop\OpenPop.NET 2.0.4\binaries\signed (strong name)\OpenPop.dll</HintPath>
@@ -180,6 +180,8 @@
     <Compile Include="BusinessObjects\AttachmentDownloads.cs" />
     <Compile Include="BusinessObjects\Attachments.cs" />
     <Compile Include="BusinessObjects\BillingInfo.cs" />
+    <Compile Include="BusinessObjects\CalendarEvents.cs" />
+    <Compile Include="BusinessObjects\CalendarRef.cs" />
     <Compile Include="BusinessObjects\CDI_Settings.cs" />
     <Compile Include="BusinessObjects\ChatClients.cs" />
     <Compile Include="BusinessObjects\ChatClientsView.cs" />
@@ -285,6 +287,8 @@
     <Compile Include="FieldMaps\AssetsFieldMap.cs" />
     <Compile Include="FieldMaps\AssetsViewFieldMap.cs" />
     <Compile Include="FieldMaps\AttachmentDownloadsFieldMap.cs" />
+    <Compile Include="FieldMaps\CalendarEventsFieldMap.cs" />
+    <Compile Include="FieldMaps\CalendarRefFieldMap.cs" />
     <Compile Include="FieldMaps\CDI_SettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ChatClientsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ChatUserSettingsFieldMap.cs" />
@@ -360,6 +364,8 @@
     <Compile Include="Generated\GeneratedAssets.cs" />
     <Compile Include="Generated\GeneratedAssetsView.cs" />
     <Compile Include="Generated\GeneratedAttachmentDownloads.cs" />
+    <Compile Include="Generated\GeneratedCalendarEvents.cs" />
+    <Compile Include="Generated\GeneratedCalendarRef.cs" />
     <Compile Include="Generated\GeneratedCDI_Settings.cs" />
     <Compile Include="Generated\GeneratedChatClientsView.cs" />
     <Compile Include="Generated\GeneratedChatUserSettings.cs" />
@@ -633,6 +639,8 @@
     <Compile Include="Generated\GeneratedWikiArticles.cs" />
     <Compile Include="Generated\GeneratedWikiArticlesView.cs" />
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
+    <Compile Include="Proxies\CalendarEventsProxy.cs" />
+    <Compile Include="Proxies\CalendarRefProxy.cs" />
     <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
     <Compile Include="Proxies\CustomPortalColumnsProxy.cs" />
     <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
