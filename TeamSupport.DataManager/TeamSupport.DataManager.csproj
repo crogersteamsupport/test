@@ -69,7 +69,8 @@
     <Reference Include="MySql.Data">
       <HintPath>References\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="OpenPop">
+    <Reference Include="OpenPop, Version=2.0.4.369, Culture=neutral, PublicKeyToken=bebb5741791313cd, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\OpenPop\OpenPop.NET 2.0.4\binaries\signed (strong name)\OpenPop.dll</HintPath>
     </Reference>
     <Reference Include="System" />

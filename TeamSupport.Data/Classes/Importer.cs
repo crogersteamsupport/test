@@ -14,8 +14,6 @@ using Microsoft.Win32;
 using System.Data.OleDb;
 using System.Text.RegularExpressions;
 
-
-
 namespace TeamSupport.Data
 {
   using IdList = SortedList<string, int>;

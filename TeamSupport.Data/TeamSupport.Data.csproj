@@ -126,6 +126,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NewtonSoft.Json\Bin\Net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="OpenPop">
+      <HintPath>..\packages\OpenPop\OpenPop.NET 2.0.4\binaries\signed (strong name)\OpenPop.dll</HintPath>
+    </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
@@ -214,6 +217,9 @@
     <Compile Include="BusinessObjects\ForumPermissions.cs" />
     <Compile Include="BusinessObjects\ForumTickets.cs" />
     <Compile Include="BusinessObjects\GroupAssignmentHistory.cs" />
+    <Compile Include="BusinessObjects\ImportFields.cs" />
+    <Compile Include="BusinessObjects\ImportMaps.cs" />
+    <Compile Include="BusinessObjects\Imports.cs" />
     <Compile Include="BusinessObjects\KnowledgeBaseCategories.cs" />
     <Compile Include="BusinessObjects\MiscellaneousLog.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
@@ -300,6 +306,9 @@
     <Compile Include="FieldMaps\ForumPermissionsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\GroupAssignmentHistoryFieldMap.cs" />
+    <Compile Include="FieldMaps\ImportFieldsFieldMap.cs" />
+    <Compile Include="FieldMaps\ImportMapsFieldMap.cs" />
+    <Compile Include="FieldMaps\ImportsFieldMap.cs" />
     <Compile Include="FieldMaps\KnowledgeBaseCategoriesFieldMap.cs" />
     <Compile Include="FieldMaps\MiscellaneousLogFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
@@ -533,6 +542,9 @@
     <Compile Include="Generated\GeneratedForumTickets.cs" />
     <Compile Include="Generated\GeneratedGroupAssignmentHistory.cs" />
     <Compile Include="Generated\GeneratedGroups.cs" />
+    <Compile Include="Generated\GeneratedImportFields.cs" />
+    <Compile Include="Generated\GeneratedImportMaps.cs" />
+    <Compile Include="Generated\GeneratedImports.cs" />
     <Compile Include="Generated\GeneratedInvoices.cs" />
     <Compile Include="Generated\GeneratedKBStats.cs" />
     <Compile Include="Generated\GeneratedKnowledgeBaseCategories.cs" />
@@ -624,6 +636,9 @@
     <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
     <Compile Include="Proxies\CustomPortalColumnsProxy.cs" />
     <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
+    <Compile Include="Proxies\ImportFieldsProxy.cs" />
+    <Compile Include="Proxies\ImportMapsProxy.cs" />
+    <Compile Include="Proxies\ImportsProxy.cs" />
     <Compile Include="Proxies\ProductFamiliesProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
     <Compile Include="Proxies\UserAssignmentHistoryProxy.cs" />

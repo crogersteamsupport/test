@@ -109,6 +109,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\Net40\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="LumenWorks.Framework.IO">
+      <HintPath>..\packages\CsvReader\bin\LumenWorks.Framework.IO.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -130,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetIndexDataSource.cs" />
+    <Compile Include="ImportProcessor.cs" />
     <Compile Include="WebHooks.cs" />
     <Compile Include="IndexDataSource.cs" />
     <Compile Include="NoteIndexDataSource.cs" />

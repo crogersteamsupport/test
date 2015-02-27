@@ -23,6 +23,7 @@ namespace TeamSupport.ServiceTestApplication
     ServiceThreadPool<Indexer> _indexer;
     CrmPool _crmPool;
     ReminderProcessor _reminderProcessor;
+    ImportProcessor _importProcessor;
     WebHooks _webhooks;
     
     public Form1()
@@ -52,6 +53,7 @@ namespace TeamSupport.ServiceTestApplication
       if (_indexer != null) _indexer.Stop();
       if (_crmPool != null) _crmPool.Stop();
       if (_reminderProcessor != null) _reminderProcessor.Stop();
+      if (_importProcessor != null) _importProcessor.Stop();
       if (_webhooks != null) _webhooks.Stop();
     }
 
@@ -121,6 +123,11 @@ namespace TeamSupport.ServiceTestApplication
     private void button1_Click(object sender, EventArgs e)
     {
       if (_webhooks == null || _webhooks.IsStopped) StartProcess(_webhooks = new WebHooks(), sender as Button); else StopProcess(_webhooks, sender as Button);
+    }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+      if (_importProcessor == null || _importProcessor.IsStopped) StartProcess(_importProcessor = new ImportProcessor(), sender as Button); else StopProcess(_importProcessor, sender as Button);
     }
 
 

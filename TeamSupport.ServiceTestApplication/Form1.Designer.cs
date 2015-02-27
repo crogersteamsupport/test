@@ -37,6 +37,7 @@
       this.btnIndexer = new System.Windows.Forms.Button();
       this.btnReminders = new System.Windows.Forms.Button();
       this.button1 = new System.Windows.Forms.Button();
+      this.button2 = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // btnEmailProcessor
@@ -123,11 +124,24 @@
       this.button1.UseVisualStyleBackColor = true;
       this.button1.Click += new System.EventHandler(this.button1_Click);
       // 
+      // button2
+      // 
+      this.button2.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.button2.ForeColor = System.Drawing.Color.Green;
+      this.button2.Location = new System.Drawing.Point(12, 266);
+      this.button2.Name = "button2";
+      this.button2.Size = new System.Drawing.Size(221, 29);
+      this.button2.TabIndex = 29;
+      this.button2.Text = "Start Imports";
+      this.button2.UseVisualStyleBackColor = true;
+      this.button2.Click += new System.EventHandler(this.button2_Click);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(248, 338);
+      this.Controls.Add(this.button2);
       this.Controls.Add(this.button1);
       this.Controls.Add(this.btnReminders);
       this.Controls.Add(this.btnIndexer);
@@ -152,6 +166,7 @@
     private System.Windows.Forms.Button btnIndexer;
     private System.Windows.Forms.Button btnReminders;
     private System.Windows.Forms.Button button1;
+    private System.Windows.Forms.Button button2;
   }
 }
 

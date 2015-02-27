@@ -30,7 +30,7 @@ namespace TeamSupport.DataManager.UserControls
     {
       OpenFileDialog dialog = new OpenFileDialog();
       dialog.FileName = Properties.Settings.Default.SpreadSheetSourceFileName;
-      dialog.Filter = "Excel Files (*.xls, *.xlsx)|*.xls;*.xlsx|All Files (*.*)|*.*";
+      dialog.Filter = "Spreadsheet (*.xls, *.xlsx, *.csv)|*.xls;*.xlsx;*.csv|All Files (*.*)|*.*";
       if (dialog.ShowDialog() == DialogResult.OK)
       {
         lblFileName.Text = dialog.FileName;
