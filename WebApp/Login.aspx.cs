@@ -331,8 +331,16 @@ public partial class Login : System.Web.UI.Page
         return "ChangePassword.aspx?reason=expired";
     else
     {
+      string rawQueryString = null;
+        try
+        {
+           rawQueryString = HttpContext.Current.Request.UrlReferrer.Query; 
+        }
+        catch (Exception)
+        {
+
+        }
         
-        string rawQueryString = HttpContext.Current.Request.UrlReferrer.Query; 
         if(null != rawQueryString)
         {
             string urlRedirect = GetQueryStringValue(rawQueryString, "ReturnUrl");
