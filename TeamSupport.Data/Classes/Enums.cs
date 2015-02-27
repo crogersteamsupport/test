@@ -248,6 +248,15 @@ namespace TeamSupport.Data
       Group
   }
 
+  public enum CalendarAttachmentType
+  {
+      Ticket = 0,
+      Product,
+      Company,
+      User,
+      Group
+  }
+
   public enum FontFamily
   {
     Unassigned      = 0,

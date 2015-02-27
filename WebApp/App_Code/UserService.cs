@@ -1283,6 +1283,238 @@ namespace TSWebServices
             return newusermessage;
         }
 
+        [WebMethod]
+        public CalEvent[] GetCalendarEvents(string startdate, string pageType, string pageID)
+        {
+            JavaScriptSerializer serial = new JavaScriptSerializer();
+            StringBuilder jsonString = new StringBuilder("");
+            List<CalEvent> events = new List<CalEvent>();
+
+            //PageType Enum
+            // 0 = ticket
+            // 1 = Product
+            // 2 = Company
+            // 4 = group
+
+            ////get all due dates for the current month
+            if (pageType == "0" || pageType == "-1")
+            {
+                Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
+                tickets.LoadbyUserMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID);
+
+                foreach (Ticket t in tickets)
+                {
+                    CalEvent cal = new CalEvent();
+                    cal.color = "red";
+                    DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)t.DueDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
+                    cal.start = ((DateTime)t.DueDate).ToString("o");
+                    cal.title = t.Name;
+                    cal.type = "ticket";
+                    //cal.id = t.TicketID;
+                    cal.id = t.TicketNumber;
+                    cal.description = "Ticket Due Date: " + t.DueDate;
+                    events.Add(cal);
+                }
+            }
+
+            //get all reminders for this user for the current month
+            Reminders reminders = new Reminders(TSAuthentication.GetLoginUser());
+            switch(pageType)
+            {
+                case "0":
+                    pageType = "17";
+                    break;
+                case "2":
+                    pageType = "9";
+                    break;
+            }
+
+            reminders.LoadByUserMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().UserID, pageType, pageID);
+            foreach (Reminder r in reminders)
+            {
+                CalEvent cal = new CalEvent();
+                cal.color = "blue";
+                cal.title = r.Description;
+                cal.start = ((DateTime)r.DueDateUtc).ToString("o");
+
+                switch (r.RefType)
+                {
+                    case ReferenceType.Tickets:
+                        Ticket t = Tickets.GetTicket(TSAuthentication.GetLoginUser(), r.RefID);
+                        cal.type = "reminder-ticket";
+                        cal.id = t.TicketNumber;
+                        cal.description = "Ticket Reminder: " + r.DueDateUtc;
+                        break;
+                    case ReferenceType.Organizations:
+                        Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), r.RefID);
+                        cal.type = "reminder-org";
+                        cal.id = o.OrganizationID;
+                        cal.description = "Company Reminder: " + r.DueDateUtc;
+                        break;
+                    case ReferenceType.Contacts:
+                        User u = Users.GetUser(TSAuthentication.GetLoginUser(), r.RefID);
+                        cal.id = u.UserID;
+                        cal.type = "reminder-user";
+                        cal.description = "Contact Reminder: " + r.DueDateUtc;
+                        break;
+                }
+
+
+                events.Add(cal);
+            }
+            ////get all custom events for the month
+            CalendarEvents customEvents = new CalendarEvents(TSAuthentication.GetLoginUser());
+            customEvents.LoadbyMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().OrganizationID, pageType, pageID);
+            foreach (CalendarEvent c in customEvents)
+            {
+                CalEvent cal = new CalEvent();
+                cal.color = "green";
+                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)c.StartDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
+                cal.start = ((DateTime)c.StartDateUtc).ToString("o");
+                //cal.end = ((DateTime)c.EndDateUtc).ToString("o");
+                cal.title = c.Title;
+                cal.type = "cal";
+                cal.id = c.CalendarID;
+                cal.description = c.Description;
+                events.Add(cal);                
+            }
+            return events.ToArray();
+        }
+
+        [WebMethod]
+        public void DeleteCalEvent(int eventid)
+        {
+            CalendarEvent c = CalendarEvents.GetCalendarEvent(TSAuthentication.GetLoginUser(), eventid);
+            if (c.OrganizationID != TSAuthentication.OrganizationID) return;
+            if (!TSAuthentication.IsSystemAdmin) return;
+            c.Delete();
+            c.Collection.Save();
+        }
+
+        [WebMethod]
+        public void AddAttachment(int calendarID, int attachmentID, CalendarAttachmentType attachmentType)
+        {
+            try
+            {
+                CalendarRefItem calAttachment = (new CalendarRef(TSAuthentication.GetLoginUser()).AddNewCalendarRefItem());
+                calAttachment.CalendarID = calendarID;
+                calAttachment.RefID = attachmentID;
+                calAttachment.RefType = attachmentType;
+                calAttachment.Collection.Save();
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        [WebMethod]
+        public void SaveCalendarEvent(string data)
+        {
+            CalendarJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<CalendarJsonInfo>(data);
+
+            CalendarEvent cal = (new CalendarEvents(TSAuthentication.GetLoginUser()).AddNewCalendarEvent());
+            cal.StartDate = DateTime.Parse(info.start);
+            //cal.EndDate = info.end == "" ? null : DateTime.Parse(info.end);
+            cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+            cal.Title = info.title;
+            cal.Description = info.description;
+            cal.LastModified = DateTime.Now;
+            cal.CreatorID = TSAuthentication.GetLoginUser().UserID;
+            cal.Collection.Save();
+
+            foreach (int ticketID in info.Tickets)
+            {
+                AddAttachment(cal.CalendarID, ticketID, CalendarAttachmentType.Ticket);
+            }
+
+            if (info.PageType == 1)
+                AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Product);
+            foreach (int productID in info.Products)
+            {
+                AddAttachment(cal.CalendarID, productID, CalendarAttachmentType.Product);
+            }
+
+            if (info.PageType == 2)
+                AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Company);
+            foreach (int CompanyID in info.Company)
+            {
+                AddAttachment(cal.CalendarID, CompanyID, CalendarAttachmentType.Company);
+            }
+
+            if (info.PageType == 4)
+                AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Group);
+            foreach (int groupID in info.Groups)
+            {
+                AddAttachment(cal.CalendarID, groupID, CalendarAttachmentType.Group);
+            }
+
+            foreach (int UserID in info.User)
+            {
+                AddAttachment(cal.CalendarID, UserID, CalendarAttachmentType.User);
+            }
+
+        }
+
+        [WebMethod]
+        public void ChangeEventDate(int eventID, DateTime newTime, string eventType)
+        {
+            switch (eventType)
+            {
+                case "ticket":
+                    Tickets ticket = new Tickets(TSAuthentication.GetLoginUser());
+                    ticket.LoadByTicketNumber(TSAuthentication.GetLoginUser().OrganizationID, eventID);
+                    ticket[0].DueDate = TimeZoneInfo.ConvertTimeToUtc(newTime);
+                    ticket[0].Collection.Save();
+                    
+                    break;
+                case "cal":
+                    CalendarEvents events = new CalendarEvents(TSAuthentication.GetLoginUser());
+                    events.LoadByCalendarID(eventID);
+                    events[0].StartDate = newTime;
+                    events[0].Collection.Save();
+                    break;
+                default:
+                    Reminders reminders = new Reminders(TSAuthentication.GetLoginUser());
+
+                    if (eventType == "reminder-ticket")
+                        reminders.LoadByItem(ReferenceType.Tickets, eventID, TSAuthentication.GetLoginUser().UserID);
+                    if (eventType == "reminder-org")
+                        reminders.LoadByItem(ReferenceType.Organizations, eventID, TSAuthentication.GetLoginUser().UserID);
+                    if (eventType == "reminder-user")
+                        reminders.LoadByItem(ReferenceType.Contacts, eventID, TSAuthentication.GetLoginUser().UserID);
+
+                    reminders[0].DueDate = newTime;
+                    reminders[0].Collection.Save();
+                    break;
+            }
+            //CalendarEvents cal;
+            //cal.LoadByCalendarID(data);
+            //cal[0].StartDate = "a";
+            //cal[0].Collection.Save();
+
+        }
+
+
+        [DataContract]
+        public class CalEvent
+        {
+            [DataMember]
+            public int id { get; set; }
+            [DataMember]
+            public string title { get; set; }
+            [DataMember]
+            public string start { get; set; }
+            [DataMember]
+            public string end { get; set; }
+            [DataMember]
+            public string color { get; set; }
+            [DataMember]
+            public string type { get; set; }
+            [DataMember]
+            public string description { get; set; }
+        }
+
 
       [DataContract]
         public class BasicUser
@@ -1295,6 +1527,33 @@ namespace TSWebServices
             public string InOfficeComment { get; set; }
         }
 
-
+      public class CalendarJsonInfo
+      {
+          public CalendarJsonInfo() { }
+          [DataMember]
+          public int id { get; set; }
+          [DataMember]
+          public string title { get; set; }
+          [DataMember]
+          public string start { get; set; }
+          [DataMember]
+          public string end { get; set; }
+          [DataMember]
+          public string description { get; set; }
+          [DataMember]
+          public List<int> Tickets { get; set; }
+          [DataMember]
+          public List<int> Groups { get; set; }
+          [DataMember]
+          public List<int> Products { get; set; }
+          [DataMember]
+          public List<int> Company { get; set; }
+          [DataMember]
+          public List<int> User { get; set; }
+          [DataMember]
+          public int PageType { get; set; }
+          [DataMember]
+          public int PageID { get; set; }
+      }
     }
 }

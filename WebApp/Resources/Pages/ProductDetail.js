@@ -13,6 +13,10 @@ var _customersSortDirection = 'DESC';
 $(document).ready(function () {
   _productID = top.Ts.Utils.getQueryValue("productid", window);
 
+  if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
+      $('#calendarTab').hide();
+  }
+
   $('body').layout({
       defaults: {
           spacing_open: 0,
@@ -120,6 +124,12 @@ $(document).ready(function () {
           LoadInventory();
           _viewingCustomers = false;
           _viewingInventory = true;
+          _viewingVersions = false;
+      }
+      else if (e.target.innerHTML == "Calendar") {
+          $('#calendarIframe').attr("src", "Calendar.html?pagetype=1&pageid=" + _productID);
+          _viewingCustomers = false;
+          _viewingInventory = false;
           _viewingVersions = false;
       }
   })

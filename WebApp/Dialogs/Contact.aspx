@@ -91,7 +91,7 @@
       </tr>
       <tr>
         <td class="labelColTD">
-          Prevent email from creating tickets:
+          Block all emails from sender:
         </td>
         <td class="inputColTD">
           <asp:CheckBox ID="cbBlockEmail" runat="server" Text="" CssClass="" />

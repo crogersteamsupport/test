@@ -4,6 +4,10 @@ $(document).ready(function () {
         applyDemoStyles: true
     });
     
+    if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
+        $('#calendarTab').hide();
+    }
+
     if (!top.Ts.System.User.IsSystemAdmin) {
         $('#groupDelete').remove();
         //$('#openTab').hide();
@@ -37,7 +41,7 @@ $(document).ready(function () {
         $('.group-container').append(html);
     });
     
-    $('#infoIframe, #openIframe, #closedIframe, #allIframe, #queueIframe, #historyIframe, #watercoolerIframe').load(function () {
+    $('#infoIframe, #openIframe, #closedIframe, #allIframe, #queueIframe, #historyIframe, #watercoolerIframe, #calendarIframe').load(function () {
         $('.maincontainer').fadeTo(0, 1);
     });
 
@@ -51,6 +55,7 @@ $(document).ready(function () {
         $('#unassignedIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=-2&tf_GroupID=" + groupID);
         $('#allIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_GroupID=" + groupID);
         $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=6&RefID=" + groupID);
+        $('#calendarIframe').attr("src", "/vcr/1_9_0/Pages/Calendar.html?pagetype=4&pageid=" + groupID);
         $('#groupName').text($(this).text());
         activeID = groupID;
 
@@ -75,6 +80,8 @@ $(document).ready(function () {
             $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=6&RefID=" + groupID);
         else if (e.target.innerHTML == "WaterCooler")
             $('#watercoolerIframe').attr("src", "/vcr/1_9_0/Pages/Watercooler.html?pagetype=4&pageid=" + groupID);
+        else if (e.target.innerHTML == "Calendar")
+            $('#calendarIframe').attr("src", "/vcr/1_9_0/Pages/Calendar.html?pagetype=4&pageid=" + groupID);
     });
 
     $('#groupNew').click(function () {

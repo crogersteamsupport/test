@@ -169,7 +169,8 @@ $(document).ready(function () {
         }
 
         if(isValid)
-            {
+        {
+                $('#custSaveBtn').prop("disabled", true);
                 var customerInfo = new Object();
                 top.Ts.System.logAction('New Customer Page - Added New Customer');
                 customerInfo.Name = $("#inputName").val();
@@ -219,9 +220,11 @@ $(document).ready(function () {
 
 
                 top.Ts.Services.Customers.SaveCustomer(top.JSON.stringify(customerInfo), function (f) {
+                    $('#custSaveBtn').prop("disabled", false);
                     top.Ts.MainPage.openNewCustomer(f);
                     top.Ts.MainPage.closenewCustomerTab();
                 }, function () {
+                    $('#custSaveBtn').prop("disabled", false);
                     alert('There was an error saving this customer.  Please try again.');
                 });
         }
@@ -238,6 +241,7 @@ $(document).ready(function () {
 
         if(isValid)
         {
+            $('#contactSaveBtn').prop("disabled", true);
             var contactInfo = new Object();
             top.Ts.System.logAction('New Customer Page - Added New Contact');
             contactInfo.FirstName = $("#inputContactFname").val();
@@ -298,9 +302,11 @@ $(document).ready(function () {
 
             top.Ts.Services.Customers.SaveContact(top.JSON.stringify(contactInfo), function (f) {
                 if (f == -1) {
-                    alert("The email you have specified is already in use.  Please choose another email.")
+                    alert("The email you have specified is already in use.  Please choose another email.");
+                    $('#contactSaveBtn').prop("disabled", false);
                 }
-                else{
+                else {
+                    $('#contactSaveBtn').prop("disabled", false);
                     top.Ts.MainPage.openNewContact(f);
                     top.Ts.MainPage.closenewCustomerTab();
                 }

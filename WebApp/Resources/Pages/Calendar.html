@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel='stylesheet' href='../Css/fullcalendar.css' />
+    <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/tsbs.css" rel="stylesheet" />
+    <link href="Calendar.css" rel="stylesheet" />
+
+    <script src='../Js/jquery-latest.min.js'></script>
+    <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+    <script src='../Js/moment.min.js'></script>
+    <script src='../Js/fullcalendar.js'></script>
+    <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
+    <script src="../Js/bootstrap-datetimepicker.min.js"></script>
+    <script src="../Js/Ts/ts.utils.js" type="text/javascript"></script>
+    <script src='calendar.js'></script>
+    <title></title>
+</head>
+<body>
+    <div class="ui-layout-center">
+        <div id='calendar'></div>
+    </div>
+
+    <div id="fullCalModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+                <h4 id="modalTitle" class="modal-title">Event</h4>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                            
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="inputTitle" placeholder="Title"/>
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control datetimepicker" id="inputStartTime" placeholder="Start Time"/>
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control datetimepicker" id="inputEndTime" placeholder="End Time"/>
+                            </div>
+                    </div>
+<!--                    <div class="form-group">
+                        <div class="col-sm-12">
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox"/> All Day Event
+                            </label>
+                          </div>
+                        </div>
+                      </div>-->
+                    <div class="form-group">
+                            <div class="col-sm-12">
+                                <textarea id="inputDescription" rows="5" class="form-control" placeholder="Description"></textarea>
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <div class="col-sm-12">
+                                <select class="form-control" id="calAssociation">
+                                    <option value="-1">Event Association</option>
+                                    <option value="0">Ticket</option>
+                                    <option value="1">User</option>
+                                    <option value="2">Company</option>
+                                    <option value="3">Group</option>
+                                    <option value="4">Product</option>
+                                </select>
+                            </div>
+                    </div>
+                    <div class="form-group" id="searchGroup">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="associationSearch" placeholder="Search..."/>
+                            </div>
+                    </div>
+                    <div id="associationQueue">
+                        <div class="ticket-queue"></div>
+                        <div class="user-queue"></div>
+                        <div class="group-queue"></div>
+                        <div class="customer-queue"></div>
+                        <div class="product-queue"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="btnSaveEvent" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div id="popoverTemplate" class="hide">
+        <div>
+            Feb 1, 2014 Time to Time
+        </div>
+        <hr />
+        <div>
+            <button id="popOverGoto" class="btn btn-sm"><i class="fa fa-arrow-up"></i></button>
+            <button class="btn btn-sm btn-primary pull-right"><i class="fa fa-pencil"></i></button>
+        </div>
+    </div>
+</body>
+</html>

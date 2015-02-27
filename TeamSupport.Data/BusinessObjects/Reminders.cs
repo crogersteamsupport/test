@@ -25,6 +25,27 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByUserMonth(DateTime date, int userID, string Type, string ID)
+    {
+        string additional = "";
+        if (Type != "-1")
+        {
+            additional = "AND (Reftype = @type) AND (RefID = @id)";
+        }
+
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * FROM Reminders WHERE (UserID = @UserID) AND (IsDismissed = 0) AND (Month(Duedate) = @month) AND (Year(Duedate) = @year) " + additional + " ORDER BY DueDate";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@month", date.Month);
+            command.Parameters.AddWithValue("@year", date.Year);
+            command.Parameters.AddWithValue("@type", date.Year);
+            command.Parameters.AddWithValue("@id", date.Year);
+            Fill(command);
+        }
+    }
+
     public void LoadByItem(ReferenceType refType, int refID, int? userID)
     {
       using (SqlCommand command = new SqlCommand())

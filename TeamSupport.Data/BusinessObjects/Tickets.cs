@@ -1027,6 +1027,21 @@ AND ts.IsClosed = 0";
       }
     }
 
+    public void LoadbyUserMonth(DateTime date, int userID, int orgID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * from Tickets WHERE (Month(DueDate) = @month) AND (Year(DueDate) = @year) AND (UserID = @UserID) AND (OrganizationID = @OrgID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@month", date.Month);
+            command.Parameters.AddWithValue("@year", date.Year);
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@OrgID", orgID);
+            Fill(command);
+        }
+    }
+
+
     public void RemoveContact(int userID, int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
