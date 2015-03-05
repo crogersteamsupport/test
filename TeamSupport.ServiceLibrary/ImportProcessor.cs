@@ -38,9 +38,6 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
-        import.IsDone = true;
-        import.Collection.Save();
-
         Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "ImportProcessor"); 
       }
