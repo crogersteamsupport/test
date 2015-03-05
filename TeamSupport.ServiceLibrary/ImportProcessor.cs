@@ -24,19 +24,23 @@ namespace TeamSupport.ServiceLibrary
 
     public override void Run()
     {
+      Imports imports = new Imports(LoginUser);
+      imports.LoadWaiting();
+      Import import = imports[0];
+
       try
       {
-        Imports imports = new Imports(LoginUser);
-        imports.LoadWaiting();
         if (!imports.IsEmpty)
         {
-          Import import = imports[0];
           ProcessImport(import);
         }
         UpdateHealth();
       }
       catch (Exception ex)
       {
+        import.IsDone = true;
+        import.Collection.Save();
+
         Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "ImportProcessor"); 
       }
@@ -145,16 +149,29 @@ namespace TeamSupport.ServiceLibrary
         
         if (++count % BULK_LIMIT == 0)
         {
-          EmailPosts.DeleteImportEmails(_importUser);
+          ClearEmails();
           actions.BulkSave();
           actions = new Actions(_importUser);
           UpdateImportCount(import, count);
         }
       }
-      EmailPosts.DeleteImportEmails(_importUser);
+      ClearEmails();
       actions.BulkSave();
       UpdateImportCount(import, count);
       // _log.AppendMessage(count.ToString() + " Actions Imported.");
+    }
+
+    private void ClearEmails()
+    {
+      try
+      {
+        EmailPosts.DeleteImportEmails(_importUser);
+
+      }
+      catch (Exception)
+      {
+        
+      }
     }
 
     private string GetMappedName(string field)
