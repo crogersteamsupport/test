@@ -144,8 +144,8 @@ namespace TeamSupport.ServiceLibrary
         action.TimeSpent = ReadIntNull("TimeSpent");
 
         action.Pinned = ReadBool("IsPinned");
-        
-        if (++count % BULK_LIMIT == 0)
+        count++;
+        if (count % BULK_LIMIT == 0)
         {
           ClearEmails();
           actions.BulkSave();
