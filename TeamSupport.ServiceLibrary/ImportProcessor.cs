@@ -21,6 +21,7 @@ namespace TeamSupport.ServiceLibrary
     private LoginUser _importUser;
     private CsvReader _csv;
     private SortedList<string, string> _map;
+    private string[] _headers;
 
     public override void Run()
     {
@@ -57,7 +58,7 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteData(import.Row);
       Logs.WriteLine();
       Logs.WriteEvent("***********************************************************************************");
-      _importUser = new Data.LoginUser(LoginUser.ConnectionString, -2, import.OrganizationID, null);
+      _importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, import.OrganizationID, null);
 
 
       //string path = AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports);
@@ -74,7 +75,7 @@ namespace TeamSupport.ServiceLibrary
       // load maps
       using (_csv = new CsvReader(new StreamReader(csvFile), true))
       {
-
+        _headers = _csv.GetFieldHeaders();
         switch (import.RefType)
         {
           case ReferenceType.Actions:
@@ -139,10 +140,10 @@ namespace TeamSupport.ServiceLibrary
         action.ModifierID = -2;
         action.Name = "";
         action.TicketID = ticketID;
-        action.ImportID = import.ImportGUID.ToString();
+        action.ImportID = ReadString("ActionID");// import.ImportGUID.ToString();
         action.TimeSpent = ReadIntNull("TimeSpent");
 
-        action.Pinned = false;// ReadBool("IsPinned");
+        action.Pinned = ReadBool("IsPinned");
         
         if (++count % BULK_LIMIT == 0)
         {
@@ -179,7 +180,8 @@ namespace TeamSupport.ServiceLibrary
 
     private string GetMappedValue(string field)
     {
-      return _csv[GetMappedName(field)];
+      string mappedField = GetMappedName(field);
+      return _headers.Contains(mappedField) ? _csv[mappedField] : "";
     }
     
     private DateTime ReadDate(string field, DateTime defaultValue)
