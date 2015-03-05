@@ -57,7 +57,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SlaWarningHours", "SlaWarningHours", true, true, true);
       _fieldMap.AddMap("KnowledgeBaseCategoryID", "KnowledgeBaseCategoryID", true, true, true);
       _fieldMap.AddMap("KnowledgeBaseCategoryName", "KnowledgeBaseCategoryName", false, false, true);
-      _fieldMap.AddMap("DueDate", "DueDate", false, false, true);
+      _fieldMap.AddMap("DueDate", "DueDate", true, true, true);
       _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
       _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
