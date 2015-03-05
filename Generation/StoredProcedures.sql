@@ -2907,119 +2907,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
-
-(
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
-  (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID])
-  VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
-    @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @DateCreated,
-    @CreatorID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
-
-(
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
-  SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
-    [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportTableField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportTableField
 GO
 
@@ -4675,111 +4562,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportFieldID],
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description]
-  FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImportField
-
-(
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFields]
-  (
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description])
-  VALUES (
-    @TableName,
-    @FieldName,
-    @Alias,
-    @DataType,
-    @Size,
-    @IsVisible,
-    @Description)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
-
-(
-  @ImportFieldID int,
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFields]
-  SET
-    [TableName] = @TableName,
-    [FieldName] = @FieldName,
-    [Alias] = @Alias,
-    [DataType] = @DataType,
-    [Size] = @Size,
-    [IsVisible] = @IsVisible,
-    [Description] = @Description
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
@@ -6069,6 +5851,117 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportFieldID],
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description]
+  FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImportField
+
+(
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ImportFields]
+  (
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description])
+  VALUES (
+    @TableName,
+    @FieldName,
+    @Alias,
+    @DataType,
+    @Size,
+    @IsVisible,
+    @IsRequired,
+    @Description)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
+
+(
+  @ImportFieldID int,
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ImportFields]
+  SET
+    [TableName] = @TableName,
+    [FieldName] = @FieldName,
+    [Alias] = @Alias,
+    [DataType] = @DataType,
+    [Size] = @Size,
+    [IsVisible] = @IsVisible,
+    [IsRequired] = @IsRequired,
+    [Description] = @Description
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
@@ -6310,6 +6203,155 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportID],
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID]
+  FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImport
+
+(
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Imports]
+  (
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID])
+  VALUES (
+    @FileName,
+    @OrganizationID,
+    @ImportGUID,
+    @RefType,
+    @AuxID,
+    @IsDone,
+    @IsRunning,
+    @IsDeleted,
+    @NeedsDeleted,
+    @TotalRows,
+    @CompletedRows,
+    @DateStarted,
+    @DateEnded,
+    @DateCreated,
+    @CreatorID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+
+(
+  @ImportID int,
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Imports]
+  SET
+    [FileName] = @FileName,
+    [OrganizationID] = @OrganizationID,
+    [ImportGUID] = @ImportGUID,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [IsDone] = @IsDone,
+    [IsRunning] = @IsRunning,
+    [IsDeleted] = @IsDeleted,
+    [NeedsDeleted] = @NeedsDeleted,
+    [TotalRows] = @TotalRows,
+    [CompletedRows] = @CompletedRows,
+    [DateStarted] = @DateStarted,
+    [DateEnded] = @DateEnded
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
 GO
 
 
@@ -17113,119 +17155,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
-
-(
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
-  (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID])
-  VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
-    @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @DateCreated,
-    @CreatorID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
-
-(
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
-  SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
-    [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportTableField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportTableField
 GO
 
@@ -18881,111 +18810,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportFieldID],
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description]
-  FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImportField
-
-(
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFields]
-  (
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description])
-  VALUES (
-    @TableName,
-    @FieldName,
-    @Alias,
-    @DataType,
-    @Size,
-    @IsVisible,
-    @Description)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
-
-(
-  @ImportFieldID int,
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFields]
-  SET
-    [TableName] = @TableName,
-    [FieldName] = @FieldName,
-    [Alias] = @Alias,
-    [DataType] = @DataType,
-    [Size] = @Size,
-    [IsVisible] = @IsVisible,
-    [Description] = @Description
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
@@ -20275,6 +20099,117 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportFieldID],
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description]
+  FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImportField
+
+(
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ImportFields]
+  (
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description])
+  VALUES (
+    @TableName,
+    @FieldName,
+    @Alias,
+    @DataType,
+    @Size,
+    @IsVisible,
+    @IsRequired,
+    @Description)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
+
+(
+  @ImportFieldID int,
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ImportFields]
+  SET
+    [TableName] = @TableName,
+    [FieldName] = @FieldName,
+    [Alias] = @Alias,
+    [DataType] = @DataType,
+    [Size] = @Size,
+    [IsVisible] = @IsVisible,
+    [IsRequired] = @IsRequired,
+    [Description] = @Description
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
@@ -20516,6 +20451,155 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportID],
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID]
+  FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImport
+
+(
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Imports]
+  (
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID])
+  VALUES (
+    @FileName,
+    @OrganizationID,
+    @ImportGUID,
+    @RefType,
+    @AuxID,
+    @IsDone,
+    @IsRunning,
+    @IsDeleted,
+    @NeedsDeleted,
+    @TotalRows,
+    @CompletedRows,
+    @DateStarted,
+    @DateEnded,
+    @DateCreated,
+    @CreatorID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+
+(
+  @ImportID int,
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Imports]
+  SET
+    [FileName] = @FileName,
+    [OrganizationID] = @OrganizationID,
+    [ImportGUID] = @ImportGUID,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [IsDone] = @IsDone,
+    [IsRunning] = @IsRunning,
+    [IsDeleted] = @IsDeleted,
+    [NeedsDeleted] = @NeedsDeleted,
+    [TotalRows] = @TotalRows,
+    [CompletedRows] = @CompletedRows,
+    [DateStarted] = @DateStarted,
+    [DateEnded] = @DateEnded
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
 GO
 
 
@@ -31319,119 +31403,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
-
-(
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
-  (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID])
-  VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
-    @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @DateCreated,
-    @CreatorID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
-
-(
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
-  SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
-    [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportTableField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportTableField
 GO
 
@@ -33087,111 +33058,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportFieldID],
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description]
-  FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImportField
-
-(
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFields]
-  (
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description])
-  VALUES (
-    @TableName,
-    @FieldName,
-    @Alias,
-    @DataType,
-    @Size,
-    @IsVisible,
-    @Description)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
-
-(
-  @ImportFieldID int,
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFields]
-  SET
-    [TableName] = @TableName,
-    [FieldName] = @FieldName,
-    [Alias] = @Alias,
-    [DataType] = @DataType,
-    [Size] = @Size,
-    [IsVisible] = @IsVisible,
-    [Description] = @Description
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
@@ -34481,6 +34347,117 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportFieldID],
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description]
+  FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImportField
+
+(
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ImportFields]
+  (
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description])
+  VALUES (
+    @TableName,
+    @FieldName,
+    @Alias,
+    @DataType,
+    @Size,
+    @IsVisible,
+    @IsRequired,
+    @Description)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
+
+(
+  @ImportFieldID int,
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ImportFields]
+  SET
+    [TableName] = @TableName,
+    [FieldName] = @FieldName,
+    [Alias] = @Alias,
+    [DataType] = @DataType,
+    [Size] = @Size,
+    [IsVisible] = @IsVisible,
+    [IsRequired] = @IsRequired,
+    [Description] = @Description
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
@@ -34722,6 +34699,155 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportID],
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID]
+  FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImport
+
+(
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Imports]
+  (
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID])
+  VALUES (
+    @FileName,
+    @OrganizationID,
+    @ImportGUID,
+    @RefType,
+    @AuxID,
+    @IsDone,
+    @IsRunning,
+    @IsDeleted,
+    @NeedsDeleted,
+    @TotalRows,
+    @CompletedRows,
+    @DateStarted,
+    @DateEnded,
+    @DateCreated,
+    @CreatorID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+
+(
+  @ImportID int,
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Imports]
+  SET
+    [FileName] = @FileName,
+    [OrganizationID] = @OrganizationID,
+    [ImportGUID] = @ImportGUID,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [IsDone] = @IsDone,
+    [IsRunning] = @IsRunning,
+    [IsDeleted] = @IsDeleted,
+    [NeedsDeleted] = @NeedsDeleted,
+    [TotalRows] = @TotalRows,
+    [CompletedRows] = @CompletedRows,
+    [DateStarted] = @DateStarted,
+    [DateEnded] = @DateEnded
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
 GO
 
 
@@ -45525,119 +45651,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
-
-(
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
-  (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID])
-  VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
-    @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @DateCreated,
-    @CreatorID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
-
-(
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
-  SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
-    [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportTableField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportTableField
 GO
 
@@ -47293,111 +47306,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportFieldID],
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description]
-  FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImportField
-
-(
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFields]
-  (
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description])
-  VALUES (
-    @TableName,
-    @FieldName,
-    @Alias,
-    @DataType,
-    @Size,
-    @IsVisible,
-    @Description)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
-
-(
-  @ImportFieldID int,
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFields]
-  SET
-    [TableName] = @TableName,
-    [FieldName] = @FieldName,
-    [Alias] = @Alias,
-    [DataType] = @DataType,
-    [Size] = @Size,
-    [IsVisible] = @IsVisible,
-    [Description] = @Description
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
@@ -48687,6 +48595,117 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportFieldID],
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description]
+  FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImportField
+
+(
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ImportFields]
+  (
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description])
+  VALUES (
+    @TableName,
+    @FieldName,
+    @Alias,
+    @DataType,
+    @Size,
+    @IsVisible,
+    @IsRequired,
+    @Description)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
+
+(
+  @ImportFieldID int,
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ImportFields]
+  SET
+    [TableName] = @TableName,
+    [FieldName] = @FieldName,
+    [Alias] = @Alias,
+    [DataType] = @DataType,
+    [Size] = @Size,
+    [IsVisible] = @IsVisible,
+    [IsRequired] = @IsRequired,
+    [Description] = @Description
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
@@ -48928,6 +48947,155 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportID],
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID]
+  FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImport
+
+(
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Imports]
+  (
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID])
+  VALUES (
+    @FileName,
+    @OrganizationID,
+    @ImportGUID,
+    @RefType,
+    @AuxID,
+    @IsDone,
+    @IsRunning,
+    @IsDeleted,
+    @NeedsDeleted,
+    @TotalRows,
+    @CompletedRows,
+    @DateStarted,
+    @DateEnded,
+    @DateCreated,
+    @CreatorID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+
+(
+  @ImportID int,
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Imports]
+  SET
+    [FileName] = @FileName,
+    [OrganizationID] = @OrganizationID,
+    [ImportGUID] = @ImportGUID,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [IsDone] = @IsDone,
+    [IsRunning] = @IsRunning,
+    [IsDeleted] = @IsDeleted,
+    [NeedsDeleted] = @NeedsDeleted,
+    [TotalRows] = @TotalRows,
+    [CompletedRows] = @CompletedRows,
+    [DateStarted] = @DateStarted,
+    [DateEnded] = @DateEnded
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
 GO
 
 
@@ -59731,119 +59899,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
-
-(
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
-  (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
-    [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [DateCreated],
-    [CreatorID])
-  VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
-    @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @DateCreated,
-    @CreatorID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
-
-(
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
-  @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
-  SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
-    [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning
-  WHERE ([ImportID] = @ImportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
-
-(
-  @ImportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportTableField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportTableField
 GO
 
@@ -61499,111 +61554,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ImportFieldID],
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description]
-  FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertImportField
-
-(
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFields]
-  (
-    [TableName],
-    [FieldName],
-    [Alias],
-    [DataType],
-    [Size],
-    [IsVisible],
-    [Description])
-  VALUES (
-    @TableName,
-    @FieldName,
-    @Alias,
-    @DataType,
-    @Size,
-    @IsVisible,
-    @Description)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
-
-(
-  @ImportFieldID int,
-  @TableName varchar(100),
-  @FieldName varchar(250),
-  @Alias varchar(250),
-  @DataType varchar(150),
-  @Size int,
-  @IsVisible bit,
-  @Description varchar(1000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFields]
-  SET
-    [TableName] = @TableName,
-    [FieldName] = @FieldName,
-    [Alias] = @Alias,
-    [DataType] = @DataType,
-    [Size] = @Size,
-    [IsVisible] = @IsVisible,
-    [Description] = @Description
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
-
-(
-  @ImportFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFields]
-  WHERE ([ImportFieldID] = @ImportFieldID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
@@ -62893,6 +62843,117 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportFieldID],
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description]
+  FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImportField
+
+(
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ImportFields]
+  (
+    [TableName],
+    [FieldName],
+    [Alias],
+    [DataType],
+    [Size],
+    [IsVisible],
+    [IsRequired],
+    [Description])
+  VALUES (
+    @TableName,
+    @FieldName,
+    @Alias,
+    @DataType,
+    @Size,
+    @IsVisible,
+    @IsRequired,
+    @Description)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImportField
+
+(
+  @ImportFieldID int,
+  @TableName varchar(100),
+  @FieldName varchar(250),
+  @Alias varchar(250),
+  @DataType varchar(150),
+  @Size int,
+  @IsVisible bit,
+  @IsRequired bit,
+  @Description varchar(1000)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ImportFields]
+  SET
+    [TableName] = @TableName,
+    [FieldName] = @FieldName,
+    [Alias] = @Alias,
+    [DataType] = @DataType,
+    [Size] = @Size,
+    [IsVisible] = @IsVisible,
+    [IsRequired] = @IsRequired,
+    [Description] = @Description
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImportField
+
+(
+  @ImportFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ImportFields]
+  WHERE ([ImportFieldID] = @ImportFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
@@ -63134,6 +63195,155 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ImportID],
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID]
+  FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertImport
+
+(
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Imports]
+  (
+    [FileName],
+    [OrganizationID],
+    [ImportGUID],
+    [RefType],
+    [AuxID],
+    [IsDone],
+    [IsRunning],
+    [IsDeleted],
+    [NeedsDeleted],
+    [TotalRows],
+    [CompletedRows],
+    [DateStarted],
+    [DateEnded],
+    [DateCreated],
+    [CreatorID])
+  VALUES (
+    @FileName,
+    @OrganizationID,
+    @ImportGUID,
+    @RefType,
+    @AuxID,
+    @IsDone,
+    @IsRunning,
+    @IsDeleted,
+    @NeedsDeleted,
+    @TotalRows,
+    @CompletedRows,
+    @DateStarted,
+    @DateEnded,
+    @DateCreated,
+    @CreatorID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+
+(
+  @ImportID int,
+  @FileName varchar(255),
+  @OrganizationID int,
+  @ImportGUID uniqueidentifier,
+  @RefType int,
+  @AuxID int,
+  @IsDone bit,
+  @IsRunning bit,
+  @IsDeleted bit,
+  @NeedsDeleted bit,
+  @TotalRows int,
+  @CompletedRows int,
+  @DateStarted datetime,
+  @DateEnded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Imports]
+  SET
+    [FileName] = @FileName,
+    [OrganizationID] = @OrganizationID,
+    [ImportGUID] = @ImportGUID,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [IsDone] = @IsDone,
+    [IsRunning] = @IsRunning,
+    [IsDeleted] = @IsDeleted,
+    [NeedsDeleted] = @NeedsDeleted,
+    [TotalRows] = @TotalRows,
+    [CompletedRows] = @CompletedRows,
+    [DateStarted] = @DateStarted,
+    [DateEnded] = @DateEnded
+  WHERE ([ImportID] = @ImportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+
+(
+  @ImportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Imports]
+  WHERE ([ImportID] = @ImportID)
 GO
 
 

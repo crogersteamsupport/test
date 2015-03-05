@@ -48,6 +48,30 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
+    public int CompletedRows
+    {
+      get { return (int)Row["CompletedRows"]; }
+      set { Row["CompletedRows"] = CheckValue("CompletedRows", value); }
+    }
+    
+    public int TotalRows
+    {
+      get { return (int)Row["TotalRows"]; }
+      set { Row["TotalRows"] = CheckValue("TotalRows", value); }
+    }
+    
+    public bool NeedsDeleted
+    {
+      get { return (bool)Row["NeedsDeleted"]; }
+      set { Row["NeedsDeleted"] = CheckValue("NeedsDeleted", value); }
+    }
+    
+    public bool IsDeleted
+    {
+      get { return (bool)Row["IsDeleted"]; }
+      set { Row["IsDeleted"] = CheckValue("IsDeleted", value); }
+    }
+    
     public bool IsRunning
     {
       get { return (bool)Row["IsRunning"]; }
@@ -90,6 +114,28 @@ namespace TeamSupport.Data
     
     
 
+    
+    public DateTime? DateStarted
+    {
+      get { return Row["DateStarted"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateStarted"]) : null; }
+      set { Row["DateStarted"] = CheckValue("DateStarted", value); }
+    }
+
+    public DateTime? DateStartedUtc
+    {
+      get { return Row["DateStarted"] != DBNull.Value ? (DateTime?)Row["DateStarted"] : null; }
+    }
+    
+    public DateTime? DateEnded
+    {
+      get { return Row["DateEnded"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateEnded"]) : null; }
+      set { Row["DateEnded"] = CheckValue("DateEnded", value); }
+    }
+
+    public DateTime? DateEndedUtc
+    {
+      get { return Row["DateEnded"] != DBNull.Value ? (DateTime?)Row["DateEnded"] : null; }
+    }
     
 
     
@@ -198,7 +244,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Imports] SET     [FileName] = @FileName,    [OrganizationID] = @OrganizationID,    [ImportGUID] = @ImportGUID,    [RefType] = @RefType,    [AuxID] = @AuxID,    [IsDone] = @IsDone,    [IsRunning] = @IsRunning  WHERE ([ImportID] = @ImportID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Imports] SET     [FileName] = @FileName,    [OrganizationID] = @OrganizationID,    [ImportGUID] = @ImportGUID,    [RefType] = @RefType,    [AuxID] = @AuxID,    [IsDone] = @IsDone,    [IsRunning] = @IsRunning,    [IsDeleted] = @IsDeleted,    [NeedsDeleted] = @NeedsDeleted,    [TotalRows] = @TotalRows,    [CompletedRows] = @CompletedRows,    [DateStarted] = @DateStarted,    [DateEnded] = @DateEnded  WHERE ([ImportID] = @ImportID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ImportID", SqlDbType.Int, 4);
@@ -257,12 +303,54 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsDeleted", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("NeedsDeleted", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TotalRows", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("CompletedRows", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateStarted", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateEnded", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Imports] (    [FileName],    [OrganizationID],    [ImportGUID],    [RefType],    [AuxID],    [IsDone],    [IsRunning],    [DateCreated],    [CreatorID]) VALUES ( @FileName, @OrganizationID, @ImportGUID, @RefType, @AuxID, @IsDone, @IsRunning, @DateCreated, @CreatorID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Imports] (    [FileName],    [OrganizationID],    [ImportGUID],    [RefType],    [AuxID],    [IsDone],    [IsRunning],    [IsDeleted],    [NeedsDeleted],    [TotalRows],    [CompletedRows],    [DateStarted],    [DateEnded],    [DateCreated],    [CreatorID]) VALUES ( @FileName, @OrganizationID, @ImportGUID, @RefType, @AuxID, @IsDone, @IsRunning, @IsDeleted, @NeedsDeleted, @TotalRows, @CompletedRows, @DateStarted, @DateEnded, @DateCreated, @CreatorID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
@@ -277,6 +365,48 @@ namespace TeamSupport.Data
 		{
 		  tempParameter.Precision = 23;
 		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateEnded", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateStarted", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CompletedRows", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TotalRows", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("NeedsDeleted", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsDeleted", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("IsRunning", SqlDbType.Bit, 1);
@@ -440,7 +570,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportID], [FileName], [OrganizationID], [ImportGUID], [RefType], [AuxID], [IsDone], [IsRunning], [DateCreated], [CreatorID] FROM [dbo].[Imports] WHERE ([ImportID] = @ImportID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportID], [FileName], [OrganizationID], [ImportGUID], [RefType], [AuxID], [IsDone], [IsRunning], [IsDeleted], [NeedsDeleted], [TotalRows], [CompletedRows], [DateStarted], [DateEnded], [DateCreated], [CreatorID] FROM [dbo].[Imports] WHERE ([ImportID] = @ImportID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ImportID", importID);
         Fill(command);

@@ -42,6 +42,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool IsRequired
+    {
+      get { return (bool)Row["IsRequired"]; }
+      set { Row["IsRequired"] = CheckValue("IsRequired", value); }
+    }
+    
     public bool IsVisible
     {
       get { return (bool)Row["IsVisible"]; }
@@ -181,7 +187,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ImportFields] SET     [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [Description] = @Description  WHERE ([ImportFieldID] = @ImportFieldID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ImportFields] SET     [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description  WHERE ([ImportFieldID] = @ImportFieldID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ImportFieldID", SqlDbType.Int, 4);
@@ -233,6 +239,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("Description", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -245,10 +258,17 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ImportFields] (    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [Description]) VALUES ( @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @Description); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ImportFields] (    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description]) VALUES ( @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Description", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsRequired", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -409,7 +429,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportFieldID], [TableName], [FieldName], [Alias], [DataType], [Size], [IsVisible], [Description] FROM [dbo].[ImportFields] WHERE ([ImportFieldID] = @ImportFieldID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportFieldID], [TableName], [FieldName], [Alias], [DataType], [Size], [IsVisible], [IsRequired], [Description] FROM [dbo].[ImportFields] WHERE ([ImportFieldID] = @ImportFieldID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ImportFieldID", importFieldID);
         Fill(command);

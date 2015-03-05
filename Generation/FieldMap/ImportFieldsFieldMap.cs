@@ -20,6 +20,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DataType", "DataType", false, false, false);
       _fieldMap.AddMap("Size", "Size", false, false, false);
       _fieldMap.AddMap("IsVisible", "IsVisible", false, false, false);
+      _fieldMap.AddMap("IsRequired", "IsRequired", false, false, false);
       _fieldMap.AddMap("Description", "Description", false, false, false);
             
     }

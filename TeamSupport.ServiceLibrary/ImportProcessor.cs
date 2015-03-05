@@ -31,11 +31,7 @@ namespace TeamSupport.ServiceLibrary
         if (!imports.IsEmpty)
         {
           Import import = imports[0];
-          import.IsRunning = true;
-          imports.Save();
           ProcessImport(import);
-          import.IsDone = true;
-          imports.Save();
         }
         UpdateHealth();
       }
@@ -43,6 +39,12 @@ namespace TeamSupport.ServiceLibrary
       {
         ExceptionLogs.LogException(LoginUser, ex, "ImportProcessor"); 
       }
+    }
+
+   private void UpdateImportCount(Import import, int count)
+    {
+      import.CompletedRows = count;
+      import.Collection.Save();
     }
 
     private void ProcessImport(Import import)
@@ -55,14 +57,22 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteEvent("***********************************************************************************");
       _importUser = new Data.LoginUser(LoginUser.ConnectionString, -2, import.OrganizationID, null);
 
-      string path = AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports);
-      string csvFile = Path.Combine(path, import.FileName);
+
+      //string path = AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports);
+      //string csvFile = "U:\\Development\\Imports\\Inersil\\Intersil Actions.csv"; // Path.Combine(path, import.FileName);
+      string csvFile = Path.Combine(AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports), import.FileName);
       _organizationID = import.OrganizationID;
+
+      import.TotalRows = GetTotalRows(csvFile);
+      import.CompletedRows = 0;
+      import.IsRunning = true;
+      import.Collection.Save();
 
       _map = new SortedList<string, string>();
       // load maps
       using (_csv = new CsvReader(new StreamReader(csvFile), true))
       {
+
         switch (import.RefType)
         {
           case ReferenceType.Actions:
@@ -72,6 +82,19 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteEvent("ERROR: Unknown Reference Type");
             break;
         }
+      }
+
+      import.IsDone = true;
+      import.Collection.Save();
+
+    }
+
+    private int GetTotalRows(string csvFile)
+    {
+      using (CsvReader csv = new CsvReader(new StreamReader(csvFile), true))
+      {
+        while (csv.ReadNextRecord()) ;
+        return (int)csv.CurrentRecordIndex;
       }
     }
 
@@ -91,25 +114,17 @@ namespace TeamSupport.ServiceLibrary
         int ticketID;
         int creatorID = -1;
 
-        if (!ticketList.TryGetValue(ReadString("TicketNumber").ToUpper(), out ticketID))
+        if (!ticketList.TryGetValue(ReadString("ActionID").ToUpper(), out ticketID))
         {
           //_log.AppendError(row, "Action skipped due to missing ticket");
           continue;
         }
 
         string actionType = ReadString("ActionType");
-        if (string.IsNullOrWhiteSpace(actionType))
-        {
-          //_log.AppendError(row, "Action skipped due to missing action type");
-          continue;
-        }
-
         userList.TryGetValue(ReadString("CreatorID").ToUpper(), out creatorID);
-
         string desc = ConvertHtmlLineBreaks(ReadString("Description"));
 
         TeamSupport.Data.Action action = actions.AddNewAction();
-
         action.SystemActionTypeID = GetSystemActionTypeID(actionType);
         action.ActionTypeID = GetActionTypeID(actionTypes, actionType);
         action.CreatorID = (int)creatorID;
@@ -124,19 +139,20 @@ namespace TeamSupport.ServiceLibrary
         action.TicketID = ticketID;
         action.ImportID = import.ImportGUID.ToString();
         action.TimeSpent = ReadIntNull("TimeSpent");
-        //if (action.IsVisibleOnPortal && !ticket.IsVisibleOnPortal) ticket.IsVisibleOnPortal = true;
 
-        action.Pinned = ReadBool("IsPinned");
-
+        action.Pinned = false;// ReadBool("IsPinned");
+        
         if (++count % BULK_LIMIT == 0)
         {
           EmailPosts.DeleteImportEmails(_importUser);
           actions.BulkSave();
           actions = new Actions(_importUser);
+          UpdateImportCount(import, count);
         }
       }
       EmailPosts.DeleteImportEmails(_importUser);
       actions.BulkSave();
+      UpdateImportCount(import, count);
       // _log.AppendMessage(count.ToString() + " Actions Imported.");
     }
 
@@ -221,7 +237,7 @@ namespace TeamSupport.ServiceLibrary
     {
       name = name.Trim();
       if (GetSystemActionTypeID(name) != SystemActionType.Custom) return null;
-
+      if (string.IsNullOrWhiteSpace(name)) name = "Comment";
       ActionType actionType = actionTypes.FindByName(name);
 
       if (actionType == null)
@@ -260,49 +276,52 @@ namespace TeamSupport.ServiceLibrary
       return GetList(command);
     }
 
+    private SortedList<string, int> GetUserAndContactList()
+    {
+      SortedList<string, int> list = GetUserList();
+      return GetContactList(list);
+    }
+
     private SortedList<string, int> GetUserList()
     {
       SqlCommand command = new SqlCommand();
-      command.CommandText = @"SELECT u.Email, u.UserID
-                              FROM Users u 
-                              WHERE (u.OrganizationID = @OrganizationID)
-                              AND (u.MarkDeleted = 0)";
+      command.CommandText = @"
+SELECT DISTINCT REPLACE(u.Email, ' ', ''), MAX(u.UserID) AS UserID
+FROM Users u 
+WHERE (u.OrganizationID = @OrganizationID)
+AND (u.MarkDeleted = 0)
+GROUP BY REPLACE(u.Email, ' ', '')
+";
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@OrganizationID", _organizationID);
       return GetList(command);
     }
 
-    private SortedList<string, int> GetUserAndContactList()
+    private SortedList<string, int> GetContactList(SortedList<string,int> list = null)
     {
       SqlCommand command = new SqlCommand();
-      command.CommandText = @"SELECT u.Email, u.UserID
-                              FROM Users u 
-                              LEFT JOIN Organizations o
-                              ON o.OrganizationID = u.OrganizationID
-                              WHERE (o.OrganizationID = @OrganizationID OR o.ParentID = @OrganizationID)
-                              AND (u.MarkDeleted = 0)";
+      command.CommandText = @"
+SELECT DISTINCT(REPLACE(u.Email + '(' + o.Name + ')', ' ', '')), MAX(u.UserID)
+FROM Users u 
+LEFT JOIN Organizations o
+ON o.OrganizationID = u.OrganizationID
+WHERE (o.ParentID = @OrganizationID)
+AND (u.MarkDeleted = 0)
+GROUP BY REPLACE(u.Email + '(' + o.Name + ')', ' ', '')";
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@OrganizationID", _organizationID);
-      return GetList(command);
-    }
-
-    private SortedList<string, int> GetContactList()
-    {
-      SqlCommand command = new SqlCommand();
-      command.CommandText = @"SELECT u.Email, u.UserID
-                              FROM Users u 
-                              LEFT JOIN Organizations o
-                              ON o.OrganizationID = u.OrganizationID
-                              WHERE (o.ParentID = @OrganizationID)
-                              AND (u.MarkDeleted = 0)";
-      command.CommandType = CommandType.Text;
-      command.Parameters.AddWithValue("@OrganizationID", _organizationID);
-      return GetList(command);
+      return list == null ? GetList(command) : GetList(command, list);
     }
 
     private SortedList<string, int> GetList(SqlCommand command)
     {
-      SortedList<string, int> result = new SortedList<string, int>();
+      return GetList(command, new SortedList<string, int>());
+    }
+
+
+    private SortedList<string, int> GetList(SqlCommand command, SortedList<string, int> list)
+    {
+   
       using (SqlConnection connection = new SqlConnection(_importUser.ConnectionString))
       {
         connection.Open();
@@ -314,7 +333,7 @@ namespace TeamSupport.ServiceLibrary
         {
           while (reader.Read())
           {
-            result.Add((reader[0] as string).Trim().ToUpper(), reader[1] as int? ?? -1);
+            list.Add((reader[0].ToString()).Trim().ToUpper(), reader[1] as int? ?? -1);
           }
         }
         finally
@@ -324,7 +343,7 @@ namespace TeamSupport.ServiceLibrary
 
         transaction.Commit();
       }
-      return result;
+      return list;
     
     }
   }

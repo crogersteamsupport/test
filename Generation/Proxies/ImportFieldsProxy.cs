@@ -20,6 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public string DataType { get; set; }
     [DataMember] public int Size { get; set; }
     [DataMember] public bool IsVisible { get; set; }
+    [DataMember] public bool IsRequired { get; set; }
     [DataMember] public string Description { get; set; }
           
   }
@@ -30,6 +31,7 @@ namespace TeamSupport.Data
     {
       ImportFieldProxy result = new ImportFieldProxy();
       result.Description = this.Description;
+      result.IsRequired = this.IsRequired;
       result.IsVisible = this.IsVisible;
       result.Size = this.Size;
       result.DataType = this.DataType;
