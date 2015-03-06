@@ -12,7 +12,7 @@ $(document).ready(function () {
         var options = result == '' ? new Object() : JSON.parse(result);
         ticketGrid = new TicketGrid(options);
 
-        top.Ts.Services.Settings.ReadUserSetting('TicketGrid-sort-' + window.location.search, 'DateModified|false', function (result) {
+        top.Ts.Services.Settings.ReadUserSetting('TicketGrid-sort-' + window.location.search, 'hiddenDateModified|false', function (result) {
             var values = result.split('|');
             ticketGrid._loader.setSort(values[0], values[1] === "true");
             ticketGrid._grid.setSortColumn(values[0], values[1] === "true");

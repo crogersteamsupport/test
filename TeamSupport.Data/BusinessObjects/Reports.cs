@@ -551,13 +551,22 @@ namespace TeamSupport.Data
                 Math.Abs(offset.Minutes));
             builder.Append(string.Format(", {0} AS [hiddenDueDate]", dueDateField));
 
+            string dateModifiedField = hiddenTable.TableName + ".DateModified";
+            dateModifiedField = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
+            dateModifiedField,
+            offset < TimeSpan.Zero ? "-" : "+",
+            Math.Abs(offset.Hours),
+            Math.Abs(offset.Minutes));
+            builder.Append(string.Format(", {0} AS [hiddenDateModified]", dateModifiedField));
+
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "SlaWarningTime", hiddenTable.TableName));
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "SlaViolationTime", hiddenTable.TableName));
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "IsRead", hiddenTable.TableName));
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "IsClosed", hiddenTable.TableName));
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "TicketTypeID", hiddenTable.TableName));
             builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "UserID", hiddenTable.TableName));
-
+            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "SeverityPosition", hiddenTable.TableName));
+            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", "StatusPosition", hiddenTable.TableName));
         }
 
       }
@@ -568,12 +577,49 @@ namespace TeamSupport.Data
       if (tabularReport.Subcategory == 70)
       {
           builder.Append(" AND (" + mainTable.TableName + ".ViewerID = @UserID)");
-
           GetUserRightsClause(loginUser, command, builder, mainTable.TableName);
-
       }
+      //else if (UsesTicketRights(tabularReport.Subcategory))
+      //{
+      //    GetUserRightsClause(loginUser, command, builder, mainTable.TableName);
+      //}
 
       if (isSchemaOnly) builder.Append(" AND (0=1)");
+    }
+
+    private static bool UsesTicketRights(int subCat)
+    {
+        switch (subCat)
+        {
+            case 26:
+                return true;
+            case 28:
+                return true;
+            case 47:
+                return true;
+            case 55:
+                return true;
+            case 56:
+                return true;
+            case 60:
+                return true;
+            case 61:
+                return true;
+            case 62:
+                return true;
+            case 63:
+                return true;
+            case 64:
+                return true;
+            case 65:
+                return true;
+            case 71:
+                return true;
+            case 72:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private static void GetUserRightsClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, string mainTableName)
@@ -586,30 +632,33 @@ namespace TeamSupport.Data
             case TicketRightType.All:
                 break;
             case TicketRightType.Assigned:
-                builder.Append(" AND (" + mainTableName + ".UserID = @UserID OR " + mainTableName + ".IsKnowledgeBase=1) ");
+                builder.Append(string.Format("AND ({0}.TicketID in ( SELECT t.TicketID FROM tickets t WHERE (t.UserID = @UserID OR t.IsKnowledgeBase=1)  AND ((t.[IsKnowledgeBase] = 0))))", mainTableName));
                 break;
             case TicketRightType.Groups:
-                rightsClause = @" AND ({0}
-              ({1}.UserID = @UserID) OR
-              ({1}.IsKnowledgeBase = 1) OR
-              ({1}.UserID IS NULL AND {1}.GroupID IS NULL)) ";
+                rightsClause = @"AND ({0}.TicketID in ( 
+		                                SELECT t.TicketID 
+		                                FROM tickets t          
+		                                WHERE ({1} 
+                                        (t.UserID = @UserID) 
+		                                OR (t.IsKnowledgeBase = 1) 
+		                                OR (t.UserID IS NULL AND t.GroupID IS NULL))  
+		                                AND ((t.[IsKnowledgeBase] = 0))
+	                                ))";
+
                 Groups groups = new Groups(loginUser);
                 groups.LoadByUserID(loginUser.UserID);
-                List<int> groupList = new List<int>();
-                foreach (Group group in groups)
-                {
-                    groupList.Add(group.GroupID);
-                }
-                string groupString = groupList.Count < 1 ? "" : string.Format("({1}.GroupID IN ({0})) OR ", DataUtils.IntArrayToCommaString(groupList.ToArray()), mainTableName);
-                builder.Append(string.Format(rightsClause, groupString, mainTableName));
+
+                string groupString = groups.Count < 1 ? "" : string.Format("(t.GroupID IN ({0})) OR ", DataUtils.IntArrayToCommaString(groups.Select(gr => gr.GroupID).ToArray()));
+
+                builder.Append(string.Format(rightsClause, mainTableName, groupString));
                 break;
             case TicketRightType.Customers:
-                rightsClause = @" AND (TicketID in (
-            SELECT ot.TicketID FROM OrganizationTickets ot
-            INNER JOIN UserRightsOrganizations uro ON ot.OrganizationID = uro.OrganizationID 
-            WHERE uro.UserID = @UserID) OR
-            {0}.UserID = @UserID OR
-            {0}.IsKnowledgeBase = 1)";
+                rightsClause = @" AND ({0}.TicketID in (
+                                    SELECT ot.TicketID FROM OrganizationTickets ot
+                                    INNER JOIN UserRightsOrganizations uro ON ot.OrganizationID = uro.OrganizationID 
+                                    WHERE uro.UserID = @UserID) OR
+                                    {0}.UserID = @UserID OR
+                                    {0}.IsKnowledgeBase = 1)";
                 builder.Append(string.Format(rightsClause, mainTableName));
                 break;
             default:
@@ -626,7 +675,7 @@ namespace TeamSupport.Data
                     break;
                 case ProductFamiliesRightType.SomeFamilies:
                     rightsClause = @" AND (
-                    TicketID IN 
+                    {0}.TicketID IN 
                     (
                         SELECT 
                             t.TicketID 
@@ -1955,10 +2004,10 @@ WHERE RowNum BETWEEN @From AND @To";
       switch (sortField)
       {
           case "Severity":
-              sortField = "SeverityPosition";
+              sortField = "hiddenSeverityPosition";
               break;
           case "Status":
-              sortField = "StatusPosition";
+              sortField = "hiddenStatusPosition";
               break;
       }
 
