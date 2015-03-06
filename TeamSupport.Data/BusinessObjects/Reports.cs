@@ -1997,19 +1997,23 @@ WHERE RowNum BETWEEN @From AND @To";
 
       if (string.IsNullOrWhiteSpace(sortField))
       {
-        sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
-        isDesc = false;
+          sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
+          isDesc = false;
       }
 
-      switch (sortField)
+      if (includeHiddenFields)
       {
-          case "Severity":
-              sortField = "hiddenSeverityPosition";
-              break;
-          case "Status":
-              sortField = "hiddenStatusPosition";
-              break;
+          switch (sortField)
+          {
+              case "Severity":
+                  sortField = "hiddenSeverityPosition";
+                  break;
+              case "Status":
+                  sortField = "hiddenStatusPosition";
+                  break;
+          }
       }
+
 
       command.Parameters.AddWithValue("@From", from);
       command.Parameters.AddWithValue("@To", to);
