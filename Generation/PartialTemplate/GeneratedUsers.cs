@@ -1199,6 +1199,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = insertCommand.Parameters.Add("ProductFamiliesRights", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 		tempParameter = insertCommand.Parameters.Add("ReceiveUnassignedGroupEmails", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
