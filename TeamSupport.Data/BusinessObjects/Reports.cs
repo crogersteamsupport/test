@@ -581,14 +581,29 @@ namespace TeamSupport.Data
       }
       //else if (UsesTicketRights(tabularReport.Subcategory))
       //{
+      //    //ReportTable reportTable = ReportTables.GetReportTable(loginUser, tabularReport.Subcategory);
+      //    ReportSubcategory subCat = ReportSubcategories.GetReportSubcategory(loginUser, tabularReport.Subcategory);
+
       //    GetUserRightsClause(loginUser, command, builder, mainTable.TableName);
       //}
+
+      ReportSubcategory subCat = ReportSubcategories.GetReportSubcategory(loginUser, tabularReport.Subcategory);
+      if (subCat.ReportTableID != null)
+      {
+          ReportTable reportTable = tables.FindByReportTableID((int)subCat.ReportTableID);
+      }
+      else
+      {
+          ReportTable reportTable = tables.FindByReportTableID((int)subCat.ReportCategoryTableID);
+      }
 
       if (isSchemaOnly) builder.Append(" AND (0=1)");
     }
 
     private static bool UsesTicketRights(int subCat)
     {
+        
+
         switch (subCat)
         {
             case 26:
@@ -2001,7 +2016,7 @@ WHERE RowNum BETWEEN @From AND @To";
           isDesc = false;
       }
 
-      if (includeHiddenFields)
+      if (includeHiddenFields && report.ReportSubcategoryID == 70 )
       {
           switch (sortField)
           {
