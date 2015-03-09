@@ -680,7 +680,8 @@ namespace TeamSupport.Data
         ,tv.KnowledgeBaseCategoryName
         ,tv.SalesForceID
         ,tv.DateModifiedBySalesForceSync
-        ,tv.DueDate";
+        ,tv.DueDate
+        ,tv.ProductFamilyID";
       StringBuilder where = new StringBuilder();
       GetFilterWhereClause(loginUser, filter, command, where);
 
