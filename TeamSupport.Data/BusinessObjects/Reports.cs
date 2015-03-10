@@ -577,63 +577,37 @@ namespace TeamSupport.Data
       if (tabularReport.Subcategory == 70)
       {
           builder.Append(" AND (" + mainTable.TableName + ".ViewerID = @UserID)");
-          GetUserRightsClause(loginUser, command, builder, mainTable.TableName);
       }
-      //else if (UsesTicketRights(tabularReport.Subcategory))
-      //{
-      //    //ReportTable reportTable = ReportTables.GetReportTable(loginUser, tabularReport.Subcategory);
-      //    ReportSubcategory subCat = ReportSubcategories.GetReportSubcategory(loginUser, tabularReport.Subcategory);
 
-      //    GetUserRightsClause(loginUser, command, builder, mainTable.TableName);
-      //}
-
-      ReportSubcategory subCat = ReportSubcategories.GetReportSubcategory(loginUser, tabularReport.Subcategory);
-      if (subCat.ReportTableID != null)
-      {
-          ReportTable reportTable = tables.FindByReportTableID((int)subCat.ReportTableID);
-      }
-      else
-      {
-          ReportTable reportTable = tables.FindByReportTableID((int)subCat.ReportCategoryTableID);
-      }
+      UseTicketRights(loginUser, (int)tabularReport.Subcategory, tables, command, builder);
 
       if (isSchemaOnly) builder.Append(" AND (0=1)");
     }
 
-    private static bool UsesTicketRights(int subCat)
+    private static void UseTicketRights(LoginUser loginUser, int subCAtID,  ReportTables tables, SqlCommand command, StringBuilder builder)
     {
-        
+        ReportSubcategory subCat = ReportSubcategories.GetReportSubcategory(loginUser, subCAtID);
 
-        switch (subCat)
+        if (subCat != null)
         {
-            case 26:
-                return true;
-            case 28:
-                return true;
-            case 47:
-                return true;
-            case 55:
-                return true;
-            case 56:
-                return true;
-            case 60:
-                return true;
-            case 61:
-                return true;
-            case 62:
-                return true;
-            case 63:
-                return true;
-            case 64:
-                return true;
-            case 65:
-                return true;
-            case 71:
-                return true;
-            case 72:
-                return true;
-            default:
-                return false;
+            ReportTable catTable = tables.FindByReportTableID((int)subCat.ReportCategoryTableID);
+
+            if(catTable.UseTicketRights)
+            {
+                GetUserRightsClause(loginUser, command, builder, catTable.TableName);
+                return;
+            }
+
+            if (subCat.ReportTableID != null)
+            {
+                ReportTable reportTable = tables.FindByReportTableID((int)subCat.ReportTableID);
+
+                if (reportTable.UseTicketRights)
+                {
+                    GetUserRightsClause(loginUser, command, builder, reportTable.TableName);
+                    return;
+                }
+            }
         }
     }
 
@@ -1098,6 +1072,8 @@ namespace TeamSupport.Data
       builder.Append(" " + sub.BaseQuery);
       ReportTable mainTable = tables.FindByReportTableID(sub.ReportCategoryTableID);
       builder.Append(" WHERE (" + mainTable.TableName + "." + mainTable.OrganizationIDFieldName + " = @OrganizationID)");
+        //add user rights where needed
+      UseTicketRights(loginUser, (int)summaryReport.Subcategory, tables, command, builder);
       if (isSchemaOnly) builder.Append(" AND (0=1)");
 
       // filters

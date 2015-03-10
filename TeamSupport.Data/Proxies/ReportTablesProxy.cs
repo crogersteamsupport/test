@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public string LookupKeyFieldName { get; set; }
     [DataMember] public string LookupDisplayClause { get; set; }
     [DataMember] public string LookupOrderBy { get; set; }
+    [DataMember] public bool UseTicketRights { get; set; }
           
   }
   
@@ -39,7 +40,7 @@ namespace TeamSupport.Data
       result.Alias = this.Alias;
       result.TableName = this.TableName;
       result.ReportTableID = this.ReportTableID;
-       
+      result.UseTicketRights = this.UseTicketRights;
        
        
       return result;

@@ -84,6 +84,12 @@ namespace TeamSupport.Data
       get { return (int)Row["ReportTableID"]; }
       set { Row["ReportTableID"] = CheckValue("ReportTableID", value); }
     }
+
+    public bool UseTicketRights
+    {
+        get { return (bool)Row["UseTicketRights"]; }
+        set { Row["UseTicketRights"] = CheckValue("UseTicketRights", value); }
+    }
     
 
     /* DateTime */
