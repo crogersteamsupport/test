@@ -42,6 +42,11 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "ImportProcessor"); 
       }
+      finally
+      {
+        ClearEmails();
+
+      }
     }
 
    private void UpdateImportCount(Import import, int count)
@@ -140,20 +145,18 @@ namespace TeamSupport.ServiceLibrary
         action.ModifierID = -2;
         action.Name = "";
         action.TicketID = ticketID;
-        action.ImportID = ReadString("ActionID");// import.ImportGUID.ToString();
+        action.ImportID = import.ImportGUID.ToString();
         action.TimeSpent = ReadIntNull("TimeSpent");
 
         action.Pinned = ReadBool("IsPinned");
         count++;
         if (count % BULK_LIMIT == 0)
         {
-          ClearEmails();
           actions.BulkSave();
           actions = new Actions(_importUser);
           UpdateImportCount(import, count);
         }
       }
-      ClearEmails();
       actions.BulkSave();
       UpdateImportCount(import, count);
       // _log.AppendMessage(count.ToString() + " Actions Imported.");

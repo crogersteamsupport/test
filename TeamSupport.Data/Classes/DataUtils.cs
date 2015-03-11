@@ -1693,8 +1693,10 @@ namespace TeamSupport.Data
 
     public static string GetIndexPath(LoginUser loginUser)
     {
-      //return Path.Combine(@"C:\TempIndex", loginUser.OrganizationID.ToString());
-      return Path.Combine(SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\"), loginUser.OrganizationID.ToString());
+      //return Path.Combine(SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\"), loginUser.OrganizationID.ToString());
+      string path = System.Web.Configuration.WebConfigurationManager.AppSettings["IndexerPath"];
+      path = string.IsNullOrWhiteSpace(path) ? "c:\\TSIndexes" : path;
+      return Path.Combine(path, loginUser.OrganizationID.ToString());
     }
 
     public static string GetTicketIndexPath(LoginUser loginUser)
