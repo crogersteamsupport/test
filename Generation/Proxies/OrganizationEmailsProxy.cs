@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public string Body { get; set; }
     [DataMember] public bool IsHtml { get; set; }
     [DataMember] public bool UseGlobalTemplate { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
           
   }
   
@@ -30,6 +31,7 @@ namespace TeamSupport.Data
     public OrganizationEmailProxy GetProxy()
     {
       OrganizationEmailProxy result = new OrganizationEmailProxy();
+      result.ProductFamilyID = this.ProductFamilyID;
       result.UseGlobalTemplate = this.UseGlobalTemplate;
       result.IsHtml = this.IsHtml;
       result.Body = this.Body;

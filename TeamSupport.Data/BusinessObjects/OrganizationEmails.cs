@@ -36,6 +36,49 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByTemplateAndProductFamily(int organizationID, int emailTemplateID, int productFamilyID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT 
+                    * 
+                FROM 
+                    OrganizationEmails 
+                WHERE 
+                    EmailTemplateID = @EmailTemplateID 
+                    AND OrganizationID = @OrganizationID
+                    AND 
+                    (
+                        ProductFamilyID = @ProductFamilyID
+                        OR 
+                        (
+                            ProductFamilyID IS NULL 
+                            AND
+                            (
+                                @ProductFamilyID = -1
+                                OR NOT EXISTS
+                                (
+                                    SELECT
+                                        *
+                                    FROM
+                                        OrganizationEmails
+                                    WHERE 
+                                        EmailTemplateID = @EmailTemplateID 
+                                        AND OrganizationID = @OrganizationID
+                                        AND ProductFamilyID = @ProductFamilyID
+                                ) 
+                            )
+                        )
+                    )
+            ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@EmailTemplateID", emailTemplateID);
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            Fill(command);
+        }
+    }
 
   }
   

@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public int? ProductFamilyID
+    {
+      get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
+      set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
+    }
+    
 
     
     public bool UseGlobalTemplate
@@ -187,7 +193,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationEmails] SET     [OrganizationID] = @OrganizationID,    [EmailTemplateID] = @EmailTemplateID,    [Subject] = @Subject,    [Header] = @Header,    [Footer] = @Footer,    [Body] = @Body,    [IsHtml] = @IsHtml,    [UseGlobalTemplate] = @UseGlobalTemplate  WHERE ([OrganizationEmailID] = @OrganizationEmailID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationEmails] SET     [OrganizationID] = @OrganizationID,    [EmailTemplateID] = @EmailTemplateID,    [Subject] = @Subject,    [Header] = @Header,    [Footer] = @Footer,    [Body] = @Body,    [IsHtml] = @IsHtml,    [UseGlobalTemplate] = @UseGlobalTemplate,    [ProductFamilyID] = @ProductFamilyID  WHERE ([OrganizationEmailID] = @OrganizationEmailID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationEmailID", SqlDbType.Int, 4);
@@ -253,13 +259,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationEmails] (    [OrganizationID],    [EmailTemplateID],    [Subject],    [Header],    [Footer],    [Body],    [IsHtml],    [UseGlobalTemplate]) VALUES ( @OrganizationID, @EmailTemplateID, @Subject, @Header, @Footer, @Body, @IsHtml, @UseGlobalTemplate); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationEmails] (    [OrganizationID],    [EmailTemplateID],    [Subject],    [Header],    [Footer],    [Body],    [IsHtml],    [UseGlobalTemplate],    [ProductFamilyID]) VALUES ( @OrganizationID, @EmailTemplateID, @Subject, @Header, @Footer, @Body, @IsHtml, @UseGlobalTemplate, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("UseGlobalTemplate", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -429,7 +449,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationEmailID], [OrganizationID], [EmailTemplateID], [Subject], [Header], [Footer], [Body], [IsHtml], [UseGlobalTemplate] FROM [dbo].[OrganizationEmails] WHERE ([OrganizationEmailID] = @OrganizationEmailID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationEmailID], [OrganizationID], [EmailTemplateID], [Subject], [Header], [Footer], [Body], [IsHtml], [UseGlobalTemplate], [ProductFamilyID] FROM [dbo].[OrganizationEmails] WHERE ([OrganizationEmailID] = @OrganizationEmailID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationEmailID", organizationEmailID);
         Fill(command);

@@ -64,6 +64,19 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
   {
     if (!IsPostBack)
     {
+        Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+        if (organization.UseProductFamilies)
+        {
+            ProductFamilies productFamilies = new ProductFamilies(UserSession.LoginUser);
+            productFamilies.LoadByOrganizationID(organization.OrganizationID);
+            cmbProductFamily.Items.Add(new Telerik.Web.UI.RadComboBoxItem("<Without Product Family>", "-1"));
+            foreach (ProductFamily productFamily in productFamilies)
+            {
+                cmbProductFamily.Items.Add(new Telerik.Web.UI.RadComboBoxItem(productFamily.Name, productFamily.ProductFamilyID.ToString()));
+            }
+            cmbProductFamily.Visible = true;
+        }
+      
       EmailTemplates templates = new EmailTemplates(UserSession.LoginUser);
 
       templates.LoadAll(UserSession.LoginUser.OrganizationID == 1078 && UserSession.CurrentUser.IsSystemAdmin);
@@ -194,13 +207,13 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
   }
 
   [WebMethod(true)]
-  public static Template GetEmailTemplate(int emailTemplateID)
+  public static Template GetEmailTemplate(int emailTemplateID, int productFamilyID)
   {
     Template result = new Template();
 
     EmailTemplate template = EmailTemplates.GetEmailTemplate(UserSession.LoginUser, emailTemplateID);
     OrganizationEmails emails = new OrganizationEmails(UserSession.LoginUser);
-    emails.LoadByTemplate(UserSession.LoginUser.OrganizationID,  emailTemplateID);
+    emails.LoadByTemplateAndProductFamily(UserSession.LoginUser.OrganizationID,  emailTemplateID, productFamilyID);
 
     result.EmailTemplateID = template.EmailTemplateID;
     result.Description = template.Description;
@@ -235,11 +248,11 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
   
 
   [WebMethod(true)]
-  public static void DeleteTemplate(int emailTemplateID)
+  public static void DeleteTemplate(int emailTemplateID, int productFamilyID)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return;
     OrganizationEmails emails = new OrganizationEmails(UserSession.LoginUser);
-    emails.LoadByTemplate(UserSession.LoginUser.OrganizationID, emailTemplateID);
+    emails.LoadByTemplateAndProductFamily(UserSession.LoginUser.OrganizationID, emailTemplateID, productFamilyID);
     if (!emails.IsEmpty && emails[0].OrganizationID == UserSession.LoginUser.OrganizationID)
     {
       emails[0].Delete();
@@ -250,7 +263,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
   }
 
   [WebMethod(true)]
-  public static void SaveEmailTemplate(int emailTemplateID, string subject, string header, string footer, string body, bool isHtml, bool useTemplate)
+  public static void SaveEmailTemplate(int emailTemplateID, string subject, string header, string footer, string body, bool isHtml, bool useTemplate, int productFamilyID)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return;
 
@@ -271,7 +284,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     else
     {
       OrganizationEmails emails = new OrganizationEmails(UserSession.LoginUser);
-      emails.LoadByTemplate(UserSession.LoginUser.OrganizationID, emailTemplateID);
+      emails.LoadByTemplateAndProductFamily(UserSession.LoginUser.OrganizationID, emailTemplateID, productFamilyID);
       OrganizationEmail email = emails.IsEmpty ? (new OrganizationEmails(UserSession.LoginUser)).AddNewOrganizationEmail() : emails[0];
 
       email.Body = body;
@@ -282,6 +295,14 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
       email.Header = header;
       email.Footer = footer;
       email.UseGlobalTemplate = useTemplate && template.IsEmail;
+      if (productFamilyID == -1)
+      {
+          email.ProductFamilyID = null;
+      }
+      else
+      {
+          email.ProductFamilyID = productFamilyID;
+      }
       email.Collection.Save();
     }
   }

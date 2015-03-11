@@ -27,6 +27,8 @@
   </style>
 
   <script type="text/javascript" language="javascript">
+      var _organizationUseProductFamily = false;
+      var _productFamilyID = -1;
 
     $(function() {
       $('button').button();
@@ -39,7 +41,7 @@
     function pageLoad() {
       loadSettings();
       loadAltEmails();
-    }
+  }
 
     function loadSettings() {
       PageMethods.GetOrganization(function (result) {
@@ -54,7 +56,7 @@
         $('#cbNeedCustForTicketMatch')[0].checked = result.NeedCustForTicketMatch;
         $('#cbReplyToAlternateEmailAddresses')[0].checked = result.ReplyToAlternateEmailAddresses;
         $('#cbAddEmailViaTS')[0].checked = !result.AddEmailViaTS;
-
+        _organizationUseProductFamily = result.UseProductFamilies;
         
         $('#divSettingsButtons').hide();
       });
@@ -97,8 +99,17 @@
     }
 
     function loadEmailTemplate(emailTemplateID) {
+        $('.ProductFamilyList').hide();
+        if (_organizationUseProductFamily)
+        {
+             //If is a ticket template show product family
+            var nonTicketTemplateIDs = [8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 23, 24];
+            if (nonTicketTemplateIDs.indexOf(parseInt(emailTemplateID)) < 0) {
+                $('.ProductFamilyList').show();
+            }
+        }
       $('#divHeaderFooter').show();
-      PageMethods.GetEmailTemplate(emailTemplateID, function(template) {
+      PageMethods.GetEmailTemplate(emailTemplateID, _productFamilyID, function(template) {
         var subject = $find('textSubject');
         if (subject != null) subject.set_value(template.Subject);
         $find('textHeader').set_value(template.Header);
@@ -131,7 +142,7 @@
 
     function resetTemplate() {
       if (!confirm('Are you sure you would like to restore this template to the default?')) return;
-      PageMethods.DeleteTemplate(getSelectedTemplateID(), function() {
+      PageMethods.DeleteTemplate(getSelectedTemplateID(), _productFamilyID, function() {
         loadEmailTemplate(getSelectedTemplateID());
       });
     }
@@ -147,6 +158,19 @@
       args.set_cancel(false);
     }
 
+    function cmbProductFamily_OnClientLoad(sender, args) { loadEmailTemplate(getSelectedTemplateID()); }
+    function cmbProductFamily_OnClientSelectedIndexChanged(sender, args) {
+        _productFamilyID = sender.get_value();
+        loadEmailTemplate(getSelectedTemplateID());
+    }
+    function cmbProductFamily_OnClientSelectedIndexChanging(sender, args) {
+        if ($('#divTemplateButtons').is(':visible')) {
+            args.set_cancel(!confirm("Would you like to continue without saving?"));
+            return;
+        }
+        args.set_cancel(false);
+    }
+
     function saveEmailTemplate() {
       var text = $find('textSubject');
       var subject = text == null ? "" : text.get_value();
@@ -157,7 +181,8 @@
         $find('textFooter').get_value(),
         $('#textBody').val(),
         $('#cbIsHtml')[0].checked,
-        $('#cbUseTemplate')[0].checked
+        $('#cbUseTemplate')[0].checked,
+        _productFamilyID
         );
       $('#divTemplateButtons').hide();
       top.Ts.System.logAction('Admin Email - Email Template Saved');
@@ -207,7 +232,7 @@
       wnd.show();
     }    
     
-  
+
   </script>
 
 </head>
@@ -287,7 +312,18 @@
         <fieldset class="ts-fieldset">
           <label for="cmbTemplate" class="text">Select an Email Template</label>
           <telerik:RadComboBox ID="cmbTemplate" runat="server" Width="250px" CssClass="text" OnClientSelectedIndexChanged="cmbTemplate_OnClientSelectedIndexChanged" OnClientSelectedIndexChanging="cmbTemplate_OnClientSelectedIndexChanging" OnClientLoad="cmbTemplate_OnClientLoad">
-          </telerik:RadComboBox> &nbsp&nbsp <a class="ts-link" href="#" onclick="resetTemplate(); return false;">Reset to Default</a>
+          </telerik:RadComboBox>
+            <telerik:RadComboBox 
+                ID="cmbProductFamily" 
+                runat="server" 
+                Width="250px" 
+                CssClass="ProductFamilyList" 
+                Visible="false"
+                OnClientSelectedIndexChanged="cmbProductFamily_OnClientSelectedIndexChanged" 
+                OnClientSelectedIndexChanging="cmbProductFamily_OnClientSelectedIndexChanging" 
+                OnClientLoad="cmbProductFamily_OnClientLoad">
+            </telerik:RadComboBox>
+             &nbsp&nbsp <a class="ts-link" href="#" onclick="resetTemplate(); return false;">Reset to Default</a>
           <p id="divTemplateDesc">This describes the current template</p>
         </fieldset>
         <div style="width: 100; border-bottom: solid 1px #A5BDD4; margin-bottom: 10px;">
@@ -425,7 +461,7 @@
           loadAltEmails();
         });
     }
-  
+
   </script>
 </body>
 </html>

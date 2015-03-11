@@ -61,7 +61,14 @@ namespace TeamSupport.Data
       ActionsView actions = new ActionsView(Collection.LoginUser);
       actions.LoadByTicketID(ticket.TicketID, publicOnly);
 
-      EmailTemplate actionTemplate = EmailTemplates.GetTemplate(Collection.LoginUser, ticket.OrganizationID, 15);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(Collection.LoginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate actionTemplate = EmailTemplates.GetTemplate(Collection.LoginUser, ticket.OrganizationID, 15, productFamilyID);
       string body = actionTemplate.Body;
 
       StringBuilder builder = new StringBuilder();
@@ -275,11 +282,11 @@ namespace TeamSupport.Data
       return message;
     }
 
-    public void UpdateForOrganization(int organizationID)
+    public void UpdateForOrganization(int organizationID, int productFamilyID)
     {
       _organizationID = organizationID;
       OrganizationEmails emails = new OrganizationEmails(BaseCollection.LoginUser);
-      emails.LoadByTemplate(organizationID, EmailTemplateID);
+      emails.LoadByTemplateAndProductFamily(organizationID, EmailTemplateID, productFamilyID);
       if (!emails.IsEmpty)
       {
         Body = emails[0].Body;
@@ -329,7 +336,7 @@ namespace TeamSupport.Data
       EmailTemplate template = EmailTemplates.GetEmailTemplate(loginUser, 18);
 
       OrganizationEmails emails = new OrganizationEmails(loginUser);
-      emails.LoadByTemplate(organizationID, 18);
+      emails.LoadByTemplateAndProductFamily(organizationID, 18, -1);
       if (!emails.IsEmpty) template.Body = emails[0].Body;
       return template;
     }
@@ -414,10 +421,10 @@ namespace TeamSupport.Data
 
     #region Utilities
 
-    public static EmailTemplate GetTemplate(LoginUser loginUser, int organizationID, int emailTemplateID)
+    public static EmailTemplate GetTemplate(LoginUser loginUser, int organizationID, int emailTemplateID, int productFamilyID)
     {
       EmailTemplate result = EmailTemplates.GetEmailTemplate(loginUser, emailTemplateID);
-      result.UpdateForOrganization(organizationID);
+      result.UpdateForOrganization(organizationID, productFamilyID);
       return result;
     }
 
@@ -434,7 +441,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetNewTicketBasicPortal(LoginUser loginUser, MailAddress creatorAddress, TicketsViewItem ticket)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 0);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 0, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
       template.ReplaceParameter("CreatorAddress", creatorAddress.ToString());
       template.ReplaceActions(ticket, true);
@@ -444,7 +458,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetNewTicketAdvPortal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
       template.ReplaceActions(ticket, true);
       if (creator != null) template.ReplaceFields("Creator", creator);
@@ -454,7 +475,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetNewTicketInternal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 2);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 2, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
       if (creator != null) template.ReplaceFields("Creator", creator);
       template.ReplaceActions(ticket, false);
@@ -464,7 +492,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetTicketAssignmentUser(LoginUser loginUser, string assignor, TicketsViewItem ticket)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 3);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 3, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
       if (ticket.UserID != null)
       {
@@ -479,7 +514,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetTicketAssignmentGroup(LoginUser loginUser, string assignor, TicketsViewItem ticket)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 4);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 4, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
       if (ticket.GroupID != null)
       {
@@ -494,7 +536,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetTicketUpdateUser(LoginUser loginUser, string modifierName, TicketsViewItem ticket, string changeText, bool includeActions)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 5);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 5, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
@@ -506,7 +555,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetTicketUpdateBasicPortal(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 6);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 6, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
@@ -517,7 +573,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetTicketUpdateAdvPortal(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 7);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 7, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
@@ -528,7 +591,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetTicketClosed(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 20);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 20, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
@@ -539,7 +609,7 @@ namespace TeamSupport.Data
 
     public static MailMessage GetWelcomePortalUser(LoginUser loginUser, UsersViewItem portalUser, string password)
     {
-      EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(portalUser), 8);
+      EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(portalUser), 8, -1);
       OrganizationsViewItem company = OrganizationsView.GetOrganizationsViewItem(loginUser, portalUser.OrganizationID);
       template.ReplaceCommonParameters().ReplaceFields("PortalUser", portalUser).ReplaceFields("Company", company).ReplaceParameter("Password", password);
       return template.GetMessage();
@@ -547,14 +617,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetWelcomeTSUser(LoginUser loginUser, UsersViewItem user, string password)
     {
-      EmailTemplate template = GetTemplate(loginUser, user.OrganizationID, 9);
+      EmailTemplate template = GetTemplate(loginUser, user.OrganizationID, 9, -1);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceParameter("Password", password);
       return template.GetMessage();
     }
 
     public static MailMessage GetWelcomeNewSignUp(LoginUser loginUser, UsersViewItem user, string password, string expiration, int templateID)
     {
-      EmailTemplate template = GetTemplate(loginUser, 1078, templateID);
+      EmailTemplate template = GetTemplate(loginUser, 1078, templateID, -1);
       Organization customer = Organizations.GetOrganization(loginUser, user.OrganizationID);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceParameter("Password", password).ReplaceParameter("Expiration", expiration).ReplaceFields("Company", customer).ReplaceFields("Company", customer.GetOrganizationView());
       return template.GetMessage();
@@ -567,35 +637,42 @@ namespace TeamSupport.Data
 
     public static MailMessage GetChangedPasswordPortal(LoginUser loginUser, UsersViewItem portalUser)
     {
-      EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(portalUser), 11);
+      EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(portalUser), 11, -1);
       template.ReplaceCommonParameters().ReplaceFields("PortalUser", portalUser);
       return template.GetMessage();
     }
 
     public static MailMessage GetChangedPasswordTS(LoginUser loginUser, UsersViewItem user)
     {
-      EmailTemplate template = GetTemplate(loginUser, user.OrganizationID, 12);
+      EmailTemplate template = GetTemplate(loginUser, user.OrganizationID, 12, -1);
       template.ReplaceCommonParameters().ReplaceFields("User", user);
       return template.GetMessage();
     }
 
     public static MailMessage GetResetPasswordPortal(LoginUser loginUser, UsersViewItem portalUser, string password)
     {
-      EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(portalUser), 13);
+      EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(portalUser), 13, -1);
       template.ReplaceCommonParameters().ReplaceFields("PortalUser", portalUser).ReplaceParameter("Password", password);
       return template.GetMessage();
     }
 
     public static MailMessage GetResetPasswordTS(LoginUser loginUser, UsersViewItem user, string password)
     {
-      EmailTemplate template = GetTemplate(loginUser, 1078, 14);
+      EmailTemplate template = GetTemplate(loginUser, 1078, 14, -1);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceParameter("Password", password); ;
       return template.GetMessage();
     }
 
     public static MailMessage GetTicketUpdateRequest(LoginUser loginUser, UsersViewItem requestor, TicketsViewItem ticket, bool includeActions)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 16);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 16, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
 
       if (requestor != null) template.ReplaceFields("Requestor", requestor);
@@ -606,7 +683,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetTicketSendEmail(LoginUser loginUser, UsersViewItem sender, TicketsViewItem ticket, string recipient, string introduction)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 21);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 21, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Sender", sender).ReplaceFields("Ticket", ticket);
       template.ReplaceIntroduction(introduction);
       template.ReplaceActions(ticket, true).ReplaceParameter("Recipient", recipient); ;
@@ -616,7 +700,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetReminderTicketEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, TicketsViewItem ticket)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 22);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 22, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Ticket", ticket);
       template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
       template.ReplaceActions(ticket, false);
@@ -626,7 +717,7 @@ namespace TeamSupport.Data
 
     public static MailMessage GetReminderCustomerEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, OrganizationsViewItem company)
     {
-      EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 23);
+      EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 23, -1);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Company", company);
       template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
       return template.GetMessage();
@@ -634,7 +725,7 @@ namespace TeamSupport.Data
 
     public static MailMessage GetReminderContactEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, ContactsViewItem contact)
     {
-      EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 24);
+      EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 24, -1);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Contact", contact);
       template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
       return template.GetMessage();
@@ -642,7 +733,14 @@ namespace TeamSupport.Data
 
     public static MailMessage GetSlaEmail(LoginUser loginUser, TicketsViewItem ticket, string violationType, bool isWarning)
     {
-      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, isWarning ? 26 : 25);
+      int productFamilyID = -1;
+      Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+      if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
+      {
+        productFamilyID = (int)ticket.ProductFamilyID;
+      }
+
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, isWarning ? 26 : 25, productFamilyID);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceActions(ticket, false).ReplaceParameter("ViolationType", violationType).ReplaceParameter("TicketUrl", ticket.TicketUrl); ;
       template.ReplaceContacts(ticket);
       return template.GetMessage();
@@ -651,7 +749,7 @@ namespace TeamSupport.Data
     public static MailMessage GetSignUpNotification(LoginUser loginUser, User user)
     {
       Organization company = Organizations.GetOrganization(loginUser, user.OrganizationID);
-      EmailTemplate template = GetTemplate(loginUser, 1078, 17);
+      EmailTemplate template = GetTemplate(loginUser, 1078, 17, -1);
 
       string search = string.Format("http://www.google.com/search?hl=en&q={0}&btnG=Search", company.Name.Replace(" ", "+"));
       string website = string.Format("http://{0}", user.Email.Substring(user.Email.IndexOf("@") + 1));

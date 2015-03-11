@@ -22,6 +22,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Body", "Body", false, false, false);
       _fieldMap.AddMap("IsHtml", "IsHtml", false, false, false);
       _fieldMap.AddMap("UseGlobalTemplate", "UseGlobalTemplate", false, false, false);
+      _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
             
     }
   }
