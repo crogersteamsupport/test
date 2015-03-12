@@ -451,16 +451,28 @@ $(document).ready(function () {
             $('#contactEdit').addClass("disabled");
         }
     });
-    $('.userProperties').on('click', '#fieldPreventemailfromcreatingtickets', function (e) {
+    $('.userProperties').on('click', '#fieldPreventemailfromcreatingandupdatingtickets', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetContactPreventEmail(userID, ($(this).text() !== 'Yes'), function (result) {
-            $('#fieldPreventemailfromcreatingtickets').text((result === true ? 'Yes' : 'No'));
-            top.Ts.System.logAction('Contact Detail - Edit Prevent Email From Creating Tickets');
+            $('#fieldPreventemailfromcreatingandupdatingtickets').text((result === true ? 'Yes' : 'No'));
+            top.Ts.System.logAction('Contact Detail - Edit Prevent Email From Creating And Updating Tickets');
         },
         function (error) {
             header.show();
             alert('There was an error saving the customer block email status.');
+        });
+    });
+    $('.userProperties').on('click', '#fieldPreventemailfromcreatingbutallowupdatingtickets', function (e) {
+        if (!$(this).hasClass('editable'))
+            return false;
+        top.Ts.Services.Customers.SetContactPreventEmailCreatingOnly(userID, ($(this).text() !== 'Yes'), function (result) {
+            $('#fieldPreventemailfromcreatingbutallowupdatingtickets').text((result === true ? 'Yes' : 'No'));
+            top.Ts.System.logAction('Contact Detail - Edit Prevent Email From Creating Only');
+        },
+        function (error) {
+            header.show();
+            alert('There was an error saving the customer block email creating only.');
         });
     });
     $('.userProperties').on('click', '#fieldSystemAdministrator', function (e) {

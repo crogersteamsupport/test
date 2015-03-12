@@ -95,6 +95,7 @@ namespace TeamSupport.Data
     [DataMember] public bool CanEditProducts { get; set; }
     [DataMember] public bool CanEditVersions { get; set; }
     [DataMember] public ProductFamiliesRightType ProductFamiliesRights { get; set; }
+    [DataMember] public bool? BlockEmailFromCreatingOnly { get; set; }
           
   }
   
@@ -104,6 +105,7 @@ namespace TeamSupport.Data
     {
 
       UserProxy result = new UserProxy();
+      result.BlockEmailFromCreatingOnly = this.BlockEmailFromCreatingOnly;
       result.ProductFamiliesRights = this.ProductFamiliesRights;
       result.DisableExporting = this.DisableExporting;
       result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;

@@ -92,6 +92,7 @@ namespace TeamSupport.Data
     [DataMember] public bool CanEditVersions { get; set; }
     [DataMember] public bool ReceiveUnassignedGroupEmails { get; set; }
     [DataMember] public int ProductFamiliesRights { get; set; }
+    [DataMember] public bool? BlockEmailFromCreatingOnly { get; set; }
           
   }
   
@@ -100,6 +101,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.BlockEmailFromCreatingOnly = this.BlockEmailFromCreatingOnly;
       result.ProductFamiliesRights = this.ProductFamiliesRights;
       result.ReceiveUnassignedGroupEmails = this.ReceiveUnassignedGroupEmails;
       result.CanEditVersions = this.CanEditVersions;

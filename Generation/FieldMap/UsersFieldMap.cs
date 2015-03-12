@@ -92,6 +92,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CanEditVersions", "CanEditVersions", false, false, false);
       _fieldMap.AddMap("ReceiveUnassignedGroupEmails", "ReceiveUnassignedGroupEmails", false, false, false);
       _fieldMap.AddMap("ProductFamiliesRights", "ProductFamiliesRights", false, false, false);
+      _fieldMap.AddMap("BlockEmailFromCreatingOnly", "BlockEmailFromCreatingOnly", false, false, false);
             
     }
   }

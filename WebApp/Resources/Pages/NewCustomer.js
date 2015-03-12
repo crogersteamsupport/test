@@ -252,6 +252,7 @@ $(document).ready(function () {
             contactInfo.Company = $("#inputContactCompany").data('item');
             contactInfo.Active = $("#inputContactActive").prop('checked');
             contactInfo.BlockInboundEmail = $("#inputContactBlockEmail").prop('checked');
+            contactInfo.BlockEmailFromCreatingOnly = $("#inputContactBlockEmailCreatingOnly").prop('checked');
             contactInfo.IsPortalUser = $("#inputPortalUser").prop('checked');
             contactInfo.IsSystemAdmin = $("#inputContactSysAdmin").prop('checked');
             contactInfo.IsFinanceAdmin = $("#inputContactFinancialAdmin").prop('checked');

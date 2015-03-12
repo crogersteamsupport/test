@@ -345,6 +345,16 @@ namespace TSWebServices
             return value;
         }
         [WebMethod]
+        public bool SetContactPreventEmailCreatingOnly(int userID, bool value)
+        {
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            u.BlockEmailFromCreatingOnly = value;
+            u.Collection.Save();
+            string description = String.Format("{0} set contact prevent email from creating but allow updating tickets to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
+            return value;
+        }
+        [WebMethod]
         public bool SetContactSystemAdmin(int userID, bool value)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
@@ -399,7 +409,8 @@ namespace TSWebServices
 
             html.AppendLine(CreateFormElement("Active", user.IsActive, "editable"));
             html.AppendLine(CreateFormElement("Portal User", user.IsPortalUser, "editable"));
-            html.AppendLine(CreateFormElement("Block all emails from sender", user.BlockInboundEmail, "editable"));
+            html.AppendLine(CreateFormElement("Prevent email from creating and updating tickets", user.BlockInboundEmail, "editable"));
+            html.AppendLine(CreateFormElement("Prevent email from creating but allow updating tickets", user.BlockEmailFromCreatingOnly, "editable"));
             html.AppendLine(CreateFormElement("Disable Organization Tickets View on Portal", user.PortalLimitOrgTickets, "editable"));
 
             if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)
@@ -1697,6 +1708,7 @@ namespace TSWebServices
             user.Title = info.Title;
             user.MiddleName = info.MiddleName;
             user.BlockInboundEmail = info.BlockInboundEmail;
+            user.BlockEmailFromCreatingOnly = info.BlockEmailFromCreatingOnly;
             user.IsActive = info.Active;
 
             if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).HasPortalAccess && TSAuthentication.IsSystemAdmin)
@@ -2816,6 +2828,7 @@ namespace TSWebServices
             [DataMember] public string Title { get; set; }
             [DataMember] public string MiddleName { get; set; }
             [DataMember] public bool BlockInboundEmail { get; set; }
+            [DataMember] public bool BlockEmailFromCreatingOnly { get; set; }
             [DataMember] public bool IsPortalUser { get; set; }
             [DataMember] public bool IsSystemAdmin { get; set; }
             [DataMember] public bool IsFinanceAdmin { get; set; }

@@ -54,6 +54,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("UserCanPinAction", "UserCanPinAction", false, false, false);
       _fieldMap.AddMap("PortalLimitOrgTickets", "DisableOrganizationTicketsViewOnPortal", true, true, true);
       _fieldMap.AddMap("ProductFamiliesRights", "ProductFamiliesRights", false, false, false);
+      _fieldMap.AddMap("BlockEmailFromCreatingOnly", "BlockEmailFromCreatingOnly", false, false, false);
             
     }
   }
