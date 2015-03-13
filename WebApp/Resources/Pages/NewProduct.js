@@ -143,6 +143,7 @@ $(document).ready(function () {
     }
 
     if (isValid) {
+        $('#productSaveBtn').prop("disabled", true);
       var productInfo = new Object();
       top.Ts.System.logAction('New Product Page - Added New Product');
       productInfo.Name = $("#inputName").val();
@@ -184,10 +185,12 @@ $(document).ready(function () {
 
 
       top.Ts.Services.Products.SaveProduct(top.JSON.stringify(productInfo), function (f) {
+          $('#productSaveBtn').prop("disabled", false);
         top.Ts.MainPage.openNewProduct(f);
         top.Ts.MainPage.closenewProductTab();
       }, function () {
-        alert('There was an error saving this product.  Please try again.');
+          $('#productSaveBtn').prop("disabled", false);
+          alert('There was an error saving this product.  Please try again.');
       });
     }
   });
@@ -204,6 +207,7 @@ $(document).ready(function () {
     }
 
     if (isValid) {
+        $('#productVersionSaveBtn').prop("disabled", true);
       var versionInfo = new Object();
       top.Ts.System.logAction('New Product Page - Added New Product Version');
       versionInfo.VersionNumber = $("#inputVersionNumber").val();
@@ -245,9 +249,11 @@ $(document).ready(function () {
 
 
       top.Ts.Services.Products.SaveProductVersion(top.JSON.stringify(versionInfo), function (f) {
+          $('#productVersionSaveBtn').prop("disabled", false);
         top.Ts.MainPage.openNewProductVersion(f);
         top.Ts.MainPage.closenewProductTab();
       }, function () {
+          $('#productVersionSaveBtn').prop("disabled", false);
         alert('There was an error saving this product version.  Please try again.');
       });
     }

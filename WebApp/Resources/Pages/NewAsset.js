@@ -52,6 +52,7 @@
     e.stopPropagation();
 
     if ($("#assetForm").valid()) {
+        $('#assetSaveBtn').prop("disabled", true);
       var assetInfo = new Object();
 
       assetInfo.Name = $("#inputName").val();
@@ -95,10 +96,12 @@
 
 
       top.Ts.Services.Assets.SaveAsset(top.JSON.stringify(assetInfo), function (assetID) {
+          $('#assetSaveBtn').prop("disabled", false);
         top.Ts.System.logAction('Asset Created');
         top.Ts.MainPage.openNewAsset(assetID);
         top.Ts.MainPage.closenewAssetTab();
       }, function () {
+          $('#assetSaveBtn').prop("disabled", false);
         alert('There was an error saving this asset.  Please try again.');
       });
     }
