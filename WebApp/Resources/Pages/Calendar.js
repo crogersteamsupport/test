@@ -121,6 +121,7 @@
 
     });
 
+    // edit event delagate
     $('body').on('click', '.eventEdit', function (e) {
         var event = theTempEvent;
         switch (event.type)
@@ -138,6 +139,7 @@
         }
     });
 
+    // delete event delegate
     $('body').on('click', '.eventDelete', function (e) {
         var eventid = theTempEvent;
         if (confirm("Are you sure you want to delete this event")) {
@@ -466,15 +468,21 @@
 
     });
 
-    addCalButton("right", "calURL");
+    addCalButton("right", "calURL", "fa fa-rss");
+    addCalButton("right", "newEvent", "fa fa-plus");
 
-    function addCalButton(where, id) {
-        var my_button = '<button class="fc-button fc-state-default fc-corner-right btn btn-default" id="'+ id+'"><i class="fa fa-rss"></i></button>';
+    function addCalButton(where, id, css) {
+        var my_button = '<button class="fc-button fc-state-default fc-corner-right btn btn-default" id="'+ id+'"><i class="'+ css +'"></i></button>';
         $(".fc-" + where + " .fc-button-group").append(my_button);
         $("#" + id).button();
     }
 
     $("#calURL").click(function () { $('#subscribeModal').modal(); });
+    $("#newEvent").click(function () {
+        $('#fullCalModal').modal();
+            $('#inputStartTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
+        $('#inputEndTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
+    });
 
     //search functions for the associations
     var execGetCustomer = null;
