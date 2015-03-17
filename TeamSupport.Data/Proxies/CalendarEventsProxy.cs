@@ -23,6 +23,7 @@ namespace TeamSupport.Data
     [DataMember] public int? RepeatFrequency { get; set; }
     [DataMember] public DateTime LastModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
+    [DataMember] public bool AllDay { get; set; }
           
   }
   
@@ -31,6 +32,7 @@ namespace TeamSupport.Data
     public CalendarEventProxy GetProxy()
     {
       CalendarEventProxy result = new CalendarEventProxy();
+      result.AllDay = this.AllDay;
       result.CreatorID = this.CreatorID;
       result.RepeatFrequency = this.RepeatFrequency;
       result.Repeat = this.Repeat;

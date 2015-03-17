@@ -18,3 +18,25 @@
     line-height: 1.5em;
     padding: 2px 2px 2px 6px;
 }
+
+.popover-content a:hover{
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.addatt{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/icons/attachment.png');cursor:pointer}
+.addticket{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
+.addgroup{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
+.addcustomer{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.addproduct{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
+.adduser{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+.arrow-up {
+	width: 0; 
+	height: 0; 
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid black;
+	position: relative;
+	left: 7px;
+	clear: both;
+}

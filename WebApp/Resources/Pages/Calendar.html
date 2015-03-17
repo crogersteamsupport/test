@@ -16,6 +16,7 @@
     <script src='../Js/fullcalendar.js'></script>
     <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
     <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="../Js/jquery.data-selector.js" type="text/javascript"></script>
     <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
     <script src="../Js/bootstrap-datetimepicker.min.js"></script>
     <script src="../Js/Ts/ts.utils.js" type="text/javascript"></script>
@@ -27,46 +28,92 @@
         <div id='calendar'></div>
     </div>
 
-    <div id="fullCalModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
-                <h4 id="modalTitle" class="modal-title">Event</h4>
-            </div>
-            <div id="modalBody" class="modal-body">
-                <form class="form-horizontal">
-                    <div class="form-group">
-                            
-                            <div class="col-sm-12">
-                                <input type="text" class="form-control" id="inputTitle" placeholder="Title"/>
+    <div id="subscribeModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="modalBody" class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="subscribeURL" placeholder="You custom calandar url" />
                             </div>
-                    </div>
-                    <div class="form-group">
-                            <div class="col-sm-12">
-                                <input type="text" class="form-control datetimepicker" id="inputStartTime" placeholder="Start Time"/>
+                            <div class="col-sm-3">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="subscribeEnable" /> Enable Sharing
+                                    </label>
+                                </div>
                             </div>
-                    </div>
-                    <div class="form-group">
-                            <div class="col-sm-12">
-                                <input type="text" class="form-control datetimepicker" id="inputEndTime" placeholder="End Time"/>
-                            </div>
-                    </div>
-<!--                    <div class="form-group">
-                        <div class="col-sm-12">
-                          <div class="checkbox">
-                            <label>
-                              <input type="checkbox"/> All Day Event
-                            </label>
-                          </div>
                         </div>
-                      </div>-->
-                    <div class="form-group">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fullCalModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+                    <h4 id="modalTitle" class="modal-title">Event</h4>
+                </div>
+                <div id="modalBody" class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="inputTitle" placeholder="Title" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control datetimepicker" id="inputStartTime" placeholder="Start Time" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control datetimepicker" id="inputEndTime" placeholder="End Time" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="inputAllDay" /> All Day Event
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" /> Recurring Event
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="checkbox">
+                                    <label>
+                                        <select class="form-control" id="recurringTime">
+                                            <option value="1">Every Day</option>
+                                            <option value="2">Every Week</option>
+                                            <option value="3">Every Month</option>
+                                            <option value="4">Every Year</option>
+
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <div class="col-sm-12">
                                 <textarea id="inputDescription" rows="5" class="form-control" placeholder="Description"></textarea>
                             </div>
-                    </div>
-                    <div class="form-group">
+                        </div>
+                        <!--<div class="form-group">
                             <div class="col-sm-12">
                                 <select class="form-control" id="calAssociation">
                                     <option value="-1">Event Association</option>
@@ -77,27 +124,38 @@
                                     <option value="4">Product</option>
                                 </select>
                             </div>
-                    </div>
-                    <div class="form-group" id="searchGroup">
+                        </div>-->
+                        <div class="form-group">
                             <div class="col-sm-12">
-                                <input type="text" class="form-control" id="associationSearch" placeholder="Search..."/>
+                                <span data-original-title="Associate Ticket" class="addticket" title=""></span>
+                                <span data-original-title="Associate User" class="adduser" title=""></span>
+                                <span data-original-title="Associate Company" class="addcustomer" title=""></span>
+                                <span data-original-title="Associate Group" class="addgroup" title=""></span>
+                                <span data-original-title="Associate Product" class="addproduct" title=""></span>
+                                <div style="left: 7px;" class="arrow-up"></div>
+
                             </div>
-                    </div>
-                    <div id="associationQueue">
-                        <div class="ticket-queue"></div>
-                        <div class="user-queue"></div>
-                        <div class="group-queue"></div>
-                        <div class="customer-queue"></div>
-                        <div class="product-queue"></div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button id="btnSaveEvent" class="btn btn-primary">Save</button>
+                        </div>
+                        <div class="form-group" id="searchGroup">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="associationSearch" placeholder="Search..." />
+                            </div>
+                        </div>
+                        <div id="associationQueue">
+                            <div class="ticket-queue"></div>
+                            <div class="user-queue"></div>
+                            <div class="group-queue"></div>
+                            <div class="customer-queue"></div>
+                            <div class="product-queue"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btnSaveEvent" class="btn btn-primary">Save</button>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <div id="popoverTemplate" class="hide">

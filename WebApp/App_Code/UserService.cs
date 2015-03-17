@@ -1313,6 +1313,9 @@ namespace TSWebServices
                     //cal.id = t.TicketID;
                     cal.id = t.TicketNumber;
                     cal.description = "Ticket Due Date: " + t.DueDate;
+                    cal.end = null;
+                    cal.allday = false;
+                    //cal.references = null;
                     events.Add(cal);
                 }
             }
@@ -1336,7 +1339,9 @@ namespace TSWebServices
                 cal.color = "blue";
                 cal.title = r.Description;
                 cal.start = ((DateTime)r.DueDateUtc).ToString("o");
-
+                cal.end = null;
+                cal.allday = false;
+                //cal.references = null;
                 switch (r.RefType)
                 {
                     case ReferenceType.Tickets:
@@ -1371,11 +1376,18 @@ namespace TSWebServices
                 cal.color = "green";
                 DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)c.StartDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
                 cal.start = ((DateTime)c.StartDateUtc).ToString("o");
-                //cal.end = ((DateTime)c.EndDateUtc).ToString("o");
+                cal.end = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
                 cal.title = c.Title;
                 cal.type = "cal";
                 cal.id = c.CalendarID;
                 cal.description = c.Description;
+                cal.allday = c.AllDay;
+
+                CalendarRef calRef = new CalendarRef(TSAuthentication.GetLoginUser());
+                calRef.LoadByCalendarID(c.CalendarID);
+
+                //cal.references = calRef.ToArray();
+
                 events.Add(cal);                
             }
             return events.ToArray();
@@ -1409,50 +1421,77 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void SaveCalendarEvent(string data)
+        public bool SaveCalendarEvent(string data)
         {
             CalendarJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<CalendarJsonInfo>(data);
-
-            CalendarEvent cal = (new CalendarEvents(TSAuthentication.GetLoginUser()).AddNewCalendarEvent());
-            cal.StartDate = DateTime.Parse(info.start);
-            //cal.EndDate = info.end == "" ? null : DateTime.Parse(info.end);
-            cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
-            cal.Title = info.title;
-            cal.Description = info.description;
-            cal.LastModified = DateTime.Now;
-            cal.CreatorID = TSAuthentication.GetLoginUser().UserID;
-            cal.Collection.Save();
-
-            foreach (int ticketID in info.Tickets)
+            DateTime dt;
+            if (info.id != -1)
             {
-                AddAttachment(cal.CalendarID, ticketID, CalendarAttachmentType.Ticket);
+                CalendarEvent cal = CalendarEvents.GetCalendarEvent(TSAuthentication.GetLoginUser(), info.id);
+                if ((DateTime.TryParse(info.start, out dt)))
+                    cal.StartDate = DateTime.Parse(info.start);
+                else
+                    return false;
+                if (DateTime.TryParse(info.end, out dt))
+                    cal.EndDate =  DateTime.Parse(info.end);
+                cal.Title = info.title;
+                cal.Description = info.description;
+                cal.LastModified = DateTime.Now;
+                cal.AllDay = info.allDay;
+                cal.Collection.Save();
+            }
+            else
+            {
+                CalendarEvent cal = (new CalendarEvents(TSAuthentication.GetLoginUser()).AddNewCalendarEvent());
+                if ((DateTime.TryParse(info.start, out dt)))
+                    cal.StartDate = DateTime.Parse(info.start);
+                else
+                    return false;
+                if (DateTime.TryParse(info.end, out dt))
+                    cal.EndDate = DateTime.Parse(info.end);
+                cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+                cal.Title = info.title;
+                cal.Description = info.description;
+                cal.LastModified = DateTime.Now;
+                cal.CreatorID = TSAuthentication.GetLoginUser().UserID;
+                cal.AllDay = info.allDay;
+                cal.Collection.Save();
+
+                foreach (int ticketID in info.Tickets)
+                {
+                    AddAttachment(cal.CalendarID, ticketID, CalendarAttachmentType.Ticket);
+                }
+
+                if (info.PageType == 1)
+                    AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Product);
+                foreach (int productID in info.Products)
+                {
+                    AddAttachment(cal.CalendarID, productID, CalendarAttachmentType.Product);
+                }
+
+                if (info.PageType == 2)
+                    AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Company);
+                foreach (int CompanyID in info.Company)
+                {
+                    AddAttachment(cal.CalendarID, CompanyID, CalendarAttachmentType.Company);
+                }
+
+                if (info.PageType == 4)
+                    AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Group);
+                foreach (int groupID in info.Groups)
+                {
+                    AddAttachment(cal.CalendarID, groupID, CalendarAttachmentType.Group);
+                }
+
+                foreach (int UserID in info.User)
+                {
+                    AddAttachment(cal.CalendarID, UserID, CalendarAttachmentType.User);
+                }
+
             }
 
-            if (info.PageType == 1)
-                AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Product);
-            foreach (int productID in info.Products)
-            {
-                AddAttachment(cal.CalendarID, productID, CalendarAttachmentType.Product);
-            }
+            return true;
 
-            if (info.PageType == 2)
-                AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Company);
-            foreach (int CompanyID in info.Company)
-            {
-                AddAttachment(cal.CalendarID, CompanyID, CalendarAttachmentType.Company);
-            }
-
-            if (info.PageType == 4)
-                AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Group);
-            foreach (int groupID in info.Groups)
-            {
-                AddAttachment(cal.CalendarID, groupID, CalendarAttachmentType.Group);
-            }
-
-            foreach (int UserID in info.User)
-            {
-                AddAttachment(cal.CalendarID, UserID, CalendarAttachmentType.User);
-            }
 
         }
 
@@ -1513,6 +1552,11 @@ namespace TSWebServices
             public string type { get; set; }
             [DataMember]
             public string description { get; set; }
+            [DataMember]
+            public bool allday { get; set; }
+            //[DataMember]
+            //public CalendarRefItem[] references { get; set; }
+
         }
 
 
@@ -1538,6 +1582,8 @@ namespace TSWebServices
           public string start { get; set; }
           [DataMember]
           public string end { get; set; }
+          [DataMember]
+          public bool allDay { get; set; }
           [DataMember]
           public string description { get; set; }
           [DataMember]

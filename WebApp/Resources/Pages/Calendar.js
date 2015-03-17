@@ -3,6 +3,7 @@
     //check if the calendar is on a sub section or not
     var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
     var pageID = top.Ts.Utils.getQueryValue("pageid", window);
+    var theTempEvent = null;
 
     if (pageType == null)
         pageType = -1;
@@ -21,29 +22,40 @@
     var year = date.getFullYear();  // yields year
     // After this construct a string with the above results as below
     var time = day + "/" + month + "/" + year;
-    
+    var tempVar = "";
     //var e = top.Ts.Services.Users.GetCalendarEvents($.fullCalendar.moment('2014-05-01'));
     
     //initialize the calendar
     $('#calendar').fullCalendar({
         header: {
-            left: 'prev,next today',
+            left: 'prev,next today custom',
             center: 'title',
-            right: 'month,agendaWeek,agendaDay'
+            right: 'month,agendaWeek,agendaDay,basicWeek,basicDay'
         },
         editable: true,
         eventLimit: true, 
         height: '200',
         aspectRatio: 2.3,
+        dayRender: function(date, element, view){
+            element.bind('dblclick', function() {
+                clearModal();
+                $('#inputStartTime').val(moment(date).format('MM/DD/YYYY hh:mm a'));
+                $('#inputStartTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
+                $('#inputEndTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
+                theTempEvent = null;
+                $('#fullCalModal').modal();
+            });
+        },
         dayClick: function (date, jsEvent, view) {
-            clearModal();
-            $('#inputStartTime').val(moment(date).format('MM/DD/YYYY hh:mm'));
-            $('#fullCalModal').modal();
-
-            //alert('Clicked on: ' + date.format());
-            //alert('Current view: ' + view.name);
-            // change the day's background color just for fun
-            //$(this).css('background-color', 'orange');
+            //if (tempVar == "") {
+            //    $(this).css('background-color', '#9ebfe8');
+            //    tempVar = this;
+            //}
+            //else {
+            //    $(this).css('background-color', '#9ebfe8');
+            //    $(tempVar).css('background-color', 'white');
+            //    tempVar = this;
+            //}
 
         },  
         timezone: 'local',
@@ -68,10 +80,13 @@
                             start: this.start,
                             textColor: this.color,
                             color: '#fff',
+                            borderColor: '#ddd',
                             type: this.type,
                             id: this.id,
-                            description: this.description
-                            //end: this.end
+                            description: this.description,
+                            end: this.end,
+                            allDay: this.allday
+                            //refernces: this.references
                         });
                     });
                     callback(events);
@@ -83,27 +98,55 @@
         },
         eventDrop: function (event, delta, revertFunc) {
             top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.type)
-
         },
         eventRender: function (event, element) {
             element.popover({
                 title: event.title,
-                placement:'auto',
+                placement:'bottom',
                 html:true,
-                trigger : 'click',
+                trigger: 'click',
+                container: 'body',
                 animation: 'true',
-                content: buildPopover(event, element),
-                container: 'body'
-        });
-        $('body').on('click', function (e) {
-            if (!element.is(e.target) && element.has(e.target).length === 0 && $('.popover').has(e.target).length === 0)
-                element.popover('hide');
-        });
-        
-    },
+                content: buildPopover(event, element)
+                
+            });
+            $('body').on('click', function (e) {
+                if (!element.is(e.target) && element.has(e.target).length === 0 && $('.popover').has(e.target).length === 0)
+                    element.popover('hide');
+            });
+        },
+        eventClick: function (calEvent, jsEvent, view) {
+            theTempEvent = calEvent;
+        }
 
     });
 
+    $('body').on('click', '.eventEdit', function (e) {
+        var event = theTempEvent;
+        switch (event.type)
+        {
+            case "ticket":
+                top.Ts.MainPage.openTicket(event.id); return false;
+                break;
+            case "cal":
+                clearModal();
+                loadModal(event);
+                $('#fullCalModal').modal('show');
+                break;
+            default:
+                break;
+        }
+    });
+
+    $('body').on('click', '.eventDelete', function (e) {
+        var eventid = theTempEvent;
+        if (confirm("Are you sure you want to delete this event")) {
+            top.Ts.Services.Users.DeleteCalEvent(eventid, function () {
+                $('.popover').hide();
+                $("#calendar").fullCalendar('refetchEvents');
+            });
+        }
+    });
 
     //Convert buttons to bootstrap classes
     $('.fc-toolbar').find('.fc-button').addClass('btn btn-default');
@@ -112,76 +155,51 @@
     function buildPopover(event, element)
     {
         var theTime = $("<div>")
-            .text(moment(event.start).format('MM/DD/YYYY hh:mm'));
+            .text("Start: " + moment(event.start).format('MM/DD/YYYY hh:mm a'));
         var lb = $("<hr>")
             .appendTo(theTime);
-        var goButton = $("<button>")
-            .addClass("btn btn-sm")
-            .click(function (e) {
-                alert("test");
-                //if (event.type == "ticket") {
-                //    top.Ts.MainPage.openTicket(event.id);
-                //}
-                //else if (event.type == "reminder-org")
-                //{
-                //    //top.Ts.MainPage.openNewCustomer(event.id);
-                    
-                //}
-                //else if (event.type == "reminder-user") {
-                //    //top.Ts.MainPage.openNewContact(event.id);
-                //}
-                //else if (event.type == "cal")
-                //{
-                //    element.popover('hide');
-                //    clearModal();
-                //    $('#inputTitle').val(event.title);
-                //    $('#inputStartTime').val(moment(event.start).format('MM/DD/YYYY hh:mm'));
-                //    $('#inputEndTime').val("");
-                //    $('#inputDescription').val(event.description);
-                //    $('#fullCalModal').modal('show');
-                //}
-            })
+        var goButton = $("<a>")
+            .addClass("eventEdit")
+            .data('event', event)
+            .text('Edit')
             .appendTo(theTime);
-        var icon = $("<i>")
-            .addClass("fa fa-arrow-up")
-            .appendTo(goButton);
 
         if (top.Ts.System.User.IsSystemAdmin && event.type == "cal")
         {
-            var delButton = $("<button>")
-                .addClass("btn btn-sm pull-right")
-                .click(function (e) {
-                    if (confirm("Are you sure you want to delete this event"))
-                    {
-                        top.Ts.Services.Users.DeleteCalEvent(event.id, function () {
-                            element.popover('hide');
-                            $("#calendar").fullCalendar('refetchEvents');
-                        });
-                    }
-                })
-            .appendTo(theTime);
-            var icon = $("<i>")
-                .addClass("fa fa-trash-o")
-                .appendTo(delButton);
+            var delButton = $("<a>")
+                .addClass("pull-right eventDelete")
+                .data('eventid', event.id)
+                .text('Delete')
+                .appendTo(theTime);
         }
 
         return theTime;
     }
 
     //default setup functions
-    $('.datetimepicker').datetimepicker({ format: 'MM/DD/YYYY hh:mm' });
+    //$('.datetimepicker').datetimepicker({ format: 'MM/DD/YYYY hh:mm a'});
     $('#searchGroup').hide();
 
-    //handle the event association dropdown
-    $('#calAssociation').change(function () {
+    //handle the event association
+    $('.addticket').click(function ()
+    { calAssociation("0"); });
+    $('.adduser').click(function ()
+    { calAssociation("1"); });
+    $('.addcustomer').click(function ()
+    { calAssociation("2"); });
+    $('.addgroup').click(function ()
+    { calAssociation("3"); });
+    $('.addproduct').click(function ()
+    { calAssociation("4"); });
+
+    function calAssociation(associationType)
+    {
         var searchbox = $('#associationSearch');
-        switch (this.value)
+        switch (associationType)
         {
-            case "-1":
-                $('#searchGroup').hide();
-                break;
             case "0":
                 $('#searchGroup').show();
+                $(".arrow-up").css('left', '7px');
                 $('#associationSearch').attr("placeholder", "Search Tickets").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 2, source: getTicketsByTerm, delay: 300,
@@ -220,6 +238,7 @@
                 break;
             case "1":
                 $('#searchGroup').show();
+                $(".arrow-up").css('left', '30px');
                 $('#associationSearch').attr("placeholder", "Search Users").val("");
                 searchbox.autocomplete({
                     minLength: 3, source: getUsers, delay: 300,
@@ -258,6 +277,7 @@
                 break;
             case "2":
                 $('#searchGroup').show();
+                $(".arrow-up").css('left', '53px');
                 $('#associationSearch').attr("placeholder", "Search Companies").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 3,
@@ -297,6 +317,7 @@
                 break;
             case "3":
                 $('#searchGroup').show();
+                $(".arrow-up").css('left', '78px');
                 $('#associationSearch').attr("placeholder", "Search Groups").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 2,
@@ -336,6 +357,7 @@
                 break;
             case "4":
                 $('#searchGroup').show();
+                $(".arrow-up").css('left', '104px');
                 $('#associationSearch').attr("placeholder", "Search Products").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 3,
@@ -374,7 +396,7 @@
                 });
                 break;
         }
-    });
+    }
 
     //save the new calendar event
     $('#btnSaveEvent').click(function (e) {
@@ -383,10 +405,15 @@
 
         var calendarinfo = new Object();
 
+        if (theTempEvent)
+            calendarinfo.ID = theTempEvent.id;
+        else
+            calendarinfo.ID = -1;
         calendarinfo.title = $('#inputTitle').val();
         calendarinfo.start = $('#inputStartTime').val();
         calendarinfo.end = $('#inputEndTime').val();
         calendarinfo.description = $('#inputDescription').val();
+        calendarinfo.allday = $('#inputAllDay').is(':checked')
         calendarinfo.PageType = pageType;
         calendarinfo.PageID = pageID;
 
@@ -421,15 +448,33 @@
         if (calendarinfo.Company.length > 0) top.Ts.System.logAction('Calendar Event - Company Inserted');
         if (calendarinfo.User.length > 0) top.Ts.System.logAction('Calendar Event - User Inserted');
 
-        top.Ts.Services.Users.SaveCalendarEvent(top.JSON.stringify(calendarinfo), function () {
-            $('#fullCalModal').modal('hide');
-            clearModal();
-            $("#calendar").fullCalendar('refetchEvents');
+        top.Ts.Services.Users.SaveCalendarEvent(top.JSON.stringify(calendarinfo), function (result) {
+            if (result)
+            {
+                $('#fullCalModal').modal('hide');
+                clearModal();
+                $("#calendar").fullCalendar('refetchEvents');
+            }
+            else
+            {
+                alert("A valid start date must be entered.");
+            }
+
+
         });
 
 
     });
 
+    addCalButton("right", "calURL");
+
+    function addCalButton(where, id) {
+        var my_button = '<button class="fc-button fc-state-default fc-corner-right btn btn-default" id="'+ id+'"><i class="fa fa-rss"></i></button>';
+        $(".fc-" + where + " .fc-button-group").append(my_button);
+        $("#" + id).button();
+    }
+
+    $("#calURL").click(function () { $('#subscribeModal').modal(); });
 
     //search functions for the associations
     var execGetCustomer = null;
@@ -493,6 +538,16 @@
         $('#associationQueue').find('.customer-queue').empty();
         $('#associationQueue').find('.user-queue').empty();
         $('#associationQueue').find('.product-queue').empty();
+    }
+
+    function loadModal(event)
+    {
+        $('#inputTitle').val(event.title);
+
+
+        $('#inputStartTime').val(moment(event.start).format('MM/DD/YYYY hh:mm a'));
+        $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format('MM/DD/YYYY hh:mm a'));
+        $('#inputDescription').val(event.description);
     }
 
 }); 

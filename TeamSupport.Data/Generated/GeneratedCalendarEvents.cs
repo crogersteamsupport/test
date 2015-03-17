@@ -54,6 +54,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool AllDay
+    {
+      get { return (bool)Row["AllDay"]; }
+      set { Row["AllDay"] = CheckValue("AllDay", value); }
+    }
+    
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
@@ -208,7 +214,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CalendarEvents] SET     [OrganizationID] = @OrganizationID,    [StartDate] = @StartDate,    [EndDate] = @EndDate,    [Title] = @Title,    [Description] = @Description,    [Repeat] = @Repeat,    [RepeatFrequency] = @RepeatFrequency,    [LastModified] = @LastModified  WHERE ([CalendarID] = @CalendarID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CalendarEvents] SET     [OrganizationID] = @OrganizationID,    [StartDate] = @StartDate,    [EndDate] = @EndDate,    [Title] = @Title,    [Description] = @Description,    [Repeat] = @Repeat,    [RepeatFrequency] = @RepeatFrequency,    [LastModified] = @LastModified,    [AllDay] = @AllDay  WHERE ([CalendarID] = @CalendarID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CalendarID", SqlDbType.Int, 4);
@@ -274,13 +280,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("AllDay", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CalendarEvents] (    [OrganizationID],    [StartDate],    [EndDate],    [Title],    [Description],    [Repeat],    [RepeatFrequency],    [LastModified],    [CreatorID]) VALUES ( @OrganizationID, @StartDate, @EndDate, @Title, @Description, @Repeat, @RepeatFrequency, @LastModified, @CreatorID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CalendarEvents] (    [OrganizationID],    [StartDate],    [EndDate],    [Title],    [Description],    [Repeat],    [RepeatFrequency],    [LastModified],    [CreatorID],    [AllDay]) VALUES ( @OrganizationID, @StartDate, @EndDate, @Title, @Description, @Repeat, @RepeatFrequency, @LastModified, @CreatorID, @AllDay); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("AllDay", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -457,7 +477,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CalendarID], [OrganizationID], [StartDate], [EndDate], [Title], [Description], [Repeat], [RepeatFrequency], [LastModified], [CreatorID] FROM [dbo].[CalendarEvents] WHERE ([CalendarID] = @CalendarID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CalendarID], [OrganizationID], [StartDate], [EndDate], [Title], [Description], [Repeat], [RepeatFrequency], [LastModified], [CreatorID], [AllDay] FROM [dbo].[CalendarEvents] WHERE ([CalendarID] = @CalendarID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CalendarID", calendarID);
         Fill(command);
