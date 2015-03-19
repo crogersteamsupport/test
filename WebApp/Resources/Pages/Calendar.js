@@ -85,8 +85,9 @@
                             id: this.id,
                             description: this.description,
                             end: this.end,
-                            allDay: this.allday
-                            //refernces: this.references
+                            allDay: this.allday,
+                            references: this.references,
+                            creatorID: this.creatorID
                         });
                     });
                     callback(events);
@@ -126,12 +127,23 @@
         var event = theTempEvent;
         switch (event.type)
         {
+            case "reminder-ticket":
+                top.Ts.MainPage.openTicket(event.id); return false;
+                break;
+            case "reminder-org":
+                top.Ts.MainPage.openNewCustomer(event.id); return false;
+                break;
+            case "reminder-user":
+                top.Ts.MainPage.openNewContact(event.id); return false;
+                break;
             case "ticket":
                 top.Ts.MainPage.openTicket(event.id); return false;
                 break;
             case "cal":
                 clearModal();
                 loadModal(event);
+                if (event.creatorID != top.Ts.System.User.UserID && !top.Ts.System.User.IsSystemAdmin)
+                readOnlyModal();
                 $('#fullCalModal').modal('show');
                 break;
             default:
@@ -143,7 +155,7 @@
     $('body').on('click', '.eventDelete', function (e) {
         var eventid = theTempEvent;
         if (confirm("Are you sure you want to delete this event")) {
-            top.Ts.Services.Users.DeleteCalEvent(eventid, function () {
+            top.Ts.Services.Users.DeleteCalEvent(eventid.id, function () {
                 $('.popover').hide();
                 $("#calendar").fullCalendar('refetchEvents');
             });
@@ -158,12 +170,34 @@
     {
         var theTime = $("<div>")
             .text("Start: " + moment(event.start).format('MM/DD/YYYY hh:mm a'));
+        if (event.end)
+        {
+            var endTime = $("<div>")
+                .text("End: " + moment(event.end).format('MM/DD/YYYY hh:mm a')).appendTo(theTime);
+        }
+
+
         var lb = $("<hr>")
             .appendTo(theTime);
+
+        if (event.references.length > 0)
+        {
+            var referenceNames = "";
+            for (i = 0; i < event.references.length; i++)
+                referenceNames += event.references[i].displayName + "<br/>";
+
+            var attachments = $('<div>')
+            .html(referenceNames)
+            .appendTo(theTime);
+        }
+
+        var lb2 = $("<hr>")
+            .appendTo(theTime);
+
         var goButton = $("<a>")
             .addClass("eventEdit")
             .data('event', event)
-            .text('Edit')
+            .text("View")
             .appendTo(theTime);
 
         if (top.Ts.System.User.IsSystemAdmin && event.type == "cal")
@@ -180,8 +214,41 @@
 
     //default setup functions
     //$('.datetimepicker').datetimepicker({ format: 'MM/DD/YYYY hh:mm a'});
-    $('#searchGroup').hide();
+    $('#associationSearch').attr("placeholder", "Search Tickets").val("");
+    $('#associationSearch').autocomplete({
+        minLength: 2, source: getTicketsByTerm, delay: 300,
+        select: function (event, ui) {
+            if (ui.item) {
+                var isDupe;
+                $('#associationQueue').find('.ticket-queue').find('.ticket-removable-item').each(function () {
+                    if (ui.item.id == $(this).data('Ticket')) {
+                        isDupe = true;
+                    }
+                });
+                if (!isDupe) {
+                    var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($('#associationQueue').find('.ticket-queue')).data('Ticket', ui.item.id);
 
+
+                    $('<span>')
+                    .text(ellipseString(ui.item.value, 20))
+                    .addClass('filename')
+                    .appendTo(bg);
+
+                    $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
+                    this.value = "";
+                    return false;
+                }
+            }
+        }
+    });
     //handle the event association
     $('.addticket').click(function ()
     { calAssociation("0"); });
@@ -546,6 +613,10 @@
         $('#associationQueue').find('.customer-queue').empty();
         $('#associationQueue').find('.user-queue').empty();
         $('#associationQueue').find('.product-queue').empty();
+        $('.form-control').prop('disabled', false);
+        $('#inputAllDay').prop('disabled', false);
+        $('#inputRecurring').prop('disabled', false);
+        $('#btnSaveEvent').show();
     }
 
     function loadModal(event)
@@ -556,6 +627,14 @@
         $('#inputStartTime').val(moment(event.start).format('MM/DD/YYYY hh:mm a'));
         $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format('MM/DD/YYYY hh:mm a'));
         $('#inputDescription').val(event.description);
+    }
+
+    function readOnlyModal()
+    {
+        $('.form-control').prop('disabled', true);
+        $('#inputAllDay').prop('disabled', true);
+        $('#inputRecurring').prop('disabled', true);
+        $('#btnSaveEvent').hide();
     }
 
 }); 

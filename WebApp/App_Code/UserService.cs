@@ -1310,12 +1310,12 @@ namespace TSWebServices
                     cal.start = ((DateTime)t.DueDate).ToString("o");
                     cal.title = t.Name;
                     cal.type = "ticket";
-                    //cal.id = t.TicketID;
                     cal.id = t.TicketNumber;
                     cal.description = "Ticket Due Date: " + t.DueDate;
                     cal.end = null;
                     cal.allday = false;
-                    //cal.references = null;
+                    cal.references = null;
+                    cal.creatorID = -1;
                     events.Add(cal);
                 }
             }
@@ -1341,7 +1341,8 @@ namespace TSWebServices
                 cal.start = ((DateTime)r.DueDateUtc).ToString("o");
                 cal.end = null;
                 cal.allday = false;
-                //cal.references = null;
+                cal.references = null;
+                cal.creatorID = -1;
                 switch (r.RefType)
                 {
                     case ReferenceType.Tickets:
@@ -1382,15 +1383,57 @@ namespace TSWebServices
                 cal.id = c.CalendarID;
                 cal.description = c.Description;
                 cal.allday = c.AllDay;
+                cal.creatorID = c.CreatorID;
 
                 CalendarRef calRef = new CalendarRef(TSAuthentication.GetLoginUser());
                 calRef.LoadByCalendarID(c.CalendarID);
-
-                //cal.references = calRef.ToArray();
+                if (calRef.Count > 0)
+                {
+                    List<CalendarRefItemProxy> calendarreferences = new List<CalendarRefItemProxy>();
+                    foreach (CalendarRefItem calitem in calRef)
+                    {
+                        CalendarRefItemProxy prox = calitem.GetProxy();
+                        prox.displayName = GetDisplayname(prox);
+                        calendarreferences.Add(prox);
+                    }
+                    cal.references = calendarreferences.ToArray();
+                }
+                else
+                    cal.references = null;
 
                 events.Add(cal);                
             }
             return events.ToArray();
+        }
+
+        public string GetDisplayname(CalendarRefItemProxy calproxy)
+        {
+            string Displayname = "";
+
+            switch (calproxy.RefType)
+            {
+                case 0:
+                    Ticket t = Tickets.GetTicket(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    Displayname = t.Name;
+                    break;
+                case 1:
+                    Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    Displayname = p.Name;
+                    break;
+                case 2:
+                    Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    Displayname = o.Name;
+                    break;
+                case 3:
+                    Displayname = Users.GetUserFullName(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    break;
+                case 4:
+                    Group g = Groups.GetGroup(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    Displayname = g.Name;
+                    break;
+            }
+
+            return Displayname;
         }
 
         [WebMethod]
@@ -1411,7 +1454,7 @@ namespace TSWebServices
                 CalendarRefItem calAttachment = (new CalendarRef(TSAuthentication.GetLoginUser()).AddNewCalendarRefItem());
                 calAttachment.CalendarID = calendarID;
                 calAttachment.RefID = attachmentID;
-                calAttachment.RefType = attachmentType;
+                calAttachment.RefType = (int)attachmentType;
                 calAttachment.Collection.Save();
             }
             catch (Exception e)
@@ -1541,6 +1584,8 @@ namespace TSWebServices
             [DataMember]
             public int id { get; set; }
             [DataMember]
+            public int creatorID { get; set; }
+            [DataMember]
             public string title { get; set; }
             [DataMember]
             public string start { get; set; }
@@ -1554,8 +1599,8 @@ namespace TSWebServices
             public string description { get; set; }
             [DataMember]
             public bool allday { get; set; }
-            //[DataMember]
-            //public CalendarRefItem[] references { get; set; }
+            [DataMember]
+            public CalendarRefItemProxy[] references { get; set; }
 
         }
 

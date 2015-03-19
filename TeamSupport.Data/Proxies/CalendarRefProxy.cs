@@ -15,8 +15,8 @@ namespace TeamSupport.Data
     public CalendarRefItemProxy() {}
     [DataMember] public int CalendarID { get; set; }
     [DataMember] public int RefID { get; set; }
-    [DataMember] public CalendarAttachmentType RefType { get; set; }
-          
+    [DataMember] public int RefType { get; set; }
+    [DataMember] public string displayName { get; set; }      
   }
   
   public partial class CalendarRefItem : BaseItem
@@ -27,8 +27,7 @@ namespace TeamSupport.Data
       result.RefType = this.RefType;
       result.RefID = this.RefID;
       result.CalendarID = this.CalendarID;
-       
-       
+      result.displayName = "";
        
       return result;
     }	

@@ -29,9 +29,9 @@ namespace TeamSupport.Data
     
 
     
-    public CalendarAttachmentType RefType
+    public int RefType
     {
-      get { return (CalendarAttachmentType)Row["RefType"]; }
+        get { return (int)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
