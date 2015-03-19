@@ -180,7 +180,7 @@
         var lb = $("<hr>")
             .appendTo(theTime);
 
-        if (event.references.length > 0)
+        if (event.references)
         {
             var referenceNames = "";
             for (i = 0; i < event.references.length; i++)
@@ -189,10 +189,12 @@
             var attachments = $('<div>')
             .html(referenceNames)
             .appendTo(theTime);
+
+            var lb2 = $("<hr>")
+                .appendTo(theTime);
         }
 
-        var lb2 = $("<hr>")
-            .appendTo(theTime);
+
 
         var goButton = $("<a>")
             .addClass("eventEdit")
