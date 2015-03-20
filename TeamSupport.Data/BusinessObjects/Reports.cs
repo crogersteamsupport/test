@@ -621,7 +621,7 @@ namespace TeamSupport.Data
             case TicketRightType.All:
                 break;
             case TicketRightType.Assigned:
-                builder.Append(string.Format("AND ({0}.TicketID in ( SELECT t.TicketID FROM tickets t WHERE (t.UserID = @UserID OR t.IsKnowledgeBase=1)  AND ((t.[IsKnowledgeBase] = 0))))", mainTableName));
+                builder.Append(string.Format("AND ({0}.TicketID in ( SELECT t.TicketID FROM tickets t WHERE (t.UserID = @UserID OR t.IsKnowledgeBase=1)))", mainTableName));
                 break;
             case TicketRightType.Groups:
                 rightsClause = @"AND ({0}.TicketID in ( 
@@ -630,8 +630,7 @@ namespace TeamSupport.Data
 		                                WHERE ({1} 
                                         (t.UserID = @UserID) 
 		                                OR (t.IsKnowledgeBase = 1) 
-		                                OR (t.UserID IS NULL AND t.GroupID IS NULL))  
-		                                AND ((t.[IsKnowledgeBase] = 0))
+		                                OR (t.UserID IS NULL AND t.GroupID IS NULL))
 	                                ))";
 
                 Groups groups = new Groups(loginUser);
