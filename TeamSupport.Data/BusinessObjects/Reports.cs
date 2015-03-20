@@ -597,6 +597,10 @@ namespace TeamSupport.Data
                 GetUserRightsClause(loginUser, command, builder, catTable.TableName);
                 return;
             }
+            else if (catTable.ReportTableID == 6)
+            {
+                GetCustomerUserRightsClause(loginUser, command, builder, catTable.TableName);
+            }
 
             if (subCat.ReportTableID != null)
             {
@@ -606,6 +610,10 @@ namespace TeamSupport.Data
                 {
                     GetUserRightsClause(loginUser, command, builder, reportTable.TableName);
                     return;
+                }
+                else if (reportTable.ReportTableID == 6)
+                {
+                    GetCustomerUserRightsClause(loginUser, command, builder, reportTable.TableName);
                 }
             }
         }
@@ -683,6 +691,22 @@ namespace TeamSupport.Data
                 default:
                     break;
             }
+        }
+    }
+
+    private static void GetCustomerUserRightsClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, string mainTableName)
+    {
+        string rightsClause = "";
+
+        User user = Users.GetUser(loginUser, loginUser.UserID);
+
+        if (user.TicketRights == TicketRightType.Customers)
+        {
+            rightsClause = @"AND (OrganizationsView.OrganizationID in (
+                                SELECT uro.OrganizationID 
+                                FROM UserRightsOrganizations uro                                       
+                                WHERE uro.UserID = @UserID))";
+            builder.Append(string.Format(rightsClause, mainTableName));
         }
     }
 
