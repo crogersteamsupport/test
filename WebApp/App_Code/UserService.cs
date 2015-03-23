@@ -1396,7 +1396,7 @@ namespace TSWebServices
                         prox.displayName = GetDisplayname(prox);
                         calendarreferences.Add(prox);
                     }
-                    cal.references = calendarreferences.ToArray();
+                    cal.references = calendarreferences.OrderBy(a => a.displayName).ToArray();
                 }
                 else
                     cal.references = null;
@@ -1482,6 +1482,134 @@ namespace TSWebServices
                 cal.LastModified = DateTime.Now;
                 cal.AllDay = info.allDay;
                 cal.Collection.Save();
+
+                CalendarRef calRef = new CalendarRef(TSAuthentication.GetLoginUser());
+                calRef.LoadByCalendarID(cal.CalendarID);
+                
+                //Delete ticket associations that no longer exist
+                foreach (CalendarRefItem item in calRef.Where(a => a.RefType == (int)CalendarAttachmentType.Ticket))
+                {
+                    bool delete = true;
+                    foreach(int ticketID in info.Tickets)
+                    {
+                        if(ticketID == item.RefID)
+                        {
+                            delete = false;
+                            break;
+                        }
+                    }
+                    if(delete)
+                    {
+                        item.Delete();
+                        item.Collection.Save();
+                    }
+                }
+                //Delete product associations that no longer exist
+                foreach (CalendarRefItem item in calRef.Where(a => a.RefType == (int)CalendarAttachmentType.Product).ToArray())
+                {
+                    bool delete = true;
+                    foreach (int productID in info.Products)
+                    {
+                        if (productID == item.RefID)
+                        {
+                            delete = false;
+                            break;
+                        }
+                    }
+                    if (delete)
+                    {
+                        item.Delete();
+                        item.Collection.Save();
+                    }
+                }
+                //Delete company associations that no longer exist
+                foreach (CalendarRefItem item in calRef.Where(a => a.RefType == (int)CalendarAttachmentType.Company).ToArray())
+                {
+                    bool delete = true;
+                    foreach (int companyID in info.Company)
+                    {
+                        if (companyID == item.RefID)
+                        {
+                            delete = false;
+                            break;
+                        }
+                    }
+                    if (delete)
+                    {
+                        item.Delete();
+                        item.Collection.Save();
+                    }
+                }
+                //Delete group associations that no longer exist
+                foreach (CalendarRefItem item in calRef.Where(a => a.RefType == (int)CalendarAttachmentType.Group).ToArray())
+                {
+                    bool delete = true;
+                    foreach (int groupID in info.Groups)
+                    {
+                        if (groupID == item.RefID)
+                        {
+                            delete = false;
+                            break;
+                        }
+                    }
+                    if (delete)
+                    {
+                        item.Delete();
+                        item.Collection.Save();
+                    }
+                }
+                //Delete user associations that no longer exist
+                foreach (CalendarRefItem item in calRef.Where(a => a.RefType == (int)CalendarAttachmentType.User).ToArray())
+                {
+                    bool delete = true;
+                    foreach (int userID in info.User)
+                    {
+                        if (userID == item.RefID)
+                        {
+                            delete = false;
+                            break;
+                        }
+                    }
+                    if (delete)
+                    {
+                        item.Delete();
+                        item.Collection.Save();
+                    }
+                }
+
+                foreach (int ticketID in info.Tickets)
+                {
+
+                    AddAttachment(cal.CalendarID, ticketID, CalendarAttachmentType.Ticket);
+                }
+
+                if (info.PageType == 1)
+                    AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Product);
+                foreach (int productID in info.Products)
+                {
+                    AddAttachment(cal.CalendarID, productID, CalendarAttachmentType.Product);
+                }
+
+                if (info.PageType == 2)
+                    AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Company);
+                foreach (int CompanyID in info.Company)
+                {
+                    AddAttachment(cal.CalendarID, CompanyID, CalendarAttachmentType.Company);
+                }
+
+                if (info.PageType == 4)
+                    AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Group);
+                foreach (int groupID in info.Groups)
+                {
+                    AddAttachment(cal.CalendarID, groupID, CalendarAttachmentType.Group);
+                }
+
+                foreach (int UserID in info.User)
+                {
+                    AddAttachment(cal.CalendarID, UserID, CalendarAttachmentType.User);
+                }
+
+
             }
             else
             {

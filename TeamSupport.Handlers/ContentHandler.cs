@@ -70,6 +70,7 @@ namespace TeamSupport.Handlers
             case "agentrating": ProcessRatingImages(context, segments.ToArray(), organizationID); break;
             case "productcustomers": ProcessProductCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
             case "productversioncustomers": ProcessProductVersionCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
+            case "calendarfeed": ProcessCalendarFeed(context, segments.ToArray(), organizationID); break;
             default: context.Response.End(); break;
           }
         }
@@ -264,6 +265,17 @@ namespace TeamSupport.Handlers
       WriteImage(context, cacheFileName);
       return;
       
+    }
+
+    private void ProcessCalendarFeed(HttpContext context, string[] segments, int organizationID)
+    {
+
+        int userID = int.Parse(segments[2]);
+
+        context.Response.Write(userID);
+
+        return;
+
     }
 
     private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)

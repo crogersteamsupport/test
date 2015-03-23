@@ -629,6 +629,187 @@
         $('#inputStartTime').val(moment(event.start).format('MM/DD/YYYY hh:mm a'));
         $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format('MM/DD/YYYY hh:mm a'));
         $('#inputDescription').val(event.description);
+
+        if (event.references) {
+            for (i = 0; i < event.references.length; i++)
+            {
+                switch (event.references[i].RefType)
+                {
+                    case 0:
+                        addTicketAssociation(event.references[i]);
+                        break;
+                    case 1:
+                        addProductAssociation(event.references[i]);
+                        break;
+                    case 2:
+                        addCompanyAssociation(event.references[i])
+                        break;
+                    case 3:
+                        addUserAssociation(event.references[i]);
+                        break;
+                    case 4:
+                        addGroupAssociation(event.references[i]);
+                        break;
+                }
+
+            }
+        }
+
+    }
+
+    function addTicketAssociation(event)
+    {
+        var isDupe;
+        $('#associationQueue').find('.ticket-queue').find('.ticket-removable-item').each(function () {
+            if (event.RefID == $(this).data('Ticket')) {
+                isDupe = true;
+            }
+        });
+        if (!isDupe) {
+            var bg = $('<div>')
+            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+            .appendTo($('#associationQueue').find('.ticket-queue')).data('Ticket', event.RefID);
+
+
+            $('<span>')
+            .text(ellipseString(event.displayName, 20))
+            .addClass('filename')
+            .appendTo(bg);
+
+            $('<span>')
+            .addClass('ui-icon ui-icon-close')
+            .click(function (e) {
+                e.preventDefault();
+                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+            })
+            .appendTo(bg);
+            this.value = "";
+            return false;
+        }
+    }
+
+    function addUserAssociation(event)
+    {
+        var isDupe;
+        $('#associationQueue').find('.user-queue').find('.ticket-removable-item').each(function () {
+            if (event.RefID == $(this).data('User')) {
+                isDupe = true;
+            }
+        });
+        if (!isDupe) {
+            var bg = $('<div>')
+        .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+        .appendTo($('#associationQueue').find('.user-queue')).data('User', event.RefID);
+
+
+            $('<span>')
+        .text(ellipseString(event.displayName, 20))
+        .addClass('filename')
+        .appendTo(bg);
+
+            $('<span>')
+        .addClass('ui-icon ui-icon-close')
+        .click(function (e) {
+            e.preventDefault();
+            $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+        })
+        .appendTo(bg);
+            this.value = "";
+            return false;
+        }
+    }
+
+    function addCompanyAssociation(event)
+    {
+        var isDupe;
+        $('#associationQueue').find('.customer-queue').find('.ticket-removable-item').each(function () {
+            if (event.RefID == $(this).data('Company')) {
+                isDupe = true;
+            }
+        });
+        if (!isDupe) {
+            var bg = $('<div>')
+            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+            .appendTo($('#associationQueue').find('.customer-queue')).data('Company', event.RefID);
+
+
+            $('<span>')
+            .text(ellipseString(event.displayName, 20))
+            .addClass('filename')
+            .appendTo(bg);
+
+            $('<span>')
+            .addClass('ui-icon ui-icon-close')
+            .click(function (e) {
+                e.preventDefault();
+                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+            })
+            .appendTo(bg);
+            this.value = "";
+            return false;
+        }
+    }
+
+    function addGroupAssociation(event)
+    {
+        var isDupe;
+        $('#associationQueue').find('.group-queue').find('.ticket-removable-item').each(function () {
+            if (event.RefID == $(this).data('Group')) {
+                isDupe = true;
+            }
+        });
+        if (!isDupe) {
+            var bg = $('<div>')
+            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+            .appendTo($('#associationQueue').find('.group-queue')).data('Group', event.RefID);
+
+
+            $('<span>')
+            .text(ellipseString(event.displayName, 20))
+            .addClass('filename')
+            .appendTo(bg);
+
+            $('<span>')
+            .addClass('ui-icon ui-icon-close')
+            .click(function (e) {
+                e.preventDefault();
+                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+            })
+            .appendTo(bg);
+            this.value = "";
+            return false;
+        }
+    }
+
+    function addProductAssociation(event)
+    {
+        var isDupe;
+        $('#associationQueue').find('.product-queue').find('.ticket-removable-item').each(function () {
+            if (event.RefID == $(this).data('Product')) {
+                isDupe = true;
+            }
+        });
+        if (!isDupe) {
+            var bg = $('<div>')
+            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+            .appendTo($('#associationQueue').find('.product-queue')).data('Product', event.RefID);
+
+
+            $('<span>')
+            .text(ellipseString(event.displayName, 20))
+            .addClass('filename')
+            .appendTo(bg);
+
+            $('<span>')
+            .addClass('ui-icon ui-icon-close')
+            .click(function (e) {
+                e.preventDefault();
+                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+            })
+            .appendTo(bg);
+            this.value = "";
+            return false;
+        }
     }
 
     function readOnlyModal()
