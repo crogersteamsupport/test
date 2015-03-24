@@ -25,6 +25,9 @@ using System.Web.Security;
 using OfficeOpenXml;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using DDay.iCal.Serialization;
+using DDay.iCal;
+using DDay.Collections;
 using System.Drawing.Text;
 
 namespace TeamSupport.Handlers
@@ -189,7 +192,7 @@ namespace TeamSupport.Handlers
         }
         string path = builder.ToString();
 
-        Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, Int32.Parse(path));
+        TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, Int32.Parse(path));
 
         path = attachment.FileName;
 
@@ -269,12 +272,58 @@ namespace TeamSupport.Handlers
 
     private void ProcessCalendarFeed(HttpContext context, string[] segments, int organizationID)
     {
+        //DDay.iCal.iCalendar iCal = new DDay.iCal.iCalendar();
+        var iCal = new iCalendar
+        {
+            Method = "PUBLISH",
+            Version = "2.0",
+            Name = "Teamsupport Calendar",
+            ProductID = "TeamSupport"
+        };
+        // Create the event, and add it to the iCalendar
+        Event evt = iCal.Create<Event>();
 
-        int userID = int.Parse(segments[2]);
+        // Set information about the event
+        evt.Start = iCalDateTime.Today.AddHours(8);
+        evt.End = evt.Start.AddHours(18); // This also sets the duration
+        evt.Description = "The event description";
+        evt.Location = "Event location";
+        evt.Summary = "18 hour event summary";
 
-        context.Response.Write(userID);
+        // Set information about the second event
+        evt = iCal.Create<Event>();
+        evt.Start = iCalDateTime.Today.AddDays(5);
+        evt.End = evt.Start.AddDays(1);
+        evt.IsAllDay = true;
+        evt.Summary = "All-day event";
 
+        // Create a serialization context and serializer factory.
+        // These will be used to build the serializer for our object.
+        ISerializationContext ctx = new SerializationContext();
+        ISerializerFactory factory = new DDay.iCal.Serialization.iCalendar.SerializerFactory();
+        // Get a serializer for our object
+        IStringSerializer serializer = factory.Build(iCal.GetType(), ctx) as IStringSerializer;
+
+        //string output = serializer.SerializeToString(iCal);
+        //var contentType = "text/calendar";
+        //var bytes = Encoding.UTF8.GetBytes(output);
+
+        //return File(bytes, contentType, "ical");
+
+        var res = new DDay.iCal.Serialization.iCalendar.iCalendarSerializer().SerializeToString(iCal);
+        using (var file = new System.IO.StreamWriter(Path.GetTempPath() + "out.ics"))
+        {
+            file.Write(res);
+        }
+
+        context.Response.Write(res);
         return;
+
+        //int userID = int.Parse(segments[2]);
+
+        //context.Response.Write(userID);
+
+        //return;
 
     }
 
@@ -504,7 +553,7 @@ namespace TeamSupport.Handlers
 
       //http://127.0.0.1/tsdev/dc/attachments/7401
       //https://app.teamsupport.com/dc/attachments/{AttachmentID}
-      Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+      TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
       Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
       User user = null;
       bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;

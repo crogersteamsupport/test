@@ -30,7 +30,7 @@
         header: {
             left: 'prev,next today custom',
             center: 'title',
-            right: 'month,agendaWeek,agendaDay,basicWeek,basicDay'
+            right: 'month,agendaWeek,agendaDay'
         },
         editable: true,
         eventLimit: true, 
@@ -548,6 +548,7 @@
 
     $("#calURL").click(function () { $('#subscribeModal').modal(); });
     $("#newEvent").click(function () {
+        clearModal();
         $('#fullCalModal').modal();
             $('#inputStartTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
         $('#inputEndTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
