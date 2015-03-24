@@ -272,14 +272,14 @@ namespace TeamSupport.Handlers
 
     private void ProcessCalendarFeed(HttpContext context, string[] segments, int organizationID)
     {
-        //DDay.iCal.iCalendar iCal = new DDay.iCal.iCalendar();
-        var iCal = new iCalendar
-        {
-            Method = "PUBLISH",
-            Version = "2.0",
-            Name = "Teamsupport Calendar",
-            ProductID = "TeamSupport"
-        };
+        DDay.iCal.iCalendar iCal = new DDay.iCal.iCalendar();
+        //var iCal = new iCalendar
+        //{
+        //    Method = "PUBLISH",
+        //    Version = "2.0",
+        //    Name = "Teamsupport Calendar",
+        //    ProductID = "TeamSupport"
+        //};
         // Create the event, and add it to the iCalendar
         Event evt = iCal.Create<Event>();
 
