@@ -297,10 +297,10 @@ namespace TeamSupport.Handlers
 
         // Set information about the second event
         evt = iCal.Create<Event>();
-        evt.Start = iCalDateTime.Today.AddHours(1);
+        evt.Start = iCalDateTime.Today.AddHours(13);
         evt.End = evt.Start.AddHours(3);
         evt.IsAllDay = true;
-        evt.Summary = "Erics new event";
+        evt.Summary = "Erics newer new event";
 
         // Create a serialization context and serializer factory.
         // These will be used to build the serializer for our object.
