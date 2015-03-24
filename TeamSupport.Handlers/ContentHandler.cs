@@ -277,8 +277,6 @@ namespace TeamSupport.Handlers
         //{
         //    Method = "PUBLISH",
         //    Version = "2.0",
-        //    Name = "Teamsupport Calendar",
-        //    ProductID = "TeamSupport"
         //};
         // Create the event, and add it to the iCalendar
         Event evt = iCal.Create<Event>();
@@ -296,6 +294,13 @@ namespace TeamSupport.Handlers
         evt.End = evt.Start.AddDays(1);
         evt.IsAllDay = true;
         evt.Summary = "All-day event";
+
+        // Set information about the second event
+        evt = iCal.Create<Event>();
+        evt.Start = iCalDateTime.Today.AddHours(1);
+        evt.End = evt.Start.AddHours(3);
+        evt.IsAllDay = true;
+        evt.Summary = "Erics new event";
 
         // Create a serialization context and serializer factory.
         // These will be used to build the serializer for our object.
