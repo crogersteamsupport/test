@@ -2328,14 +2328,33 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public TicketsViewItemProxy AdminGetTicketByNumber(int orgID, int number)
+    public string AdminGetTicketByNumber(int orgID, int number)
     {
       if (TSAuthentication.OrganizationID != 1078) return null;
       Ticket ticket = Tickets.GetTicketByNumber(TSAuthentication.GetLoginUser(), orgID, number);
       if (ticket == null) return null;
-      return ticket.GetTicketView().GetProxy();
+      return AdminGetTicketByID(ticket.TicketID);
     }
 
+    [WebMethod]
+    public string AdminGetTicketByID(int ticketID)
+    {
+      if (TSAuthentication.OrganizationID != 1078) return null;
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      SqlCommand command = new SqlCommand();
+
+      command.CommandText = @"
+SELECT 
+CAST((SELECT SUM(DATALENGTH(Description)) FROM Actions WHERE TicketID = t.TicketID) / 1024 AS Varchar) + ' KB' AS [Size],
+t.* 
+FROM Tickets t
+WHERE t.TicketID = @TicketID
+";
+      command.Parameters.AddWithValue("TicketID", ticketID);
+      var expando = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command)[0];
+      return JsonConvert.SerializeObject(expando);
+    }
+    
     [WebMethod]
     public void AdminProcessEmails(int ticketID)
     {
@@ -2344,16 +2363,6 @@ namespace TSWebServices
       command.CommandText = "UPDATE EmailPosts SET HoldTime = 0 WHERE Param1=@Param1";
       command.Parameters.AddWithValue("@Param1", ticketID);
       SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), command);
-    }
-
-
-    [WebMethod]
-    public TicketsViewItemProxy AdminGetTicketByID(int ticketID)
-    {
-      if (TSAuthentication.OrganizationID != 1078) return null;
-      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-      if (ticket == null) return null;
-      return ticket.GetTicketView().GetProxy();
     }
 
     [WebMethod]

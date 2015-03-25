@@ -68,6 +68,7 @@
 
 
       function loadTicket(ticket) {
+        ticket = JSON.parse(ticket);
         _ticket = ticket;
         if (!ticket) {
           $('.ticket-details').addClass('invisible');
@@ -78,10 +79,12 @@
 
         $('.ticket-details').removeClass('invisible');
         var properites = $('#divProperties').empty();
-        $('<div>').text('Ticket ID: ' + ticket.TicketID).appendTo(properites);
-        $('<div>').text('Organization ID: ' + ticket.OrganizationID).appendTo(properites);
-        $('<div>').text('Number: ' + ticket.TicketNumber).appendTo(properites);
-        $('<div>').text('Title: ' + ticket.Name).appendTo(properites);
+        for (var key in ticket) {
+            if (ticket.hasOwnProperty(key)) {
+                $('<div>').text(key + ': ' + ticket[key]).appendTo(properites);
+            }
+
+        }
 
         top.Ts.Services.Tickets.AdminGetActions(ticket.TicketID, function (actions) {
           var html = '<table class="table table-striped">'

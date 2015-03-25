@@ -15,6 +15,8 @@ using System.Security.Cryptography;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Globalization;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 namespace TeamSupport.Data
 {
@@ -563,6 +565,29 @@ namespace TeamSupport.Data
       builder.AppendLine(command.CommandText);
 
       return builder.ToString();    
+    }
+
+    public static ExpandoObject[] DataTableToExpandoObject(DataTable table)
+    {
+      List<ExpandoObject> result = new List<ExpandoObject>();
+
+      foreach (DataRow row in table.Rows)
+      {
+        var expando = new ExpandoObject();
+        foreach (DataColumn column in table.Columns)
+        {
+          var dict = expando as IDictionary<String, object>;
+          dict.Add(column.ColumnName, row[column] == DBNull.Value ? null : row[column]);
+        }
+        result.Add(expando);
+      }
+
+      return result.ToArray();
+    }
+
+    public static string DataTableToJson(DataTable table)
+    {
+      return JsonConvert.SerializeObject(DataTableToExpandoObject(table));
     }
 
     /// <summary>

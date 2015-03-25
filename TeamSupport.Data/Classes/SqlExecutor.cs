@@ -9,12 +9,24 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Xml;
 using System.Security;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 
 namespace TeamSupport.Data
 {
   public class SqlExecutor
   {
+    public static ExpandoObject[] GetExpandoObject(LoginUser loginUser, SqlCommand command)
+    {
+      return DataUtils.DataTableToExpandoObject(ExecuteQuery(loginUser, command));
+    }
+
+    public static string GetJson(LoginUser loginUser, SqlCommand command)
+    {
+      return JsonConvert.SerializeObject(GetExpandoObject(loginUser, command));
+    }
+
     public static DataTable ExecuteQuery(LoginUser loginUser, SqlCommand command)
     {
       DataTable result = new DataTable();
