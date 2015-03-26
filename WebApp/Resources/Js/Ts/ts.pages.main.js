@@ -335,6 +335,11 @@ Ts.Pages.Main.prototype = {
                 cleardialog();
             }
         });
+		
+		$('#mainImageDiv').click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
 
         var execSelectTicket = null;
 
