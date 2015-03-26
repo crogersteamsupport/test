@@ -1370,7 +1370,7 @@ namespace TSWebServices
             }
             ////get all custom events for the month
             CalendarEvents customEvents = new CalendarEvents(TSAuthentication.GetLoginUser());
-            customEvents.LoadbyMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().OrganizationID, pageType, pageID);
+            customEvents.LoadbyMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().OrganizationID, pageType, pageID, TSAuthentication.GetLoginUser().UserID);
             foreach (CalendarEvent c in customEvents)
             {
                 CalEvent cal = new CalEvent();

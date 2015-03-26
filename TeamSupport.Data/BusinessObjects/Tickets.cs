@@ -1041,6 +1041,17 @@ AND ts.IsClosed = 0";
         }
     }
 
+    public void LoadAllDueDates(int userID, int orgID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * from Tickets WHERE (UserID = @UserID) AND (OrganizationID = @OrgID) and (DueDate IS NOT NULL)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@OrgID", orgID);
+            Fill(command);
+        }
+    }
 
     public void RemoveContact(int userID, int ticketID)
     {

@@ -469,6 +469,7 @@
         }
     }
 
+
     //save the new calendar event
     $('#btnSaveEvent').click(function (e) {
         e.preventDefault();
@@ -546,7 +547,7 @@
         $("#" + id).button();
     }
 
-    $("#calURL").click(function () { $('#subscribeModal').modal(); });
+    $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); });
     $("#newEvent").click(function () {
         clearModal();
         $('#fullCalModal').modal();
@@ -630,6 +631,7 @@
         $('#inputStartTime').val(moment(event.start).format('MM/DD/YYYY hh:mm a'));
         $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format('MM/DD/YYYY hh:mm a'));
         $('#inputDescription').val(event.description);
+        $('#inputAllDay').prop('checked', event.allDay);
 
         if (event.references) {
             for (i = 0; i < event.references.length; i++)

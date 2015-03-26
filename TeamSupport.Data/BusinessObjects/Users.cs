@@ -672,6 +672,17 @@ namespace TeamSupport.Data
         }
 
     }
+    
+    public void LoadByCalGUID(string calGUID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"SELECT * FROM Users WHERE CalGUID = @calGUID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@calGUID", calGUID);
+            Fill(command);
+        }
+    }
 
     public void LoadByOnline()
     {
