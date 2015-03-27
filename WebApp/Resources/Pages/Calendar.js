@@ -116,6 +116,24 @@
             top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.type)
         },
         eventRender: function (event, element) {
+            var title;
+            switch(event.type)
+            {
+                case "reminder-ticket":
+                    title = event.description
+                    break;
+                case "reminder-org":
+                    break;
+                case "reminder-user":
+                    break;
+                case "ticket":
+                    break;
+                case "cal":
+                    break;
+                default:
+                    break;
+
+            }
             element.popover({
                 title: event.title,
                 placement:'bottom',
@@ -179,6 +197,7 @@
             top.Ts.Services.Users.DeleteCalEvent(eventid.id, function () {
                 $('.popover').hide();
                 $("#calendar").fullCalendar('refetchEvents');
+                top.Ts.System.logAction('Calendar Event - Deleted');
             });
         }
     });
@@ -522,6 +541,8 @@
             value = top.Ts.Utils.getMsDate(formattedDate);
             return value;
         }
+        else
+            return val;
     }
 
     //save the new calendar event
@@ -538,7 +559,7 @@
 
         if ($('#inputEndTime').val() != "")
         {
-            if($('#inputEndTime').val() < $('#inputStartTime').val())
+            if ((new Date($('#inputEndTime').val()).getTime()) < (new Date($('#inputStartTime').val()).getTime()))
             {
                 alert("The end date needs to be after the start date");
                 return;
@@ -603,8 +624,8 @@
             {
                 alert("A valid start date must be entered.");
             }
-
-
+            top.Ts.System.logAction('Calendar Event - Event Inserted');
+            //window.top.ticketSocket.server.calendarUpdate();
         });
 
 

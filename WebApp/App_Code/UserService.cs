@@ -1346,7 +1346,7 @@ namespace TSWebServices
                         Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), r.RefID);
                         cal.type = "reminder-org";
                         cal.id = o.OrganizationID;
-                        cal.description = "Company Reminder: " + o.Name;
+                        cal.description = "Customer Reminder: " + o.Name;
                         break;
                     case ReferenceType.Contacts:
                         User u = Users.GetUser(TSAuthentication.GetLoginUser(), r.RefID);
