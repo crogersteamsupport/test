@@ -169,11 +169,11 @@
     function buildPopover(event, element)
     {
         var theTime = $("<div>")
-            .text("Start: " + moment(event.start).format('MM/DD/YYYY hh:mm a'));
+            .text("Starts: " + moment(event.start).format('MM/DD/YYYY hh:mm a'));
         if (event.end)
         {
             var endTime = $("<div>")
-                .text("End: " + moment(event.end).format('MM/DD/YYYY hh:mm a')).appendTo(theTime);
+                .text("Ends: " + moment(event.end).format('MM/DD/YYYY hh:mm a')).appendTo(theTime);
         }
 
 
@@ -547,7 +547,7 @@
         $("#" + id).button();
     }
 
-    $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); });
+    $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed/" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); });
     $("#newEvent").click(function () {
         clearModal();
         $('#fullCalModal').modal();

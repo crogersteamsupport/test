@@ -289,8 +289,8 @@ namespace TeamSupport.Handlers
                 evt.Summary = calevent.Title;
                 evt.Description = calevent.Description;
                 evt.IsAllDay = calevent.AllDay;
-                evt.Start = (iCalDateTime)calevent.StartDate;
-                evt.End = (iCalDateTime)calevent.EndDate; 
+                evt.Start = (iCalDateTime)calevent.StartDateUtc;
+                evt.End = (iCalDateTime)calevent.EndDateUtc; 
             }
 
             Tickets tickets = new Tickets(LoginUser.Anonymous);
