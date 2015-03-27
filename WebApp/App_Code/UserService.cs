@@ -1311,7 +1311,7 @@ namespace TSWebServices
                     cal.title = t.Name;
                     cal.type = "ticket";
                     cal.id = t.TicketNumber;
-                    cal.description = "Ticket Due Date: " + t.Name;
+                    cal.description = "Ticket Due Date: " + t.TicketNumber + "-" + t.Name;
                     cal.end = null;
                     cal.allday = false;
                     cal.references = null;
