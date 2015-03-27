@@ -1311,7 +1311,7 @@ namespace TSWebServices
                     cal.title = t.Name;
                     cal.type = "ticket";
                     cal.id = t.TicketNumber;
-                    cal.description = "Ticket Due Date: " + t.DueDate;
+                    cal.description = "Ticket Due Date: " + t.Name;
                     cal.end = null;
                     cal.allday = false;
                     cal.references = null;
@@ -1340,19 +1340,19 @@ namespace TSWebServices
                         Ticket t = Tickets.GetTicket(TSAuthentication.GetLoginUser(), r.RefID);
                         cal.type = "reminder-ticket";
                         cal.id = t.TicketNumber;
-                        cal.description = "Ticket Reminder: " + r.DueDateUtc;
+                        cal.description = "Ticket Reminder: "  + t.TicketNumber + "-" + t.Name;
                         break;
                     case ReferenceType.Organizations:
                         Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), r.RefID);
                         cal.type = "reminder-org";
                         cal.id = o.OrganizationID;
-                        cal.description = "Company Reminder: " + r.DueDateUtc;
+                        cal.description = "Company Reminder: " + o.Name;
                         break;
                     case ReferenceType.Contacts:
                         User u = Users.GetUser(TSAuthentication.GetLoginUser(), r.RefID);
                         cal.id = u.UserID;
                         cal.type = "reminder-user";
-                        cal.description = "Contact Reminder: " + r.DueDateUtc;
+                        cal.description = "Contact Reminder: " + u.FirstLastName;
                         break;
                 }
 

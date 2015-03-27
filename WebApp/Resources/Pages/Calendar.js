@@ -4,6 +4,7 @@
     var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
     var pageID = top.Ts.Utils.getQueryValue("pageid", window);
     var theTempEvent = null;
+    var dateFormat;
 
     if (pageType == null)
         pageType = -1;
@@ -14,6 +15,26 @@
     $('body').layout({
         applyDemoStyles: true
     });
+
+    //setup the dateformat
+    top.Ts.Services.Customers.GetDateFormat(false, function (format) {
+        dateFormat = format.replace("yyyy", "yy");
+        if (dateFormat.length < 8) {
+            var dateArr = dateFormat.split('/');
+            if (dateArr[0].length < 2) {
+                dateArr[0] = dateArr[0] + dateArr[0];
+            }
+            if (dateArr[1].length < 2) {
+                dateArr[1] = dateArr[1] + dateArr[1];
+            }
+            if (dateArr[2].length < 2) {
+                dateArr[1] = dateArr[1] + dateArr[1];
+            }
+            dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
+        }
+
+    });
+
 
     //test function
     var date = new Date();
@@ -30,7 +51,7 @@
         header: {
             left: 'prev,next today custom',
             center: 'title',
-            right: 'month,basicWeek,basicDay,agendaWeek,agendaDay'
+            right: 'month,agendaWeek,agendaDay'
         },
         editable: true,
         eventLimit: true, 
@@ -38,21 +59,13 @@
         aspectRatio: 2.3,
         viewRender: function (view, element, date)
         {
-            //element.bind('dblclick', function () {
-            //    clearModal();
-            //    $('#inputStartTime').val(moment(date).format('MM/DD/YYYY hh:mm a'));
-            //    $('#inputStartTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
-            //    $('#inputEndTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
-            //    theTempEvent = null;
-            //    $('#fullCalModal').modal();
-            //});
         },
         dayRender: function(date, element, view){
             element.bind('dblclick', function() {
                 clearModal();
-                $('#inputStartTime').val(moment(date).format('MM/DD/YYYY hh:mm a'));
-                $('#inputStartTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
-                $('#inputEndTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
+                $('#inputStartTime').val(moment(date).format(dateFormat + ' hh:mm a'));
+                $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
+                $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
                 theTempEvent = null;
                 $('#fullCalModal').modal();
             });
@@ -131,6 +144,7 @@
     // edit event delagate
     $('body').on('click', '.eventEdit', function (e) {
         var event = theTempEvent;
+        $('.popover').not(this).hide();
         switch (event.type)
         {
             case "reminder-ticket":
@@ -146,7 +160,7 @@
                 top.Ts.MainPage.openTicket(event.id); return false;
                 break;
             case "cal":
-                $('.popover').not(this).hide();
+                
                 clearModal();
                 loadModal(event);
                 if (event.creatorID != top.Ts.System.User.UserID && !top.Ts.System.User.IsSystemAdmin)
@@ -176,13 +190,18 @@
     function buildPopover(event, element)
     {
         var theTime = $("<div>")
-            .text("Starts: " + moment(event.start).format('MM/DD/YYYY hh:mm a'));
+            .text("Starts: " + moment(event.start).format(dateFormat + ' hh:mm a'));
         if (event.end)
         {
             var endTime = $("<div>")
-                .text("Ends: " + moment(event.end).format('MM/DD/YYYY hh:mm a')).appendTo(theTime);
+                .text("Ends: " + moment(event.end).format(dateFormat + ' hh:mm a')).appendTo(theTime);
         }
 
+        if (event.type != "cal")
+            var descType = $("<div>")
+                            .text(event.description)
+                            .appendTo(theTime);
+                
 
         var lb = $("<hr>")
             .appendTo(theTime);
@@ -476,6 +495,34 @@
         }
     }
 
+    function convertToValidDate(val)
+    {
+        var value = '';
+        if (val == "")
+            return value;
+
+        if (dateFormat.indexOf("M") != 0) {
+            var dateArr = val.split('/');
+            if (dateFormat.indexOf("D") == 0)
+                var day = dateArr[0];
+            if (dateFormat.indexOf("Y") == 0)
+                var year = dateArr[0];
+            if (dateFormat.indexOf("M") == 3)
+                var month = dateArr[1];
+
+            var timeSplit = dateArr[2].split(' ');
+            if (dateFormat.indexOf("Y") == 6)
+                var year = timeSplit[0];
+            else
+                var day = timeSplit[0];
+
+            var theTime = timeSplit[1];
+
+            var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+            value = top.Ts.Utils.getMsDate(formattedDate);
+            return value;
+        }
+    }
 
     //save the new calendar event
     $('#btnSaveEvent').click(function (e) {
@@ -506,8 +553,9 @@
         else
             calendarinfo.ID = -1;
         calendarinfo.title = $('#inputTitle').val();
-        calendarinfo.start = $('#inputStartTime').val();
-        calendarinfo.end = $('#inputEndTime').val();
+
+        calendarinfo.start = convertToValidDate($('#inputStartTime').val());
+        calendarinfo.end = convertToValidDate($('#inputEndTime').val());
         calendarinfo.description = $('#inputDescription').val();
         calendarinfo.allday = $('#inputAllDay').is(':checked')
         calendarinfo.PageType = pageType;
@@ -575,8 +623,8 @@
     $("#newEvent").click(function () {
         clearModal();
         $('#fullCalModal').modal();
-            $('#inputStartTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
-        $('#inputEndTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
+            $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
+        $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
     });
 
     //search functions for the associations
@@ -651,9 +699,10 @@
     {
         $('#inputTitle').val(event.title);
 
-
-        $('#inputStartTime').val(moment(event.start).format('MM/DD/YYYY hh:mm a'));
-        $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format('MM/DD/YYYY hh:mm a'));
+        $('#inputStartTime').val(moment(event.start).format(dateFormat + ' hh:mm a'));
+        $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format(dateFormat + ' hh:mm a'));
+        $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
+        $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
         $('#inputDescription').val(event.description);
         $('#inputAllDay').prop('checked', event.allDay);
 
