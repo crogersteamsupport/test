@@ -1322,15 +1322,6 @@ namespace TSWebServices
 
             //get all reminders for this user for the current month
             Reminders reminders = new Reminders(TSAuthentication.GetLoginUser());
-            switch(pageType)
-            {
-                case "0":
-                    pageType = "17";
-                    break;
-                case "2":
-                    pageType = "9";
-                    break;
-            }
 
             reminders.LoadByUserMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().UserID, pageType, pageID);
             foreach (Reminder r in reminders)
@@ -1413,7 +1404,7 @@ namespace TSWebServices
             switch (calproxy.RefType)
             {
                 case 0:
-                    Ticket t = Tickets.GetTicket(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    Ticket t = Tickets.GetTicketByNumber(TSAuthentication.GetLoginUser(), calproxy.RefID);
                     Displayname = t.Name;
                     break;
                 case 1:

@@ -30,12 +30,23 @@
         header: {
             left: 'prev,next today custom',
             center: 'title',
-            right: 'month,agendaWeek,agendaDay'
+            right: 'month,basicWeek,basicDay,agendaWeek,agendaDay'
         },
         editable: true,
         eventLimit: true, 
         height: '200',
         aspectRatio: 2.3,
+        viewRender: function (view, element, date)
+        {
+            //element.bind('dblclick', function () {
+            //    clearModal();
+            //    $('#inputStartTime').val(moment(date).format('MM/DD/YYYY hh:mm a'));
+            //    $('#inputStartTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
+            //    $('#inputEndTime').datetimepicker({ format: 'MM/DD/YYYY hh:mm a' });
+            //    theTempEvent = null;
+            //    $('#fullCalModal').modal();
+            //});
+        },
         dayRender: function(date, element, view){
             element.bind('dblclick', function() {
                 clearModal();
@@ -47,16 +58,6 @@
             });
         },
         dayClick: function (date, jsEvent, view) {
-            //if (tempVar == "") {
-            //    $(this).css('background-color', '#9ebfe8');
-            //    tempVar = this;
-            //}
-            //else {
-            //    $(this).css('background-color', '#9ebfe8');
-            //    $(tempVar).css('background-color', 'white');
-            //    tempVar = this;
-            //}
-
         },  
         timezone: 'local',
         ignoreTimezone: false,
@@ -474,6 +475,23 @@
     $('#btnSaveEvent').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+
+        if ($('#inputTitle').val() == "")
+        {
+            alert("Please enter a valid event name.");
+            return;
+        }
+            
+
+        if ($('#inputEndTime').val() != "")
+        {
+            if($('#inputEndTime').val() < $('#inputStartTime').val())
+            {
+                alert("The end date needs to be after the start date");
+                return;
+            }
+        }
+
 
         var calendarinfo = new Object();
 
