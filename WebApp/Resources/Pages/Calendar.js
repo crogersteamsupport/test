@@ -58,6 +58,7 @@
             });
         },
         dayClick: function (date, jsEvent, view) {
+            $('.popover').hide();
         },  
         timezone: 'local',
         ignoreTimezone: false,
@@ -114,7 +115,11 @@
             });
             $('body').on('click', function (e) {
                 if (!element.is(e.target) && element.has(e.target).length === 0 && $('.popover').has(e.target).length === 0)
+                {
+                    //$('.popover').hide();
                     element.popover('hide');
+                }
+                    
             });
         },
         eventClick: function (calEvent, jsEvent, view) {
@@ -141,6 +146,7 @@
                 top.Ts.MainPage.openTicket(event.id); return false;
                 break;
             case "cal":
+                $('.popover').not(this).hide();
                 clearModal();
                 loadModal(event);
                 if (event.creatorID != top.Ts.System.User.UserID && !top.Ts.System.User.IsSystemAdmin)
