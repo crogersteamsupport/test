@@ -8,29 +8,24 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class TicketType : BaseItem
+  public partial class TicketTypesViewItem : BaseItem
   {
-    private TicketTypes _ticketTypes;
+    private TicketTypesView _ticketTypesView;
     
-    public TicketType(DataRow row, TicketTypes ticketTypes): base(row, ticketTypes)
+    public TicketTypesViewItem(DataRow row, TicketTypesView ticketTypesView): base(row, ticketTypesView)
     {
-      _ticketTypes = ticketTypes;
+      _ticketTypesView = ticketTypesView;
     }
 	
     #region Properties
     
-    public TicketTypes Collection
+    public TicketTypesView Collection
     {
-      get { return _ticketTypes; }
+      get { return _ticketTypesView; }
     }
         
     
     
-    
-    public int TicketTypeID
-    {
-      get { return (int)Row["TicketTypeID"]; }
-    }
     
 
     
@@ -39,11 +34,11 @@ namespace TeamSupport.Data
       get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
       set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
     }
-
-    public string Description
+    
+    public string ProductFamilyName
     {
-      get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckValue("Description", value); }
+      get { return Row["ProductFamilyName"] != DBNull.Value ? (string)Row["ProductFamilyName"] : null; }
+      set { Row["ProductFamilyName"] = CheckValue("ProductFamilyName", value); }
     }
     
 
@@ -84,10 +79,22 @@ namespace TeamSupport.Data
       set { Row["Position"] = CheckValue("Position", value); }
     }
     
+    public string Description
+    {
+      get { return (string)Row["Description"]; }
+      set { Row["Description"] = CheckValue("Description", value); }
+    }
+    
     public string Name
     {
       get { return (string)Row["Name"]; }
       set { Row["Name"] = CheckValue("Name", value); }
+    }
+    
+    public int TicketTypeID
+    {
+      get { return (int)Row["TicketTypeID"]; }
+      set { Row["TicketTypeID"] = CheckValue("TicketTypeID", value); }
     }
     
 
@@ -127,9 +134,9 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class TicketTypes : BaseCollection, IEnumerable<TicketType>
+  public partial class TicketTypesView : BaseCollection, IEnumerable<TicketTypesViewItem>
   {
-    public TicketTypes(LoginUser loginUser): base (loginUser)
+    public TicketTypesView(LoginUser loginUser): base (loginUser)
     {
     }
 
@@ -137,7 +144,7 @@ namespace TeamSupport.Data
 
     public override string TableName
     {
-      get { return "TicketTypes"; }
+      get { return "TicketTypesView"; }
     }
     
     public override string PrimaryKeyFieldName
@@ -147,9 +154,9 @@ namespace TeamSupport.Data
 
 
 
-    public TicketType this[int index]
+    public TicketTypesViewItem this[int index]
     {
-      get { return new TicketType(Table.Rows[index], this); }
+      get { return new TicketTypesViewItem(Table.Rows[index], this); }
     }
     
 
@@ -157,10 +164,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(TicketType ticketType);
-    partial void AfterRowInsert(TicketType ticketType);
-    partial void BeforeRowEdit(TicketType ticketType);
-    partial void AfterRowEdit(TicketType ticketType);
+    partial void BeforeRowInsert(TicketTypesViewItem ticketTypesViewItem);
+    partial void AfterRowInsert(TicketTypesViewItem ticketTypesViewItem);
+    partial void BeforeRowEdit(TicketTypesViewItem ticketTypesViewItem);
+    partial void AfterRowEdit(TicketTypesViewItem ticketTypesViewItem);
     partial void BeforeRowDelete(int ticketTypeID);
     partial void AfterRowDelete(int ticketTypeID);    
 
@@ -171,11 +178,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public TicketTypeProxy[] GetTicketTypeProxies()
+    public TicketTypesViewItemProxy[] GetTicketTypesViewItemProxies()
     {
-      List<TicketTypeProxy> list = new List<TicketTypeProxy>();
+      List<TicketTypesViewItemProxy> list = new List<TicketTypesViewItemProxy>();
 
-      foreach (TicketType item in this)
+      foreach (TicketTypesViewItem item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -194,7 +201,7 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketTypes] WHERE ([TicketTypeID] = @TicketTypeID);";
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketTypesView] WHERE ([TicketTypeID] = @TicketTypeID);";
         deleteCommand.Parameters.Add("TicketTypeID", SqlDbType.Int);
         deleteCommand.Parameters["TicketTypeID"].Value = ticketTypeID;
 
@@ -209,13 +216,13 @@ namespace TeamSupport.Data
     }
 
     public override void Save(SqlConnection connection)    {
-		//SqlTransaction transaction = connection.BeginTransaction("TicketTypesSave");
+		//SqlTransaction transaction = connection.BeginTransaction("TicketTypesViewSave");
 		SqlParameter tempParameter;
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTypes] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [IconUrl] = @IconUrl,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ProductFamilyID] = @ProductFamilyID  WHERE ([TicketTypeID] = @TicketTypeID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTypesView] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [IconUrl] = @IconUrl,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ProductFamilyID] = @ProductFamilyID,    [ProductFamilyName] = @ProductFamilyName  WHERE ([TicketTypeID] = @TicketTypeID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketTypeID", SqlDbType.Int, 4);
@@ -288,13 +295,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ProductFamilyName", SqlDbType.NVarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTypes] (    [Name],    [Description],    [Position],    [OrganizationID],    [IconUrl],    [IsVisibleOnPortal],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ProductFamilyID]) VALUES ( @Name, @Description, @Position, @OrganizationID, @IconUrl, @IsVisibleOnPortal, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTypesView] (    [TicketTypeID],    [Name],    [Description],    [Position],    [OrganizationID],    [IconUrl],    [IsVisibleOnPortal],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ProductFamilyID],    [ProductFamilyName]) VALUES ( @TicketTypeID, @Name, @Description, @Position, @OrganizationID, @IconUrl, @IsVisibleOnPortal, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ProductFamilyID, @ProductFamilyName); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ProductFamilyName", SqlDbType.NVarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -373,28 +394,35 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = insertCommand.Parameters.Add("TicketTypeID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketTypes] WHERE ([TicketTypeID] = @TicketTypeID);";
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketTypesView] WHERE ([TicketTypeID] = @TicketTypeID);";
 		deleteCommand.Parameters.Add("TicketTypeID", SqlDbType.Int);
 
 		try
 		{
-		  foreach (TicketType ticketType in this)
+		  foreach (TicketTypesViewItem ticketTypesViewItem in this)
 		  {
-			if (ticketType.Row.RowState == DataRowState.Added)
+			if (ticketTypesViewItem.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(ticketType);
+			  BeforeRowInsert(ticketTypesViewItem);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = ticketType.Row[parameter.ParameterName];
+				  parameter.Value = ticketTypesViewItem.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -405,26 +433,26 @@ namespace TeamSupport.Data
 			  Table.Columns["TicketTypeID"].AutoIncrement = false;
 			  Table.Columns["TicketTypeID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				ticketType.Row["TicketTypeID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(ticketType);
+				ticketTypesViewItem.Row["TicketTypeID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(ticketTypesViewItem);
 			}
-			else if (ticketType.Row.RowState == DataRowState.Modified)
+			else if (ticketTypesViewItem.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(ticketType);
+			  BeforeRowEdit(ticketTypesViewItem);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = ticketType.Row[parameter.ParameterName];
+				parameter.Value = ticketTypesViewItem.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(ticketType);
+			  AfterRowEdit(ticketTypesViewItem);
 			}
-			else if (ticketType.Row.RowState == DataRowState.Deleted)
+			else if (ticketTypesViewItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)ticketType.Row["TicketTypeID", DataRowVersion.Original];
+			  int id = (int)ticketTypesViewItem.Row["TicketTypeID", DataRowVersion.Original];
 			  deleteCommand.Parameters["TicketTypeID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -445,10 +473,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (TicketType ticketType in this)
+      foreach (TicketTypesViewItem ticketTypesViewItem in this)
       {
-        if (ticketType.Row.Table.Columns.Contains("CreatorID") && (int)ticketType.Row["CreatorID"] == 0) ticketType.Row["CreatorID"] = LoginUser.UserID;
-        if (ticketType.Row.Table.Columns.Contains("ModifierID")) ticketType.Row["ModifierID"] = LoginUser.UserID;
+        if (ticketTypesViewItem.Row.Table.Columns.Contains("CreatorID") && (int)ticketTypesViewItem.Row["CreatorID"] == 0) ticketTypesViewItem.Row["CreatorID"] = LoginUser.UserID;
+        if (ticketTypesViewItem.Row.Table.Columns.Contains("ModifierID")) ticketTypesViewItem.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -461,153 +489,59 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public TicketType FindByTicketTypeID(int ticketTypeID)
+    public TicketTypesViewItem FindByTicketTypeID(int ticketTypeID)
     {
-      foreach (TicketType ticketType in this)
+      foreach (TicketTypesViewItem ticketTypesViewItem in this)
       {
-        if (ticketType.TicketTypeID == ticketTypeID)
+        if (ticketTypesViewItem.TicketTypeID == ticketTypeID)
         {
-          return ticketType;
+          return ticketTypesViewItem;
         }
       }
       return null;
     }
 
-    public virtual TicketType AddNewTicketType()
+    public virtual TicketTypesViewItem AddNewTicketTypesViewItem()
     {
-      if (Table.Columns.Count < 1) LoadColumns("TicketTypes");
+      if (Table.Columns.Count < 1) LoadColumns("TicketTypesView");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new TicketType(row, this);
+      return new TicketTypesViewItem(row, this);
     }
     
     public virtual void LoadByTicketTypeID(int ticketTypeID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketTypeID], [Name], [Description], [Position], [OrganizationID], [IconUrl], [IsVisibleOnPortal], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ProductFamilyID] FROM [dbo].[TicketTypes] WHERE ([TicketTypeID] = @TicketTypeID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketTypeID], [Name], [Description], [Position], [OrganizationID], [IconUrl], [IsVisibleOnPortal], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ProductFamilyID], [ProductFamilyName] FROM [dbo].[TicketTypesView] WHERE ([TicketTypeID] = @TicketTypeID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketTypeID", ticketTypeID);
         Fill(command);
       }
     }
     
-    public static TicketType GetTicketType(LoginUser loginUser, int ticketTypeID)
+    public static TicketTypesViewItem GetTicketTypesViewItem(LoginUser loginUser, int ticketTypeID)
     {
-      TicketTypes ticketTypes = new TicketTypes(loginUser);
-      ticketTypes.LoadByTicketTypeID(ticketTypeID);
-      if (ticketTypes.IsEmpty)
+      TicketTypesView ticketTypesView = new TicketTypesView(loginUser);
+      ticketTypesView.LoadByTicketTypeID(ticketTypeID);
+      if (ticketTypesView.IsEmpty)
         return null;
       else
-        return ticketTypes[0];
+        return ticketTypesView[0];
     }
     
-    
-     
-
-    public void LoadByPosition(int organizationID, int position)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM TicketTypes WHERE (OrganizationID = @OrganizationID) AND (Position = @Position)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("OrganizationID", organizationID);
-        command.Parameters.AddWithValue("Position", position);
-        Fill(command);
-      }
-    }
-    
-    public void LoadAllPositions(int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM TicketTypes WHERE (OrganizationID = @OrganizationID) ORDER BY Position";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("OrganizationID", organizationID);
-        Fill(command);
-      }
-    }
-
-    public void ValidatePositions(int organizationID)
-    {
-      TicketTypes ticketTypes = new TicketTypes(LoginUser);
-      ticketTypes.LoadAllPositions(organizationID);
-      int i = 0;
-      foreach (TicketType ticketType in ticketTypes)
-      {
-        ticketType.Position = i;
-        i++;
-      }
-      ticketTypes.Save();
-    }    
-
-    public void MovePositionUp(int ticketTypeID)
-    {
-      TicketTypes types1 = new TicketTypes(LoginUser);
-      types1.LoadByTicketTypeID(ticketTypeID);
-      if (types1.IsEmpty || types1[0].Position < 1) return;
-
-      TicketTypes types2 = new TicketTypes(LoginUser);
-      types2.LoadByPosition(types1[0].OrganizationID, types1[0].Position - 1);
-      if (!types2.IsEmpty)
-      {
-        types2[0].Position = types2[0].Position + 1;
-        types2.Save();
-      }
-
-      types1[0].Position = types1[0].Position - 1;
-      types1.Save();
-      ValidatePositions(LoginUser.OrganizationID);
-    }
-    
-    public void MovePositionDown(int ticketTypeID)
-    {
-      TicketTypes types1 = new TicketTypes(LoginUser);
-      types1.LoadByTicketTypeID(ticketTypeID);
-      if (types1.IsEmpty || types1[0].Position >= GetMaxPosition(types1[0].OrganizationID)) return;
-
-      TicketTypes types2 = new TicketTypes(LoginUser);
-      types2.LoadByPosition(types1[0].OrganizationID, types1[0].Position + 1);
-      if (!types2.IsEmpty)
-      {
-        types2[0].Position = types2[0].Position - 1;
-        types2.Save();
-      }
-
-      types1[0].Position = types1[0].Position + 1;
-      types1.Save();
-	  
-      ValidatePositions(LoginUser.OrganizationID);
-    }
-
-
-    public virtual int GetMaxPosition(int organizationID)
-    {
-      int position = -1;
-      
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT MAX(Position) FROM TicketTypes WHERE OrganizationID = @OrganizationID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("OrganizationID", organizationID);
-        object o = ExecuteScalar(command);
-        if (o == DBNull.Value) return -1;
-        position = (int)o;
-      }
-      return position;
-    }
     
     
 
     #endregion
 
-    #region IEnumerable<TicketType> Members
+    #region IEnumerable<TicketTypesViewItem> Members
 
-    public IEnumerator<TicketType> GetEnumerator()
+    public IEnumerator<TicketTypesViewItem> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new TicketType(row, this);
+        yield return new TicketTypesViewItem(row, this);
       }
     }
 

@@ -9,10 +9,10 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(TicketTypeProxy))]
-  public class TicketTypeProxy
+  [KnownType(typeof(TicketTypesViewItemProxy))]
+  public class TicketTypesViewItemProxy
   {
-    public TicketTypeProxy() {}
+    public TicketTypesViewItemProxy() {}
     [DataMember] public int TicketTypeID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public string Description { get; set; }
@@ -25,14 +25,16 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public string ProductFamilyName { get; set; }
           
   }
   
-  public partial class TicketType : BaseItem
+  public partial class TicketTypesViewItem : BaseItem
   {
-    public TicketTypeProxy GetProxy()
+    public TicketTypesViewItemProxy GetProxy()
     {
-      TicketTypeProxy result = new TicketTypeProxy();
+      TicketTypesViewItemProxy result = new TicketTypesViewItemProxy();
+      result.ProductFamilyName = this.ProductFamilyName;
       result.ProductFamilyID = this.ProductFamilyID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;

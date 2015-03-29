@@ -93,7 +93,7 @@
     <ContentTemplate>
       <div style="margin: 7px 20px;">
         <div>
-          <div style="height: 225px;">
+          <div style="height: 265px;">
             <div>
               Name:</div>
             <div style="padding-bottom: 5px;">
@@ -114,6 +114,17 @@
             <div id="divProductVersionStatus">
               <asp:CheckBox ID="cbIsShipping" runat="server" Text="Is Shipping" />&nbsp&nbsp<asp:CheckBox
                 ID="cbIsDiscontinued" runat="server" Text="Is Discontinued" /></div>
+            <div id="divTicketTypeProductFamily" style="display: none" runat="server">
+                <div style="padding-bottom: 3px;">
+                Product Family:</div>
+                <div>
+                <div style="margin-bottom: 10px;">
+                    <telerik:RadComboBox ID="cmbTicketTypeProductFamilies" runat="server" Width="200px" ExpandAnimation-Type="None"
+                    CollapseAnimation-Type="None">
+                    </telerik:RadComboBox>
+                </div>
+                </div>
+            </div>
             <div id="divTicketTypeIcon">
               <div style="padding-bottom: 3px;">
                 Icon:</div>
@@ -134,7 +145,7 @@
                 <div id="divUploadResults" style="padding-top: 5px; font-weight: bold; display: none;">
                 </div>
               </div>
-              <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />&nbsp&nbsp
+                <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />&nbsp&nbsp
             </div>
           </div>
           <div style="float: right; margin: 0px 0px 0 0;">
@@ -256,7 +267,7 @@
         }
         combo.commitChanges();
         combo.get_items().getItem(0).select();
-
+        
         if (oldValue) {
           var selectedItem = combo.findItemByValue(oldValue);
           if (selectedItem) selectedItem.select();
@@ -299,13 +310,19 @@
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked = result.IsShipping;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = result.IsDiscontinued;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = result.IsVisibleOnPortal;
-            if (_type == 5) loadTicketTypeImageCombo(result.IconUrl.toLowerCase());
+              if (_type == 5) {
+                  loadTicketTypeImageCombo(result.IconUrl.toLowerCase());
+                  loadTicketTypeProductFamilyCombo(result.ProductFamilyID);
+              }
 
             showEditWindow(id);
           });
         }
         else {
-          if (_type == 5) loadTicketTypeImageCombo();
+            if (_type == 5) {
+                loadTicketTypeImageCombo();
+                loadTicketTypeProductFamilyCombo();
+            }
           showEditWindow();
         }
       }
@@ -316,6 +333,13 @@
           loadCombo(combo, items, url);
         });
       }
+
+    function loadTicketTypeProductFamilyCombo(productFamilyID) {
+        PageMethods.GetTicketTypeProductFamilyComboData(function(items) {
+            var combo = $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeProductFamilies").ClientID %>');
+            loadCombo(combo, items, productFamilyID);
+    });
+    }
 
       function showEditWindow(id) {
         showWindow($find("<%=wndEditType.ClientID%>"), function(result) {
@@ -329,6 +353,7 @@
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsEmailResponse").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked,
+            $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeProductFamilies").ClientID %>').get_value(),
             $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeIcons").ClientID %>').get_value(),
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked,
             function (html) {

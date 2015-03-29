@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   
-  public partial class TicketTypes
+  public partial class TicketTypesView
   {
     protected override void BuildFieldMap()
     {
@@ -25,6 +25,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
+      _fieldMap.AddMap("ProductFamilyName", "ProductFamilyName", false, false, false);
             
     }
   }

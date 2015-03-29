@@ -14,6 +14,7 @@ var _ticketGroupUsers = null;
 var _dueDate = null;
 var _parentFields = [];
 var _ticketTypeID = null;
+var _productFamilyID = null;
 var speed = 50, counter = 0, start;
 
 var execSelectTicket = null;
@@ -1068,10 +1069,30 @@ $(document).ready(function () {
         var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
         var select = $('<select>').appendTo(container);
         var types = top.Ts.Cache.getTicketTypes();
-        for (var i = 0; i < types.length; i++) {
-            var option = $('<option>').text(types[i].Name).appendTo(select).data('type', types[i]);
-            if ($(this).text() === types[i].Name) {
-                option.attr('selected', 'selected');
+        if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null)
+        {
+            for (var i = 0; i < types.length; i++) {
+                if (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID) {
+                    var option = $('<option>').text(types[i].Name).appendTo(select).data('type', types[i]);
+                    if ($(this).text() === types[i].Name) {
+                        option.attr('selected', 'selected');
+                    }
+                }
+            }
+
+            if (select[0].childElementCount == 0) {
+                parent.show().find('img').hide();
+                container.remove();
+                alert('There are no ticket types available for this product family. Please contact your TeamSupport administrator.');
+            }
+        }
+        else
+        {
+            for (var i = 0; i < types.length; i++) {
+                var option = $('<option>').text(types[i].Name).appendTo(select).data('type', types[i]);
+                if ($(this).text() === types[i].Name) {
+                    option.attr('selected', 'selected');
+                }
             }
         }
 
@@ -3252,6 +3273,7 @@ var loadProducts = function (productIDs) {
             top.Ts.Services.Tickets.SetProduct(_ticketID, product.ProductID, function (result) {
                 if (result !== null) {
                     setProduct(result.id, result.label);
+                    _productFamilyID = result.data;
                     setVersion(null, null, true);
                     setVersion(null, null, false);
                     //$('#product').text(result[1] === '' ? 'Unassigned' : result[1]).data('productID', result[0]);
@@ -3391,6 +3413,7 @@ var loadTicket = function (ticketNumber, refresh) {
         $('#ticketGroup').text(info.Ticket.GroupName == null ? 'Unassigned' : info.Ticket.GroupName);
         _ticketGroupID = info.Ticket.GroupID;
         setProduct(info.Ticket.ProductID, info.Ticket.ProductName);
+        _productFamilyID = info.Ticket.ProductFamilyID;
         setVersion(info.Ticket.ReportedVersionID, info.Ticket.ReportedVersion, false);
         setVersion(info.Ticket.SolvedVersionID, info.Ticket.SolvedVersion, true);
         //$('#reported').text(info.Ticket.ReportedVersion == null ? 'Unassigned' : info.Ticket.ReportedVersion);

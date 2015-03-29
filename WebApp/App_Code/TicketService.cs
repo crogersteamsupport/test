@@ -1590,7 +1590,7 @@ namespace TSWebServices
       ticket.ReportedVersionID = null;
       ticket.SolvedVersionID = null;
       ticket.Collection.Save();
-      if (product != null) return new AutocompleteItem(product.Name, product.ProductID.ToString());
+      if (product != null) return new AutocompleteItem(product.Name, product.ProductID.ToString(), product.ProductFamilyID);
       return new AutocompleteItem(null, null);
     }
 

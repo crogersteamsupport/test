@@ -47,6 +47,11 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       if (item != null) item.Selected = true;*/
 
       spanNewType.Visible = UserSession.CurrentUser.IsSystemAdmin;
+      Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+      if (organization.UseProductFamilies)
+      {
+          divTicketTypeProductFamily.Style["display"] = "block";
+      }
     }
   }
 
@@ -77,6 +82,28 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     }
 
     return data.ToArray();
+  }
+
+  [WebMethod(true)]
+  public static ImageComboBoxData[] GetTicketTypeProductFamilyComboData()
+  {
+      List<ImageComboBoxData> data = new List<ImageComboBoxData>();
+      ProductFamilies productFamilies = new ProductFamilies(UserSession.LoginUser);
+      productFamilies.LoadByOrganizationID(UserSession.LoginUser.OrganizationID);
+      ImageComboBoxData withoutProductFamily = new ImageComboBoxData();
+      withoutProductFamily.Text = "Without Product Family";
+      withoutProductFamily.Value = "-1";
+      data.Add(withoutProductFamily);
+
+      foreach (ProductFamily productFamily in productFamilies)
+      {
+          ImageComboBoxData item = new ImageComboBoxData();
+          item.Text = productFamily.Name;
+          item.Value = productFamily.ProductFamilyID.ToString();
+          data.Add(item);
+      }
+
+      return data.ToArray();
   }
 
   [WebMethod(true)]
@@ -203,6 +230,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
   [WebMethod(true)]
   public static string GetTypesHtml(SelectedType type, string arg)
   {
+      Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
     DataTable table = new DataTable();
     table.Columns.Add("ID");
     table.Columns.Add("Name");
@@ -258,14 +286,27 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         }
         break;
       case SelectedType.TicketTypes:
-        TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
-        ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
         table.Columns.Add("Icon");
         table.Columns.Add("Visible on Portal");
         string icon = "<img src=\"../{0}\" />";
-        foreach (TicketType ticketType in ticketTypes)
+        if (organization.UseProductFamilies)
         {
-          table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString() });
+            TicketTypesView ticketTypes = new TicketTypesView(UserSession.LoginUser);
+            ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+            table.Columns.Add("Product Family");
+            foreach (TicketTypesViewItem ticketType in ticketTypes)
+            {
+                table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString(), ticketType.ProductFamilyName });
+            }
+        }
+        else
+        {
+            TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
+            ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+            foreach (TicketType ticketType in ticketTypes)
+            {
+                table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString() });
+            }
         }
         break;
       default:
@@ -494,6 +535,15 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         result.Description = ticketType.Description;
         result.IsVisibleOnPortal = ticketType.IsVisibleOnPortal;
         result.IconUrl = ticketType.IconUrl;
+        if (ticketType.ProductFamilyID == null)
+        {
+            result.ProductFamilyID = -1;
+        }
+        else
+        {
+            result.ProductFamilyID = (int)ticketType.ProductFamilyID;
+        }
+
         break;
       default:
         break;
@@ -503,7 +553,20 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
   }
 
   [WebMethod(true)]
-  public static string UpdateType(SelectedType type, string arg, int? id, string name, string description, bool isTimed, bool isClosed, bool isClosedEmail, bool isEmailResponse, bool isShipping, bool isDiscontinued, string iconUrl, bool isVisibleOnPortal)
+  public static string UpdateType(SelectedType type, 
+      string arg, 
+      int? id, 
+      string name, 
+      string description, 
+      bool isTimed, 
+      bool isClosed, 
+      bool isClosedEmail, 
+      bool isEmailResponse, 
+      bool isShipping, 
+      bool isDiscontinued,
+      string productFamilyID,
+      string iconUrl, 
+      bool isVisibleOnPortal)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return "";
     switch (type)
@@ -579,6 +642,15 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         ticketType.IsVisibleOnPortal = isVisibleOnPortal;
         if (id == null) ticketType.Position = ticketType.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
         if (id == null) ticketType.OrganizationID = UserSession.LoginUser.OrganizationID;
+        if (productFamilyID == "-1")
+        {
+            ticketType.ProductFamilyID = null;
+        }
+        else
+        {
+            ticketType.ProductFamilyID = Convert.ToInt32(productFamilyID);
+        }
+
         ticketType.Collection.Save();
         ticketType.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
         if (id == null)
@@ -654,6 +726,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       IsTimed = false;
       IsShipping = false;
       IsDiscontinued = false;
+      ProductFamilyID = -1;
     }
     public int ID { get; set; }
     public string Name { get; set; }
@@ -666,6 +739,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     public bool IsDiscontinued { get; set; }
     public string IconUrl { get; set; }
     public bool IsVisibleOnPortal { get; set; }
+    public int ProductFamilyID { get; set; }
 
   }
 }
