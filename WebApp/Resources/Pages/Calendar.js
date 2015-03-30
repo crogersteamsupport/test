@@ -5,6 +5,8 @@
     var pageID = top.Ts.Utils.getQueryValue("pageid", window);
     var theTempEvent = null;
     var dateFormat;
+    var isNewButton = false;
+    var clicks = 0, timeout;
 
     if (pageType == null)
         pageType = -1;
@@ -61,16 +63,32 @@
         {
         },
         dayRender: function(date, element, view){
-            element.bind('dblclick', function() {
-                clearModal();
-                $('#inputStartTime').val(moment(date).format(dateFormat + ' hh:mm a'));
-                $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
-                $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
-                theTempEvent = null;
-                $('#fullCalModal').modal();
-            });
+            //element.bind('dblclick', function() {
+            //    clearModal();
+            //    isNewButton = false;
+            //    $('#inputStartTime').val(moment(date).format(dateFormat + ' hh:mm a'));
+
+            //    if ($('#inputStartTime').data("DateTimePicker"))
+            //        $('#inputStartTime').data("DateTimePicker").destroy();
+            //    $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' , pickDate: false, minuteStepping: 30});
+            //    $('#inputStartTime').data("DateTimePicker").setDate(moment(date));
+
+            //    $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', minuteStepping: 30 });
+            //    //$('#inputEndTime').data("DateTimePicker").setDate(moment(date));
+
+            //    theTempEvent = null;
+            //    $('#fullCalModal').modal();
+            //});
         },
         dayClick: function (date, jsEvent, view) {
+                clicks++;
+                if (clicks == 1) {
+                    timeout = setTimeout(function () { clicks = 0; }, 400);
+                } else {
+                    timeout && clearTimeout(timeout);
+                    showModal(date);
+                    clicks = 0;
+                }
             $('.popover').hide();
         },  
         timezone: 'local',
@@ -116,27 +134,31 @@
             top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.type)
         },
         eventRender: function (event, element) {
-            var title;
+            var evttitle;
             switch(event.type)
             {
                 case "reminder-ticket":
-                    title = event.description
+                    evttitle = "Ticket Reminder : " + event.id;
                     break;
                 case "reminder-org":
+                    evttitle = "Company Reminder";
                     break;
                 case "reminder-user":
+                    evttitle = "Customer Reminder";
                     break;
                 case "ticket":
+                    evttitle = "Ticket Due Date : " + event.id;
                     break;
                 case "cal":
+                    evttitle = event.title;
                     break;
                 default:
                     break;
 
             }
             element.popover({
-                title: event.title,
-                placement:'bottom',
+                title: evttitle,
+                placement:'auto',
                 html:true,
                 trigger: 'click',
                 container: 'body',
@@ -205,15 +227,59 @@
     //Convert buttons to bootstrap classes
     $('.fc-toolbar').find('.fc-button').addClass('btn btn-default');
 
+    //toggle for allday input
+    $('#inputAllDay').click(function (e) {
+        if($('#inputAllDay').is(':checked'))
+        {
+            $('#inputEndTime').prop('disabled', true);
+            $('#inputEndTime').val('');
+
+            if ($('#inputStartTime').data("DateTimePicker"))
+                $('#inputStartTime').data("DateTimePicker").destroy();
+            $('#inputStartTime').datetimepicker({ format: dateFormat, pickTime: false });
+            $('#inputStartTime').val(moment($('#inputStartTime').val()).format(dateFormat));
+
+        } else {
+            $('#inputEndTime').prop('disabled', false);
+            if ($('#inputStartTime').data("DateTimePicker"))
+                $('#inputStartTime').data("DateTimePicker").destroy();
+            if(isNewButton)
+                $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', minuteStepping: 30 });
+            else
+                $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
+            $('#inputStartTime').val(moment($('#inputStartTime').val()).format(dateFormat + ' hh:mm a'));
+
+        }
+
+    });
+
+    function showModal(date)
+    {
+        clearModal();
+        isNewButton = false;
+        $('#inputStartTime').val(moment(date).format(dateFormat + ' hh:mm a'));
+
+        if ($('#inputStartTime').data("DateTimePicker"))
+            $('#inputStartTime').data("DateTimePicker").destroy();
+        $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
+        $('#inputStartTime').data("DateTimePicker").setDate(moment(date));
+
+        $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', minuteStepping: 30 });
+        //$('#inputEndTime').data("DateTimePicker").setDate(moment(date));
+
+        theTempEvent = null;
+        $('#fullCalModal').modal();
+    }
+
     //build popover content
     function buildPopover(event, element)
     {
         var theTime = $("<div>")
-            .text("Starts: " + moment(event.start).format(dateFormat + ' hh:mm a'));
+            .text(moment(event.start).format(dateFormat + ' hh:mm a'));
         if (event.end)
         {
             var endTime = $("<div>")
-                .text("Ends: " + moment(event.end).format(dateFormat + ' hh:mm a')).appendTo(theTime);
+                .text("to " + moment(event.end).format(dateFormat + ' hh:mm a')).appendTo(theTime);
         }
 
         if (event.type != "cal")
@@ -552,7 +618,7 @@
 
         if ($('#inputTitle').val() == "")
         {
-            alert("Please enter a valid event name.");
+            alert("Please enter a valid event title.");
             return;
         }
             
@@ -643,9 +709,18 @@
     $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed/" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); });
     $("#newEvent").click(function () {
         clearModal();
+        isNewButton = true;
         $('#fullCalModal').modal();
-            $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
-        $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
+        if ($('#inputStartTime').data("DateTimePicker"))
+            $('#inputStartTime').data("DateTimePicker").destroy();
+
+        $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: true, minuteStepping: 30 });
+        $('#inputStartTime').data("DateTimePicker").setDate(new Date());
+
+        if ($('#inputEndTime').data("DateTimePicker"))
+            $('#inputEndTime').data("DateTimePicker").destroy();
+        $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: true, minuteStepping: 30 });
+        $('#inputEndTime').data("DateTimePicker").setDate(new Date());
     });
 
     //search functions for the associations
@@ -712,6 +787,7 @@
         $('#associationQueue').find('.product-queue').empty();
         $('.form-control').prop('disabled', false);
         $('#inputAllDay').prop('disabled', false);
+        $('#inputAllDay').prop('checked', false);
         $('#inputRecurring').prop('disabled', false);
         $('#btnSaveEvent').show();
     }

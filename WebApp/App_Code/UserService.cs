@@ -1296,6 +1296,13 @@ namespace TSWebServices
             // 2 = Company
             // 4 = group
 
+            var testDate = DateTime.Parse(startdate);
+            if (testDate.Day != 1)
+            {
+                testDate = testDate.AddMonths(1);
+                startdate = testDate.ToString();
+            }
+
             ////get all due dates for the current month
             if (pageType == "0" || pageType == "-1")
             {
@@ -1311,7 +1318,7 @@ namespace TSWebServices
                     cal.title = t.Name;
                     cal.type = "ticket";
                     cal.id = t.TicketNumber;
-                    cal.description = "Ticket Due Date: " + t.TicketNumber;
+                    cal.description = "";
                     cal.end = null;
                     cal.allday = false;
                     cal.references = null;
@@ -1340,19 +1347,19 @@ namespace TSWebServices
                         Ticket t = Tickets.GetTicket(TSAuthentication.GetLoginUser(), r.RefID);
                         cal.type = "reminder-ticket";
                         cal.id = t.TicketNumber;
-                        cal.description = "Ticket Reminder: "  + t.TicketNumber;
+                        cal.description = t.Name;
                         break;
                     case ReferenceType.Organizations:
                         Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), r.RefID);
                         cal.type = "reminder-org";
                         cal.id = o.OrganizationID;
-                        cal.description = "Customer Reminder: " + o.Name;
+                        cal.description = o.Name;
                         break;
                     case ReferenceType.Contacts:
                         User u = Users.GetUser(TSAuthentication.GetLoginUser(), r.RefID);
                         cal.id = u.UserID;
                         cal.type = "reminder-user";
-                        cal.description = "Contact Reminder: " + u.FirstLastName;
+                        cal.description = u.FirstLastName;
                         break;
                 }
 

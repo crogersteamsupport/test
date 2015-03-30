@@ -2131,29 +2131,29 @@ $(document).ready(function () {
 
     $('button').button();
 
-    //$('#calendarLink').click(function (e) {
-    //    e.preventDefault();
-    //    e.stopPropagation();
-    //    top.Ts.System.logAction('Ticket - Calendar Clicked');
-    //    $('#divCalendar').show();
-    //    //$('#divWaterCooler').hide();
-    //    //$('#divActions').hide();
-    //    //$('#divFooter').hide();
-    //    //$('#calendarLink').addClass("activelink");
-    //    //$('#watercoolerLink').removeClass("activelink");
-    //    //$('#actionsLink').removeClass("activelink");
-    //    //$('.ticket-action-add').hide();
-    //});
+    $('#calendarLink').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        top.Ts.System.logAction('Ticket - Calendar Clicked');
+        $('#divCalendar').show();
+        $('#divWaterCooler').hide();
+        $('#divActions').hide();
+        $('#divFooter').hide();
+        $('#calendarLink').addClass("activelink");
+        $('#watercoolerLink').removeClass("activelink");
+        $('#actionsLink').removeClass("activelink");
+        $('.ticket-action-add').hide();
+    });
 
     $('#watercoolerLink').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - WC Clicked');
-        //$('#divCalendar').hide();
+        $('#divCalendar').hide();
         $('#divWaterCooler').show();
         $('#divActions').hide();
         $('#divFooter').hide();
-        //$('#calendarLink').removeClass("activelink");
+        $('#calendarLink').removeClass("activelink");
         $('#watercoolerLink').addClass("activelink");
         $('#actionsLink').removeClass("activelink");
         $('.ticket-action-add').toggle();
@@ -2161,11 +2161,11 @@ $(document).ready(function () {
     $('#actionsLink').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        //$('#divCalendar').hide();
+        $('#divCalendar').hide();
         $('#divWaterCooler').hide();
         $('#divActions').show();
         $('#divFooter').show();
-        //$('#calendarLink').removeClass("activelink");
+        $('#calendarLink').removeClass("activelink");
         $('#watercoolerLink').removeClass("activelink");
         $('#actionsLink').addClass("activelink");
         $('.ticket-action-add').show();
@@ -2624,7 +2624,17 @@ var initEditor = function (element, init) {
           onclick: function () {
           
             if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
-              alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
+                //alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
+                top.Ts.MainPage.pasteImage(null, function (result) {
+                    ed.focus();
+                    if (result != "") {
+                        var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                        ed.selection.setContent(html);
+                        setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                        ed.execCommand('mceAutoResize');
+                        ed.focus();
+                    }
+                });
             }
             else {
               top.Ts.MainPage.pasteImage(null, function (result) {
@@ -3509,7 +3519,8 @@ var loadTicket = function (ticketNumber, refresh) {
         }
 
         $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=0&pageid=" + _ticketNumber);
-        
+        $('#calendarIframe').attr("src", "Calendar.html?pagetype=0&pageid=" + _ticketNumber);
+
         top.Ts.Services.Tickets.GetTicketWaterCoolerCount(_ticketNumber, function (result) {
             $('#watercoolerLink').html('Water Cooler (' + result + ')')
         });
