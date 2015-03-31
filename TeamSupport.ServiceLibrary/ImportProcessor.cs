@@ -66,8 +66,7 @@ namespace TeamSupport.ServiceLibrary
       _importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, import.OrganizationID, null);
 
 
-      //string path = AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports);
-      //string csvFile = "U:\\Development\\Imports\\Inersil\\Intersil Actions.csv"; // Path.Combine(path, import.FileName);
+      //string csvFile = "U:\\Development\\Imports\\TestFiles\test.csv"; // Path.Combine(path, import.FileName);
       string csvFile = Path.Combine(AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports), import.FileName);
       _organizationID = import.OrganizationID;
 
@@ -85,6 +84,9 @@ namespace TeamSupport.ServiceLibrary
         {
           case ReferenceType.Actions:
             ImportActions(import);
+            break;
+          case ReferenceType.CustomFieldPickList:
+            ImportCustomFieldPickList(import);
             break;
           default:
             Logs.WriteEvent("ERROR: Unknown Reference Type");
@@ -162,6 +164,39 @@ namespace TeamSupport.ServiceLibrary
       // _log.AppendMessage(count.ToString() + " Actions Imported.");
     }
 
+    private void ImportCustomFieldPickList(Import import)
+    {
+      int count = 0;
+      var fields = new Dictionary<string, List<string>>();
+      
+      while (_csv.ReadNextRecord())
+      {
+        count++;
+        string apiFieldName = ReadString("ApiFieldName");
+        string listValue = ReadString("PickListValue");
+        List<string> list;
+        if (!fields.TryGetValue(apiFieldName, out list))
+        {
+          list = new List<string>();
+          fields.Add(apiFieldName, list);
+        }
+
+        list.Add(listValue);
+      }
+
+      foreach (KeyValuePair<string, List<string>> item in fields)
+	    {
+        CustomField customField = CustomFields.GetCustomFieldByApi(_importUser, _organizationID, item.Key);
+        if (customField != null)
+        {
+          customField.ListValues = string.Join("|", item.Value.ToArray());
+          customField.Collection.Save();
+        }
+	    }
+
+      UpdateImportCount(import, count);
+    }
+    
     private void ClearEmails()
     {
       try
@@ -210,7 +245,7 @@ namespace TeamSupport.ServiceLibrary
     {
       string value = GetMappedValue(field);
       value = value.ToLower();
-      return value.IndexOf('t') > -1 || value.IndexOf('y') > -1;
+      return value.IndexOf('t') > -1 || value.IndexOf('y') > -1 || value.IndexOf('1') > -1;
     }
 
     private int ReadInt(string field, int defaultValue = 0)

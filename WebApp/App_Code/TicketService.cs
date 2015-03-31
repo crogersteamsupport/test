@@ -2347,7 +2347,7 @@ namespace TSWebServices
 SELECT 
 CAST((SELECT SUM(DATALENGTH(Description)) FROM Actions WHERE TicketID = t.TicketID) / 1024 AS Varchar) + ' KB' AS [Size],
 t.* 
-FROM Tickets t
+FROM TicketsView t
 WHERE t.TicketID = @TicketID
 ";
       command.Parameters.AddWithValue("TicketID", ticketID);
