@@ -883,7 +883,7 @@ namespace TeamSupport.Data
       organization.LoadByOrganizationID(loginUser.OrganizationID);
       if (organization.Count > 0 && organization[0].UseProductFamilies)
       {
-          switch (user.ProductFamiliesRights)
+          switch ((ProductFamiliesRightType)user.ProductFamiliesRights)
           {
               case ProductFamiliesRightType.AllFamilies:
                   break;
@@ -1038,7 +1038,7 @@ namespace TeamSupport.Data
         conditions.Append(") ");
       }
 
-      if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+      if ((ProductFamiliesRightType)user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
       {
           Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
           if (organization.UseProductFamilies)

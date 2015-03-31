@@ -43,7 +43,7 @@ namespace TeamSupport.Data
 
     public static bool UserHasRights(User user, int? groupID, int? userID, int? ticketID, bool isKB)
     {
-        if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+        if ((ProductFamiliesRightType)user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
         {
             if (ticketID != null && !Ticket.UserHasProductFamilyRights(user, (int)ticketID))
             {

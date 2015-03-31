@@ -87,7 +87,7 @@ namespace TSWebServices
             if (!TSAuthentication.IsSystemAdmin) return;
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             if (user.OrganizationID != TSAuthentication.OrganizationID) return;
-            user.ProductFamiliesRights = (ProductFamiliesRightType)value;
+            user.ProductFamiliesRights = value;
             user.Collection.Save();
         }
 

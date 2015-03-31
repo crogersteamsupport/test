@@ -92,7 +92,7 @@ namespace TSWebServices
 
           if (dtSearchTicketsResultsList.Count > 0)
           {
-            if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+            if ((ProductFamiliesRightType)user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
             {
                 ticketsQuery = GetProductFamilyTicketsQuery(searchTerm, loginUser, selectTicketsFields);
             }
@@ -162,7 +162,7 @@ namespace TSWebServices
               includesPreviousQuery = true;
             }
 
-            if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+            if ((ProductFamiliesRightType)user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
             {
                 productVersionsQuery = GetProductVersionsWithinProductFamilyQuery(includesPreviousQuery, loginUser, selectProductVersionsFields);
             }
@@ -1287,7 +1287,7 @@ namespace TSWebServices
         }
 
         User user = Users.GetUser(loginUser, loginUser.UserID);
-        if (user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+        if ((ProductFamiliesRightType)user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
         {
             Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
             if (organization.UseProductFamilies)

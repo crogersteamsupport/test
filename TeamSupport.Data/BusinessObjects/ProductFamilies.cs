@@ -129,7 +129,7 @@ namespace TeamSupport.Data
       public void LoadByLikeProductFamilyName(int organizationID, string name, int maxRows, bool filterByUserRights)
       {
           User user = Users.GetUser(LoginUser, LoginUser.UserID);
-          bool doFilter = filterByUserRights && user.ProductFamiliesRights == ProductFamiliesRightType.SomeFamilies;
+          bool doFilter = filterByUserRights && (ProductFamiliesRightType)user.ProductFamiliesRights == ProductFamiliesRightType.SomeFamilies;
 
           using (SqlCommand command = new SqlCommand())
           {

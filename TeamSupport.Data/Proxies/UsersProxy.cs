@@ -108,7 +108,7 @@ namespace TeamSupport.Data
       UserProxy result = new UserProxy();
       result.CalGUID = this.CalGUID;
       result.BlockEmailFromCreatingOnly = this.BlockEmailFromCreatingOnly;
-      result.ProductFamiliesRights = this.ProductFamiliesRights;
+      result.ProductFamiliesRights = (ProductFamiliesRightType)this.ProductFamiliesRights;
       result.DisableExporting = this.DisableExporting;
       result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;
       result.UserCanPinAction = this.UserCanPinAction;
