@@ -231,23 +231,47 @@
     $('#inputAllDay').click(function (e) {
         if($('#inputAllDay').is(':checked'))
         {
-            $('#inputEndTime').prop('disabled', true);
-            $('#inputEndTime').val('');
-
+            //set start time to time only format
             if ($('#inputStartTime').data("DateTimePicker"))
                 $('#inputStartTime').data("DateTimePicker").destroy();
             $('#inputStartTime').datetimepicker({ format: dateFormat, pickTime: false });
             $('#inputStartTime').val(moment($('#inputStartTime').val()).format(dateFormat));
 
+            //set end time to time only format
+            if ($('#inputEndTime').data("DateTimePicker"))
+                $('#inputEndTime').data("DateTimePicker").destroy();
+            $('#inputEndTime').datetimepicker({ format: dateFormat, pickTime: false });
+            $('#inputEndTime').val(moment($('#inputStartTime').val()).format(dateFormat));
+            $('#inputEndTime').data("DateTimePicker").setDate($('#inputStartTime').val());
+
         } else {
-            $('#inputEndTime').prop('disabled', false);
+
+            
             if ($('#inputStartTime').data("DateTimePicker"))
                 $('#inputStartTime').data("DateTimePicker").destroy();
-            if(isNewButton)
+
+            if ($('#inputEndTime').data("DateTimePicker"))
+                $('#inputEndTime').data("DateTimePicker").destroy();
+
+            //if nnew event leave it date/time event
+            if (isNewButton)
+            {
                 $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', minuteStepping: 30 });
-            else
+                $('#inputStartTime').val(moment($('#inputStartTime')).add(moment().hours(), 'hour').format(dateFormat + ' hh:mm a'));
+
+                $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', minuteStepping: 30 });
+                $('#inputEndTime').val(moment($('#inputEndTime')).add(moment().hours()+1, 'hour').format(dateFormat + ' hh:mm a'));
+            }
+            else //if existing event
+            {
+                //set dates to time only
                 $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
-            $('#inputStartTime').val(moment($('#inputStartTime').val()).format(dateFormat + ' hh:mm a'));
+                $('#inputStartTime').val(moment($('#inputStartTime')).add(moment().hours(), 'hour').format(dateFormat + ' hh:mm a'));
+
+                $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
+                $('#inputEndTime').val(moment($('#inputEndTime')).add(moment().hours()+1, 'hour').format(dateFormat + ' hh:mm a'));
+            }
+                
 
         }
 
@@ -257,15 +281,15 @@
     {
         clearModal();
         isNewButton = false;
-        $('#inputStartTime').val(moment(date).format(dateFormat + ' hh:mm a'));
+        //$('#inputStartTime').val(moment(date).format(dateFormat + ' hh:mm a'));
 
         if ($('#inputStartTime').data("DateTimePicker"))
             $('#inputStartTime').data("DateTimePicker").destroy();
         $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
-        $('#inputStartTime').data("DateTimePicker").setDate(moment(date));
+        $('#inputStartTime').data("DateTimePicker").setDate(moment(date).add(moment().hours(),'hour'));
 
         $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', minuteStepping: 30 });
-        //$('#inputEndTime').data("DateTimePicker").setDate(moment(date));
+        $('#inputEndTime').data("DateTimePicker").setDate(moment(date).add(moment().hours()+1, 'hour'));
 
         theTempEvent = null;
         $('#fullCalModal').modal();
@@ -697,7 +721,9 @@
 
     });
 
-    addCalButton("right", "calURL", "fa fa-rss");
+    if (pageID == -1)
+        addCalButton("right", "calURL", "fa fa-rss");
+
     addCalButton("right", "newEvent", "fa fa-plus");
 
     function addCalButton(where, id, css) {
@@ -715,12 +741,12 @@
             $('#inputStartTime').data("DateTimePicker").destroy();
 
         $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: true, minuteStepping: 30 });
-        $('#inputStartTime').data("DateTimePicker").setDate(new Date());
+        $('#inputStartTime').data("DateTimePicker").setDate(moment(new (Date)).set('minute', 00));
 
         if ($('#inputEndTime').data("DateTimePicker"))
             $('#inputEndTime').data("DateTimePicker").destroy();
         $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: true, minuteStepping: 30 });
-        $('#inputEndTime').data("DateTimePicker").setDate(new Date());
+        $('#inputEndTime').data("DateTimePicker").setDate(moment(new (Date)).set('minute', 00).add(1,'hour'));
     });
 
     //search functions for the associations

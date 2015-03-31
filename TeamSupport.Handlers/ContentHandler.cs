@@ -285,10 +285,15 @@ namespace TeamSupport.Handlers
                 System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById(u[0].TimeZoneID);
                 iCalTimeZone timezone = iCalTimeZone.FromSystemTimeZone(timezoneinfo);
                 iCal.AddTimeZone(timezone);
+                iCal.AddChild(timezone);
             }
             else
+            {
                 iCal.AddLocalTimeZone();
+            }
+                
 
+            
 
             TeamSupport.Data.CalendarEvents events = new CalendarEvents(LoginUser.Anonymous);
             events.LoadAll(organizationID, u[0].UserID);

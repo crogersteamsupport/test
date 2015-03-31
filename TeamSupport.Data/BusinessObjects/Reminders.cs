@@ -40,8 +40,8 @@ namespace TeamSupport.Data
             command.Parameters.AddWithValue("@UserID", userID);
             command.Parameters.AddWithValue("@month", date.Month);
             command.Parameters.AddWithValue("@year", date.Year);
-            command.Parameters.AddWithValue("@type", date.Year);
-            command.Parameters.AddWithValue("@id", date.Year);
+            command.Parameters.AddWithValue("@type", Type);
+            command.Parameters.AddWithValue("@id", ID);
             Fill(command);
         }
     }

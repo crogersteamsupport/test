@@ -1329,14 +1329,33 @@ namespace TSWebServices
 
             //get all reminders for this user for the current month
             Reminders reminders = new Reminders(TSAuthentication.GetLoginUser());
+            string tempPageType;
+            string tempPageID;
 
-            reminders.LoadByUserMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().UserID, pageType, pageID);
+            switch (pageType)
+            {
+                case "0":
+                    tempPageType = "17";
+                    Ticket ticket = Tickets.GetTicketByNumber(TSAuthentication.GetLoginUser(), int.Parse(pageID));
+                    tempPageID = ticket.TicketID.ToString();
+                    break;
+                case "2":
+                    tempPageType = "9";
+                    tempPageID = pageID;
+                    break;
+                default:
+                    tempPageType = pageType;
+                    tempPageID = pageID;
+                    break;
+            }
+
+            reminders.LoadByUserMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().UserID, tempPageType, tempPageID);
             foreach (Reminder r in reminders)
             {
                 CalEvent cal = new CalEvent();
                 cal.color = "blue";
                 cal.title = r.Description;
-                cal.start = ((DateTime)r.DueDateUtc).ToString("o");
+                cal.start = ((DateTime)r.GetProxy().DueDate).ToString("o");
                 cal.end = null;
                 cal.allday = false;
                 cal.references = null;
@@ -1626,6 +1645,8 @@ namespace TSWebServices
                 cal.AllDay = info.allDay;
                 cal.Collection.Save();
 
+                if(info.PageType == 0)
+                    AddAttachment(cal.CalendarID, info.PageID, CalendarAttachmentType.Ticket);
                 foreach (int ticketID in info.Tickets)
                 {
                     AddAttachment(cal.CalendarID, ticketID, CalendarAttachmentType.Ticket);
