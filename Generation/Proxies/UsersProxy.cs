@@ -81,11 +81,11 @@ namespace TeamSupport.Data
     [DataMember] public bool AllowUserToEditAnyAction { get; set; }
     [DataMember] public bool UserCanPinAction { get; set; }
     [DataMember] public bool PortalLimitOrgTickets { get; set; }
-    [DataMember] public bool DisableExporting { get; set; }
     [DataMember] public bool CanCreateAsset { get; set; }
     [DataMember] public bool CanEditAsset { get; set; }
     [DataMember] public bool CanChangeCommunityVisibility { get; set; }
     [DataMember] public bool FilterInactive { get; set; }
+    [DataMember] public bool DisableExporting { get; set; }
     [DataMember] public bool CanCreateProducts { get; set; }
     [DataMember] public bool CanEditProducts { get; set; }
     [DataMember] public bool CanCreateVersions { get; set; }
@@ -93,6 +93,7 @@ namespace TeamSupport.Data
     [DataMember] public bool ReceiveUnassignedGroupEmails { get; set; }
     [DataMember] public int ProductFamiliesRights { get; set; }
     [DataMember] public bool? BlockEmailFromCreatingOnly { get; set; }
+    [DataMember] public Guid CalGUID { get; set; }
           
   }
   
@@ -101,6 +102,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.CalGUID = this.CalGUID;
       result.BlockEmailFromCreatingOnly = this.BlockEmailFromCreatingOnly;
       result.ProductFamiliesRights = this.ProductFamiliesRights;
       result.ReceiveUnassignedGroupEmails = this.ReceiveUnassignedGroupEmails;
@@ -108,11 +110,11 @@ namespace TeamSupport.Data
       result.CanCreateVersions = this.CanCreateVersions;
       result.CanEditProducts = this.CanEditProducts;
       result.CanCreateProducts = this.CanCreateProducts;
+      result.DisableExporting = this.DisableExporting;
       result.FilterInactive = this.FilterInactive;
       result.CanChangeCommunityVisibility = this.CanChangeCommunityVisibility;
       result.CanEditAsset = this.CanEditAsset;
       result.CanCreateAsset = this.CanCreateAsset;
-      result.DisableExporting = this.DisableExporting;
       result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;
       result.UserCanPinAction = this.UserCanPinAction;
       result.AllowUserToEditAnyAction = this.AllowUserToEditAnyAction;

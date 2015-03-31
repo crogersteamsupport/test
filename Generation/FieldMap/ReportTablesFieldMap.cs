@@ -22,6 +22,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("LookupKeyFieldName", "LookupKeyFieldName", false, false, false);
       _fieldMap.AddMap("LookupDisplayClause", "LookupDisplayClause", false, false, false);
       _fieldMap.AddMap("LookupOrderBy", "LookupOrderBy", false, false, false);
+      _fieldMap.AddMap("UseTicketRights", "UseTicketRights", false, false, false);
             
     }
   }

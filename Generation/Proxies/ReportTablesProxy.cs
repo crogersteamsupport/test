@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public string LookupKeyFieldName { get; set; }
     [DataMember] public string LookupDisplayClause { get; set; }
     [DataMember] public string LookupOrderBy { get; set; }
+    [DataMember] public bool UseTicketRights { get; set; }
           
   }
   
@@ -30,6 +31,7 @@ namespace TeamSupport.Data
     public ReportTableProxy GetProxy()
     {
       ReportTableProxy result = new ReportTableProxy();
+      result.UseTicketRights = this.UseTicketRights;
       result.LookupOrderBy = this.LookupOrderBy;
       result.LookupDisplayClause = this.LookupDisplayClause;
       result.LookupKeyFieldName = this.LookupKeyFieldName;

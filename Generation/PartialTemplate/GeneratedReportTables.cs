@@ -55,6 +55,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool UseTicketRights
+    {
+      get { return (bool)Row["UseTicketRights"]; }
+      set { Row["UseTicketRights"] = CheckValue("UseTicketRights", value); }
+    }
+    
     public bool IsCategory
     {
       get { return (bool)Row["IsCategory"]; }
@@ -188,7 +194,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportTables] SET     [TableName] = @TableName,    [Alias] = @Alias,    [CustomFieldRefType] = @CustomFieldRefType,    [IsCategory] = @IsCategory,    [OrganizationIDFieldName] = @OrganizationIDFieldName,    [LookupKeyFieldName] = @LookupKeyFieldName,    [LookupDisplayClause] = @LookupDisplayClause,    [LookupOrderBy] = @LookupOrderBy  WHERE ([ReportTableID] = @ReportTableID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportTables] SET     [TableName] = @TableName,    [Alias] = @Alias,    [CustomFieldRefType] = @CustomFieldRefType,    [IsCategory] = @IsCategory,    [OrganizationIDFieldName] = @OrganizationIDFieldName,    [LookupKeyFieldName] = @LookupKeyFieldName,    [LookupDisplayClause] = @LookupDisplayClause,    [LookupOrderBy] = @LookupOrderBy,    [UseTicketRights] = @UseTicketRights  WHERE ([ReportTableID] = @ReportTableID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportTableID", SqlDbType.Int, 4);
@@ -254,13 +260,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("UseTicketRights", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportTables] (    [ReportTableID],    [TableName],    [Alias],    [CustomFieldRefType],    [IsCategory],    [OrganizationIDFieldName],    [LookupKeyFieldName],    [LookupDisplayClause],    [LookupOrderBy]) VALUES ( @ReportTableID, @TableName, @Alias, @CustomFieldRefType, @IsCategory, @OrganizationIDFieldName, @LookupKeyFieldName, @LookupDisplayClause, @LookupOrderBy); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportTables] (    [ReportTableID],    [TableName],    [Alias],    [CustomFieldRefType],    [IsCategory],    [OrganizationIDFieldName],    [LookupKeyFieldName],    [LookupDisplayClause],    [LookupOrderBy],    [UseTicketRights]) VALUES ( @ReportTableID, @TableName, @Alias, @CustomFieldRefType, @IsCategory, @OrganizationIDFieldName, @LookupKeyFieldName, @LookupDisplayClause, @LookupOrderBy, @UseTicketRights); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("UseTicketRights", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("LookupOrderBy", SqlDbType.VarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -437,7 +457,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportTableID], [TableName], [Alias], [CustomFieldRefType], [IsCategory], [OrganizationIDFieldName], [LookupKeyFieldName], [LookupDisplayClause], [LookupOrderBy] FROM [dbo].[ReportTables] WHERE ([ReportTableID] = @ReportTableID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportTableID], [TableName], [Alias], [CustomFieldRefType], [IsCategory], [OrganizationIDFieldName], [LookupKeyFieldName], [LookupDisplayClause], [LookupOrderBy], [UseTicketRights] FROM [dbo].[ReportTables] WHERE ([ReportTableID] = @ReportTableID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportTableID", reportTableID);
         Fill(command);
