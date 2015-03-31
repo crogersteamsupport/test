@@ -34,16 +34,16 @@ namespace TeamSupport.Data
     
 
     
-    public int? ProductFamilyID
-    {
-      get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
-      set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
-    }
-    
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
       set { Row["Description"] = CheckValue("Description", value); }
+    }
+    
+    public int? ProductFamilyID
+    {
+      get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
+      set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
     }
     
 
