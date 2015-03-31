@@ -120,16 +120,42 @@ namespace TeamSupport.Data
             if (customField == null)
             {
               if (filterValues.Count > 1) result.Append("(");
-              result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName);
-              filterParameters.AddWithValue("@" + filterFieldName, filterValues[0]);
+
+			  if (filterValues[0] == null)
+			  {
+				  string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
+				  result.Append("(");
+				  result.Append(filterFieldName + " " + filterOperator + " NULL");
+				  result.Append(" OR ");
+				  result.Append(filterFieldName + " " + notEmptyOperator + " ''");
+				  result.Append(")");
+			  }
+			  else
+			  {
+				  result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName);
+				  filterParameters.AddWithValue("@" + filterFieldName, filterValues[0]);
+			  }
 
               if (filterValues.Count > 1)
               {
                 for (int j = 1; j < filterValues.Count; j++)
                 {
                   result.Append(" OR ");
-                  result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName + j.ToString());
-                  filterParameters.AddWithValue("@" + filterFieldName + j.ToString(), filterValues[j]);                
+
+				  if (filterValues[j] == null)
+				  {
+					  string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
+					  result.Append("(");
+					  result.Append(filterFieldName + " " + filterOperator + " NULL");
+					  result.Append(" OR ");
+					  result.Append(filterFieldName + " " + notEmptyOperator + " ''");
+					  result.Append(")");
+				  }
+				  else
+				  {
+					  result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName + j.ToString());
+					  filterParameters.AddWithValue("@" + filterFieldName + j.ToString(), filterValues[j]);
+				  }
                 }
                 result.Append(")");
               }
@@ -265,7 +291,7 @@ namespace TeamSupport.Data
             }
           }
 
-          filterValues.Add("NULL");
+          filterValues.Add(null);
         }
         else
         {

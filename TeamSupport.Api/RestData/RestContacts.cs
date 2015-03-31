@@ -24,16 +24,20 @@ namespace TeamSupport.Api
 
     public static string GetItems(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null)
     {
-      ContactsView items = new ContactsView(command.LoginUser);
-      if (orderByDateCreated)
-      {
-        items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC", limitNumber);
-      }
-      else
-      {
-        items.LoadByParentOrganizationID(command.Organization.OrganizationID);
-      }
-      return items.GetXml("Contacts", "Contact", true, command.Filters);
+		ContactsView items = new ContactsView(command.LoginUser);
+
+		if (orderByDateCreated)
+		{
+			items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, "DateCreated DESC", limitNumber);
+		}
+		else
+		{
+			items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters);
+		}
+
+		//The resuls have been filtered in SQL at this point, somewhere in the next method .NET filters the results again,
+		//I'll leave this as a safety net, the records .NET will 'filter' if nothing wrong happens with the SQL filtering will be minimum and should be quick
+		return items.GetXml("Contacts", "Contact", true, command.Filters);
     }
 
     public static string GetItems(RestCommand command, int organizationID, bool orderByDateCreated = false)
