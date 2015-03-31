@@ -143,6 +143,30 @@ namespace TeamSupport.Data
       return result;
     }
 
+
+    public static CustomField GetCustomFieldByApi(LoginUser loginUser, int organizationID, string apiFieldName)
+    {
+      CustomFields customFields = new CustomFields(loginUser);
+      customFields.LoadByApiName(organizationID, apiFieldName);
+      if (customFields.IsEmpty)
+        return null;
+      else
+        return customFields[0];
+    }
+
+
+    public void LoadByApiName(int organizationID, string apiFieldName)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM CustomFields WHERE (OrganizationID = @OrganizationID) AND (ApiFieldName = @ApiFieldName) ORDER BY Position";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@ApiFieldName", apiFieldName);
+        Fill(command, "CustomFields");
+      }
+    }
+
     public void LoadByOrganization(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -152,7 +176,6 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command, "CustomFields");
       }
-    
     }
 
     public void LoadByOrganizationFieldTypeAndTicketType(int organizationID, CustomFieldType fieldType, int ticketTypeID, int selfID, int? customFieldCategoryID)

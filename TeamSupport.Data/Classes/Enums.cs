@@ -57,7 +57,8 @@ namespace TeamSupport.Data
      Tags = 41,
      KnowledgeBaseCategories = 42,
      Reports = 43,
-     ProductFamilies = 44
+     ProductFamilies = 44,
+     CustomFieldPickList =45
   };
 
   public enum SlaViolationType
