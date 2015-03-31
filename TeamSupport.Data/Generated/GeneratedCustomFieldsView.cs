@@ -240,11 +240,11 @@ namespace TeamSupport.Data
     partial void AfterRowInsert(CustomFieldsViewItem customFieldsViewItem);
     partial void BeforeRowEdit(CustomFieldsViewItem customFieldsViewItem);
     partial void AfterRowEdit(CustomFieldsViewItem customFieldsViewItem);
-    partial void BeforeRowDelete(int );
-    partial void AfterRowDelete(int );    
+    partial void BeforeRowDelete(int customFieldID);
+    partial void AfterRowDelete(int customFieldID);    
 
-    partial void BeforeDBDelete(int );
-    partial void AfterDBDelete(int );    
+    partial void BeforeDBDelete(int customFieldID);
+    partial void AfterDBDelete(int customFieldID);    
 
     #endregion
 
@@ -262,9 +262,9 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int )
+    public virtual void DeleteFromDB(int customFieldID)
     {
-      BeforeDBDelete();
+      BeforeDBDelete(customFieldID);
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
         connection.Open();
@@ -274,16 +274,16 @@ namespace TeamSupport.Data
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CustomFieldsView] WH);";
-        deleteCommand.Parameters.Add("", SqlDbType.Int);
-        deleteCommand.Parameters[""].Value = ;
+        deleteCommand.Parameters.Add("CustomFieldID", SqlDbType.Int);
+        deleteCommand.Parameters["CustomFieldID"].Value = customFieldID;
 
-        BeforeRowDelete();
+        BeforeRowDelete(customFieldID);
         deleteCommand.ExecuteNonQuery();
 		connection.Close();
         if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
-        AfterRowDelete();
+        AfterRowDelete(customFieldID);
       }
-      AfterDBDelete();
+      AfterDBDelete(customFieldID);
       
     }
 
@@ -729,11 +729,11 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public CustomFieldsViewItem FindBy(int )
+    public CustomFieldsViewItem FindByCustomFieldID(int customFieldID)
     {
       foreach (CustomFieldsViewItem customFieldsViewItem in this)
       {
-        if (customFieldsViewItem. == )
+        if (customFieldsViewItem.CustomFieldID == customFieldID)
         {
           return customFieldsViewItem;
         }
@@ -749,21 +749,21 @@ namespace TeamSupport.Data
       return new CustomFieldsViewItem(row, this);
     }
     
-    public virtual void LoadBy(int )
+    public virtual void LoadByCustomFieldID(int customFieldID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomFieldID], [OrganizationID], [Name], [ApiFieldName], [RefType], [FieldType], [AuxID], [Position], [ListValues], [Description], [IsVisibleOnPortal], [IsFirstIndexSelect], [IsRequired], [DateCreated], [DateModified], [CreatorID], [ModifierID], [CustomFieldCategoryID], [IsRequiredToClose], [Mask], [ParentCustomFieldID], [ParentCustomValue], [ParentProductID], [ParentFieldName], [ParentProductName] FROM [dbo].[CustomFieldsView] WH);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomFieldID], [OrganizationID], [Name], [ApiFieldName], [RefType], [FieldType], [AuxID], [Position], [ListValues], [Description], [IsVisibleOnPortal], [IsFirstIndexSelect], [IsRequired], [DateCreated], [DateModified], [CreatorID], [ModifierID], [CustomFieldCategoryID], [IsRequiredToClose], [Mask], [ParentCustomFieldID], [ParentCustomValue], [ParentProductID], [ParentFieldName], [ParentProductName] FROM [dbo].[CustomFieldsView] WHERE ([CustomFieldID] = @CustomFieldID);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("", );
+        command.Parameters.AddWithValue("CustomFieldID", customFieldID);
         Fill(command);
       }
     }
     
-    public static CustomFieldsViewItem GetCustomFieldsViewItem(LoginUser loginUser, int )
+    public static CustomFieldsViewItem GetCustomFieldsViewItem(LoginUser loginUser, int customFieldID)
     {
       CustomFieldsView customFieldsView = new CustomFieldsView(loginUser);
-      customFieldsView.LoadBy();
+      customFieldsView.LoadByCustomFieldID(customFieldID);
       if (customFieldsView.IsEmpty)
         return null;
       else
