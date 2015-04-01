@@ -141,18 +141,6 @@ AdminAuto = function () {
     });
 
   });
-  /*
-  addToolbarButton('btnRefresh', 'ts-icon-clone', 'Clone', function (e) {
-  e.preventDefault();
-  e.stopPropagation();
-  window.location = window.location;
-  });
-
-  addToolbarButton('btnRefresh', 'ts-icon-reorder', 'Reorder', function (e) {
-  e.preventDefault();
-  e.stopPropagation();
-  window.location = window.location;
-  });*/
 
   addToolbarButton('btnRefresh', 'ts-icon-refresh', 'Refresh', function (e) {
     e.preventDefault();
@@ -208,7 +196,6 @@ AdminAuto = function () {
     });*/
     //editor.render();
   }
-
 
   top.Ts.Services.Automation.GetData(function (data) {
     _data = data;
@@ -271,7 +258,6 @@ AdminAuto = function () {
     return select;
   }
 
-
   function loadComboGroups(select) {
     select.html('');
     for (var i = 0; i < _data.Groups.length; i++) {
@@ -299,6 +285,7 @@ AdminAuto = function () {
     $('<option>').attr('value', '>=').text('Greater Than or Equal To').appendTo(select);
     $('<option>').attr('value', '>').text('Greater Than').appendTo(select);
     $('<option>').attr('value', 'contains').text('Contains').appendTo(select);
+    $('<option>').attr('value', 'does not contain').text('Does Not Contain').appendTo(select);
     return select;
   }
 
@@ -397,8 +384,6 @@ AdminAuto = function () {
     top.Ts.System.logAction('Admin Automation - Any Condition Added');
   });
 
-
-
   function addCondition(selector, fieldID, measure, value) {
     var div = $('<div>').addClass('condition ts-section')
     var fields = $('<select>').addClass('condition-field').appendTo(div).width('150px');
@@ -493,7 +478,6 @@ AdminAuto = function () {
     return items;
   }
 
-
   $('#btnAddAction').click(function (e) {
     e.preventDefault();
     addAction('.actions');
@@ -563,7 +547,8 @@ AdminAuto = function () {
       proxy.TriggerID = -1;
       proxy.ActionID = $(this).find('.action-type').val();
       var action = getAction(proxy.ActionID);
-      proxy.ActionValue = action.ValueList ? $(this).find('.action-value').val() : null;
+      var actionValue = $(this).find('.action-value');
+      proxy.ActionValue = action.ValueList ? (actionValue.data('itemID') ? actionValue.data('itemID') : actionValue.val()) : null;
       proxy.ActionValue2 = action.ValueList2 && action.ValueList2.toLowerCase() === "text" ? getEditor($(this).find('.action-editor')).getContent() : null;
       items[items.length] = proxy;
     });
@@ -615,18 +600,72 @@ AdminAuto = function () {
       case 'Groups':
         loadComboGroups(select).combobox('update');
         break;
+      case 'CustomerList':
+      case 'ContactList':
       case 'TextBox':
-        $('<input type="text">')
+        var input = $('<input type="text">')
           .addClass('action-value ui-widget-content ui-corner-all text')
           .width('250px')
-          .val((value1 ? value1 : ''))
           .insertAfter(select);
         select.remove();
+        if (action.ValueList == 'CustomerList') {
+            input.autocomplete({
+                minLength: 2,
+                source: getCompanies,
+                select: function (event, ui) {
+                    $(this).data('itemID', ui.item.id);
+                }
+
+            });
+
+            top.Ts.Services.Organizations.GetOrganization(value1, function (result) {
+                if (result) {
+                    input.val(result.Name);
+                    input.data('itemID', value1);
+                }
+            });
+        }
+        else if (action.ValueList == 'ContactList') {
+            input.autocomplete({
+                minLength: 2,
+                source: getContacts,
+                select: function (event, ui) {
+                    $(this).data('itemID', ui.item.id);
+                }
+
+            });
+
+            top.Ts.Services.Organizations.GetUser(value1, function (result) {
+                if (result) {
+                    input.val(result.LastName + ', ' + result.FirstName);
+                    input.data('itemID', value1);
+                }
+            });
+
+        }
+        else {
+            input.val((value1 ? value1 : ''))
+        }
 
         break;
       default:
     }
   }
+
+  var execGetCompany = null;
+  function getCompanies(request, response) {
+      if (execGetCompany) { execGetCompany._executor.abort(); }
+      execGetCompany = top.Ts.Services.Organizations.GetCompanies(request.term, function (result) { response(result); });
+      isModified(true);
+  }
+
+  var execGetContact = null;
+  function getContacts(request, response) {
+      if (execGetContact) { execGetContact._executor.abort(); }
+      execGetContact = top.Ts.Services.Organizations.GetContacts(request.term, function (result) { response(result); });
+      isModified(true);
+  }
+
 
   function getAction(actionID) {
     for (var i = 0; i < _data.Actions.length; i++) {

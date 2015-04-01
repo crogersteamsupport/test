@@ -894,6 +894,36 @@ namespace TSWebServices
       return GetUserOrOrganizationFiltered(searchTerm, true);
     }
 
+    [WebMethod]
+    public AutocompleteItem[] GetContacts(string searchTerm)
+    {
+      UsersView users = new UsersView(TSAuthentication.GetLoginUser());
+      users.LoadByLikeName(TSAuthentication.OrganizationID, searchTerm, 50, false, true);
+
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
+      foreach (UsersViewItem user in users)
+      {
+        list.Add(new AutocompleteItem(String.Format("{0}, {1} [{2}]", user.LastName, user.FirstName, user.Organization), user.UserID.ToString(), "u"));
+      }
+
+      return list.ToArray();
+    }
+
+    [WebMethod]
+    public AutocompleteItem[] GetCompanies(string searchTerm)
+    {
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true, 50, false);
+
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
+      foreach (Organization organization in organizations)
+      {
+        list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), "o"));
+      }
+
+      return list.ToArray();
+    }
+    
     public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
     {
       Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
