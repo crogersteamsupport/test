@@ -301,7 +301,7 @@
         $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
         $('#inputStartTime').data("DateTimePicker").setDate(moment(date).add(moment().hours(),'hour'));
 
-        $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', minuteStepping: 30 });
+        $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
         $('#inputEndTime').data("DateTimePicker").setDate(moment(date).add(moment().hours()+1, 'hour'));
 
         theTempEvent = null;
@@ -368,7 +368,7 @@
             .text("View")
             .appendTo(theTime);
 
-        if (top.Ts.System.User.IsSystemAdmin && event.type == "cal" && event.creatorID == top.Ts.System.User.UserID)
+        if (event.type == "cal" && (top.Ts.System.User.IsSystemAdmin || event.creatorID == top.Ts.System.User.UserID))
         {
             var delButton = $("<a>")
                 .addClass("pull-right eventDelete")
