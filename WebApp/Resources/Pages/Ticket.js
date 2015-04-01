@@ -2134,6 +2134,8 @@ $(document).ready(function () {
     $('#calendarLink').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+        if ($('#calendarIframe').attr('src') == "")
+            $('#calendarIframe').attr("src", "Calendar.html?pagetype=0&pageid=" + _ticketNumber);
         top.Ts.System.logAction('Ticket - Calendar Clicked');
         $('#divCalendar').show();
         $('#divWaterCooler').hide();
@@ -3519,7 +3521,6 @@ var loadTicket = function (ticketNumber, refresh) {
         }
 
         $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=0&pageid=" + _ticketNumber);
-        $('#calendarIframe').attr("src", "Calendar.html?pagetype=0&pageid=" + _ticketNumber);
 
         top.Ts.Services.Tickets.GetTicketWaterCoolerCount(_ticketNumber, function (result) {
             $('#watercoolerLink').html('Water Cooler (' + result + ')')

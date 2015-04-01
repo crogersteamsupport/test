@@ -108,6 +108,10 @@
                         var thestart = top.Ts.Utils.getMsDate(parseJsonDate(this.start));
                         var test = thestart.localeFormat();
                         var test2 = new Date(thestart);
+                        if (this.creatorID != top.Ts.System.User.UserID && !top.Ts.System.User.IsSystemAdmin)
+                            var editable = false;
+                        else
+                            var editable = true;
                         events.push({
                             title: this.title,
                             start: this.start,
@@ -120,7 +124,8 @@
                             end: this.end,
                             allDay: this.allday,
                             references: this.references,
-                            creatorID: this.creatorID
+                            creatorID: this.creatorID,
+                            editable: editable
                         });
                     });
                     callback(events);
@@ -202,9 +207,16 @@
             case "cal":
                 
                 clearModal();
-                loadModal(event);
                 if (event.creatorID != top.Ts.System.User.UserID && !top.Ts.System.User.IsSystemAdmin)
-                readOnlyModal();
+                {
+                    loadModal(event, false);
+                    readOnlyModal();
+                }
+                else
+                    loadModal(event, true);
+                    
+                
+
                 $('#fullCalModal').modal('show');
                 break;
             default:
@@ -253,7 +265,7 @@
             if ($('#inputEndTime').data("DateTimePicker"))
                 $('#inputEndTime').data("DateTimePicker").destroy();
 
-            //if nnew event leave it date/time event
+            //if new event leave it date/time event
             if (isNewButton)
             {
                 $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', minuteStepping: 30 });
@@ -317,12 +329,30 @@
 
         if (event.references)
         {
-            var referenceNames = "";
+            var refstring = "";
             for (i = 0; i < event.references.length; i++)
-                referenceNames += event.references[i].displayName + "<br/>";
+            {
+                switch (event.references[i].RefType) {
+                    case 0:
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openTicketByID(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        break;
+                    case 1:
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewProduct(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        break;
+                    case 2:
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewCustomer(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        break;
+                    case 3:
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewContact(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        break;
+                    case 4:
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openGroup(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        break;
+                }
+            }
 
             var attachments = $('<div>')
-            .html(referenceNames)
+            .html(refstring)
             .appendTo(theTime);
 
             var lb2 = $("<hr>")
@@ -337,7 +367,7 @@
             .text("View")
             .appendTo(theTime);
 
-        if (top.Ts.System.User.IsSystemAdmin && event.type == "cal")
+        if (top.Ts.System.User.IsSystemAdmin && event.type == "cal" && event.creatorID == top.Ts.System.User.UserID)
         {
             var delButton = $("<a>")
                 .addClass("pull-right eventDelete")
@@ -721,6 +751,9 @@
 
     });
 
+    if (pageID == 0)
+        $('#calendar').fullCalendar('render');
+
     if (pageID == -1)
         addCalButton("right", "calURL", "fa fa-rss");
 
@@ -818,7 +851,7 @@
         $('#btnSaveEvent').show();
     }
 
-    function loadModal(event)
+    function loadModal(event, editable)
     {
         $('#inputTitle').val(event.title);
 
@@ -835,19 +868,19 @@
                 switch (event.references[i].RefType)
                 {
                     case 0:
-                        addTicketAssociation(event.references[i]);
+                        addTicketAssociation(event.references[i], editable);
                         break;
                     case 1:
-                        addProductAssociation(event.references[i]);
+                        addProductAssociation(event.references[i], editable);
                         break;
                     case 2:
-                        addCompanyAssociation(event.references[i])
+                        addCompanyAssociation(event.references[i], editable)
                         break;
                     case 3:
-                        addUserAssociation(event.references[i]);
+                        addUserAssociation(event.references[i], editable);
                         break;
                     case 4:
-                        addGroupAssociation(event.references[i]);
+                        addGroupAssociation(event.references[i], editable);
                         break;
                 }
 
@@ -856,7 +889,7 @@
 
     }
 
-    function addTicketAssociation(event)
+    function addTicketAssociation(event, editable)
     {
         var isDupe;
         $('#associationQueue').find('.ticket-queue').find('.ticket-removable-item').each(function () {
@@ -875,19 +908,21 @@
             .addClass('filename')
             .appendTo(bg);
 
-            $('<span>')
-            .addClass('ui-icon ui-icon-close')
-            .click(function (e) {
-                e.preventDefault();
-                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-            })
-            .appendTo(bg);
-            this.value = "";
-            return false;
+            if (editable) {
+                $('<span>')
+                .addClass('ui-icon ui-icon-close')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
+                this.value = "";
+                return false;
+            }
         }
     }
 
-    function addUserAssociation(event)
+    function addUserAssociation(event, editable)
     {
         var isDupe;
         $('#associationQueue').find('.user-queue').find('.ticket-removable-item').each(function () {
@@ -905,20 +940,21 @@
         .text(ellipseString(event.displayName, 20))
         .addClass('filename')
         .appendTo(bg);
-
-            $('<span>')
-        .addClass('ui-icon ui-icon-close')
-        .click(function (e) {
-            e.preventDefault();
-            $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-        })
-        .appendTo(bg);
-            this.value = "";
-            return false;
+            if (editable) {
+                $('<span>')
+            .addClass('ui-icon ui-icon-close')
+            .click(function (e) {
+                e.preventDefault();
+                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+            })
+            .appendTo(bg);
+                this.value = "";
+                return false;
+            }
         }
     }
 
-    function addCompanyAssociation(event)
+    function addCompanyAssociation(event, editable)
     {
         var isDupe;
         $('#associationQueue').find('.customer-queue').find('.ticket-removable-item').each(function () {
@@ -937,19 +973,21 @@
             .addClass('filename')
             .appendTo(bg);
 
-            $('<span>')
-            .addClass('ui-icon ui-icon-close')
-            .click(function (e) {
-                e.preventDefault();
-                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-            })
-            .appendTo(bg);
-            this.value = "";
-            return false;
+            if (editable) {
+                $('<span>')
+                .addClass('ui-icon ui-icon-close')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
+                this.value = "";
+                return false;
+            }
         }
     }
 
-    function addGroupAssociation(event)
+    function addGroupAssociation(event, editable)
     {
         var isDupe;
         $('#associationQueue').find('.group-queue').find('.ticket-removable-item').each(function () {
@@ -968,19 +1006,21 @@
             .addClass('filename')
             .appendTo(bg);
 
-            $('<span>')
-            .addClass('ui-icon ui-icon-close')
-            .click(function (e) {
-                e.preventDefault();
-                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-            })
-            .appendTo(bg);
-            this.value = "";
-            return false;
+            if (editable) {
+                $('<span>')
+                .addClass('ui-icon ui-icon-close')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
+                this.value = "";
+                return false;
+            }
         }
     }
 
-    function addProductAssociation(event)
+    function addProductAssociation(event, editable)
     {
         var isDupe;
         $('#associationQueue').find('.product-queue').find('.ticket-removable-item').each(function () {
@@ -999,15 +1039,17 @@
             .addClass('filename')
             .appendTo(bg);
 
-            $('<span>')
-            .addClass('ui-icon ui-icon-close')
-            .click(function (e) {
-                e.preventDefault();
-                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-            })
-            .appendTo(bg);
-            this.value = "";
-            return false;
+            if (editable) {
+                $('<span>')
+                .addClass('ui-icon ui-icon-close')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
+                this.value = "";
+                return false;
+            }
         }
     }
 
