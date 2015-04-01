@@ -26,13 +26,31 @@ namespace TeamSupport.Api
     {
 		ContactsView items = new ContactsView(command.LoginUser);
 
-		if (orderByDateCreated)
+		try
 		{
-			items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, "DateCreated DESC", limitNumber);
+			if (orderByDateCreated)
+			{
+				items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, "DateCreated DESC", limitNumber);
+			}
+			else
+			{
+				items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters);
+			}
 		}
-		else
+		catch (Exception ex)
 		{
-			items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters);
+			//if something fails use the old method
+			items = new ContactsView(command.LoginUser);
+
+			if (orderByDateCreated)
+			{
+				items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC", limitNumber);
+			}
+			else
+			{
+				items.LoadByParentOrganizationID(command.Organization.OrganizationID);
+			}
+
 		}
 
 		//The resuls have been filtered in SQL at this point, somewhere in the next method .NET filters the results again,

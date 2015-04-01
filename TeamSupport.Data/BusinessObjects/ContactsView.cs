@@ -32,22 +32,22 @@ namespace TeamSupport.Data
       }
     }
 
-	public void LoadOneByOrganizationID(int organizationID)
+	public void LoadOneByParentOrganizationID(int organizationParentId)
 	{
 		using (SqlCommand command = new SqlCommand())
 		{
-			command.CommandText = "SELECT TOP 1 * FROM ContactsView WHERE (organizationID = @organizationID)";
+			command.CommandText = "SELECT TOP 1 * FROM ContactsView WHERE (organizationParentId = @OrganizationParentId)";
 			command.CommandType = CommandType.Text;
-			command.Parameters.AddWithValue("@organizationID", organizationID);
+			command.Parameters.AddWithValue("@OrganizationParentId", organizationParentId);
 
 			Fill(command);
 		}
 	}
 
-	public void LoadByParentOrganizationID(int organizationID, NameValueCollection filters, string orderBy = "LastName, FirstName", int? limitNumber = null)
+	public void LoadByParentOrganizationID(int organizationParentId, NameValueCollection filters, string orderBy = "LastName, FirstName", int? limitNumber = null)
 	{
 		//Get the column names, this row will be deleted before getting the actual data
-		this.LoadOneByOrganizationID(organizationID);
+		this.LoadOneByParentOrganizationID(organizationParentId);
 
 		using (SqlCommand command = new SqlCommand())
 		{
@@ -58,11 +58,11 @@ namespace TeamSupport.Data
 				limit = "TOP " + limitNumber.ToString();
 			}
 
-			string sql = BuildLoadByParentOrganizationIdSql(limit, organizationID, orderBy, filters, command.Parameters);
+			string sql = BuildLoadByParentOrganizationIdSql(limit, organizationParentId, orderBy, filters, command.Parameters);
 			sql = InjectCustomFields(sql, "UserID", ReferenceType.Contacts);
             command.CommandType = CommandType.Text;
             command.CommandText = sql;
-			command.Parameters.AddWithValue("@OrganizationID", organizationID);
+			command.Parameters.AddWithValue("@OrganizationParentId", organizationParentId);
 			this.DeleteAll();
 
 			Fill(command);
@@ -90,24 +90,24 @@ namespace TeamSupport.Data
 	/// <param name="filters">Filters to be applied. Specified in the URL request.</param>
 	/// <param name="filterParameters">SqlParamenterCollection for the input parameters of the sql query.</param>
 	/// <returns>A string with the full sql statement.</returns>
-	public string BuildLoadByParentOrganizationIdSql(string limit, int parentID, string orderBy, NameValueCollection filters, SqlParameterCollection filterParameters)
+	public string BuildLoadByParentOrganizationIdSql(string limit, int organizationParentId, string orderBy, NameValueCollection filters, SqlParameterCollection filterParameters)
 	{
 		StringBuilder result = new StringBuilder();
 
 		result.Append("SELECT " + limit + " * ");
 		result.Append("FROM ContactsView ");
-		result.Append("WHERE OrganizationParentID = @OrganizationID AND (MarkDeleted = 0) " + BuildWhereClausesFromFilters(parentID, filters, ref filterParameters) + " ");
+		result.Append("WHERE OrganizationParentID = @OrganizationParentId AND (MarkDeleted = 0) " + BuildWhereClausesFromFilters(organizationParentId, filters, ref filterParameters) + " ");
 		result.Append("ORDER BY " + orderBy);
 
 		return result.ToString();
 	}
 
-	private string BuildWhereClausesFromFilters(int parentID, NameValueCollection filters, ref SqlParameterCollection filterParameters)
+	private string BuildWhereClausesFromFilters(int organizationParentId, NameValueCollection filters, ref SqlParameterCollection filterParameters)
 	{
 		StringBuilder result = new StringBuilder();
 
 		CustomFields customFields = new CustomFields(this.LoginUser);
-		customFields.LoadByReferenceType(parentID, ReferenceType.Contacts);
+		customFields.LoadByReferenceType(organizationParentId, ReferenceType.Contacts);
 
 		StringBuilder filterFieldName;
 		StringBuilder filterOperator;
