@@ -81,6 +81,7 @@
             //});
         },
         dayClick: function (date, jsEvent, view) {
+            $('#calendar').fullCalendar('gotoDate', date);
                 clicks++;
                 if (clicks == 1) {
                     timeout = setTimeout(function () { clicks = 0; }, 400);
