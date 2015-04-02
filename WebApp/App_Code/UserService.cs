@@ -1410,7 +1410,7 @@ namespace TSWebServices
                     foreach (CalendarRefItem calitem in calRef)
                     {
                         CalendarRefItemProxy prox = calitem.GetProxy();
-                        prox.displayName = "";// GetDisplayname(prox);
+                        prox.displayName =  GetDisplayname(prox);
                         calendarreferences.Add(prox);
                     }
                     cal.references = calendarreferences.OrderBy(a => a.displayName).ToArray();
@@ -1435,18 +1435,18 @@ namespace TSWebServices
                     break;
                 case 1:
                     Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    Displayname = p.Name;
+                    //Displayname = p.Name;
                     break;
                 case 2:
                     Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    Displayname = o.Name;
+                    //Displayname = o.Name;
                     break;
                 case 3:
-                    Displayname = Users.GetUserFullName(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    //Displayname = Users.GetUserFullName(TSAuthentication.GetLoginUser(), calproxy.RefID);
                     break;
                 case 4:
                     Group g = Groups.GetGroup(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    Displayname = g.Name;
+                    //Displayname = g.Name;
                     break;
             }
 
