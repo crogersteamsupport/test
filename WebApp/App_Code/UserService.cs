@@ -1431,22 +1431,22 @@ namespace TSWebServices
             {
                 case 0:
                     Ticket t = Tickets.GetTicketByNumber(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    Displayname = t.Name;
+                    Displayname = calproxy.RefID.ToString();
                     break;
                 case 1:
                     Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    //Displayname = p.Name;
+                    Displayname = p.Name;
                     break;
                 case 2:
                     Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    //Displayname = o.Name;
+                    Displayname = o.Name;
                     break;
                 case 3:
-                    //Displayname = Users.GetUserFullName(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    Displayname = Users.GetUserFullName(TSAuthentication.GetLoginUser(), calproxy.RefID);
                     break;
                 case 4:
                     Group g = Groups.GetGroup(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    //Displayname = g.Name;
+                    Displayname = g.Name;
                     break;
             }
 
