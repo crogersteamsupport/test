@@ -1431,7 +1431,11 @@ namespace TSWebServices
             {
                 case 0:
                     Ticket t = Tickets.GetTicketByNumber(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    Displayname = calproxy.RefID.ToString();
+                    if(t == null)
+                        Displayname = "";
+                    else
+                        Displayname = t.Name;
+
                     break;
                 case 1:
                     Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), calproxy.RefID);
