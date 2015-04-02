@@ -4,10 +4,6 @@ $(document).ready(function () {
         applyDemoStyles: true
     });
     
-    if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
-        $('#calendarTab').hide();
-    }
-
     if (!top.Ts.System.User.IsSystemAdmin) {
         $('#groupDelete').remove();
         //$('#openTab').hide();

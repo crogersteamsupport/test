@@ -51,10 +51,6 @@ $(document).ready(function () {
     top.privateServices.SetUserSetting('SelectedOrganizationID', organizationID);
     top.privateServices.SetUserSetting('SelectedContactID', -1);
 
-    if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
-        $('#calendarTab').hide();
-    }
-
     LoadNotes();
     //LoadHistory();
     LoadFiles();

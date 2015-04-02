@@ -13,10 +13,6 @@ var _customersSortDirection = 'DESC';
 $(document).ready(function () {
   _productID = top.Ts.Utils.getQueryValue("productid", window);
 
-  if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
-      $('#calendarTab').hide();
-  }
-
   $('body').layout({
       defaults: {
           spacing_open: 0,
