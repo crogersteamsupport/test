@@ -316,7 +316,7 @@ namespace TeamSupport.ServiceLibrary
 
       foreach (Organization customer in customers)
       {
-        if (customer.OrganizationID != 13679) continue;
+        //if (customer.OrganizationID != 13679) continue;
         TimeZoneInfo tz = System.TimeZoneInfo.Local;
         if (!string.IsNullOrWhiteSpace(customer.TimeZoneID))
         {
