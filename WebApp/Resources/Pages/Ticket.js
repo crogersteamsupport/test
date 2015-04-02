@@ -2619,39 +2619,29 @@ var initEditor = function (element, init) {
           }
         });
 
-        ed.addButton('insertPasteImage', {
-          title: 'Insert Pasted Image',
-          //image: '../images/nav/16/imagepaste.png',
-          icon: 'awesome fa fa-paste',
-          onclick: function () {
-          
-            if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
-                //alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
-                top.Ts.MainPage.pasteImage(null, function (result) {debugger
-                    ed.focus();
-                    if (result != "") {
-                        var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
-                        ed.selection.setContent(html);
-                        setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
-                        ed.execCommand('mceAutoResize');
-                        ed.focus();
-                    }
-                });
-            }
-            else {
-              top.Ts.MainPage.pasteImage(null, function (result) {
+ed.addButton('insertPasteImage', {
+    title: 'Insert Pasted Image',
+    //image: '../images/nav/16/imagepaste.png',
+    icon: 'awesome fa fa-paste',
+    onclick: function () {
+
+        if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
+            alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
+        }
+        else {
+            top.Ts.MainPage.pasteImage(null, function (result) {
                 ed.focus();
                 if (result != "") {
-                  var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
-                  ed.selection.setContent(html);
-                  setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
-                  ed.execCommand('mceAutoResize');
-                  ed.focus();
+                    var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                    ed.selection.setContent(html);
+                    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                    ed.execCommand('mceAutoResize');
+                    ed.focus();
                 }
-              });
-            }
-          }
-        });
+            });
+        }
+    }
+});
 
         ed.addButton('insertUser', {
             title: 'Insert Userstamp',
