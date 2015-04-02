@@ -81,6 +81,18 @@
             //});
         },
         dayClick: function (date, jsEvent, view) {
+
+            if (tempVar == "") {
+                $(this).css('background-color', '#c6dcf7');
+                tempVar = this;
+                
+            }
+            else {
+                $(tempVar).css('background-color', 'white');
+                $(this).css('background-color', '#c6dcf7');
+                tempVar = this;
+            }
+
             $('#calendar').fullCalendar('gotoDate', date);
                 clicks++;
                 if (clicks == 1) {
@@ -335,7 +347,7 @@
             {
                 switch (event.references[i].RefType) {
                     case 0:
-                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openTicketByID(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openTicket(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
                         break;
                     case 1:
                         refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewProduct(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';

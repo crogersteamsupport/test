@@ -1430,7 +1430,7 @@ namespace TSWebServices
             switch (calproxy.RefType)
             {
                 case 0:
-                    Ticket t = Tickets.GetTicket(TSAuthentication.GetLoginUser(), calproxy.RefID);
+                    Ticket t = Tickets.GetTicketByNumber(TSAuthentication.GetLoginUser(), calproxy.RefID);
                     Displayname = t.Name;
                     break;
                 case 1:
