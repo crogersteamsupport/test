@@ -336,10 +336,6 @@ Ts.Pages.Main.prototype = {
             }
         });
 		
-		$('#mainImageDiv').click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        });
 
         var execSelectTicket = null;
 
