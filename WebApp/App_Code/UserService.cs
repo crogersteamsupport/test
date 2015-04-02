@@ -1410,7 +1410,7 @@ namespace TSWebServices
                     foreach (CalendarRefItem calitem in calRef)
                     {
                         CalendarRefItemProxy prox = calitem.GetProxy();
-                        prox.displayName = GetDisplayname(prox);
+                        prox.displayName = "";// GetDisplayname(prox);
                         calendarreferences.Add(prox);
                     }
                     cal.references = calendarreferences.OrderBy(a => a.displayName).ToArray();
