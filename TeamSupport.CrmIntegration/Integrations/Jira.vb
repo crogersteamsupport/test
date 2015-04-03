@@ -229,24 +229,28 @@ Namespace TeamSupport
               crmLinkErrors.Save()
             End If
           Catch ex As Exception
-            If crmLinkError Is Nothing then
-              Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-              crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-              crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
-              crmLinkError.CRMType          = CRMLinkRow.CRMType
-              crmLinkError.Orientation      = "out"
-              crmLinkError.ObjectType       = "ticket"
-              crmLinkError.ObjectFieldName  = String.Empty
-              crmLinkError.ObjectID         = ticket.TicketID.ToString()
-              crmLinkError.Exception        = ex.ToString() + ex.StackTrace
-              crmLinkError.OperationType    = "unknown"
-              newCrmLinkError.Save()
-            Else
-              crmLinkError.Exception        = ex.ToString() + ex.StackTrace                                               
-            End If                                              
+                        Try
+                            If crmLinkError Is Nothing Then
+                                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                crmLinkError.CRMType = CRMLinkRow.CRMType
+                                crmLinkError.Orientation = "out"
+                                crmLinkError.ObjectType = "ticket"
+                                crmLinkError.ObjectFieldName = String.Empty
+                                crmLinkError.ObjectID = ticket.TicketID.ToString()
+                                crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                crmLinkError.OperationType = "unknown"
+                                newCrmLinkError.Save()
+                            Else
+                                crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                            End If
 
-            Log.Write(crmLinkError.Exception)
-            Continue For
+                            Log.Write(crmLinkError.Exception)
+                        Catch errorException As Exception
+
+                        End Try
+                        Continue For
           End Try
 
           Dim issue As JObject = Nothing
@@ -294,26 +298,31 @@ Namespace TeamSupport
                 ticketLinkToJira.Collection.Save()
               End If
 
-              If crmLinkError Is Nothing then
-                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
-                crmLinkError.CRMType          = CRMLinkRow.CRMType
-                crmLinkError.Orientation      = "out"
-                crmLinkError.ObjectType       = "ticket"
-                crmLinkError.ObjectFieldName  = "create"
-                crmLinkError.ObjectID         = ticket.TicketID.ToString()
-                crmLinkError.ObjectData       = ticketData.ToString()
-                crmLinkError.Exception        = ex.ToString() + ex.StackTrace
-                crmLinkError.OperationType    = "create"
-                newCrmLinkError.Save()
-              Else
-                crmLinkError.ObjectData       = ticketData.ToString()
-                crmLinkError.Exception        = ex.ToString() + ex.StackTrace                                               
-              End If                                              
+                            Try
+                                If crmLinkError Is Nothing Then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation = "out"
+                                    crmLinkError.ObjectType = "ticket"
+                                    crmLinkError.ObjectFieldName = "create"
+                                    crmLinkError.ObjectID = ticket.TicketID.ToString()
+                                    crmLinkError.ObjectData = ticketData.ToString()
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                    crmLinkError.OperationType = "create"
+                                    newCrmLinkError.Save()
+                                Else
+                                    crmLinkError.ObjectData = ticketData.ToString()
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                End If
+                                Log.Write(errorMessage)
 
-              Log.Write(errorMessage)
-              Continue For
+                            Catch errorException As Exception
+
+                            End Try
+
+                            Continue For
 
             End Try
           'Issue already exists. 
@@ -332,26 +341,30 @@ Namespace TeamSupport
               'We'll only clear when successfull below.
             Catch ex As Exception
 
-              If crmLinkError Is Nothing then
-                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
-                crmLinkError.CRMType          = CRMLinkRow.CRMType
-                crmLinkError.Orientation      = "out"
-                crmLinkError.ObjectType       = "ticket"
-                crmLinkError.ObjectFieldName  = "update"
-                crmLinkError.ObjectID         = ticket.TicketID.ToString()
-                crmLinkError.ObjectData       = URI
-                crmLinkError.Exception        = ex.ToString() + ex.StackTrace
-                crmLinkError.OperationType    = "update"
-                newCrmLinkError.Save()
-              Else
-                crmLinkError.ObjectData       = URI
-                crmLinkError.Exception        = ex.ToString() + ex.StackTrace
-              End If
+                            Try
+                                If crmLinkError Is Nothing Then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation = "out"
+                                    crmLinkError.ObjectType = "ticket"
+                                    crmLinkError.ObjectFieldName = "update"
+                                    crmLinkError.ObjectID = ticket.TicketID.ToString()
+                                    crmLinkError.ObjectData = URI
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                    crmLinkError.OperationType = "update"
+                                    newCrmLinkError.Save()
+                                Else
+                                    crmLinkError.ObjectData = URI
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                End If
 
-              Log.Write(ex.ToString() + ex.StackTrace)
-              Continue For
+                                Log.Write(ex.ToString() + ex.StackTrace)
+                            Catch errorException As Exception
+
+                            End Try
+                            Continue For
 
             End Try
           Else
@@ -418,23 +431,27 @@ Namespace TeamSupport
 
             Catch ex As Exception
 
-              If crmLinkError Is Nothing then
-                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
-                crmLinkError.CRMType          = CRMLinkRow.CRMType
-                crmLinkError.Orientation      = "out"
-                crmLinkError.ObjectType       = "ticket"
-                crmLinkError.ObjectFieldName  = "update"
-                crmLinkError.ObjectID         = ticket.TicketID.ToString()
-                'crmLinkError.ObjectData       = JsonConvert.SerializeObject(ticket)
-                crmLinkError.Exception        = ex.ToString() + ex.StackTrace
-                crmLinkError.OperationType    = "update"
-                newCrmLinkError.Save()
-              Else
-                'crmLinkError.ObjectData     = JsonConvert.SerializeObject(ticket)
-                crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-              End If                                              
+                            Try
+                                If crmLinkError Is Nothing Then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation = "out"
+                                    crmLinkError.ObjectType = "ticket"
+                                    crmLinkError.ObjectFieldName = "update"
+                                    crmLinkError.ObjectID = ticket.TicketID.ToString()
+                                    'crmLinkError.ObjectData       = JsonConvert.SerializeObject(ticket)
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                    crmLinkError.OperationType = "update"
+                                    newCrmLinkError.Save()
+                                Else
+                                    'crmLinkError.ObjectData     = JsonConvert.SerializeObject(ticket)
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                End If
+                            Catch errorException As Exception
+
+                            End Try
 
             End Try
           End If
@@ -502,27 +519,31 @@ Namespace TeamSupport
                       Log.Write("Field " + field.Value("name").ToString() + " with body " + exBody + ", was not sent because an exception ocurred.")                      
                     End If
 
-                    If crmLinkError Is Nothing then
-                      Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                      crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                      crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                      crmLinkError.CRMType        = CRMLinkRow.CRMType
-                      crmLinkError.Orientation    = "out"
-                      crmLinkError.ObjectType     = "ticket"
-                      crmLinkError.ObjectID       = ticket.TicketID.ToString()
-                      If cRMLinkField.CustomFieldID IsNot Nothing Then
-                        crmLinkError.ObjectFieldName = cRMLinkField.CustomFieldID.ToString()
-                      Else
-                        crmLinkError.ObjectFieldName = cRMLinkField.TSFieldName
-                      End If
-                      crmLinkError.ObjectData     = value
-                      crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                      crmLinkError.OperationType  = "unknown"
-                      newCrmLinkError.Save()
-                    Else
-                      crmLinkError.ObjectData     = value
-                      crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-                    End If                                              
+                                            Try
+                                                If crmLinkError Is Nothing Then
+                                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                                    crmLinkError.Orientation = "out"
+                                                    crmLinkError.ObjectType = "ticket"
+                                                    crmLinkError.ObjectID = ticket.TicketID.ToString()
+                                                    If cRMLinkField.CustomFieldID IsNot Nothing Then
+                                                        crmLinkError.ObjectFieldName = cRMLinkField.CustomFieldID.ToString()
+                                                    Else
+                                                        crmLinkError.ObjectFieldName = cRMLinkField.TSFieldName
+                                                    End If
+                                                    crmLinkError.ObjectData = value
+                                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                                    crmLinkError.OperationType = "unknown"
+                                                    newCrmLinkError.Save()
+                                                Else
+                                                    crmLinkError.ObjectData = value
+                                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                                End If
+                                            Catch errorException As Exception
+
+                                            End Try
 
                   End Try
                 End If
@@ -831,27 +852,31 @@ Namespace TeamSupport
 
               Catch ex As Exception
 
-                If crmLinkError Is Nothing then
-                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                  crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                  crmLinkError.CRMType        = CRMLinkRow.CRMType
-                  crmLinkError.Orientation    = "out"
-                  crmLinkError.ObjectType     = "action"
-                  crmLinkError.ObjectID       = actionToPushAsComment.ActionID.ToString()
-                  If body IsNot Nothing
-                    crmLinkError.ObjectData     = body.ToString()
-                  End If
-                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                  crmLinkError.OperationType  = "create"
-                  newCrmLinkError.Save()
-                Else
-                  crmLinkError.ObjectData     = body.ToString()
-                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-                End If                                              
+                            Try
+                                If crmLinkError Is Nothing Then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation = "out"
+                                    crmLinkError.ObjectType = "action"
+                                    crmLinkError.ObjectID = actionToPushAsComment.ActionID.ToString()
+                                    If body IsNot Nothing Then
+                                        crmLinkError.ObjectData = body.ToString()
+                                    End If
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                    crmLinkError.OperationType = "create"
+                                    newCrmLinkError.Save()
+                                Else
+                                    crmLinkError.ObjectData = body.ToString()
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                End If
 
-                Log.Write(ex.ToString() + ex.StackTrace)
-                Continue For
+                                Log.Write(ex.ToString() + ex.StackTrace)
+                            Catch errorException As Exception
+
+                            End Try
+                            Continue For
 
               End Try
             Else
@@ -877,29 +902,33 @@ Namespace TeamSupport
 
               Catch ex As Exception
 
-                If crmLinkError Is Nothing then
-                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                  crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                  crmLinkError.CRMType        = CRMLinkRow.CRMType
-                  crmLinkError.Orientation    = "out"
-                  crmLinkError.ObjectType     = "action"
-                  crmLinkError.ObjectID       = actionToPushAsComment.ActionID.ToString()
-                  If body IsNot Nothing
-                    crmLinkError.ObjectData     = body.ToString()
-                  End If 
-                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                  crmLinkError.OperationType  = "update"
-                  newCrmLinkError.Save()
-                Else
-                  If (body IsNot Nothing)
-                    crmLinkError.ObjectData     = body.ToString()
-                  End If
-                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-                End If   
-                                                           
-                Log.Write(ex.ToString() + ex.StackTrace)
-                Continue For
+                            Try
+                                If crmLinkError Is Nothing Then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation = "out"
+                                    crmLinkError.ObjectType = "action"
+                                    crmLinkError.ObjectID = actionToPushAsComment.ActionID.ToString()
+                                    If body IsNot Nothing Then
+                                        crmLinkError.ObjectData = body.ToString()
+                                    End If
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                    crmLinkError.OperationType = "update"
+                                    newCrmLinkError.Save()
+                                Else
+                                    If (body IsNot Nothing) Then
+                                        crmLinkError.ObjectData = body.ToString()
+                                    End If
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                End If
+
+                                Log.Write(ex.ToString() + ex.StackTrace)
+                            Catch errorException As Exception
+
+                            End Try
+                            Continue For
 
               End Try
             End If
@@ -983,22 +1012,26 @@ Namespace TeamSupport
 
                     Catch ex As Exception
 
-                      If crmLinkError Is Nothing then
-                        Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                        crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                        crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                        crmLinkError.CRMType        = CRMLinkRow.CRMType
-                        crmLinkError.Orientation    = "out"
-                        crmLinkError.ObjectType     = "attachment"
-                        crmLinkError.ObjectID       = attachment.AttachmentID.ToString()
-                        'crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
-                        crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                        crmLinkError.OperationType  = "create"
-                        newCrmLinkError.Save()
-                      Else
-                        'crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
-                        crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-                      End If                                              
+                                Try
+                                    If crmLinkError Is Nothing Then
+                                        Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                        crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                        crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                        crmLinkError.CRMType = CRMLinkRow.CRMType
+                                        crmLinkError.Orientation = "out"
+                                        crmLinkError.ObjectType = "attachment"
+                                        crmLinkError.ObjectID = attachment.AttachmentID.ToString()
+                                        'crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
+                                        crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                        crmLinkError.OperationType = "create"
+                                        newCrmLinkError.Save()
+                                    Else
+                                        'crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
+                                        crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                    End If
+                                Catch errorException As Exception
+
+                                End Try
 
                     End Try
                   End If
@@ -1038,23 +1071,27 @@ Namespace TeamSupport
                 crmLinkErrors.Save()
               End If
             Catch ex As Exception
-              If crmLinkError Is Nothing then
-                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                crmLinkError.CRMType        = CRMLinkRow.CRMType
-                crmLinkError.Orientation    = "in"
-                crmLinkError.ObjectType     = "ticket"
-                crmLinkError.ObjectID       = ticketID.ToString()
-                crmLinkError.ObjectData     = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
-                crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                crmLinkError.OperationType  = "update"
-                newCrmLinkError.Save()
-              Else
-                crmLinkError.ObjectData     = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
-                crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-              End If                                              
-            End Try
+                            Try
+                                If crmLinkError Is Nothing Then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation = "in"
+                                    crmLinkError.ObjectType = "ticket"
+                                    crmLinkError.ObjectID = ticketID.ToString()
+                                    crmLinkError.ObjectData = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                    crmLinkError.OperationType = "update"
+                                    newCrmLinkError.Save()
+                                Else
+                                    crmLinkError.ObjectData = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
+                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                End If
+                            Catch errorException As Exception
+
+                            End Try
+                        End Try
             If newComments Is Nothing Then
               newComments = GetNewComments(issuesToPullAsTickets(i)("fields")("comment"), ticketID)
             End If
