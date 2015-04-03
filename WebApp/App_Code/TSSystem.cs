@@ -257,7 +257,7 @@ namespace TSWebServices
         if (user.IsSystemAdmin && IsMenuItemActive(user, "mniAdmin"))
           items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "Frames/Admin.aspx", "vcr/1_9_0/PaneInfo/Admin.html")));
         
-        if (TSAuthentication.OrganizationID == 1078 && TSAuthentication.IsSystemAdmin)
+        if (TSAuthentication.OrganizationID == 1078)
         {
           TsMenuItem utils = new TsMenuItem("utils", "mniUtils", "Utilities", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils.html", "vcr/1_9_0/PaneInfo/Admin.html"));
           items.Add(utils);
