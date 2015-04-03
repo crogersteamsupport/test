@@ -18,6 +18,8 @@
         applyDemoStyles: true
     });
 
+    $('[data-toggle="tooltip"]').tooltip();
+
     //setup the dateformat
     top.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -82,16 +84,16 @@
         },
         dayClick: function (date, jsEvent, view) {
 
-            if (tempVar == "") {
-                $(this).css('background-color', '#c6dcf7');
-                tempVar = this;
+            //if (tempVar == "") {
+            //    $(this).css('background-color', '#c6dcf7');
+            //    tempVar = this;
                 
-            }
-            else {
-                $(tempVar).css('background-color', 'white');
-                $(this).css('background-color', '#c6dcf7');
-                tempVar = this;
-            }
+            //}
+            //else {
+            //    $(tempVar).css('background-color', 'white');
+            //    $(this).css('background-color', '#c6dcf7');
+            //    tempVar = this;
+            //}
 
             $('#calendar').fullCalendar('gotoDate', date);
                 clicks++;
@@ -121,10 +123,10 @@
                         var thestart = top.Ts.Utils.getMsDate(parseJsonDate(this.start));
                         var test = thestart.localeFormat();
                         var test2 = new Date(thestart);
-                        if (this.creatorID != top.Ts.System.User.UserID && !top.Ts.System.User.IsSystemAdmin)
-                            var editable = false;
-                        else
+                        if (this.creatorID == top.Ts.System.User.UserID || top.Ts.System.User.IsSystemAdmin)
                             var editable = true;
+                        else
+                            var editable = false;
                         events.push({
                             title: this.title,
                             start: this.start,
@@ -135,7 +137,7 @@
                             id: this.id,
                             description: this.description,
                             end: this.end,
-                            allDay: this.allday,
+                            isallDay: this.allday,
                             references: this.references,
                             creatorID: this.creatorID,
                             editable: editable
@@ -313,6 +315,8 @@
         $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
         $('#inputStartTime').data("DateTimePicker").setDate(moment(date).add(moment().hours(),'hour'));
 
+        if ($('#inputEndTime').data("DateTimePicker"))
+            $('#inputEndTime').data("DateTimePicker").destroy();
         $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
         $('#inputEndTime').data("DateTimePicker").setDate(moment(date).add(moment().hours()+1, 'hour'));
 
@@ -873,7 +877,7 @@
         $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
         $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
         $('#inputDescription').val(event.description);
-        $('#inputAllDay').prop('checked', event.allDay);
+        $('#inputAllDay').prop('checked', event.isallDay);
 
         if (event.references) {
             for (i = 0; i < event.references.length; i++)

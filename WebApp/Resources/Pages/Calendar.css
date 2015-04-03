@@ -24,6 +24,18 @@
     text-decoration: none;
 }
 
+.popover-title {
+    font-size: 12px;
+}
+
+.popover-content{
+    font-size: 11px;
+}
+
+/*.eventEdit, .eventDelete{
+    font-size: 10px;
+}*/
+
 .addatt{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/icons/attachment.png');cursor:pointer}
 .addticket{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
 .addgroup{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}

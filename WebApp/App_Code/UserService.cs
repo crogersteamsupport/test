@@ -1411,7 +1411,8 @@ namespace TSWebServices
                     {
                         CalendarRefItemProxy prox = calitem.GetProxy();
                         prox.displayName =  GetDisplayname(prox);
-                        calendarreferences.Add(prox);
+                        if(prox.displayName != "")
+                            calendarreferences.Add(prox);
                     }
                     cal.references = calendarreferences.OrderBy(a => a.displayName).ToArray();
                 }
@@ -1496,8 +1497,16 @@ namespace TSWebServices
                     cal.StartDate = DateTime.Parse(info.start);
                 else
                     return false;
+
                 if (DateTime.TryParse(info.end, out dt))
-                    cal.EndDate =  DateTime.Parse(info.end);
+                {
+                    if(info.allDay)
+                    {
+                        cal.EndDate = (DateTime.Parse(info.end)).AddHours(23).AddMinutes(59);
+                    }
+                    else
+                        cal.EndDate = DateTime.Parse(info.end);
+                }
                 cal.Title = info.title;
                 cal.Description = info.description;
                 cal.LastModified = DateTime.Now;
@@ -1639,8 +1648,16 @@ namespace TSWebServices
                     cal.StartDate = DateTime.Parse(info.start);
                 else
                     return false;
+
                 if (DateTime.TryParse(info.end, out dt))
-                    cal.EndDate = DateTime.Parse(info.end);
+                {
+                    if (info.allDay)
+                    {
+                        cal.EndDate = (DateTime.Parse(info.end)).AddHours(23).AddMinutes(59);
+                    }
+                    else
+                        cal.EndDate = DateTime.Parse(info.end);
+                }
                 cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
                 cal.Title = info.title;
                 cal.Description = info.description;
