@@ -1453,16 +1453,24 @@ Namespace TeamSupport
                             result = resultBuilder.ToString()
                         Case "versions", "fixversions"
                             Dim attachmentsArray As JArray = DirectCast(field.Value, JArray)
-                            Dim resultBuilder As StringBuilder = New StringBuilder()
-                            Dim preffix = String.Empty
-                            For i = 0 To attachmentsArray.Count - 1
-                                resultBuilder.Append(preffix)
-                                resultBuilder.Append(attachmentsArray(i)("description").ToString())
-                                If preffix = String.Empty Then
-                                    preffix = ", "
-                                End If
-                            Next
-                            result = resultBuilder.ToString()
+							Dim resultBuilder As StringBuilder = New StringBuilder()
+							Dim preffix = String.Empty
+
+							For i = 0 To attachmentsArray.Count - 1
+								resultBuilder.Append(preffix)
+
+								Try
+									resultBuilder.Append(attachmentsArray(i)("name").ToString())
+								Catch ex As Exception
+									resultBuilder.Append(attachmentsArray(i)("description").ToString())
+								End Try
+
+								If preffix = String.Empty Then
+									preffix = ", "
+								End If
+							Next
+
+							result = resultBuilder.ToString()
                         Case "subtasks"
                             Dim attachmentsArray As JArray = DirectCast(field.Value, JArray)
                             Dim resultBuilder As StringBuilder = New StringBuilder()
