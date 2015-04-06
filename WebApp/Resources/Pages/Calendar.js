@@ -20,6 +20,8 @@
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    top.Ts.System.logAction('Calendar - Loaded');
+
     //setup the dateformat
     top.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -204,6 +206,7 @@
     // edit event delagate
     $('body').on('click', '.eventEdit', function (e) {
         var event = theTempEvent;
+        top.Ts.System.logAction('Calendar Event - Edit Event Clicked');
         $('.popover').not(this).hide();
         switch (event.type)
         {
@@ -782,10 +785,11 @@
         $("#" + id).button();
     }
 
-    $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed/" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); });
+    $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed/" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); top.Ts.System.logAction('Calendar Event - Subscription Button Clicked'); });
     $("#newEvent").click(function () {
         clearModal();
         isNewButton = true;
+        top.Ts.System.logAction('Calendar Event - New Event Button Clicked');
         $('#fullCalModal').modal();
         if ($('#inputStartTime').data("DateTimePicker"))
             $('#inputStartTime').data("DateTimePicker").destroy();
