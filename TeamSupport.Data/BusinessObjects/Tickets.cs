@@ -1031,7 +1031,7 @@ AND ts.IsClosed = 0";
     {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = "SELECT * from Tickets WHERE (Month(DueDate) = @month) AND (Year(DueDate) = @year) AND (UserID = @UserID OR USERID IS NULL) AND (OrganizationID = @OrgID) AND (GroupID in (select GroupID from GroupUsers where UserID = @UserID) )";
+            command.CommandText = "SELECT * from Tickets WHERE (Month(DueDate) = @month) AND (Year(DueDate) = @year) AND (UserID = @UserID OR USERID IS NULL) AND (OrganizationID = @OrgID) AND ((GroupID in (select GroupID from GroupUsers where UserID = @UserID)) or GroupID IS NULL)";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@month", date.Month);
             command.Parameters.AddWithValue("@year", date.Year);
