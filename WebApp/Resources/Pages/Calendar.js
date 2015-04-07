@@ -666,7 +666,7 @@
                 var day = dateArr[0];
             if (dateFormat.indexOf("Y") == 0)
                 var year = dateArr[0];
-            if (dateFormat.indexOf("M") == 3)
+            if (dateFormat.indexOf("M") == 3 || dateFormat.indexOf("M") == 5)
                 var month = dateArr[1];
 
             var timeSplit = dateArr[2].split(' ');
@@ -677,7 +677,7 @@
 
             var theTime = timeSplit[1];
 
-            var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+            var formattedDate = month + "/" + day + "/" + year + " " + theTime + (timeSplit[2] != null ? " " + timeSplit[2] : "");
             value = top.Ts.Utils.getMsDate(formattedDate);
             return value;
         }
@@ -695,7 +695,12 @@
             alert("Please enter a valid event title.");
             return;
         }
-            
+    
+        if (moment($('#inputStartTime').val(), dateFormat).isValid() == false)
+        {
+            alert("A valid start date must be entered.");
+        }
+
 
         if ($('#inputEndTime').val() != "")
         {
