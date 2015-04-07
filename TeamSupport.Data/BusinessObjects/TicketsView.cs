@@ -774,19 +774,19 @@ namespace TeamSupport.Data
       else if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -2)
       {
         //Users's all groups, unassigned tickets
-        builder.Append(" AND (tv.UserID IS NULL AND tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+        builder.Append(" AND ((tv.UserID IS NULL OR tv.UserID < 0) AND tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
         command.Parameters.AddWithValue("UserID", filter.UserID);
       }
       else if (filter.GroupID != null && filter.UserID != null && filter.UserID == -2)
       {
         //Group's unassigned tickets
-        builder.Append(" AND (tv.UserID IS NULL AND tv.GroupID = @GroupID)");
+        builder.Append(" AND ((tv.UserID IS NULL OR tv.UserID < 0) AND tv.GroupID = @GroupID)");
         command.Parameters.AddWithValue("GroupID", filter.GroupID);
       }
       else if (filter.GroupID == null && filter.UserID != null && filter.UserID == -2)
       {
         //All unassigned tickets
-        builder.Append(" AND (tv.UserID IS NULL)");
+        builder.Append(" AND (tv.UserID IS NULL OR tv.UserID < 0) ");
       }
       else
       {
