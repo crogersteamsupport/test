@@ -188,24 +188,34 @@ namespace TeamSupport.ServiceLibrary
               service.LastResult = "Success";
               int total = (int)((DateTime)service.LastEndTime).Subtract((DateTime)service.LastStartTime).TotalSeconds;
               service.RunTimeMax = service.RunTimeMax < total ? total : service.RunTimeMax;
-              
+
               service.RunTimeAvg = service.RunCount > 1 ? (int)((((service.RunCount - 1) * service.RunTimeAvg) + total) / service.RunCount) : total;
               service.Collection.Save();
             }
             Thread.Sleep(100);
           }
           catch (ThreadAbortException)
-          { 
-          
+          {
+
+          }
+          catch (System.Data.SqlClient.SqlException sqlEx)
+          {
+            _logs.WriteException(sqlEx);
+            service.ErrorCount = service.ErrorCount + 1;
           }
           catch (Exception ex)
           {
             _logs.WriteException(ex);
             ExceptionLog log = ExceptionLogs.LogException(_loginUser, ex, "Service - " + ServiceName);
-            service.LastError = string.Format("[{0} {1}", log.ExceptionLogID.ToString(), ex.Message);
             service.ErrorCount = service.ErrorCount + 1;
-            service.Collection.Save();
+
+            if (log != null)
+            {
+              service.LastError = string.Format("[{0} {1}", log.ExceptionLogID.ToString(), ex.Message);
+              service.Collection.Save();
+            }
           }
+
           if (!IsLoop)
           {
             Stop();
@@ -220,7 +230,7 @@ namespace TeamSupport.ServiceLibrary
       catch (Exception ex)
       {
         _logs.WriteException(ex);
-
+        _logs.WriteEvent(string.Format("{0}: TeamSupport.ServiceLibrary.ServiceThread.Process(). Attention, the service exited the processing loop due to a exception. Check previous log entries.", ServiceName));
       }
     }
 
