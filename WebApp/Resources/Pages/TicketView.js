@@ -118,7 +118,7 @@ TicketGrid = function (options) {
                 self.hideLoadingIndicator();
             });
         } catch (e) {
-            alert(e.message);
+            //alert(e.message);
         }
     }
 
