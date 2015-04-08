@@ -119,6 +119,7 @@ function BuildWikiView() {
     var element = $('body');
     tinymce.execCommand('mceRemoveControl', true, '#Wiki-Edit-Body');
     initEditor(element.find('#Wiki-Edit-Body'), function (ed) {
+        tinyMCE.activeEditor.setContent(_wikiBody);
         element.find('#Wiki-Edit-Body').tinymce().focus();
     });
 };
