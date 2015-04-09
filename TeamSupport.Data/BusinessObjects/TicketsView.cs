@@ -1118,7 +1118,7 @@ namespace TeamSupport.Data
         {
           if (isUnassignableInt && (int)value < 0)
           {
-            builder.Append(" AND (tv."+name+" IS NULL)");
+            builder.Append(" AND (tv." + name + " IS NULL OR tv." + name + " < 0)");
           }
           else          
           {
