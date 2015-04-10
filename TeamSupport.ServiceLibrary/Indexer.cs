@@ -174,7 +174,7 @@ namespace TeamSupport.ServiceLibrary
       IndexDataSource indexDataSource = null;
       int maxRecords = Settings.ReadInt("Max Records", 1000);
 
-      string logName = "Indexer - {0} ({1})";
+      string logName = "Indexer ({0})";
       switch (referenceType)
       {
         case ReferenceType.Tickets:
@@ -183,7 +183,7 @@ namespace TeamSupport.ServiceLibrary
           storedFields = "TicketID OrganizationID TicketNumber Name IsKnowledgeBase Status Severity DateModified DateCreated DateClosed SlaViolationDate SlaWarningDate";
           tableName = "Tickets";
           primaryKeyName = "TicketID";
-          indexDataSource = new TicketIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new TicketIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         case ReferenceType.Wikis:
           indexPath = "\\Wikis";
@@ -191,28 +191,28 @@ namespace TeamSupport.ServiceLibrary
           storedFields = "OrganizationID Creator Modifier";
           tableName = "WikiArticles";
           primaryKeyName = "ArticleID";
-          indexDataSource = new WikiIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new WikiIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         case ReferenceType.Notes:
           indexPath = "\\Notes";
           deletedIndexItemsFileName = "DeletedNotes.txt";
           tableName = "Notes";
           primaryKeyName = "NoteID";
-          indexDataSource = new NoteIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new NoteIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         case ReferenceType.ProductVersions:
           indexPath = "\\ProductVersions";
           deletedIndexItemsFileName = "DeletedProductVersions.txt";
           tableName = "ProductVersions";
           primaryKeyName = "ProductVersionID";
-          indexDataSource = new ProductVersionIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new ProductVersionIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         case ReferenceType.WaterCooler:
           indexPath = "\\WaterCooler";
           deletedIndexItemsFileName = "DeletedWaterCoolerMessages.txt";
           tableName = "WatercoolerMsg";
           primaryKeyName = "MessageID";
-          indexDataSource = new WaterCoolerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new WaterCoolerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         case ReferenceType.Organizations:
           indexPath = "\\Customers";
@@ -220,7 +220,7 @@ namespace TeamSupport.ServiceLibrary
           storedFields = "Name JSON";
           tableName = "Organizations";
           primaryKeyName = "OrganizationID";
-          indexDataSource = new CustomerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new CustomerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         case ReferenceType.Contacts:
           indexPath = "\\Contacts";
@@ -228,7 +228,7 @@ namespace TeamSupport.ServiceLibrary
           storedFields = "Name JSON";
           tableName = "Users";
           primaryKeyName = "UserID";
-          indexDataSource = new ContactIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new ContactIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         case ReferenceType.Assets:
           indexPath = "\\Assets";
@@ -236,7 +236,7 @@ namespace TeamSupport.ServiceLibrary
           storedFields = "Name JSON";
           tableName = "Assets";
           primaryKeyName = "AssetID";
-          indexDataSource = new AssetIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new AssetIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         case ReferenceType.Products:
           indexPath = "\\Products";
@@ -244,7 +244,7 @@ namespace TeamSupport.ServiceLibrary
           storedFields = "Name JSON";
           tableName = "Products";
           primaryKeyName = "ProductID";
-          indexDataSource = new ProductIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          indexDataSource = new ProductIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, _threadPosition.ToString()));
           break;
         default:
           throw new System.ArgumentException("ReferenceType " + referenceType.ToString() + " is not supported by indexer.");
