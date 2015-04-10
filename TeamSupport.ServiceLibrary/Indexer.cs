@@ -49,6 +49,7 @@ namespace TeamSupport.ServiceLibrary
       command.CommandText = "UPDATE Organizations SET IsIndexLocked = 0 WHERE OrganizationID = @OrganizationID";
       command.Parameters.AddWithValue("OrganizationID", organizationID);
       SqlExecutor.ExecuteNonQuery(LoginUser, command);
+      Logs.WriteEvent("Unlocked index for " + organizationID.ToString());
     }
 
     private void UnmarkIndexRebuild(int organizationID)
@@ -57,6 +58,7 @@ namespace TeamSupport.ServiceLibrary
       command.CommandText = "UPDATE Organizations SET IsRebuildingIndex = 0 WHERE OrganizationID = @OrganizationID";
       command.Parameters.AddWithValue("OrganizationID", organizationID);
       SqlExecutor.ExecuteNonQuery(LoginUser, command);
+      Logs.WriteEvent("Unmarked index rebuild for " + organizationID.ToString());
     }
 
     private bool ObtainLock(int organizationID)
@@ -68,6 +70,7 @@ namespace TeamSupport.ServiceLibrary
         command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1 WHERE IsIndexLocked = 0 AND OrganizationID = @OrganizationID";
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         result = SqlExecutor.ExecuteNonQuery(LoginUser, command) > 0;
+        Logs.WriteEvent("Locked index for " + organizationID.ToString());
       }
       return result;
     }
@@ -147,6 +150,7 @@ namespace TeamSupport.ServiceLibrary
         ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
         ProcessIndex(org, ReferenceType.Assets, isRebuilder);
         ProcessIndex(org, ReferenceType.Products, isRebuilder);
+        Logs.WriteEvent("Finished Processing");
 
         if (isRebuilder && !IsStopped)
         {
