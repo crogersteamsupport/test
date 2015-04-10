@@ -2051,6 +2051,7 @@ WHERE OrganizationID IN (
   SELECT Y.OrganizationID FROM Y WHERE RowNum=1
 )
 SELECT * FROM Organizations o WHERE OrganizationID IN (SELECT ID FROM  @TIndex)";
+//        command.CommandText = "SELECT * FROM Organizations WHERE OrganizationID = 9733";
         command.CommandType = CommandType.Text;
         Fill(command);
       }

@@ -18,6 +18,7 @@ namespace TeamSupport.ServiceLibrary
     protected   List<int> _updatedItems = null;
     protected   int       _rowIndex     = 0;
     protected   int?      _lastItemID   = null;
+    protected string _table;
     protected bool _isRebuilding = false;
     protected StringBuilder _docFields;
 
@@ -28,12 +29,13 @@ namespace TeamSupport.ServiceLibrary
     
     protected IndexDataSource() { }
 
-    public IndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding, string logName)
+    public IndexDataSource(LoginUser loginUser, int maxCount, int organizationID, string table, bool isRebuilding, Logs logs)
     {
       _organizationID = organizationID;
       _isRebuilding = isRebuilding;
+      _table = table;
       _loginUser      = new LoginUser(loginUser.ConnectionString, loginUser.UserID, loginUser.OrganizationID, null);
-      _logs = new Logs(logName);
+      _logs = logs;
       _docFields = new StringBuilder();
 
       _maxCount = maxCount;
@@ -49,14 +51,50 @@ namespace TeamSupport.ServiceLibrary
       DocModifiedDate = System.DateTime.UtcNow;
     }
 
-    override public bool GetNextDoc()
+    public override bool GetNextDoc()
     {
-      return false;
+      if (_itemIDList == null) { Rewind(); }
+      _rowIndex++;
+      if (_itemIDList.Count <= _rowIndex) { return false; }
+      try
+      {
+        GetNextRecord();
+      }
+      catch (Exception ex)
+      {
+        _logs.WriteException(ex);
+        ExceptionLogs.LogException(_loginUser, ex, "Indexer - GetNextDoc - " + _table);
+        return false;
+      }
+      return true;
     }
 
-    override public bool Rewind()
+    public override bool Rewind()
     {
-      return false;
+
+      try
+      {
+        _logs.WriteEvent(string.Format("Rewind {0}, OrgID: {1}", _table, _organizationID.ToString()));
+        _itemIDList = new List<int>();
+        LoadData();
+        _lastItemID = null;
+        _rowIndex = -1;
+        return true;
+      }
+      catch (Exception ex)
+      {
+        _logs.WriteException(ex);
+        ExceptionLogs.LogException(_loginUser, ex, "Indexer - Rewind - " + _table);
+        return false;
+      }
+    }
+
+    protected virtual void LoadData()
+    {
+    }
+
+    protected virtual void GetNextRecord()
+    {
     }
 
     protected void AddDocField(string key, string value)

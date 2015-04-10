@@ -11,67 +11,41 @@ namespace TeamSupport.ServiceLibrary
   {
     protected NoteIndexDataSource() { }
 
-    public NoteIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding, string logName) : base(loginUser, maxCount, organizationID, isRebuilding, logName) {}
+    public NoteIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, string table, bool isRebuilding, Logs logs) : base(loginUser, maxCount, organizationID, table, isRebuilding, logs) { }
 
-    override public bool GetNextDoc()
+    override protected void GetNextRecord()
     {
-      try
+      NotesViewItem note = NotesView.GetNotesViewItem(_loginUser, _itemIDList[_rowIndex]);
+      _logs.WriteEvent("Started Processing NoteID: " + note.NoteID.ToString());
+
+      _lastItemID = note.NoteID;
+      UpdatedItems.Add((int)_lastItemID);
+
+
+      DocText = HtmlToText.ConvertHtml(note.Description);
+
+      _docFields.Clear();
+      foreach (DataColumn column in note.Collection.Table.Columns)
       {
-        if (_itemIDList == null) { Rewind(); }
-        _rowIndex++;
-        if (_itemIDList.Count <= _rowIndex) { return false; }
-
-        NotesViewItem note = NotesView.GetNotesViewItem(_loginUser, _itemIDList[_rowIndex]);
-        _logs.WriteEvent("Started Processing NoteID: " + note.NoteID.ToString());
-
-        _lastItemID = note.NoteID;
-        UpdatedItems.Add((int)_lastItemID);
-
-
-        DocText = HtmlToText.ConvertHtml(note.Description);
-
-        _docFields.Clear();
-        foreach (DataColumn column in note.Collection.Table.Columns)
-        {
-          object value = note.Row[column];
-          string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          AddDocField(column.ColumnName, s);
-        }
-        DocFields = _docFields.ToString();
-        DocIsFile = false;
-        DocName = note.NoteID.ToString();
-        DocCreatedDate = note.DateCreatedUtc;
-        DocModifiedDate = DateTime.UtcNow;
-
+        object value = note.Row[column];
+        string s = value == null || value == DBNull.Value ? "" : value.ToString();
+        AddDocField(column.ColumnName, s);
       }
-      catch (Exception ex)
-      {
-        ExceptionLogs.LogException(_loginUser, ex, "NoteIndexDataSource");
-      }
-      return true;
+      DocFields = _docFields.ToString();
+      DocIsFile = false;
+      DocName = note.NoteID.ToString();
+      DocCreatedDate = note.DateCreatedUtc;
+      DocModifiedDate = DateTime.UtcNow;
     }
 
-    override public bool Rewind()
+    override protected void LoadData()
     {
-      try
+      NotesView notes = new NotesView(_loginUser);
+      notes.LoadForIndexing(_organizationID, _maxCount, _isRebuilding);
+      foreach (NotesViewItem note in notes)
       {
-        _logs.WriteEvent("Rewound notes, OrgID: " + _organizationID.ToString());
-        _itemIDList = new List<int>();
-        NotesView notes = new NotesView(_loginUser);
-        notes.LoadForIndexing(_organizationID, _maxCount, _isRebuilding);
-        foreach (NotesViewItem note in notes)
-        {
-          _itemIDList.Add(note.NoteID);
-        }
-        _lastItemID = null;
-        _rowIndex = -1;
+        _itemIDList.Add(note.NoteID);
       }
-      catch (Exception ex)
-      {
-        ExceptionLogs.LogException(_loginUser, ex, "NoteIndexDataSource Rewind");
-        throw;
-      }
-      return true;
     }
   }
 }
