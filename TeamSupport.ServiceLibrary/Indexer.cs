@@ -174,7 +174,7 @@ namespace TeamSupport.ServiceLibrary
       IndexDataSource indexDataSource = null;
       int maxRecords = Settings.ReadInt("Max Records", 1000);
 
-      string logName = "Indexer ({0})";
+      string logName = "Indexer - {0}";
       switch (referenceType)
       {
         case ReferenceType.Tickets:
