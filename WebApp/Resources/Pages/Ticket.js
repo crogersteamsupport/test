@@ -1330,14 +1330,15 @@ $(document).ready(function () {
           .click(function (e) {
               parent.show().find('img').show();
               var value = '';
+              
               if (input.val()) {
                   if (dateFormat.indexOf("m") != 0) {
-                      var dateArr = input.val().split('/');
+                      var dateArr = input.val().replace(/\./g,'/').replace(/-/g,'/').split('/');
                       if (dateFormat.indexOf("d") == 0)
                           var day = dateArr[0];
                       if (dateFormat.indexOf("y") == 0)
                           var year = dateArr[0];
-                      if (dateFormat.indexOf("m") == 3)
+                      if (dateFormat.indexOf("m") == 3 || dateFormat.indexOf("m") == 5)
                           var month = dateArr[1];
 
                       var timeSplit = dateArr[2].split(' ');
@@ -1348,7 +1349,7 @@ $(document).ready(function () {
 
                       var theTime = timeSplit[1];
 
-                      var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+                      var formattedDate = month + "/" + day + "/" + year + " " + theTime + (timeSplit[2] != null ? " " + timeSplit[2] : "");
                       value = top.Ts.Utils.getMsDate(formattedDate);
                   }
                   else

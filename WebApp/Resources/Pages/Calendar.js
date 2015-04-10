@@ -18,8 +18,6 @@
         applyDemoStyles: true
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
-
     top.Ts.System.logAction('Calendar - Loaded');
 
     //setup the dateformat
@@ -661,7 +659,7 @@
             return value;
 
         if (dateFormat.indexOf("M") != 0) {
-            var dateArr = val.split('/');
+            var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
             if (dateFormat.indexOf("D") == 0)
                 var day = dateArr[0];
             if (dateFormat.indexOf("Y") == 0)
@@ -776,19 +774,26 @@
 
     });
 
+    addCalButton("right", "refresh", "fa fa-refresh", "Refresh Calendar");
+
     if (pageID == 0)
         $('#calendar').fullCalendar('render');
 
     if (pageID == -1)
-        addCalButton("right", "calURL", "fa fa-rss");
+        addCalButton("right", "calURL", "fa fa-rss", "Get Calendar Feed URL");
 
-    addCalButton("right", "newEvent", "fa fa-plus");
+    
+    addCalButton("right", "newEvent", "fa fa-plus", "Add Calendar Event");
 
-    function addCalButton(where, id, css) {
-        var my_button = '<button class="fc-button fc-state-default fc-corner-right btn btn-default" id="'+ id+'"><i class="'+ css +'"></i></button>';
+    
+
+    function addCalButton(where, id, css, title) {
+        var my_button = '<button data-toggle="tooltip" class="fc-button fc-state-default fc-corner-right btn btn-default" id="' + id + '" title="' + title + '"><i class="' + css + '"></i></button>';
         $(".fc-" + where + " .fc-button-group").append(my_button);
         $("#" + id).button();
     }
+
+    $("#calURL").click(function () { $('#calendar').fullCalendar( 'refresh' ) });
 
     $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed/" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); top.Ts.System.logAction('Calendar Event - Subscription Button Clicked'); });
     $("#newEvent").click(function () {
@@ -1086,5 +1091,7 @@
         $('#inputRecurring').prop('disabled', true);
         $('#btnSaveEvent').hide();
     }
+
+    $('[data-toggle="tooltip"]').tooltip({placement: 'auto'});
 
 }); 

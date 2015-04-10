@@ -2224,7 +2224,7 @@ $(document).ready(function () {
       if (dueDate != null) {
 
           if (dateFormat.indexOf("m") != 0) {
-              var dateArr = $('.ticket-action-form-dueDate').val().split('/');
+              var dateArr = $('.ticket-action-form-dueDate').val().replace(/\./g, '/').replace(/-/g, '/').split('/');
               if (dateFormat.indexOf("d") == 0)
                   var day = dateArr[0];
               if (dateFormat.indexOf("y") == 0)
