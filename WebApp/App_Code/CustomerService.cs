@@ -1205,6 +1205,42 @@ namespace TSWebServices
             return list.ToArray();
         }
 
+        [WebMethod]
+        public UserCustomProduct[] LoadContactProducts(int contactID, string sortColumn, string sortDirection)
+        {
+            UserProducts userProducts = new UserProducts(TSAuthentication.GetLoginUser());
+            userProducts.LoadForContactProductGridSorting(contactID, GetSortColumnTableName(sortColumn), sortDirection);
+            List<UserCustomProduct> list = new List<UserCustomProduct>();
+            //CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+            //fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.UserProducts);
+
+
+            foreach (DataRow row in userProducts.Table.Rows)
+            {
+                UserCustomProduct test = new UserCustomProduct();
+                test.ProductName = row["Product"].ToString();
+                test.VersionNumber = row["VersionNumber"].ToString();
+                test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(), (((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
+                test.VersionStatus = row["VersionStatus"].ToString();
+                test.IsReleased = row["IsReleased"].ToString();
+                test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+                test.DateCreated = row["DateCreated"].ToString() != "" ? ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal()) : "";
+                test.UserProductID = (int)row["UserProductID"];
+                //test.CustomFields = new List<string>();
+                //foreach (CustomField field in fields)
+                //{
+                //    CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.OrganizationProductID);
+                //    test.CustomFields.Add(customValue.Value);
+                //}
+
+
+                list.Add(test);
+            }
+
+
+            return list.ToArray();
+        }
+
         private string GetSortColumnTableName(string interfaceName)
         {
             string result = "OrganizationProductID";
@@ -1259,6 +1295,29 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public UserCustomProduct LoadContactProduct(int productID)
+        {
+          UserProduct userProduct = (UserProduct)UserProducts.GetUserProduct(TSAuthentication.GetLoginUser(), productID);
+          UserCustomProduct userProd = new UserCustomProduct();
+
+          userProd.ProductName = userProduct.ProductID.ToString();
+          userProd.VersionNumber = userProduct.ProductVersionID.HasValue ? userProduct.ProductVersionID.ToString() : "-1";
+
+          if (userProduct.SupportExpiration.HasValue)
+            userProd.SupportExpiration = ((DateTime)userProduct.SupportExpiration).ToString(GetDateFormatNormal());
+          else
+            userProd.SupportExpiration = "";
+
+          userProd.VersionStatus = "";
+          userProd.IsReleased = "";
+          userProd.ReleaseDate = null;
+          userProd.UserProductID = userProduct.UserProductID;
+          userProd.ProductID = userProduct.ProductID;
+
+          return userProd;
+        }
+
+        [WebMethod]
         public PhoneNumberProxy[] LoadPhoneNumbers(int refID, ReferenceType refType)
         {
             PhoneNumbers phoneNumbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
@@ -1270,8 +1329,17 @@ namespace TSWebServices
         [WebMethod]
         public ProductProxy[] LoadProductTypes()
         {
-            Products products = new Products(TSAuthentication.GetLoginUser());
-            products.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Products products = new Products(loginUser);
+            Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+            if (organization.UseProductFamilies)
+            {
+                products.LoadByOrganizationIDAndUserRights(loginUser.OrganizationID, loginUser.UserID);
+            }
+            else
+            {
+                products.LoadByOrganizationID(loginUser.OrganizationID);
+            }
 
             return products.GetProductProxies();
         }
@@ -2014,6 +2082,82 @@ namespace TSWebServices
 
             }
                 
+
+        }
+
+        [WebMethod]
+        public void SaveContactProduct(string data)
+        {
+            NewProductSave info = null;
+            UserProduct userProduct = null;
+
+            try
+            {
+                info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewProductSave>(data);
+            }
+            catch (Exception e)
+            {
+                string a = e.Message;
+            }
+            if (info.UserProductID < 0)
+            {
+                userProduct = (new UserProducts(TSAuthentication.GetLoginUser())).AddNewUserProduct();
+                Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), int.Parse(info.ProductID));
+                string description = String.Format("{0} added product association to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, p.Name);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Contacts, int.Parse(info.UserID), description);
+            }
+            else
+            {
+                userProduct = (UserProduct)UserProducts.GetUserProduct(TSAuthentication.GetLoginUser(), info.UserProductID);
+                Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), int.Parse(info.ProductID));
+                string description = String.Format("{0} modified product association to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, p.Name);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Contacts, int.Parse(info.UserID), description);
+            }
+
+            userProduct.UserID = int.Parse(info.UserID);
+            userProduct.ProductID = int.Parse(info.ProductID);
+            if (info.Version > 0)
+                userProduct.ProductVersionID = info.Version;
+            else
+            {
+                userProduct.ProductVersionID = null;
+            }
+
+            if (info.SupportExpiration != null && info.SupportExpiration != "")
+                userProduct.SupportExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.ParseExact(info.SupportExpiration, GetDateFormatNormal(), null));
+            else
+                userProduct.SupportExpiration = null;
+
+            userProduct.Collection.Save();
+
+            //foreach (CustomFieldSaveInfo field in info.Fields)
+            //{
+            //    CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationProduct.OrganizationProductID);
+            //    if (field.Value == null)
+            //    {
+            //        customValue.Value = "";
+            //    }
+            //    else
+            //    {
+            //        if (customValue.FieldType == CustomFieldType.DateTime)
+            //        {
+            //            //customValue.Value = ((DateTime)field.Value).ToString();
+            //            DateTime dt;
+            //            if (DateTime.TryParse(((string)field.Value).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+            //            {
+            //                customValue.Value = dt.ToUniversalTime().ToString();
+            //            }
+            //        }
+            //        else
+            //        {
+            //            customValue.Value = field.Value.ToString();
+            //        }
+
+            //    }
+            //    customValue.Collection.Save();
+
+            //}
+
 
         }
 
@@ -2810,10 +2954,12 @@ namespace TSWebServices
         {
             public NewProductSave() { }
             [DataMember] public string OrganizationID { get; set; }
+            [DataMember] public string UserID { get; set; }
             [DataMember] public string ProductID { get; set; }
             [DataMember] public int Version { get; set; }
             [DataMember] public string SupportExpiration { get; set; }
             [DataMember] public int OrganizationProductID { get; set; }
+            [DataMember] public int UserProductID { get; set; }
             [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
         }
 
@@ -2908,6 +3054,31 @@ namespace TSWebServices
             public int ProductID { get; set; }
             [DataMember]
             public int OrganizationProductID { get; set; }
+            [DataMember]
+            public List<string> CustomFields { get; set; }
+
+        }
+
+        public class UserCustomProduct
+        {
+            [DataMember]
+            public string ProductName { get; set; }
+            [DataMember]
+            public string VersionNumber { get; set; }
+            [DataMember]
+            public string SupportExpiration { get; set; }
+            [DataMember]
+            public string VersionStatus { get; set; }
+            [DataMember]
+            public string IsReleased { get; set; }
+            [DataMember]
+            public string ReleaseDate { get; set; }
+            [DataMember]
+            public string DateCreated { get; set; }
+            [DataMember]
+            public int ProductID { get; set; }
+            [DataMember]
+            public int UserProductID { get; set; }
             [DataMember]
             public List<string> CustomFields { get; set; }
 

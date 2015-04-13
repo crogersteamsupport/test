@@ -10,6 +10,10 @@
 var userID = null;
 var ratingFilter = '';
 var _execGetAsset = null;
+var _productsSortColumn = 'Date Created';
+var _productsSortDirection = 'DESC';
+var _productHeadersAdded = false;
+
 $(document).ready(function () {
     userID = top.Ts.Utils.getQueryValue("user", window);
     noteID = top.Ts.Utils.getQueryValue("noteid", window);
@@ -25,6 +29,7 @@ $(document).ready(function () {
 
     LoadNotes();
     LoadFiles();
+    LoadProductTypes();
     LoadPhoneTypes();
     LoadPhoneNumbers();
     LoadAddresses();
@@ -101,6 +106,15 @@ $(document).ready(function () {
 
     if (!_isAdmin)
         $('#contactDelete').hide();
+
+    if (!top.Ts.System.Organization.IsInventoryEnabled) {
+        $('#contactTabs a[href="#contact-products"]').hide();
+        $('#contactTabs a[href="#contact-inventory"]').hide();
+    }
+
+    if (!top.Ts.System.User.CanEditContact && !_isAdmin) {
+        $('#productToggle').hide();
+    }
 
     $('#contactRefresh').click(function (e) {
         top.Ts.System.logAction('Contact Detail - Refresh Window');
@@ -513,6 +527,11 @@ $(document).ready(function () {
         $('#fileForm').toggle();
     });
 
+    $('#productToggle').click(function (e) {
+        top.Ts.System.logAction('Contact Detail - Toggle Product Form');
+        $('#productForm').toggle();
+    });
+
     $("input[type=text], textarea").autoGrow();
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -522,6 +541,8 @@ $(document).ready(function () {
             LoadNotes();
         else if (e.target.innerHTML == "Files")
             LoadFiles();
+        else if (e.target.innerHTML == "Products")
+            LoadProducts();
         else if (e.target.innerHTML == "Inventory")
             LoadInventory();
         else if (e.target.innerHTML == "Ratings")
@@ -1352,6 +1373,236 @@ $(document).ready(function () {
         }
     });
 
+    $('#productContact').val(userID);
+
+    // Why do we have an autocomplete on a hidden field in customer page?
+    //$('#productContact').autocomplete({
+    //    minLength: 2,
+    //    source: getCompany,
+    //    select: function (event, ui) {
+    //        $(this)
+    //        .data('item', ui.item)
+    //        .removeClass('ui-autocomplete-loading')
+    //    }
+    //});
+
+    top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+        $('.datepicker').attr("data-format", dateformat);
+        $('.datepicker').datetimepicker({ pickTime: false });
+
+        $('#productExpiration').attr("data-format", dateformat);
+        $('.datetimepicker').datetimepicker({});
+    });
+
+    $('#productProduct').change(function () {
+        LoadProductVersions($(this).val(), -1);
+    });
+
+    $('#btnProductSave').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        top.Ts.System.logAction('Contact Detail - Save Product');
+        var productInfo = new Object();
+        var hasError = 0;
+        productInfo.UserID = $("#productContact").val();
+        productInfo.ProductID = $("#productProduct").val();
+        productInfo.Version = $("#productVersion").val();
+        productInfo.SupportExpiration = $("#productExpiration").val();
+        productInfo.UserProductID = $('#fieldProductID').val();
+
+        //productInfo.Fields = new Array();
+        //$('.customField:visible').each(function () {
+        //    var field = new Object();
+        //    field.CustomFieldID = $(this).attr("id");
+
+        //    if ($(this).hasClass("required") && ($(this).val() === null || $.trim($(this).val()) === '')) {
+        //        $(this).parent().addClass('has-error');
+        //        hasError = 1;
+        //    }
+        //    else {
+        //        $(this).parent().removeClass('has-error');
+        //    }
+
+        //    switch ($(this).attr("type")) {
+        //        case "checkbox":
+        //            field.Value = $(this).prop('checked');
+        //            break;
+        //            //case "date":
+        //            //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+        //            //    break;
+        //            //case "time":
+        //            //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+        //            //    break;
+        //            //case "datetime":
+        //            //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+        //            //    break;
+        //        default:
+        //            field.Value = $(this).val();
+        //    }
+        //    productInfo.Fields[productInfo.Fields.length] = field;
+        //});
+
+        if (hasError == 0) {
+            top.Ts.Services.Customers.SaveContactProduct(top.JSON.stringify(productInfo), function (prod) {
+                LoadProducts();
+                $('#btnProductSave').text("Save Product");
+                $('#productExpiration').val('');
+                $('#fieldProductID').val('-1');
+                $('#btnProductSave').text("Associate Product");
+                $('.customField:visible').each(function () {
+                    switch ($(this).attr("type")) {
+                        case "checkbox":
+                            $(this).prop('checked', false);
+                            break;
+                        default:
+                            $(this).val('');
+                    }
+                });
+                $('#productForm').toggle();
+            }, function () {
+                alert('There was an error saving this product association. Please try again.');
+            });
+        }
+
+    });
+
+    $('#tblProducts').on('click', '.productEdit', function (e) {
+        e.preventDefault();
+        var product = $(this).parent().parent().attr('id');
+        var userProductID;
+        top.Ts.System.logAction('Contact Detail - Edit Product');
+        top.Ts.Services.Customers.LoadContactProduct(product, function (prod) {
+            userProductID = prod.UserProductID;
+            LoadProductVersions(prod.ProductID, prod.VersionNumber);
+            $('#productProduct').val(prod.ProductID);
+            $('#productExpiration').val(prod.SupportExpiration);
+            $('#fieldProductID').val(userProductID);
+            $('#btnProductSave').text("Save");
+//            top.Ts.Services.Customers.LoadCustomProductFields(product, function (custField) {
+//                for (var i = 0; i < custField.length; i++) {
+//                    if (custField[i].FieldType == 2)
+//                        $('#' + custField[i].CustomFieldID).attr('checked', custField[i].Value);
+//                        //else if (custField[i].FieldType == 5)
+//                        //{
+//                        //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+//                        //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(top.Ts.Utils.getDatePattern()));
+//                        //}
+
+//                    else
+//                        $('#' + custField[i].CustomFieldID).val(custField[i].Value);
+//                }
+//            });
+        });
+
+        $('#productForm').show();
+
+
+
+    });
+
+    $('#tblProducts').on('click', '.productHeader', function (e) {
+        e.preventDefault();
+        _productsSortColumn = $(this).text();
+        var sortIcon = $(this).children(i);
+        if (sortIcon.length > 0) {
+            if (sortIcon.hasClass('fa-sort-asc')) {
+                _productsSortDirection = 'DESC'
+            }
+            else {
+                _productsSortDirection = 'ASC'
+            }
+            sortIcon.toggleClass('fa-sort-asc fa-sort-desc');
+        }
+        else {
+            $('.productHeader').children(i).remove();
+            var newSortIcon = $('<i>')
+                .addClass('fa fa-sort-asc')
+                .appendTo($(this));
+            _customersSortDirection = 'ASC';
+            switch (_productsSortColumn.toLowerCase()) {
+                case "version":
+                case "support expiration":
+                case "released date":
+                case "date created":
+                    newSortIcon.toggleClass('fa-sort-asc fa-sort-desc');
+                    _productsSortDirection = 'DESC';
+
+            }
+        }
+        LoadProducts();
+    });
+
+    $("#btnProductCancel").click(function (e) {
+        e.preventDefault();
+        LoadProductTypes();
+        top.Ts.System.logAction('Contact Detail - Cancel Product Edit');
+        $('#productExpiration').val('');
+        $('#fieldProductID').val('-1');
+        $('#btnProductSave').text("Associate Product");
+        $('.customField:visible').each(function () {
+            switch ($(this).attr("type")) {
+                case "checkbox":
+                    $(this).prop('checked', false);
+                    break;
+                default:
+                    $(this).val('');
+            }
+        });
+        $('#productForm').toggle();
+    });
+
+    $('#tblProducts').on('click', '.productDelete', function (e) {
+        e.preventDefault();
+        if (confirm('Are you sure you would like to remove this product association?')) {
+            top.Ts.System.logAction('Contact Detail - Delete Product');
+            top.privateServices.DeleteUserProduct($(this).parent().parent().attr('id'), function (e) {
+                LoadProducts();
+            });
+
+        }
+    });
+
+    $('#tblProducts').on('click', '.productView', function (e) {
+        e.preventDefault();
+        top.Ts.System.logAction('Contact Detail - View Product');
+        top.Ts.MainPage.openUserProduct($(this).parent().parent().attr('id'))
+        //top.location = "../../../Default.aspx?OrganizationProductID=" + ;
+
+    });
+
+    $('#tblProducts').on('click', '.productVersionView', function (e) {
+        e.preventDefault();
+        top.Ts.System.logAction('Contact Detail - View Product Version');
+        top.Ts.MainPage.openUserProductVersion($(this).parent().parent().attr('id'))
+        //top.location = "../../../Default.aspx?OrganizationProductID=" + ;
+
+    });
+
+    function LoadProductTypes() {
+        $('#productProduct').empty();
+        top.Ts.Services.Customers.LoadProductTypes(function (pt) {
+            for (var i = 0; i < pt.length; i++) {
+                if (i == 0)
+                    LoadProductVersions(pt[i].ProductID, -1);
+                $('<option>').attr('value', pt[i].ProductID).text(pt[i].Name).data('o', pt[i]).appendTo('#productProduct');
+            }
+        });
+    }
+
+    function LoadProductVersions(productID, selVal) {
+        $("#productVersion").empty();
+
+        top.Ts.Services.Customers.LoadProductVersions(productID, function (pt) {
+            $('<option>').attr('value', '-1').text('Unassigned').appendTo('#productVersion');
+            for (var i = 0; i < pt.length; i++) {
+                var opt = $('<option>').attr('value', pt[i].ProductVersionID).text(pt[i].VersionNumber).data('o', pt[i]);
+                if (pt[i].ProductVersionID == selVal)
+                    opt.attr('selected', 'selected');
+                opt.appendTo('#productVersion');
+            }
+        });
+    }
+
     $('.asset-action-assign').click(function (e) {
         e.preventDefault();
     });
@@ -1416,6 +1667,54 @@ $(document).ready(function () {
       //    else
       //      alert("Please fill in all the fields");
     });
+
+    function LoadProducts() {
+
+        //if (!_productHeadersAdded) {
+        //    top.Ts.Services.Customers.LoadcustomProductHeaders(function (headers) {
+        //        for (var i = 0; i < headers.length; i++) {
+        //            $('#tblProducts th:last').after('<th>' + headers[i] + '</th>');
+        //        }
+        //        _productHeadersAdded = true;
+        //        if (headers.length > 5) {
+        //            $('#productsContainer').addClass('expandProductsContainer');
+        //        }
+        //    });
+        //}
+
+        $('#tblProducts tbody').empty();
+        top.Ts.Services.Customers.LoadContactProducts(userID, _productsSortColumn, _productsSortDirection, function (product) {
+            for (var i = 0; i < product.length; i++) {
+//                var customfields = "";
+//                for (var p = 0; p < product[i].CustomFields.length; p++) {
+//                    customfields = customfields + "<td>" + product[i].CustomFields[p] + "</td>";
+//                }
+
+                var html;
+
+                if (top.Ts.System.User.CanEditCompany || _isAdmin) {
+                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>';
+                }
+                else {
+                    html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>';
+                }
+                var tr = $('<tr>')
+                .attr('id', product[i].UserProductID)
+                .html(html)
+                .appendTo('#tblProducts > tbody:last');
+
+
+                //$('#tblProducts > tbody:last').append('<tr><td><a href="#" id='+ product.ProductID +'><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td></td></tr>');
+            }
+
+            $('.products-loading').hide();
+            $('.products-empty').hide();
+            if (product.length == 0) {
+                $('.products-empty').show();
+            }
+        });
+
+    }
 
     function LoadInventory() {
         $('.assetList').empty();

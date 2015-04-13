@@ -787,6 +787,21 @@ namespace TeamSupport.Services
     }
 
     [WebMethod(true)]
+    public void DeleteUserProduct(int userProductID)
+    {
+      if (!UserSession.CurrentUser.IsSystemAdmin) return;
+      try
+      {
+        UserProducts userProducts = new UserProducts(UserSession.LoginUser);
+        userProducts.DeleteFromDB(userProductID);
+      }
+      catch (Exception ex)
+      {
+        DataUtils.LogException(UserSession.LoginUser, ex);
+      }
+    }
+
+    [WebMethod(true)]
     public void DeleteTicketOrganization(int organizationID, int ticketID)
     {
       try

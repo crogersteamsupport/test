@@ -56,6 +56,7 @@
                 <li><a href="#contact-tickets" data-toggle="tab">Tickets</a></li>
                 <li><a href="#contact-notes" data-toggle="tab">Notes</a></li>
                 <li><a href="#contact-files" data-toggle="tab">Files</a></li>
+                <li><a href="#contact-products" data-toggle="tab">Products</a></li>
                 <li><a href="#contact-inventory" data-toggle="tab">Inventory</a></li>
                 <li id="ratingsTab"><a href="#contact-ratings" data-toggle="tab">Ratings</a></li>
                 
@@ -306,6 +307,79 @@
                   </div>
                 </div>   
                 </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="contact-products">
+                <div class="row">
+                    <div class="col-xs-12" id="productsContainer">
+                        <div class="box" id="productForm" style="display: none;">
+                            <div class="box-header">
+                            </div>
+                            <div class="box-content">
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class="col-md-2 control-label" for="productProduct">Product</label>
+                                                <div class="col-md-8">
+                                                    <select id="productProduct" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="col-md-2 control-label" for="productVersion">Version</label>
+                                                <div class="col-md-8">
+                                                    <select id="productVersion" class="form-control">
+                                                        <option value="-1">Unassigned</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="col-md-2 control-label" for="productExpiration">Warranty Expiration</label>
+                                                <div class="col-md-8">
+                                                    <input id="productExpiration" class="col-md-10 form-control datepicker">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="productContact">
+                                    <!--<div id="customProductsControls">
+                                    </div>-->
+                                </form>
+                                <input type="hidden" id="fieldProductID" value="-1" />
+                                <button id="btnProductSave" class="btn btn-primary col-md-offset-1">Associate Product</button>
+                                <button id="btnProductCancel" class="btn btn-default">Cancel</button>
+                            </div>
+                        </div>
+                        <div class="box">
+                            <div class="box-header">
+                                <button id="productToggle" class="btn btn-primary">Associate Product</button>
+                            </div>
+                            <div class="box-content">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover" id="tblProducts">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th><a href="#" class="productHeader">Product Name</a></th>
+                                                    <th><a href="#" class="productHeader">Version</a></th>
+                                                    <th><a href="#" class="productHeader">Support Expiration</a></th>
+                                                    <th><a href="#" class="productHeader">Status</a></th>
+                                                    <th><a href="#" class="productHeader">Released</a></th>
+                                                    <th><a href="#" class="productHeader">Released Date</a></th>
+                                                    <th><a href="#" class="productHeader">Date Created<i class="fa fa-sort-desc"></i></a></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                        <div class="products-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                                        <div class="products-empty" hidden>This contact has no products.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="contact-inventory">

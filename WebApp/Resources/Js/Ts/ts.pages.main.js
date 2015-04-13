@@ -1546,6 +1546,20 @@ Ts.Pages.Main.prototype = {
             self.openCustomer(op.OrganizationID);
         });
     },
+    openUserProduct: function (userProductID) {
+      var self = this;
+      Ts.Services.Users.GetUserProduct(userProductID, function (op) {
+        //self.openProduct(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
+        self.openNewProduct(op.ProductID);
+      });
+    },
+    openUserProductVersion: function (userProductID) {
+      var self = this;
+      Ts.Services.Users.GetUserProduct(userProductID, function (op) {
+        //self.openProductr(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
+        self.openNewProductVersion(op.ProductVersionID);
+      });
+    },
     openTag: function (tagID) {
         this.MainMenu.find('mniTicketTags', 'tickettags').select();
         var element = $('.main-tab-content-item:visible');

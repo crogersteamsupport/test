@@ -1745,6 +1745,12 @@ namespace TSWebServices
 
         }
 
+        [WebMethod]
+        public UserProductProxy GetUserProduct(int userProductID)
+        {
+          UserProduct op = UserProducts.GetUserProduct(TSAuthentication.GetLoginUser(), userProductID);
+          return op.GetProxy();
+        }
 
         [DataContract]
         public class CalEvent

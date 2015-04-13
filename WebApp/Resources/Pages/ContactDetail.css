@@ -17,7 +17,7 @@
 
 .userProperties .fa-external-link { margin-left: 10px; }
 
-#tblNotes, #tblFiles i {cursor:pointer;}
+#tblNotes, #tblProducts, #tblFiles i {cursor:pointer;}
 .note-list{
     border-bottom: 3px solid #DDDDDD;
     max-height: 208px;

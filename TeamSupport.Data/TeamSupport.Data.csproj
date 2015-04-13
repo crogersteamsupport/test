@@ -253,6 +253,8 @@
     <Compile Include="BusinessObjects\Translate.cs" />
     <Compile Include="BusinessObjects\UserAssignmentHistory.cs" />
     <Compile Include="BusinessObjects\UserNoteSettings.cs" />
+    <Compile Include="BusinessObjects\UserProducts.cs" />
+    <Compile Include="BusinessObjects\UserProductsView.cs" />
     <Compile Include="BusinessObjects\UserTicketStatuses.cs" />
     <Compile Include="BusinessObjects\WatercoolerAttachments.cs" />
     <Compile Include="BusinessObjects\WatercoolerLikes.cs" />
@@ -345,6 +347,8 @@
     <Compile Include="FieldMaps\TranslateFieldMap.cs" />
     <Compile Include="FieldMaps\UserAssignmentHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\UserNoteSettingsFieldMap.cs" />
+    <Compile Include="FieldMaps\UserProductsFieldMap.cs" />
+    <Compile Include="FieldMaps\UserProductsViewFieldMap.cs" />
     <Compile Include="FieldMaps\UserTicketStatusesFieldMap.cs" />
     <Compile Include="FieldMaps\WatercoolerAttachmentsFieldMap.cs" />
     <Compile Include="FieldMaps\WatercoolerLikesFieldMap.cs" />
@@ -627,6 +631,8 @@
     <Compile Include="Generated\GeneratedTSEMailIgnoreList.cs" />
     <Compile Include="Generated\GeneratedUserAssignmentHistory.cs" />
     <Compile Include="Generated\GeneratedUserNoteSettings.cs" />
+    <Compile Include="Generated\GeneratedUserProducts.cs" />
+    <Compile Include="Generated\GeneratedUserProductsView.cs" />
     <Compile Include="Generated\GeneratedUsers.cs" />
     <Compile Include="Generated\GeneratedUserSettings.cs" />
     <Compile Include="Generated\GeneratedUsersView.cs" />
@@ -790,6 +796,8 @@
     <Compile Include="Proxies\TranslateProxy.cs" />
     <Compile Include="Proxies\TSEMailIgnoreListProxy.cs" />
     <Compile Include="Proxies\UserNoteSettingsProxy.cs" />
+    <Compile Include="Proxies\UserProductsProxy.cs" />
+    <Compile Include="Proxies\UserProductsViewProxy.cs" />
     <Compile Include="Proxies\UserSettingsProxy.cs" />
     <Compile Include="Proxies\UsersProxy.cs" />
     <Compile Include="Proxies\UsersViewProxy.cs" />
