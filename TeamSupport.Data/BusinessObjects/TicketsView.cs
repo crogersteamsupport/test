@@ -248,6 +248,28 @@ namespace TeamSupport.Data
       }
     }
 
+    // This is to support handling the ticket number along with the ticketID
+    public void LoadByTicketIDAndOrganizationID(int organizationID, int ticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+            SELECT 
+                * 
+            FROM 
+                TicketsView 
+            WHERE
+                OrganizationID = @OrganizationID
+                AND TicketID = @TicketID
+            ORDER BY 
+                TicketNumber";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@TicketID", ticketID);
+            Fill(command);
+        }
+    }
+
     public void LoadByOrganizationIDOrderByNumberDESC(int organizationID, int? limitNumber = null)
     {
       using (SqlCommand command = new SqlCommand())
@@ -1610,7 +1632,7 @@ WHERE tgv.OrganizationID = @OrganizationID"
     public static TicketsViewItem GetTicketsViewItemByIdOrNumber(LoginUser loginUser, int ticketIDOrTicketNumber)
     {
       TicketsView ticketsView = new TicketsView(loginUser);
-      ticketsView.LoadByTicketID(ticketIDOrTicketNumber);
+      ticketsView.LoadByTicketIDAndOrganizationID(loginUser.OrganizationID, ticketIDOrTicketNumber);
       if (ticketsView.IsEmpty)
       {
         ticketsView = new TicketsView(loginUser);
