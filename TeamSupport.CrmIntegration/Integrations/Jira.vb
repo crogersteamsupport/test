@@ -1181,7 +1181,7 @@ Namespace TeamSupport
                                 End If
                                 result.Append("""" + field.Key.ToString() + """:" + value)
                             Else
-                                Log.Write("No value foud for the required field " + field.Value("name").ToString())
+                                Log.Write("No value found for the required field " + field.Value("name").ToString())
                             End If
                         End If
                     Next
@@ -1371,7 +1371,12 @@ Namespace TeamSupport
             Private Function GetFieldValue(ByVal field As KeyValuePair(Of String, JToken)) As String
                 Dim result As String = Nothing
                 If field.Key.ToString().ToLower().Contains("customfield") = True Then
-                    result = field.Value("value").ToString()
+                    If field.Value.HasValues Then
+                      result = field.Value("value").ToString()
+                    Else
+                      result = field.Value.ToString()
+                    End If
+
                     If result.ToLower() = "yes" Then
                         result = "True"
                     ElseIf result.ToLower() = "no" Then
@@ -1453,24 +1458,24 @@ Namespace TeamSupport
                             result = resultBuilder.ToString()
                         Case "versions", "fixversions"
                             Dim attachmentsArray As JArray = DirectCast(field.Value, JArray)
-							Dim resultBuilder As StringBuilder = New StringBuilder()
-							Dim preffix = String.Empty
+                            Dim resultBuilder As StringBuilder = New StringBuilder()
+                            Dim preffix = String.Empty
 
-							For i = 0 To attachmentsArray.Count - 1
-								resultBuilder.Append(preffix)
+                            For i = 0 To attachmentsArray.Count - 1
+                              resultBuilder.Append(preffix)
 
-								Try
-									resultBuilder.Append(attachmentsArray(i)("name").ToString())
-								Catch ex As Exception
-									resultBuilder.Append(attachmentsArray(i)("description").ToString())
-								End Try
+                              Try
+                                resultBuilder.Append(attachmentsArray(i)("name").ToString())
+                              Catch ex As Exception
+                                resultBuilder.Append(attachmentsArray(i)("description").ToString())
+                              End Try
 
-								If preffix = String.Empty Then
-									preffix = ", "
-								End If
-							Next
+                              If preffix = String.Empty Then
+                                preffix = ", "
+                              End If
+                            Next
 
-							result = resultBuilder.ToString()
+                            result = resultBuilder.ToString()
                         Case "subtasks"
                             Dim attachmentsArray As JArray = DirectCast(field.Value, JArray)
                             Dim resultBuilder As StringBuilder = New StringBuilder()

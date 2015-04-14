@@ -166,7 +166,7 @@ Namespace TeamSupport
                   If pushTicketsAndPullCasesMessage.Length > 0 Then
                     pushTicketsAndPullCasesMessage.Append(" and")
                   End If
-                  pushTicketsAndPullCasesMessage.Append(" pushing ticktes as ")
+                  pushTicketsAndPullCasesMessage.Append(" pushing tickets as ")
                   If CRMLinkTableItem.CRMType = "Jira" Then
                     pushTicketsAndPullCasesMessage.Append("issues")
                   Else
