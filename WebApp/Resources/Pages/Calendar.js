@@ -793,7 +793,7 @@
         $("#" + id).button();
     }
 
-    $("#refresh").click(function () { $('#calendar').fullCalendar('refresh') });
+    $("#refresh").click(function () { $('#calendar').fullCalendar('refetchEvents') });
 
     $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed/" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); top.Ts.System.logAction('Calendar Event - Subscription Button Clicked'); });
     $("#newEvent").click(function () {
