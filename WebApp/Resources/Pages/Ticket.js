@@ -1515,11 +1515,13 @@ $(document).ready(function () {
                 var user = $(ui.item).data('user');
                 top.Ts.System.logAction('Ticket - Assignment Changed');
                 top.Ts.Services.Tickets.SetTicketUser(_ticketID, user.UserID, function (userInfo) {
+                    top.Ts.System.logAction('Ticket - Assignment Change Completed');
                     setUserName(userInfo);
                     parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
                     window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
                 },
           function (error) {
+              top.Ts.System.logAction('Ticket - Assignment Change NOT-Completed');
               parent.show().find('img').hide();
               alert('There was an error setting the user.');
           });

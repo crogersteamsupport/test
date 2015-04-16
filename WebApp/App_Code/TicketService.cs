@@ -1522,14 +1522,23 @@ namespace TSWebServices
     [WebMethod]
     public UserInfo SetTicketUser(int ticketID, int? userID)
     {
-      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-      if (!CanEditTicket(ticket)) return null;
+        try
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (!CanEditTicket(ticket)) return null;
 
-      UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)userID) : null;
-      if (user != null && user.OrganizationID != TSAuthentication.OrganizationID) return null;
-      ticket.UserID = userID;
-      ticket.Collection.Save();
-      return user == null ? null : new UserInfo(user);
+            UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)userID) : null;
+            if (user != null && user.OrganizationID != TSAuthentication.OrganizationID) return null;
+            ticket.UserID = userID;
+            ticket.Collection.Save();
+            return user == null ? null : new UserInfo(user);
+        }
+        catch (Exception ex)
+        {
+            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "SetTicketUser");
+            UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)userID) : null;
+            return user == null ? null : new UserInfo(user);
+        }
     }
 
     [WebMethod]
