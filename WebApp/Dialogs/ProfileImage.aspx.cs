@@ -115,14 +115,19 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         }
     }
 
-    private void RemoveCachedImages(string avatarPath, int userID)
+    private void RemoveCachedImages(int organizationID, int userID)
     {
-      string pattern =  userID.ToString() + "-*.*";
-      string path = Path.Combine(avatarPath, "cache");
-      string[] files = Directory.GetFiles(path, pattern, SearchOption.TopDirectoryOnly);
-      foreach (String file in files)
+      string cachePath = System.Web.Configuration.WebConfigurationManager.AppSettings["ImageCachePath"];
+      cachePath = cachePath ?? "C:\\TSCache";
+      cachePath = Path.Combine(cachePath, "Avatars\\" + organizationID.ToString());
+      if (Directory.Exists(cachePath))
       {
-        File.Delete(file);
+        string pattern = userID.ToString() + "-*.*";
+        string[] files = Directory.GetFiles(cachePath, pattern, SearchOption.TopDirectoryOnly);
+        foreach (String file in files)
+        {
+          File.Delete(file);
+        }
       }
     }
 
@@ -130,7 +135,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
     {
         String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
         string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
-        RemoveCachedImages(path, _userID);
+        RemoveCachedImages(UserSession.LoginUser.OrganizationID, _userID);
 
         if (img1.Value != "")
         {
