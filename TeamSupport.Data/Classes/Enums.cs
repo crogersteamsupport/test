@@ -9,7 +9,7 @@ namespace TeamSupport.Data
 {
   public enum DataFormat { XML, XHTML, JSON }
 
-  public enum TicketTemplateType { TicketType, PickList }
+  public enum TicketTemplateType { TicketType, PickList, ActionType }
 
   public enum ReferenceType
   {  None = -1,

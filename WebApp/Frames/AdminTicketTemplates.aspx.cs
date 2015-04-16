@@ -51,6 +51,21 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
   }
 
   [WebMethod(true)]
+  public static ComboBoxItem[] GetActionTypes(int ticketTemplateID)
+  {
+      ActionTypes actionTypes = new ActionTypes(UserSession.LoginUser);
+      actionTypes.LoadByOrganizationID(UserSession.LoginUser.OrganizationID);
+
+      List<ComboBoxItem> result = new List<ComboBoxItem>();
+      foreach (ActionType action in actionTypes)
+      {
+          result.Add(new ComboBoxItem(action.Name, action.ActionTypeID));
+      }
+      return result.ToArray();
+
+  }
+
+  [WebMethod(true)]
   public static ComboBoxItem[] GetTicketTemplates()
   {
     TicketTemplates templates = new TicketTemplates(UserSession.LoginUser);
@@ -67,6 +82,10 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
         case TicketTemplateType.PickList:
           result.Add(new ComboBoxItem(template.TriggerText, template.TicketTemplateID));
         break;
+        case TicketTemplateType.ActionType:
+        result.Add(new ComboBoxItem("Action Type", template.TicketTemplateID));
+        break;
+
         default:
           break;
       }

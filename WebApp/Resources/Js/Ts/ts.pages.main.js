@@ -1823,6 +1823,16 @@ Ts.Pages.Main.prototype = {
         top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
             this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
         });
+        Ts.Services.Settings.WriteUserSetting('SelectedUserID', contactID, function () {
+            Ts.Services.Settings.WriteUserSetting('SelectedUserTabIndex', 0, function () {
+                self.MainMenu.find('mniUsers', 'users').select();
+                var element = $('.main-tab-content-item:visible');
+                var contentFrame = $(element).children('iframe')[0];
+                if (contentFrame && contentFrame.contentWindow.refreshData) {
+                    contentFrame.contentWindow.refreshData;
+                }
+            });
+        });
 
     },
     closeNewContact: function (contactID) {

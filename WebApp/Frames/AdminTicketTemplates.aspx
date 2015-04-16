@@ -36,7 +36,7 @@
     });
 
     function pageLoad() {
-      $('#rbTicketType, #rbPickList').change(function() { setTemplateType(); });
+      $('#rbTicketType, #rbPickList, #rbActionType').change(function() { setTemplateType(); });
       loadTemplateList();
     }
 
@@ -83,13 +83,21 @@
     }
 
     function setTemplateType() {
-      if ($('#rbTicketType')[0].checked == true) {
+        if ($('#rbTicketType')[0].checked == true) {
+            $('#divActionType').hide('fast');
         $('#divPickList').hide('fast');
         $('#divTicketType').show('fast');
       }
-      else {
+        else if ($('#rbPickList')[0].checked == true) {
+            $('#divActionType').hide('fast');
         $('#divTicketType').hide('fast');
         $('#divPickList').show('fast');
+      }
+      else
+      {
+          $('#divPickList').hide('fast');
+          $('#divTicketType').hide('fast');
+          $('#divActionType').show('fast');
       }
     }
 
@@ -111,28 +119,49 @@
       });
     }
 
+    function loadActionTypes(ticketTemplateID, ticketTypeID) {
+        var result = top.Ts.Cache.getActionTypes();
+        var combo = $find('cmbActionType');
+        var items = combo.get_items();;
+        combo.trackChanges();
+        items.clear();
+            for (var i = 0; i < result.length; i++) {
+                var item = new Telerik.Web.UI.RadComboBoxItem();
+                item.set_text(result[i].Name);
+                item.set_value(result[i].ActionTypeID);
+                items.add(item);
+                if (i == 0 || (ticketTypeID == result[i].ActionTypeID)) item.select();
+            }
+            combo.commitChanges();
+            setTimeout('g_loading = false;', 1000);
+
+    }
+
     function loadTemplate(id) {
       hideButtons();
       g_loading = true;
       PageMethods.GetTicketTemplate(id, function(template) {
         $('#cbIsEnabled')[0].checked = template.IsEnabled;
         $('#cbPortal')[0].checked = template.IsVisibleOnPortal;
-        if (template.TemplateType == 0) $('#rbTicketType')[0].checked = true; else $('#rbPickList')[0].checked = true;
+        if (template.TemplateType == 0) $('#rbTicketType')[0].checked = true; else if (template.TemplateType == 1) $('#rbPickList')[0].checked = true; else $('#rbActionType')[0].checked = true;
         $find('textPickList').set_value(template.TriggerText);
         $find('editTemplate').set_html(template.TemplateText);
         setTemplateType();
         loadTicketTypes(id, template.TicketTypeID);
+        loadActionTypes(id, template.TicketTypeID);
       });
     }
 
     function saveTemplate() {
-      var templateType = 0;
-      if ($('#rbPickList')[0].checked == true) templateType = 1;
+        var templateType = 0;
+        var typeID = $find('cmbTicketType').get_value();
+        if ($('#rbPickList')[0].checked == true)  templateType = 1;
+        if ($('#rbActionType')[0].checked == true) { templateType = 2; typeID = $find('cmbActionType').get_value() }
       PageMethods.SaveTicketTemplate(getSelectedTemplateID(),
         templateType,
         $('#cbIsEnabled')[0].checked,
         $('#cbPortal')[0].checked,
-        $find('cmbTicketType').get_value(),
+        typeID,
         $find('textPickList').get_value(),
         $find('editTemplate').get_html(),
         function(result) { loadTemplateList(result); });
@@ -211,6 +240,7 @@
           <p>Check this box to use this ticket template on the customer portal.</p>
           <asp:RadioButton ID="rbTicketType" runat="server" Checked="true" Text="Ticket Type" GroupName="TemplateType"/>
           <asp:RadioButton ID="rbPickList" runat="server" Checked="false" Text="Custom Pick List" GroupName="TemplateType"/>
+            <asp:RadioButton ID="rbActionType" runat="server" Checked="false" Text="Action Type" GroupName="TemplateType"/>
           <p>The Ticket Type template will insert the template into the ticket's description whenever the ticket type changes.</p>
           <p>The Custom Pick List template will insert text into the ticket's description when a pick list value matches the template value.</p>
           <div id="divTicketType">
@@ -225,7 +255,12 @@
             </telerik:RadTextBox>         
             <p>When this value is selected in a pick list, the template will be inserted into the ticket's description.</p>
           </div>
-          
+          <div id="divActionType">
+            <label for="cmbActionType" class="text">Select an Action Type</label>
+            <telerik:RadComboBox ID="cmbActionType" runat="server" Width="250px" CssClass="text">
+            </telerik:RadComboBox>            
+            <p>When this ticket action is selected, the template will be inserted into the ticket's description.</p>
+          </div>          
           <label for="editTemplate" class="text">Template Text/HTML</label>
                <telerik:RadEditor ID="editTemplate" runat="server" EditModes="All" EnableResize="false"
                 StripFormattingOptions="All" ToolsFile="~/Editor/StandardToolsNoTicket.xml"
