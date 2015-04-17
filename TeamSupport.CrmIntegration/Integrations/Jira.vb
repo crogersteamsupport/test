@@ -289,6 +289,7 @@ Namespace TeamSupport
                   errorMessage = "Error: Specify valid Project (Product)."
                 Case Else
                   'Throw ex 
+                  errorMessage = ex.Message
                   updateLinkToJira = False
               End Select
 
@@ -592,6 +593,7 @@ Namespace TeamSupport
 
           Private Function GetIssueFields(ByVal ticket As TicketsViewItem) As JObject
             Dim issueTypeName As String = ticket.TicketTypeName
+            issueTypeName = Replace(issueTypeName, " ", "+")
             Dim projectKey As String = GetProjectKey(ticket.ProductName)
             Dim URI As String = 
               _baseURI + 
