@@ -15,7 +15,7 @@ function loadSignalR(url) {
     });
 
     //Debug reasons
-    $.connection.hub.logging = true;
+    //$.connection.hub.logging = true;
     $.connection.hub.url = url;
     // Start the connection only if on main wc page
 
