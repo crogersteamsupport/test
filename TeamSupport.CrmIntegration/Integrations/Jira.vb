@@ -1209,6 +1209,7 @@ Namespace TeamSupport
                     Dim ticketView As TicketsView = New TicketsView(User)
                     ticketView.LoadByTicketID(ticketID)
                     Dim issueFields As JObject = GetIssueFields(ticketView(0))
+                    Dim ticketsFieldMap As Tickets = New Tickets(User)
 
                     For Each field As KeyValuePair(Of String, JToken) In CType(issue("fields"), JObject)
                         Dim value As String = Nothing
@@ -1223,6 +1224,13 @@ Namespace TeamSupport
                         Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), issueFields))
                         If cRMLinkField IsNot Nothing Then
                             Try
+                                Dim fieldMapItem As FieldMapItem = ticketsFieldMap.FieldMap.Items.Find(Function(c) c.PrivateName = cRMLinkField.TSFieldName)
+                                Dim canBeUpdated As Boolean = True
+
+                                If fieldMapItem IsNot Nothing And (Not fieldMapItem.Insert Or Not fieldMapItem.Update) Then
+                                  canBeUpdated = False
+                                End If
+
                                 Dim translatedFieldValue As String = value
 
                                 If cRMLinkField.CustomFieldID IsNot Nothing Then
@@ -1239,14 +1247,14 @@ Namespace TeamSupport
                                         thisCustom.RefID = ticketID
                                     End If
 
-                                    If IsDBNull(thisCustom.Value) OrElse thisCustom.Value <> translatedFieldValue Then
+                                    If (IsDBNull(thisCustom.Value) OrElse thisCustom.Value <> translatedFieldValue) And canBeUpdated Then
                                         thisCustom.Value = translatedFieldValue
                                         thisCustom.Collection.Save()
                                         ticketValuesChanged = True
                                     End If
                                 ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
                                     Try
-                                        If IsDBNull(updateTicket(0).Row(cRMLinkField.TSFieldName)) OrElse updateTicket(0).Row(cRMLinkField.TSFieldName) <> translatedFieldValue Then
+                                        If (IsDBNull(updateTicket(0).Row(cRMLinkField.TSFieldName)) OrElse updateTicket(0).Row(cRMLinkField.TSFieldName) <> translatedFieldValue) And canBeUpdated Then
                                             updateTicket(0).Row(cRMLinkField.TSFieldName) = translatedFieldValue
                                             ticketValuesChanged = True
                                         End If
