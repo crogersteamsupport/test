@@ -1227,7 +1227,7 @@ Namespace TeamSupport
                                 Dim fieldMapItem As FieldMapItem = ticketsFieldMap.FieldMap.Items.Find(Function(c) c.PrivateName = cRMLinkField.TSFieldName)
                                 Dim canBeUpdated As Boolean = True
 
-                                If fieldMapItem IsNot Nothing And (Not fieldMapItem.Insert Or Not fieldMapItem.Update) Then
+                                If fieldMapItem IsNot Nothing AndAlso (Not fieldMapItem.Insert Or Not fieldMapItem.Update) Then
                                   canBeUpdated = False
                                 End If
 
