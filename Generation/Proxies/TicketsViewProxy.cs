@@ -97,7 +97,7 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
-      result.ProductFamilyID = this.ProductFamilyID;
+      result.EmailReplyToAddress = this.EmailReplyToAddress;
       result.EmailReplyToAddress = this.EmailReplyToAddress;
       result.JiraStatus = this.JiraStatus;
       result.JiraLinkURL = this.JiraLinkURL;

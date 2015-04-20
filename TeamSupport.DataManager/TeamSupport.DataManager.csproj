@@ -69,9 +69,15 @@
     <Reference Include="MySql.Data">
       <HintPath>References\MySql.Data.dll</HintPath>
     </Reference>
+<<<<<<< .working
     <Reference Include="OpenPop, Version=2.0.4.369, Culture=neutral, PublicKeyToken=bebb5741791313cd, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\OpenPop\OpenPop.NET 2.0.4\binaries\signed (strong name)\OpenPop.dll</HintPath>
+=======
+    <Reference Include="OpenPop, Version=2.0.4.369, Culture=neutral, PublicKeyToken=bebb5741791313cd, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\OpenPop\OpenPop.NET 2.0.4\binaries\unsigned\OpenPop.dll</HintPath>
+>>>>>>> .merge-right.r3048
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

@@ -33,8 +33,8 @@ $(document).ready(function () {
   top.Ts.Services.Products.GetVersion(_productVersionID, function (productVersion) {
     if (productVersion == null)
     {
-        alert('This product version has either been deleted or you do not have permission to view it.');
-        top.Ts.MainPage.closeNewProductVersionTab(_productVersionID);
+      alert('This product version has been deleted.');
+      top.Ts.MainPage.closeNewProductVersionTab(_productVersionID);
     }
     else
     {

@@ -104,7 +104,6 @@
     #user-top-info .mceIcon img {display:block;}
     #userSignature img {display:block;}
 
- #divAddCustomer,#divAddProductFamily { margin: 1em 0;}
+ #divAddCustomer { margin: 1em 0;}
  #divAddCustomer input { padding: .3em .3em; margin-right: .5em; width: 200px !important;} 
- #divAddProductFamily input { padding: .3em .3em; margin-right: .5em; width: 200px !important;} 
  .mce-i-image{ color: #BA55D3 !important}

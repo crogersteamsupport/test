@@ -3558,7 +3558,7 @@ WHERE t.TicketID = @TicketID
         ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, winningTicketID, description);
     }      
 
-    private TicketLinkToJiraItemProxy GetLinkToJira(int ticketID)
+    public TicketLinkToJiraItemProxy GetLinkToJira(int ticketID)
     {
       TicketLinkToJiraItemProxy result = null;
       TicketLinkToJira linkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
@@ -3721,6 +3721,11 @@ WHERE t.TicketID = @TicketID
     [DataMember] public string InOfficeComment { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public string Organization { get; set; }
+
+    public UserInfo()
+    {
+
+    }
 
     public UserInfo(UsersViewItem user)
     {

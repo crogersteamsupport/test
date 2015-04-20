@@ -249,6 +249,7 @@
     <Compile Include="BusinessObjects\TicketRelationships.cs" />
     <Compile Include="BusinessObjects\TicketsView.cs" />
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
+    <Compile Include="BusinessObjects\TicketTimeLineView.cs" />
     <Compile Include="BusinessObjects\TicketTypesView.cs" />
     <Compile Include="BusinessObjects\Translate.cs" />
     <Compile Include="BusinessObjects\UserAssignmentHistory.cs" />
@@ -343,6 +344,7 @@
     <Compile Include="FieldMaps\TicketLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\TicketRelationshipsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketTemplatesFieldMap.cs" />
+    <Compile Include="FieldMaps\TicketTimeLineViewFieldMap.cs" />
     <Compile Include="FieldMaps\TicketTypesViewFieldMap.cs" />
     <Compile Include="FieldMaps\TranslateFieldMap.cs" />
     <Compile Include="FieldMaps\UserAssignmentHistoryFieldMap.cs" />
@@ -625,6 +627,7 @@
     <Compile Include="Generated\GeneratedTicketStatuses.cs" />
     <Compile Include="Generated\GeneratedTicketsView.cs" />
     <Compile Include="Generated\GeneratedTicketTemplates.cs" />
+    <Compile Include="Generated\GeneratedTicketTimeLineView.cs" />
     <Compile Include="Generated\GeneratedTicketTypes.cs" />
     <Compile Include="Generated\GeneratedTicketTypesView.cs" />
     <Compile Include="Generated\GeneratedTranslate.cs" />
@@ -655,6 +658,7 @@
     <Compile Include="Proxies\ImportsProxy.cs" />
     <Compile Include="Proxies\ProductFamiliesProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
+    <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />
     <Compile Include="Proxies\TicketTypesViewProxy.cs" />
     <Compile Include="Proxies\UserAssignmentHistoryProxy.cs" />
     <Compile Include="HtmlToText.cs" />

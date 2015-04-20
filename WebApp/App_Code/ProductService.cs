@@ -33,7 +33,7 @@ namespace TSWebServices
     [WebMethod]
     public ProductVersionsViewItemProxy GetVersion(int versionID)
     {
-        ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItemByUserRights(TSAuthentication.GetLoginUser(), versionID);
+      ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItem(TSAuthentication.GetLoginUser(), versionID);
       if (version == null || version.OrganizationID != TSAuthentication.OrganizationID) return null;
       return version.GetProxy();
     }
@@ -52,9 +52,8 @@ namespace TSWebServices
     [WebMethod]
     public BasicProduct[] GetProducts()
     {
-        LoginUser loginUser = TSAuthentication.GetLoginUser();
-        Products products = new Products(loginUser);
-      products.LoadByOrganizationIDAndUserRights(TSAuthentication.OrganizationID, loginUser.UserID);
+      Products products = new Products(TSAuthentication.GetLoginUser());
+      products.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
       List<BasicProduct> result = new List<BasicProduct>();
       foreach (Product product in products)
@@ -85,7 +84,7 @@ namespace TSWebServices
     [WebMethod]
     public ProductProxy GetProduct(int productID)
     {
-        Product product = Products.GetProductByUserRights(TSAuthentication.GetLoginUser(), productID);
+      Product product = Products.GetProduct(TSAuthentication.GetLoginUser(), productID);
       if (product == null || product.OrganizationID != TSAuthentication.OrganizationID) return null;
       return product.GetProxy();
     }
@@ -837,21 +836,6 @@ namespace TSWebServices
         }
 
         return htmlresults.ToString();
-    }
-
-    [WebMethod]
-    public AutocompleteItem[] SearchProductFamily(string searchTerm)
-    {
-        ProductFamilies productFamilies = new ProductFamilies(TSAuthentication.GetLoginUser());
-        productFamilies.LoadByLikeProductFamilyName(TSAuthentication.OrganizationID, searchTerm);
-
-        List<AutocompleteItem> list = new List<AutocompleteItem>();
-        foreach (ProductFamily productFamily in productFamilies)
-        {
-            list.Add(new AutocompleteItem(productFamily.Name, productFamily.ProductFamilyID.ToString()));
-        }
-
-        return list.ToArray();
     }
 
     [WebMethod]

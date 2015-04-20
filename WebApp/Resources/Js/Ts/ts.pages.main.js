@@ -1581,7 +1581,6 @@ Ts.Pages.Main.prototype = {
             var allMenuItems = $('.menutree-item-tickets-mniTickets').find('ul.ui-helper-hidden');
             allMenuItems.show();
         }
-        debugger
         this.MainMenu.find('mniTicketView_' + ReportID, 'tickettype').select();
         var element = $('.main-tab-content-item:visible');
         $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/TicketView.html?ReportID=' + ReportID);

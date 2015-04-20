@@ -447,8 +447,8 @@ $(document).ready(function () {
 
             var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
-            top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (MessageID) {
-                newMessageID = MessageID;
+            top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
+                newMessageID = Message.MessageID;
                 if (attcontainer.length > 0) {
                     attcontainer.each(function (i, o) {
                         var data = $(o).data('data');
@@ -1709,8 +1709,8 @@ function createCommentContainer(messageid) {
 
                 var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
-                top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (MessageID) {
-                    newMessageID = MessageID;
+                top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
+                    newMessageID = Message.MessageID;
                     if (attcontainer.length > 0) {
                         attcontainer.each(function (i, o) {
                             var data = $(o).data('data');

@@ -22,6 +22,7 @@
            <telerik:RadTab runat="server" Text="Email" Value="AdminEmails.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Integration" Value="../vcr/1_9_0/Pages/Admin_Integration.html" Visible="true"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Ticket Templates" Value="AdminTicketTemplates.aspx"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="Ticket Page Order" Value="../vcr/1_9_0/Pages/Admin_TicketOrder.html"></telerik:RadTab>
          </Tabs>
         </telerik:RadTabStrip>
        </div>

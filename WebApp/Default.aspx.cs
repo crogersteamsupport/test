@@ -41,8 +41,6 @@ public partial class _Default : BasePage
     Response.Expires = 0;
 
     fieldSID.Value = TSAuthentication.SessionID;
-    string signalRUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["SignalRUrl"];
-    SignalRUrl.Value = string.IsNullOrWhiteSpace(signalRUrl) ? "signalr/signalr" : signalRUrl;
 
     ChatUserSetting setting = ChatUserSettings.GetSetting(UserSession.LoginUser, UserSession.LoginUser.UserID);
     setting.CurrentChatID = -1;

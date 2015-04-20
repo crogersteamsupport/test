@@ -32,7 +32,7 @@ $(document).ready(function () {
   top.Ts.Services.Products.GetProduct(_productID, function (product) {
     if (product == null)
     {
-      alert('This product has either been deleted or you do not have permission to view it.');
+      alert('This product has been deleted.');
       top.Ts.MainPage.closeNewProductTab(_productID);
     }
     else

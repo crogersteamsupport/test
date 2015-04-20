@@ -72,6 +72,10 @@ var _startDate = new Date();
     Ts.Services.Tickets.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Tickets.set_defaultFailedCallback(defaultFailedCallback);
 
+    Ts.Services.TicketPage = new TSWebServices.TicketPageService();
+    Ts.Services.TicketPage.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.TicketPage.set_defaultFailedCallback(defaultFailedCallback);
+
     Ts.Services.Automation = new TSWebServices.AutomationService();
     Ts.Services.Automation.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Automation.set_defaultFailedCallback(defaultFailedCallback);

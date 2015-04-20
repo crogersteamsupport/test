@@ -1552,12 +1552,12 @@ $(document).ready(function () {
             unassigned.Name = "Unassigned";
             var select = $('<select>').appendTo(container);
             var option = $('<option>').text(unassigned.Name).appendTo(select).data('group', unassigned);
-            if (self.text() === unassigned.Name) {
+            if ($(this).text() === unassigned.Name) {
                 option.attr('selected', 'selected');
             }
             for (var i = 0; i < groups.length; i++) {
                 var option = $('<option>').text(groups[i].Name).appendTo(select).data('group', groups[i]);
-                if (self.text() === groups[i].Name) {
+                if ($(this).text() === groups[i].Name) {
                     option.attr('selected', 'selected');
                 }
             }
@@ -1909,6 +1909,7 @@ $(document).ready(function () {
         window.location = window.location;
     });
 
+
     /*
     addToolbarButton('btnLoadOld', 'ts-icon-refresh', 'Load Old', function (e) {
     e.preventDefault();
@@ -2049,6 +2050,16 @@ $(document).ready(function () {
             }
         });
     }
+
+    var V2OrgID = top.Ts.System.User.OrganizationID;
+    if (V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372) {
+        addToolbarButton('btnTicketV2', 'fa-fighter-jet', 'Switch to V2', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            //top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+            window.location = '/vcr/1_9_0/Pages/TicketPage.html?TicketNumber=' + _ticketNumber;
+        });
+   }
 
     loadTicket(top.Ts.Utils.getQueryValue('TicketNumber', window));
 
