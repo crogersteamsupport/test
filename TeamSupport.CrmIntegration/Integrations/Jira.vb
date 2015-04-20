@@ -611,7 +611,7 @@ Namespace TeamSupport
               Dim issueTypeIndex As Integer? = Nothing
 
               For i = 0 To fields("projects")(0)("issuetypes").Count - 1
-                If fields("projects")(0)("issuetypes")(i)("name").ToString().ToLower() = issueTypeName.ToLower() Then
+                If Replace(fields("projects")(0)("issuetypes")(i)("name").ToString().ToLower(), " ", "+") = issueTypeName.ToLower() Then
                   issueTypeIndex = i
                   Exit For
                 End If
