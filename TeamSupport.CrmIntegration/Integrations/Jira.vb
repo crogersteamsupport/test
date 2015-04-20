@@ -1201,9 +1201,29 @@ Namespace TeamSupport
                 If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
                     Dim ticketLinkToJira As TicketLinkToJira = New TicketLinkToJira(User)
                     ticketLinkToJira.LoadByTicketID(updateTicket(0).TicketID)
-
                     Dim customFields As New CRMLinkFields(User)
-                    customFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
+                    Dim allTypes As TicketTypes = New TicketTypes(User)
+                    allTypes.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+                    Dim ticketTypeId As Integer = 0
+
+                    For Each field As KeyValuePair(Of String, JToken) In CType(issue("fields"), JObject)
+                      If field.Key.Trim().ToLower() = "issuetype" Then
+                        Dim issueTypeName As String = GetFieldValue(field)
+                        Dim ticketType As TicketType = allTypes.FindByName(issueTypeName)
+
+                        If ticketType IsNot Nothing Then
+                          ticketTypeId = allTypes.FindByName(issueTypeName).TicketTypeID
+                          customFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, ticketTypeId)
+                        End If
+
+                        Exit For
+                      End If
+                    Next
+
+                    If ticketTypeId = 0 Then
+                      customFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
+                    End If
+
 
                     Dim ticketValuesChanged = False
                     Dim ticketView As TicketsView = New TicketsView(User)
@@ -1284,9 +1304,6 @@ Namespace TeamSupport
                         Else
                             Select Case field.Key.Trim().ToLower()
                                 Case "issuetype"
-                                    Dim allTypes As TicketTypes = New TicketTypes(User)
-                                    allTypes.LoadByOrganizationID(CRMLinkRow.OrganizationID)
-
                                     Dim currentType As TicketType = allTypes.FindByTicketTypeID(updateTicket(0).TicketTypeID)
                                     Dim newType As TicketType = allTypes.FindByName(value)
 

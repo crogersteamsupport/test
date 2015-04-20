@@ -13,6 +13,7 @@ namespace TeamSupport.Data
     protected override void BuildFieldMap()
     {
       // In addition to the fieldMap the RestTickets.CreateTicket method needs to get a field explicitly added for it to be included in the ticket.
+      // (!) Be careful when changing these values since this map is checked by the CRM service when updating the tickets
       _fieldMap = new FieldMap();
       _fieldMap.AddMap("TicketID", "TicketID", false, false, true);
       _fieldMap.AddMap("ReportedVersionID", "ReportedVersionID", true, true, true);
