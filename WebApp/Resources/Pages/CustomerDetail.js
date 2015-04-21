@@ -18,6 +18,7 @@ var _productsSortDirection = 'DESC';
 var _productHeadersAdded = false;
 
 $(document).ready(function () {
+    var _dateFormat;
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
     $('.customer-tooltip').tooltip({ placement: 'bottom', container: 'body' });
@@ -504,7 +505,7 @@ $(document).ready(function () {
         var theinput = $('<input type="text">')
           .addClass('col-xs-10 form-control')
           .val($(this).text() == "[None]" ? "" : $(this).text())
-            .datetimepicker({ pickTime: false })
+            .datetimepicker({ pickTime: false, format: _dateFormat })
           .appendTo(container1)
           .focus();
        
@@ -524,9 +525,12 @@ $(document).ready(function () {
           .click(function (e) {
               //var value = top.Ts.Utils.getMsDate($(this).prev().find('input').val());
               top.Ts.System.logAction('Customer Detail - Save Service Agreement Expiration Date Edit');
-              top.Ts.Services.Customers.SetCompanySAE(organizationID, $(this).prev().find('input').val(), function (result) {
+
+              var convertedDate = convertToValidDate($(this).prev().find('input').val())
+              var currentdate = $(this).prev().find('input').val();
+              top.Ts.Services.Customers.SetCompanySAE(organizationID, convertedDate, function (result) {
                   //var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-                  header.text(result == "" ? "[None]" : result);
+                  header.text(result == "" ? "[None]" : currentdate);
                   $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
@@ -994,12 +998,43 @@ $(document).ready(function () {
 
     });
 
+    function convertToValidDate(val) {
+        var value = '';
+        if (val == "")
+            return value;
+
+        if (_dateFormat.indexOf("M") != 0) {
+            var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+            if (_dateFormat.indexOf("D") == 0)
+                var day = dateArr[0];
+            if (_dateFormat.indexOf("Y") == 0)
+                var year = dateArr[0];
+            if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+                var month = dateArr[1];
+
+            var timeSplit = dateArr[2].split(' ');
+            if (_dateFormat.indexOf("Y") == 6)
+                var year = timeSplit[0];
+            else
+                var day = timeSplit[0];
+
+            var theTime = timeSplit[1];
+
+            var formattedDate = month + "/" + day + "/" + year;
+            value = top.Ts.Utils.getMsDate(formattedDate);
+            return formattedDate;
+        }
+        else
+            return val;
+    }
+
     top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+        _dateFormat = dateformat.replace('D','DD').replace('DDD','DD');
         $('.datepicker').attr("data-format", dateformat);
         $('.datepicker').datetimepicker({ pickTime: false });
 
         $('#productExpiration').attr("data-format", dateformat);
-        $('.datetimepicker').datetimepicker({ });
+        $('.datetimepicker').datetimepicker({});
     });
 
     $('.userList').on('click', '.contactlink', function (e) {
