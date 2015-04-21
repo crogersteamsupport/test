@@ -218,12 +218,18 @@ namespace TeamSupport.Data
         }
 
         public static string StripHTML(string Content) {
+            // Added to remove <style> tag and its contect based on http://forums.asp.net/t/1901224.aspx?Remove+Head+tag+from+HTML+
+            Content = Regex.Replace(Content, "<style>(.|\n)*?</style>", string.Empty);
+            
             Content = Regex.Replace(Content, "<.*?>", string.Empty);
             Content = System.Web.HttpUtility.HtmlDecode(Content);
             Content = StripComments(Content);
 
             //regex based on http://stackoverflow.com/questions/787932/using-c-regular-expressions-to-remove-html-tags/787949#787949
             Content = Regex.Replace(Content, @"</?\w+((\s+\w+(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)/?>", "", RegexOptions.Singleline);
+
+            // Added to remove duplicate spaces based on http://texthandler.com/?module=remove_double_spaces_cc
+            Content = Regex.Replace(Content, " {2,}", " ");
 
             return Content;
         }
