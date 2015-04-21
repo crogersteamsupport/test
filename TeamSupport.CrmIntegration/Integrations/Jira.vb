@@ -1244,7 +1244,6 @@ Namespace TeamSupport
                         Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), issueFields))
                         If cRMLinkField IsNot Nothing Then
                             Try
-<<<<<<< .working
                                 Dim fieldMapItem As FieldMapItem = ticketsFieldMap.FieldMap.Items.Find(Function(c) c.PrivateName = cRMLinkField.TSFieldName)
                                 Dim canBeUpdated As Boolean = True
 
@@ -1252,15 +1251,6 @@ Namespace TeamSupport
                                   canBeUpdated = False
                                 End If
 
-=======
-                                Dim fieldMapItem As FieldMapItem = ticketsFieldMap.FieldMap.Items.Find(Function(c) c.PrivateName = cRMLinkField.TSFieldName)
-                                Dim canBeUpdated As Boolean = True
-
-                                If fieldMapItem IsNot Nothing AndAlso (Not fieldMapItem.Insert Or Not fieldMapItem.Update) Then
-                                  canBeUpdated = False
-                                End If
-
->>>>>>> .merge-right.r3048
                                 Dim translatedFieldValue As String = value
 
                                 If cRMLinkField.CustomFieldID IsNot Nothing Then
