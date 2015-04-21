@@ -2416,11 +2416,9 @@ function CreateTicketToolbarDomEvents() {
         e.preventDefault();
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - Request Update');
-        top.Ts.Services.Tickets.RequestUpdate(_ticketID, function (actionInfo) {
+        top.Ts.Services.TicketPage.RequestUpdate(_ticketID, function (actionInfo) {
           //TODO:  add in update
-            //var _compiledInsertActionTemplate = Handlebars.compile($("#action-template-inserted").html());
-            //var html = _compiledInsertActionTemplate(Action);
-            //$("#action-timeline").append(html);
+          CreateActionElement(actionInfo, false);
             alert('An update has been requested for this ticket.');
         }, function () {
             alert('There was an error requesting an update for this ticket.');

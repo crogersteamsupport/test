@@ -207,11 +207,7 @@ namespace TSWebServices
                     timeLineItem.item.Message = SanitizeMessage(timeLineItem.item.Message);
                     timeLineItem.Attachments = attachments.GetAttachmentProxies();
 
-                    timeLineItems.Add(new TimeLineItem
-                    {
-                        item = viewItem.GetProxy(),
-                        Attachments = attachments.GetAttachmentProxies()
-                    });
+                    timeLineItems.Add(timeLineItem);
                 }
                 else
                 {
@@ -251,6 +247,32 @@ namespace TSWebServices
             }
 
             return timeLineItems.ToArray();
+        }
+
+        [WebMethod]
+        public TimeLineItem RequestUpdate(int ticketID)
+        {
+          TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+          if (ticket == null) return null;
+          EmailPosts.SendTicketUpdateRequest(TSAuthentication.GetLoginUser(), ticketID);
+          User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+          TeamSupport.Data.Action action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+          action.ActionTypeID = null;
+          action.Name = "Update Requested";
+          action.ActionSource = "UpdateRequest";
+          action.SystemActionTypeID = SystemActionType.UpdateRequest;
+          action.Description = String.Format("<p>{0} requested an update for this ticket.</p>", user.FirstName);
+          action.IsVisibleOnPortal = false;
+          action.IsKnowledgeBase = false;
+          action.TicketID = ticket.TicketID;
+          action.CreatorID = TSAuthentication.UserID;
+          action.Collection.Save();
+
+
+          string description = String.Format("{0} requested an update from {1} for {2}", user.FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
+          ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+
+          return GetActionTimelineItem(action);
         }
 
         [WebMethod]
@@ -489,6 +511,7 @@ namespace TSWebServices
             public bool DidLike { get; set; }
         }
 
+
         [DataContract(Namespace = "http://teamsupport.com/")]
         public class TicketCategoryOrder
         {
@@ -559,7 +582,7 @@ namespace TSWebServices
                 RefID = action.ActionID,
                 IsWC = false,
                 MessageType = action.ActionTypeName,
-                Message = action.Description,
+                Message = SanitizeMessage(action.Description),
                 DateCreated = action.DateCreated,
                 OrganizationID = TSAuthentication.OrganizationID,
                 CreatorID = action.CreatorID,
