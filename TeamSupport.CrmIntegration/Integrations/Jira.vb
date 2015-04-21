@@ -1144,7 +1144,7 @@ Namespace TeamSupport
 
                 Try
                     Dim customMappingFields As New CRMLinkFields(User)
-                    customMappingFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
+                    customMappingFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, ticket.TicketTypeID)
 
                     For Each field As KeyValuePair(Of String, JToken) In fields
                         If field.Value("required") Then
