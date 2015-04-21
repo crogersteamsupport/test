@@ -218,6 +218,7 @@ function CreateNewActionLI() {
         SetupActionTypeSelect();
         FlipNewActionBadge(false);
         _isNewActionPrivate = false;
+        $('#action-save-alert').text('').hide();
     });
 
     $('#action-add-private').click(function (e) {
@@ -228,6 +229,7 @@ function CreateNewActionLI() {
         SetupActionTypeSelect();
         FlipNewActionBadge(true);
         _isNewActionPrivate = true;
+        $('#action-save-alert').text('').hide();
     });
 
     $('#action-new-cancel').click(function (e) {
@@ -447,7 +449,7 @@ function SaveAction(oldAction, isPrivate, callback) {
     var timeSpent = parseInt($('#action-new-hours').val()) * 60 + parseInt($('#action-new-minutes').val());
 
     if (timeSpent < 1 && actionType.IsTimed == true && top.Ts.System.Organization.TimedActionsRequired == true) {
-        //TODO: Need to add validation to indicate that a timed value is required
+      $('#action-save-alert').text('Please enter the time you worked on this action.').show();
         return false;
     }
 
@@ -458,14 +460,23 @@ function SaveAction(oldAction, isPrivate, callback) {
 
     action.Description = tinymce.activeEditor.getContent();
 
-    //TODO:  Need confirmation
-    //if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
+    if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
     top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
         callback(result)
     }, function (error) {
         callback(null);
     });
 }
+
+var confirmVisibleToCustomers = function () {
+  var visible = $('#ticket-visible').is(":checked");
+  if (!visible) {
+    if (confirm('This ticket is not visible to customers.\n\nWould you like to make it visible to customers now?') == true) {
+      $('#ticket-visible').click();
+    }
+  }
+}
+
 
 function UploadAttachments(newAction) {
     if ($('.upload-queue li').length > 0 && newAction !== null) {
@@ -2417,7 +2428,6 @@ function CreateTicketToolbarDomEvents() {
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - Request Update');
         top.Ts.Services.TicketPage.RequestUpdate(_ticketID, function (actionInfo) {
-          //TODO:  add in update
           CreateActionElement(actionInfo, false);
             alert('An update has been requested for this ticket.');
         }, function () {
@@ -2504,7 +2514,7 @@ function CreateTicketToolbarDomEvents() {
           _ticketInfo.Ticket.IsSubscribed = !isSubscribed;
           self.children().toggleClass('color-green');
           //TODO:  add append
-            //appendSubscribers(subscribers);
+          //appendSubscribers(subscribers);
         }, function () {
             alert('There was an error subscribing this ticket.');
         });
