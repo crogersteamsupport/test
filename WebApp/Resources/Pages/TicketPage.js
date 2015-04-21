@@ -31,6 +31,7 @@ var execGetTags = null;
 var execGetAsset = null;
 var execGetUsers = null;
 var execGetRelated = null;
+var execSelectTicket = null;
 
 var getCustomers = function (request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -55,6 +56,17 @@ var getUsers = function (request, response) {
 var getRelated = function (request, response) {
     if (execGetRelated) { execGetRelated._executor.abort(); }
     execGetRelated = top.Ts.Services.Tickets.SearchTickets(request, null, function (result) { response(result); });
+}
+
+var selectTicket = function (request, response) {
+    if (execSelectTicket) { execSelectTicket._executor.abort(); }
+    var filter = $(this.element).data('filter');
+    if (filter === undefined) {
+        execSelectTicket = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
+    }
+    else {
+        execSelectTicket = top.Ts.Services.Tickets.SearchTickets(request.term, filter, function (result) { response(result); });
+    }
 }
 
 var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
@@ -260,7 +272,7 @@ function CreateNewActionLI() {
             top.Ts.Services.Tickets.SetTicketStatus(_ticketID, statusID, function () {
                 $('#ticket-status').val(statusID);
                 top.Ts.System.logAction('Ticket - Status Changed');
-                //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
+                window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
             });
 
             top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
@@ -2374,8 +2386,6 @@ function CreateTimeLineDelegates() {
 };
 
 function CreateTicketToolbarDomEvents() {
-    
-
     $('#Ticket-Owner').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2402,12 +2412,65 @@ function CreateTicketToolbarDomEvents() {
         });
     });
 
-    $('#Ticket-Merge').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        top.Ts.System.logAction('Ticket - Merge');
-        //clearDialog();
-        //$(".dialog-ticketmerge").dialog('open');
+    $("#Ticket-Merge-search").autocomplete({
+        minLength: 2,
+        source: selectTicket,
+        select: function (event, ui) {
+            if (ui.item.data == _ticketID) {
+                alert("Sorry, but you can not merge this ticket into itself.");
+                return;
+            }
+
+            $(this).data('ticketid', ui.item.data).removeClass('ui-autocomplete-loading');
+            $(this).data('ticketnumber', ui.item.id);
+
+            try {
+                top.Ts.Services.Tickets.GetTicketInfo(ui.item.id, function (info) {
+                    var descriptionString = info.Actions[0].Action.Description;
+
+                    if (ellipseString(info.Actions[0].Action.Description, 30).indexOf("<img src") !== -1)
+                        descriptionString = "This ticket starts off with an embedded/linked image. We have disabled this for the preview.";
+                    else if (ellipseString(info.Actions[0].Action.Description, 30).indexOf(".viewscreencast.com") !== -1)
+                        descriptionString = "This ticket starts off with an embedded recorde video.  We have disabled this for the preview.";
+                    else
+                        descriptionString = ellipseString(info.Actions[0].Action.Description, 30);
+
+                    var ticketPreviewName = "<div><strong>Ticket Name:</strong> " + info.Ticket.Name + "</div>";
+                    var ticketPreviewAssigned = "<div><strong>Ticket Assigned To:</strong> " + info.Ticket.UserName + "</div>";
+                    var ticketPreviewDesc = "<div><strong>Ticket Desciption Sample:</strong> " + descriptionString + "</div>";
+
+                    $('#ticketmerge-preview-details').after(ticketPreviewName + ticketPreviewAssigned + ticketPreviewDesc);
+                    $('#dialog-ticketmerge-preview').show();
+                    $('#dialog-ticketmerge-warning').show();
+                    $(".dialog-ticketmerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
+                })
+            }
+            catch (e) {
+                alert("Sorry, there was a problem loading the information for that ticket.");
+            }
+        },
+        position: { my: "right top", at: "right bottom", collision: "fit flip" }
+    });
+
+    $('#ticket-merge-complete').click(function (e) {
+      e.preventDefault();
+      if ($('#Ticket-Merge-search').val() == "") {
+        alert("Please select a valid ticket to merge");
+        return;
+      }
+
+      if ($('#dialog-ticketmerge-confirm').prop("checked")) {
+        var winningID = $('#Ticket-Merge-search').data('ticketid');
+        var winningTicketNumber = $('#Ticket-Merge-search').data('ticketnumber');
+        var JSTop = top;
+        top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+          function () {
+          $('#merge-error').show();
+        });
+      }
+      else {
+        alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+      }
     });
 
     $('#Ticket-Refresh').click(function (e) {
@@ -2479,3 +2542,13 @@ function CreateTicketToolbarDomEvents() {
         //$('.ticket-url').toggle();
     });
 };
+
+var MergeSuccessEvent = function(_ticketNumber, winningTicketNumber)
+{
+  $('#merge-success').show();
+  setTimeout(function () { $('#MergeModal').modal('hide'); }, 2000);
+  top.Ts.MainPage.closeTicketTab(_ticketNumber);
+  top.Ts.MainPage.openTicket(winningTicketNumber, true);
+  window.location = window.location;
+  window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+}
