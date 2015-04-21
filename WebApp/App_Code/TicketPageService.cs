@@ -415,6 +415,14 @@ namespace TSWebServices
             return products.GetProductProxies();
         }
 
+        [WebMethod]
+        public string GetActionTicketTemplate(int actionTypeId)
+        {
+            TicketTemplate template = TicketTemplates.GetByActionType(TSAuthentication.GetLoginUser(), actionTypeId);
+            if (template == null) return "";
+            if (template.OrganizationID != TSAuthentication.OrganizationID) return "";
+            return template.TemplateText;
+        }
 
 
         //TODO Move this down

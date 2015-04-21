@@ -269,11 +269,29 @@ function CreateNewActionLI() {
             });
         });
     });
+
+    $('#action-new-type').change(function (e) {
+        var action = $(this).val();
+        top.Ts.Services.TicketPage.GetActionTicketTemplate(action, function (result) {
+            if (result != null && result != "" && result != "<br>") {
+                var currenttext = tinyMCE.activeEditor.getContent();
+                tinyMCE.activeEditor.setContent(currenttext + result);
+            }
+            elem.parent().fadeIn('normal');
+        });
+    });
 };
 
 function SetupActionEditor(elem) {
     initEditor(elem, true, function (ed) {
-        elem.parent().fadeIn('normal');
+        var action = $('#action-new-type').val();
+        top.Ts.Services.TicketPage.GetActionTicketTemplate(action, function (result) {
+            if (result != null && result != "" && result != "<br>") {
+                var currenttext = tinyMCE.activeEditor.getContent();
+                tinyMCE.activeEditor.setContent(currenttext + result);
+            }
+            elem.parent().fadeIn('normal');
+        });
     });
 
     var element = $('.action-new-area');

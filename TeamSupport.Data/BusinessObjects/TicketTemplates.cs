@@ -42,6 +42,23 @@ namespace TeamSupport.Data
     
     }
 
+    public static TicketTemplate GetByActionType(LoginUser loginUser, int actionTypeID)
+    {
+        TicketTemplates templates = new TicketTemplates(loginUser);
+
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * FROM TicketTemplates WHERE (OrganizationID = @OrganizationID) AND TicketTypeID = @TicketTypeID AND IsEnabled = 1 AND TemplateType = 2";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@TicketTypeID", actionTypeID);
+            templates.Fill(command);
+        }
+        if (templates.IsEmpty) return null;
+        return templates[0];
+
+    }
+
     public static TicketTemplate GetByTriggerText(LoginUser loginUser, string triggerText)
     {
       TicketTemplates templates = new TicketTemplates(loginUser);
