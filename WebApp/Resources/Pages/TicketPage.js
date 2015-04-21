@@ -539,7 +539,19 @@ function GetActionCount() {
 };
 
 function LoadTicketControls() {
-    $('#ticket-assigned').selectize({
+  if (_ticketInfo.Ticket.IsFlagged) {
+    $('#Ticket-Flag').children().addClass('color-red');
+  }
+
+  if (_ticketInfo.Ticket.IsEnqueued) {
+    $('#Ticket-Queue').children().addClass('color-green');
+  }
+
+  if (_ticketInfo.Ticket.IsSubscribed) {
+    $('#Ticket-Subscribe').children().addClass('color-green');
+  }
+
+    var AssignedSelectize = $('#ticket-assigned').selectize({
         valueField: 'id',
         labelField: 'label',
         searchField: 'label',
@@ -2391,8 +2403,10 @@ function CreateTicketToolbarDomEvents() {
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - Take Ownership');
         top.Ts.Services.Tickets.AssignUser(_ticketID, top.Ts.System.User.UserID, function (userInfo) {
-            //setUserName(userInfo);
-            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+          var $select = $("#ticket-assigned").selectize();
+          var selectize = $select[0].selectize;
+          selectize.setValue(userInfo.UserID);
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
         }, function () {
             alert('There was an error taking ownwership of this ticket.');
         });
@@ -2403,6 +2417,7 @@ function CreateTicketToolbarDomEvents() {
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - Request Update');
         top.Ts.Services.Tickets.RequestUpdate(_ticketID, function (actionInfo) {
+          //TODO:  add in update
             //var _compiledInsertActionTemplate = Handlebars.compile($("#action-template-inserted").html());
             //var html = _compiledInsertActionTemplate(Action);
             //$("#action-timeline").append(html);
@@ -2484,10 +2499,13 @@ function CreateTicketToolbarDomEvents() {
     $('#Ticket-Subscribe').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+        var self = $(this);
         var isSubscribed = _ticketInfo.Ticket.IsSubscribed;
         top.Ts.System.logAction('Ticket - Subscribed');
         top.Ts.Services.Tickets.SetSubscribed(_ticketID, !isSubscribed, null, function (subscribers) {
-            _ticketInfo.Ticket.IsSubscribed = !isSubscribed;
+          _ticketInfo.Ticket.IsSubscribed = !isSubscribed;
+          self.children().toggleClass('color-green');
+          //TODO:  add append
             //appendSubscribers(subscribers);
         }, function () {
             alert('There was an error subscribing this ticket.');
@@ -2497,11 +2515,14 @@ function CreateTicketToolbarDomEvents() {
     $('#Ticket-Queue').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+        var self = $(this);
         var isQueued = _ticketInfo.Ticket.IsEnqueued;
         top.Ts.System.logAction('Ticket - Enqueued');
         top.Ts.System.logAction('Queued');
         top.Ts.Services.Tickets.SetQueue(_ticketID, !isQueued, null, function (queues) {
-            _ticketInfo.Ticket.IsEnqueued = !isQueued;
+          _ticketInfo.Ticket.IsEnqueued = !isQueued;
+          self.children().toggleClass('color-green');
+          //TODO:  add append
             //appendQueues(queues);
         }, function () {
             alert('There was an error queueing this ticket.');
@@ -2511,11 +2532,12 @@ function CreateTicketToolbarDomEvents() {
     $('#Ticket-Flag').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+        var self = $(this);
         var isFlagged = _ticketInfo.Ticket.IsFlagged;
+        _ticketInfo.Ticket.IsFlagged = !isFlagged;
+        self.children().toggleClass('color-red');
         top.Ts.System.logAction('Ticket - Flagged');
-        top.Ts.Services.Tickets.SetTicketFlag(_ticketID, !isFlagged, null, function (queues) {
-            _ticketInfo.Ticket.IsFlagged = !isFlagged;
-            //appendQueues(queues);
+        top.Ts.Services.Tickets.SetTicketFlag(_ticketID, !isFlagged, null, function () {
         }, function () {
             alert('There was an error unflagging to this ticket.');
         });
