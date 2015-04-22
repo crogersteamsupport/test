@@ -18,6 +18,7 @@ namespace TeamSupport.Data
     [DataMember] public int RefID { get; set; }
     [DataMember] public bool IsWC { get; set; }
     [DataMember] public string MessageType { get; set; }
+    [DataMember] public int? ActionTypeID { get; set; }
     [DataMember] public string Message { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public int? OrganizationID { get; set; }
@@ -44,6 +45,7 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.Message = this.Message;
       result.MessageType = this.MessageType;
+      result.ActionTypeID = this.ActionTypeID;
       result.IsWC = this.IsWC;
       result.RefID = this.RefID;
       result.TicketNumber = this.TicketNumber;

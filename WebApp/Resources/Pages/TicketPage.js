@@ -4,7 +4,6 @@ var _ticketID = null;
 var _ticketCreator = new Object();
 var _ticketSender = null;
 
-//TODO:  Need to figure out wth these do. 
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
 var _ticketTypeID = null;
@@ -298,17 +297,25 @@ function CreateNewActionLI() {
     });
 };
 
-function SetupActionEditor(elem) {
-    initEditor(elem, true, function (ed) {
-        var action = $('#action-new-type').val();
-        top.Ts.Services.TicketPage.GetActionTicketTemplate(action, function (result) {
-            if (result != null && result != "" && result != "<br>") {
-                var currenttext = tinyMCE.activeEditor.getContent();
-                tinyMCE.activeEditor.setContent(currenttext + result);
-            }
-            elem.parent().fadeIn('normal');
-        });
-    });
+function SetupActionEditor(elem, action) {
+  initEditor(elem, true, function (ed) {
+    if (action) {
+      debugger
+      var test = $('#action-new-type');
+      $('#action-new-type').val(action.ActionTypeID);
+      tinyMCE.activeEditor.setContent(action.Message);
+      elem.parent().fadeIn('normal');
+    }
+    else {
+      $('#action-new-type').val();
+      top.Ts.Services.TicketPage.GetActionTicketTemplate(action.ActionTypeID, function (result) {
+        if (result != null && result != "" && result != "<br>") {
+          var currenttext = tinyMCE.activeEditor.getContent();
+        }
+        elem.parent().fadeIn('normal');
+      });
+    }
+  });
 
     var element = $('.action-new-area');
     $('.file-upload').fileupload({
@@ -701,11 +708,13 @@ function LoadTicketControls() {
 
 
     if (_ticketInfo.Ticket.SlaViolationTime === null) {
-        $('#ticket-SLAStatus').addClass('ts-icon-sla-good');
+        $('#ticket-SLAStatus').find('i').addClass('color-green');
         $('#ticket-SLANote').text('None');
     }
     else {
-        $('#ticket-SLAStatus').addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'ts-icon-sla-bad' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'ts-icon-sla-warning' : 'ts-icon-sla-good')));
+      $('#ticket-SLAStatus')
+        .find('i')
+        .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
         $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(top.Ts.Utils.getDateTimePattern()));
     }
 
@@ -1118,9 +1127,7 @@ function PrependTag(parent, id, value, data) {
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data });
     parent.prepend(tagHTML);
 }
-
-//TODO:  Add in the update method for when a value is changed.  
-//TODO:  Also need to update custom fields on update. 
+  
 function SetupProductSection() {
   top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
         if (showOnlyCustomers == "True") {
@@ -1403,7 +1410,6 @@ function SetupSubscribedUsersSection() {
     });
 }
 
-//TODO:  Not working but may just be the enviroment with DTSearch
 function SetupAssociatedTicketsSection() {
     $('#ticket-AssociatedTickets-Input').selectize({
         valueField: 'id',
@@ -2301,12 +2307,22 @@ function CreateTimeLineDelegates() {
         }
     });
 
-    $('#action-timeline').on('click', 'a.ticket-action-edit', function (e) {
+    $('#action-timeline').on('click', 'a.action-option-edit', function (e) {
         e.preventDefault();
         e.stopPropagation();
-
+      debugger
         var self = $(this);
         var action = self.closest('li').data().action;
+
+        var editor = $('#action-new-editor');
+        SetupActionEditor(editor, action);
+        SetupActionTypeSelect();
+
+
+
+        //FlipNewActionBadge(false);
+        //_isNewActionPrivate = false;
+        $('#action-save-alert').text('').hide();
 
     });
 

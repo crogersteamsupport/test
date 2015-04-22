@@ -165,10 +165,10 @@
                                                     <li><a href="#">Create and Set Status to Closed</a></li>
                                                     <li><a href="#">Another action</a></li>
                                                     <li><a href="#">Something else here</a></li>
-                                                    <li class="divider"></li>
-                                                    <li><a id="action-new-cancel" href="#">Cancel</a></li>
+                                                    <li class="divider"></li> 
                                                 </ul>
                                             </div>
+                                          <button id="action-new-cancel" type="button" class="btn btn-default">Cancel</button>
                                         </div>
                                     </div>
                                 </div>
@@ -347,7 +347,9 @@
                             <div class="form-group form-group-sm">
                                 <label for="ticket-severity" class="col-sm-4 control-label select-label">SLA Status</label>
                                 <div class="col-sm-8 ticket-input-container">
-                                    <label id="ticket-SLAStatus" class="ts-icon ticket-sla-status pull-left control-label"></label>
+                                    <label id="ticket-SLAStatus" class="ticket-sla-status pull-left control-label">
+                                      <i class="fa fa-bomb"></i>
+                                    </label>
                                     <label id="ticket-SLANote" class="ticket-sla-status-note pull-left control-label">Sla</label>
                                     
                                 </div>

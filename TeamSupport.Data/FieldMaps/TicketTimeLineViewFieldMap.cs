@@ -18,6 +18,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RefID", "RefID", false, false, false);
       _fieldMap.AddMap("IsWC", "IsWC", false, false, false);
       _fieldMap.AddMap("MessageType", "MessageType", false, false, false);
+      _fieldMap.AddMap("ActionTypeID", "ActionTypeID", false, false, false);
       _fieldMap.AddMap("Message", "Message", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);

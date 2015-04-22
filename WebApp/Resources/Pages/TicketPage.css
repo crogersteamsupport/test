@@ -498,7 +498,8 @@
 
     .ts-icon { width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
     .ts-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
-    .ticket-sla-status {  position: relative; top: 5px;  margin-left: 5px;}
+
+    .ticket-sla-status > i { position: relative; top: -3px; }
     .ts-icon-sla-good { background-position: -784px -16px; }
     .ts-icon-sla-warning { background-position: -528px -16px; }
     .ts-icon-sla-bad { background-position: -512px 0px; }

@@ -46,6 +46,12 @@ namespace TeamSupport.Data
       get { return Row["MessageType"] != DBNull.Value ? (string)Row["MessageType"] : null; }
       set { Row["MessageType"] = CheckValue("MessageType", value); }
     }
+
+    public int? ActionTypeID
+    {
+      get { return Row["ActionTypeID"] != DBNull.Value ? (int?)Row["ActionTypeID"] : null; }
+      set { Row["ActionTypeID"] = CheckValue("ActionTypeID", value); }
+    }
     
     public string Message
     {
