@@ -67,16 +67,20 @@ namespace TeamSupport.Handlers
               using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
               {
                 string requestContent = readStream.ReadToEnd();
+                NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
                 try
                 {
-                  User user = ProcessSignUp(context, requestContent);
-                  context.Response.Redirect("http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=" + user.UserID.ToString(), false);
+                  User user = ProcessSignUp(context, values);
+                  //context.Response.Redirect("http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=" + user.UserID.ToString(), false);
+
+                  string url = string.Format("{0}://{1}/{2}?userid={3}", context.Request.UrlReferrer.Scheme, context.Request.UrlReferrer.Host, GetValueString(values["success"]), "34");
+                  context.Response.Redirect(url, false);
 
                 }
                 catch (Exception ex)
                 {
                   ExceptionLogs.LogException(LoginUser.Anonymous, ex, "SIGN UP", requestContent);
-                  context.Response.Redirect(GetErrorUrl(context), false);
+                  context.Response.Redirect(GetErrorUrl(context, values), false);
                 }
               }
             }
@@ -90,29 +94,23 @@ namespace TeamSupport.Handlers
       }
     }
 
-    private static string GetErrorUrl(HttpContext context, string requestContent = null)
+    private static string GetErrorUrl(HttpContext context, NameValueCollection values = null)
     {
-      string result = "https://www.teamsupport.com/web-help-desk-support-free-trial";//context.Request.UrlReferrer.AbsoluteUri;
-      if (requestContent != null)
+      UriBuilder builder = new UriBuilder(context.Request.UrlReferrer.AbsoluteUri);
+      NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
+      if (values != null)
       {
-        NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
-        result = appendUrlParam(result, "_name", GetValueString(values["name"]));
-        result = appendUrlParam(result, "_email", GetValueString(values["email"]));
-        result = appendUrlParam(result, "_company", GetValueString(values["company"]));
-        result = appendUrlParam(result, "_phone", GetValueString(values["phone"]));
-        result = appendUrlParam(result, "_product", GetValueString(values["product"]));
-        result = appendUrlParam(result, "_promo", GetValueString(values["promo"]));
+        query["_name"] = "kevin jones";// GetValueString(values["name"]);
+        query["_email"] = GetValueString(values["email"]);
+        query["_company"] = GetValueString(values["company"]);
+        query["_phone"] = GetValueString(values["phone"]);
+        query["_product"] = GetValueString(values["product"]);
+        query["_promo"] = GetValueString(values["promo"]);
       }
+      query["suerror"] = "1";
 
-      if (result.IndexOf("suerror=1") < 0) result = appendUrlParam(result, "suerror", "1");
-
-      return result;
-    }
-
-    private static string appendUrlParam(string url, string param, string value)
-    {
-      if (string.IsNullOrWhiteSpace(value)) return url;
-      return url + (url.IndexOf("?") > -1 ? "&" : "?") + param + "=" + HttpUtility.UrlEncode(value);
+      builder.Query = HttpUtility.UrlPathEncode(HttpUtility.UrlDecode(query.ToString()));
+      return builder.ToString();
     }
 
     private static void ValidateCompany(HttpContext context)
@@ -124,9 +122,8 @@ namespace TeamSupport.Handlers
 
     }
 
-    private static User ProcessSignUp(HttpContext context, string requestContent)
+    private static User ProcessSignUp(HttpContext context, NameValueCollection values)
     {
-      NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
       string name = GetValueString(values["name"]);
       string email = GetValueString(values["email"]);
       string company = GetValueString(values["company"]);
@@ -141,7 +138,7 @@ namespace TeamSupport.Handlers
       {
         if (int.TryParse(product, out version))
         {
-          if (version != (int)ProductType.Enterprise || version != (int)ProductType.HelpDesk)
+          if (version != (int)ProductType.Enterprise && version != (int)ProductType.HelpDesk)
           {
             version = (int)ProductType.Enterprise;
           }
@@ -241,9 +238,8 @@ namespace TeamSupport.Handlers
           }
         }
         prams.promo = promo;
-        prams.hubspotutk = cookies["hubspotutk"].Value;
+        prams.hubspotutk = cookies["hubspotutk"] != null ? cookies["hubspotutk"].Value : "";
         prams.source = source;
-        //HubspotPost(fname, lname, email, company, phone, promo, source, cookies, version);
         return Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
       }
       else
@@ -251,9 +247,6 @@ namespace TeamSupport.Handlers
         throw new Exception("Invalid Company: " + company);
       }
     }
-    
-   
-    
 
     private static string parseGAString(string cookieValue, string key)
     {
@@ -269,7 +262,7 @@ namespace TeamSupport.Handlers
 
     private static string GetValueString(string value)
     {
-      return string.IsNullOrWhiteSpace(value) ? "" : value;
+      return string.IsNullOrWhiteSpace(value) ? "" : HttpUtility.UrlDecode(value);
     }
 
     public static bool IsCompanyValid(string company)

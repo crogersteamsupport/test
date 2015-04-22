@@ -13,7 +13,6 @@
         <source src="https://s3.amazonaws.com/screenrvideos/<%=Request.QueryString["VideoID"] %>.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
-    
     </div>
     </form>
 </body>
