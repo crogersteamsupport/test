@@ -71,9 +71,7 @@ namespace TeamSupport.Handlers
                 try
                 {
                   User user = ProcessSignUp(context, values);
-                  //context.Response.Redirect("http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=" + user.UserID.ToString(), false);
-
-                  string url = string.Format("{0}://{1}/{2}?userid={3}", context.Request.UrlReferrer.Scheme, context.Request.UrlReferrer.Host, GetValueString(values["success"]), "34");
+                  string url = string.Format("{0}://{1}/{2}?userid={3}", context.Request.UrlReferrer.Scheme, context.Request.UrlReferrer.Host, GetValueString(values["success"]), user.UserID.ToString());
                   context.Response.Redirect(url, false);
 
                 }
