@@ -366,7 +366,7 @@ Namespace TeamSupport
                     thisCompany = findCompany(0)
                     'it exists, so update the name on the account if it has changed.
                     thisCompany.Name = company.AccountName
-
+                    Log.Write(String.Format("Found by accountId: {0} ({1})", company.AccountName, company.AccountID))
                 Else
                     'look for parentid = parentorgid and name = accountname, and use that
                     findCompany.LoadByParentID(ParentOrgID, False)
@@ -374,7 +374,7 @@ Namespace TeamSupport
                         thisCompany = findCompany.FindByName(company.AccountName)
                         'update accountid
                         thisCompany.CRMLinkID = company.AccountID
-
+                        Log.Write(String.Format("Found by Name: {0} ({1})", company.AccountName, company.AccountID))
                     Else
                         'if still not found, add new
 
@@ -390,7 +390,7 @@ Namespace TeamSupport
                         thisCompany.IsActive = True
                         thisCompany.SlaLevelID = CRMLinkRow.DefaultSlaLevelID
 
-                        Log.Write("Added a new account.")
+                        Log.Write(String.Format("Added a new account. {0} ({1})", company.AccountName, company.AccountID))
                     End If
                 End If
 
@@ -467,25 +467,25 @@ Namespace TeamSupport
                         thisPhone.Collection.DeleteFromDB(thisPhone.PhoneID)
                     End If
                 Else
-                    If thisPhone Is Nothing
+                    If thisPhone Is Nothing Then
                         thisPhone = (New PhoneNumbers(User)).AddNewPhoneNumber()
                     End If
 
                     With thisPhone
-                        .Number   = company.Phone
-                        .RefType  = ReferenceType.Organizations
-                        .RefID    = thisCompany.OrganizationID
+                        .Number = company.Phone
+                        .RefType = ReferenceType.Organizations
+                        .RefID = thisCompany.OrganizationID
                         If CRMPhoneType IsNot Nothing Then
                           .PhoneTypeID = CRMPhoneType.PhoneTypeID
                         End If
 
                         .Collection.Save()
                         Log.Write("Account phone number added/upated.")
-                    End With                
+                    End With
                 End If
 
                 Log.Write("Adding/updating account fax number.")
-                Dim faxType As PhoneType = phoneTypes.FindByName("Fax") 
+                Dim faxType As PhoneType = phoneTypes.FindByName("Fax")
                 If faxType Is Nothing Then
                     faxType = AddPhoneType("Fax", phoneTypes.Count, ParentOrgID)
                     phoneTypes.LoadAllPositions(ParentOrgID)
@@ -501,14 +501,14 @@ Namespace TeamSupport
                     If thisFax Is Nothing Then
                         thisFax = (New PhoneNumbers(User)).AddNewPhoneNumber()
                     End If
-                
+
                     With thisFax
                         .Number = company.Fax
-                        .RefType     = ReferenceType.Organizations
-                        .RefID       = thisCompany.OrganizationID
+                        .RefType = ReferenceType.Organizations
+                        .RefID = thisCompany.OrganizationID
                         .PhoneTypeID = faxType.PhoneTypeID
                         .Collection.Save()
-                    End With                
+                    End With
                     Log.Write("Account fax number added.")
                 End If
 
