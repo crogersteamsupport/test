@@ -9,6 +9,7 @@ var _ticketGroupID = null;
 var _ticketGroupUsers = null;
 var _ticketTypeID = null;
 var _parentFields = [];
+var _productFamilyID = null;
 
 var _isNewActionPrivate = true;
 
@@ -170,6 +171,7 @@ function SetupTicketProperties() {
         _ticketCreator = new Object();
         _ticketCreator.UserID = info.Ticket.CreatorID;
         _ticketCreator.Name = info.Ticket.CreatorName;
+        _productFamilyID = info.Ticket.ProductFamilyID;
         top.Ts.System.logAction('View Ticket');
 
         if (info == null) alert('no ticket');
@@ -1117,16 +1119,16 @@ function PrependTag(parent, id, value, data) {
     parent.prepend(tagHTML);
 }
 
-//TODO:  Need to work on revisions and resolved (not loading) and add in the update method for when a value is changed.  
+//TODO:  Add in the update method for when a value is changed.  
 //TODO:  Also need to update custom fields on update. 
 function SetupProductSection() {
-    top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
+  top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
         if (showOnlyCustomers == "True") {
             top.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
                 for (var i = 0; i < CustomerProducts.length; i++) {
                     AppendSelect('#ticket-Product', CustomerProducts[i], 'product', CustomerProducts[i].ProductID, CustomerProducts[i].Name, (CustomerProducts[i].ProductID === _ticketInfo.Ticket.ProductID));
                 }
-                $('#ticket-Product').selectize();
+                var $productselect = $('#ticket-Product').selectize();
             });
         }
         else {
@@ -1134,22 +1136,121 @@ function SetupProductSection() {
             for (var i = 0; i < products.length; i++) {
                 AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, (products[i].ProductID === _ticketInfo.Ticket.ProductID));
             }
-            $('#ticket-Product').selectize();
+            var $productselect = $('#ticket-Product').selectize();
+        }
+
+        if (_ticketInfo.Ticket.ProductID == null) {
+          var $productselectInput = $productselect[0].selectize;
+          $productselectInput.clear();
         }
 
         var product = top.Ts.Cache.getProduct(_ticketInfo.Ticket.ProductID);
-        if (product !== null && product.Versions.length > 0)
-        {
-            var versions = product.Versions;
-            for (var i = 0; i < versions.length; i++) {
-                AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, (versions[i].ProductVersionID === _ticketInfo.Ticket.ReportedVersionID));
-                AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, (versions[i].ProductVersionID === _ticketInfo.Ticket.ResolvedVersionID));
+        SetupProductVersionsControl(product);
+        SetProductVersionAndResolved(_ticketInfo.Ticket.ReportedVersionID, _ticketInfo.Ticket.ResolvedVersionID);
+        //if (product !== null && product.Versions.length > 0)
+        //{
+        //    var versions = product.Versions;
+        //    for (var i = 0; i < versions.length; i++) {
+        //        AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, (versions[i].ProductVersionID === _ticketInfo.Ticket.ReportedVersionID));
+        //        AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, (versions[i].ProductVersionID === _ticketInfo.Ticket.ResolvedVersionID));
+        //    }
+        //    $('#ticket-Versions').selectize();
+        //    $('#ticket-Resolved').selectize();
+        //}
+
+        top.Ts.Services.Organizations.IsProductRequired(function (result) {
+          if (result && _ticketInfo.Ticket.ProductID == null)
+            $('#ticket-Product').closest('.form-group').addClass('hasError');
+          else
+            $('#ticket-Product').closest('.form-group').removeClass('hasError');
+        });
+
+        $('#ticket-Product').change(function (e) {
+          var self = $(this);
+          top.Ts.Services.Tickets.SetProduct(_ticketID, self.val(), function (result) {
+            if (result !== null) {
+              var name = result.label;
+              _productFamilyID = result.data;
+              var product = top.Ts.Cache.getProduct(self.val());
+              SetupProductVersionsControl(product);
+              SetProductVersionAndResolved(null, null);
             }
-            $('#ticket-Versions').selectize();
-            $('#ticket-Resolved').selectize();
-        }
+
+            top.Ts.Services.Tickets.GetParentValues(_ticketID, function (fields) {
+              AppenCustomValues(fields);
+            });
+
+            top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
+              if (IsRequired && (name == null || name == ''))
+                $('#ticket-Product').closest('.form-group').addClass('hasError');
+              else
+                $('#ticket-Product').closest('.form-group').removeClass('hasError');
+            });
+          },
+          function (error) {
+            alert('There was an error setting the product.');
+          });
+        });
+
+        $('#ticket-Versions').change(function (e) {
+
+        });
+
+        $('#ticket-Resolved').change(function (e) {
+
+        });
+
     })
 }
+
+function SetupProductVersionsControl(product) {
+  var $select = $("#ticket-Versions").selectize();
+  var versionInput = $select[0].selectize;
+
+  if (versionInput) {
+    versionInput.destroy();
+  }
+
+  var $select = $("#ticket-Resolved").selectize();
+  var resolvedInput = $select[0].selectize;
+
+  if (resolvedInput) {
+    resolvedInput.destroy();
+  }
+
+  if (product !== null && product.Versions.length > 0) {
+    var versions = product.Versions;
+    for (var i = 0; i < versions.length; i++) {
+      AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+      AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+    }
+    $('#ticket-Versions').selectize();
+    $('#ticket-Resolved').selectize();
+  }
+}
+
+function SetProductVersionAndResolved(versionId, resolvedId) {
+  var $select = $("#ticket-Versions").selectize();
+  var versionInput = $select[0].selectize;
+
+  if (versionId !== null) {
+    versionInput.setValue(versionId);
+  }
+  else
+  {
+    versionInput.clear();
+  }
+
+  var $select = $("#ticket-Resolved").selectize();
+  var resolvedInput = $select[0].selectize;
+
+  if (resolvedId !== null) {
+    resolvedInput.setValue(versionId);
+  }
+  else {
+    resolvedInput.clear();
+  }
+};
 
 function SetupInventorySection() {
     $('#ticket-Inventory-Input').selectize({

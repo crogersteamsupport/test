@@ -172,6 +172,44 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string GetUserContactCard(int userID)
+        {
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user == null) return null;
+          Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), user.OrganizationID);
+
+          StringBuilder ContactCardHTML = new StringBuilder();
+          ContactCardHTML.Append("<address>");
+
+          if (organization != null)
+          {
+            ContactCardHTML.AppendFormat("<strong><a href='#' onclick='top.Ts.MainPage.openCustomer({0}); return false;'>{1}</a></strong><br>", organization.OrganizationID, organization.Name);
+          }
+
+          if (!string.IsNullOrEmpty(user.Title))
+          {
+            ContactCardHTML.AppendFormat("{0}<br>", user.Title);
+          }
+
+          if (!string.IsNullOrEmpty(user.Email))
+          {
+            ContactCardHTML.AppendFormat("<a href='mailto:{0}'>{0}</a><br>", user.Email);
+          }
+
+          PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+          numbers.LoadByID(userID, ReferenceType.Users);
+
+          foreach (PhoneNumber phone in numbers)
+          {
+            ContactCardHTML.AppendFormat("<abbr title='{0}'>{1}:</abbr> {2}<br>", phone.PhoneTypeName, phone.PhoneTypeName.Substring(0, 1), phone.FormattedNumber);
+          }
+
+          ContactCardHTML.Append("</address>");
+
+          return ContactCardHTML.ToString();
+        }
+
+        [WebMethod]
         public GroupProxy[] GetUserGroups(int userID)
         {
             Groups groups = new Groups(TSAuthentication.GetLoginUser());
