@@ -1919,9 +1919,9 @@ $(document).ready(function () {
     var menuID = top.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
     switch (menuID) {
       case 'mniusers':
-        top.Ts.Services.Settings.ReadUserSetting('SelectedUserID', -1, function (result) {
-          if (result > -1) $('.newticket-user').combobox('setValue', result);
-        });
+        //top.Ts.Services.Settings.ReadUserSetting('SelectedUserID', -1, function (result) {
+        //  if (result > -1) $('.newticket-user').combobox('setValue', result);
+        //});
         break;
       case 'mniproducts':
         top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
