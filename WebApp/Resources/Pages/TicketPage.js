@@ -767,11 +767,15 @@ function SetupTicketPropertyEvents() {
         top.Ts.Services.Tickets.SetTicketType(_ticketID, value, function (result) {
             if (result !== null) {
                 _ticketTypeID = value;
-                //TODO:  This is not working.  It never changes the value of the control. 
-                $('#ticket-status').val(result[0].TicketStatusID); 
+                //TODO:  This is not working.  IT does not always find the correct status for some reaosn. 
+                var $select = $("#ticket-status").selectize();
+                var selectize = $select[0].selectize;
+                selectize.addOption({ value: result[0].TicketStatusID, text: result[0].Name })
+                selectize.setValue(result[0].TicketStatusID);
+
                 $('#ticket-status-label').toggleClass('ticket-closed', result[0].IsClosed);
-                //TODO:  Add Custom Results Fields Logic here
-                //appendCustomValues(result[1]);
+
+                AppenCustomValues(result[1])
                 window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changetype", userFullName);
             }
         },
@@ -1113,6 +1117,8 @@ function PrependTag(parent, id, value, data) {
     parent.prepend(tagHTML);
 }
 
+//TODO:  Need to work on revisions and resolved (not loading) and add in the update method for when a value is changed.  
+//TODO:  Also need to update custom fields on update. 
 function SetupProductSection() {
     top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
         if (showOnlyCustomers == "True") {
@@ -1411,6 +1417,7 @@ function SetupCustomFieldsSection() {
 function AppenCustomValues(fields) {
     var parentContainer = $('#ticket-group-custom-fields');
     if (fields === null || fields.length < 1) { parentContainer.empty().hide(); return; }
+    parentContainer.empty()
     parentContainer.show();
     _parentFields = [];
 
