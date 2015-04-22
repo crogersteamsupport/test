@@ -1146,17 +1146,7 @@ function SetupProductSection() {
 
         var product = top.Ts.Cache.getProduct(_ticketInfo.Ticket.ProductID);
         SetupProductVersionsControl(product);
-        SetProductVersionAndResolved(_ticketInfo.Ticket.ReportedVersionID, _ticketInfo.Ticket.ResolvedVersionID);
-        //if (product !== null && product.Versions.length > 0)
-        //{
-        //    var versions = product.Versions;
-        //    for (var i = 0; i < versions.length; i++) {
-        //        AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, (versions[i].ProductVersionID === _ticketInfo.Ticket.ReportedVersionID));
-        //        AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, (versions[i].ProductVersionID === _ticketInfo.Ticket.ResolvedVersionID));
-        //    }
-        //    $('#ticket-Versions').selectize();
-        //    $('#ticket-Resolved').selectize();
-        //}
+        SetProductVersionAndResolved(_ticketInfo.Ticket.ReportedVersionID, _ticketInfo.Ticket.SolvedVersionID);
 
         top.Ts.Services.Organizations.IsProductRequired(function (result) {
           if (result && _ticketInfo.Ticket.ProductID == null)
@@ -1193,11 +1183,23 @@ function SetupProductSection() {
         });
 
         $('#ticket-Versions').change(function (e) {
-
+          top.Ts.System.logAction('Ticket - Reported Version Changed');
+          top.Ts.Services.Tickets.SetReportedVersion(_ticketID, $(this).val(), function (result) {
+            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changereported", userFullName);
+          },
+          function (error) {
+            alert('There was an error setting the reported version.');
+          });
         });
 
         $('#ticket-Resolved').change(function (e) {
-
+          top.Ts.System.logAction('Ticket - Resolved Version Changed');
+          top.Ts.Services.Tickets.SetSolvedVersion(_ticketID, $(this).val(), function (result) {
+            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeresolved", userFullName);
+          },
+          function (error) {
+            alert('There was an error setting the reported version.');
+          });
         });
 
     })
@@ -1245,7 +1247,7 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
   var resolvedInput = $select[0].selectize;
 
   if (resolvedId !== null) {
-    resolvedInput.setValue(versionId);
+    resolvedInput.setValue(resolvedId);
   }
   else {
     resolvedInput.clear();
