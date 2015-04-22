@@ -98,7 +98,7 @@ namespace TeamSupport.Handlers
       NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
       if (values != null)
       {
-        query["_name"] = "kevin jones";// GetValueString(values["name"]);
+        query["_name"] = GetValueString(values["name"]);
         query["_email"] = GetValueString(values["email"]);
         query["_company"] = GetValueString(values["company"]);
         query["_phone"] = GetValueString(values["phone"]);
