@@ -2764,6 +2764,16 @@ var initEditor = function (element, init) {
   });
 }
 
+var onScreenBirdRecordComplete = function (url) {
+  var link = '<a href="' + url + '" target="_blank">Click here to view screen recording video</a>';
+  var html = '<div><iframe src="' + url + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
+  var ed = tinyMCE.activeEditor;
+  ed.selection.setContent(html);
+  ed.execCommand('mceAutoResize');
+  ed.focus();
+  top.Ts.System.logAction('Ticket - Screen Recorded');
+};
+
 //actions
 var tickettimer = function () {
     var element = $('.ticket-action-form');
