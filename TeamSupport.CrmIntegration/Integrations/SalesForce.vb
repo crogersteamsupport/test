@@ -61,7 +61,7 @@ Namespace TeamSupport
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
                 Dim TagsToMatch As String = CRMLinkRow.TypeFieldMatch
 
-        Log.Write("(Trunk Rev. 3078) Attempting to log in")
+                Log.Write("(Trunk Rev. 1151) Attempting to log in")
 
                 Dim LoginReturn As String = login(Trim(CompanyName), Trim(Password), Trim(SecurityToken))
 
@@ -2259,20 +2259,20 @@ Namespace TeamSupport
                     hasParentID = True
                   Case "commentbody"
                     If action.Description IsNot Nothing AndAlso ((isNewCaseComment AndAlso field.createable) OrElse field.updateable)  Then
-                result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(StripHTMLForSalesForce(action.Description))))
-              Else
-                Dim message As StringBuilder = New StringBuilder("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because ")
-                If action.Description Is Nothing Then
-                  message.Append("it was null")
-                End If
-                If action.Description Is Nothing AndAlso Not ((isNewCaseComment AndAlso field.createable) OrElse field.updateable) Then
-                  message.Append(" and ")
-                End If
-                If Not ((isNewCaseComment AndAlso field.createable) OrElse field.updateable) Then
-                  message.Append("the field is not updatable.")
-                End If
-                Log.Write(message.ToString())
-              End If
+                      result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(action.Description))))
+                    Else
+                      Dim message As StringBuilder = New StringBuilder("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because ")
+                      If action.Description Is Nothing Then
+                        message.Append("it was null")
+                      End If
+                      If action.Description Is Nothing AndAlso Not ((isNewCaseComment AndAlso field.createable) OrElse field.updateable) Then
+                        message.Append(" and ")
+                      End If
+                      If Not ((isNewCaseComment AndAlso field.createable) OrElse field.updateable) Then
+                        message.Append("the field is not updatable.")
+                      End If
+                      Log.Write(message.ToString())
+                    End If
                   Case "createdbyid"
                     If impersonation Then
                     'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
@@ -3449,32 +3449,7 @@ Namespace TeamSupport
               End If
               Return halfHours
             End Function
-
-      Private Function StripHTMLForSalesForce(ByVal Content As String) As String
-        Log.Write("Original: " + Content)
-        'Added to remove <style> tag and its contect based on http://forums.asp.net/t/1901224.aspx?Remove+Head+tag+from+HTML+
-        Content = System.Text.RegularExpressions.Regex.Replace(Content, "<style>(.|\n)*?</style>", String.Empty)
-
-        Log.Write("AfterStyle: " + Content)
-        Content = System.Text.RegularExpressions.Regex.Replace(Content, "<.*?>", String.Empty)
-        Log.Write("AfterTags: " + Content)
-        Content = System.Web.HttpUtility.HtmlDecode(Content)
-        Log.Write("AfterDecode: " + Content)
-        Content = HtmlUtility.StripComments(Content)
-
-        Log.Write("AfterStripComments: " + Content)
-        'regex based on http://stackoverflow.com/questions/787932/using-c-regular-expressions-to-remove-html-tags/787949#787949
-        Content = System.Text.RegularExpressions.Regex.Replace(Content, "</?\w+((\s+\w+(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)/?>", "", System.Text.RegularExpressions.RegexOptions.Singleline)
-
-        Log.Write("AfterReplaceSingleLine: " + Content)
-        'Added to remove duplicate spaces based on http://texthandler.com/?module=remove_double_spaces_cc
-        Content = System.Text.RegularExpressions.Regex.Replace(Content, " {2,}", " ")
-
-        Log.Write("AfterSpaces: " + Content)
-        Return Content
-      End Function
-
-    End Class
+        End Class
 
         Friend Class SalesForceCustomer
           Private _contactID    As String
