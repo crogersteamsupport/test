@@ -61,7 +61,7 @@ Namespace TeamSupport
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
                 Dim TagsToMatch As String = CRMLinkRow.TypeFieldMatch
 
-                Log.Write("(Trunk Rev. 1151) Attempting to log in")
+        Log.Write("(Trunk Rev. 3078) Attempting to log in")
 
                 Dim LoginReturn As String = login(Trim(CompanyName), Trim(Password), Trim(SecurityToken))
 
@@ -2259,20 +2259,23 @@ Namespace TeamSupport
                     hasParentID = True
                   Case "commentbody"
                     If action.Description IsNot Nothing AndAlso ((isNewCaseComment AndAlso field.createable) OrElse field.updateable)  Then
-                      result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(action.Description))))
-                    Else
-                      Dim message As StringBuilder = New StringBuilder("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because ")
-                      If action.Description Is Nothing Then
-                        message.Append("it was null")
-                      End If
-                      If action.Description Is Nothing AndAlso Not ((isNewCaseComment AndAlso field.createable) OrElse field.updateable) Then
-                        message.Append(" and ")
-                      End If
-                      If Not ((isNewCaseComment AndAlso field.createable) OrElse field.updateable) Then
-                        message.Append("the field is not updatable.")
-                      End If
-                      Log.Write(message.ToString())
-                    End If
+                result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(action.Description))))
+                If action.ActionID = 15779653 Then
+                  Log.Write("Action 15779653 Description Sent: " + TruncateCaseCommentBody(HtmlUtility.StripHTML(action.Description)))
+                End If
+              Else
+                Dim message As StringBuilder = New StringBuilder("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because ")
+                If action.Description Is Nothing Then
+                  message.Append("it was null")
+                End If
+                If action.Description Is Nothing AndAlso Not ((isNewCaseComment AndAlso field.createable) OrElse field.updateable) Then
+                  message.Append(" and ")
+                End If
+                If Not ((isNewCaseComment AndAlso field.createable) OrElse field.updateable) Then
+                  message.Append("the field is not updatable.")
+                End If
+                Log.Write(message.ToString())
+              End If
                   Case "createdbyid"
                     If impersonation Then
                     'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
