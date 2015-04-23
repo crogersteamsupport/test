@@ -2259,9 +2259,9 @@ Namespace TeamSupport
                     hasParentID = True
                   Case "commentbody"
                     If action.Description IsNot Nothing AndAlso ((isNewCaseComment AndAlso field.createable) OrElse field.updateable)  Then
-                result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(action.Description))))
+                result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML2(action.Description))))
                 If action.ActionID = 15779653 Then
-                  Log.Write("Action 15779653 Description Sent: " + TruncateCaseCommentBody(HtmlUtility.StripHTML(action.Description)))
+                  Log.Write("Action 15779653 Description Sent: " + TruncateCaseCommentBody(HtmlUtility.StripHTML2(action.Description)))
                 End If
               Else
                 Dim message As StringBuilder = New StringBuilder("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because ")
