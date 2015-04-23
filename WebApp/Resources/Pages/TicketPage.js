@@ -2603,6 +2603,24 @@ function CreateTicketToolbarDomEvents() {
         });
     });
 
+    $('#Ticket-Read').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var self = $(this);
+      var isRead = self.find('i').hasClass('color-blue');
+
+      top.Ts.Services.Tickets.SetTicketRead(_ticketID, !isRead, function () {
+        if(!isRead) {
+          self.find('i').addClass('color-blue');
+        }
+        else
+        {
+          self.find('i').removeClass('color-blue');
+        }
+      });
+      top.Ts.System.logAction('Ticket Grid - Mark Read');
+    });
+
     $("#Ticket-Merge-search").autocomplete({
         minLength: 2,
         source: selectTicket,
