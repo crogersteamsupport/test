@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsKnowledgeBase { get; set; }
     [DataMember] public bool IsPinned { get; set; }
     [DataMember] public int? WCUserID { get; set; }
+    [DataMember] public int? TimeSpent { get; set; }
           
   }
   
@@ -50,6 +51,7 @@ namespace TeamSupport.Data
       result.RefID = this.RefID;
       result.TicketNumber = this.TicketNumber;
       result.TicketID = this.TicketID;
+      result.TimeSpent = this.TimeSpent;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        

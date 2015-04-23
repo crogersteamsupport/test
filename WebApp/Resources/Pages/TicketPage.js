@@ -251,13 +251,20 @@ function CreateNewActionLI() {
     $('#action-new-save').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        SaveAction(null, _isNewActionPrivate, function (result) {
+        var self = $(this);
+        var oldActionID = self.data('actionid');
+        SaveAction(oldActionID, _isNewActionPrivate, function (result) {
             UploadAttachments(result);
             $('#action-new-editor').val('').parent().fadeOut('normal');
             tinymce.activeEditor.destroy();
             top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
-                result.Attachments = attachments;
+              result.Attachments = attachments;
+              if (oldActionID === -1) {
                 CreateActionElement(result, false);
+              }
+              else {
+                UpdateActionElement(result, false);
+              }
             });
         });
     });
@@ -266,7 +273,8 @@ function CreateNewActionLI() {
         e.preventDefault();
         e.stopPropagation();
         var self = $(this);
-        SaveAction(null, _isNewActionPrivate, function (result) {
+        var oldActionID = self.data('actionid');
+        SaveAction(oldActionID, _isNewActionPrivate, function (result) {
             UploadAttachments(result);
             $('#action-new-editor').val('').parent().fadeOut('normal');
             tinymce.activeEditor.destroy();
@@ -298,23 +306,32 @@ function CreateNewActionLI() {
 };
 
 function SetupActionEditor(elem, action) {
+  top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
   initEditor(elem, true, function (ed) {
     if (action) {
-      debugger
-      var test = $('#action-new-type');
       $('#action-new-type').val(action.ActionTypeID);
+      if (action.TimeSpent) {
+        $('#action-new-hours').val(Math.floor(action.TimeSpent / 60));
+        $('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
+      }
       tinyMCE.activeEditor.setContent(action.Message);
       elem.parent().fadeIn('normal');
     }
     else {
-      $('#action-new-type').val();
-      top.Ts.Services.TicketPage.GetActionTicketTemplate(action.ActionTypeID, function (result) {
+      var actionTypeID = $('#action-new-type').val();
+      $('#action-new-hours').val(0);
+      $('#action-new-minutes').val(0);
+      top.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
         if (result != null && result != "" && result != "<br>") {
-          var currenttext = tinyMCE.activeEditor.getContent();
+          tinyMCE.activeEditor.setContent(result);
         }
         elem.parent().fadeIn('normal');
       });
     }
+
+    $('.frame-container').animate({
+      scrollTop: 0
+    }, 600);
   });
 
     var element = $('.action-new-area');
@@ -390,10 +407,20 @@ function SetupActionEditor(elem, action) {
 
     var statuses = top.Ts.Cache.getNextStatuses(_ticketInfo.Ticket.TicketStatusID);
     $('#action-new-saveoptions').empty();
-    for (var i = 0; i < statuses.length; i++) {
-        $('#action-new-saveoptions').append('<li><a class="action-create-option" data-statusid=' + statuses[i].TicketStatusID + ' href="#">Create and Set Status to ' + statuses[i].Name + '</a></li>'); 
+    if (action) {
+      $('#action-new-save').text('Save').data('actionid', action.RefID);
+      for (var i = 0; i < statuses.length; i++) {
+        $('#action-new-saveoptions').append('<li><a class="action-create-option" data-actionid=' + action.RefID + ' data-statusid=' + statuses[i].TicketStatusID + ' href="#">Create and Set Status to ' + statuses[i].Name + '</a></li>');
+      }
     }
-    $('#action-new-saveoptions').append('<li class="divider"></li>').append('<li><a id="action-new-cancel" href="#">Cancel</a></li>');
+    else
+    {
+      $('#action-new-save').text('Create').data('actionid', -1);
+      for (var i = 0; i < statuses.length; i++) {
+        $('#action-new-saveoptions').append('<li><a class="action-create-option" data-actionid=-1 data-statusid=' + statuses[i].TicketStatusID + ' href="#">Save and Set Status to ' + statuses[i].Name + '</a></li>');
+      }
+    }
+
 
     $('#action-new-date-started').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
 
@@ -445,9 +472,10 @@ function FlipNewActionBadge(isPrivate) {
     _isNewActionPrivate = isPrivate;
 }
 
-function SaveAction(oldAction, isPrivate, callback) {
+function SaveAction(oldActionID, isPrivate, callback) {
     var action = new top.TeamSupport.Data.ActionProxy();
-    action.ActionID = oldAction === null ? -1 : oldAction.ActionID;
+
+    action.ActionID = oldActionID;
     action.TicketID = _ticketID;
 
     var actionType = $('#action-new-type option:selected').data('data');
@@ -709,7 +737,7 @@ function LoadTicketControls() {
 
     if (_ticketInfo.Ticket.SlaViolationTime === null) {
         $('#ticket-SLAStatus').find('i').addClass('color-green');
-        $('#ticket-SLANote').text('None');
+        $('#ticket-SLANote').text('');
     }
     else {
       $('#ticket-SLAStatus')
@@ -2125,6 +2153,20 @@ function CreateActionElement(val, ShouldAppend) {
 
 };
 
+//TODO:  Update existing timeline item
+function UpdateActionElement(val) {
+  if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+    var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
+    $("#action-timeline").append(dateSpan);
+    _currDateSpan = val.item.DateCreated;
+  }
+  var html = _compiledActionTemplate(val);
+  var li = $("#action-timeline li[data-id=" + val.item.RefID + "]");
+  var actionNumber = li.find('.ticket-action-number').text();
+  li.replaceWith(html);
+  $("#action-timeline li[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
+};
+
 function CreateHandleBarHelpers() {
     Handlebars.registerHelper('FormatDateTime', function (Date) {
         return Date.localeFormat(top.Ts.Utils.getDateTimePattern())
@@ -2310,7 +2352,7 @@ function CreateTimeLineDelegates() {
     $('#action-timeline').on('click', 'a.action-option-edit', function (e) {
         e.preventDefault();
         e.stopPropagation();
-      debugger
+
         var self = $(this);
         var action = self.closest('li').data().action;
 

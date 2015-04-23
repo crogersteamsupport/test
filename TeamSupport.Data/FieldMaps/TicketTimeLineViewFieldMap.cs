@@ -28,6 +28,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsKnowledgeBase", "IsKnowledgeBase", false, false, false);
       _fieldMap.AddMap("IsPinned", "IsPinned", false, false, false);
       _fieldMap.AddMap("WCUserID", "WCUserID", false, false, false);
+      _fieldMap.AddMap("TimeSpent", "TimeSpent", false, false, false);
             
     }
   }

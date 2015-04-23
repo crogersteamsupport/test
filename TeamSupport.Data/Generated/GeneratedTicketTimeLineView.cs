@@ -76,6 +76,12 @@ namespace TeamSupport.Data
       get { return Row["WCUserID"] != DBNull.Value ? (int?)Row["WCUserID"] : null; }
       set { Row["WCUserID"] = CheckValue("WCUserID", value); }
     }
+
+    public int? TimeSpent
+    {
+      get { return Row["TimeSpent"] != DBNull.Value ? (int?)Row["TimeSpent"] : null; }
+      set { Row["TimeSpent"] = CheckValue("TimeSpent", value); }
+    }
     
 
     
