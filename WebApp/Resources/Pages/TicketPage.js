@@ -2608,8 +2608,7 @@ function CreateTicketToolbarDomEvents() {
       e.stopPropagation();
       var self = $(this);
       var isRead = self.find('i').hasClass('color-blue');
-
-      top.Ts.Services.Tickets.SetTicketRead(_ticketID, !isRead, function () {
+      top.Ts.Services.Tickets.SetTicketRead(_ticketID, isRead, function () {
         if(!isRead) {
           self.find('i').addClass('color-blue');
         }
