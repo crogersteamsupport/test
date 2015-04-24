@@ -98,17 +98,31 @@ namespace TeamSupport.Handlers
       NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
       if (values != null)
       {
-        query["_name"] = GetValueString(values["name"]);
-        query["_email"] = GetValueString(values["email"]);
-        query["_company"] = GetValueString(values["company"]);
-        query["_phone"] = GetValueString(values["phone"]);
-        query["_product"] = GetValueString(values["product"]);
-        query["_promo"] = GetValueString(values["promo"]);
+        UpdateParam(query, values, "name");
+        UpdateParam(query, values, "email");
+        UpdateParam(query, values, "company");
+        UpdateParam(query, values, "phone");
+        UpdateParam(query, values, "product");
+        UpdateParam(query, values, "promo");
       }
       query["suerror"] = "1";
 
       builder.Query = HttpUtility.UrlPathEncode(HttpUtility.UrlDecode(query.ToString()));
       return builder.ToString();
+    }
+
+    private static void UpdateParam(NameValueCollection query, NameValueCollection values, string param)
+    {
+      string value = GetValueString(values[param]);
+      string key = "_" + param;
+      if (string.IsNullOrWhiteSpace(value))
+      {
+        query.Remove(key);
+      }
+      else
+      {
+        query[key] = value;
+      }
     }
 
     private static void ValidateCompany(HttpContext context)

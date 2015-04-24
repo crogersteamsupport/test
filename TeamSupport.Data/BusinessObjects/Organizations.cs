@@ -374,7 +374,9 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       try
       {
         Organization sourceOrg = GetTemplateOrganization(LoginUser.Anonymous, productType);
+        sourceOrg = sourceOrg ?? Organizations.GetOrganization(LoginUser.Anonymous, 1088);
         int sourceOrgID = sourceOrg.OrganizationID;
+        
 
         Organization organization = (new Organizations(LoginUser.Anonymous)).AddNewOrganization();
         organization.Name = company.Trim();

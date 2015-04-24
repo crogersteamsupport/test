@@ -44,7 +44,7 @@
     function initFromParams() {
         function initParam(param) {
             var val = getURLParameter('_' + param);
-            if (val != null) jQuery('input[name="' + param + '"]').val(val);
+            if (val) jQuery('input[name="' + param + '"]').val(val);
         }
         initParam('name');
         initParam('email');
