@@ -439,7 +439,8 @@ namespace TSWebServices
       bool?   updateStatus,
       bool    matchAccountsByName,
       bool    useSandBoxServer,
-      bool    alwaysUseDefaultProjectKey
+      bool    alwaysUseDefaultProjectKey,
+      string  restrictedToTicketTypes
     )
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
@@ -484,6 +485,7 @@ namespace TSWebServices
       item.MatchAccountsByName = matchAccountsByName;
       item.UseSandBoxServer = useSandBoxServer;
       item.AlwaysUseDefaultProjectKey = alwaysUseDefaultProjectKey;
+      item.RestrictedToTicketTypes = restrictedToTicketTypes;
 
       item.Collection.Save();
       return item.GetProxy();

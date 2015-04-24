@@ -38,6 +38,7 @@ namespace TeamSupport.Data
     [DataMember] public bool MatchAccountsByName { get; set; }
     [DataMember] public bool UseSandBoxServer { get; set; }
     [DataMember] public bool AlwaysUseDefaultProjectKey { get; set; }
+    [DataMember] public string RestrictedToTicketTypes { get; set; }
           
   }
   
@@ -46,6 +47,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;
       result.AlwaysUseDefaultProjectKey = this.AlwaysUseDefaultProjectKey;
       result.UseSandBoxServer = this.UseSandBoxServer;
       result.MatchAccountsByName = this.MatchAccountsByName;

@@ -1106,11 +1106,54 @@ $(document).ready(function () {
                         $('#ticketType').text(type.Name);
                         _ticketTypeID = type.TicketTypeID;
                         $('#ticketStatus')
-                .text(result[0].Name)
-                .toggleClass('ticket-closed', result[0].IsClosed)
-                .data('ticketStatusID', result[0].TicketStatusID);
+                        .text(result[0].Name)
+                        .toggleClass('ticket-closed', result[0].IsClosed)
+                        .data('ticketStatusID', result[0].TicketStatusID);
                         appendCustomValues(result[1]);
                         parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+
+                        top.Ts.Services.Admin.GetIsJiraLinkActive(_ticketID, function (result) {
+                          if (result) {
+                            $('#enterIssueKey').hide();
+                            $('.ticket-widget-jira').show();
+
+                            top.Ts.Services.Tickets.GetLinkToJiraSync(_ticketID, function (result) {
+                              if (result != null) {
+                                if (!result.JiraKey) {
+                                  $('#issueKeyValue').text('Pending...');
+                                }
+                                else if (!resultLinkToJira.JiraLinkURL) {
+                                  $('#issueKeyValue').text(resultLinkToJira.JiraKey);
+                                  if (inforesult.JiraKey.indexOf('Error') > -1) {
+                                    $('#issueKeyValue').addClass('nonrequired-field-error ui-corner-all');
+                                  }
+                                  else {
+                                    $('#issueKeyValue').removeClass('nonrequired-field-error ui-corner-all');
+                                  }
+                                }
+                                else {
+                                  var jiraLink = $('<a>')
+                                    .attr('href', resultLinkToJira.JiraLinkURL)
+                                    .attr('target', '_blank')
+                                    .text(result.JiraKey)
+                                    .addClass('value ui-state-default ts-link')
+                                    .appendTo($('#issueKeyValue').parent())
+                                }
+
+                                $('#issueKey').show();
+                                $('.ts-jira-buttons-container').hide();
+                              }
+                              else {
+                                $('#issueKey').hide();
+                                $('.ts-jira-buttons-container').show();
+                              }
+                            });
+                          }
+                          else {
+                            $('.ticket-widget-jira').hide();
+                          }
+                        });
+
                         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changetype", userFullName);
                     }
                     else {
@@ -1846,9 +1889,10 @@ $(document).ready(function () {
         e.preventDefault();
         var parent = $(this).parent().hide();
         top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
-            if (result === true) {
-                $('#issueKeyValue').text('Pending...');
-                $('#issueKey').show();
+          if (result === true) {
+              $('#issueKeyValue').text('Pending...');
+              $('#issueKey').show();
+              $('#issueKey div:first-child').show();
             }
             else {
                 $('.ts-jira-buttons-container').show();
@@ -1864,15 +1908,17 @@ $(document).ready(function () {
     });
 
     $('#jiraUnlink').click(function (e) {
-        if (confirm("Are you sure you want to remove link to JIRA?")) {
+      var currentStatus = $("#issueKeyValue").text().toLowerCase();
+      var confirmMessage = "Are you sure you want to " + ((currentStatus.indexOf("pending") > -1) ? "cancel" : "remove") + " link to JIRA?";
+
+        if (confirm(confirmMessage)) {
             e.preventDefault();
             $('.ts-jira-buttons-container').show();
             $('#issueKey').hide();
             var parent = $(this).parent().hide();
             top.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
                 if (result === true) {
-                    //$('.ts-jira-buttons-container').show();
-                    //$('#issueKey').hide();
+                    //It was successful
                 }
                 else {
                     alert('There was an error setting your Jira Issue Key. Please try again later');
@@ -3551,43 +3597,45 @@ var loadTicket = function (ticketNumber, refresh) {
         });
         top.Ts.MainPage.updateMyOpenTicketReadCount();
 
-        if (top.Ts.Cache.getIsJiraLinkActive()) {
+        top.Ts.Services.Admin.GetIsJiraLinkActive(_ticketID, function (result) {
+          if (result) {
             $('#enterIssueKey').hide();
             $('.ticket-widget-jira').show();
 
             if (info.LinkToJira != null) {
-                if (!info.LinkToJira.JiraKey) {
-                    $('#issueKeyValue').text('Pending...');
-                }
-                else if (!info.LinkToJira.JiraLinkURL) {
-                    $('#issueKeyValue').text(info.LinkToJira.JiraKey);
-                    if (info.LinkToJira.JiraKey.indexOf('Error') > -1) {
-                        $('#issueKeyValue').addClass('nonrequired-field-error ui-corner-all');
-                    }
-                    else {
-                        $('#issueKeyValue').removeClass('nonrequired-field-error ui-corner-all');
-                    }
+              if (!info.LinkToJira.JiraKey) {
+                $('#issueKeyValue').text('Pending...');
+              }
+              else if (!info.LinkToJira.JiraLinkURL) {
+                $('#issueKeyValue').text(info.LinkToJira.JiraKey);
+                if (info.LinkToJira.JiraKey.indexOf('Error') > -1) {
+                  $('#issueKeyValue').addClass('nonrequired-field-error ui-corner-all');
                 }
                 else {
-                    var jiraLink = $('<a>')
-                      .attr('href', info.LinkToJira.JiraLinkURL)
-                      .attr('target', '_blank')
-                      .text(info.LinkToJira.JiraKey)
-                      .addClass('value ui-state-default ts-link')
-                      .appendTo($('#issueKeyValue').parent())
+                  $('#issueKeyValue').removeClass('nonrequired-field-error ui-corner-all');
                 }
+              }
+              else {
+                var jiraLink = $('<a>')
+                  .attr('href', info.LinkToJira.JiraLinkURL)
+                  .attr('target', '_blank')
+                  .text(info.LinkToJira.JiraKey)
+                  .addClass('value ui-state-default ts-link')
+                  .appendTo($('#issueKeyValue').parent())
+              }
 
-                $('#issueKey').show();
-                $('.ts-jira-buttons-container').hide();
+              $('#issueKey').show();
+              $('.ts-jira-buttons-container').hide();
             }
             else {
-                $('#issueKey').hide();
-                $('.ts-jira-buttons-container').show();
+              $('#issueKey').hide();
+              $('.ts-jira-buttons-container').show();
             }
-        }
-        else {
+          }
+          else {
             $('.ticket-widget-jira').hide();
-        }
+          }
+        });
 
         if (typeof refresh === "undefined") {
             window.top.ticketSocket.server.getTicketViewing(_ticketNumber);

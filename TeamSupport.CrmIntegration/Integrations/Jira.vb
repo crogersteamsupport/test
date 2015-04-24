@@ -101,7 +101,7 @@ Namespace TeamSupport
             recentClause = "updated>-" + minutesSinceFirstSyncedTicket.ToString() + "m+"
           Else
             Log.Write("No tickets have been synced, therefore no issues to pull exist.")
-            Return result  
+            Return result
           End If
         End If
         Dim needToGetMore As Boolean = True
@@ -110,7 +110,7 @@ Namespace TeamSupport
 
         While needToGetMore
           Dim URI As String = _baseURI + "/search?jql=" + recentClause + "order+by+updated+asc&fields=*all" + startAt
-          Dim batch As JObject = GetAPIJObject(URI, "GET", string.Empty)
+          Dim batch As JObject = GetAPIJObject(URI, "GET", String.Empty)
           result.Add(batch)
 
           Dim batchTotal As Integer = batch("issues").Count
@@ -166,12 +166,12 @@ Namespace TeamSupport
         End Function
 
         Private Function MakeHTTPRequest(
-        ByVal encodedCredentials As string, 
-        ByVal URI As String, 
-        ByVal method As String, 
-        ByVal contentType As String, 
-        ByVal userAgent As String, 
-        ByVal body As String) As HTTPWebResponse
+        ByVal encodedCredentials As String,
+        ByVal URI As String,
+        ByVal method As String,
+        ByVal contentType As String,
+        ByVal userAgent As String,
+        ByVal body As String) As HttpWebResponse
 
         Dim bodyByteArray = UTF8Encoding.UTF8.GetBytes(body)
         Dim request As HttpWebRequest = WebRequest.Create(URI)
@@ -193,9 +193,9 @@ Namespace TeamSupport
       End Function
 
       Private Sub PushTicketsAndActionsAsIssuesAndComments(
-        ByVal ticketsToPushAsCases As TicketsView, 
-        ByVal ticketsLinksToJiraToPushAsIssues As TicketLinkToJira, 
-        ByVal allStatuses As TicketStatuses, 
+        ByVal ticketsToPushAsCases As TicketsView,
+        ByVal ticketsLinksToJiraToPushAsIssues As TicketLinkToJira,
+        ByVal allStatuses As TicketStatuses,
         ByVal newActionsTypeID As Integer)
 
         Dim URI As String = _baseURI + "/issue"
@@ -217,6 +217,15 @@ Namespace TeamSupport
         For Each ticket As TicketsViewItem In ticketsToPushAsCases
           Dim ticketLinkToJira As TicketLinkToJiraItem = ticketsLinksToJiraToPushAsIssues.FindByTicketID(ticket.TicketID)
           Log.Write("Processing ticket #" + ticket.TicketNumber.ToString())
+
+          Dim ticketLinkToJiraVerify As TicketLinkToJira = New TicketLinkToJira(User)
+          ticketLinkToJiraVerify.LoadByTicketID(ticket.TicketID)
+
+          If (ticketLinkToJiraVerify.Count = 0) Then
+            Log.Write("The ticket link record has been deleted. Link was removed or cancelled. Doing nothing.")
+            Continue For
+          End If
+
           Dim updateTicketFlag As Boolean = False
           Dim sendCustomMappingFields As Boolean = False
 
@@ -224,7 +233,7 @@ Namespace TeamSupport
           Try
             crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, String.Empty)
             issueFields = GetIssueFields(ticket)
-            If crmLinkError IsNot Nothing then
+            If crmLinkError IsNot Nothing Then
               crmLinkError.Delete()
               crmLinkErrors.Save()
             End If
@@ -271,13 +280,13 @@ Namespace TeamSupport
               updateTicketFlag = True
               sendCustomMappingFields = True
 
-              If crmLinkError IsNot Nothing then
+              If crmLinkError IsNot Nothing Then
                 crmLinkError.Delete()
                 crmLinkErrors.Save()
               End If
 
             Catch ex As Exception
-              
+
               Dim updateLinkToJira As Boolean = True
               Dim errorMessage As String = String.Empty
               Select Case ex.Message
@@ -329,9 +338,9 @@ Namespace TeamSupport
           'Issue already exists. 
           'We are not updating issues, but if this is a second ticket relating to issue we add a remote link and update ticket fields for Jira
           ElseIf ticketLinkToJira.JiraID Is Nothing Then
-            
+
             crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, "update")
-            
+
             Try
               URI = _baseURI + "/issue/" + ticketLinkToJira.JiraKey
               issue = GetAPIJObject(URI, "GET", String.Empty)
@@ -386,10 +395,10 @@ Namespace TeamSupport
               AddRemoteLinkInJira(issue("id").ToString(), ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.Name, creatorName)
               Log.Write("Added remote link for ticket #" + ticket.TicketNumber.ToString())
 
-              ticketLinkToJira.JiraID      = CType(issue("id").ToString(), Integer?)
-              ticketLinkToJira.JiraKey     = issue("key").ToString()
+              ticketLinkToJira.JiraID = CType(issue("id").ToString(), Integer?)
+              ticketLinkToJira.JiraKey = issue("key").ToString()
               ticketLinkToJira.JiraLinkURL = CRMLinkRow.HostName + "/browse/" + ticketLinkToJira.JiraKey
-              ticketLinkToJira.JiraStatus  = issue("fields")("status")("name").ToString()
+              ticketLinkToJira.JiraStatus = issue("fields")("status")("name").ToString()
 
               If CRMLinkRow.UpdateStatus Then
                 Dim newStatus As TicketStatus = allStatuses.FindByName(ticketLinkToJira.JiraStatus, ticket.TicketTypeID)
@@ -425,7 +434,7 @@ Namespace TeamSupport
               ticketLinkToJira.Collection.Save()
               Log.Write("Updated jira fields in ticket")
 
-              If crmLinkError IsNot Nothing then
+              If crmLinkError IsNot Nothing Then
                 crmLinkError.Delete()
                 crmLinkErrors.Save()
               End If
@@ -478,18 +487,18 @@ Namespace TeamSupport
                   If findCustom.Count > 0 Then
                     value = GetDataLineValue(field.Key.ToString(), field.Value("schema")("custom"), findCustom(0).Value)
                   Else
-                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), findCustom.Count = 0))                      
+                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), findCustom.Count = 0))
                   End If
                 ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
                   crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, cRMLinkField.TSFieldName)
                   If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
                     value = GetDataLineValue(field.Key.ToString(), field.Value("schema")("custom"), ticket.Row(cRMLinkField.TSFieldName))
                   Else
-                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Row(cRMLinkField.TSFieldName) Is Nothing))                      
+                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Row(cRMLinkField.TSFieldName) Is Nothing))
                   End If
                 Else
                   Log.Write(
-                    "TicketID " + ticket.TicketID.ToString() + "'s field '" + field.Value("name").ToString() + "' was not included because custom field " + 
+                    "TicketID " + ticket.TicketID.ToString() + "'s field '" + field.Value("name").ToString() + "' was not included because custom field " +
                     cRMLinkField.CRMFieldID.ToString() + " CustomFieldID and TSFieldName are null.")
                 End If
 
@@ -499,14 +508,14 @@ Namespace TeamSupport
                     updateFieldRequestBody.Append("{")
                     updateFieldRequestBody.Append("""fields"":{")
 
-                    updateFieldRequestBody.Append("""" + field.Key.ToString() + """:" + value)                  
+                    updateFieldRequestBody.Append("""" + field.Key.ToString() + """:" + value)
 
                     updateFieldRequestBody.Append("}")
                     updateFieldRequestBody.Append("}")
-       
+
                     issue = GetAPIJObject(URI, "PUT", updateFieldRequestBody.ToString())
 
-                    If crmLinkError IsNot Nothing then
+                    If crmLinkError IsNot Nothing Then
                       crmLinkError.Delete()
                       crmLinkErrors.Save()
                     End If
@@ -517,7 +526,7 @@ Namespace TeamSupport
                       exBody = updateFieldRequestBody.ToString()
                     End If
                     If ex.Message <> "Error reading JObject from JsonReader. Path '', line 0, position 0." Then
-                      Log.Write("Field " + field.Value("name").ToString() + " with body " + exBody + ", was not sent because an exception ocurred.")                      
+                      Log.Write("Field " + field.Value("name").ToString() + " with body " + exBody + ", was not sent because an exception ocurred.")
                     End If
 
                                             Try
@@ -563,7 +572,7 @@ Namespace TeamSupport
           Dim result As Boolean = False
 
           Dim URI As String = _baseURI + "/attachment/meta"
-          Dim batch As JObject = GetAPIJObject(URI, "GET", string.Empty)
+          Dim batch As JObject = GetAPIJObject(URI, "GET", String.Empty)
           result = Convert.ToBoolean(batch("enabled").ToString())
           attachmentFileSizeLimit = Convert.ToInt32(batch("uploadLimit").ToString())
           Log.Write("Attachment enabled is " + result.ToString())
@@ -595,19 +604,19 @@ Namespace TeamSupport
             Dim issueTypeName As String = ticket.TicketTypeName
             issueTypeName = Replace(issueTypeName, " ", "+")
             Dim projectKey As String = GetProjectKey(ticket.ProductName)
-            Dim URI As String = 
-              _baseURI + 
-              "/issue/createmeta?projectKeys=" + 
-              projectKey.ToUpper() + 
+            Dim URI As String =
+              _baseURI +
+              "/issue/createmeta?projectKeys=" +
+              projectKey.ToUpper() +
               "&issuetypeNames=" + issueTypeName +
-              "&expand=projects.issuetypes.fields" 
+              "&expand=projects.issuetypes.fields"
               'View an example of this response in 
               'https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Discovering+meta-data+for+creating+issues
-               
+
             Dim result As JObject = Nothing
             Try
 
-              Dim fields = GetAPIJObject(URI, "GET", string.Empty)
+              Dim fields = GetAPIJObject(URI, "GET", String.Empty)
               Dim issueTypeIndex As Integer? = Nothing
 
               For i = 0 To fields("projects")(0)("issuetypes").Count - 1
@@ -652,11 +661,11 @@ Namespace TeamSupport
             End Function
 
           Private Function GetDataLine(
-            ByVal field As KeyValuePair(Of String, JToken), 
+            ByVal field As KeyValuePair(Of String, JToken),
             ByVal ticket As TicketsViewItem,
             ByRef preffix As String) As String
             Dim result As String = String.Empty
-        
+
               Select Case field.Value("name").ToString().Trim().ToLower()
                 Case "project"
                   Dim projectKey As String = GetProjectKey(ticket.ProductName)
@@ -665,13 +674,13 @@ Namespace TeamSupport
                     preffix = ","
                   End If
                 Case "summary"
-                  If ticket.Name IsNot Nothing Then               
+                  If ticket.Name IsNot Nothing Then
                             result = preffix + """summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """"
                     If preffix = String.Empty Then
                       preffix = ","
                     End If
                   Else
-                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Name Is Nothing))                      
+                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Name Is Nothing))
                   End If
                 Case "description"
                         Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(Actions.GetTicketDescription(User, ticket.TicketID).Description))
@@ -681,7 +690,7 @@ Namespace TeamSupport
                       preffix = ","
                     End If
                   Else
-                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), description Is Nothing))                      
+                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), description Is Nothing))
                   End If
                 Case "issue type"
                   result = preffix + """issuetype"":{""name"":""" + ticket.TicketTypeName + """}"
@@ -694,9 +703,9 @@ Namespace TeamSupport
           End Function
 
             Private Function GetFieldNotIncludedMessage(
-              ByVal ticketID As Integer, 
-              ByVal fieldName As String, 
-              ByVal isNull As Boolean, 
+              ByVal ticketID As Integer,
+              ByVal fieldName As String,
+              ByVal isNull As Boolean,
               Optional ByVal isNewIssue As Boolean = True,
               Optional ByVal isCreateable As Boolean = True,
               Optional ByVal isUpdateable As Boolean = True) As String
@@ -711,13 +720,13 @@ Namespace TeamSupport
               If Not ((isNewIssue AndAlso isCreateable) OrElse isUpdateable) Then
                 message.Append("the field is not updatable.")
               End If
-        
+
               Return message.ToString()
             End Function
 
             Private Function GetDataLineValue(ByVal fieldKey As String, ByVal fieldType As Object, ByVal fieldValue As String) As String
               Dim result As String = Nothing
-              Select fieldKey.ToLower()
+              Select Case fieldKey.ToLower()
                 Case "assignee", "reporter"
                   result = "{""emailAddress"":""" + fieldValue + """}"
                 Case "issuetype", "status", "priority", "resolution"
@@ -737,11 +746,11 @@ Namespace TeamSupport
                 Case "attachment", "labels", "issuelinks", "versions", "fixversions", "subtasks", "components"
                   result = "[{""name"":""" + fieldValue + """}]"
                 Case Else
-                  result = """" + fieldValue + """"                
+                  result = """" + fieldValue + """"
                   If fieldType IsNot Nothing Then
                     Dim fieldTypeString = fieldType.ToString()
                     If fieldTypeString.Length > 50 Then
-                      Select fieldTypeString.substring(50, fieldTypeString.Length - 50).ToLower()
+                      Select Case fieldTypeString.substring(50, fieldTypeString.Length - 50).ToLower()
                         Case "select"
                           result = "{""value"":""" + fieldValue + """}"
                         Case "multiselect"
@@ -763,8 +772,8 @@ Namespace TeamSupport
                           End If
                       End Select
                     End If
-                  End If                                               
-              End Select                      
+                  End If
+              End Select
               Return result
             End Function
 
@@ -799,9 +808,9 @@ Namespace TeamSupport
         End Sub
 
         Private Sub PushActionsAsComments(
-        ByVal ticketID As Integer, 
-        ByVal ticketNumber As Integer, 
-        ByVal issue As JObject, 
+        ByVal ticketID As Integer,
+        ByVal ticketNumber As Integer,
+        ByVal issue As JObject,
         ByVal issueKey As String,
         ByVal attachmentEnabled As Boolean,
         ByVal attachmentFileSizeLimit As Integer,
@@ -816,22 +825,22 @@ Namespace TeamSupport
 
           Dim crmLinkError As CRMLinkError = Nothing
           Dim body As StringBuilder = Nothing
-          
+
           For Each actionToPushAsComment As Action In actionsToPushAsComments
 
-            crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(actionToPushAsComment.ActionID.ToString(), string.Empty)
+            crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(actionToPushAsComment.ActionID.ToString(), String.Empty)
 
             Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.FindByActionID(actionToPushAsComment.ActionID)
 
             Log.Write("Processing actionID: " + actionToPushAsComment.ActionID.ToString())
             Dim comment As JObject = Nothing
-            
-            Dim actionPosition As Integer =  Actions.GetActionPosition(User, actionToPushAsComment.ActionID)
+
+            Dim actionPosition As Integer = Actions.GetActionPosition(User, actionToPushAsComment.ActionID)
             If actionLinkToJiraItem Is Nothing Then
-              
+
               Try
                 If issue Is Nothing Then
-                  issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET",  String.Empty)
+                  issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET", String.Empty)
                 End If
 
                 Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment"
@@ -847,7 +856,7 @@ Namespace TeamSupport
                 newActionLinkToJira.Save()
                 Log.Write("created comment for action")
 
-                If crmLinkError IsNot Nothing then
+                If crmLinkError IsNot Nothing Then
                   crmLinkError.Delete()
                   crmLinkActionErrors.Save()
                 End If
@@ -897,7 +906,7 @@ Namespace TeamSupport
                   Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
                 End If
 
-                If crmLinkError IsNot Nothing then
+                If crmLinkError IsNot Nothing Then
                   crmLinkError.Delete()
                   crmLinkActionErrors.Save()
                 End If
@@ -935,17 +944,17 @@ Namespace TeamSupport
               End Try
             End If
 
-            If (attachmentEnabled)
+            If (attachmentEnabled) Then
               PushAttachments(actionToPushAsComment.ActionID, ticketNumber, issue, issueKey, attachmentFileSizeLimit, actionPosition, crmLinkAttachmentErrors)
             End If
           Next
           actionLinkToJira.Save()
         End Sub
-          
+
           Private Sub PushAttachments(
-          ByVal actionID As Integer, 
-          ByVal ticketNumber As Integer, 
-          ByVal issue As JObject, 
+          ByVal actionID As Integer,
+          ByVal ticketNumber As Integer,
+          ByVal issue As JObject,
           ByVal issueKey As String,
           ByVal fileSizeLimit As Integer,
           ByVal actionPosition As Integer,
@@ -956,16 +965,16 @@ Namespace TeamSupport
             Dim crmLinkError As CRMLinkError = Nothing
 
             For Each attachment As Attachment In attachments
-              If (Not File.Exists(attachment.Path))
+              If (Not File.Exists(attachment.Path)) Then
                 Log.Write("Attachment """ + attachment.FileName + """ was not sent as it was not found on server")
               Else
-                  Dim fs = new FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
-                  If (fs.Length > fileSizeLimit)
+                  Dim fs = New FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
+                  If (fs.Length > fileSizeLimit) Then
                     Log.Write(
-                      "Attachment """ + attachment.FileName + 
-                      """ was not sent as its file size (" + 
-                      fs.Length.ToString() + 
-                      ") exceeded the file size limit of " + 
+                      "Attachment """ + attachment.FileName +
+                      """ was not sent as its file size (" +
+                      fs.Length.ToString() +
+                      ") exceeded the file size limit of " +
                       fileSizeLimit)
                   Else
                     Dim URIString As String = _baseURI + "/issue/" + issue("id").ToString() + "/attachments/"
@@ -973,12 +982,12 @@ Namespace TeamSupport
                     request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
                     request.Headers.Add("X-Atlassian-Token", "nocheck")
                     request.Method = "POST"
-                    Dim boundary As String = string.Format("----------{0:N}", Guid.NewGuid())
-                    request.ContentType = string.Format("multipart/form-data; boundary={0}", boundary)
+                    Dim boundary As String = String.Format("----------{0:N}", Guid.NewGuid())
+                    request.ContentType = String.Format("multipart/form-data; boundary={0}", boundary)
                     request.UserAgent = Client
 
-                    Dim content = new MemoryStream()
-                      Dim writer = new StreamWriter(content)
+                    Dim content = New MemoryStream()
+                      Dim writer = New StreamWriter(content)
                       writer.WriteLine("--{0}", boundary)
                       writer.WriteLine("Content-Disposition: form-data; name=""file""; filename=""{0}""", ("TeamSupport Ticket #" + ticketNumber.ToString() + " action #" + actionPosition.ToString() + " - " + attachment.FileName))
                       writer.WriteLine("Content-Type: application/octet-stream")
@@ -999,15 +1008,15 @@ Namespace TeamSupport
                       requestStream.Close()
                     End Using
 
-                    crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), string.Empty)
-                    
+                    crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), String.Empty)
+
                     Try
                       Dim response As HttpWebResponse = request.GetResponse()
                       Log.Write("Attachment """ + attachment.FileName + """ sent.")
                       attachment.SentToJira = True
-                      updateAttachments = True                                 
+                      updateAttachments = True
 
-                      If crmLinkError IsNot Nothing then
+                      If crmLinkError IsNot Nothing Then
                         crmLinkError.Delete()
                         crmLinkAttachmentErrors.Save()
                       End If
@@ -1039,7 +1048,7 @@ Namespace TeamSupport
                   End If
                 End If
             Next
-            If updateAttachments then
+            If updateAttachments Then
               attachments.Save()
             End If
           End Sub
@@ -1064,11 +1073,11 @@ Namespace TeamSupport
         For i = 0 To issuesToPullAsTickets.Count - 1
           Dim newComments As JArray = Nothing
           For Each ticketID As Integer In GetLinkedTicketIDs(issuesToPullAsTickets(i), indexOfTicketIDInRemoteLink)
-            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), string.Empty)
+            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), String.Empty)
             Try
               UpdateTicketWithIssueData(ticketID, issuesToPullAsTickets(i), newActionsTypeID, allStatuses)
 
-              If crmLinkError IsNot Nothing then
+              If crmLinkError IsNot Nothing Then
                 crmLinkError.Delete()
                 crmLinkErrors.Save()
               End If
@@ -1607,7 +1616,20 @@ Namespace TeamSupport
                         updateActions.AddNewAction()
                         updateActions(0).TicketID = ticketID
                         updateActions(0).ActionTypeID = newActionsTypeID
-                        updateActions(0).Description = newComments(i)("body").ToString()
+
+                        Dim commentDescription = newComments(i)("body").ToString()
+                        Dim firstLine As String = "<p><em>Comment added in Jira {0}{1}</em></p> <p>&nbsp;</p>"
+                        Dim author As String = String.Empty
+
+                        Try
+                          author = newComments(i)("author")("displayName").ToString()
+                        Catch ex As Exception
+                          Log.Write("The author displayName was not found for the comment.")
+                        End Try
+
+                        firstLine = String.Format(firstLine, If(String.IsNullOrEmpty(author), "", "by "), If(String.IsNullOrEmpty(author), "", author))
+                        commentDescription = firstLine + commentDescription
+                        updateActions(0).Description = commentDescription
 
                         Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
                         Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()

@@ -243,10 +243,10 @@
           });
           return self._cultures;
       },
-      getIsJiraLinkActive: function () {
+      getIsJiraLinkActive: function (ticketId) {
           var self = this;
           if (self._isJiraLinkActive == null) {
-            Ts.Services.Admin.GetIsJiraLinkActive(function (result) {
+            Ts.Services.Admin.GetIsJiraLinkActive(ticketId, function (result) {
               self._isJiraLinkActive = result;
             });
           }

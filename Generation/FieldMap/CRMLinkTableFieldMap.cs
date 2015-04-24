@@ -38,6 +38,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("MatchAccountsByName", "MatchAccountsByName", false, false, false);
       _fieldMap.AddMap("UseSandBoxServer", "UseSandBoxServer", false, false, false);
       _fieldMap.AddMap("AlwaysUseDefaultProjectKey", "AlwaysUseDefaultProjectKey", false, false, false);
+      _fieldMap.AddMap("RestrictedToTicketTypes", "RestrictedToTicketTypes", false, false, false);
             
     }
   }

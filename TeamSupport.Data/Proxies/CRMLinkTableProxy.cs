@@ -28,16 +28,17 @@ namespace TeamSupport.Data
     [DataMember] public bool AllowPortalAccess { get; set; }
     [DataMember] public bool SendWelcomeEmail { get; set; }
     [DataMember] public int? DefaultSlaLevelID { get; set; }
-    [DataMember] public bool? PushTicketsAsCases { get; set; }
     [DataMember] public bool? PullCasesAsTickets { get; set; }
+    [DataMember] public bool? PushTicketsAsCases { get; set; }
     [DataMember] public bool? PullCustomerProducts { get; set; }
+    [DataMember] public bool? UpdateStatus { get; set; }
     [DataMember] public int? ActionTypeIDToPush { get; set; }
     [DataMember] public string HostName { get; set; }
     [DataMember] public string DefaultProject { get; set; }
-    [DataMember] public bool? UpdateStatus { get; set; }
     [DataMember] public bool MatchAccountsByName { get; set; }
     [DataMember] public bool UseSandBoxServer { get; set; }
     [DataMember] public bool AlwaysUseDefaultProjectKey { get; set; }
+    [DataMember] public string RestrictedToTicketTypes { get; set; }
           
   }
   
@@ -46,16 +47,18 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;
       result.AlwaysUseDefaultProjectKey = this.AlwaysUseDefaultProjectKey;
       result.UseSandBoxServer = this.UseSandBoxServer;
       result.MatchAccountsByName = this.MatchAccountsByName;
-      result.UpdateStatus = this.UpdateStatus;
       result.DefaultProject = this.DefaultProject;
       result.HostName = this.HostName;
       result.ActionTypeIDToPush = this.ActionTypeIDToPush;
+      result.UpdateStatus = this.UpdateStatus;
       result.PullCustomerProducts = this.PullCustomerProducts;
-      result.PullCasesAsTickets = this.PullCasesAsTickets;
       result.PushTicketsAsCases = this.PushTicketsAsCases;
+      result.PullCasesAsTickets = this.PullCasesAsTickets;
+      result.DefaultSlaLevelID = this.DefaultSlaLevelID;
       result.SendWelcomeEmail = this.SendWelcomeEmail;
       result.AllowPortalAccess = this.AllowPortalAccess;
       result.LastTicketID = this.LastTicketID;
@@ -68,7 +71,7 @@ namespace TeamSupport.Data
       result.Active = this.Active;
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
-      result.DefaultSlaLevelID = this.DefaultSlaLevelID;
+      result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;//vv
        
       result.LastProcessed = DateTime.SpecifyKind(this.LastProcessedUtc, DateTimeKind.Utc);
        

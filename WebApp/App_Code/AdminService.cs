@@ -282,26 +282,53 @@ namespace TSWebServices
    }
     
     /// <summary>
-    /// Is Jira Link Active
+    /// Checks if the ticket type is allowed to be linked to Jira in the Integration Admin settings. Link should be active in account too.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True or False</returns>
     [WebMethod]
-    public bool GetIsJiraLinkActive()
+    public bool GetIsJiraLinkActive(int ticketId)
     {
       bool result = false;
+   
       CRMLinkTable organizationLinks = new CRMLinkTable(TSAuthentication.GetLoginUser());
       organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
       foreach (CRMLinkTableItem link in organizationLinks)
       {
-        if (link.CRMType == "Jira" && link.Active) 
+        if (link.CRMType == "Jira" && link.Active)
         {
-          result = true;
+          if (string.IsNullOrEmpty(link.RestrictedToTicketTypes))
+          {
+            result = true;
+          }
+          else
+          {
+            TicketsView ticket = new TicketsView(TSAuthentication.GetLoginUser());
+            ticket.LoadByTicketID(ticketId);
+
+            foreach(string allowedTicketType in link.RestrictedToTicketTypes.Split(','))
+            {
+              result = ticket[0].TicketTypeID.ToString() == allowedTicketType;
+              
+              if (result)
+              {
+                break;
+              }
+            }
+
+            //If restricted check if it was linked already
+            if (!result)
+            {
+              TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+              ticketLinkToJira.LoadByTicketID(ticketId);
+              result = ticketLinkToJira != null && ticketLinkToJira.Count > 0;
+            }
+          }
         }
       }
 
       return result;
-    }    
+    }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]

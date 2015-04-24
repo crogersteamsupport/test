@@ -1844,29 +1844,33 @@ namespace TSWebServices
                     TicketLinkToJiraItemProxy ticketLinktoJiraProxy = GetLinkToJira(ticketID);
                     if (null != ticketLinktoJiraProxy && linkToJira.Count > 0)
                     {
-                        TeamSupport.JIRA.JiraClient jiraClient = new TeamSupport.JIRA.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
-                        TeamSupport.JIRA.IssueRef issueRef = new TeamSupport.JIRA.IssueRef();
-                        issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
-                        issueRef.key = ticketLinktoJiraProxy.JiraKey;
-                        var issue = jiraClient.LoadIssue(issueRef);
-                        if (null != issue)
+
+                        if (ticketLinktoJiraProxy.JiraID != null && !String.IsNullOrEmpty(ticketLinktoJiraProxy.JiraKey))
                         {
+                          TeamSupport.JIRA.JiraClient jiraClient = new TeamSupport.JIRA.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
+                          TeamSupport.JIRA.IssueRef issueRef = new TeamSupport.JIRA.IssueRef();
+                          issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
+                          issueRef.key = ticketLinktoJiraProxy.JiraKey;
+                          var issue = jiraClient.LoadIssue(issueRef);
+                          if (null != issue)
+                          {
                             var remoteLinks = jiraClient.GetRemoteLinks(issueRef);
                             if (null != remoteLinks)
                             {
-                                foreach (TeamSupport.JIRA.RemoteLink linkItem in remoteLinks)
+                              foreach (TeamSupport.JIRA.RemoteLink linkItem in remoteLinks)
+                              {
+                                if (linkItem.icon.title == "TeamSupport Logo")
                                 {
-                                    if (linkItem.icon.title == "TeamSupport Logo")
-                                    {
-                                        jiraClient.DeleteRemoteLink(issueRef, linkItem);
-                                    }
+                                  jiraClient.DeleteRemoteLink(issueRef, linkItem);
                                 }
-                                
-                                linkToJira.DeleteFromDB(ticketLinktoJiraProxy.id);
-                                result = true;
+                              }
                             }
+                          }
                         }
-                        
+
+                        linkToJira.DeleteFromDB(ticketLinktoJiraProxy.id);
+                        result = true;
+
                     }
                 }
             }
@@ -3588,6 +3592,19 @@ WHERE t.TicketID = @TicketID
         CustomValues values = new CustomValues(ticket.Collection.LoginUser);
         values.LoadByParentValue(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID, parentFieldID, parentValue, ticket.ProductID);
         return values.GetCustomValueProxies();
+    }
+
+    [WebMethod]
+    public TicketLinkToJiraItemProxy GetLinkToJiraSync(int ticketID)
+    {
+      TicketLinkToJiraItemProxy result = null;
+      TicketLinkToJira linkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+      linkToJira.LoadByTicketID(ticketID);
+      if (linkToJira.Count > 0)
+      {
+        result = linkToJira[0].GetProxy();
+      }
+      return result;
     }
   }
 

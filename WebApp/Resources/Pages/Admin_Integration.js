@@ -9,6 +9,7 @@
 /// <reference path="~/Default.aspx" />
 var slaLevels;
 var actionTypes;
+var ticketTypes;
 var adminInt = null;
 $(document).ready(function () {
   adminInt = new AdminInt();
@@ -26,6 +27,7 @@ AdminInt = function () {
   });
 
   actionTypes = top.Ts.Cache.getActionTypes();
+  ticketTypes = top.Ts.Cache.getTicketTypes();
 
   $('#btnRefresh')
   .click(function (e) {
@@ -131,6 +133,7 @@ AdminInt = function () {
       loadMaps($(this).next());
       loadSlaLevels($(this).next());
       loadActionTypes($(this).next());
+      loadTicketTypes($(this).next());
       $(this).next().show();
     }
 
@@ -296,6 +299,36 @@ AdminInt = function () {
     }
     else {
       actionTypesList.attr('disabled', 'disabled');
+    }
+  }
+
+  function loadTicketTypes(panel) {
+    var ticketTypesList = panel.find('.int-ticketTypeToPush');
+    if (ticketTypesList == null) return;
+
+    panel = $(panel);
+    var item = panel.data('link');
+
+    if (ticketTypesList.length > 0) {
+      ticketTypesList.empty();
+
+      for (var i = 0; i < ticketTypes.length; i++) {
+        var selected = '">';
+
+        if (item != null && item.RestrictedToTicketTypes != null) {
+          var restrictedToTicketTypesArray = item.RestrictedToTicketTypes.split(',');
+          var found = jQuery.inArray(ticketTypes[i].TicketTypeID.toString(), restrictedToTicketTypesArray);
+          
+          if (found > -1) {
+            selected = '" selected="selected">';
+          }
+        }
+
+        ticketTypesList.append('<option value="' + ticketTypes[i].TicketTypeID + selected + ticketTypes[i].Name + '</option>');
+      }
+    }
+    else {
+      ticketTypesList.attr('disabled', 'disabled');
     }
   }
 
@@ -506,6 +539,42 @@ AdminInt = function () {
       alwaysUseDefaultProjectKey = false;
     }
 
+    var useAllTicketTypes = parent.find('.int-crm-ticket-types').prop('checked');
+    if (typeof useAllTicketTypes == 'undefined') {
+      useAllTicketTypes = true;
+    }
+
+    var restrictedToTicketTypes = null;
+    if (useAllTicketTypes) {
+      restrictedToTicketTypes = null;
+    }
+    else {
+      var restrictedTicketTypesList = parent.find('#restrictedTicketTypesList');
+      if (typeof restrictedTicketTypesList == 'undefined') {
+        restrictedToTicketTypes = null;
+      }
+      else {
+        restrictedToTicketTypes = '';
+
+        for (var x = 0; x < restrictedTicketTypesList[0].length; x++) {
+          if (restrictedTicketTypesList[0][x].selected) {
+            if (restrictedToTicketTypes != '') {
+              restrictedToTicketTypes = restrictedToTicketTypes + ','
+            }
+
+            restrictedToTicketTypes = restrictedToTicketTypes + restrictedTicketTypesList[0][x].value;
+          }
+        }
+
+        if (restrictedToTicketTypes === null || restrictedToTicketTypes == '') {
+          parent.find('.int-crm-ticket-types').prop('checked', true);
+          parent.find('#restrictedTicketTypesList').hide();
+          restrictedToTicketTypes = null;
+        }
+      }
+    }
+
+
     top.Ts.Services.Organizations.SaveCrmLink(
           linkID,
           parent.find('.int-crm-active').prop('checked'),
@@ -528,6 +597,7 @@ AdminInt = function () {
           matchAccountsByName,
           useSandBoxServer,
           alwaysUseDefaultProjectKey,
+          restrictedToTicketTypes,
           function (result) {
             parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
             loadMaps(parent);
@@ -582,7 +652,8 @@ AdminInt = function () {
   $('.int-defaultSla').change(onChange);
   $('.int-actionTypeToPush').change(onChange);
   $('.int-content-center input').unbind('change').unbind('keydown');
-
+  $('.int-ticketTypeToPush').change(onChange);
+  
   function loadPanel(element) {
     element = $(element);
     var item = element.data('link');
@@ -662,7 +733,25 @@ AdminInt = function () {
     else {
       element.find('.int-crm-always-use-default-project-key').prop('checked', false);
     }
+
+    if (item.RestrictedToTicketTypes) {
+      element.find('.int-crm-ticket-types').prop('checked', false);
+      $('#restrictedTicketTypesList').show();
+    }
+    else {
+      element.find('.int-crm-ticket-types').prop('checked', true);
+      $('#restrictedTicketTypesList').hide();
+    }
   }
+
+  $('.int-crm-ticket-types').click(function (e) {
+    if ($(this).prop('checked')) {
+      $('#restrictedTicketTypesList').hide();
+    }
+    else {
+      $('#restrictedTicketTypesList').show();
+    }
+  });
 
   $('.int-crm-push-tickets-as-cases').click(function (e) {
     if ($('.int-crm-push-tickets-as-cases').prop('checked')) {
