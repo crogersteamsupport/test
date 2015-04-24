@@ -135,6 +135,15 @@ UserPage = function () {
         $('#activatedOn').text(user.ActivatedOn.toDateString());
         $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
 
+        var V2OrgID = top.Ts.System.User.OrganizationID;
+        if (V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372) {
+          $('#userTicketPageVersion').text((user.IsClassicView == false ? 'Yes' : 'No'));
+
+        }
+        else {
+          $('#userTicketPageVersion').remove();
+        }
+
         if (user.LinkedIn == '')
             $('#userWebsite').html('None');
         else {
@@ -678,6 +687,26 @@ UserPage = function () {
               item.next().hide();
           });
       });
+
+        var V2OrgID = top.Ts.System.User.OrganizationID;
+        if (V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372) {
+          $('#userTicketPageVersion')
+            .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+            .click(function (e) {
+              e.preventDefault();
+              var item = $(this);
+              item.next().show();
+              top.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'Yes'),
+              function (result) {
+                top.Ts.System.logAction('User Info - User Changed Ticket Page Version');
+                item.text((result === false ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+              },
+              function (error) {
+                alert('There was an error saving the user auto subscribe status.');
+                item.next().hide();
+              });
+            });
+        }
 
         $('#userGroupNotify')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')

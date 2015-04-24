@@ -864,7 +864,8 @@ Ts.Pages.Main.prototype = {
               .attr('scrolling', 'no')
               .addClass('ticketIframe')
               .appendTo(div)
-                        .attr('src', 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
+                      //.attr('src', 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
+                      .attr('src', (top.Ts.System.User.IsClassicView) ? 'vcr/1_9_0/Pages/TicketPage.html?TicketNumber=' + ticketID : 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
                     } else {
                         div.show();
 

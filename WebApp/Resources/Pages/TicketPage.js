@@ -185,7 +185,6 @@ function SetupTicketProperties() {
                         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "delete", userFullName);
                     }, function () {
                         alert('There was an error deleting this ticket.');
-
                     });
                 }
             });
