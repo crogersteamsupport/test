@@ -391,7 +391,7 @@ namespace TeamSupport.Handlers
     private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)
     {
 
-      string initial = segments[2].Substring(0, 1).ToUpper();
+      string initial = segments[2].ToUpper();
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
       string cachePath = Path.Combine(GetImageCachePath(), "Initials");
@@ -460,8 +460,8 @@ namespace TeamSupport.Handlers
 
       };
 
-
-      string color = d.ContainsKey(initial) ? d[initial] : "999999";
+      string key = initial.Substring(0, 1).ToUpper();
+      string color = d.ContainsKey(key) ? d[key] : "999999";
       return ColorTranslator.FromHtml("#" + color);
           
     }
@@ -501,7 +501,7 @@ namespace TeamSupport.Handlers
               while (true)
               {
                 font = new Font(fontFamily, fontSize);
-                SizeF sizeF = gr.MeasureString("X", font);
+                SizeF sizeF = gr.MeasureString("XX", font);
                 if ((sizeF.Height > maxSize && sizeF.Width > maxSize) || fontSize > 100)
                 {
                   font = new Font(fontFamily, fontSize - 1);
