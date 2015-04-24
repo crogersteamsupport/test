@@ -2233,6 +2233,17 @@ function CreateHandleBarHelpers() {
         if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
     });
 
+    Handlebars.registerHelper('TimeSpent', function () {
+      var hours = Math.floor(this.item.TimeSpent / 60);
+      var mins = Math.floor(this.item.TimeSpent % 60);
+      var timeSpentString = "";
+      if (hours > 0) timeSpentString = hours + ((hours > 1) ? " hours " : " hour ");
+      if (mins > 0) timeSpentString += mins + ((mins > 1) ? " minutes " : " minute ");
+
+      return timeSpentString;
+    });
+
+    
     Handlebars.registerHelper('WCLikes', function () {
         if (this.Likes > 0) {
             return "+" + this.Likes;

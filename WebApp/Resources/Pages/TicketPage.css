@@ -186,7 +186,7 @@
     div.ticket-badge > div > a:focus { color: white; }
     .UserAnchor { cursor:pointer; }
 
-    .timeline-header { height:70px; border-bottom: 1px solid lightgray; padding: 15px 10px 10px 10px; }
+    .timeline-header { height:80px; border-bottom: 1px solid lightgray; padding: 15px 10px 10px 10px; }
 
     .timeline-body { margin-bottom: 10px; margin-top: 10px; overflow-y: hidden; overflow-x: auto; }
 
