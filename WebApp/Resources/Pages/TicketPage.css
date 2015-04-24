@@ -73,9 +73,9 @@
         font-weight: normal;
     }
 
-    .timeline > li.action-new { background-color: transparent;  margin-bottom: 20px; }
+    .timeline > li.action-new { background-color: transparent;  margin-bottom: 10px; }
 
-    .timeline > li.action-new > div.panel { position: relative; margin-left: 57px;}
+    .timeline > li.action-new > div.panel { position: relative; margin-left: 57px; margin-bottom: 10px;}
     
     .timeline > li.action-new > div.panel > p { display: table-cell; padding: 0 20px; vertical-align: middle;  height: 48px; }
 

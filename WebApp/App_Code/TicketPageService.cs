@@ -410,12 +410,14 @@ namespace TSWebServices
             Users users = new Users(TSAuthentication.GetLoginUser());
             users.LoadByName(term, TSAuthentication.OrganizationID, true, false, false);
 
+            result.Add(new AutocompleteItem("Unassigned", "-1"));
             for (int i = 0; i < users.Count(); i++)
             {
                 result.Add(new AutocompleteItem(users[i].DisplayName, users[i].UserID.ToString()));
             }
-            return result.OrderBy(r => r.label).ToArray();
+            return result.ToArray();
         }
+
         [WebMethod]
         public ProductProxy[] GetTicketCustomerProducts(int ticketID)
         {

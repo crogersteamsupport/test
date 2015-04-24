@@ -191,6 +191,9 @@ function SetupTicketProperties() {
             });
         };
 
+        //set the ticket title
+        $('#ticket-title').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
+
         //Setup ToolTips
         SetupToolTips();
         //update ticket property controls with the values needed
@@ -611,8 +614,9 @@ function LoadTicketControls() {
         labelField: 'label',
         searchField: 'label',
         preload: true,
+        allowEmptyOption: true,
         load: function (query, callback) {
-            top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
+          top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
                 callback(result);
             });
 
@@ -625,14 +629,19 @@ function LoadTicketControls() {
             }
         },
         onItemAdd: function (value, $item) {
-            if (this.settings.initData === false) {
-                top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function () {
-                    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-                },
-                function (error) {
-                    alert('There was an error setting the user.');
-                });
+          if (this.settings.initData === false) {
+            if (value == -1) {
+              value = null;
+              this.clear(true);
             }
+
+            top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function () {
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+            },
+            function (error) {
+              alert('There was an error setting the user.');
+            });
+          }
         }
     });
 
