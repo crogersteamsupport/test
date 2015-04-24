@@ -136,9 +136,9 @@ function SetupTicketPage() {
             }
             dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
         }
-
     });
 
+    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.ticket-toolbar-row', animation: false });
 };
 
 function AddTicketProperty(item) {
@@ -2611,13 +2611,14 @@ function CreateTicketToolbarDomEvents() {
       top.Ts.Services.Tickets.SetTicketRead(_ticketID, isRead, function () {
         if(!isRead) {
           self.find('i').addClass('color-blue');
+          top.Ts.System.logAction('Ticket Grid - Mark UnRead');
         }
         else
         {
           self.find('i').removeClass('color-blue');
+          top.Ts.System.logAction('Ticket Grid - Mark Read');
         }
       });
-      top.Ts.System.logAction('Ticket Grid - Mark Read');
     });
 
     $("#Ticket-Merge-search").autocomplete({
