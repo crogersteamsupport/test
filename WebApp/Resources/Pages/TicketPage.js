@@ -137,8 +137,6 @@ function SetupTicketPage() {
             dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
         }
     });
-
-    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.ticket-toolbar-row', animation: false });
 };
 
 function AddTicketProperty(item) {
@@ -193,6 +191,8 @@ function SetupTicketProperties() {
             });
         };
 
+        //Setup ToolTips
+        SetupToolTips();
         //update ticket property controls with the values needed
         LoadTicketControls();
         //Get Ticket Notes for Customers associated with ticket
@@ -204,6 +204,13 @@ function SetupTicketProperties() {
         //create timeline now that we have a ticketID
         FetchTimeLineItems(0);
     });
+};
+
+function SetupToolTips() {
+  $('#Ticket-Subscribe').attr('data-original-title', (_ticketInfo.Ticket.IsSubscribed) ? 'UnSubscribe to Ticket' : 'Subscribe to Ticket');
+  $('#Ticket-Queue').attr('data-original-title', (_ticketInfo.Ticket.IsEnqueued) ? 'Remove from your Ticket Queue' : 'Add to your Ticket Queue');
+  $('#Ticket-Flag').attr('data-original-title', (_ticketInfo.Ticket.IsFlagged) ? 'UnFlag Ticket' : 'Flag Ticket');
+  $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.ticket-toolbar-row', animation: false });
 };
 
 function CreateNewActionLI() {
@@ -2153,7 +2160,6 @@ function CreateActionElement(val, ShouldAppend) {
 
 };
 
-//TODO:  Update existing timeline item
 function UpdateActionElement(val) {
   if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
     var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
@@ -2611,11 +2617,13 @@ function CreateTicketToolbarDomEvents() {
       top.Ts.Services.Tickets.SetTicketRead(_ticketID, isRead, function () {
         if(!isRead) {
           self.find('i').addClass('color-blue');
+          self.attr('data-original-title', 'Mark Ticket as Read').tooltip('fixTitle');
           top.Ts.System.logAction('Ticket Grid - Mark UnRead');
         }
         else
         {
           self.find('i').removeClass('color-blue');
+          self.attr('data-original-title', 'Mark Ticket as UnRead').tooltip('fixTitle');
           top.Ts.System.logAction('Ticket Grid - Mark Read');
         }
       });
@@ -2691,19 +2699,20 @@ function CreateTicketToolbarDomEvents() {
     });
 
     $('#Ticket-Subscribe').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var self = $(this);
-        var isSubscribed = _ticketInfo.Ticket.IsSubscribed;
-        top.Ts.System.logAction('Ticket - Subscribed');
-        top.Ts.Services.Tickets.SetSubscribed(_ticketID, !isSubscribed, null, function (subscribers) {
-          _ticketInfo.Ticket.IsSubscribed = !isSubscribed;
-          self.children().toggleClass('color-green');
-          //TODO:  add append
-          //appendSubscribers(subscribers);
-        }, function () {
-            alert('There was an error subscribing this ticket.');
-        });
+      e.preventDefault();
+      e.stopPropagation();
+      var self = $(this);
+      var isSubscribed = _ticketInfo.Ticket.IsSubscribed;
+      top.Ts.System.logAction('Ticket - Subscribed');
+      top.Ts.Services.Tickets.SetSubscribed(_ticketID, !isSubscribed, null, function (subscribers) {
+        _ticketInfo.Ticket.IsSubscribed = !isSubscribed;
+        self.children().toggleClass('color-green');
+        self.attr('data-original-title', (_ticketInfo.Ticket.IsSubscribed) ? 'UnSubscribe to Ticket' : 'Subscribe to Ticket').tooltip('fixTitle');
+        //TODO:  add append
+        //appendSubscribers(subscribers);
+      }, function () {
+        alert('There was an error subscribing this ticket.');
+      });
     });
 
     $('#Ticket-Queue').click(function (e) {
@@ -2716,6 +2725,7 @@ function CreateTicketToolbarDomEvents() {
         top.Ts.Services.Tickets.SetQueue(_ticketID, !isQueued, null, function (queues) {
           _ticketInfo.Ticket.IsEnqueued = !isQueued;
           self.children().toggleClass('color-green');
+          self.attr('data-original-title', (_ticketInfo.Ticket.IsEnqueued) ? 'Remove from your Ticket Queue' : 'Add to your Ticket Queue').tooltip('fixTitle');
           //TODO:  add append
             //appendQueues(queues);
         }, function () {
@@ -2730,6 +2740,7 @@ function CreateTicketToolbarDomEvents() {
         var isFlagged = _ticketInfo.Ticket.IsFlagged;
         _ticketInfo.Ticket.IsFlagged = !isFlagged;
         self.children().toggleClass('color-red');
+        self.attr('data-original-title', (_ticketInfo.Ticket.IsFlagged) ? 'UnFlag Ticket' : 'Flag Ticket').tooltip('fixTitle');
         top.Ts.System.logAction('Ticket - Flagged');
         top.Ts.Services.Tickets.SetTicketFlag(_ticketID, !isFlagged, null, function () {
         }, function () {
