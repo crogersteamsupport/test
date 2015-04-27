@@ -2123,6 +2123,26 @@ var getUrls = function (input) {
     return result;
 }
 
+var LoadTicketHistory = function() {
+  top.Ts.Services.Tickets.GetTicketHistory(_ticketID, function (logs) {
+    var historyTable = $('#ticket-history-table > tbody');
+    historyTable.empty().addClass('ts-loading');
+    for (var i = 0; i < logs.length; i++) {
+      var row = $('<tr>').appendTo(historyTable);
+      var col1 = $('<td>').text(logs[i].CreatorName).appendTo(row);
+      var col2 = $('<td>').text(logs[i].DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern())).appendTo(row);
+      var col3 = $('<td>').html(logs[i].Description).appendTo(row);
+    }
+    historyTable.removeClass('ts-loading');
+  }, function () {
+    alert('There was a problem retrieving the history for the ticket.');
+  });
+}
+
+function openTicketWindow(ticketID) {
+  top.Ts.MainPage.openTicket(ticketID, true);
+}
+
 function FetchTimeLineItems(start) {
     _isLoading = true;
     $('.results-loading').show();
@@ -2776,18 +2796,27 @@ function CreateTicketToolbarDomEvents() {
         window.open('../../../TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
     });
 
+  //TODO
     $('#Ticket-Email').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - Emailed');
         //$(".dialog-emailinput").dialog('open');
     });
-
+  //TODO
     $('#Ticket-URL').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - Shown URL');
         //$('.ticket-url').toggle();
+    });
+
+    $('#Ticket-History').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      top.Ts.System.logAction('Ticket - Shown History');
+      LoadTicketHistory();
+      $('#TicketHistoryModal').modal('show')
     });
 };
 

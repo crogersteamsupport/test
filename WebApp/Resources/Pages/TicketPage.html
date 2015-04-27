@@ -69,6 +69,7 @@
                     <div class="btn-group ticket-toolbar" role="group" aria-label="...">
                         <button type="button" class="btn btn-default ticket-option dropdown-toggle" data-toggle="dropdown">More&nbsp;<span class="caret"></span></button>
                         <ul class="dropdown-menu ticket-menu-actions" role="menu">
+                            <li><a id="Ticket-History">History</a></li>
                             <li><a id="Ticket-Print">Print</a></li>
                             <li><a id="Ticket-Email">Email</a></li>
                             <li><a id="Ticket-URL">URL</a></li>
@@ -645,5 +646,33 @@
         </div>
       </div>
     </div>
+  <div id="TicketHistoryModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="TicketHistoryModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="TicketHistoryModalTitle">Ticket History</h4>
+        </div>
+        <div class="modal-body">
+          <table id="ticket-history-table" class="table table-hover">
+            <thead>
+              <tr>
+                <td>User</td>
+                <td>Date</td>
+                <td>Descrption</td>
+              </tr>
+            </thead>
+            <tbody>
+              <!--<tr>
+              <td>Matthew Townsen</td>
+              <td>01/01/2015 11:00 PM</td>
+              <td>Test description of what happened in this event.</td>
+            </tr>-->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
