@@ -2,6 +2,15 @@
         background-color:white;
     }
 
+    .ts-loading {
+      background-color: transparent;
+      background-image: url('../images/loading/loading2.gif');
+      background-repeat: no-repeat;
+      background-position: 50% 25%;
+      height: 100%;
+      min-height: 200px;
+    }
+
     .ticket-toolbar-row {
           padding-left: 5px;
          padding-right: 5px;

@@ -169,7 +169,10 @@ function SetupTicketProperties() {
         _ticketCreator.UserID = info.Ticket.CreatorID;
         _ticketCreator.Name = info.Ticket.CreatorName;
         _productFamilyID = info.Ticket.ProductFamilyID;
+
         top.Ts.System.logAction('View Ticket');
+      debugger
+        $('.page-loading').hide().next().show();
 
         if (info == null) alert('no ticket');
 
@@ -417,14 +420,14 @@ function SetupActionEditor(elem, action) {
     var statuses = top.Ts.Cache.getNextStatuses(_ticketInfo.Ticket.TicketStatusID);
     $('#action-new-saveoptions').empty();
     if (action) {
-      $('#action-new-save').text('Save').data('actionid', action.RefID);
+      $('#action-new-save').text('Update').data('actionid', action.RefID);
       for (var i = 0; i < statuses.length; i++) {
         $('#action-new-saveoptions').append('<li><a class="action-create-option" data-actionid=' + action.RefID + ' data-statusid=' + statuses[i].TicketStatusID + ' href="#">Create and Set Status to ' + statuses[i].Name + '</a></li>');
       }
     }
     else
     {
-      $('#action-new-save').text('Create').data('actionid', -1);
+      $('#action-new-save').text('Save').data('actionid', -1);
       for (var i = 0; i < statuses.length; i++) {
         $('#action-new-saveoptions').append('<li><a class="action-create-option" data-actionid=-1 data-statusid=' + statuses[i].TicketStatusID + ' href="#">Save and Set Status to ' + statuses[i].Name + '</a></li>');
       }
