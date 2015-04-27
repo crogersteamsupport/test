@@ -171,8 +171,6 @@ function SetupTicketProperties() {
         _productFamilyID = info.Ticket.ProductFamilyID;
 
         top.Ts.System.logAction('View Ticket');
-      debugger
-        $('.page-loading').hide().next().show();
 
         if (info == null) alert('no ticket');
 
@@ -195,6 +193,10 @@ function SetupTicketProperties() {
 
         //set the ticket title
         $('#ticket-title').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
+      //get total number of actions so we can use it to number each action
+        GetActionCount();
+      //create timeline now that we have a ticketID
+        FetchTimeLineItems(0);
 
         //Setup ToolTips
         SetupToolTips();
@@ -204,10 +206,7 @@ function SetupTicketProperties() {
         top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
             LoadTicketNotes(note);
         });
-        //get total number of actions so we can use it to number each action
-        GetActionCount();
-        //create timeline now that we have a ticketID
-        FetchTimeLineItems(0);
+        $('.page-loading').hide().next().show();
     });
 };
 
