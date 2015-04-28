@@ -20,8 +20,6 @@ namespace TeamSupport.ServiceLibrary
     override protected void GetNextRecord()
     {
       AssetsViewItem asset = AssetsView.GetAssetsViewItem(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing AssetID: " + asset.AssetID.ToString());
-
       _lastItemID = asset.AssetID;
       UpdatedItems.Add((int)_lastItemID);
 

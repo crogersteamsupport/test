@@ -21,8 +21,6 @@ namespace TeamSupport.ServiceLibrary
     protected override void GetNextRecord()
     {
       ContactsViewItem contact = ContactsView.GetContactsViewItem(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing UserID: " + contact.UserID.ToString());
-
       _lastItemID = contact.UserID;
       UpdatedItems.Add((int)_lastItemID);
 
