@@ -21,10 +21,7 @@ namespace TeamSupport.ServiceLibrary
 
     override protected void GetNextRecord()
     {
-
       OrganizationsViewItem organization = OrganizationsView.GetOrganizationsViewItem(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing OrganizationID: " + organization.OrganizationID.ToString());
-
       _lastItemID = organization.OrganizationID;
       UpdatedItems.Add((int)_lastItemID);
 

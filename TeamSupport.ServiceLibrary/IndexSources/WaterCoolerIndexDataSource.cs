@@ -19,8 +19,6 @@ namespace TeamSupport.ServiceLibrary
     override protected void GetNextRecord()
     {
       WaterCoolerViewItem waterCooler = WaterCoolerView.GetWaterCoolerViewItem(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing WaterCoolerMessageID: " + waterCooler.MessageID.ToString());
-
       _lastItemID = waterCooler.MessageID;
       UpdatedItems.Add((int)_lastItemID);
 

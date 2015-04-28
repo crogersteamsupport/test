@@ -74,7 +74,7 @@ namespace TeamSupport.ServiceLibrary
 
       try
       {
-        _logs.WriteEvent(string.Format("Rewind {0}, OrgID: {1}", _table, _organizationID.ToString()));
+        //_logs.WriteEvent(string.Format("Rewind {0}, OrgID: {1}", _table, _organizationID.ToString()));
         _itemIDList = new List<int>();
         LoadData();
         _lastItemID = null;

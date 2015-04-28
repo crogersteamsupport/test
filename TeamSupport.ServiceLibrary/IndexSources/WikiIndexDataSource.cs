@@ -18,10 +18,7 @@ namespace TeamSupport.ServiceLibrary
 
     override protected void GetNextRecord()
     {
-
       WikiArticlesViewItem wiki = WikiArticlesView.GetWikiArticlesViewItem(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing Wiki ArticleID: " + wiki.ArticleID.ToString());
-
       _lastItemID = wiki.ArticleID;
       UpdatedItems.Add((int)_lastItemID);
 

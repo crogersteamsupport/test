@@ -20,8 +20,6 @@ namespace TeamSupport.ServiceLibrary
     override protected void GetNextRecord()
     {
       TicketsViewItem ticket = TicketsView.GetTicketsViewItem(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing TicketID: " + ticket.TicketID.ToString());
-
       _lastItemID = ticket.TicketID;
       UpdatedItems.Add((int)_lastItemID);
 

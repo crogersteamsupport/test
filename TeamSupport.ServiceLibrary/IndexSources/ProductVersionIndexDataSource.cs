@@ -20,8 +20,6 @@ namespace TeamSupport.ServiceLibrary
     override protected void GetNextRecord()
     {
       ProductVersionsViewItem productVersion = ProductVersionsView.GetProductVersionsViewItem(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing ProductVersionID: " + productVersion.ProductVersionID.ToString());
-
       _lastItemID = productVersion.ProductVersionID;
       UpdatedItems.Add((int)_lastItemID);
 

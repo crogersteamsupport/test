@@ -16,8 +16,6 @@ namespace TeamSupport.ServiceLibrary
     override protected void GetNextRecord()
     {
       NotesViewItem note = NotesView.GetNotesViewItem(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing NoteID: " + note.NoteID.ToString());
-
       _lastItemID = note.NoteID;
       UpdatedItems.Add((int)_lastItemID);
 

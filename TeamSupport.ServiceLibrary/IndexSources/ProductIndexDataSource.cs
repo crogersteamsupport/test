@@ -20,8 +20,6 @@ namespace TeamSupport.ServiceLibrary
     override protected void GetNextRecord()
     {
       Product product = Products.GetProduct(_loginUser, _itemIDList[_rowIndex]);
-      _logs.WriteEvent("Started Processing ProductID: " + product.ProductID.ToString());
-
       _lastItemID = product.ProductID;
       UpdatedItems.Add((int)_lastItemID);
 
