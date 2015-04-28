@@ -70,9 +70,8 @@ Namespace TeamSupport
 
         If numberOfIssuesToPullAsTickets > 0 Then
           Dim domain As String = SystemSettings.ReadString(User, "AppDomain", "https://app.teamsupport.com")
-          Dim indexOfTicketIDInRemoteLink As Integer = domain.Length + 22
           For Each batchOfIssuesToPullAsTicket As JObject In issuesToPullAsTickets
-            PullIssuesAndCommentsAsTicketsAndActions(batchOfIssuesToPullAsTicket("issues"), allStatuses, newActionsTypeID, indexOfTicketIDInRemoteLink)
+            PullIssuesAndCommentsAsTicketsAndActions(batchOfIssuesToPullAsTicket("issues"), allStatuses, newActionsTypeID)
           Next
         End If
         Return Not SyncError
@@ -1062,7 +1061,7 @@ Namespace TeamSupport
             Return result.ToString()
           End Function
 
-      Private Sub PullIssuesAndCommentsAsTicketsAndActions(ByVal issuesToPullAsTickets As JArray, ByVal allStatuses As TicketStatuses, ByVal newActionsTypeID As Integer, ByVal indexOfTicketIDInRemoteLink As Integer)
+      Private Sub PullIssuesAndCommentsAsTicketsAndActions(ByVal issuesToPullAsTickets As JArray, ByVal allStatuses As TicketStatuses, ByVal newActionsTypeID As Integer)
         Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
         crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "ticket")
         Dim crmLinkError As CRMLinkError = Nothing
@@ -1072,7 +1071,7 @@ Namespace TeamSupport
 
         For i = 0 To issuesToPullAsTickets.Count - 1
           Dim newComments As JArray = Nothing
-          For Each ticketID As Integer In GetLinkedTicketIDs(issuesToPullAsTickets(i), indexOfTicketIDInRemoteLink)
+          For Each ticketID As Integer In GetLinkedTicketIDs(issuesToPullAsTickets(i))
             crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), String.Empty)
             Try
               UpdateTicketWithIssueData(ticketID, issuesToPullAsTickets(i), newActionsTypeID, allStatuses)
@@ -1130,18 +1129,23 @@ Namespace TeamSupport
           Return result
         End Function
 
-        Private Function GetLinkedTicketIDs(ByVal issue As JObject, ByVal indexOfTicketIDInRemoteLink As Integer) As List(Of Integer)
+        Private Function GetLinkedTicketIDs(ByVal issue As JObject) As List(Of Integer)
           Dim result As List(Of Integer) = New List(Of Integer)()
-
           Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/remotelink"
           Dim remoteLinks As JArray = GetAPIJArray(URI, "GET", String.Empty)
-          'For i = 0 To CType(remoteLinks("total"), Integer)
+
           Log.Write("remoteLinks.Count: " + remoteLinks.Count.ToString())
           For i = 0 To remoteLinks.Count - 1
             If remoteLinks(i)("application")("name") = "Team Support" Then
               Dim remoteLinkURL As String = remoteLinks(i)("object")("url").ToString()
               Log.Write("remoteLinkURL: " + remoteLinkURL)
-              result.Add(CType(remoteLinks(i)("object")("url").ToString().Substring(indexOfTicketIDInRemoteLink), Integer))
+
+              Try
+                Dim remoteLinkSplit() As String = Split(remoteLinkURL, "ticketid=")
+                result.Add(CType(remoteLinkSplit(1), Integer))
+              Catch ex As Exception
+                Log.Write("ticketid= string not found in remotelink. Skipping issue " + issue("id").ToString() + ", please review.")
+              End Try
             End If
           Next
 
