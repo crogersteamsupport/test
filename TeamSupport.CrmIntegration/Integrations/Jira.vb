@@ -1072,40 +1072,46 @@ Namespace TeamSupport
         For i = 0 To issuesToPullAsTickets.Count - 1
           Dim newComments As JArray = Nothing
           For Each ticketID As Integer In GetLinkedTicketIDs(issuesToPullAsTickets(i))
-            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), String.Empty)
-            Try
-              UpdateTicketWithIssueData(ticketID, issuesToPullAsTickets(i), newActionsTypeID, allStatuses)
+            Dim updateTicket As Tickets = New Tickets(User)
+            updateTicket.LoadByTicketID(ticketID)
 
-              If crmLinkError IsNot Nothing Then
-                crmLinkError.Delete()
-                crmLinkErrors.Save()
+            If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
+              crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), String.Empty)
+              Try
+                UpdateTicketWithIssueData(ticketID, issuesToPullAsTickets(i), newActionsTypeID, allStatuses)
+
+                If crmLinkError IsNot Nothing Then
+                  crmLinkError.Delete()
+                  crmLinkErrors.Save()
+                End If
+              Catch ex As Exception
+                              Try
+                                  If crmLinkError Is Nothing Then
+                                      Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                      crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                      crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                      crmLinkError.CRMType = CRMLinkRow.CRMType
+                                      crmLinkError.Orientation = "in"
+                                      crmLinkError.ObjectType = "ticket"
+                                      crmLinkError.ObjectID = ticketID.ToString()
+                                      crmLinkError.ObjectData = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
+                                      crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                      crmLinkError.OperationType = "update"
+                                      newCrmLinkError.Save()
+                                  Else
+                                      crmLinkError.ObjectData = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
+                                      crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                  End If
+                              Catch errorException As Exception
+
+                              End Try
+                          End Try
+              If newComments Is Nothing Then
+                newComments = GetNewComments(issuesToPullAsTickets(i)("fields")("comment"), ticketID)
               End If
-            Catch ex As Exception
-                            Try
-                                If crmLinkError Is Nothing Then
-                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                                    crmLinkError.CRMType = CRMLinkRow.CRMType
-                                    crmLinkError.Orientation = "in"
-                                    crmLinkError.ObjectType = "ticket"
-                                    crmLinkError.ObjectID = ticketID.ToString()
-                                    crmLinkError.ObjectData = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
-                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
-                                    crmLinkError.OperationType = "update"
-                                    newCrmLinkError.Save()
-                                Else
-                                    crmLinkError.ObjectData = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
-                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
-                                End If
-                            Catch errorException As Exception
 
-                            End Try
-                        End Try
-            If newComments Is Nothing Then
-              newComments = GetNewComments(issuesToPullAsTickets(i)("fields")("comment"), ticketID)
+              AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
             End If
-            AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
           Next
         Next
         crmLinkErrors.Save()
