@@ -191,6 +191,14 @@ function SetupTicketProperties() {
             });
         };
 
+        //set the url for the copy paste button
+        var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
+        ticketURLLink.on("aftercopy", function (event) {
+          alert("Copied URL to clipboard: " + event.data["text/plain"]);
+        });
+        var ticketUrl = top.Ts.System.AppDomain + "/?" + _ticketNumber;
+        $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
+
         //set the ticket title
         $('#ticket-title').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
       //get total number of actions so we can use it to number each action
@@ -2796,19 +2804,16 @@ function CreateTicketToolbarDomEvents() {
         window.open('../../../TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
     });
 
-  //TODO
     $('#Ticket-Email').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        top.Ts.System.logAction('Ticket - Emailed');
-        //$(".dialog-emailinput").dialog('open');
-    });
-  //TODO
-    $('#Ticket-URL').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        top.Ts.System.logAction('Ticket - Shown URL');
-        //$('.ticket-url').toggle();
+      e.preventDefault();
+      e.stopPropagation();
+      top.Ts.System.logAction('Ticket - Emailed');
+      top.Ts.Services.Tickets.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function () {
+        $('#email-success').show();
+        setTimeout(function () { $('#EmailModal').modal('hide'); }, 2000);
+      }, function () {
+        $('#email-error').show();
+      });
     });
 
     $('#Ticket-History').click(function (e) {
@@ -2820,12 +2825,31 @@ function CreateTicketToolbarDomEvents() {
     });
 };
 
-var MergeSuccessEvent = function(_ticketNumber, winningTicketNumber)
-{
+var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
   $('#merge-success').show();
   setTimeout(function () { $('#MergeModal').modal('hide'); }, 2000);
   top.Ts.MainPage.closeTicketTab(_ticketNumber);
   top.Ts.MainPage.openTicket(winningTicketNumber, true);
   window.location = window.location;
   window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+};
+
+
+var addUserViewing = function (userID) {
+  $('.ticket-now-viewing').show();
+  if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
+    top.Ts.Services.Users.GetUser(userID, function (user) {
+      var fullName = user.FirstName + " " + user.LastName;
+      var viewuser = $('<a>')
+              .data('ChatID', user.UserID)
+              .data('Name', fullName)
+              .addClass('ticket-viewer')
+              .click(function () {
+                window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
+                top.Ts.System.logAction('Now Viewing - Chat Opened');
+              })
+              .html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>')
+              .appendTo($('#ticket-viewing-users'));
+    });
+  }
 }
