@@ -174,12 +174,16 @@
                   </div>
                 </div>
               </li>
-              <div class="panel panel-default" style="position: relative; z-index: 1; display:table; margin-left:auto; margin-right:auto;">
-                <p id="ticket-title" class="text-muted text-center" style="margin-bottom: 0px; padding: 5px;"></p>
+              <div id="ticket-title-panel" class="panel panel-default" style="position: relative; z-index: 1; display:table; margin-left:auto; margin-right:auto;">
+                <p id="ticket-title" class="text-muted text-center" style="margin-bottom: 0px; padding: 5px; font-weight: 500;"></p>
               </div>
             </script>
             <script id="action-template" type="text/x-handlebars-template">
+              {{#if item.IsPinned}}
+              <li data-id="{{item.RefID}}" data-action="{{ActionData}}" class="pinned">
+                {{else}}
               <li data-id="{{item.RefID}}" data-action="{{ActionData}}">
+                {{/if}}
                 <div class="timeline-panel">
                   {{#unless item.IsWC}}
                   <label class="ticket-action-number">{{ActionNumber}}</label>
@@ -689,14 +693,5 @@
       </div>
     </div>
   </div>
-  <!--<div id="URLModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-small">
-      <div class="modal-content">
-        <div class="modal-body">
-          <a id="ticket-url-link" target="_blank" href="http://localhost:81/?TicketNumber=2267">http://localhost:81/?TicketNumber=2267</a>
-        </div>
-      </div>
-    </div>
-  </div>-->
 </body>
 </html>

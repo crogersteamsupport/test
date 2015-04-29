@@ -543,6 +543,7 @@ function UploadAttachments(newAction) {
             $(o).data('data', data);
         });
     }
+    $('.upload-queue').empty();
 }
 
 function tickettimer() {
@@ -2152,49 +2153,52 @@ function openTicketWindow(ticketID) {
 }
 
 function FetchTimeLineItems(start) {
-    _isLoading = true;
-    $('.results-loading').show();
-    top.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
-        _timeLine = TimeLineItems;
+  _isLoading = true;
+  $('.results-loading').show();
+  top.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
+    _timeLine = TimeLineItems;
 
-        if (TimeLineItems.length < 1) {
-            $('.results-loading').hide();
-            $('.results-done').show();
-        }
-        else {
-            //compile action template
-            _compiledActionTemplate = Handlebars.compile($("#action-template").html());
+    if (TimeLineItems.length < 1) {
+      $('.results-loading').hide();
+      $('.results-done').show();
+    }
+    else {
+      //compile action template
+      _compiledActionTemplate = Handlebars.compile($("#action-template").html());
 
-            //create first timeline date marker if needed
-            if (_currDateSpan == null) {
-                _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
-                $("#action-timeline").append(dateSpan);
-            };
+      //create first timeline date marker if needed
+      if (_currDateSpan == null) {
+        _currDateSpan = _timeLine[0].item.DateCreated;
+        var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
+        $("#action-timeline").append(dateSpan);
+      };
 
-            jQuery.each(_timeLine, function (i, val) { CreateActionElement(val, true); });
-            _isLoading = false;
-            $('.results-loading').hide();
-        };
-    });
+      for (i = 0; i < _timeLine.length; i++) {
+        var timeLineItem = _timeLine[i];
+        CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
+      }
+      _isLoading = false;
+      $('.results-loading').hide();
+    };
+  });
 
 };
 
-function CreateActionElement(val, ShouldAppend) {
-    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
-        $("#action-timeline").append(dateSpan);
-        _currDateSpan = val.item.DateCreated;
-    }
-    var html = _compiledActionTemplate(val);
 
-    if (ShouldAppend) {
-        $("#action-timeline").append(html);
-    }
-    else
-    {
-        $('#action-timeline li:nth-child(1)').after(html);
-    }
+function CreateActionElement(val, ShouldAppend) {
+  if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+    var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
+    $("#action-timeline").append(dateSpan);
+    _currDateSpan = val.item.DateCreated;
+  }
+  var html = _compiledActionTemplate(val);
+
+  if (ShouldAppend) {
+    $("#action-timeline").append(html);
+  }
+  else {
+    $('#ticket-title-panel').after(html);
+  }
 
 };
 
@@ -2291,44 +2295,77 @@ function CreateTimeLineDelegates() {
     });
 
     $('#action-timeline').on('click', 'a.action-option-pin', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
 
-        var self = $(this);
-        var Action = self.closest('li').data().action;
+      var self = $(this);
+      var parentLI = self.closest('li');
+      var titleElement = $('#ticket-title-panel');
+      var Action = parentLI.data().action;
 
-        if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
-            top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-            top.Ts.Services.Tickets.SetActionPinned(_ticketID, Action.RefID, !Action.IsPinned,
-            function (result) {
-                var parentLI = self.closest('li');
-                parentLI.data().action.IsPinned = result;
-                parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
-            }, function () {
-                alert('There was an error editing this action.');
-            });
-        }
+      parentLI.find(".action-option-items").hide();
+      parentLI.find(".action-options-icon").fadeIn();
+      if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
+        $('a.ticket-action-pinned').addClass('hidden');
+        top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
+        top.Ts.Services.Tickets.SetActionPinned(_ticketID, Action.RefID, !Action.IsPinned,
+        function (result) {
+          parentLI.data().action.IsPinned = result;
+          parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
+          var pinnedAction = $('.pinned');
+          var actionID = parseInt(pinnedAction.find('.ticket-action-number').text()) + 1;
+
+          titleElement.after(parentLI.clone().addClass('pinned'));
+          parentLI.insertAfter(titleElement);
+          parentLI.remove();
+
+          var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
+          if (InLineElement.length > 0) {
+            InLineElement.after(pinnedAction.clone().removeClass('pinned'));
+          }
+          else {
+            titleElement.next().after(pinnedAction.clone().removeClass('pinned'));
+          }
+          pinnedAction.remove();
+
+        }, function () {
+          alert('There was an error editing this action.');
+        });
+      }
 
     });
 
     $('#action-timeline').on('click', 'a.ticket-action-pinned', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
 
-        var self = $(this);
-        var action = self.closest('li').data().action;
+      var self = $(this);
+      var parentLI = self.closest('li');
+      var action = parentLI.data().action;
+      var titleElement = $('#ticket-title-panel');
 
-        if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
-            top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-            top.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, !action.IsPinned,
-            function (result) {
-                var parentLI = self.closest('li');
-                parentLI.data().action.IsPinned = result;
-                parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
-            }, function () {
-                alert('There was an error editing this action.');
-            });
-        }
+      if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
+        top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
+        top.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false,
+        function (result) {
+          parentLI.data().action.IsPinned = result;
+          parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
+
+          var actionID = parseInt(parentLI.find('.ticket-action-number').text()) + 1;
+
+          var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
+          if (InLineElement.length > 0) {
+            InLineElement.after(parentLI.clone().removeClass('pinned'));
+          }
+          else {
+            titleElement.next().after(parentLI.clone().removeClass('pinned'));
+          }
+          $('a.ticket-action-pinned').addClass('hidden');
+          parentLI.remove();
+        }, function () {
+          alert('There was an error editing this action.');
+        });
+      }
     });
 
     $('#action-timeline').on('click', 'a.action-option-kb', function (e) {
