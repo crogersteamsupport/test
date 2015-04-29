@@ -1111,6 +1111,10 @@ Namespace TeamSupport
               End If
 
               AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
+            ElseIf updateTicket.Count > 0 Then
+              Log.Write("Ticket with ID: """ + ticketID.ToString() + """ belongs to a different organization and was not udpated.")
+            Else
+              Log.Write("Ticket with ID: """ + ticketID.ToString() + """ was not found to be updated.")
             End If
           Next
         Next
