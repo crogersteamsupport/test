@@ -514,17 +514,6 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool SetUseClassicTicketPage(int userID, bool value)
-        {
-          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-          if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
-
-          user.IsClassicView = value;
-          user.Collection.Save();
-          return user.IsClassicView;
-        }
-
-        [WebMethod]
         public bool SetGroupNotify(int userID, bool value)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
