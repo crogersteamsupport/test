@@ -542,7 +542,7 @@ namespace BusinessObjectGenerator
         field.IsReadOnly = (bool)row["IsReadOnly"];
         field.AllowDBNull = (bool)row["AllowDBNull"];
         field.IsNullable = field.AllowDBNull && field.CustomType != "string";
-        field.IsPrimaryKey = false;
+        field.IsPrimaryKey = row.Table.Columns.Contains("IsPrimaryKey") ? (bool)row["IsPrimaryKey"] : false;
 
         for (int i = 0; i < dataset.Tables[0].PrimaryKey.Length; i++)
         {

@@ -391,7 +391,8 @@ namespace TeamSupport.ServiceLibrary
         else
         {
           Logs.WriteEvent("Processing New Ticket");
-          AddMessageNewTicket(ticket, modifier, ticketOrganization);
+          User creator = Users.GetUser(LoginUser, ticket.CreatorID);
+          AddMessageNewTicket(ticket, creator, ticketOrganization);
         }
         try
         {
