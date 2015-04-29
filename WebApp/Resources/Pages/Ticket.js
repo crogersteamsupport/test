@@ -1725,6 +1725,7 @@ $(document).ready(function () {
       }
       else {
         loadProducts();
+		
       }
       window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeproduct", userFullName);
     })
