@@ -150,6 +150,16 @@ UserPage = function () {
     $('#activatedOn').text(user.ActivatedOn.toDateString());
     $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
 
+    var V2OrgID = top.Ts.System.User.OrganizationID;
+    if (V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372) {
+      $('#userTicketPageVersion').text((user.IsClassicView == false ? 'Yes' : 'No'));
+
+    }
+    else {
+      $('#userTicketPageVersion').remove();
+    }
+
+
     if (user.LinkedIn == '')
       $('#userWebsite').html('None');
     else {
