@@ -218,8 +218,12 @@ namespace TeamSupport.Data
         }
 
         public static string StripHTML(string Content) {
+            // While researching Ticket #20811 realized further Regex.Replace break in multiple lines. This added to temporarily remove break lines.
+            Content = Regex.Replace(Content, @"\n", "TeamSupportNewLine");
+            
             // Added to remove <style> tag and its contect based on http://forums.asp.net/t/1901224.aspx?Remove+Head+tag+from+HTML+
             Content = Regex.Replace(Content, "<style>(.|\n)*?</style>", string.Empty);
+            Content = Regex.Replace(Content, "<w:WordDocument>(.|\n)*?</w:WordDocument>", string.Empty);
             
             Content = Regex.Replace(Content, "<.*?>", string.Empty);
             Content = System.Web.HttpUtility.HtmlDecode(Content);
@@ -230,6 +234,10 @@ namespace TeamSupport.Data
 
             // Added to remove duplicate spaces based on http://texthandler.com/?module=remove_double_spaces_cc
             Content = Regex.Replace(Content, " {2,}", " ");
+
+            Content = Regex.Replace(Content, "TeamSupportNewLine", Environment.NewLine);
+
+            Content = Regex.Replace(Content, @"(?:(?:\r?\n)+ +){2,}", Environment.NewLine + Environment.NewLine);
 
             return Content;
         }
