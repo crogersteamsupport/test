@@ -95,25 +95,33 @@ namespace TeamSupport.ServiceLibrary
 
     public override void Run()
     {
-      Logs.WriteEvent("Start Run");
-
       bool isRebuilder = GetIsRebuilderMode();
       int daysSinceLastRebuild = Settings.ReadInt("DaysSinceLastRebuild", 14);
       int minutesSinceLastActive = Settings.ReadInt("MinutesSinceLastActive", 30); 
       
       while (!IsStopped)
       {
+        Logs.WriteEvent("Start Loop");
+
+
         try
         {
           UpdateHealth();
+          Logs.WriteEvent("Health Updated");
+
+
           Organization organization = GetNextOrganization(LoginUser.ConnectionString, (int)_threadPosition, isRebuilder, daysSinceLastRebuild, minutesSinceLastActive);
           if (organization == null) return;
+          Logs.WriteEvent("Organization Selected");
           try
           {
+            Logs.WriteEvent("Start processing");
             ProcessOrganization(organization, isRebuilder);
+            Logs.WriteEvent("finished processing");
           }
           finally
           {
+            Logs.WriteEvent("unlocking");
             if (isRebuilder)
             {
               UnmarkIndexRebuild(organization.OrganizationID);
@@ -123,6 +131,8 @@ namespace TeamSupport.ServiceLibrary
               UnlockIndex(organization.OrganizationID);
             }
           }
+          Logs.WriteEvent("end loop");
+
         }
         catch (Exception ex)
         {
@@ -131,7 +141,6 @@ namespace TeamSupport.ServiceLibrary
           ExceptionLogs.LogException(LoginUser, ex, "Indexer", "Error processing organization");
         }
       }
-      Logs.WriteEvent("End Run");
 
     }
 
