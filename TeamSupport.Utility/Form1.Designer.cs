@@ -30,16 +30,17 @@
     {
       this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
       this.tabPage1 = new System.Windows.Forms.TabPage();
-      this.label1 = new System.Windows.Forms.Label();
+      this.tbAttachments = new System.Windows.Forms.RichTextBox();
+      this.btnSetAttachmentFolder = new System.Windows.Forms.Button();
+      this.tbAttachmentFolder = new System.Windows.Forms.TextBox();
       this.btnAttachmentsClean = new System.Windows.Forms.Button();
-      this.textBox1 = new System.Windows.Forms.TextBox();
+      this.label1 = new System.Windows.Forms.Label();
       this.tabControlMain = new System.Windows.Forms.TabControl();
-      this.button1 = new System.Windows.Forms.Button();
-      this.richTextBox1 = new System.Windows.Forms.RichTextBox();
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
       this.fToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+      this.btnDeleteAttachments = new System.Windows.Forms.Button();
       this.tabPage1.SuspendLayout();
       this.tabControlMain.SuspendLayout();
       this.menuStrip1.SuspendLayout();
@@ -47,9 +48,10 @@
       // 
       // tabPage1
       // 
-      this.tabPage1.Controls.Add(this.richTextBox1);
-      this.tabPage1.Controls.Add(this.button1);
-      this.tabPage1.Controls.Add(this.textBox1);
+      this.tabPage1.Controls.Add(this.btnDeleteAttachments);
+      this.tabPage1.Controls.Add(this.tbAttachments);
+      this.tabPage1.Controls.Add(this.btnSetAttachmentFolder);
+      this.tabPage1.Controls.Add(this.tbAttachmentFolder);
       this.tabPage1.Controls.Add(this.btnAttachmentsClean);
       this.tabPage1.Controls.Add(this.label1);
       this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -60,6 +62,44 @@
       this.tabPage1.Text = "Attachments";
       this.tabPage1.UseVisualStyleBackColor = true;
       // 
+      // tbAttachments
+      // 
+      this.tbAttachments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.tbAttachments.Location = new System.Drawing.Point(6, 55);
+      this.tbAttachments.Name = "tbAttachments";
+      this.tbAttachments.Size = new System.Drawing.Size(666, 312);
+      this.tbAttachments.TabIndex = 4;
+      this.tbAttachments.Text = "";
+      // 
+      // btnSetAttachmentFolder
+      // 
+      this.btnSetAttachmentFolder.Location = new System.Drawing.Point(321, 26);
+      this.btnSetAttachmentFolder.Name = "btnSetAttachmentFolder";
+      this.btnSetAttachmentFolder.Size = new System.Drawing.Size(82, 23);
+      this.btnSetAttachmentFolder.TabIndex = 3;
+      this.btnSetAttachmentFolder.Text = "Set Folder";
+      this.btnSetAttachmentFolder.UseVisualStyleBackColor = true;
+      this.btnSetAttachmentFolder.Click += new System.EventHandler(this.btnSetAttachmentFolder_Click);
+      // 
+      // tbAttachmentFolder
+      // 
+      this.tbAttachmentFolder.Location = new System.Drawing.Point(9, 28);
+      this.tbAttachmentFolder.Name = "tbAttachmentFolder";
+      this.tbAttachmentFolder.Size = new System.Drawing.Size(306, 20);
+      this.tbAttachmentFolder.TabIndex = 1;
+      // 
+      // btnAttachmentsClean
+      // 
+      this.btnAttachmentsClean.Location = new System.Drawing.Point(409, 26);
+      this.btnAttachmentsClean.Name = "btnAttachmentsClean";
+      this.btnAttachmentsClean.Size = new System.Drawing.Size(111, 23);
+      this.btnAttachmentsClean.TabIndex = 0;
+      this.btnAttachmentsClean.Text = "Get Delete List";
+      this.btnAttachmentsClean.UseVisualStyleBackColor = true;
+      this.btnAttachmentsClean.Click += new System.EventHandler(this.btnAttachmentsClean_Click);
+      // 
       // label1
       // 
       this.label1.AutoSize = true;
@@ -68,23 +108,6 @@
       this.label1.Size = new System.Drawing.Size(93, 13);
       this.label1.TabIndex = 2;
       this.label1.Text = "Attachment Folder";
-      // 
-      // btnAttachmentsClean
-      // 
-      this.btnAttachmentsClean.Location = new System.Drawing.Point(409, 26);
-      this.btnAttachmentsClean.Name = "btnAttachmentsClean";
-      this.btnAttachmentsClean.Size = new System.Drawing.Size(111, 23);
-      this.btnAttachmentsClean.TabIndex = 0;
-      this.btnAttachmentsClean.Text = "Clean Attachments";
-      this.btnAttachmentsClean.UseVisualStyleBackColor = true;
-      this.btnAttachmentsClean.Click += new System.EventHandler(this.btnAttachmentsClean_Click);
-      // 
-      // textBox1
-      // 
-      this.textBox1.Location = new System.Drawing.Point(9, 28);
-      this.textBox1.Name = "textBox1";
-      this.textBox1.Size = new System.Drawing.Size(306, 20);
-      this.textBox1.TabIndex = 1;
       // 
       // tabControlMain
       // 
@@ -97,26 +120,6 @@
       this.tabControlMain.SelectedIndex = 0;
       this.tabControlMain.Size = new System.Drawing.Size(688, 401);
       this.tabControlMain.TabIndex = 3;
-      // 
-      // button1
-      // 
-      this.button1.Location = new System.Drawing.Point(321, 26);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(82, 23);
-      this.button1.TabIndex = 3;
-      this.button1.Text = "Set Folder";
-      this.button1.UseVisualStyleBackColor = true;
-      // 
-      // richTextBox1
-      // 
-      this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.richTextBox1.Location = new System.Drawing.Point(6, 55);
-      this.richTextBox1.Name = "richTextBox1";
-      this.richTextBox1.Size = new System.Drawing.Size(666, 312);
-      this.richTextBox1.TabIndex = 4;
-      this.richTextBox1.Text = "";
       // 
       // menuStrip1
       // 
@@ -139,7 +142,7 @@
       // exitToolStripMenuItem
       // 
       this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-      this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
       this.exitToolStripMenuItem.Text = "Exit";
       // 
       // toolStrip1
@@ -149,6 +152,16 @@
       this.toolStrip1.Size = new System.Drawing.Size(688, 25);
       this.toolStrip1.TabIndex = 5;
       this.toolStrip1.Text = "toolStrip1";
+      // 
+      // btnDeleteAttachments
+      // 
+      this.btnDeleteAttachments.Location = new System.Drawing.Point(526, 26);
+      this.btnDeleteAttachments.Name = "btnDeleteAttachments";
+      this.btnDeleteAttachments.Size = new System.Drawing.Size(75, 23);
+      this.btnDeleteAttachments.TabIndex = 5;
+      this.btnDeleteAttachments.Text = "Delete Attachments";
+      this.btnDeleteAttachments.UseVisualStyleBackColor = true;
+      this.btnDeleteAttachments.Click += new System.EventHandler(this.btnDeleteAttachments_Click);
       // 
       // MainForm
       // 
@@ -174,9 +187,8 @@
 
     private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     private System.Windows.Forms.TabPage tabPage1;
-    private System.Windows.Forms.RichTextBox richTextBox1;
-    private System.Windows.Forms.Button button1;
-    private System.Windows.Forms.TextBox textBox1;
+    private System.Windows.Forms.Button btnSetAttachmentFolder;
+    private System.Windows.Forms.TextBox tbAttachmentFolder;
     private System.Windows.Forms.Button btnAttachmentsClean;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.TabControl tabControlMain;
@@ -184,6 +196,8 @@
     private System.Windows.Forms.ToolStripMenuItem fToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     private System.Windows.Forms.ToolStrip toolStrip1;
+    private System.Windows.Forms.RichTextBox tbAttachments;
+    private System.Windows.Forms.Button btnDeleteAttachments;
 
   }
 }
