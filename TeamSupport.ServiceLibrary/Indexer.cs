@@ -30,8 +30,10 @@ namespace TeamSupport.ServiceLibrary
           if (result != null)
           {
             SqlCommand command = new SqlCommand();
-            command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1 WHERE IsIndexLocked = 0 AND OrganizationID = @OrganizationID";
+            command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1 WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", result.OrganizationID);
+            SqlExecutor.ExecuteNonQuery(loginUser, command);
+
           }
         }
         else
@@ -101,27 +103,17 @@ namespace TeamSupport.ServiceLibrary
       
       while (!IsStopped)
       {
-        Logs.WriteEvent("Start Loop");
-
-
         try
         {
           UpdateHealth();
-          Logs.WriteEvent("Health Updated");
-
-
           Organization organization = GetNextOrganization(LoginUser.ConnectionString, (int)_threadPosition, isRebuilder, daysSinceLastRebuild, minutesSinceLastActive);
           if (organization == null) return;
-          Logs.WriteEvent("Organization Selected");
           try
           {
-            Logs.WriteEvent("Start processing");
             ProcessOrganization(organization, isRebuilder);
-            Logs.WriteEvent("finished processing");
           }
           finally
           {
-            Logs.WriteEvent("unlocking");
             if (isRebuilder)
             {
               UnmarkIndexRebuild(organization.OrganizationID);
@@ -131,8 +123,6 @@ namespace TeamSupport.ServiceLibrary
               UnlockIndex(organization.OrganizationID);
             }
           }
-          Logs.WriteEvent("end loop");
-
         }
         catch (Exception ex)
         {
