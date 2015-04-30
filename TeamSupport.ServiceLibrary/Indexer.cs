@@ -95,6 +95,8 @@ namespace TeamSupport.ServiceLibrary
 
     public override void Run()
     {
+      Logs.WriteEvent("Start Run");
+
       bool isRebuilder = GetIsRebuilderMode();
       int daysSinceLastRebuild = Settings.ReadInt("DaysSinceLastRebuild", 14);
       int minutesSinceLastActive = Settings.ReadInt("MinutesSinceLastActive", 30); 
@@ -129,6 +131,8 @@ namespace TeamSupport.ServiceLibrary
           ExceptionLogs.LogException(LoginUser, ex, "Indexer", "Error processing organization");
         }
       }
+      Logs.WriteEvent("End Run");
+
     }
 
     private void ProcessOrganization(Organization org, bool isRebuilder)
