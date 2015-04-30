@@ -2016,7 +2016,7 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
       {
         command.CommandText =
 @"
-SELECT TOP 1 * FROM Organizations o 
+SELECT * FROM Organizations o 
 WHERE o.IsIndexLocked = 0
 AND o.ParentID = 1
 AND (IsRebuildingIndex = 0 OR DATEDIFF(SECOND, DateLastIndexed, GETUTCDATE()) > 300)
