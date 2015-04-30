@@ -151,7 +151,7 @@
             });
         },
         eventDrop: function (event, delta, revertFunc) {
-            top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.type)
+            top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.end ? event.end.utc().format() : event.start.format() , event.type)
         },
         eventRender: function (event, element) {
             var evttitle;

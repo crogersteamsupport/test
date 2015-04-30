@@ -1756,7 +1756,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void ChangeEventDate(int eventID, DateTime newTime, string eventType)
+        public void ChangeEventDate(int eventID, DateTime newTime, DateTime endTime, string eventType)
         {
             switch (eventType)
             {
@@ -1771,10 +1771,13 @@ namespace TSWebServices
                     CalendarEvents events = new CalendarEvents(TSAuthentication.GetLoginUser());
                     events.LoadByCalendarID(eventID);
                     events[0].StartDate = newTime;
+                    events[0].EndDate = endTime;
                     events[0].Collection.Save();
                     break;
                 default:
                     Reminders reminders = new Reminders(TSAuthentication.GetLoginUser());
+
+                    User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.GetLoginUser().UserID);
 
                     if (eventType == "reminder-ticket")
                         reminders.LoadByItem(ReferenceType.Tickets, eventID, TSAuthentication.GetLoginUser().UserID);

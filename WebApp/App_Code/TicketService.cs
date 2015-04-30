@@ -2787,6 +2787,7 @@ WHERE t.TicketID = @TicketID
       if (!includeDescription) actionInfo.Action.Description = null;
       if (actionInfo.Action.Description != null)
       {
+          actionInfo.Action.Description = actionInfo.Action.Description + "&nbsp;";
         actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.Sanitize(HtmlUtility.CheckScreenR(loginUser, actionInfo.Action.Description)));
       }
 
