@@ -172,7 +172,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     {
         cbRequireProduct.Checked = organization.ProductRequired;
         cbRequireProductVersion.Checked = organization.ProductVersionRequired;
-        if (organization.OrganizationID == 13679 || organization.OrganizationID == 686086)
+        if (organization.OrganizationID == 13679 || organization.OrganizationID == 686086 || organization.OrganizationID == 1088)
         {
             cbUseProductFamilies.Checked = organization.UseProductFamilies;
         }
