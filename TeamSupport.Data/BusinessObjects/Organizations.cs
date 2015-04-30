@@ -2015,44 +2015,30 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText =
-@"DECLARE @TIndex TABLE (ID int);
-
-WITH X AS (
-  SELECT OrganizationID, IsRebuildingIndex, DateLastIndexed FROM Organizations o 
-	WHERE o.IsIndexLocked = 0
-	AND o.ParentID = 1
-	AND (IsRebuildingIndex = 0 OR DATEDIFF(SECOND, DateLastIndexed, GETUTCDATE()) > 300)
-	AND o.IsActive = 1
-	AND (
-	  EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
-	  OR EXISTS (SELECT * FROM WikiArticles w WHERE w.OrganizationID = o.OrganizationID And w.NeedsIndexing=1)
-	  OR EXISTS (SELECT * FROM NotesView nv WHERE nv.ParentOrganizationID = o.OrganizationID AND nv.NeedsIndexing=1)
-	  OR EXISTS (SELECT * FROM ProductVersionsView pvv WHERE pvv.OrganizationID = o.OrganizationID AND pvv.NeedsIndexing=1)
-	  OR EXISTS (SELECT * FROM WatercoolerMsg wcm WHERE wcm.OrganizationID = o.OrganizationID AND wcm.NeedsIndexing=1)
-	  OR EXISTS (SELECT * FROM Organizations o2 WHERE o2.ParentID = o.OrganizationID AND o2.NeedsIndexing=1)
-	  OR EXISTS (SELECT * FROM ContactsView cv WHERE cv.OrganizationParentID = o.OrganizationID AND cv.NeedsIndexing=1)
-	  OR EXISTS (SELECT * FROM Assets a WHERE a.OrganizationID = o.OrganizationID AND a.NeedsIndexing=1)
-	  OR EXISTS (SELECT * FROM Products p WHERE p.OrganizationID = o.OrganizationID AND p.NeedsIndexing=1)
-	  OR EXISTS (
-	    SELECT * FROM DeletedIndexItems dii 
-	    WHERE dii.RefType IN (9, 13, 14, 17, 32, 38, 39, 40, 34)
-	    AND dii.OrganizationID = o.OrganizationID
-	  )
-    )
-),
-
-Y AS (
-  SELECT X.OrganizationID, X.IsRebuildingIndex, ROW_NUMBER() OVER (ORDER BY X.DateLastIndexed) AS 'RowNum' FROM X
+@"
+SELECT TOP 1 * FROM Organizations o 
+WHERE o.IsIndexLocked = 0
+AND o.ParentID = 1
+AND (IsRebuildingIndex = 0 OR DATEDIFF(SECOND, DateLastIndexed, GETUTCDATE()) > 300)
+AND o.IsActive = 1
+AND (
+  EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM WikiArticles w WHERE w.OrganizationID = o.OrganizationID And w.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM NotesView nv WHERE nv.ParentOrganizationID = o.OrganizationID AND nv.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM ProductVersionsView pvv WHERE pvv.OrganizationID = o.OrganizationID AND pvv.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM WatercoolerMsg wcm WHERE wcm.OrganizationID = o.OrganizationID AND wcm.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM Organizations o2 WHERE o2.ParentID = o.OrganizationID AND o2.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM ContactsView cv WHERE cv.OrganizationParentID = o.OrganizationID AND cv.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM Assets a WHERE a.OrganizationID = o.OrganizationID AND a.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM Products p WHERE p.OrganizationID = o.OrganizationID AND p.NeedsIndexing=1)
+  OR EXISTS (
+    SELECT * FROM DeletedIndexItems dii 
+    WHERE dii.RefType IN (9, 13, 14, 17, 32, 38, 39, 40, 34)
+    AND dii.OrganizationID = o.OrganizationID
   )
-
-UPDATE Organizations
-SET IsIndexLocked = 1, DateLastIndexed = GETUTCDATE()
-OUTPUT inserted.OrganizationID
-INTO @TIndex
-WHERE OrganizationID IN (
-  SELECT Y.OrganizationID FROM Y WHERE RowNum=1
 )
-SELECT * FROM Organizations o WHERE OrganizationID IN (SELECT ID FROM  @TIndex)";
+
+ORDER BY DateLastIndexed";
 //        command.CommandText = "SELECT * FROM Organizations WHERE OrganizationID = 9733";
         command.CommandType = CommandType.Text;
         Fill(command);

@@ -27,6 +27,12 @@ namespace TeamSupport.ServiceLibrary
         {
           orgs.LoadByNeedsIndexing();
           result = orgs.IsEmpty ? null : orgs[0];
+          if (result != null)
+          {
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1 WHERE IsIndexLocked = 0 AND OrganizationID = @OrganizationID";
+            command.Parameters.AddWithValue("OrganizationID", result.OrganizationID);
+          }
         }
         else
         {
@@ -333,7 +339,8 @@ namespace TeamSupport.ServiceLibrary
         {
           if (!isRebuilder)
           {
-            if (!organization.IsRebuildingIndex) UpdateItems(indexDataSource, tableName, primaryKeyName);
+            Organization tempOrg = Organizations.GetOrganization(_loginUser, organization.OrganizationID);
+            if (!tempOrg.IsRebuildingIndex) UpdateItems(indexDataSource, tableName, primaryKeyName);
           }
           else
           {
@@ -422,8 +429,6 @@ namespace TeamSupport.ServiceLibrary
         return;
       }
     }
-
-
 
     private void UpdateItems(IndexDataSource dataSource, string tableName, string primaryKeyName)
     {
