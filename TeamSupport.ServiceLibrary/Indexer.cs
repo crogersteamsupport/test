@@ -30,7 +30,7 @@ namespace TeamSupport.ServiceLibrary
           if (result != null)
           {
             SqlCommand command = new SqlCommand();
-            command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1 WHERE OrganizationID = @OrganizationID";
+            command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1, DateLastIndexed = GETUTCDATE() WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", result.OrganizationID);
             SqlExecutor.ExecuteNonQuery(loginUser, command);
 
