@@ -557,6 +557,23 @@
         font-size: 12px;
     }
 
+    div.tag-item {
+      cursor: pointer;
+      margin: 0 3px 3px 0;
+      padding: 1px 3px;
+      background: #efefef;
+      border: 0 solid rgba(0, 0, 0, 0);
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      border-radius: 3px;
+      vertical-align: baseline;
+      display: -moz-inline-stack;
+      display: inline-block;
+      zoom: 1;
+      line-height: 20px;
+      -webkit-font-smoothing: inherit;
+    }
+
     .ticket-select {
         width: auto;
         display: inline;

@@ -255,17 +255,20 @@ function CreateNewActionLI() {
     $('#action-new-cancel').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        $('#action-new-editor').parent().fadeOut('normal');
-        tinymce.activeEditor.destroy();
+        $('#action-new-editor').parent().fadeOut('normal', function () {
+          tinymce.activeEditor.destroy();
+        });
+        top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
     });
 
-    $('#action-timeline').on('click', '#action-new-cancel', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $('#action-new-editor').parent().fadeOut('normal');
-        tinymce.activeEditor.destroy();
-        $('#action-new-save-element').dropdown('toggle')
-    });
+    //$('#action-timeline').on('click', '#action-new-cancel', function (e) {
+    //    e.preventDefault();
+    //    e.stopPropagation();
+    //    $('#action-new-editor').parent().fadeOut('normal');
+    //    tinymce.activeEditor.destroy();
+    //    $('#action-new-save-element').dropdown('toggle');
+    //    top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+    //});
 
     $('#action-new-save').click(function (e) {
         e.preventDefault();
@@ -274,8 +277,9 @@ function CreateNewActionLI() {
         var oldActionID = self.data('actionid');
         SaveAction(oldActionID, _isNewActionPrivate, function (result) {
             UploadAttachments(result);
-            $('#action-new-editor').val('').parent().fadeOut('normal');
-            tinymce.activeEditor.destroy();
+            $('#action-new-editor').parent().fadeOut('normal', function () {
+              tinymce.activeEditor.destroy();
+            });
             top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
               result.Attachments = attachments;
               if (oldActionID === -1) {
@@ -327,6 +331,7 @@ function CreateNewActionLI() {
 function SetupActionEditor(elem, action) {
   top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
   initEditor(elem, true, function (ed) {
+    $('#action-new-editor').val('');
     if (action) {
       $('#action-new-type').val(action.ActionTypeID);
       if (action.TimeSpent) {
@@ -334,7 +339,7 @@ function SetupActionEditor(elem, action) {
         $('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
       }
       tinyMCE.activeEditor.setContent(action.Message);
-      elem.parent().fadeIn('normal');
+      //elem.parent().fadeIn('normal');
     }
     else {
       var actionTypeID = $('#action-new-type').val();
@@ -342,11 +347,19 @@ function SetupActionEditor(elem, action) {
       $('#action-new-minutes').val(0);
       top.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
         if (result != null && result != "" && result != "<br>") {
-          tinyMCE.activeEditor.setContent(result);
+          var currenttext = tinyMCE.activeEditor.getContent();
+          tinyMCE.activeEditor.setContent(currenttext + result);
         }
-        elem.parent().fadeIn('normal');
+      });
+
+      top.Ts.Services.Tickets.GetTicketTypeTemplateText(_ticketTypeID, function (result) {
+        if (result != null && result != "" && result != "<br>") {
+          var currenttext = tinyMCE.activeEditor.getContent();
+          tinyMCE.activeEditor.setContent(currenttext + result);
+        }
       });
     }
+    elem.parent().fadeIn('normal');
 
     $('.frame-container').animate({
       scrollTop: 0
@@ -518,6 +531,7 @@ function SaveAction(oldActionID, isPrivate, callback) {
 
     if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
     top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
+      top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
         callback(result)
     }, function (error) {
         callback(null);
@@ -1055,9 +1069,9 @@ function SetupCustomerSection() {
     //        .appendTo(ul);
     //};
 
-    $('#ticket-Customer').on('click', 'a > span.tagRemove', function (e) {
+    $('#ticket-Customer').on('click', 'span.tagRemove', function (e) {
         var self = $(this);
-        var data = self.closest('a').data().tag;
+        var data = self.parent().data().tag;
 
         if (data.UserID) {
             top.Ts.Services.Tickets.RemoveTicketContact(_ticketID, data.UserID, function (customers) {
@@ -1091,13 +1105,13 @@ function AddCustomers(customers) {
         var label = "";
 
         if (customers[i].Contact !== null && customers[i].Company !== null) {
-            label = '<strong>' + customers[i].Contact + '</strong>' + '<br/>' + customers[i].Company;
+          label = customers[i].Contact + '<br/>' + customers[i].Company;
         }
         else if (customers[i].Contact !== null) {
-            label = '<strong>' + customers[i].Contact + '</strong>';
+          label = customers[i].Contact;
         }
         else if (customers[i].Company !== null) {
-            label = '<strong>' + customers[i].Company + '</strong>';
+          label = customers[i].Company;
         }
 
         PrependTag(customerDiv, customers[i].UserID, label, customers[i]);
@@ -1147,7 +1161,7 @@ function SetupTagsSection() {
             .appendTo(ul);
     };
 
-    $('#ticket-tags').on('click', 'a > span.tagRemove', function (e) {
+    $('#ticket-tags').on('click', 'span.tagRemove', function (e) {
         var tag = $(this).parent()[0];
         if (tag) {
             top.Ts.Services.Tickets.RemoveTag(_ticketID, tag.id, function (tags) {
@@ -1171,7 +1185,7 @@ function AddTags(tags) {
     $("#ticket-tag-Input").val('');
 
     for (var i = 0; i < tags.length; i++) {
-        var label = label = '<strong>' + tags[i].Value + '</strong>'
+      var label = tags[i].Value
         PrependTag(tagDiv, tags[i].TagID, label, tags[i]);
     };
 }
@@ -1536,7 +1550,7 @@ function SetupRemindersSection() {
 
         top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Tickets, _ticketID, title, date, userid, function (result) {
             $('#reminder-success').show();
-            var label = label = '<strong>' + ellipseString(result.Description, 30) + '</strong><br>' + result.DueDate.localeFormat(top.Ts.Utils.getDateTimePattern())
+            var label = ellipseString(result.Description, 30) + '<br>' + result.DueDate.localeFormat(top.Ts.Utils.getDateTimePattern())
             PrependTag($("#ticket-reminder-span"), result.ReminderID, label, result);
             setTimeout(function () { $('#RemindersModal').modal('hide'); }, 2000);
         },
@@ -1545,7 +1559,7 @@ function SetupRemindersSection() {
         });
     });
 
-    $('#ticket-reminder-span').on('click', 'a > span.tagRemove', function (e) {
+    $('#ticket-reminder-span').on('click', 'span.tagRemove', function (e) {
         var reminder = $(this).parent()[0];
         if (reminder) {
             top.Ts.Services.System.DismissReminder(reminder.id, function () {
@@ -1568,7 +1582,7 @@ function AddReminders(reminders) {
     remindersDiv.empty();
 
     for (var i = 0; i < reminders.length; i++) {
-        var label = label = '<strong>' + ellipseString(reminders[i].Description, 30) + '</strong><br>' + reminders[i].DueDate.localeFormat(top.Ts.Utils.getDateTimePattern())
+        var label = ellipseString(reminders[i].Description, 30) + '<br>' + reminders[i].DueDate.localeFormat(top.Ts.Utils.getDateTimePattern())
         PrependTag(remindersDiv, reminders[i].ReminderID, label, reminders[i]);
     };
 }
