@@ -191,7 +191,7 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AgentRatingUsers] WHERE ([AgentRatingID] = @AgentRatingID AND [UserID] = @UserID);";
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AgentRatingUsers] WHERE ([AgentRatingID] = @AgentRatingID);";
 		deleteCommand.Parameters.Add("AgentRatingID", SqlDbType.Int);
 
 		try

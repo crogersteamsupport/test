@@ -2714,6 +2714,22 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void DeleteAgentRating(int ratingID)
+        {
+            AgentRatingUsers users = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+            users.LoadByAgentRatingID(ratingID);
+            users[0].Delete();
+            users[0].Collection.Save();
+
+
+            AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+            ratings.LoadByAgentRatingID(ratingID);
+            ratings[0].Delete();
+            ratings[0].Collection.Save();
+
+        }
+
+        [WebMethod]
         public CustomRatingClass[] LoadAgentRatingsUser(int userID, string filter, int start)
         {
             List<CustomRatingClass> list = new List<CustomRatingClass>();

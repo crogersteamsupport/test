@@ -173,11 +173,19 @@ $(document).ready(function () {
 
     LoadRatings('', 1);
 
+    $('#tblRatings').delegate('.delete-link', 'click', function (e) {
+        var id = $(this).attr('id');
+        top.Ts.Services.Customers.DeleteAgentRating(id, function () {
+            LoadRatings('', 1);
+        });
+    });
+
     function LoadRatings(ratingOption, start) {
         if (start == 1)
             $('#tblRatings tbody').empty();
         top.Ts.Services.Customers.LoadAgentRatingsUser(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, function (ratings) {
             var agents = "";
+            var deleteIt = "";
             for (var i = 0; i < ratings.length; i++) {
                 for (var j = 0; j < ratings[i].users.length; j++) {
                     if (j != 0)
@@ -186,8 +194,13 @@ $(document).ready(function () {
                     agents = agents + '<a href="#" target="_blank" onclick="top.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
                 }
 
+                if (top.Ts.System.User.IsSystemAdmin)
+                {
+                    deleteIt = '<a href="#" class="delete-link" id="' + ratings[i].rating.AgentRatingID + '"><span class="fa fa-trash-o"></span></a>';
+                }
+
                 var tr = $('<tr>')
-                .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="top.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td><a href="#" onclick="top.Ts.MainPage.openNewCustomer(' + ratings[i].org.OrganizationID + '); return false;">' + ratings[i].org.Name + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="top.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td><a href="#" onclick="top.Ts.MainPage.openNewCustomer(' + ratings[i].org.OrganizationID + '); return false;">' + ratings[i].org.Name + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td><td>'+deleteIt+'</td>')
                 .appendTo('#tblRatings > tbody:last');
                 agents = "";
             }
