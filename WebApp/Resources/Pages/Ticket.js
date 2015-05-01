@@ -1111,7 +1111,7 @@ $(document).ready(function () {
             appendCustomValues(result[1]);
             parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
 
-            top.Ts.Services.Admin.GetIsJiraLinkActive(_ticketID, function (result) {
+            top.Ts.Services.Admin.GetIsJiraLinkActiveForTicket(_ticketID, function (result) {
               if (result) {
                 $('#enterIssueKey').hide();
                 $('.ticket-widget-jira').show();
@@ -3599,7 +3599,7 @@ var loadTicket = function (ticketNumber, refresh) {
     });
     top.Ts.MainPage.updateMyOpenTicketReadCount();
 
-    top.Ts.Services.Admin.GetIsJiraLinkActive(_ticketID, function (result) {
+    top.Ts.Services.Admin.GetIsJiraLinkActiveForTicket(_ticketID, function (result) {
       if (result) {
         $('#enterIssueKey').hide();
         $('.ticket-widget-jira').show();

@@ -21,6 +21,7 @@
         this._cultures = null;
         this._knowledgeBaseCategories = null;
         this._isJiraLinkActive = null;
+        this._isJiraLinkActiveForOrganization = null;
         this._fontFamilies = null;
         this._fontSizes = null;
       }
@@ -47,7 +48,8 @@
           this.getTimeZones();
           this.getCultures();
           this.getKnowledgeBaseCategories();
-          this.getIsJiraLinkActive();
+          this.getIsJiraLinkActiveForTicket();
+          this.GetIsJiraLinkActiveForOrganization();
           this.getFontFamilies();
           this.getFontSizes();
       },
@@ -243,14 +245,23 @@
           });
           return self._cultures;
       },
-      getIsJiraLinkActive: function (ticketId) {
+      getIsJiraLinkActiveForTicket: function (ticketId) {
           var self = this;
           if (self._isJiraLinkActive == null) {
-            Ts.Services.Admin.GetIsJiraLinkActive(ticketId, function (result) {
+            Ts.Services.Admin.GetIsJiraLinkActiveForTicket(ticketId, function (result) {
               self._isJiraLinkActive = result;
             });
           }
           return self._isJiraLinkActive
+      },
+      GetIsJiraLinkActiveForOrganization: function () {
+        var self = this;
+        if (self._isJiraLinkActiveForOrganization == null) {
+          Ts.Services.Admin.GetIsJiraLinkActiveForOrganization(function (result) {
+            self._isJiraLinkActiveForOrganization = result;
+          });
+        }
+        return self._isJiraLinkActiveForOrganization
       },
       getFontFamilies: function () {
           var self = this;

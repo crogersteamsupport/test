@@ -286,7 +286,7 @@ namespace TSWebServices
     /// </summary>
     /// <returns>True or False</returns>
     [WebMethod]
-    public bool GetIsJiraLinkActive(int ticketId)
+    public bool GetIsJiraLinkActiveForTicket(int ticketId)
     {
       bool result = false;
    
@@ -324,6 +324,29 @@ namespace TSWebServices
               result = ticketLinkToJira != null && ticketLinkToJira.Count > 0;
             }
           }
+        }
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Checks if the Jira Integration is active.
+    /// </summary>
+    /// <returns>True or False</returns>
+    [WebMethod]
+    public bool GetIsJiraLinkActiveForOrganization()
+    {
+      bool result = false;
+
+      CRMLinkTable organizationLinks = new CRMLinkTable(TSAuthentication.GetLoginUser());
+      organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+      foreach (CRMLinkTableItem link in organizationLinks)
+      {
+        if (link.CRMType == "Jira" && link.Active)
+        {
+          result = true;
         }
       }
 

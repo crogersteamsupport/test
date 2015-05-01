@@ -30,6 +30,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ProductName", "ProductName", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
+      _fieldMap.AddMap("JiraProjectKey", "JiraProjectKey", false, false, false);
             
     }
   }

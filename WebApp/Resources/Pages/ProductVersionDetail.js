@@ -47,6 +47,15 @@ $(document).ready(function () {
       $('#fieldStatus').html(productVersion.VersionStatus);
       $('#fieldReleased').text((productVersion.IsReleased === true ? 'True' : 'False'));
       $('#fieldReleaseDate').text(top.Ts.Utils.getMsDate(productVersion.ReleaseDate).localeFormat(top.Ts.Utils.getDatePattern()));
+
+      top.Ts.Services.Admin.GetIsJiraLinkActiveForOrganization(function (result) {
+        if (result)
+        {
+          $('#jiraIntegrationBox').show();
+          $('#fieldJiraProjectKey').text(productVersion.JiraProjectKey != null && productVersion.JiraProjectKey != "" ? productVersion.JiraProjectKey : "Not Set");
+        }
+      });
+      
       top.privateServices.SetUserSetting('SelectedProductID', _productID);
       top.privateServices.SetUserSetting('SelectedProductVersionID', _productVersionID);
     }
@@ -497,6 +506,56 @@ $(document).ready(function () {
           });
       });
       $('#productVersionEdit').addClass("disabled");
+  });
+
+  $('#fieldJiraProjectKey').click(function (e) {
+    e.preventDefault();
+    if (!$(this).hasClass('editable'))
+      return false;
+
+    top.Ts.System.logAction('Product Version Detail - Edit Jira Project Key');
+    var header = $(this).hide();
+    var container = $('<div>')
+      .insertAfter(header);
+
+    var container1 = $('<div>')
+        .addClass('col-xs-8')
+      .appendTo(container);
+
+    $('<input type="text">')
+      .addClass('col-xs-8 form-control')
+      .val($(this).text())
+      .appendTo(container1)
+      .focus();
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-times')
+      .click(function (e) {
+        $(this).closest('div').remove();
+        header.show();
+        $('#productVersionEdit').removeClass("disabled");
+      })
+      .insertAfter(container1);
+    $('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+        top.Ts.System.logAction('Product Version Detail - Save Jira Project Key Edit');
+        var isForProductVersion = true;
+        top.Ts.Services.Products.SetProductJiraProjectKey(_productVersionID, $(this).prev().find('input').val(), isForProductVersion, function (result) {
+          header.text(result);
+          $('#fieldJiraProjectKey').text(result);
+        },
+        function (error) {
+          header.show();
+          alert('There was an error saving the product version jira project key.');
+        });
+
+        $('#productVersionEdit').removeClass("disabled");
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
+    $('#productVersionEdit').addClass("disabled");
   });
 
   $('#fieldReleased').click(function (e) {

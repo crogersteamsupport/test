@@ -18,6 +18,12 @@ $(document).ready(function () {
       $('#productFamilyRow').show();
   }
 
+  if (top.Ts.Cache.GetIsJiraLinkActiveForOrganization()) {
+    alert('vv1');
+    $('#jiraProjectKeyRow').show();
+    $('#productVersionJiraProjectKeyRow').show();
+  }
+
   $('body').layout({
     defaults: {
       spacing_open: 0,
@@ -36,7 +42,7 @@ $(document).ready(function () {
   var defaultProduct = top.Ts.Utils.getQueryValue("productID", window);
 
   $(".maincontainer").on("keypress", "input", (function (evt) {
-    //Deterime where our character code is coming from within the event
+    //Determine where our character code is coming from within the event
     var charCode = evt.charCode || evt.keyCode;
     if (charCode == 13) { //Enter key's keycode
       return false;
@@ -143,11 +149,12 @@ $(document).ready(function () {
     }
 
     if (isValid) {
-        $('#productSaveBtn').prop("disabled", true);
+      $('#productSaveBtn').prop("disabled", true);
       var productInfo = new Object();
       top.Ts.System.logAction('New Product Page - Added New Product');
       productInfo.Name = $("#inputName").val();
       productInfo.Description = $("#Description").val();
+      productInfo.JiraProjectKey = $("inputJiraProjectKey").val();
 
       if ($("#ddlProductFamily").val() != -1) {
           productInfo.ProductFamilyID = $("#ddlProductFamily").val();
@@ -162,19 +169,12 @@ $(document).ready(function () {
             field.Value = $(this).prop('checked');
             break;
           case "date":
-            //    var dt = $(this).find('input').datepicker('getDate');
             field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
             break;
           case "time":
-            //    var time = new Date("January 1, 1970 00:00:00");
-            //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
-            //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
             field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
           case "datetime":
-            //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
-            //    var dt = $(this).find('input').datetimepicker('getDate');
-            //    field.Value = dt == null ? null : dt.toUTCString();
             field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
             break;
           default:
@@ -216,6 +216,7 @@ $(document).ready(function () {
       versionInfo.ReleaseDate = $("#inputExpectedRelease").val();
       versionInfo.IsRelease = $("#cbReleased").prop('checked');
       versionInfo.Description = $("#inputDescription").val();
+      versionInfo.JiraProjectKey = $("#inputProductVersionJiraProjectKey").val();
 
       versionInfo.Fields = new Array();
       $('.customField:visible').each(function () {
@@ -226,19 +227,12 @@ $(document).ready(function () {
             field.Value = $(this).prop('checked');
             break;
           case "date":
-            //    var dt = $(this).find('input').datepicker('getDate');
             field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
             break;
           case "time":
-            //    var time = new Date("January 1, 1970 00:00:00");
-            //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
-            //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
             field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
           case "datetime":
-            //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
-            //    var dt = $(this).find('input').datetimepicker('getDate');
-            //    field.Value = dt == null ? null : dt.toUTCString();
             field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
             break;
           default:

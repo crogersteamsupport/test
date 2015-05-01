@@ -82,6 +82,7 @@ $(document).ready(function () {
           createTestChart();
           LoadCustomProperties();
           LoadProperties();
+          LoadJiraProjectKey();
           _viewingCustomers = false;
           _viewingInventory = false;
           _viewingVersions = false;
@@ -324,6 +325,18 @@ $(document).ready(function () {
       }
   }
 
+  function LoadJiraProjectKey() {
+    top.Ts.Services.Admin.GetIsJiraLinkActiveForOrganization(function (isActive) {
+      if (isActive)
+      {
+        top.Ts.Services.Products.GetProperties(_productID, function (result) {
+        $('#jiraIntegrationBox').show();
+        $('#fieldJiraProjectKey').text(result.JiraProjectKey != null && result.JiraProjectKey != "" ? result.JiraProjectKey : "Not Set");
+        });
+      }
+    });
+  }
+
   var historyLoaded = 0;
 
   $('#historyToggle').on('click', function () {
@@ -410,9 +423,55 @@ $(document).ready(function () {
       $('#productEdit').addClass("disabled");
   });
 
-//  initEditor($('#fieldDesc'), function (ed) {
-//      $('#fieldDesc').tinymce().focus();
-//  });
+  $('#fieldJiraProjectKey').click(function (e) {
+    e.preventDefault();
+    if (!$(this).hasClass('editable'))
+      return false;
+
+    top.Ts.System.logAction('Product Detail - Edit Jira Project Key');
+    var header = $(this).hide();
+    var container = $('<div>')
+      .insertAfter(header);
+
+    var container1 = $('<div>')
+        .addClass('col-xs-8')
+      .appendTo(container);
+
+    $('<input type="text">')
+      .addClass('col-xs-8 form-control')
+      .val($(this).text())
+      .appendTo(container1)
+      .focus();
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-times')
+      .click(function (e) {
+        $(this).closest('div').remove();
+        header.show();
+        $('#productEdit').removeClass("disabled");
+      })
+      .insertAfter(container1);
+    $('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+        top.Ts.System.logAction('Product Detail - Save Jira Project Key Edit');
+        var isForProductVersion = false;
+        top.Ts.Services.Products.SetProductJiraProjectKey(_productID, $(this).prev().find('input').val(), isForProductVersion, function (result) {
+          header.text(result);
+          $('#fieldJiraProjectKey').text(result);
+        },
+        function (error) {
+          header.show();
+          alert('There was an error saving the product jira project key.');
+        });
+
+        $('#productEdit').removeClass("disabled");
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
+    $('#productEdit').addClass("disabled");
+  });
 
   $('#fieldDescription').click(function (e) {
       e.preventDefault();

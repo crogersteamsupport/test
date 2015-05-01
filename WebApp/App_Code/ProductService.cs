@@ -33,7 +33,7 @@ namespace TSWebServices
     [WebMethod]
     public ProductVersionsViewItemProxy GetVersion(int versionID)
     {
-        ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItemByUserRights(TSAuthentication.GetLoginUser(), versionID);
+      ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItem(TSAuthentication.GetLoginUser(), versionID);
       if (version == null || version.OrganizationID != TSAuthentication.OrganizationID) return null;
       return version.GetProxy();
     }
@@ -118,6 +118,7 @@ namespace TSWebServices
         }
         prodProp.ProductFamily = productFamily;
         prodProp.prodproxy = products[0].GetProxy();
+        prodProp.JiraProjectKey = products[0].JiraProjectKey;
 
         return prodProp;
 
@@ -316,6 +317,7 @@ namespace TSWebServices
       product.Name = info.Name;
       product.Description = info.Description;
       product.ProductFamilyID = info.ProductFamilyID;
+      product.JiraProjectKey = info.JiraProjectKey;
       product.Collection.Save();
 
       string description = String.Format("{0} created {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, product.Name);
@@ -333,11 +335,6 @@ namespace TSWebServices
           if (customValue.FieldType == CustomFieldType.DateTime)
           {
             customValue.Value = ((DateTime)field.Value).ToString();
-            //DateTime dt;
-            //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-            //{
-            //    customValue.Value = dt.ToUniversalTime().ToString();
-            //}
           }
           else
           {
@@ -377,6 +374,7 @@ namespace TSWebServices
       productVersion.ReleaseDate = info.ReleaseDate;
       productVersion.IsReleased = info.IsReleased;
       productVersion.Description = info.Description;
+      productVersion.JiraProjectKey = info.JiraProjectKey;
       productVersion.Collection.Save();
 
       string description = String.Format("{0} created {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productVersion.VersionNumber);
@@ -394,11 +392,6 @@ namespace TSWebServices
           if (customValue.FieldType == CustomFieldType.DateTime)
           {
             customValue.Value = ((DateTime)field.Value).ToString();
-            //DateTime dt;
-            //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-            //{
-            //    customValue.Value = dt.ToUniversalTime().ToString();
-            //}
           }
           else
           {
@@ -767,6 +760,32 @@ namespace TSWebServices
         string description = String.Format("{0} set product family as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, pf.IsEmpty ? "Unassigned" : pf[0].Name);
         ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, productID, description);
         return value;
+    }
+
+    [WebMethod]
+    public string SetProductJiraProjectKey(int id, string value, bool isForProductVersion)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      string description = string.Empty;
+
+      if (isForProductVersion)
+      {
+        ProductVersion productVersion = ProductVersions.GetProductVersion(loginUser, id);
+        productVersion.JiraProjectKey = string.IsNullOrEmpty(value) ? null : value;
+        productVersion.Collection.Save();
+        description = String.Format("{0} set product version jira project key as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, string.IsNullOrEmpty(value) ? "NULL" : value);
+      }
+      else
+      {
+        Product product = Products.GetProduct(loginUser, id);
+        product.JiraProjectKey = string.IsNullOrEmpty(value) ? null : value;
+        product.Collection.Save();
+        description = String.Format("{0} set product jira project key as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, string.IsNullOrEmpty(value) ? "NULL" : value);
+      }
+
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, id, description);      
+
+      return value;
     }
 
     [WebMethod]
@@ -1203,6 +1222,7 @@ namespace TSWebServices
       [DataMember] public string Name { get; set; }
       [DataMember] public string Description { get; set; }
       [DataMember] public int? ProductFamilyID { get; set; }
+      [DataMember] public string JiraProjectKey { get; set; }
       [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
   }
 
@@ -1215,6 +1235,7 @@ namespace TSWebServices
       [DataMember] public DateTime? ReleaseDate { get; set; }
       [DataMember] public bool IsReleased { get; set; }
       [DataMember] public string Description { get; set; }
+      [DataMember] public string JiraProjectKey { get; set; }
       [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
   }
 
@@ -1262,5 +1283,7 @@ namespace TSWebServices
       public ProductProxy prodproxy { get; set; }
       [DataMember]
       public string ProductFamily { get; set; }
+      [DataMember]
+      public string JiraProjectKey { get; set; }
   }
 }

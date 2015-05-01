@@ -52,6 +52,12 @@ namespace TeamSupport.Data
       set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
     }
     
+    public string JiraProjectKey
+    {
+      get { return Row["JiraProjectKey"] != DBNull.Value ? (string)Row["JiraProjectKey"] : null; }
+      set { Row["JiraProjectKey"] = CheckValue("JiraProjectKey", value); }
+    }
+    
 
     
     public bool NeedsIndexing
@@ -209,7 +215,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Products] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [ProductFamilyID] = @ProductFamilyID  WHERE ([ProductID] = @ProductID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Products] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [ProductFamilyID] = @ProductFamilyID,    [JiraProjectKey] = @JiraProjectKey  WHERE ([ProductID] = @ProductID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
@@ -275,13 +281,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("JiraProjectKey", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Products] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [ProductFamilyID]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Products] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [ProductFamilyID],    [JiraProjectKey]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @ProductFamilyID, @JiraProjectKey); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("JiraProjectKey", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -465,7 +485,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [ProductFamilyID] FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [ProductFamilyID], [JiraProjectKey] FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ProductID", productID);
         Fill(command);

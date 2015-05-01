@@ -79,6 +79,16 @@
                             </div>
                         </div>
                     </div>
+                  <div class="form-group" id="jiraProjectKeyRow" style="display:none">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="ddlJiraProjectKey" class="col-md-2 control-label">Jira Project Key</label>
+                        <div class="col-md-8">
+                          <input class="col-md-8 form-control" name="inputJiraProjectKey" id="inputName" placeholder="Jira Project Key">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>   
 
@@ -160,18 +170,30 @@
                         </div>
                       </div>
                     </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="col-md-11">
-                        <div class="col-md-2">
-                          <label for="inputDescription" class="col-md-1 control-label">Description</label>
-                        </div>
-                        <div class="col-md-10">
-                          <textarea class="col-md-3 form-control" id="inputDescription"></textarea>
+                    <div class="form-group" id="productVersionJiraProjectKeyRow" style="display:none">
+                      <div class="row">
+                        <div class="col-md-6" id="trJiraProjectKey">
+                          <div class="col-md-2">
+                            <label for="inputProductVersionJiraProjectKey" class="col-md-4 control-label">Jira Project Key</label>
+                          </div>
+                          <div class="col-md-8">
+                            <input class="col-md-8 form-control" id="inputProductVersionJiraProjectKey" placeholder="Jira Project Key">
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                  <div class="form-group">
+                    <div class="col-md-11">
+                      <div class="col-md-2">
+                        <label for="inputDescription" class="col-md-1 control-label">Description</label>
+                      </div>
+                      <div class="col-md-10">
+                        <textarea class="col-md-3 form-control" id="inputDescription"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
               <div class="box" id="versionCustomInfoBox">
                 <div class="box-header"><h3>Additional Information</h3></div>

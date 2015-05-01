@@ -221,6 +221,8 @@ Namespace TeamSupport
         Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
         crmLinkAttachmentErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "out", "attachment")
 
+        Dim jiraProjectKey As String = String.Empty
+
         For Each ticket As TicketsViewItem In ticketsToPushAsCases
           Dim ticketLinkToJira As TicketLinkToJiraItem = ticketsLinksToJiraToPushAsIssues.FindByTicketID(ticket.TicketID)
           Log.Write("Processing ticket #" + ticket.TicketNumber.ToString())
@@ -239,7 +241,8 @@ Namespace TeamSupport
           Dim issueFields As JObject = Nothing
           Try
             crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, String.Empty)
-            issueFields = GetIssueFields(ticket)
+            jiraProjectKey = GetProjectKey(ticket)
+            issueFields = GetIssueFields(ticket, jiraProjectKey)
             If crmLinkError IsNot Nothing Then
               crmLinkError.Delete()
               crmLinkErrors.Save()
@@ -279,7 +282,7 @@ Namespace TeamSupport
               Log.Write("No JiraKey. Creating issue...")
               URI = _baseURI + "/issue"
               ticketData = New StringBuilder()
-              ticketData.Append(GetTicketData(ticket, issueFields))
+              ticketData.Append(GetTicketData(ticket, issueFields, jiraProjectKey))
               issue = GetAPIJObject(URI, "POST", ticketData.ToString())
               'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
               URI = _baseURI + "/issue/" + issue("key").ToString()
@@ -587,127 +590,112 @@ Namespace TeamSupport
           Return result
         End Function
 
-            Private Function GetTicketData(ByVal ticket As TicketsViewItem, ByRef fields As JObject) As String
-                Dim result As StringBuilder = New StringBuilder()
-                Dim customField As StringBuilder = New StringBuilder()
-                customField = BuildRequiredFields(ticket, fields)
-                result.Append("{")
-                result.Append("""fields"":{")
-                result.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """,")
-                result.Append("""issuetype"":{""name"":""" + ticket.TicketTypeName + """},")
-                If customField.ToString().Trim().Length > 0 Then
-                    result.Append(customField.ToString() + ",")
-                End If
-                result.Append("""project"":{""key"":""" + GetProjectKey(ticket.ProductName) + """},")
-                Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(Actions.GetTicketDescription(User, ticket.TicketID).Description))
-                result.Append("""description"":""" + DataUtils.GetJsonCompatibleString(description) + """")
-                result.Append("}")
-                result.Append("}")
+        Private Function GetTicketData(ByVal ticket As TicketsViewItem, ByRef fields As JObject, ByVal jiraProjectKey As String) As String
+            Dim result As StringBuilder = New StringBuilder()
+            Dim customField As StringBuilder = New StringBuilder()
+            customField = BuildRequiredFields(ticket, fields)
+            result.Append("{")
+            result.Append("""fields"":{")
+            result.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """,")
+            result.Append("""issuetype"":{""name"":""" + ticket.TicketTypeName + """},")
+            If customField.ToString().Trim().Length > 0 Then
+                result.Append(customField.ToString() + ",")
+            End If
 
-                Return result.ToString()
-            End Function
+            result.Append("""project"":{""key"":""" + jiraProjectKey + """},")
+            Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(Actions.GetTicketDescription(User, ticket.TicketID).Description))
+            result.Append("""description"":""" + DataUtils.GetJsonCompatibleString(description) + """")
+            result.Append("}")
+            result.Append("}")
 
-          Private Function GetIssueFields(ByVal ticket As TicketsViewItem) As JObject
-            Dim issueTypeName As String = ticket.TicketTypeName
-            issueTypeName = Replace(issueTypeName, " ", "+")
-            Dim projectKey As String = GetProjectKey(ticket.ProductName)
-            Dim URI As String =
-              _baseURI +
-              "/issue/createmeta?projectKeys=" +
-              projectKey.ToUpper() +
-              "&issuetypeNames=" + issueTypeName +
-              "&expand=projects.issuetypes.fields"
-              'View an example of this response in 
-              'https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Discovering+meta-data+for+creating+issues
+            Return result.ToString()
+        End Function
 
-            Dim result As JObject = Nothing
-            Try
+        Private Function GetIssueFields(ByVal ticket As TicketsViewItem, ByVal jiraProjectKey As String) As JObject
+          Dim issueTypeName As String = ticket.TicketTypeName
+          issueTypeName = Replace(issueTypeName, " ", "+")
+          jiraProjectKey = Replace(jiraProjectKey, " ", "+")
 
-              Dim fields = GetAPIJObject(URI, "GET", String.Empty)
-              Dim issueTypeIndex As Integer? = Nothing
+          Dim URI As String =
+            _baseURI +
+            "/issue/createmeta?projectKeys=" +
+            jiraProjectKey.ToUpper() +
+            "&issuetypeNames=" + issueTypeName +
+            "&expand=projects.issuetypes.fields"
+            'View an example of this response in 
+            'https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Discovering+meta-data+for+creating+issues
 
+          Dim result As JObject = Nothing
+
+          Try
+            Dim fields = GetAPIJObject(URI, "GET", String.Empty)
+
+            If (fields("projects").Count > 0) Then
               For i = 0 To fields("projects")(0)("issuetypes").Count - 1
                 If Replace(fields("projects")(0)("issuetypes")(i)("name").ToString().ToLower(), " ", "+") = issueTypeName.ToLower() Then
-                  issueTypeIndex = i
+                  result = CType(fields("projects")(0)("issuetypes")(i)("fields"), JObject)
                   Exit For
                 End If
               Next
-              If issueTypeIndex Is Nothing Then
-                'Throw New Exception("type mismatch")
-                'See ticket #16955
-                Log.Write("Type was not found in list of project types. If an exception ahead, chances are it was caused by missing type.")
+            End If
+
+            If result Is Nothing Then
+              Log.Write("Type was not found in list of project types. If an exception ahead, chances are it was caused by missing type.")
+            End If
+          Catch ex As Exception
+            Log.Write("Exception rised attempting to get createmeta.")
+            Log.Write(ex.Message)
+            Log.Write("URI: " + URI)
+            Log.Write("Type: " + issueTypeName)
+            Throw New Exception("project mismatch")
+          End Try
+
+          Return result
+        End Function
+
+            Private Function GetProjectKey(ByVal ticket As TicketsViewItem) As String
+              Dim jiraProjectKey As String = CRMLinkRow.DefaultProject
+
+              If CRMLinkRow.AlwaysUseDefaultProjectKey Then
+                Log.Write(String.Format("Using Default Project Key ""{0}""", jiraProjectKey))
               Else
-                result = CType(fields("projects")(0)("issuetypes")(issueTypeIndex)("fields"), JObject)
-              End If
-            Catch ex As Exception
-              Log.Write("Exception rised attempting to get createmeta.")
-              Log.Write(ex.Message)
-              Log.Write("URI: " + URI)
-              Log.Write("Type: " + issueTypeName)
-              'See ticket #16955
-              'If ex.Message <> "type mismatch" Then
-                Throw New Exception("project mismatch")
-              'Else
-              '  Throw ex
-              'End If
-            End Try
+                Dim ticketProductVersion As ProductVersion
 
-            Return result
-          End Function
+                If Not ticket.ReportedVersionID Is Nothing Then
+                  ticketProductVersion = ProductVersions.GetProductVersion(User, ticket.ReportedVersionID)
+                End If
 
-            Private Function GetProjectKey(ByVal productName As String) As String
-              Dim result As String = productName
-              If CRMLinkRow.AlwaysUseDefaultProjectKey OrElse String.IsNullOrEmpty(productName) Then
-                result = CRMLinkRow.DefaultProject
-                If String.IsNullOrEmpty(result) Then
-                  Dim ex As Exception = New Exception("no project")
-                  Throw ex
+                If Not ticket.ReportedVersionID Is Nothing AndAlso Not String.IsNullOrEmpty(ticketProductVersion.JiraProjectKey) Then
+                  jiraProjectKey = ticketProductVersion.JiraProjectKey
+                  Log.Write(String.Format("Jira Project Key ""{0}"" from Product Version {1}", jiraProjectKey, ticket.ReportedVersion))
+                Else
+                  Dim ticketProduct As Product
+
+                  If Not ticket.ProductID Is Nothing Then
+                    ticketProduct = Products.GetProduct(User, ticket.ProductID)
+
+                    If Not String.IsNullOrEmpty(ticketProduct.JiraProjectKey) Then
+                      jiraProjectKey = ticketProduct.JiraProjectKey
+                      Log.Write(String.Format("Jira Project Key ""{0}"" from Product {1}", jiraProjectKey, ticket.ProductName))
+                    Else
+                      jiraProjectKey = ticket.ProductName
+                      Log.Write(String.Format("Jira Project Key ""{0}"" like Product Name", jiraProjectKey))
+                    End If
+                  Else
+                    jiraProjectKey = CRMLinkRow.DefaultProject
+                    Log.Write(String.Format("Default Project Key ""{0}"" to be used as Jira Project Key after not found in ProductVersion, Product, or Product Name", jiraProjectKey))
+                  End If
                 End If
               End If
-              Return result
+
+              If String.IsNullOrEmpty(jiraProjectKey) Then
+                  Dim message As String = IIf(CRMLinkRow.AlwaysUseDefaultProjectKey, "AlwaysUseDefaultProjectKey but no Default Project.", "Couldn't find a Jira Project Key in ProductVersion, Product, Product Name in Ticket, or Default Project to use for integration.")
+                  Dim ex As Exception = New Exception(message)
+                  Throw ex
+              End If
+
+              Return jiraProjectKey
             End Function
-
-          Private Function GetDataLine(
-            ByVal field As KeyValuePair(Of String, JToken),
-            ByVal ticket As TicketsViewItem,
-            ByRef preffix As String) As String
-            Dim result As String = String.Empty
-
-              Select Case field.Value("name").ToString().Trim().ToLower()
-                Case "project"
-                  Dim projectKey As String = GetProjectKey(ticket.ProductName)
-                  result = preffix + """project"":{""key"":""" + projectKey + """}"
-                  If preffix = String.Empty Then
-                    preffix = ","
-                  End If
-                Case "summary"
-                  If ticket.Name IsNot Nothing Then
-                            result = preffix + """summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """"
-                    If preffix = String.Empty Then
-                      preffix = ","
-                    End If
-                  Else
-                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Name Is Nothing))
-                  End If
-                Case "description"
-                        Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(Actions.GetTicketDescription(User, ticket.TicketID).Description))
-                  If description IsNot Nothing Then
-                    result = preffix + """description"":""" + DataUtils.GetJsonCompatibleString(description) + """"
-                    If preffix = String.Empty Then
-                      preffix = ","
-                    End If
-                  Else
-                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), description Is Nothing))
-                  End If
-                Case "issue type"
-                  result = preffix + """issuetype"":{""name"":""" + ticket.TicketTypeName + """}"
-                  If preffix = String.Empty Then
-                    preffix = ","
-                  End If
-              End Select
-
-            Return result
-          End Function
 
             Private Function GetFieldNotIncludedMessage(
               ByVal ticketID As Integer,
@@ -1255,11 +1243,11 @@ Namespace TeamSupport
                       customFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
                     End If
 
-
                     Dim ticketValuesChanged = False
                     Dim ticketView As TicketsView = New TicketsView(User)
                     ticketView.LoadByTicketID(ticketID)
-                    Dim issueFields As JObject = GetIssueFields(ticketView(0))
+                    Dim jiraProjectKey As String = GetProjectKey(ticketView(0))
+                    Dim issueFields As JObject = GetIssueFields(ticketView(0), jiraProjectKey)
                     Dim ticketsFieldMap As Tickets = New Tickets(User)
 
                     For Each field As KeyValuePair(Of String, JToken) In CType(issue("fields"), JObject)
