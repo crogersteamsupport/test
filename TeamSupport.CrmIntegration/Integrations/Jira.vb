@@ -149,7 +149,11 @@ Namespace TeamSupport
         Private Function GetAPIJObject(ByVal URI As String, ByVal verb As String, ByVal body As String) As JObject
           Log.Write("URI: " + URI)
           Log.Write("verb: " + verb)
-          Log.Write("body: " + body)
+
+          If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
+            Log.Write("body: " + body)
+          End If
+
           Dim response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
           Dim responseReader As New StreamReader(response.GetResponseStream())
           Return JObject.Parse(responseReader.ReadToEnd)
@@ -158,7 +162,11 @@ Namespace TeamSupport
         Private Function GetAPIJArray(ByVal URI As String, ByVal verb As String, ByVal body As String) As JArray
           Log.Write("URI: " + URI)
           Log.Write("verb: " + verb)
-          Log.Write("body: " + body)
+
+          If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
+            Log.Write("body: " + body)
+          End If
+
           Dim response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
           Dim responseReader As New StreamReader(response.GetResponseStream())
           Return Jarray.Parse(responseReader.ReadToEnd)
@@ -1329,10 +1337,27 @@ Namespace TeamSupport
                                 Case "issuetype"
                                     Dim currentType As TicketType = allTypes.FindByTicketTypeID(updateTicket(0).TicketTypeID)
                                     Dim newType As TicketType = allTypes.FindByName(value)
+                                    Dim updateType As Boolean = CRMLinkRow.UpdateTicketType
 
-                                    If newType IsNot Nothing AndAlso newType.TicketTypeID <> currentType.TicketTypeID Then
+                                    If updateType AndAlso newType IsNot Nothing AndAlso newType.TicketTypeID <> currentType.TicketTypeID Then
                                         updateTicket(0).TicketTypeID = newType.TicketTypeID
                                         ticketValuesChanged = True
+                                    ElseIf Not updateType Then
+                                      Dim newAction As Actions = New Actions(User)
+                                      newAction.AddNewAction()
+                                      newAction(0).ActionTypeID = newActionsTypeID
+                                      newAction(0).TicketID = updateTicket(0).TicketID
+                                      newAction(0).Description = "Jira's Issue " + issue("key").ToString() + "'s type changed from """ + currentType.Name + """ to """ + value + """."
+
+                                      Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
+                                      Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()
+                                      actionLinkToJiraItem.JiraID = -1
+
+                                      actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow()
+                                      newAction.Save()
+
+                                      actionLinkToJiraItem.ActionID = newAction(0).ActionID
+                                      actionLinkToJira.Save()
                                     End If
                                 Case "project"
                                     Dim allProducts As Products = New Products(User)

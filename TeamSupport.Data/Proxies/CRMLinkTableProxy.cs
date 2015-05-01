@@ -39,6 +39,7 @@ namespace TeamSupport.Data
     [DataMember] public bool UseSandBoxServer { get; set; }
     [DataMember] public bool AlwaysUseDefaultProjectKey { get; set; }
     [DataMember] public string RestrictedToTicketTypes { get; set; }
+    [DataMember] public bool UpdateTicketType { get; set; }
           
   }
   
@@ -47,6 +48,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.UpdateTicketType = this.UpdateTicketType;
       result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;
       result.AlwaysUseDefaultProjectKey = this.AlwaysUseDefaultProjectKey;
       result.UseSandBoxServer = this.UseSandBoxServer;
@@ -71,7 +73,7 @@ namespace TeamSupport.Data
       result.Active = this.Active;
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
-      result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;//vv
+      result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;
        
       result.LastProcessed = DateTime.SpecifyKind(this.LastProcessedUtc, DateTimeKind.Utc);
        

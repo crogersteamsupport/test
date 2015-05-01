@@ -437,6 +437,7 @@ namespace TSWebServices
       string  hostName,
       string  defaultProject,
       bool?   updateStatus,
+      bool    updateTicketType,
       bool    matchAccountsByName,
       bool    useSandBoxServer,
       bool    alwaysUseDefaultProjectKey,
@@ -483,6 +484,7 @@ namespace TSWebServices
       item.DefaultProject = defaultProject;
       item.UpdateStatus = updateStatus;
       item.MatchAccountsByName = matchAccountsByName;
+      item.UpdateTicketType = updateTicketType;
       item.UseSandBoxServer = useSandBoxServer;
       item.AlwaysUseDefaultProjectKey = alwaysUseDefaultProjectKey;
       item.RestrictedToTicketTypes = restrictedToTicketTypes;

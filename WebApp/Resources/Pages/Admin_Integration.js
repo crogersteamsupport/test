@@ -574,6 +574,10 @@ AdminInt = function () {
       }
     }
 
+    var updateTicketStatus = parent.find('.int-crm-update-type').prop('checked');
+    if (typeof updateTicketStatus == 'undefined') {
+      updateTicketStatus = true;
+    }
 
     top.Ts.Services.Organizations.SaveCrmLink(
           linkID,
@@ -594,6 +598,7 @@ AdminInt = function () {
           hostName,
           defaultProject,
           (parent.find('.int-crm-update-status').length > 0 ? parent.find('.int-crm-update-status').prop('checked') : null),
+          updateTicketStatus,
           matchAccountsByName,
           useSandBoxServer,
           alwaysUseDefaultProjectKey,
@@ -715,6 +720,9 @@ AdminInt = function () {
     else {
       element.find('.int-crm-update-status').prop('checked', false);
     }
+
+    element.find('.int-crm-update-type').prop('checked', item.UpdateTicketType);
+
     if (item.MatchAccountsByName) {
       element.find('.int-crm-match-accounts-by-name').prop('checked', true);
     }
