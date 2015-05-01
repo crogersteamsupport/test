@@ -468,8 +468,14 @@
         border: 1px solid #ccc;
         -webkit-appearance: menulist;
         -moz-appearance: menulist;
-        
+    }
 
+    #ticket-properties-area > .form-horizontal > .form-group > div > select.hidden-select:hover {
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        border: 1px solid #ccc;
+        -webkit-appearance: menulist;
+        -moz-appearance: menulist;
     }
       
     .selectize-input { padding-left: 5px; min-height:inherit; }
@@ -492,6 +498,14 @@
         padding-left:0px;
     }
 
+    .ticket-input-container.hasSaved {
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+      border: 1px solid #3c763d;
+      transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+      border-radius: 4px;
+    }
+
     .form-group-sm > label,
     .ticket-group > label,
     .customFieldCategoryHeader
@@ -510,7 +524,15 @@
         padding-right: 5px; 
     }
 
-    .customFieldCategoryHeader { border-bottom: 3px solid #eee; padding-bottom: 5px; width: 100%; }
+    .customFieldCategoryHeader {
+      border-bottom: 3px solid #eee;
+      padding-bottom: 5px;
+      width: 100%;
+      color: DimGray !important;
+      font-weight: bold !important;
+      -webkit-font-smoothing: inherit;
+      font-size: 14px;
+    }
      
     .form-horizontal .control-label {
         height:30px;
@@ -539,14 +561,15 @@
         border: 1px solid #CCC;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
         display: inline-block;
-        padding: 4px 6px;
-        margin-bottom: 10px;
+        /*padding: 4px 6px;
+        margin-bottom: 10px;*/
         color: #555;
         vertical-align: middle;
         border-radius: 4px;
         width: 100%;
-        line-height: 22px;
+        /*line-height: 22px;*/
         cursor: text;
+        padding: 5px 5px 2px 9px;
     }
 
     #ticket-Customer > a {
@@ -576,7 +599,6 @@
 
     .tag-error {
       background-color: #fef1ec !important;
-      border: 1px solid red !important;
       color: red !important;
     }
 
@@ -601,13 +623,22 @@
         opacity: .2;
         position:relative;
         top:-5px;
-        left:5px;
+        left:1px;
+        padding-left: 2px;
+    }
+
+    .tag-error > .tagRemove {
+        color: red !important;
     }
 
 
     .TagCategoryLabel {
         width: 100%;
         padding-bottom: 5px;
+        color: DimGray !important;
+        font-weight: bold !important;
+        -webkit-font-smoothing: inherit;
+        font-size: 14px !important;
     }
 
     .ticket-group {
@@ -641,6 +672,8 @@
         -webkit-box-shadow: none;
         -moz-box-shadow: none;
         box-shadow: none;
+        position: relative; 
+        top: -4px; 
     }
 
     .ticket-checkbox { padding-top: 5px !important; }

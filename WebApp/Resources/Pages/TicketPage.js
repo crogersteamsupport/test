@@ -74,7 +74,6 @@ var ellipseString = function (text, max) { return text.length > max - 3 ? text.s
 var isFormValidToClose = function (isClosed, callback) {
     var result = true;
     if (isClosed) {
-        var test = $('.isRequiredToClose.isEmpty');
         $('.isRequiredToClose.isEmpty').addClass('hasCloseError');
         if ($('.hasCloseError').length > 0) {
             result = false;
@@ -891,7 +890,8 @@ function SetupTicketPropertyEvents() {
         var self = $(this);
         var value = self.val();
         top.Ts.Services.Tickets.SetTicketSeverity(_ticketID, value, function (result) {
-            if (result !== null) {
+          if (result !== null) {
+            //self.closest('.ticket-input-container').addClass('hasSaved');
                 window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName);
             }
         },
@@ -992,6 +992,10 @@ function SetupCustomerSection() {
                 this.settings.initData = false;
             }
         },
+        create: function(input, callback) {
+          $('#NewCustomerModal').modal('show');
+          callback(null);
+        },
         onItemAdd: function (value, $item) {
             if (this.settings.initData === false) {
                 var customerData = $item.data();
@@ -1030,6 +1034,59 @@ function SetupCustomerSection() {
                 return '<div data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" class="option">' + item.label + '</div>';
             }
         }
+    });
+
+    $('#Customer-Create').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      top.Ts.System.logAction('Ticket - New Customer Added');
+      var email = $('#customer-email-input').val();
+      var firstName = $('#customer-fname-input').val();
+      var lastName = $('#customer-lname-input').val();
+      var phone = $('#customer-phone-input').val();;
+      var companyName = $('#customer-company-input').val();
+      top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
+        if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
+          top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
+            AddCustomers(result);
+            $('.ticket-new-customer-email').val('');
+            $('.ticket-new-customer-first').val('');
+            $('.ticket-new-customer-last').val('');
+            $('.ticket-new-customer-company').val('');
+            $('.ticket-new-customer-phone').val('');
+            $('#NewCustomerModal').modal('hide');
+          });
+        }
+        else if (result.indexOf("The company you have specified is invalid") !== -1) {
+          if (top.Ts.System.User.CanCreateCompany || top.Ts.System.User.IsSystemAdmin) {
+            if (confirm('Unknown company, would you like to create it?')) {
+              top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
+                top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
+                  AddCustomers(result);
+                  $('.ticket-new-customer-email').val('');
+                  $('.ticket-new-customer-first').val('');
+                  $('.ticket-new-customer-last').val('');
+                  $('.ticket-new-customer-company').val('');
+                  $('.ticket-new-customer-phone').val('');
+                  $('#NewCustomerModal').modal('hide');
+                });
+              });
+            }
+          }
+          else {
+            alert("We're sorry, but you do not have the rights to create a new company.");
+            $('.ticket-new-customer-email').val('');
+            $('.ticket-new-customer-first').val('');
+            $('.ticket-new-customer-last').val('');
+            $('.ticket-new-customer-company').val('');
+            $('.ticket-new-customer-phone').val('');
+            $('#NewCustomerModal').modal('hide');
+          }
+        }
+        else {
+          alert(result);
+        }
+      });
     });
 
     //$("#ticket-Customers-Input").autocomplete({

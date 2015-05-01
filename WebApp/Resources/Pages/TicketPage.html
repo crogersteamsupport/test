@@ -697,5 +697,43 @@
       </div>
     </div>
   </div>
+  <div id="NewCustomerModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="NewCustomerModalTitle" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="NewCustomerModalTitle">Create New Customer</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="customer-fname-input">First Name</label>
+            <input type="text" class="form-control" id="customer-fname-input" placeholder="First Name">
+          </div>
+          <div class="form-group">
+            <label for="customer-lname-input">Last Name</label>
+            <input type="text" class="form-control" id="customer-lname-input" placeholder="Last Name">
+          </div>
+          <div class="form-group">
+            <label for="customer-email-input">Email Address</label>
+            <input type="text" class="form-control" id="customer-email-input" placeholder="Email Address">
+          </div>
+          <div class="form-group">
+            <label for="customer-phone-input">Phone Number</label>
+            <input type="text" class="form-control" id="customer-phone-input" placeholder="Phone Number">
+          </div>
+          <div class="form-group">
+            <label for="customer-company-input">Company Name</label>
+            <input type="text" class="form-control" id="customer-company-input" placeholder="Company Name">
+          </div>
+          <div id="customer-success" class="alert alert-success" role="alert" style="display:none;">Your customer has been created!</div>
+          <div id="customer-error" class="alert alert-danger" role="alert" style="display:none;">There was an error creating your customer.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button id="Customer-Create" type="button" class="btn btn-primary">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
