@@ -574,6 +574,12 @@
       -webkit-font-smoothing: inherit;
     }
 
+    .tag-error {
+      background-color: #fef1ec !important;
+      border: 1px solid red !important;
+      color: red !important;
+    }
+
     .ticket-select {
         width: auto;
         display: inline;

@@ -1113,8 +1113,12 @@ function AddCustomers(customers) {
         else if (customers[i].Company !== null) {
           label = customers[i].Company;
         }
-
-        PrependTag(customerDiv, customers[i].UserID, label, customers[i]);
+        var cssClasses = "tag-item";
+       
+        if (customers[i].Flag) {
+          cssClasses = cssClasses + " tag-error"
+        }
+        PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
     };
 }
 
@@ -1190,9 +1194,9 @@ function AddTags(tags) {
     };
 }
 
-function PrependTag(parent, id, value, data) {
+function PrependTag(parent, id, value, data, cssclass) {
     var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
-    var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data });
+    var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
     parent.prepend(tagHTML);
 }
   

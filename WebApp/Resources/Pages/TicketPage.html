@@ -513,8 +513,10 @@
             </div>
           </script>
           <script id="ticket-tag" type="text/x-handlebars-template">
-            <div id="{{id}}" data-tag="{{TagData}}" class="tag-item"><span class="tagRemove" aria-hidden="true">&times;</span>
-              {{{value}}}</div>
+            <div id="{{id}}" data-tag="{{TagData}}" class="{{css}}">
+              <span class="tagRemove" aria-hidden="true">&times;</span>
+              {{{value}}}
+            </div>
             <!--<a id="{{id}}" class="btn btn-default" data-tag="{{TagData}}">
               <span class="tagRemove" aria-hidden="true">&times;</span>
               {{{value}}}
