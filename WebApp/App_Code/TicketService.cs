@@ -3258,42 +3258,42 @@ WHERE t.TicketID = @TicketID
       result.Add(ticket.TicketID);
       result.Add(action.ActionID);
 
-      foreach (int ticketID in info.RelatedTickets)
+      foreach (int ticketID in info.RelatedTickets.Distinct())
       {
         AddRelated(ticket.TicketID, ticketID, null);
       }
 
-      foreach (int ticketID in info.ChildTickets)
+      foreach (int ticketID in info.ChildTickets.Distinct())
       {
         AddRelated(ticket.TicketID, ticketID, true);
       }
 
-      foreach (int userID in info.Subscribers)
+      foreach (int userID in info.Subscribers.Distinct())
       {
         Subscriptions.AddSubscription(ticket.Collection.LoginUser, userID, ReferenceType.Tickets, ticket.TicketID);
       }
 
-      foreach (int userID in info.Queuers)
+      foreach (int userID in info.Queuers.Distinct())
       {
         TicketQueue.Enqueue(ticket.Collection.LoginUser, ticket.TicketID, userID);
       }
 
-      foreach (string tag in info.Tags)
+      foreach (string tag in info.Tags.Distinct())
       {
         AddTag(ticket.TicketID, tag);
       }
 
-      foreach (int id in info.Customers)
+      foreach (int id in info.Customers.Distinct())
       {
         AddTicketCustomer(ticket.TicketID, "o", id);
       }
 
-      foreach (int id in info.Contacts)
+      foreach (int id in info.Contacts.Distinct())
       {
         AddTicketCustomer(ticket.TicketID, "u", id);
       }
 
-      foreach (int assetID in info.Assets)
+      foreach (int assetID in info.Assets.Distinct())
       {
         AddTicketAsset(ticket.TicketID, assetID);
       }
