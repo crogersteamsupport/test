@@ -1212,16 +1212,17 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
-    private void AddUser(List<UserEmail> list, User user)
+    private bool AddUser(List<UserEmail> list, User user)
     {
-      AddUser(list, user, false);
+      return AddUser(list, user, false);
     }
 
-    private void AddUser(List<UserEmail> list, User user, bool honorTicketNotifications)
+    private bool AddUser(List<UserEmail> list, User user, bool honorTicketNotifications)
     {
-      if (user == null || user.Email == null) return;
-      if ((IsUserAlreadyInList(list, user.UserID) || (!user.ReceiveTicketNotifications && honorTicketNotifications))) return;
+      if (user == null || user.Email == null) return false;
+      if ((IsUserAlreadyInList(list, user.UserID) || (!user.ReceiveTicketNotifications && honorTicketNotifications))) return false;
       list.Add(new UserEmail(user.UserID, user.FirstName, user.LastName, user.Email, user.OnlyEmailAfterHours));
+      return true;
     }
 
     private void RemoveUser(List<UserEmail> list, int userID)
@@ -1300,15 +1301,27 @@ namespace TeamSupport.ServiceLibrary
               {
                   if (ticketAssignedUser.ReceiveTicketNotifications == (bool)receiveTicketNotifications)
                   {
-                      AddUser(userList, ticketAssignedUser, true);
-                      Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
+                      if (AddUser(userList, ticketAssignedUser, true))
+                      {
+                        Logs.WriteEventFormat("Added Assigned User: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
+                      }
+                      else
+                      {
+                        Logs.WriteEventFormat("Didn't add Assigned User: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
+                      }
                   }
                   Logs.WriteEventFormat("Owner Skipped due to receiveTicketNotifications: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
               }
               else
               {
-                  AddUser(userList, ticketAssignedUser, true);
-                  Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
+                  if(AddUser(userList, ticketAssignedUser, true))
+                  {
+                    Logs.WriteEventFormat("Added Assigned User: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
+                  }
+                  else
+                  {
+                    Logs.WriteEventFormat("Didn't add Assigned User: {0} ({1})", ticketAssignedUser.DisplayName, ticketAssignedUser.UserID.ToString());
+                  }
               }
           }
       }
@@ -1323,8 +1336,14 @@ namespace TeamSupport.ServiceLibrary
         foreach (User user in users) {
            if (ticket.UserHasRights(user) && ((ticketAssignedUser != null && user.ReceiveAllGroupNotifications) || (ticketAssignedUser == null && user.ReceiveUnassignedGroupEmails)))
           {
-            AddUser(userList, user, true);
+            if (AddUser(userList, user, true))
+            {
             Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+          }
+          else
+          {
+              Logs.WriteEventFormat("{0} ({1}) <{2}> was not added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+            }
           }
           else
           {
@@ -1350,14 +1369,34 @@ namespace TeamSupport.ServiceLibrary
       users = new Users(LoginUser);
       users.LoadByTicketSubscription(ticket.TicketID);
       foreach (User user in users) { 
-        if (ticket.UserHasRights(user)) AddUser(userList, user); 
+        if (ticket.UserHasRights(user))
+        {
+          if (AddUser(userList, user))
+          {
+            Logs.WriteEventFormat("{0} ({1}) <{2}> ticket subscriber was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+          }
+          else
+          {
+            Logs.WriteEventFormat("{0} ({1}) <{2}> ticket subscriber was not added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+          }
+        }
       }
 
       // Customer Subscribers
       users = new Users(LoginUser);
       users.LoadByCustomerSubscription(ticket.TicketID);
       foreach (User user in users) {
-        if (ticket.UserHasRights(user)) AddUser(userList, user); 
+        if (ticket.UserHasRights(user))
+        {
+          if (AddUser(userList, user))
+          {
+            Logs.WriteEventFormat("{0} ({1}) <{2}> customer subscriber was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+          }
+          else
+          {
+            Logs.WriteEventFormat("{0} ({1}) <{2}> customer subscriber was not added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+          }
+        }
       }
 
       
@@ -1371,7 +1410,16 @@ namespace TeamSupport.ServiceLibrary
       Users users;
       users = new Users(LoginUser);
       users.LoadBasicPortalUsers(ticket.TicketID);
-      foreach (User user in users) { AddUser(userList, user); }
+      foreach (User user in users) {
+        if (AddUser(userList, user))
+        {
+          Logs.WriteEventFormat("{0} ({1}) <{2}> basic portal user was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+        }
+        else
+        {
+          Logs.WriteEventFormat("{0} ({1}) <{2}> basic portal user was not added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+        }
+      }
     }
 
     private void AddAdvancedPortalUsers(List<UserEmail> userList, Ticket ticket)
@@ -1379,7 +1427,16 @@ namespace TeamSupport.ServiceLibrary
       Users users;
       users = new Users(LoginUser);
       users.LoadAdvancedPortalUsers(ticket.TicketID);
-      foreach (User user in users) { AddUser(userList, user); }
+      foreach (User user in users) {
+        if (AddUser(userList, user))
+        {
+          Logs.WriteEventFormat("{0} ({1}) <{2}> advanced portal user was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+        }
+        else
+        {
+          Logs.WriteEventFormat("{0} ({1}) <{2}> advanced portal user was not added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
+        }
+      }
     }
 
     private void AddUsersToAddresses(MailAddressCollection collection, List<UserEmail> users, int modifierID)
