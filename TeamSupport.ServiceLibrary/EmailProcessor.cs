@@ -1371,7 +1371,7 @@ namespace TeamSupport.ServiceLibrary
       foreach (User user in users) { 
         if (ticket.UserHasRights(user))
         {
-          if (AddUser(userList, user))
+          if (AddUser(userList, user, true))
           {
             Logs.WriteEventFormat("{0} ({1}) <{2}> ticket subscriber was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
           }
