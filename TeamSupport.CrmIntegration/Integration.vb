@@ -358,6 +358,7 @@ Namespace TeamSupport
 
                 Dim findCompany As New Organizations(User)
                 Dim thisCompany As Organization
+                Dim companyInfoNeedsUpdate As Boolean = True
 
                 'search for the crmlinkid = accountid in db to see if it already exists
                 findCompany.LoadByCRMLinkID(company.AccountID, ParentOrgID)
@@ -365,6 +366,7 @@ Namespace TeamSupport
                 If findCompany.Count > 0 Then
                     thisCompany = findCompany(0)
                     'it exists, so update the name on the account if it has changed.
+                    companyInfoNeedsUpdate = thisCompany.Name <> company.AccountName
                     thisCompany.Name = company.AccountName
                     Log.Write(String.Format("Found by accountId: {0} ({1})", company.AccountName, company.AccountID))
                 Else
@@ -394,16 +396,17 @@ Namespace TeamSupport
                     End If
                 End If
 
-                thisCompany.Collection.Save()
+                If companyInfoNeedsUpdate Then
+                  thisCompany.Collection.Save()
+                End If
 
                 Dim findAddress As New Addresses(User)
                 Dim thisAddress As Address
+                Dim addressNeedsUpdate As Boolean = False
                 findAddress.LoadByID(thisCompany.OrganizationID, ReferenceType.Organizations)
 
                 If findAddress.Count > 0 Then
                     thisAddress = findAddress(0)
-
-                    Log.Write("Address information updated.")
                 Else
                     thisAddress = (New Addresses(User)).AddNewAddress()
                     thisAddress.RefID = thisCompany.OrganizationID
@@ -414,13 +417,26 @@ Namespace TeamSupport
                 End If
 
                 With thisAddress
+                     If .Addr1 <> company.Street Or _
+                          .Addr2 <> company.Street2 Or _
+                          .City <> company.City Or _
+                          .State <> company.State Or _
+                          .Zip <> company.Zip Or _
+                          .Country <> company.Country Then
+                      addressNeedsUpdate = True
+                    End If
+
                     .Addr1 = company.Street
                     .Addr2 = company.Street2
                     .City = company.City
                     .State = company.State
                     .Zip = company.Zip
                     .Country = company.Country
-                    .Collection.Save()
+
+                    If addressNeedsUpdate Then
+                      .Collection.Save()
+                      Log.Write("Address information updated.")
+                    End If
                 End With
 
                 Log.Write(String.Format("AccountID={0}, OrgID={1}", company.AccountID, thisCompany.OrganizationID))
@@ -455,7 +471,7 @@ Namespace TeamSupport
                 If findPhone.Count > 0 Then
                     For Each phone As PhoneNumber In findPhone
                         'The previous version did not added type and this version uses the CRMPhoneType
-                        If phone.PhoneTypeID Is Nothing OrElse (CRMPhoneType IsNot Nothing AndAlso phone.PhoneTypeID = CRMPhoneType.PhoneTypeId) Then
+                        If phone.PhoneTypeID Is Nothing OrElse (CRMPhoneType IsNot Nothing AndAlso phone.PhoneTypeID = CRMPhoneType.PhoneTypeID) Then
                             thisPhone = phone
                             Exit For
                         End If
@@ -471,16 +487,30 @@ Namespace TeamSupport
                         thisPhone = (New PhoneNumbers(User)).AddNewPhoneNumber()
                     End If
 
+                    Dim phoneNeedsUpdate As Boolean = False
+
                     With thisPhone
+                        If .Number <> company.Phone Or _
+                            .RefType <> ReferenceType.Organizations Or _
+                            .RefID <> thisCompany.OrganizationID Then
+                          phoneNeedsUpdate = True
+                        End If
+
                         .Number = company.Phone
                         .RefType = ReferenceType.Organizations
                         .RefID = thisCompany.OrganizationID
                         If CRMPhoneType IsNot Nothing Then
+                          If (Not phoneNeedsUpdate) Then
+                            phoneNeedsUpdate = .PhoneTypeID <> CRMPhoneType.PhoneTypeID
+                          End If
+
                           .PhoneTypeID = CRMPhoneType.PhoneTypeID
                         End If
 
-                        .Collection.Save()
-                        Log.Write("Account phone number added/upated.")
+                        If phoneNeedsUpdate Then
+                          .Collection.Save()
+                          Log.Write("Account phone number added/upated.")
+                        End If
                     End With
                 End If
 
@@ -492,6 +522,7 @@ Namespace TeamSupport
                 End If
 
                 Dim thisFax As PhoneNumber = findPhone.FindByPhoneTypeID(faxType.PhoneTypeID)
+                Dim faxNeedsUpdate As Boolean = False
 
                 If company.Fax Is Nothing OrElse company.Fax = String.Empty Then
                     If thisFax IsNot Nothing Then
@@ -503,13 +534,23 @@ Namespace TeamSupport
                     End If
 
                     With thisFax
+                        If .Number <> company.Fax Or _
+                          .RefType <> ReferenceType.Organizations Or _
+                          .RefID <> thisCompany.OrganizationID Or _
+                          .PhoneTypeID = faxType.PhoneTypeID Then
+                          faxNeedsUpdate = True
+                        End If
+
                         .Number = company.Fax
                         .RefType = ReferenceType.Organizations
                         .RefID = thisCompany.OrganizationID
                         .PhoneTypeID = faxType.PhoneTypeID
-                        .Collection.Save()
+
+                        If faxNeedsUpdate Then
+                          .Collection.Save()
+                          Log.Write("Account fax number added.")
+                        End If
                     End With
-                    Log.Write("Account fax number added.")
                 End If
 
                 Log.Write("Updated w/ Address:" & company.AccountName)
@@ -586,7 +627,18 @@ Namespace TeamSupport
                             End If
                         End If
 
+                        Dim contactNeedsUpdate As Boolean = False
+
                         With thisUser
+                            If .Email <> person.Email Or _
+                              .FirstLastName <> IIf(person.FirstName IsNot Nothing, person.FirstName, "") Or _
+                              .LastName <> person.LastName Or _
+                              .Title <> person.Title Or _
+                              .MarkDeleted Or _
+                              .SalesForceID <> person.SalesForceID Then
+                              contactNeedsUpdate = True
+                            End If
+
                             .Email = person.Email
                             .FirstName = IIf(person.FirstName IsNot Nothing, person.FirstName, "")
                             .LastName = person.LastName
@@ -594,7 +646,9 @@ Namespace TeamSupport
                             .MarkDeleted = False
                             .SalesForceID = person.SalesForceID
 
-                            .Collection.Save()
+                            If contactNeedsUpdate Then
+                              .Collection.Save()
+                            End If
                         End With
 
                         Log.Write("Updating phone information.")
@@ -694,20 +748,32 @@ Namespace TeamSupport
                                 phone = (New PhoneNumbers(User).AddNewPhoneNumber())
                             End If
 
+                            Dim phoneNeedsUpdate As Boolean = False
+
                             With phone
+                                If .Number <> person.Phone Or _
+                                    .RefType <> ReferenceType.Users Or _
+                                    .RefID <> thisUser.UserID Then
+                                  phoneNeedsUpdate = True
+                                End If
+
                                 .Number = person.Phone
                                 .RefType = ReferenceType.Users
                                 .RefID = thisUser.UserID
                                 If CRMPhoneType IsNot Nothing Then
+                                    phoneNeedsUpdate = .PhoneTypeID <> CRMPhoneType.PhoneTypeID
                                     .PhoneTypeID = CRMPhoneType.PhoneTypeID
                                 End If
 
                                 'Custom mapping for Tenmast.
                                 If Type = IntegrationType.ZohoCRM Then
+                                    phoneNeedsUpdate = .Extension <> person.Extension
                                     .Extension = person.Extension
                                 End If
 
-                                .Collection.Save()
+                                If phoneNeedsUpdate Then
+                                  .Collection.Save()
+                                End If
                             End With
                         End If
 
@@ -720,12 +786,24 @@ Namespace TeamSupport
                                 mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
                             End If
 
+                            Dim mobileNeedsUpdate As Boolean = False
+
                             With mobilePhone
+                                If .Number <> person.Cell Or _
+                                    .RefType <> ReferenceType.Users Or _
+                                    .RefID <> thisUser.UserID Or _
+                                    .PhoneTypeID <> mobileType.PhoneTypeID Then
+                                  mobileNeedsUpdate = True
+                                End If
+
                                 .Number = person.Cell
                                 .RefType = ReferenceType.Users
                                 .RefID = thisUser.UserID
                                 .PhoneTypeID = mobileType.PhoneTypeID
-                                .Collection.Save()
+
+                                If mobileNeedsUpdate Then
+                                  .Collection.Save()
+                                End If
                             End With
                         End If
 
@@ -738,12 +816,24 @@ Namespace TeamSupport
                                 faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
                             End If
 
+                            Dim faxNeedsUpdate As Boolean = False
+
                             With faxPhone
+                                If .Number <> person.Fax Or _
+                                .RefType <> ReferenceType.Users Or _
+                                .RefID <> thisUser.UserID Or _
+                                .PhoneTypeID <> faxType.PhoneTypeID Then
+                                  faxNeedsUpdate = True
+                                End If
+
                                 .Number = person.Fax
                                 .RefType = ReferenceType.Users
                                 .RefID = thisUser.UserID
                                 .PhoneTypeID = faxType.PhoneTypeID
-                                .Collection.Save()
+
+                                If faxNeedsUpdate Then
+                                  .Collection.Save()
+                                End If
                             End With
                         End If
 
