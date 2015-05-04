@@ -204,6 +204,7 @@ namespace TeamSupport.Api
           case "/zapier/properties/ticketseverities/": data = RestProperties.GetTicketSeverities(_command, true); break;
           case "/zapier/properties/ticketstatuses/": data = RestProperties.GetTicketStatuses(_command, true); break;
           case "/zapier/properties/tickettypes/": data = RestProperties.GetTicketTypes(_command, true); break;
+          case "/apiversion/": data = string.Format("<Api><AssemblyDate>{0}</AssemblyDate></Api>", File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString()); break;
 
           default: throw new RestException(HttpStatusCode.NotFound);
         }
@@ -294,6 +295,8 @@ namespace TeamSupport.Api
           case "/tickets/{id}/contacts/{id}/": data = RestContacts.AddTicketContact(_command, GetId(1), GetId(3)); break;
           case "/tickets/{id}/actions/": data = RestActions.CreateAction(_command, GetId(1)); break;
           case "/tickets/{id}/actions/{id}/attachments/": data = RestAttachments.CreateAttachment(_command, GetId(1), GetId(3)); break;
+          case "/tickets/{id}/subscribe/{id}/": data = RestSubscriptions.SubscribeToTicket(_command, GetId(1), GetId(3)); break;
+          case "/tickets/{id}/unsubscribe/{id}/": data = RestSubscriptions.UnSubscribeFromTicket(_command, GetId(1), GetId(3)); break;
           case "/customers/": data = RestOrganizations.CreateOrganization(_command); break;
           case "/customers/{id}/phonenumbers/": data = RestPhoneNumbers.AddPhoneNumber(_command, ReferenceType.Organizations, GetId(1)); break;
           case "/customers/{id}/addresses/": data = RestAddresses.AddAddress(_command, ReferenceType.Organizations, GetId(1)); break;
