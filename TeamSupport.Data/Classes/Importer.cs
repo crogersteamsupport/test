@@ -2246,7 +2246,7 @@ AND a.OrganizationID = @OrganizationID
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
       IdList ticketIDs = GetIdList(tickets);
-      tickets = null;
+      tickets = new Tickets(_loginUser);
       GC.WaitForPendingFinalizers();
 
       foreach (DataRow row in table.Rows)
@@ -2400,6 +2400,8 @@ AND a.OrganizationID = @OrganizationID
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
       IdList ticketIDs = GetIdList(tickets);
+      tickets = new Tickets(_loginUser);
+      GC.WaitForPendingFinalizers();
 
       foreach (DataRow row in table.Rows)
       {
