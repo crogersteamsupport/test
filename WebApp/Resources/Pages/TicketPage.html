@@ -517,49 +517,57 @@
               <span class="tagRemove" aria-hidden="true">&times;</span>
               {{{value}}}
             </div>
-            <!--<a id="{{id}}" class="btn btn-default" data-tag="{{TagData}}">
-              <span class="tagRemove" aria-hidden="true">&times;</span>
-              {{{value}}}
-            </a>-->
           </script>
           <script id="ticket-group-Inventory" type="text/x-handlebars-template">
-            <div class="form-group ticket-group" id="ticket-group-assets">
-              <label for="ticket-Inventory" class="TagCategoryLabel">Inventory:&nbsp;</label>
-              <input id="ticket-Inventory-Input" class="tagInput" type="text" placeholder="Add Inventory">
-            </div>
-          </script>
-          <script id="ticket-group-UserQueue" type="text/x-handlebars-template">
-            <div class="form-group ticket-group" id="ticket-group-UserQueue">
-              <label for="ticket-UserQueue" class="TagCategoryLabel">User Queues:&nbsp;</label>
-              <input id="ticket-UserQueue-Input" class="tagInput" type="text" placeholder="Add To Queue">
-            </div>
-          </script>
-          <script id="ticket-group-SubscribedUsers" type="text/x-handlebars-template">
-            <div class="form-group ticket-group" id="ticket-group-UserQueue">
-              <label for="ticket-SubscribedUsers" class="TagCategoryLabel">Subscribed Users:&nbsp;</label>
-              <input id="ticket-SubscribedUsers-Input" class="tagInput" type="text" placeholder="Add User">
-            </div>
-          </script>
-          <script id="ticket-group-AssociatedTickets" type="text/x-handlebars-template">
-            <div class="form-group ticket-group" id="ticket-group-AssociatedTickets">
-              <label for="ticket-AssociatedTickets" class="TagCategoryLabel">Associated Tickets:&nbsp;</label>
-              <input id="ticket-AssociatedTickets-Input" class="tagInput" type="text" placeholder="Add Ticket">
-            </div>
-          </script>
-          <script id="ticket-group-Reminders" type="text/x-handlebars-template">
-            <div class="form-group ticket-group" id="ticket-group-Reminders">
-              <label for="ticket-Reminders" class="TagCategoryLabel">Reminders:&nbsp;</label>
+            <div class="form-group ticket-group">
+              <label for="ticket-UserQueue" class="TagCategoryLabel">Inventory:&nbsp;</label>
               <div class="tagContainer">
-                <span id="ticket-reminder-span"></span><br />
-                <a class="btn btn-link" style="color: darkgray; padding-left: 0px; padding-bottom: 0px;" data-toggle="modal" data-target="#RemindersModal">Add Reminder</a>
+                <span id="ticket-Inventory" style="z-index:100;"></span>
+                <input id="ticket-Inventory-Input" class="tagInput hidden-select" type="text" placeholder="Add Inventory">
               </div>
             </div>
           </script>
-          <script id="ticket-group-CustomFields" type="text/x-handlebars-template">
-            <div id="ticket-group-custom-fields">
+          <script id="ticket-group-UserQueue" type="text/x-handlebars-template">
+            <div class="form-group ticket-group">
+              <label for="ticket-UserQueue" class="TagCategoryLabel">User Queues:&nbsp;</label>
+              <div class="tagContainer">
+                <span id="ticket-UserQueue" style="z-index:100;"></span>
+                <input id="ticket-UserQueue-Input" class="tagInput hidden-select" type="text" placeholder="Add to Queue">
+              </div>
             </div>
           </script>
-        </div>
+          <script id="ticket-group-SubscribedUsers" type="text/x-handlebars-template">
+            <div class="form-group ticket-group">
+              <label for="ticket-SubscribedUsers" class="TagCategoryLabel">Subscribed Users:&nbsp;</label>
+              <div class="tagContainer">
+                <span id="ticket-SubscribedUsers" style="z-index:100;"></span>
+                <input id="ticket-SubscribedUsers-Input" class="tagInput hidden-select" type="text" placeholder="Subscribe User">
+              </div>
+            </div>
+          </script>
+          <script id="ticket-group-AssociatedTickets" type="text/x-handlebars-template">
+            <div class="form-group ticket-group">
+              <label for="ticket-AssociatedTickets" class="TagCategoryLabel">Associated Tickets:&nbsp;</label>
+              <div class="tagContainer">
+                <span id="ticket-AssociatedTickets" style="z-index:100;"></span>
+                <input id="ticket-AssociatedTickets-Input" class="tagInput hidden-select" type="text" placeholder="Add Ticket">
+              </div>
+            </div>
+          </script>
+            <script id="ticket-group-Reminders" type="text/x-handlebars-template">
+              <div class="form-group ticket-group" id="ticket-group-Reminders">
+                <label for="ticket-Reminders" class="TagCategoryLabel">Reminders:&nbsp;</label>
+                <div class="tagContainer">
+                  <span id="ticket-reminder-span"></span><br />
+                  <a class="btn btn-link" style="color: darkgray; padding-left: 0px; padding-bottom: 0px;" data-toggle="modal" data-target="#RemindersModal">Add Reminder</a>
+                </div>
+              </div>
+            </script>
+            <script id="ticket-group-CustomFields" type="text/x-handlebars-template">
+              <div id="ticket-group-custom-fields">
+              </div>
+            </script>
+</div>
       </div>
     </div>
     <div class="maincontainerx">

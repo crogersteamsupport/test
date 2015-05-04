@@ -546,7 +546,6 @@ var confirmVisibleToCustomers = function () {
   }
 }
 
-
 function UploadAttachments(newAction) {
     if ($('.upload-queue li').length > 0 && newAction !== null) {
         $('.upload-queue li').each(function (i, o) {
@@ -1397,187 +1396,252 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
 };
 
 function SetupInventorySection() {
-    $('#ticket-Inventory-Input').selectize({
-        valueField: 'id',
-        labelField: 'label',
-        searchField: 'label',
-        load: function (query, callback) {
-            getAssets(query, callback)
+  AddInventory(_ticketInfo.Assets);
 
-        },
-        initData: true,
-        preload: true,
-        onLoad: function () {
-            var assets = _ticketInfo.assets;
-            if (this.settings.initData === true) {
-                for (var i = 0; i < _ticketInfo.Assets.length ; i++) {
-                    this.addItem(_ticketInfo.Assets[i].AssetID, false);
-                }
-                this.settings.initData = false;
-            }
-        },
-        //render: {
-        //    option: function (item, escape) {
-        //        return '<div data-value="'+escape(item.id)+'" data-selectable="" class="option">'+escape(item.label)+'</div>';
-        //    }
-        //},
-        onItemAdd: function (value, $item) {
-            if (this.settings.initData === false) {
-                top.Ts.Services.Tickets.AddTicketAsset(_ticketID, value, function (assets) {
-                    //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addasset", userFullName);
-                    top.Ts.Services.Tickets.GetTicketCustomers(_ticketID, function (customers) {
-                        AddCustomers(customers);
-                    });
-                }, function () {
-                    alert('There was an error adding the asset.');
-                });
-                top.Ts.System.logAction('Ticket - Asset Added');
-                $('#ticket-Inventory-Input').attr("placeholder", "Type your answer here");
-            }
-        },
-        onItemRemove: function (value) {
-            top.Ts.Services.Tickets.RemoveTicketAsset(_ticketID, value, function (assets) {
-                //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removeasset", userFullName);
-            }, function () {
-                alert('There was a problem removing the asset from the ticket.');
-            });
-        },
-        plugins: {
-            'sticky_placeholder': {}
-        }
+  $('#ticket-Inventory-Input').selectize({
+    valueField: 'id',
+    labelField: 'label',
+    searchField: 'label',
+    load: function (query, callback) {
+      getAssets(query, callback)
+    },
+    onItemAdd: function (value, $item) {
+      top.Ts.Services.Tickets.AddTicketAsset(_ticketID, value, function (assets) {
+        AddInventory(assets);
+        top.Ts.Services.Tickets.GetTicketCustomers(_ticketID, function (customers) {
+          AddCustomers(customers);
+        });
+        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addasset", userFullName);
+      }, function () {
+        alert('There was an error adding the asset.');
+      });
+      top.Ts.System.logAction('Ticket - Asset Added');
+      this.removeItem(value, true);
+    },
+    plugins: {
+      'sticky_placeholder': {}
+    }
+  });
+
+  $('#ticket-Inventory').on('click', 'span.tagRemove', function (e) {
+    var self = $(this);
+    var data = self.parent().data().tag;
+    top.Ts.Services.Tickets.RemoveTicketAsset(_ticketID, data.AssetID, function (assets) {
+      AddInventory(assets);
+      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removeasset", userFullName);
+    }, function () {
+      alert('There was a problem removing the asset from the ticket.');
     });
+  });
+};
+
+function AddInventory(Inventory) {
+  var InventoryDiv = $("#ticket-Inventory");
+  InventoryDiv.empty();
+  $("#ticket-Inventory-Input").val('');
+
+  for (var i = 0; i < Inventory.length; i++) {
+    PrependTag(InventoryDiv, Inventory[i].AssetID, Inventory[i].Name, Inventory[i]);
+  };
 }
 
 function SetupUserQueuesSection() {
-    $('#ticket-UserQueue-Input').selectize({
-        valueField: 'id',
-        labelField: 'label',
-        searchField: 'label',
-        load: function (query, callback) {
-            getUsers(query, callback)
+  AddQueues(_ticketInfo.Queuers);
 
-        },
-        initData: true,
-        preload: true,
-        onLoad: function () {
-            if (this.settings.initData === true) {
-                for (var i = 0; i < _ticketInfo.Queuers.length ; i++) {
-                    this.addItem(_ticketInfo.Queuers[i].UserID);
-                }
-                this.settings.initData = false;
-            }
-        },
-        //render: {
-        //    option: function (item, escape) {
-        //        return '<div data-value="'+escape(item.id)+'" data-selectable="" class="option">'+escape(item.label)+'</div>';
-        //    }
-        //},
-        onItemAdd: function (value, $item) {
-            if (this.settings.initData === false) {
-                top.Ts.Services.Tickets.SetQueue(_ticketID, true, value, function (queues) {
-                    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addqueue", userFullName);
-                }, function () {
-                    alert('There was an error adding the queue.');
-                });
-                top.Ts.System.logAction('Ticket - Enqueued');
-                top.Ts.System.logAction('Queued');
-            }
-        },
-        onItemRemove: function (value) {
-            top.Ts.Services.Tickets.SetQueue(_ticketID, false, value, function (queues) {
-                window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removequeue", userFullName);
-            }, function () {
-                alert('There was a problem removing the queue from the ticket.');
-            });
-            top.Ts.System.logAction('Ticket - Dequeued');
-        },
-        plugins: {
-            'sticky_placeholder': {}
-        }
+  $('#ticket-UserQueue-Input').selectize({
+    valueField: 'id',
+    labelField: 'label',
+    searchField: 'label',
+    load: function (query, callback) {
+      getUsers(query, callback)
+    },
+    onItemAdd: function (value, $item) {
+      top.Ts.Services.Tickets.SetQueue(_ticketID, true, value, function (queues) {
+        AddQueues(queues);
+        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addqueue", userFullName);
+      }, function () {
+        alert('There was an error adding the queue.');
+      });
+      top.Ts.System.logAction('Ticket - Enqueued');
+      top.Ts.System.logAction('Queued');
+      this.removeItem(value, true);
+    },
+    plugins: {
+      'sticky_placeholder': {}
+    }
+  });
+
+  $('#ticket-UserQueue').on('click', 'span.tagRemove', function (e) {
+    var self = $(this);
+    var data = self.parent().data().tag;
+
+    top.Ts.Services.Tickets.SetQueue(_ticketID, false, data.UserID, function (queues) {
+      AddQueues(queues);
+      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removequeue", userFullName);
+    }, function () {
+      alert('There was a problem removing the queue from the ticket.');
     });
+    top.Ts.System.logAction('Ticket - Dequeued');
+  });
+
+    //$('#ticket-UserQueue-Input').selectize({
+    //    valueField: 'id',
+    //    labelField: 'label',
+    //    searchField: 'label',
+    //    load: function (query, callback) {
+    //        getUsers(query, callback)
+
+    //    },
+    //    initData: true,
+    //    preload: true,
+    //    onLoad: function () {
+    //        if (this.settings.initData === true) {
+    //            for (var i = 0; i < _ticketInfo.Queuers.length ; i++) {
+    //                this.addItem(_ticketInfo.Queuers[i].UserID);
+    //            }
+    //            this.settings.initData = false;
+    //        }
+    //    },
+    //    //render: {
+    //    //    option: function (item, escape) {
+    //    //        return '<div data-value="'+escape(item.id)+'" data-selectable="" class="option">'+escape(item.label)+'</div>';
+    //    //    }
+    //    //},
+    //    onItemAdd: function (value, $item) {
+    //        if (this.settings.initData === false) {
+    //            top.Ts.Services.Tickets.SetQueue(_ticketID, true, value, function (queues) {
+    //                window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addqueue", userFullName);
+    //            }, function () {
+    //                alert('There was an error adding the queue.');
+    //            });
+    //            top.Ts.System.logAction('Ticket - Enqueued');
+    //            top.Ts.System.logAction('Queued');
+    //        }
+    //    },
+    //    onItemRemove: function (value) {
+    //        top.Ts.Services.Tickets.SetQueue(_ticketID, false, value, function (queues) {
+    //            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removequeue", userFullName);
+    //        }, function () {
+    //            alert('There was a problem removing the queue from the ticket.');
+    //        });
+    //        top.Ts.System.logAction('Ticket - Dequeued');
+    //    },
+    //    plugins: {
+    //        'sticky_placeholder': {}
+    //    }
+    //});
+}
+
+function AddQueues(queues) {
+  var UserQueueDiv = $("#ticket-UserQueue");
+  UserQueueDiv.empty();
+  $("#ticket-UserQueue-Input").val('');
+
+  for (var i = 0; i < queues.length; i++) {
+    PrependTag(UserQueueDiv, queues[i].UserID, queues[i].FirstName + " " + queues[i].LastName, queues[i]);
+  };
 }
 
 function SetupSubscribedUsersSection() {
-    $('#ticket-SubscribedUsers-Input').selectize({
-        valueField: 'id',
-        labelField: 'label',
-        searchField: 'label',
-        load: function (query, callback) {
-            getUsers(query, callback)
+  AddSubscribers(_ticketInfo.Subscribers);
 
-        },
-        initData: true,
-        preload: true,
-        onLoad: function () {
-            if (this.settings.initData === true) {
-                for (var i = 0; i < _ticketInfo.Subscribers.length ; i++) {
-                    this.addItem(_ticketInfo.Subscribers[i].UserID);
-                }
-                this.settings.initData = false;
-            }
-        },
-        //render: {
-        //    option: function (item, escape) {
-        //        return '<div data-value="'+escape(item.id)+'" data-selectable="" class="option">'+escape(item.label)+'</div>';
-        //    }
-        //},
-        onItemAdd: function (value, $item) {
-            if (this.settings.initData === false) {
-                top.Ts.Services.Tickets.SetSubscribed(_ticketID, true, value, function (subscribers) {
-                    //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addsubscriber", userFullName);
-                }, function () {
-                    alert('There was an error adding the subscriber.');
-                });
-                top.Ts.System.logAction('Ticket - User Subscribed');
-            }
-        },
-        onItemRemove: function (value) {
-            top.Ts.Services.Tickets.SetSubscribed(_ticketID, false, value, function (subscribers) {
-                //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removesubscriber", userFullName);
-            }, function () {
-                alert('There was a problem removing the subscriber from the ticket.');
-            });
-            top.Ts.System.logAction('Ticket - Subscriber Removed');
-        },
-        plugins: {
-            'sticky_placeholder': {}
-        }
+  $('#ticket-SubscribedUsers-Input').selectize({
+    valueField: 'id',
+    labelField: 'label',
+    searchField: 'label',
+    load: function (query, callback) {
+      getUsers(query, callback)
+    },
+    onItemAdd: function (value, $item) {
+      top.Ts.Services.Tickets.SetSubscribed(_ticketID, true, value, function (subscribers) {
+        AddSubscribers(subscribers);
+        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addsubscriber", userFullName);
+      }, function () {
+        alert('There was an error adding the subscriber.');
+      });
+      top.Ts.System.logAction('Ticket - User Subscribed');
+      this.removeItem(value, true);
+    },
+    plugins: {
+      'sticky_placeholder': {}
+    }
+  });
+
+  $('#ticket-SubscribedUsers').on('click', 'span.tagRemove', function (e) {
+    var self = $(this);
+    var data = self.parent().data().tag;
+    top.Ts.Services.Tickets.SetSubscribed(_ticketID, false, data.UserID, function (subscribers) {
+      AddSubscribers(subscribers);
+      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removesubscriber", userFullName);
+    }, function () {
+      alert('There was a problem removing the subscriber from the ticket.');
     });
+    top.Ts.System.logAction('Ticket - Subscriber Removed');
+  });
+};
+
+function AddSubscribers(Subscribers) {
+  var SubscribersDiv = $("#ticket-SubscribedUsers");
+  SubscribersDiv.empty();
+  $("#ticket-SubscribedUsers-Input").val('');
+
+  for (var i = 0; i < Subscribers.length; i++) {
+    PrependTag(SubscribersDiv, Subscribers[i].UserID, Subscribers[i].FirstName + " " + Subscribers[i].LastName, Subscribers[i]);
+  };
 }
 
 function SetupAssociatedTicketsSection() {
-    $('#ticket-AssociatedTickets-Input').selectize({
-        valueField: 'id',
-        labelField: 'label',
-        searchField: 'label',
-        load: function (query, callback) {
-            getRelated(query, callback)
-        },
-        initData: true,
-        preload: true,
-        onLoad: function () {
-            if (this.settings.initData === true) {
-                for (var i = 0; i < _ticketInfo.Related.length ; i++) {
-                    this.addItem(_ticketInfo.Related[i].TicketNumber);
-                }
-                this.settings.initData = false;
-            }
-        },
-        //render: {
-        //    option: function (item, escape) {
-        //        return '<div data-value="'+escape(item.id)+'" data-selectable="" class="option">'+escape(item.label)+'</div>';
-        //    }
-        //},
-        onItemAdd: function (value, $item) {
-            
-        },
-        onItemRemove: function (value) {
+  AddAssociatedTickets(_ticketInfo.Related);
 
-        },
-        plugins: {
-            'sticky_placeholder': {}
-        }
+  $('#ticket-AssociatedTickets-Input').selectize({
+    valueField: 'id',
+    labelField: 'label',
+    searchField: 'label',
+    load: function (query, callback) {
+      getRelated(query, callback)
+    },
+    onItemAdd: function (value, $item) {
+      //TODO:  Need related ticket code.
+      this.removeItem(value, true);
+    },
+    plugins: {
+      'sticky_placeholder': {}
+    }
+  });
+
+  $('#ticket-AssociatedTickets').on('click', 'span.tagRemove', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var self = $(this);
+    var data = self.parent().data().tag;
+    top.Ts.Services.Tickets.RemoveRelated(_ticketID, data.TicketID, function (result) {
+      if (result !== null && result === true) self.parent().remove();
+      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removerelationship", userFullName);
+    }, function () {
+      alert('There was an error removing the associated ticket.');
     });
+
+    top.Ts.System.logAction('Ticket - Association Removed');
+  });
+
+  $('#ticket-AssociatedTickets').on('click', 'div.tag-item', function (e) {
+    var self = $(this);
+    var data = self.data().tag;
+    top.Ts.MainPage.openTicket(data.TicketNumber, true);
+  });
+};
+
+function AddAssociatedTickets(Tickets) {
+  var AssociatedTicketsDiv = $("#ticket-AssociatedTickets");
+  AssociatedTicketsDiv.empty();
+  $("#ticket-AssociatedTickets-Input").val('');
+
+  for (var i = 0; i < Tickets.length; i++) {
+    var related = Tickets[i];
+    var label = ellipseString(related.TicketNumber + ': ' + related.Name, 30);
+
+    PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related);
+  };
 }
 
 function SetupRemindersSection() {
@@ -2921,8 +2985,7 @@ function CreateTicketToolbarDomEvents() {
         _ticketInfo.Ticket.IsSubscribed = !isSubscribed;
         self.children().toggleClass('color-green');
         self.attr('data-original-title', (_ticketInfo.Ticket.IsSubscribed) ? 'UnSubscribe to Ticket' : 'Subscribe to Ticket').tooltip('fixTitle');
-        //TODO:  add append
-        //appendSubscribers(subscribers);
+        AddSubscribers(subscribers);
       }, function () {
         alert('There was an error subscribing this ticket.');
       });
@@ -2939,8 +3002,7 @@ function CreateTicketToolbarDomEvents() {
           _ticketInfo.Ticket.IsEnqueued = !isQueued;
           self.children().toggleClass('color-green');
           self.attr('data-original-title', (_ticketInfo.Ticket.IsEnqueued) ? 'Remove from your Ticket Queue' : 'Add to your Ticket Queue').tooltip('fixTitle');
-          //TODO:  add append
-            //appendQueues(queues);
+          AddQueues(queues);
         }, function () {
             alert('There was an error queueing this ticket.');
         });
