@@ -36,7 +36,17 @@ namespace TeamSupport.Api
           int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
           TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
           if (ticketType.OrganizationID != command.Organization.OrganizationID) throw new Exception();
-          tickets.LoadByTicketTypeID(ticketTypeID);
+          
+          try
+          {
+            tickets.LoadByTicketTypeID(ticketTypeID, command.Organization.OrganizationID, command.Filters);
+          }
+          catch (Exception ex)
+          {
+            //if something fails use the old method
+            tickets.LoadByTicketTypeID(ticketTypeID);
+          }
+          
           xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
 	      }
 	      catch (Exception ex)
@@ -54,19 +64,25 @@ namespace TeamSupport.Api
 
         foreach (TicketType ticketType in ticketTypes)
         {
-          tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
-          //writer.WriteStartElement(ticketType.Name);
+          try
+		      {
+            tickets.LoadByTicketTypeID(ticketType.TicketTypeID, command.Organization.OrganizationID, command.Filters);
+          }
+          catch (Exception ex)
+          {
+            //if something fails use the old method
+            tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
+          }
+          
           foreach (DataRow row in tickets.Table.Rows)
           {
             tickets.WriteXml(writer, row, "Ticket", true, command.Filters);
           }
-          //writer.WriteEndElement();
         }
         
         xml = Tickets.EndXmlWrite(writer);
 	    }
 
-      //return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
       return xml;
     }
 
