@@ -736,14 +736,19 @@ function LoadTicketControls() {
     else {
         $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened).parent().prev().html('Days Opened');
     }
+  debugger
+  var dueDate = _ticketInfo.Ticket.DueDate;
+  SetupDueDateField(dueDate);
+  //$('#ticket-DueDate').text((dueDate === null ? '' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern())));
+    //var dueDateField = $('#ticket-DueDate').val((dueDate === null ? '' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern()))).datetimepicker();
+    //$('#ticket-DueDate')
+    //  .val(dueDate === null ? '' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern()))
+    //  .datetimepicker();
 
-    var dueDate = _ticketInfo.Ticket.DueDate;
-    $('#ticket-DueDate').text((dueDate === null ? 'Unassigned' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern())));
-
-    if (dueDate != null && dueDate < Date.now()) {
-        $('#ticket-DueDate').addClass('nonrequired-field-error-font');
-        $('#ticket-DueDate').parent().prev().addClass('nonrequired-field-error-font');
-    }
+    //if (dueDate != null && dueDate < Date.now()) {
+    //    $('#ticket-DueDate').addClass('nonrequired-field-error-font');
+    //    $('#ticket-DueDate').parent().prev().addClass('nonrequired-field-error-font');
+    //}
 
     if (top.Ts.System.Organization.UseForums == true) {
         if (top.Ts.System.User.CanChangeCommunityVisibility) {
@@ -1252,6 +1257,7 @@ function AddTags(tags) {
 }
 
 function PrependTag(parent, id, value, data, cssclass) {
+  if (cssclass === undefined) cssclass = 'tag-item';
     var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
     parent.prepend(tagHTML);
@@ -2180,6 +2186,53 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     }
 }
 
+var SetupDueDateField = function (duedate) {
+  var dateContainer = $('#ticket-duedate-container');
+  var dateLink = $('<a>')
+                      .attr('href', '#')
+                      .text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                      .addClass('control-label')
+                      .attr('style', 'padding-left: 5px;')
+                      .appendTo(dateContainer);
+
+  dateLink.click(function (e) {
+    e.preventDefault();
+    $(this).hide();
+    var input = $('<input type="text">')
+                    .addClass('form-control')
+                    .val(duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern()))
+                    .datetimepicker({
+                      showClear: true,
+                      sideBySide: true
+                    })
+                    .appendTo(dateContainer)
+                    .focus();
+
+    input.focusout(function (e) {
+      var value = top.Ts.Utils.getMsDate(input.val());
+
+      top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
+        var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+        input.remove();
+        dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
+        _dueDate = top.Ts.Utils.getMsDate(value); //result;
+
+        if (date != null && date < Date.now()) {
+          $('#ticket-DueDate').addClass('nonrequired-field-error-font');
+          $('#ticket-DueDate').parent().prev().addClass('nonrequired-field-error-font');
+        }
+        else {
+          $('#ticket-DueDate').removeClass('nonrequired-field-error-font');
+          $('#ticket-DueDate').parent().prev().removeClass('nonrequired-field-error-font');
+        }
+        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
+      }, function () {
+        alert("There was a problem saving your ticket property.");
+      });
+    })
+  });
+}
+
 var getUrls = function (input) {
     var source = (input || '').toString();
     var parentDiv = $('<div>').addClass('input-group-addon external-link')
@@ -2258,7 +2311,6 @@ function FetchTimeLineItems(start) {
   });
 
 };
-
 
 function CreateActionElement(val, ShouldAppend) {
   if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
