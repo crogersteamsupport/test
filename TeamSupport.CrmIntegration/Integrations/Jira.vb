@@ -840,7 +840,7 @@ Namespace TeamSupport
 
                 Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment"
                 body = New StringBuilder()
-                body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition))
+                body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID))
                 comment = GetAPIJObject(URI, "POST", body.ToString())
 
                 Dim newActionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
@@ -895,7 +895,7 @@ Namespace TeamSupport
 
                   Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment/" + actionLinkToJiraItem.JiraID.ToString()
                   body = New StringBuilder()
-                  body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition))
+                  body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID))
                   comment = GetAPIJObject(URI, "PUT", body.ToString())
                   actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
                   Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
@@ -1048,14 +1048,17 @@ Namespace TeamSupport
             End If
           End Sub
 
-          Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer) As String
-            Dim result As StringBuilder = New StringBuilder()
-            result.Append("{")
-                result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() + ":\n\n")
-                result.Append(DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription))))
-            result.Append("""}")
-            Return result.ToString()
-          End Function
+        Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer, creatorId As Integer) As String
+          Dim result As StringBuilder = New StringBuilder()
+          Dim creatorUser As UsersViewItem = UsersView.GetUsersViewItem(User, creatorId)
+
+          result.Append("{")
+          result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() + " added by " + String.Format("{0} {1}", creatorUser.FirstName, creatorUser.LastName) + ":\n\n")
+          result.Append(DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription))))
+          result.Append("""}")
+
+          Return result.ToString()
+        End Function
 
       Private Sub PullIssuesAndCommentsAsTicketsAndActions(ByVal issuesToPullAsTickets As JArray, ByVal allStatuses As TicketStatuses, ByVal newActionsTypeID As Integer)
         Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
