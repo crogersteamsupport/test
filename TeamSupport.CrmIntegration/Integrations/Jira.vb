@@ -1051,9 +1051,10 @@ Namespace TeamSupport
         Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer, creatorId As Integer) As String
           Dim result As StringBuilder = New StringBuilder()
           Dim creatorUser As UsersViewItem = UsersView.GetUsersViewItem(User, creatorId)
+          Dim creatorUserName As String = IIf(Not creatorUser Is Nothing, String.Format(" added by {0} {1}", creatorUser.FirstName, creatorUser.LastName), String.Empty)
 
           result.Append("{")
-          result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() + " added by " + String.Format("{0} {1}", creatorUser.FirstName, creatorUser.LastName) + ":\n\n")
+          result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() + creatorUserName + ":\n\n")
           result.Append(DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription))))
           result.Append("""}")
 
