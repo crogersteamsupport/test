@@ -26,6 +26,8 @@ var speed = 50, counter = 0, start;
 
 var userFullName = top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName;
 
+var clueTipOptions = top.Ts.Utils.getClueTipOptions(null);
+
 var execGetCustomer = null;
 var execGetTags = null;
 var execGetAsset = null;
@@ -735,19 +737,9 @@ function LoadTicketControls() {
     else {
         $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened).parent().prev().html('Days Opened');
     }
-  debugger
+
   var dueDate = _ticketInfo.Ticket.DueDate;
   SetupDueDateField(dueDate);
-  //$('#ticket-DueDate').text((dueDate === null ? '' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern())));
-    //var dueDateField = $('#ticket-DueDate').val((dueDate === null ? '' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern()))).datetimepicker();
-    //$('#ticket-DueDate')
-    //  .val(dueDate === null ? '' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern()))
-    //  .datetimepicker();
-
-    //if (dueDate != null && dueDate < Date.now()) {
-    //    $('#ticket-DueDate').addClass('nonrequired-field-error-font');
-    //    $('#ticket-DueDate').parent().prev().addClass('nonrequired-field-error-font');
-    //}
 
     if (top.Ts.System.Organization.UseForums == true) {
         if (top.Ts.System.User.CanChangeCommunityVisibility) {
@@ -1093,43 +1085,6 @@ function SetupCustomerSection() {
       });
     });
 
-    //$("#ticket-Customers-Input").autocomplete({
-    //    minLength: 2,
-    //    source: getCustomers,
-    //    select: function (event, ui) {
-    //        $(this)
-    //        .data('item', ui.item)
-
-    //        var item = $(this).data('item');
-    //        alertMessage = item;
-    //        top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, item.data, item.id, function (customers) {
-    //            AddCustomers(customers);
-
-    //            if (alertMessage.data == "u") {
-    //                top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Users, function (note) {
-    //                    LoadTicketNotes(note);
-    //                });
-    //            }
-    //            else {
-    //                top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Organizations, function (note) {
-    //                    LoadTicketNotes(note);
-    //                });
-    //            }
-
-    //            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addcustomer", userFullName);
-    //        }, function () {
-    //            $(this).parent().remove();
-    //            alert('There was an error adding the customer.');
-    //        });
-    //        top.Ts.System.logAction('Ticket - Customer Added');
-    //    }
-    //})
-    //.data("autocomplete")._renderItem = function (ul, item) {
-    //    return $("<li>")
-    //        .append("<a>" + item.label + "</a>")
-    //        .appendTo(ul);
-    //};
-
     $('#ticket-Customer').on('click', 'span.tagRemove', function (e) {
         var self = $(this);
         var data = self.parent().data().tag;
@@ -1154,7 +1109,6 @@ function SetupCustomerSection() {
             top.Ts.System.logAction('Ticket - Customer Removed');
         }
     });
-
 };
 
 function AddCustomers(customers) {
@@ -1179,7 +1133,14 @@ function AddCustomers(customers) {
         if (customers[i].Flag) {
           cssClasses = cssClasses + " tag-error"
         }
-        PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
+        if (customers[i].UserID !== null) {
+          var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
+          newelement.attr('rel', '../../../Tips/User.aspx?UserID=' + customers[i].UserID + '&TicketID=' + _ticketID).cluetip(clueTipOptions);
+        }
+        else {
+          var newelement = PrependTag(customerDiv, customers[i].OrganizationID, label, customers[i], cssClasses);
+          newelement.attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customers[i].OrganizationID + '&TicketID=' + _ticketID).cluetip(clueTipOptions);
+        }
     };
 }
 
@@ -1259,7 +1220,7 @@ function PrependTag(parent, id, value, data, cssclass) {
   if (cssclass === undefined) cssclass = 'tag-item';
     var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
-    parent.prepend(tagHTML);
+    return $(tagHTML).prependTo(parent);
 }
   
 function SetupProductSection() {
@@ -1651,10 +1612,10 @@ function SetupAssociatedTicketsSection() {
 };
 
 function AddAssociatedTickets(Tickets) {
-  var AssociatedTicketsDiv = $("#ticket-AssociatedTickets");
-  AssociatedTicketsDiv.empty();
-  $("#ticket-AssociatedTickets-Input").val('');
   if (Tickets !== null) {
+    var AssociatedTicketsDiv = $("#ticket-AssociatedTickets");
+    AssociatedTicketsDiv.empty();
+    $("#ticket-AssociatedTickets-Input").val('');
     for (var i = 0; i < Tickets.length; i++) {
       var related = Tickets[i];
       var label = ellipseString(related.TicketNumber + ': ' + related.Name, 30);
@@ -3079,7 +3040,6 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
   window.location = window.location;
   window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
 };
-
 
 var addUserViewing = function (userID) {
   $('.ticket-now-viewing').show();

@@ -2,6 +2,25 @@
         background-color:white;
     }
 
+.ui-cluetip-content h1 { padding: 0 0 .5em 0; line-height: inherit; font-size: 1.5em; margin:0;} 
+.ui-cluetip-content h2 { padding: 0 0 .5em 0; font-size: 1.2em; font-weight:normal;line-height: inherit;} 
+.ui-cluetip-content h3 { } 
+.ui-cluetip-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;margin-bottom: 0px;} 
+.ui-cluetip-content dt { float:left; width: 25%; font-weight:bold; clear:both;} 
+.ui-cluetip-content dd { float:left; width: 70%;} 
+.ui-cluetip-content { padding: 1em 1em;  border:none;}
+.cluetip-close { display: none; }
+a.ui-state-default { font-weight:bold; float:left;  }
+.ui-widget-content a.ts-link { border: none; background:none; cursor: pointer; color: #0057c2;}
+
+.ui-widget-content.ts-separator {
+  height: 1px;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  margin-bottom: .5em;
+  clear: both;
+}
     .ts-loading {
       background-color: transparent;
       background-image: url('../images/loading/loading2.gif');

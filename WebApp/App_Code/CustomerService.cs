@@ -1606,6 +1606,36 @@ namespace TSWebServices
 
         }
 
+        [WebMethod]
+        public OrganizationContactCard GetCustomerCard(int organizationID)
+        {
+          OrganizationContactCard result = new OrganizationContactCard();
+
+          Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
+          if (organization == null) return null;
+          result.orgproxy = organization.GetProxy();
+
+          PhoneNumbersView numbers = new PhoneNumbersView(organization.Collection.LoginUser);
+          numbers.LoadByID(organization.OrganizationID, ReferenceType.Organizations);
+          result.phoneNumbers = numbers.GetPhoneNumbersViewItemProxies();
+
+          TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+          tickets.LoadLatest5Tickets(organizationID);
+          result.tickets = tickets.GetTicketsViewItemProxies();
+
+          return result;
+        }
+
+        public class OrganizationContactCard
+        {
+          [DataMember]
+          public OrganizationProxy orgproxy { get; set; }
+          [DataMember]
+          public PhoneNumbersViewItemProxy[] phoneNumbers { get; set; }
+          [DataMember]
+          public TicketsViewItemProxy[] tickets { get; set; }
+          //also need support hours info
+        }
 
 
         [WebMethod]

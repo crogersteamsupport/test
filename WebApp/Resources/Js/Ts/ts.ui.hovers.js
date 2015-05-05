@@ -36,4 +36,20 @@
 	        }).popover('show');
 	    });
 	});
+
+	$("body").on("mouseenter", ".OrgAnchor", function (event) {
+	  var e = $(this);
+	  e.unbind('hover');
+	  var orgid = e[0].id;
+	  var name = 'gdxg';
+	  top.Ts.Services.Customers.GetCustomerCard(orgid, function (orgcard) {
+	    e.popover({
+	      html: true,
+	      title: name,
+	      trigger: 'hover',
+	      content: '<label>YO</label>',
+	      delay: { "show": 500, "hide": 500 }
+	    }).popover('show');
+	  });
+	});
 });
