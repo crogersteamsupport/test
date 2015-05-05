@@ -1594,14 +1594,14 @@ function SetupAssociatedTicketsSection() {
   AddAssociatedTickets(_ticketInfo.Related);
 
   $('#ticket-AssociatedTickets-Input').selectize({
-    valueField: 'id',
+    valueField: 'data',
     labelField: 'label',
     searchField: 'label',
     load: function (query, callback) {
       getRelated(query, callback)
     },
     onItemAdd: function (value, $item) {
-      //TODO:  Need related ticket code.
+      $('#AssociateTicketModal').data('ticketid', value).modal('show');
       this.removeItem(value, true);
     },
     plugins: {
@@ -1629,19 +1629,39 @@ function SetupAssociatedTicketsSection() {
     var data = self.data().tag;
     top.Ts.MainPage.openTicket(data.TicketNumber, true);
   });
+
+  $('.ticket-association').click(function (e) {
+    var IsParent = $(this).data('isparent');
+    var TicketID2 = $(this).closest('#AssociateTicketModal').data('ticketid');
+    $('#associate-error').hide();
+    $('#associate-success').hide();
+    if (_ticketID == TicketID2) {
+      $('#associate-error').text('You picked the ticket you are viewing. Please try again.').show();
+      return;
+    }
+    top.Ts.Services.Tickets.AddRelated(_ticketID, TicketID2, IsParent, function (tickets) {
+      AddAssociatedTickets(tickets);
+      $('#associate-success').show();
+      setTimeout(function () { $('#AssociateTicketModal').modal('hide'); }, 2000);
+      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
+    }, function (error) {
+      $('#associate-error').text(error.get_message()).show();
+    });
+  });
 };
 
 function AddAssociatedTickets(Tickets) {
   var AssociatedTicketsDiv = $("#ticket-AssociatedTickets");
   AssociatedTicketsDiv.empty();
   $("#ticket-AssociatedTickets-Input").val('');
+  if (Tickets !== null) {
+    for (var i = 0; i < Tickets.length; i++) {
+      var related = Tickets[i];
+      var label = ellipseString(related.TicketNumber + ': ' + related.Name, 30);
 
-  for (var i = 0; i < Tickets.length; i++) {
-    var related = Tickets[i];
-    var label = ellipseString(related.TicketNumber + ': ' + related.Name, 30);
-
-    PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related);
-  };
+      PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related);
+    };
+  }
 }
 
 function SetupRemindersSection() {
