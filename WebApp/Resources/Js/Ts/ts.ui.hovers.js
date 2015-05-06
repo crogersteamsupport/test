@@ -25,31 +25,37 @@
 	    var e = $(this);
 	    e.unbind('hover');
 	    var userid = e.data('userid');
-	    var name = e.data('name');
-	    top.Ts.Services.Users.GetUserContactCard(userid, function (cardhtml) {
-	        e.popover({
-	            html: true,
-	            title: name,
-	            trigger: 'hover',
-	            content: cardhtml,
-	            delay: { "show": 500, "hide": 500 }
-	        }).popover('show');
-	    });
+	    var ticketid = e.data('ticketid');
+	    e.popover({
+	      html: true,
+	      trigger: 'hover',
+	      content: function () {
+	        return $.ajax({
+	          url: '../../../Tips/User.aspx?UserID=' + userid + '&TicketID=' + ticketid,
+	          dataType: 'html',
+	          async: false
+	        }).responseText;
+	      },
+	      //delay: { "show": 500, "hide": 500 }
+	    }).popover('show');
 	});
 
 	$("body").on("mouseenter", ".OrgAnchor", function (event) {
 	  var e = $(this);
 	  e.unbind('hover');
-	  var orgid = e[0].id;
-	  var name = 'gdxg';
-	  top.Ts.Services.Customers.GetCustomerCard(orgid, function (orgcard) {
-	    e.popover({
-	      html: true,
-	      title: name,
-	      trigger: 'hover',
-	      content: '<label>YO</label>',
-	      delay: { "show": 500, "hide": 500 }
-	    }).popover('show');
-	  });
+	  var orgid = e.data('orgid');
+	  var ticketid = e.data('ticketid');
+	  e.popover({
+	    html: true,
+	    trigger: 'hover',
+	    content: function () {
+	      return $.ajax({
+	        url: '../../../Tips/Customer.aspx?CustomerID=' + orgid + '&TicketID=' + ticketid,
+	        dataType: 'html',
+	        async: false
+	      }).responseText;
+	    },
+	    //delay: { "show": 500, "hide": 500 }
+	  }).popover('show');
 	});
 });

@@ -1115,7 +1115,6 @@ function AddCustomers(customers) {
     var customerDiv = $("#ticket-Customer");
     customerDiv.empty();
     $("#ticket-Customers-Input").val('');
-
     for (var i = 0; i < customers.length; i++) {
         var label = "";
 
@@ -1134,12 +1133,14 @@ function AddCustomers(customers) {
           cssClasses = cssClasses + " tag-error"
         }
         if (customers[i].UserID !== null) {
+          cssClasses = cssClasses + ' UserAnchor';
           var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
-          newelement.attr('rel', '../../../Tips/User.aspx?UserID=' + customers[i].UserID + '&TicketID=' + _ticketID).cluetip(clueTipOptions);
+          newelement.data('userid', customers[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
         }
         else {
+          cssClasses = cssClasses + ' OrgAnchor';
           var newelement = PrependTag(customerDiv, customers[i].OrganizationID, label, customers[i], cssClasses);
-          newelement.attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customers[i].OrganizationID + '&TicketID=' + _ticketID).cluetip(clueTipOptions);
+          newelement.data('orgid', customers[i].OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
         }
     };
 }
