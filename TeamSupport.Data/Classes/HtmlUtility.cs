@@ -239,6 +239,9 @@ namespace TeamSupport.Data
 
             Content = Regex.Replace(Content, @"(?:(?:\r?\n)+ +){2,}", Environment.NewLine + Environment.NewLine);
 
+            //regex to replace the contiguous newlines, leave just one. ref: http://stackoverflow.com/questions/11710966/building-a-regex-how-to-remove-redundant-line-breaks
+            Content = Regex.Replace(Content, @"\s*\r\n\s*", "\r\n");
+
             return Content;
         }
 
