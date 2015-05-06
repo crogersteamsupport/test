@@ -2376,7 +2376,7 @@ function CreateActionElement(val, ShouldAppend) {
     $("#action-timeline").append(html);
   }
   else {
-    $('#ticket-title-panel').after(html);
+    $('.action-new').after(html);
   }
 
 };
@@ -2479,7 +2479,7 @@ function CreateTimeLineDelegates() {
 
       var self = $(this);
       var parentLI = self.closest('li');
-      var titleElement = $('#ticket-title-panel');
+      var titleElement = $('.action-new');
       var Action = parentLI.data().action;
 
       parentLI.find(".action-option-items").hide();
@@ -2521,7 +2521,7 @@ function CreateTimeLineDelegates() {
       var self = $(this);
       var parentLI = self.closest('li');
       var action = parentLI.data().action;
-      var titleElement = $('#ticket-title-panel');
+      var titleElement = $('.action-new');
 
       if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
         top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');

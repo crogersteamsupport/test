@@ -101,6 +101,9 @@
             <div class="timeline-done"></div>
             <div class="results-loading"><i class="fa fa-spinner fa-spin"></i></div>
             <script id="new-action-template" type="text/x-handlebars-template">
+              <div id="ticket-title-panel" class="panel panel-default" style="position: relative; z-index: 1; display:table; margin-left:auto; margin-right:auto; margin-bottom:10px;">
+                <p id="ticket-title" class="text-muted text-center" style="margin-bottom: 0px; padding: 5px; font-weight: 500;"></p>
+              </div>
               <li class="action-new">
                 <img class="user-avatar pull-left" src="../../../dc/{{OrganizationID}}/useravatar/{{UserID}}/48" />
                 <div class="panel panel-default">
@@ -176,9 +179,6 @@
                   </div>
                 </div>
               </li>
-              <div id="ticket-title-panel" class="panel panel-default" style="position: relative; z-index: 1; display:table; margin-left:auto; margin-right:auto;">
-                <p id="ticket-title" class="text-muted text-center" style="margin-bottom: 0px; padding: 5px; font-weight: 500;"></p>
-              </div>
             </script>
             <script id="action-template" type="text/x-handlebars-template">
               {{#if item.IsPinned}}
