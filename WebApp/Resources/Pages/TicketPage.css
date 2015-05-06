@@ -2,35 +2,26 @@
         background-color:white;
     }
 
-.popover-content h1 { padding: 0 0 .5em 0; line-height: inherit; font-size: 1.5em; margin:0;}
-.popover-content h2 {
-  padding: 0 0 .5em 0;
-  font-size: 1.2em;
-  font-weight: normal;
-  line-height: inherit;
-    margin: 0;
-}
-.popover-content h3 { } 
-.popover-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;margin-bottom: 0px;} 
-.popover-content dt { float:left; width: 25%; font-weight:bold; clear:both;} 
-.popover-content dd { float:left; width: 70%;} 
+    .popover-content h1 { padding: 0 0 .5em 0; line-height: inherit; font-size: 1.5em; margin:0;}
+    .popover-content h2 { padding: 0 0 .5em 0; font-size: 1.2em; font-weight: normal; line-height: inherit; margin: 0; }
+    .popover-content h3 { } 
+    .popover-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;margin-bottom: 0px;} 
+    .popover-content dt { float:left; width: 25%; font-weight:bold; clear:both;} 
+    .popover-content dd { float:left; width: 70%;} \
+    a.ui-state-default { font-weight:bold; float:left;  }
+    .ui-widget-content a.ts-link { border: none; background:none; cursor: pointer; color: #0057c2;}
+    .popover { width: 400px; max-width: 400px; min-width: 400px; }
+    .ui-widget-content.ts-separator {
+      height: 1px;
+      border-bottom: none;
+      border-left: none;
+      border-right: none;
+      margin-bottom: .5em;
+      clear: both;
+    }
+    .popover-content dt { width: 35%; }
+    .popover-content dd { width: 60%; }
 
-a.ui-state-default { font-weight:bold; float:left;  }
-.ui-widget-content a.ts-link { border: none; background:none; cursor: pointer; color: #0057c2;}
-
-.popover {
-  width: 400px;
-  max-width: 400px;
-  min-width: 400px;
-}
-.ui-widget-content.ts-separator {
-  height: 1px;
-  border-bottom: none;
-  border-left: none;
-  border-right: none;
-  margin-bottom: .5em;
-  clear: both;
-}
     .ts-loading {
       background-color: transparent;
       background-image: url('../images/loading/loading2.gif');

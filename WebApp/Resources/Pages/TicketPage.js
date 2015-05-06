@@ -1127,11 +1127,13 @@ function AddCustomers(customers) {
         else if (customers[i].Company !== null) {
           label = customers[i].Company;
         }
+
         var cssClasses = "tag-item";
        
         if (customers[i].Flag) {
           cssClasses = cssClasses + " tag-error"
         }
+
         if (customers[i].UserID !== null) {
           cssClasses = cssClasses + ' UserAnchor';
           var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
@@ -1403,7 +1405,8 @@ function AddInventory(Inventory) {
   $("#ticket-Inventory-Input").val('');
 
   for (var i = 0; i < Inventory.length; i++) {
-    PrependTag(InventoryDiv, Inventory[i].AssetID, Inventory[i].Name, Inventory[i]);
+    var newelement = PrependTag(InventoryDiv, Inventory[i].AssetID, Inventory[i].Name, Inventory[i], "tag-item AssetAnchor");
+    newelement.data('assetid', Inventory[i].AssetID).data('placement', 'left');
   };
 }
 
@@ -1500,7 +1503,8 @@ function AddQueues(queues) {
   $("#ticket-UserQueue-Input").val('');
 
   for (var i = 0; i < queues.length; i++) {
-    PrependTag(UserQueueDiv, queues[i].UserID, queues[i].FirstName + " " + queues[i].LastName, queues[i]);
+    var newelement = PrependTag(UserQueueDiv, queues[i].UserID, queues[i].FirstName + " " + queues[i].LastName, queues[i], "tag-item UserAnchor");
+    newelement.data('userid', queues[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
   };
 }
 
@@ -1548,7 +1552,8 @@ function AddSubscribers(Subscribers) {
   $("#ticket-SubscribedUsers-Input").val('');
 
   for (var i = 0; i < Subscribers.length; i++) {
-    PrependTag(SubscribersDiv, Subscribers[i].UserID, Subscribers[i].FirstName + " " + Subscribers[i].LastName, Subscribers[i]);
+    var newelement = PrependTag(SubscribersDiv, Subscribers[i].UserID, Subscribers[i].FirstName + " " + Subscribers[i].LastName, Subscribers[i], "tag-item UserAnchor");
+    newelement.data('userid', Subscribers[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
   };
 }
 
@@ -1621,7 +1626,8 @@ function AddAssociatedTickets(Tickets) {
       var related = Tickets[i];
       var label = ellipseString(related.TicketNumber + ': ' + related.Name, 30);
 
-      PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related);
+      var newelement = PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related, 'tag-item TicketAnchor');
+      newelement.data('ticketid', related.TicketID).data('placement', 'left');
     };
   }
 }
