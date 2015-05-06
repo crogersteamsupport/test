@@ -200,8 +200,8 @@ function SetupTicketProperties() {
         var ticketUrl = top.Ts.System.AppDomain + "/?" + _ticketNumber;
         $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
-        //set the ticket title
-        $('#ticket-title').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
+        //set the ticket title 
+        $('#ticket-title').text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name));
       //get total number of actions so we can use it to number each action
         GetActionCount();
       //create timeline now that we have a ticketID
