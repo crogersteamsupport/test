@@ -200,7 +200,7 @@ function SetupTicketProperties() {
         ticketURLLink.on("aftercopy", function (event) {
           alert("Copied URL to clipboard: " + event.data["text/plain"]);
         });
-        var ticketUrl = top.Ts.System.AppDomain + "/?" + _ticketNumber;
+        var ticketUrl = top.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
         $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
         //set the ticket title 
@@ -791,6 +791,7 @@ function LoadTicketControls() {
         .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
         $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(top.Ts.Utils.getDateTimePattern()));
     }
+    $('#ticket-SLAStatus').data('placement', 'left').data('ticketid', _ticketID);
 
     SetupTicketPropertyEvents();
     SetupCustomerSection();

@@ -75,6 +75,23 @@
 	  }).popover('show');
 	});
 
+	$("body").on("mouseenter", ".SLAAnchor", function (event) {
+	  var e = $(this);
+	  e.unbind('hover');
+	  var ticketid = e.data('ticketid');
+	  e.popover({
+	    html: true,
+	    trigger: 'hover',
+	    content: function () {
+	      return $.ajax({
+	        url: '../../../Tips/Sla.aspx?TicketID=' + ticketid,
+	        dataType: 'html',
+	        async: false
+	      }).responseText;
+	    }
+	  }).popover('show');
+	});
+
 	$("body").on("mouseenter", ".TicketAnchor", function (event) {
 	  var e = $(this);
 	  e.unbind('hover');
