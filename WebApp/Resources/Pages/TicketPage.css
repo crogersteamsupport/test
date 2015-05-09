@@ -68,6 +68,8 @@
         z-index:100;
     }
 
+    .ticket-anchor { padding-left: 5px; display: inline; }
+
     .results-loading {
         color: #999;
         width: 100%;

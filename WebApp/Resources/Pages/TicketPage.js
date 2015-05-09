@@ -644,41 +644,9 @@ function LoadTicketControls() {
     $('#Ticket-Subscribe').children().addClass('color-green');
   }
 
-    var AssignedSelectize = $('#ticket-assigned').selectize({
-        valueField: 'id',
-        labelField: 'label',
-        searchField: 'label',
-        preload: true,
-        allowEmptyOption: true,
-        load: function (query, callback) {
-          top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
-                callback(result);
-            });
+  setUserName(_ticketInfo.Ticket.UserName, _ticketInfo.Ticket.UserID);
 
-        },
-        initData: true,
-        onLoad: function () {
-            if (this.settings.initData === true) {
-                this.setValue(_ticketInfo.Ticket.UserID);
-                this.settings.initData = false;
-            }
-        },
-        onItemAdd: function (value, $item) {
-          if (this.settings.initData === false) {
-            if (value == -1) {
-              value = null;
-              this.clear(true);
-            }
-
-            top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function () {
-              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-            },
-            function (error) {
-              alert('There was an error setting the user.');
-            });
-          }
-        }
-    });
+    
 
     top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
         for (var i = 0; i < groups.length; i++) {
@@ -821,6 +789,53 @@ function AppendSelect(parent, data, type, id, name, isSelected) {
 };
 
 function SetupTicketPropertyEvents() {
+  $('#ticket-assigned-group').on('click', '#ticket-assigned-anchor', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var anchor = $(this);
+    anchor.hide();
+    
+    var span = $('#ticket-assigned-span');
+    var $select = $('<select>').appendTo(span);
+    
+    $select.selectize({
+      valueField: 'id',
+      labelField: 'label',
+      searchField: 'label',
+      load: function (query, callback) {
+        top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
+          callback(result);
+        });
+
+      }
+    });
+
+    var selectize = $select[0].selectize;
+    selectize.focus();
+
+    $('#ticket-assigned-span').show();
+
+    $select.change(function (e) {
+      span.hide();
+      var thisSelect = $(this);
+      var selectElement = $(this);
+      var value = selectElement.val();
+      anchor.text(value);
+      top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+        selectize.destroy();
+        $select.remove();
+        setUserName(userInfo);
+        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+      },
+    function (error) {
+      alert('There was an error setting the user.');
+    });
+
+
+      anchor.show();
+    });
+  });
+
     $('#ticket-group').change(function (e) {
         var self = $(this);
         var GroupID = self.val();
@@ -2820,9 +2835,7 @@ function CreateTicketToolbarDomEvents() {
         e.stopPropagation();
         top.Ts.System.logAction('Ticket - Take Ownership');
         top.Ts.Services.Tickets.AssignUser(_ticketID, top.Ts.System.User.UserID, function (userInfo) {
-          var $select = $("#ticket-assigned").selectize();
-          var selectize = $select[0].selectize;
-          selectize.setValue(userInfo.UserID);
+          setUserName(userInfo);
           window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
         }, function () {
             alert('There was an error taking ownwership of this ticket.');
@@ -3453,4 +3466,22 @@ var addUserViewing = function (userID) {
               .appendTo($('#ticket-viewing-users'));
     });
   }
+}
+
+var setUserName = function (user, userID) {
+  var isAssigned = user !== null && user !== "";
+  var id = -1;
+  $('#ticket-assigned-anchor').remove();
+  var anchor = $('<a id="ticket-assigned-anchor">').appendTo($('#ticket-assigned-group'));
+  debugger
+  if (isAssigned) {
+    var name = (!userID ? user.FirstName + ' ' + user.LastName : user);
+    id = (!userID ? user.UserID : userID);
+    anchor.text(name);
+  }
+  else {
+    anchor.text("Unassigned");
+  }
+
+  anchor.addClass('UserAnchor').data('userid', id).data('placement', 'left').data('ticketid', _ticketID);
 }
