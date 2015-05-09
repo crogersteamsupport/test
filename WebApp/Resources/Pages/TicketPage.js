@@ -1238,7 +1238,7 @@ function PrependTag(parent, id, value, data, cssclass) {
 }
   
 function SetupProductSection() {
-  top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
+  top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {debugger
         if (showOnlyCustomers == "True") {
             top.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
                 for (var i = 0; i < CustomerProducts.length; i++) {
