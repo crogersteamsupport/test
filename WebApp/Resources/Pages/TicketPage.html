@@ -104,6 +104,7 @@
               <div id="ticket-title-panel" class="panel panel-default" style="position: relative; z-index: 1; display:table; margin-left:auto; margin-right:auto; margin-bottom:10px;">
                 <p id="ticket-title" class="text-muted text-center" style="margin-bottom: 0px; padding: 5px; font-weight: 500;"></p>
               </div>
+
               <li class="action-new">
                 <img class="user-avatar pull-left" src="../../../dc/{{OrganizationID}}/useravatar/{{UserID}}/48" />
                 <div class="panel panel-default">
@@ -179,6 +180,56 @@
                   </div>
                 </div>
               </li>
+              <li class="watercooler-new-area" style="display:none; padding-bottom: 10px;">
+                <div class="ticket-badge">
+                  <div class="bgcolor-blue"><span class="bgcolor-blue">&nbsp;</span><label>WC</label></div>
+                </div>
+                <div class="container" style="padding-top: 25px;">
+                  <div class="form-group">
+                    <textarea id="inputDescription" rows="5" class="form-control" placeholder="Share To Watercooler"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <span data-toggle="tooltip" data-original-title="Associate Ticket" class="addticket" title="Associate Ticket"></span>
+                    <span data-toggle="tooltip" data-original-title="Associate User" class="adduser" title="Associate User"></span>
+                    <span data-toggle="tooltip" data-original-title="Associate Company" class="addcustomer" title="Associate Company"></span>
+                    <span data-toggle="tooltip" data-original-title="Associate Group" class="addgroup" title="Associate Group"></span>
+                    <span data-toggle="tooltip" data-original-title="Associate Product" class="addproduct" title="Associate Product"></span>
+                    <div style="left: 7px;" class="arrow-up"></div>
+                    <input type="text" class="form-control" id="associationSearch" placeholder="Search..." style="width:250px;" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0px;">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div id="associationQueue">
+                          <div class="wc-attachments"></div>
+                          <div class="ticket-queue"></div>
+                          <div class="user-queue"></div>
+                          <div class="group-queue"></div>
+                          <div class="customer-queue"></div>
+                          <div class="product-queue"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <form class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                          <input type="file" name="file[]">
+                          <a class="ts-link" href="#" title="You can drag and drop your attachments here.">Attach File >></a>
+                        </form>
+                      </div>
+                      <div class="col-sm-6">
+                        <span class="pull-right">
+                          <button id="newcomment" class="btn btn-primary">Save</button>
+                          <button id="newcommentcancel" type="button" class="btn btn-default">Cancel</button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <div class="hidden action-placeholder"></div>
             </script>
             <script id="action-template" type="text/x-handlebars-template">
               {{#if item.IsPinned}}

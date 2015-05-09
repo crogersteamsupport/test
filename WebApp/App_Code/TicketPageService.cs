@@ -449,8 +449,94 @@ namespace TSWebServices
             return template.TemplateText;
         }
 
+        [WebMethod]
+        public object[] GetKBTicketAndActions(int ticketID)
+        {
+          TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+          ActionsView view = new ActionsView(TSAuthentication.GetLoginUser());
+          view.LoadKBByTicketID(ticketID);
 
-        //TODO Move this down
+          List<object> result = new List<object>();
+          result.Add(ticket.GetProxy());
+          result.Add(view.GetActionsViewItemProxies());
+          result.Add(GetActionAttachments(view[0].ActionID));
+          return result.ToArray();
+        }
+
+
+        [WebMethod]
+        public TimeLineItem NewWCPost(string data)
+        {
+          WatercoolerJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<WatercoolerJsonInfo>(data);
+          WatercoolerMsgItem wc = (new WatercoolerMsg(TSAuthentication.GetLoginUser())).AddNewWatercoolerMsgItem();
+          int parentmsgid = info.ParentTicketID;
+          int pageType = info.PageType;
+          int pageID = info.PageID;
+
+          wc.UserID = TSAuthentication.UserID;
+          wc.OrganizationID = TSAuthentication.OrganizationID;
+          wc.TimeStamp = DateTime.UtcNow;
+          wc.LastModified = DateTime.UtcNow;
+          wc.Message = info.Description;
+          wc.MessageParent = parentmsgid;
+
+          wc.Collection.Save();
+
+          if (info.ParentTicketID != -1)
+          {
+            WatercoolerMsg wcm = new WatercoolerMsg(TSAuthentication.GetLoginUser());
+            wcm.LoadByMessageID(parentmsgid);
+
+            wcm[0].LastModified = DateTime.UtcNow;
+            wcm[0].Collection.Save();
+          }
+
+          if (wc.MessageParent == -1 && info.PageType == 0)
+            addWCAttachment((int)wc.MessageID, info.PageID, WaterCoolerAttachmentType.Ticket);
+          foreach (int ticketID in info.Tickets)
+          {
+            addWCAttachment(wc.MessageID, ticketID, WaterCoolerAttachmentType.Ticket);
+            if (wc.MessageParent != -1)
+              addWCAttachment((int)wc.MessageParent, ticketID, WaterCoolerAttachmentType.Ticket);
+          }
+
+          if (wc.MessageParent == -1 && info.PageType == 1)
+            addWCAttachment((int)wc.MessageID, info.PageID, WaterCoolerAttachmentType.Product);
+          foreach (int productID in info.Products)
+          {
+            addWCAttachment(wc.MessageID, productID, WaterCoolerAttachmentType.Product);
+            if (wc.MessageParent != -1)
+              addWCAttachment((int)wc.MessageParent, productID, WaterCoolerAttachmentType.Product);
+          }
+
+          if (wc.MessageParent == -1 && info.PageType == 2)
+            addWCAttachment((int)wc.MessageID, info.PageID, WaterCoolerAttachmentType.Company);
+          foreach (int CompanyID in info.Company)
+          {
+            addWCAttachment(wc.MessageID, CompanyID, WaterCoolerAttachmentType.Company);
+            if (wc.MessageParent != -1)
+              addWCAttachment((int)wc.MessageParent, CompanyID, WaterCoolerAttachmentType.Company);
+          }
+
+          if (wc.MessageParent == -1 && info.PageType == 4)
+            addWCAttachment((int)wc.MessageID, info.PageID, WaterCoolerAttachmentType.Group);
+          foreach (int groupID in info.Groups)
+          {
+            addWCAttachment(wc.MessageID, groupID, WaterCoolerAttachmentType.Group);
+            if (wc.MessageParent != -1)
+              addWCAttachment((int)wc.MessageParent, groupID, WaterCoolerAttachmentType.Group);
+          }
+
+          foreach (int UserID in info.User)
+          {
+            addWCAttachment(wc.MessageID, UserID, WaterCoolerAttachmentType.User);
+            if (wc.MessageParent != -1)
+              addWCAttachment((int)wc.MessageParent, UserID, WaterCoolerAttachmentType.User);
+          }
+
+          //return wc.MessageID;
+          return GetWCLineItem(wc);
+        }
 
         [DataContract]
         public class TicketPageInfo
@@ -605,11 +691,45 @@ namespace TSWebServices
             return item;
         }
 
+        private TimeLineItem GetWCLineItem(TeamSupport.Data.WatercoolerMsgItem wc)
+        {
+          TicketTimeLineView TimeLineView = new TicketTimeLineView(TSAuthentication.GetLoginUser());
+          TimeLineView.LoadByRefIDAndType(wc.MessageID, true);
+
+          TimeLineItem wcItem = new TimeLineItem();
+          wcItem.item = TimeLineView[0].GetProxy();
+          wcItem.Likes = 0;
+          wcItem.DidLike = false;
+
+          List<WaterCoolerReply> wcReplies = new List<WaterCoolerReply>();
+          wcItem.WaterCoolerReplies = wcReplies.ToArray();
+
+          return wcItem;
+        }
+
         private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
             Attachments attachments = new Attachments(loginUser);
             attachments.LoadByActionID(actionID);
             return attachments.GetAttachmentProxies();
+        }
+
+        private void addWCAttachment(int messageID, int attachmentID, WaterCoolerAttachmentType attachmentType)
+        {
+          try
+          {
+            WatercoolerAttachment ticketAttachment = (new WatercoolerAttachments(TSAuthentication.GetLoginUser()).AddNewWatercoolerAttachment());
+            ticketAttachment.MessageID = messageID;
+            ticketAttachment.AttachmentID = attachmentID;
+            ticketAttachment.RefType = attachmentType;
+            ticketAttachment.DateCreated = DateTime.UtcNow;
+            ticketAttachment.CreatorID = TSAuthentication.GetLoginUser().UserID;
+            ticketAttachment.Collection.Save();
+          }
+          catch (Exception e)
+          {
+
+          }
         }
     }
 }

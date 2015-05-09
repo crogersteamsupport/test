@@ -36,6 +36,18 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
+
+        public void LoadByRefIDAndType(int id, bool isWC)
+        {
+          using (SqlCommand command = new SqlCommand())
+          {
+            command.CommandText = @"SELECT * FROM TicketTimelineView WHERE RefID = @RefID AND IsWC = @IsWC";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@RefID", id);
+            command.Parameters.AddWithValue("@IsWC", isWC);
+            Fill(command);
+          }
+        }
     }
 
 }
