@@ -1238,13 +1238,15 @@ function PrependTag(parent, id, value, data, cssclass) {
 }
   
 function SetupProductSection() {
-  top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {debugger
+  top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
+    debugger
+    var $productselect = $('#ticket-Product').selectize();
         if (showOnlyCustomers == "True") {
             top.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
                 for (var i = 0; i < CustomerProducts.length; i++) {
                     AppendSelect('#ticket-Product', CustomerProducts[i], 'product', CustomerProducts[i].ProductID, CustomerProducts[i].Name, (CustomerProducts[i].ProductID === _ticketInfo.Ticket.ProductID));
                 }
-                var $productselect = $('#ticket-Product').selectize();
+                //var $productselect = $('#ticket-Product').selectize();
             });
         }
         else {
@@ -1252,7 +1254,7 @@ function SetupProductSection() {
             for (var i = 0; i < products.length; i++) {
                 AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, (products[i].ProductID === _ticketInfo.Ticket.ProductID));
             }
-            var $productselect = $('#ticket-Product').selectize();
+            //var $productselect = $('#ticket-Product').selectize();
         }
 
         if (_ticketInfo.Ticket.ProductID == null) {
