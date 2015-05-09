@@ -123,10 +123,11 @@
                         var thestart = top.Ts.Utils.getMsDate(parseJsonDate(this.start));
                         var test = thestart.localeFormat();
                         var test2 = new Date(thestart);
+                        var editable;
                         if (this.creatorID == top.Ts.System.User.UserID || top.Ts.System.User.IsSystemAdmin)
-                            var editable = true;
+                            editable = true;
                         else
-                            var editable = false;
+                            editable = false;
                         events.push({
                             title: this.title,
                             start: this.start,
@@ -263,14 +264,14 @@
             if ($('#inputStartTime').data("DateTimePicker"))
                 $('#inputStartTime').data("DateTimePicker").destroy();
             $('#inputStartTime').datetimepicker({ format: dateFormat, pickTime: false });
-            $('#inputStartTime').val(moment($('#inputStartTime').val()).format(dateFormat));
+            $('#inputStartTime').val(moment($('#inputStartTime').val(), dateFormat).format(dateFormat));
 
             //set end time to time only format
             if ($('#inputEndTime').data("DateTimePicker"))
                 $('#inputEndTime').data("DateTimePicker").destroy();
             $('#inputEndTime').datetimepicker({ format: dateFormat, pickTime: false });
-            $('#inputEndTime').val(moment($('#inputStartTime').val()).format(dateFormat));
-            $('#inputEndTime').data("DateTimePicker").setDate($('#inputStartTime').val());
+            $('#inputEndTime').val(moment($('#inputEndTime').val(), dateFormat).format(dateFormat));
+            //$('#inputEndTime').data("DateTimePicker").setDate($('#inputStartTime').val());
 
         } else {
 
@@ -294,10 +295,10 @@
             {
                 //set dates to time only
                 $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
-                $('#inputStartTime').val(moment($('#inputStartTime')).add(moment().hours(), 'hour').format(dateFormat + ' hh:mm a'));
+                $('#inputStartTime').val(moment($('#inputStartTime').val(), dateFormat).add(moment().hours(), 'hour').format(dateFormat + ' hh:mm a'));
 
                 $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a', pickDate: false, minuteStepping: 30 });
-                $('#inputEndTime').val(moment($('#inputEndTime')).add(moment().hours()+1, 'hour').format(dateFormat + ' hh:mm a'));
+                $('#inputEndTime').val(moment($('#inputEndTime').val(), dateFormat).add(moment().hours()+1, 'hour').format(dateFormat + ' hh:mm a'));
             }
                 
 

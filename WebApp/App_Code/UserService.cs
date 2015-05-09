@@ -34,7 +34,6 @@ namespace TSWebServices
             user.InOfficeComment = comment;
             user.Collection.Save();
 
-
             WaterCooler watercooler = new WaterCooler(loginUser);
             WaterCoolerItem item = watercooler.AddNewWaterCoolerItem();
             item.Message = string.Format("<strong>{0} - </strong>{1}", user.FirstLastName, user.InOfficeComment);
@@ -1352,29 +1351,67 @@ namespace TSWebServices
                 startdate = testDate.ToString();
             }
 
+            Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
             ////get all due dates for the current month
             if (pageType == "0" || pageType == "-1")
             {
-                Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
                 tickets.LoadbyUserMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID);
-
-                foreach (Ticket t in tickets)
-                {
-                    CalEvent cal = new CalEvent();
-                    cal.color = "red";
-                    DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)t.DueDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
-                    cal.start = ((DateTime)t.DueDate).ToString("o");
-                    cal.title = t.Name;
-                    cal.type = "ticket";
-                    cal.id = t.TicketNumber;
-                    cal.description = "";
-                    cal.end = null;
-                    cal.allday = false;
-                    cal.references = null;
-                    cal.creatorID = -1;
-                    events.Add(cal);
-                }
             }
+            else if (pageType == "4")
+                tickets.LoadbyGroupMonth(DateTime.Parse(startdate), int.Parse(pageID), TSAuthentication.GetLoginUser().OrganizationID);
+            else if (pageType == "2")
+                tickets.LoadbyCompanyMonth(DateTime.Parse(startdate), int.Parse(pageID), TSAuthentication.GetLoginUser().OrganizationID);
+
+            foreach (Ticket t in tickets)
+            {
+                CalEvent cal = new CalEvent();
+                cal.color = "red";
+                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)t.DueDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
+                cal.start = ((DateTime)t.DueDate).ToString("o");
+                cal.title = t.Name;
+                cal.type = "ticket";
+                cal.id = t.TicketNumber;
+                cal.description = "";
+                cal.end = null;
+                cal.allday = false;
+                    
+                cal.creatorID = -1;
+
+                Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+                organizations.LoadByNotContactTicketID(t.TicketID);
+                User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+
+                if(organizations.Count > 0)
+                {
+                    List<CalendarRefItemProxy> calendarreferences = new List<CalendarRefItemProxy>();
+                    foreach (Organization organization in organizations)
+                    {
+                        CalendarRefItemProxy prox = new CalendarRefItemProxy();
+                        prox.displayName = organization.Name;
+                        prox.RefType = 2;
+                        prox.RefID = organization.OrganizationID;
+
+                        if (user.TicketRights == TicketRightType.Customers)
+                        {
+                            if (CheckUserRights(TSAuthentication.UserID, prox.RefID))
+                            {
+                                prox.displayName = GetDisplayname(prox);
+                                if (prox.displayName != "")
+                                    calendarreferences.Add(prox);
+                            }
+                        }
+                        else
+                            calendarreferences.Add(prox);
+                    }
+                    cal.references = calendarreferences.OrderBy(a => a.displayName).ToArray();
+                }
+                else
+                    cal.references = null;
+
+
+                events.Add(cal);
+            }
+
 
             //get all reminders for this user for the current month
             Reminders reminders = new Reminders(TSAuthentication.GetLoginUser());
@@ -1451,6 +1488,8 @@ namespace TSWebServices
                 cal.allday = c.AllDay;
                 cal.creatorID = c.CreatorID;
 
+                User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+                
                 CalendarRef calRef = new CalendarRef(TSAuthentication.GetLoginUser());
                 calRef.LoadByCalendarID(c.CalendarID);
                 if (calRef.Count > 0)
@@ -1459,9 +1498,23 @@ namespace TSWebServices
                     foreach (CalendarRefItem calitem in calRef)
                     {
                         CalendarRefItemProxy prox = calitem.GetProxy();
-                        prox.displayName =  GetDisplayname(prox);
-                        if(prox.displayName != "")
-                            calendarreferences.Add(prox);
+                        if (user.TicketRights == TicketRightType.Customers && prox.RefType == 2)
+                        {
+                            if (CheckUserRights(TSAuthentication.UserID, prox.RefID))
+                            {
+                                prox.displayName = GetDisplayname(prox);
+                                if (prox.displayName != "")
+                                    calendarreferences.Add(prox);
+                            }
+                        }
+                        else
+                        {
+                            prox.displayName = GetDisplayname(prox);
+                            if (prox.displayName != "")
+                                calendarreferences.Add(prox);
+                        }
+
+
                     }
                     cal.references = calendarreferences.OrderBy(a => a.displayName).ToArray();
                 }
@@ -1471,6 +1524,20 @@ namespace TSWebServices
                 events.Add(cal);                
             }
             return events.ToArray();
+        }
+
+        public bool CheckUserRights(int userID, int companyID)
+        {
+            SqlCommand command = new SqlCommand();
+            command.CommandText = @"
+            SELECT COUNT(*) 
+            FROM UserRightsOrganizations 
+            WHERE UserID = @UserID
+            AND OrganizationID = @OrganizationID
+            ";
+            command.Parameters.AddWithValue("UserID", userID);
+            command.Parameters.AddWithValue("OrganizationID", companyID);
+            return SqlExecutor.ExecuteInt(TSAuthentication.GetLoginUser(), command) > 0;
         }
 
         public string GetDisplayname(CalendarRefItemProxy calproxy)
@@ -1780,13 +1847,18 @@ namespace TSWebServices
                     User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.GetLoginUser().UserID);
 
                     if (eventType == "reminder-ticket")
-                        reminders.LoadByItem(ReferenceType.Tickets, eventID, TSAuthentication.GetLoginUser().UserID);
+                    {
+                        ticket = new Tickets(TSAuthentication.GetLoginUser());
+                        ticket.LoadByTicketNumber(TSAuthentication.GetLoginUser().OrganizationID, eventID);
+                        reminders.LoadByItem(ReferenceType.Tickets, ticket[0].TicketID, TSAuthentication.GetLoginUser().UserID);
+                    }
                     if (eventType == "reminder-org")
                         reminders.LoadByItem(ReferenceType.Organizations, eventID, TSAuthentication.GetLoginUser().UserID);
                     if (eventType == "reminder-user")
                         reminders.LoadByItem(ReferenceType.Contacts, eventID, TSAuthentication.GetLoginUser().UserID);
 
-                    reminders[0].DueDate = newTime;
+                    //reminders[0].DueDateUtc = TimeZoneInfo.ConvertTimeToUtc(newTime);
+                    reminders[0].DueDate = TimeZoneInfo.ConvertTimeToUtc(newTime);
                     reminders[0].Collection.Save();
                     break;
             }
