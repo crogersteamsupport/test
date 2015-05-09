@@ -1041,6 +1041,34 @@ AND ts.IsClosed = 0";
         }
     }
 
+    public void LoadbyCompanyMonth(DateTime date, int companyID, int orgID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * from Tickets WHERE (Month(DueDate) = @month) AND (Year(DueDate) = @year) AND (OrganizationID = @OrgID) AND ((TicketID in (select TicketID from OrganizationTickets where OrganizationID = @companyID)))";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@month", date.Month);
+            command.Parameters.AddWithValue("@year", date.Year);
+            command.Parameters.AddWithValue("@companyID", companyID);
+            command.Parameters.AddWithValue("@OrgID", orgID);
+            Fill(command);
+        }
+    }
+
+    public void LoadbyGroupMonth(DateTime date, int groupID, int orgID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * from Tickets WHERE (Month(DueDate) = @month) AND (Year(DueDate) = @year) AND (GroupID = @groupID) AND (OrganizationID = @OrgID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@month", date.Month);
+            command.Parameters.AddWithValue("@year", date.Year);
+            command.Parameters.AddWithValue("@groupID", groupID);
+            command.Parameters.AddWithValue("@OrgID", orgID);
+            Fill(command);
+        }
+    }
+
     public void LoadAllDueDates(int userID, int orgID)
     {
         using (SqlCommand command = new SqlCommand())
