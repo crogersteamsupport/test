@@ -316,7 +316,7 @@ function CreateNewActionLI() {
 
             var statusID = self.data("statusid");
             top.Ts.Services.Tickets.SetTicketStatus(_ticketID, statusID, function () {
-                $('#ticket-status').val(statusID);
+              SetupStatusField(statusID);
                 top.Ts.System.logAction('Ticket - Status Changed');
                 window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
             });
@@ -661,10 +661,7 @@ function LoadTicketControls() {
         AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
     }
 
-    var statuses = top.Ts.Cache.getNextStatuses(_ticketInfo.Ticket.TicketStatusID);
-    for (var i = 0; i < statuses.length; i++) {
-        AppendSelect('#ticket-status', statuses[i], 'status', statuses[i].TicketStatusID, statuses[i].Name, (_ticketInfo.Ticket.TicketStatusID === statuses[i].TicketStatusID));
-    }
+    SetupStatusField(_ticketInfo.Ticket.TicketStatusID);
 
     $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
 
@@ -811,7 +808,6 @@ function SetupTicketPropertyEvents() {
     });
 
     var selectize = $select[0].selectize;
-    selectize.focus();
 
     $('#ticket-assigned-span').show();
 
@@ -1255,7 +1251,6 @@ function PrependTag(parent, id, value, data, cssclass) {
   
 function SetupProductSection() {
   top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
-    debugger
     var $productselect = $('#ticket-Product').selectize();
         if (showOnlyCustomers == "True") {
             top.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
@@ -2225,8 +2220,7 @@ var SetupDueDateField = function (duedate) {
   var dateLink = $('<a>')
                       .attr('href', '#')
                       .text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                      .addClass('control-label')
-                      .attr('style', 'padding-left: 5px;')
+                      .addClass('control-label ticket-anchor')
                       .appendTo(dateContainer);
 
   dateLink.click(function (e) {
@@ -2265,6 +2259,20 @@ var SetupDueDateField = function (duedate) {
       });
     })
   });
+}
+
+var SetupStatusField = function (StatusId) {
+  var statuses = top.Ts.Cache.getNextStatuses(StatusId);
+  $("#ticket-status").selectize();
+  var selectize = $("#ticket-status")[0].selectize;
+  selectize.clear(true);
+  selectize.clearOptions();
+
+  for (var i = 0; i < statuses.length; i++) {
+    selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name });
+  }
+
+  selectize.addItem(StatusId, true)
 }
 
 var getUrls = function (input) {
@@ -3377,7 +3385,7 @@ function SetupWCArea() {
       for (var i = 0; i < data.files.length; i++) {
         var item = $('<li>')
         .appendTo(wcelement.find('.wc-attachments'));
-        debugger
+
         data.context = item;
         item.data('data', data);
 
@@ -3473,7 +3481,7 @@ var setUserName = function (user, userID) {
   var id = -1;
   $('#ticket-assigned-anchor').remove();
   var anchor = $('<a id="ticket-assigned-anchor">').appendTo($('#ticket-assigned-group'));
-  debugger
+  
   if (isAssigned) {
     var name = (!userID ? user.FirstName + ' ' + user.LastName : user);
     id = (!userID ? user.UserID : userID);
@@ -3483,5 +3491,5 @@ var setUserName = function (user, userID) {
     anchor.text("Unassigned");
   }
 
-  anchor.addClass('UserAnchor').data('userid', id).data('placement', 'left').data('ticketid', _ticketID);
+  anchor.addClass('UserAnchor ticket-anchor').data('userid', id).data('placement', 'left').data('ticketid', _ticketID);
 }
