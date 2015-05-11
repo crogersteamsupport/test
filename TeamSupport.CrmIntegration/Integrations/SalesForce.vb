@@ -661,8 +661,19 @@ Namespace TeamSupport
 
                 Dim Title = "Support Issue: " & thisTicket.Name
                 Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+                '//vv temp logging for Ticket#20811. Logging only for organization FISCAL Technologies (784292) and Fiscal Technology Ltd - Sandbox (871653)
+                If thisTicket.OrganizationID = 784292 OrElse thisTicket.OrganizationID = 871653 Then
+                  Log.Write(String.Format("CreateNote: Ticket Id: {0}", thisTicket.TicketID))
+                  Log.Write(String.Format("Description before htmlstrip: {0}", description.Description))
+                End If
+
                 Dim NoteBody As String = String.Format("A new support ticket has been created for this account entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
                                                     thisTicket.Name, thisTicket.TicketID.ToString(), HtmlUtility.StripHTML(description.Description), Environment.NewLine)
+
+                '//vv temp logging for Ticket#20811. Logging only for organization FISCAL Technologies (784292) and Fiscal Technology Ltd - Sandbox (871653)
+                If thisTicket.OrganizationID = 784292 OrElse thisTicket.OrganizationID = 871653 Then
+                  Log.Write(String.Format("Description after htmlstrip: {0}", HtmlUtility.StripHTML(description.Description)))
+                End If
 
                 Try
 
@@ -1850,7 +1861,18 @@ Namespace TeamSupport
                       If action IsNot Nothing Then
                         description = Actions.GetTicketDescription(User, ticket.TicketID).Description
                         If description IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                          '//vv temp logging for Ticket#20811. Logging only for organization FISCAL Technologies (784292) and Fiscal Technology Ltd - Sandbox (871653)
+                          If ticket.OrganizationID = 784292 OrElse ticket.OrganizationID = 871653 Then
+                            Log.Write(String.Format("GetSalesForceCaseData: Ticket Id: {0}", ticket.TicketID))
+                            Log.Write(String.Format("Description before htmlstrip: {0}", description))
+                          End If
+
                           result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(description))))
+
+                          '//vv temp logging for Ticket#20811. Logging only for organization FISCAL Technologies (784292) and Fiscal Technology Ltd - Sandbox (871653)
+                          If ticket.OrganizationID = 784292 OrElse ticket.OrganizationID = 871653 Then
+                            Log.Write(String.Format("Description after TruncateCaseCommentBody and htmlstrip: {0}", TruncateCaseCommentBody(HtmlUtility.StripHTML(description))))
+                          End If
                         Else
                           logError = True
                         End If
@@ -3364,8 +3386,18 @@ Namespace TeamSupport
                 Dim data As New List(Of XmlElement)
                 data.Add(GetNewXmlElement("Address__c",                       SiteAddressIDValue)) 
                 data.Add(GetNewXmlElement("Service_Complete__c",              CType(ticketToPushAsSalesOrders.DateClosedUtc, DateTime).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")))
-                data.Add(GetNewXmlElement("Issue_No__c",                      ticketToPushAsSalesOrders.TicketNumber.ToString()))
-                data.Add(GetNewXmlElement("PBSI__Comments__c",                HtmlUtility.StripHTML(HtmlUtility.StripHTML(ticketDescription))))
+                data.Add(GetNewXmlElement("Issue_No__c", ticketToPushAsSalesOrders.TicketNumber.ToString()))
+
+                '//vv temp logging for Ticket#20811. Logging only for organization FISCAL Technologies (784292) and Fiscal Technology Ltd - Sandbox (871653)
+                If ticketToPushAsSalesOrders.OrganizationID = 784292 OrElse ticketToPushAsSalesOrders.OrganizationID = 871653 Then
+                  Log.Write(String.Format("(PushGridPointSalesOrders: Ticket Id: {0}", ticketToPushAsSalesOrders.TicketID))
+                  Log.Write(String.Format("Description before htmlstrip: {0}", ticketDescription))
+                End If
+                data.Add(GetNewXmlElement("PBSI__Comments__c", HtmlUtility.StripHTML(HtmlUtility.StripHTML(ticketDescription))))
+                '//vv temp logging for Ticket#20811. Logging only for organization FISCAL Technologies (784292) and Fiscal Technology Ltd - Sandbox (871653)
+                If ticketToPushAsSalesOrders.OrganizationID = 784292 OrElse ticketToPushAsSalesOrders.OrganizationID = 871653 Then
+                  Log.Write(String.Format("Description after two htmlstrip (?): {0}", HtmlUtility.StripHTML(HtmlUtility.StripHTML(ticketDescription))))
+                End If
                 'At the 08/06/2013 meeting got specified that the ticket summary goes to the PBSI__Comments__c field.
                 'data.Add(GetNewXmlElement("Ticket_Summary__c",        ticketDescription))
                 data.Add(GetNewXmlElement("Sales_Order_Type__c",              "paid service"))
