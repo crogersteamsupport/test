@@ -295,8 +295,9 @@ function CreateNewActionLI() {
             top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
               result.Attachments = attachments;
               if (oldActionID === -1) {
-                debugger
-                var test = CreateActionElement(result, false);
+                _actionTotal = _actionTotal + 1;
+                var actionElement = CreateActionElement(result, false);
+                actionElement.find('.ticket-action-number').text(_actionTotal);
               }
               else {
                 UpdateActionElement(result, false);
