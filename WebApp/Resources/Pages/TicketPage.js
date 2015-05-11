@@ -204,7 +204,7 @@ function SetupTicketProperties() {
         $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
         //set the ticket title 
-        $('#ticket-title').text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name));
+        $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name));
       //get total number of actions so we can use it to number each action
         GetActionCount();
       //create timeline now that we have a ticketID
@@ -786,6 +786,37 @@ function AppendSelect(parent, data, type, id, name, isSelected) {
 };
 
 function SetupTicketPropertyEvents() {
+  $('#ticket-title-label').click(function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var self = $(this);
+    self.hide();
+    var parent = self.parent();
+    var input = $('#ticket-title-input');
+
+    var titleInputContainer = $('#ticket-title-input-panel').show();
+    $('#ticket-title-input').val(_ticketInfo.Ticket.Name).focus().select();
+    
+    $('#ticket-title-save').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      titleInputContainer.hide();
+      top.Ts.Services.Tickets.SetTicketName(_ticketID, input.val(), function (result) {
+        _ticketInfo.Ticket.Name = result;
+        top.Ts.System.logAction('Ticket - Renamed');
+        self.text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name)).show();
+
+
+        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeticketname", userFullName);
+      },
+      function (error) {
+        alert('There was an error saving the ticket name.');
+      });
+    });
+
+
+  });
+
   $('#ticket-assigned-group').on('click', '#ticket-assigned-anchor', function (e) {
     e.preventDefault();
     e.stopPropagation();

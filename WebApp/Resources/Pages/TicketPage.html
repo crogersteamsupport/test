@@ -102,8 +102,21 @@
             <div class="results-loading"><i class="fa fa-spinner fa-spin"></i></div>
             <script id="new-action-template" type="text/x-handlebars-template">
               <div id="ticket-title-panel" class="panel panel-default" style="position: relative; z-index: 1; display:table; margin-left:auto; margin-right:auto; margin-bottom:10px;">
-                <p id="ticket-title" class="text-muted text-center" style="margin-bottom: 0px; padding: 5px; font-weight: 500;"></p>
+                <p id="ticket-title-label" class="text-muted text-center" style="margin-bottom: 0px; padding: 5px; font-weight: 500;"></p>
               </div>
+              <div id="ticket-title-input-panel" class="panel panel-default" style="position:relative; z-index: 1; margin-bottom:10px; display:none; ">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="input-group">
+                      <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter name for ticket...">
+                      <span class="input-group-btn">
+                        <button id="ticket-title-save" class="btn btn-primary" type="button">Save</button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
 
               <li class="action-new">
                 <img class="user-avatar pull-left" src="../../../dc/{{OrganizationID}}/useravatar/{{UserID}}/48" />
