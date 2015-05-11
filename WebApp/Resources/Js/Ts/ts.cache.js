@@ -48,8 +48,6 @@
           this.getTimeZones();
           this.getCultures();
           this.getKnowledgeBaseCategories();
-          this.getIsJiraLinkActiveForTicket();
-          this.GetIsJiraLinkActiveForOrganization();
           this.getFontFamilies();
           this.getFontSizes();
       },
