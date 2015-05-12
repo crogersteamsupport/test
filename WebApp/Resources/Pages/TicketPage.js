@@ -628,11 +628,25 @@ function LoadTicketNotes(note) {
 
 function GetActionCount() {
   top.Ts.Services.TicketPage.GetActionCount(_ticketID, function (total) {
-    debugger
         _actionTotal = total;
         _workingActionNumer = total;
     });
 };
+
+function SetupAssignedField() {
+  //TODO:  Need ability to recreate selectize field
+  top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+    for (var i = 0; i < users.length; i++) {
+      AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].ID, users[i].Name, users[i].IsSelected);
+    }
+
+    $('#ticket-assigned').selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      }
+    });
+  });
+}
 
 function LoadTicketControls() {
   if (_ticketInfo.Ticket.IsFlagged) {
@@ -647,9 +661,21 @@ function LoadTicketControls() {
     $('#Ticket-Subscribe').children().addClass('color-green');
   }
 
-  setUserName(_ticketInfo.Ticket.UserName, _ticketInfo.Ticket.UserID);
+  //setUserName(_ticketInfo.Ticket.UserName, _ticketInfo.Ticket.UserID);'
 
-    
+  SetupAssignedField();
+
+  //top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+  //  	for (var i = 0; i < users.length; i++) {
+  //  	  AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].ID, users[i].Name, users[i].IsSelected);
+  //  	}
+
+  //  	$('#ticket-assigned').selectize({
+  //  	  onDropdownClose: function ($dropdown) {
+  //  	    $($dropdown).prev().find('input').blur();
+  //  	  }
+  //  	});
+  //});
 
     top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
         for (var i = 0; i < groups.length; i++) {
@@ -764,17 +790,7 @@ function LoadTicketControls() {
       }
     });
 
-
-    if (_ticketInfo.Ticket.SlaViolationTime === null) {
-        $('#ticket-SLAStatus').find('i').addClass('color-green');
-        $('#ticket-SLANote').text('');
-    }
-    else {
-      $('#ticket-SLAStatus')
-        .find('i')
-        .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
-        $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(top.Ts.Utils.getDateTimePattern()));
-    }
+    setSLAInfo();
     $('#ticket-SLAStatus').data('placement', 'left').data('ticketid', _ticketID);
 
     SetupTicketPropertyEvents();
@@ -836,53 +852,66 @@ function SetupTicketPropertyEvents() {
 
   });
 
-  $('#ticket-assigned-group').on('click', '#ticket-assigned-anchor', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var anchor = $(this);
-    anchor.hide();
+  //$('#ticket-assigned-group').on('click', '#ticket-assigned-anchor', function (e) {
+  //  e.preventDefault();
+  //  e.stopPropagation();
+  //  var anchor = $(this);
+  //  anchor.hide();
     
-    var span = $('#ticket-assigned-span');
-    var $select = $('<select>').appendTo(span);
+  //  var span = $('#ticket-assigned-span');
+  //  var $select = $('<select>').appendTo(span);
     
-    $select.selectize({
-      valueField: 'id',
-      labelField: 'label',
-      searchField: 'label',
-      load: function (query, callback) {
-        top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
-          callback(result);
-        });
+  //  $select.selectize({
+  //    valueField: 'id',
+  //    labelField: 'label',
+  //    searchField: 'label',
+  //    load: function (query, callback) {
+  //      top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
+  //        callback(result);
+  //      });
 
-      },
-      onDropdownClose: function ($dropdown) {
-        $($dropdown).prev().find('input').blur();
-      }
-    });
+  //    },
+  //    onDropdownClose: function ($dropdown) {
+  //      $($dropdown).prev().find('input').blur();
+  //    }
+  //  });
 
-    var selectize = $select[0].selectize;
+  //  var selectize = $select[0].selectize;
 
-    $('#ticket-assigned-span').show();
+  //  $('#ticket-assigned-span').show();
 
-    $select.change(function (e) {
-      span.hide();
-      var thisSelect = $(this);
-      var selectElement = $(this);
-      var value = selectElement.val();
-      anchor.text(value);
-      top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-        selectize.destroy();
-        $select.remove();
-        setUserName(userInfo);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-      },
-    function (error) {
-      alert('There was an error setting the user.');
-    });
+  //  $select.change(function (e) {
+  //    span.hide();
+  //    var thisSelect = $(this);
+  //    var selectElement = $(this);
+  //    var value = selectElement.val();
+  //    anchor.text(value);
+  //    top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+  //      selectize.destroy();
+  //      $select.remove();
+  //      setUserName(userInfo);
+  //      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+  //    },
+  //  function (error) {
+  //    alert('There was an error setting the user.');
+  //  });
 
 
-      anchor.show();
-    });
+  //    anchor.show();
+  //  });
+  //});
+
+  $('#ticket-assigned').change(function (e) {
+    var self = $(this);
+    var value = self.val();
+    top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+      var selectize = self[0].selectize;
+
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+        },
+      function (error) {
+        alert('There was an error setting the user.');
+      });
   });
 
     $('#ticket-group').change(function (e) {
@@ -914,22 +943,18 @@ function SetupTicketPropertyEvents() {
     $('#ticket-type').change(function (e) {
         var self = $(this);
         var value = self.val();
-        top.Ts.Services.Tickets.SetTicketType(_ticketID, value, function (result) {
+        top.Ts.Services.TicketPage.SetTicketType(_ticketID, value, function (result) {
             if (result !== null) {
                 _ticketTypeID = value;
-                //TODO:  This is not working.  IT does not always find the correct status for some reaosn. 
-                var $select = $("#ticket-status").selectize({
-                  onDropdownClose: function ($dropdown) {
-                    $($dropdown).prev().find('input').blur();
-                  }
-                });
-                var selectize = $select[0].selectize;
-                selectize.addOption({ value: result[0].TicketStatusID, text: result[0].Name })
-                selectize.setValue(result[0].TicketStatusID);
+                SetupStatusField(result[0].TicketStatusID);
 
                 $('#ticket-status-label').toggleClass('ticket-closed', result[0].IsClosed);
 
-                AppenCustomValues(result[1])
+                AppenCustomValues(result[1]);
+
+                _ticketInfo.Ticket = result[2];
+                setSLAInfo();
+
                 window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changetype", userFullName);
             }
         },
@@ -2954,13 +2979,9 @@ function CreateTicketToolbarDomEvents() {
     $('#Ticket-Owner').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+        var selectize = $('#ticket-assigned')[0].selectize;
+        selectize.setValue(top.Ts.System.User.UserID);
         top.Ts.System.logAction('Ticket - Take Ownership');
-        top.Ts.Services.Tickets.AssignUser(_ticketID, top.Ts.System.User.UserID, function (userInfo) {
-          setUserName(userInfo);
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-        }, function () {
-            alert('There was an error taking ownwership of this ticket.');
-        });
     });
 
     $('#Ticket-GetUpdate').click(function (e) {
@@ -3589,20 +3610,21 @@ var addUserViewing = function (userID) {
   }
 }
 
-var setUserName = function (user, userID) {
-  var isAssigned = user !== null && user !== "";
-  var id = -1;
-  $('#ticket-assigned-anchor').remove();
-  var anchor = $('<a id="ticket-assigned-anchor">').appendTo($('#ticket-assigned-group'));
-  
-  if (isAssigned) {
-    var name = (!userID ? user.FirstName + ' ' + user.LastName : user);
-    id = (!userID ? user.UserID : userID);
-    anchor.text(name);
+var setSLAInfo = function () {
+  if (_ticketInfo.Ticket.SlaViolationTime === null) {
+    $('#ticket-SLAStatus').find('i').addClass('color-green');
+    $('#ticket-SLANote').text('');
   }
   else {
-    anchor.text("Unassigned");
+    $('#ticket-SLAStatus')
+      .find('i')
+      .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
+    if (_ticketInfo.Ticket.SlaViolationDate !== undefined) {
+      $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(top.Ts.Utils.getDateTimePattern()));
+    }
+    else 
+    {
+      $('#ticket-SLANote').text('');
+    }
   }
-
-  anchor.addClass('UserAnchor ticket-anchor').data('userid', id).data('placement', 'left').data('ticketid', _ticketID);
 }

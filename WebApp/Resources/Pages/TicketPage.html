@@ -362,15 +362,13 @@
         </div>
         <div id="ticket-properties-area" class="ticket-property-section">
 
+
           <script id="ticket-group-AssignedTo" type="text/x-handlebars-template">
             <div class="form-horizontal">
               <div class="form-group form-group-sm">
                 <label for="ticket-assigned" class="col-sm-4 control-label select-label">Assigned</label>
-                <div id="ticket-assigned-group" class="col-sm-8 ticket-input-container" style="padding-top: 4px;">
-                  <a id="ticket-assigned-anchor"  href="#" class="control-label ticket-anchor" style="padding-left: 5px;"></a>
-                  <span id="ticket-assigned-span" style="display:none;">
-                    <!--<select id="ticket-assigned" class="hidden-select"></select>-->
-                  </span>
+                <div class="col-sm-8 ticket-input-container">
+                  <select id="ticket-assigned" class="form-control hidden-select"><option>Unassiged</option></select>
                 </div>
               </div>
             </div>
@@ -429,7 +427,7 @@
                   <label id="ticket-SLAStatus" class="ticket-sla-status pull-left control-label SLAAnchor">
                     <i class="fa fa-bomb"></i>
                   </label>
-                  <label id="ticket-SLANote" class="ticket-sla-status-note pull-left control-label" style="line-height: 20px; padding-top: 3px; padding-left: 0px;"></label>
+                  <label id="ticket-SLANote" class="ticket-sla-status-note pull-left control-label" style="line-height: 20px; padding-top: 3px; padding-left: 0px; color: #333333;"></label>
                 </div>
               </div>
             </div>

@@ -538,6 +538,40 @@ namespace TSWebServices
           return GetWCLineItem(wc);
         }
 
+        [WebMethod]
+        public object[] SetTicketType(int ticketID, int ticketTypeID)
+        {
+          TicketService ts = new TicketService();
+          TransferCustomValues(ticketID, ticketTypeID);
+          Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+          int statusId = ticket.TicketStatusID;
+          if (ticketTypeID == ticket.TicketTypeID) return null;
+          //if (!CanEditTicket(ticket)) return null;
+          TicketType ticketType = TicketTypes.GetTicketType(ticket.Collection.LoginUser, ticketTypeID);
+          if (ticketType.OrganizationID != TSAuthentication.OrganizationID) return null;
+          ticket.TicketTypeID = ticketTypeID;
+
+          TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
+          statuses.LoadAvailableTicketStatuses(ticketTypeID, null);
+          ticket.TicketStatusID = statuses[0].TicketStatusID;
+          TicketStatus newStatus = null;
+          try
+          {
+            TicketStatus currStatus = TicketStatuses.GetTicketStatus(ticket.Collection.LoginUser, statusId);
+            newStatus = statuses.Where(s => s.Name == currStatus.Name).FirstOrDefault();
+            ticket.TicketStatusID = newStatus.TicketStatusID;
+          }
+          catch (Exception)
+          {
+          }
+          ticket.Collection.Save();
+          List<object> result = new List<object>();
+          result.Add((newStatus != null) ? newStatus.GetProxy() : statuses[0].GetProxy());
+          result.Add(ts.GetParentCustomValues(ticketID));
+          result.Add(ticket.GetProxy());
+          return result.ToArray();
+        }
+
         [DataContract]
         public class TicketPageInfo
         {
@@ -611,6 +645,49 @@ namespace TSWebServices
         }
 
         //Private Methods
+
+        private void TransferCustomValues(int ticketID, int ticketTypeID)
+        {
+          TicketService ts = new TicketService();
+          Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+          CustomValueProxy[] oldValues = ts.GetCustomValues(ticketID);
+          DateTime dateValue;
+          CustomValues values = new CustomValues(ticket.Collection.LoginUser);
+          values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticketTypeID, ticketID);
+          CustomValueProxy[] newValues = values.GetCustomValueProxies();
+
+          foreach (CustomValueProxy newCustVal in newValues)
+          {
+            foreach (CustomValueProxy oldCustVal in oldValues)
+            {
+              if (newCustVal.Name == oldCustVal.Name && newCustVal.FieldType == oldCustVal.FieldType)
+              {
+                CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), newCustVal.CustomFieldID, ticketID);
+                if (oldCustVal.Value == null)
+                {
+                  customValue.Value = "";
+                  customValue.Collection.Save();
+                }
+
+                if (customValue.FieldType == CustomFieldType.DateTime || customValue.FieldType == CustomFieldType.Date || customValue.FieldType == CustomFieldType.Time)
+                {
+                  if (oldCustVal.Value != null)
+                  {
+                    if (DateTime.TryParse(oldCustVal.Value.ToString(), out dateValue))
+                      customValue.Value = dateValue.ToString();
+                  }
+                }
+                else
+                {
+                  customValue.Value = oldCustVal.Value.ToString();
+                }
+
+                customValue.Collection.Save();
+              }
+            }
+
+          }
+        }
 
         private string SanitizeMessage(string message)
         {
