@@ -719,8 +719,8 @@
             calendarinfo.ID = -1;
         calendarinfo.title = $('#inputTitle').val();
 
-        calendarinfo.start = convertToValidDate($('#inputStartTime').val());
-        calendarinfo.end = convertToValidDate($('#inputEndTime').val());
+        calendarinfo.start = convertToValidDate($('#inputAllDay').is(':checked') ? $('#inputStartTime').val() + " 12:00 am" : $('#inputStartTime').val());
+        calendarinfo.end = convertToValidDate($('#inputAllDay').is(':checked') ? $('#inputEndTime').val() + " 12:00 am" : $('#inputEndTime').val());
         calendarinfo.description = $('#inputDescription').val();
         calendarinfo.allday = $('#inputAllDay').is(':checked')
         calendarinfo.PageType = pageType;
