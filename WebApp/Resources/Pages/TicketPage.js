@@ -791,7 +791,6 @@ function LoadTicketControls() {
     });
 
     setSLAInfo();
-    $('#ticket-SLAStatus').data('placement', 'left').data('ticketid', _ticketID);
 
     SetupTicketPropertyEvents();
     SetupCustomerSection();
@@ -3611,6 +3610,7 @@ var addUserViewing = function (userID) {
 }
 
 var setSLAInfo = function () {
+  debugger
   if (_ticketInfo.Ticket.SlaViolationTime === null) {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
@@ -3627,4 +3627,5 @@ var setSLAInfo = function () {
       $('#ticket-SLANote').text('');
     }
   }
+  $('#ticket-SLAStatus').data('placement', 'left').data('ticketid', _ticketID);
 }

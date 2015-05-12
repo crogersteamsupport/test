@@ -568,7 +568,8 @@ namespace TSWebServices
           List<object> result = new List<object>();
           result.Add((newStatus != null) ? newStatus.GetProxy() : statuses[0].GetProxy());
           result.Add(ts.GetParentCustomValues(ticketID));
-          result.Add(ticket.GetProxy());
+          TicketsViewItem tv = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticket.TicketNumber);
+          result.Add(tv.GetProxy());
           return result.ToArray();
         }
 
