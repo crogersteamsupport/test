@@ -447,18 +447,18 @@ $(document).ready(function () {
 
             var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
-            top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (MessageID) {
-                newMessageID = MessageID;
+            top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
+              newMessageID = Message.MessageID;
                 if (attcontainer.length > 0) {
                     attcontainer.each(function (i, o) {
                         var data = $(o).data('data');
-                        data.url = '../../../Upload/WaterCooler/' + MessageID;
+                        data.url = '../../../Upload/WaterCooler/' + Message.MessageID;
                         data.jqXHR = data.submit();
                         $(o).data('data', data);
                     });
                 }
                 else {
-                    window.top.chatHubClient.server.newThread(MessageID, top.Ts.System.User.OrganizationID);
+                  window.top.chatHubClient.server.newThread(Message.MessageID, top.Ts.System.User.OrganizationID);
                     $('.commentcontainer').hide();
                     $('.faketextcontainer').show();
                     $('#messagecontents').val('');
@@ -1709,18 +1709,18 @@ function createCommentContainer(messageid) {
 
                 var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
-                top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (MessageID) {
-                    newMessageID = MessageID;
+                top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
+                  newMessageID = Message.MessageID;
                     if (attcontainer.length > 0) {
                         attcontainer.each(function (i, o) {
                             var data = $(o).data('data');
-                            data.url = '../../../Upload/WaterCooler/' + MessageID;
+                            data.url = '../../../Upload/WaterCooler/' + Message.MessageID;
                             data.jqXHR = data.submit();
                             $(o).data('data', data);
                         });
                     }
                     else {
-                        window.top.chatHubClient.server.newThread(MessageID, top.Ts.System.User.OrganizationID);
+                      window.top.chatHubClient.server.newThread(Message.MessageID, top.Ts.System.User.OrganizationID);
 
                         cc.hide();
                         ftc.show();

@@ -214,7 +214,7 @@ namespace TSWebServices
 
 
     [WebMethod]
-    public int NewComment(string data)
+    public WatercoolerMsgItemProxy NewComment(string data)
     {
         WatercoolerJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<WatercoolerJsonInfo>(data);
         WatercoolerMsgItem wc = (new WatercoolerMsg(TSAuthentication.GetLoginUser())).AddNewWatercoolerMsgItem();
@@ -283,7 +283,7 @@ namespace TSWebServices
                 AddAttachment((int)wc.MessageParent, UserID, WaterCoolerAttachmentType.User);
         }
 
-        return wc.MessageID;
+        return wc.GetProxy();
     }
 
     [WebMethod]

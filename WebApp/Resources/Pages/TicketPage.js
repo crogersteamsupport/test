@@ -1736,7 +1736,11 @@ function AddAssociatedTickets(Tickets) {
     $("#ticket-AssociatedTickets-Input").val('');
     for (var i = 0; i < Tickets.length; i++) {
       var related = Tickets[i];
-      var label = ellipseString(related.TicketNumber + ': ' + related.Name, 30);
+      var caption = 'Related';
+      if (related.IsParent !== null) {
+        caption = (related.IsParent === true ? 'Parent' : 'Child');
+      }
+      var label = caption + "<br />" + ellipseString(related.TicketNumber + ': ' + related.Name, 30);
 
       var newelement = PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related, 'tag-item TicketAnchor');
       newelement.data('ticketid', related.TicketID).data('placement', 'left');
