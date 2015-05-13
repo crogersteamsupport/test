@@ -778,6 +778,12 @@ namespace TeamSupport.Services
       try
       {
         OrganizationProducts organizationProducts = new OrganizationProducts(UserSession.LoginUser);
+        organizationProducts.LoadByOrganizationProductID(organizationProductID);
+        UserProducts userProducts = new UserProducts(UserSession.LoginUser);
+        //userProducts.LoadByOrganizationProductAndVersionID(organizationProducts[0].OrganizationID, "hola", "adios");
+        userProducts.LoadByOrganizationProductAndVersionID(organizationProducts[0].OrganizationID, organizationProducts[0].ProductID, organizationProducts[0].ProductVersionID);
+        userProducts.DeleteAll();
+        userProducts.Save();
         organizationProducts.DeleteFromDB(organizationProductID);
       }
       catch (Exception ex)

@@ -112,7 +112,40 @@ namespace TeamSupport.Data
         }
     }
 
-          public OrganizationProduct FindByImportID(string importID)
+    public void LoadByContactProductAndVersionID(int contactID, int productID, int? productVersionID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            string versionClause = "AND op.ProductVersionID IS NULL";
+            if (productVersionID != null)
+            {
+                versionClause = "AND op.ProductVersionID = @ProductVersionID";
+            }
+            command.CommandText = @"
+                SELECT
+                    op.* 
+                FROM 
+                    OrganizationProducts op
+                    JOIN Organizations o
+                        ON op.OrganizationID = o.OrganizationID
+                    JOIN Users c
+                        ON c.OrganizationID = o.OrganizationID
+                WHERE 
+                    c.UserID = @ContactID 
+                    AND op.ProductID = @ProductID
+            " + versionClause;
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ContactID", contactID);
+            command.Parameters.AddWithValue("@ProductID", productID);
+            if (productVersionID != null)
+            {
+                command.Parameters.AddWithValue("@ProductVersionID", (int)productVersionID);
+            }
+            Fill(command);
+        }
+    }
+
+      public OrganizationProduct FindByImportID(string importID)
     {
       foreach (OrganizationProduct organizationProduct in this)
       {

@@ -30,6 +30,7 @@ $(document).ready(function () {
     LoadNotes();
     LoadFiles();
     LoadProductTypes();
+    LoadCustomControls(top.Ts.ReferenceTypes.UserProducts);
     LoadPhoneTypes();
     LoadPhoneNumbers();
     LoadAddresses();
@@ -1048,7 +1049,7 @@ $(document).ready(function () {
         }
     }
 
-    $('.customProperties').on('keydown', '.number', function (event) {
+    $('.customProperties, #customProductsControls').on('keydown', '.number', function (event) {
         // Allow only backspace and delete
         if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 109 || event.keyCode == 173 || (event.keyCode >= 96 && event.keyCode <= 105)) {
             // let it happen, don't do anything
@@ -1410,37 +1411,37 @@ $(document).ready(function () {
         productInfo.SupportExpiration = $("#productExpiration").val();
         productInfo.UserProductID = $('#fieldProductID').val();
 
-        //productInfo.Fields = new Array();
-        //$('.customField:visible').each(function () {
-        //    var field = new Object();
-        //    field.CustomFieldID = $(this).attr("id");
+        productInfo.Fields = new Array();
+        $('.customField:visible').each(function () {
+            var field = new Object();
+            field.CustomFieldID = $(this).attr("id");
 
-        //    if ($(this).hasClass("required") && ($(this).val() === null || $.trim($(this).val()) === '')) {
-        //        $(this).parent().addClass('has-error');
-        //        hasError = 1;
-        //    }
-        //    else {
-        //        $(this).parent().removeClass('has-error');
-        //    }
+            if ($(this).hasClass("required") && ($(this).val() === null || $.trim($(this).val()) === '')) {
+                $(this).parent().addClass('has-error');
+                hasError = 1;
+            }
+            else {
+                $(this).parent().removeClass('has-error');
+            }
 
-        //    switch ($(this).attr("type")) {
-        //        case "checkbox":
-        //            field.Value = $(this).prop('checked');
-        //            break;
-        //            //case "date":
-        //            //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
-        //            //    break;
-        //            //case "time":
-        //            //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
-        //            //    break;
-        //            //case "datetime":
-        //            //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
-        //            //    break;
-        //        default:
-        //            field.Value = $(this).val();
-        //    }
-        //    productInfo.Fields[productInfo.Fields.length] = field;
-        //});
+            switch ($(this).attr("type")) {
+                case "checkbox":
+                    field.Value = $(this).prop('checked');
+                    break;
+                    //case "date":
+                    //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+                    //    break;
+                    //case "time":
+                    //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                    //    break;
+                    //case "datetime":
+                    //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+                    //    break;
+                default:
+                    field.Value = $(this).val();
+            }
+            productInfo.Fields[productInfo.Fields.length] = field;
+        });
 
         if (hasError == 0) {
             top.Ts.Services.Customers.SaveContactProduct(top.JSON.stringify(productInfo), function (prod) {
@@ -1478,20 +1479,20 @@ $(document).ready(function () {
             $('#productExpiration').val(prod.SupportExpiration);
             $('#fieldProductID').val(userProductID);
             $('#btnProductSave').text("Save");
-//            top.Ts.Services.Customers.LoadCustomProductFields(product, function (custField) {
-//                for (var i = 0; i < custField.length; i++) {
-//                    if (custField[i].FieldType == 2)
-//                        $('#' + custField[i].CustomFieldID).attr('checked', custField[i].Value);
-//                        //else if (custField[i].FieldType == 5)
-//                        //{
-//                        //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);
-//                        //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(top.Ts.Utils.getDatePattern()));
-//                        //}
+            top.Ts.Services.Customers.LoadCustomContactProductFields(product, function (custField) {
+                for (var i = 0; i < custField.length; i++) {
+                    if (custField[i].FieldType == 2)
+                        $('#' + custField[i].CustomFieldID).attr('checked', custField[i].Value);
+                        //else if (custField[i].FieldType == 5)
+                        //{
+                        //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+                        //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(top.Ts.Utils.getDatePattern()));
+                        //}
 
-//                    else
-//                        $('#' + custField[i].CustomFieldID).val(custField[i].Value);
-//                }
-//            });
+                    else
+                        $('#' + custField[i].CustomFieldID).val(custField[i].Value);
+                }
+            });
         });
 
         $('#productForm').show();
@@ -1670,33 +1671,33 @@ $(document).ready(function () {
 
     function LoadProducts() {
 
-        //if (!_productHeadersAdded) {
-        //    top.Ts.Services.Customers.LoadcustomProductHeaders(function (headers) {
-        //        for (var i = 0; i < headers.length; i++) {
-        //            $('#tblProducts th:last').after('<th>' + headers[i] + '</th>');
-        //        }
-        //        _productHeadersAdded = true;
-        //        if (headers.length > 5) {
-        //            $('#productsContainer').addClass('expandProductsContainer');
-        //        }
-        //    });
-        //}
+        if (!_productHeadersAdded) {
+          top.Ts.Services.Customers.LoadcustomContactProductHeaders(function (headers) {
+                for (var i = 0; i < headers.length; i++) {
+                    $('#tblProducts th:last').after('<th>' + headers[i] + '</th>');
+                }
+                _productHeadersAdded = true;
+                if (headers.length > 5) {
+                    $('#productsContainer').addClass('expandProductsContainer');
+                }
+            });
+        }
 
         $('#tblProducts tbody').empty();
         top.Ts.Services.Customers.LoadContactProducts(userID, _productsSortColumn, _productsSortDirection, function (product) {
             for (var i = 0; i < product.length; i++) {
-//                var customfields = "";
-//                for (var p = 0; p < product[i].CustomFields.length; p++) {
-//                    customfields = customfields + "<td>" + product[i].CustomFields[p] + "</td>";
-//                }
+                var customfields = "";
+                for (var p = 0; p < product[i].CustomFields.length; p++) {
+                    customfields = customfields + "<td>" + product[i].CustomFields[p] + "</td>";
+                }
 
                 var html;
 
                 if (top.Ts.System.User.CanEditCompany || _isAdmin) {
-                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>';
+                  html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
                 else {
-                    html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>';
+                  html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
                 var tr = $('<tr>')
                 .attr('id', product[i].UserProductID)
@@ -1714,6 +1715,16 @@ $(document).ready(function () {
             }
         });
 
+    }
+
+    function LoadCustomControls(refType) {
+      top.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
+        $('#customProductsControls').append(html);
+
+        $('#customProductsControls .datepicker').datetimepicker({ pickTime: false });
+        $('#customProductsControls .datetimepicker').datetimepicker({});
+        $('#customProductsControls .timepicker ').datetimepicker({ pickDate: false });
+      });
     }
 
     function LoadInventory() {

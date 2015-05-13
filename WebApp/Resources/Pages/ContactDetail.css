@@ -103,3 +103,7 @@
 }
 
 .list-group { padding-top: 15px; }
+
+.expandProductsContainer {
+    width: auto;
+}

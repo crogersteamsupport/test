@@ -596,6 +596,58 @@ $(document).ready(function () {
         $('#customerEdit').addClass("disabled");
     });
 
+    $('#fieldParentCompany').click(function (e) {
+      e.preventDefault();
+      if (!$(this).hasClass('editable'))
+        return false;
+      var header = $(this).hide();
+      top.Ts.System.logAction('Customer Detail - Edit Parent Company');
+      var container = $('<div>')
+        .insertAfter(header);
+
+      var container1 = $('<div>')
+          .addClass('col-xs-9')
+        .appendTo(container);
+
+      var select = $('<select>').addClass('form-control').attr('id', 'ddlParentCompany').appendTo(container1);
+      top.Ts.Services.Customers.LoadOrgUsers(organizationID, function (contacts) {
+        $('<option>').attr('value', '-1').text('Unassigned').appendTo(select);
+        for (var i = 0; i < contacts.length; i++) {
+          var opt = $('<option>').attr('value', contacts[i].UserID).text(contacts[i].FirstName + " " + contacts[i].LastName).data('o', contacts[i]);
+          if (header.data('field') == contacts[i].UserID)
+            opt.attr('selected', 'selected');
+          opt.appendTo(select);
+        }
+      });
+
+
+      $('<i>')
+        .addClass('col-xs-1 fa fa-times')
+        .click(function (e) {
+          $(this).closest('div').remove();
+          header.show();
+          $('#customerEdit').removeClass("disabled");
+        })
+        .insertAfter(container1);
+      $('#ddlPrimaryContact').on('change', function () {
+        var value = $(this).val();
+        var name = this.options[this.selectedIndex].innerHTML;
+        container.remove();
+        top.Ts.System.logAction('Customer Detail - Save Primary Contact Edit');
+        top.Ts.Services.Customers.SetCompanyPrimaryContact(organizationID, value, function (result) {
+          header.data('field', result);
+          header.text(name);
+          header.show();
+          $('#customerEdit').removeClass("disabled");
+        }, function () {
+          alert("There was a problem saving your company property.");
+          $('#customerEdit').removeClass("disabled");
+        });
+      });
+      $('#customerEdit').addClass("disabled");
+    });
+
+
     $('#fieldDefaultUser').click(function (e) {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
@@ -1195,7 +1247,7 @@ $(document).ready(function () {
 
     $('#tblProducts').on('click', '.productDelete', function (e) {
         e.preventDefault();
-        if (confirm('Are you sure you would like to remove this product association?')) {
+        if (confirm('All contact associations with this product and version will also be deleted. Are you sure you would like to remove this product association?')) {
             top.Ts.System.logAction('Customer Detail - Delete Product');
             top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
                 LoadProducts();

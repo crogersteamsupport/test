@@ -44,6 +44,7 @@ AdminCustomFields = function () {
 
       if (top.Ts.System.Organization.ProductType != top.Ts.ProductType.HelpDesk) {
         $('<option>').text('Customer Product').attr('value', 8).appendTo(select);
+        $('<option>').text('Contact Product').attr('value', 46).appendTo(select);
       }
       $('<option>').text('Customer Contact').attr('value', 32).appendTo(select);
     }

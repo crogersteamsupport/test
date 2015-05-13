@@ -49,6 +49,39 @@ namespace TeamSupport.Data
               Fill(command);
           }
       }
+
+      public void LoadByOrganizationProductAndVersionID(int organizationID, int productID, int? productVersionID)
+      {
+          using (SqlCommand command = new SqlCommand())
+          {
+              string versionClause = "AND up.ProductVersionID IS NULL";
+              if (productVersionID != null)
+              {
+                  versionClause = "AND up.ProductVersionID = @ProductVersionID";
+              }
+              command.CommandText = @"
+                SELECT
+                    up.* 
+                FROM 
+                    UserProducts up
+                    JOIN Users c
+                        ON up.UserID = c.UserID
+                    JOIN Organizations o
+                        ON c.OrganizationID = o.OrganizationID
+                WHERE 
+                    o.OrganizationID = @OrganizationID 
+                    AND up.ProductID = @ProductID
+                " + versionClause;
+              command.CommandType = CommandType.Text;
+              command.Parameters.AddWithValue("@OrganizationID", organizationID);
+              command.Parameters.AddWithValue("@ProductID", productID);
+              if (productVersionID != null)
+              {
+                  command.Parameters.AddWithValue("@ProductVersionID", (int)productVersionID);
+              }
+              Fill(command);
+          }
+      }
   }
   
 }
