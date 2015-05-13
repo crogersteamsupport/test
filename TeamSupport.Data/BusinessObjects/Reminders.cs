@@ -29,7 +29,20 @@ namespace TeamSupport.Data
     {
         string additional = "";
         string userStr = "(UserID = @UserID)";
-        if (Type != "-1")
+
+        if (Type == "9")
+        {
+            additional = "and (refid in (select TicketID from OrganizationTickets where OrganizationID = @id) and RefType = 17) or (RefType = @type and RefID = @ID)";
+            userStr = "1=1";
+        }
+
+        if (Type == "4")
+        {
+            additional = "and (refid in (select TicketID from Tickets where GroupID = @id) and RefType = 17)";
+            userStr = "1=1";
+        }
+
+        if (Type == "0")
         {
             additional = "AND (Reftype = @type) AND (RefID = @id)";
             userStr = "1=1";
