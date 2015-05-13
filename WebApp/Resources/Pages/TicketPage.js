@@ -786,8 +786,8 @@ function LoadTicketControls() {
         }
     }
     else {
-        $('#ticket-Community').remove();
-        $('#ticket-Community-RO').remove();
+      $('#ticket-Community').closest('.form-horizontal').remove();
+        //$('#ticket-Community-RO').remove();
     }
     
     $('.ticket-select').selectize({
