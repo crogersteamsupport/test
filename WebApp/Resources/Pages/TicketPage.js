@@ -1343,7 +1343,7 @@ function SetupProductSection() {
   top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
     if (showOnlyCustomers == "True") {
       top.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
-        loadProductList(CustomerProducts);
+        LoadProductList(CustomerProducts);
       });
     }
     else {
@@ -2934,7 +2934,7 @@ function CreateTimeLineDelegates() {
 
           //var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
           //TODO:  Getting strange error
-            top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {debugger
+            top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
                 var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
                 var html = _compiledWCReplyTemplate(Message);
                 self.closest('li').find('.timeline-wc-responses').append(html);
@@ -3624,7 +3624,6 @@ var addUserViewing = function (userID) {
 }
 
 var setSLAInfo = function () {
-  debugger
   if (_ticketInfo.Ticket.SlaViolationTime === null) {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
