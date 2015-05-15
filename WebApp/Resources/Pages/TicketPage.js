@@ -173,8 +173,6 @@ function SetupTicketProperties() {
     _ticketCreator.UserID = info.Ticket.CreatorID;
     _ticketCreator.Name = info.Ticket.CreatorName;
     _productFamilyID = info.Ticket.ProductFamilyID;
-    //create timeline now that we have a ticketID
-    FetchTimeLineItems(0);
 
     top.Ts.System.logAction('View Ticket');
 
@@ -209,7 +207,8 @@ function SetupTicketProperties() {
     $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name));
     //get total number of actions so we can use it to number each action
     GetActionCount();
-
+    //create timeline now that we have a ticketID
+    FetchTimeLineItems(0);
 
     //action timers
     SetupActionTimers();
