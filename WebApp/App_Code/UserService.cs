@@ -1378,7 +1378,7 @@ namespace TSWebServices
                 cal.creatorID = -1;
 
                 Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
-                organizations.LoadByNotContactTicketID(t.TicketID);
+                organizations.LoadBTicketID(t.TicketID);
                 User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 
                 if(organizations.Count > 0)

@@ -2073,6 +2073,21 @@ SELECT * FROM Organizations o WHERE OrganizationID IN (SELECT ID FROM  @TIndex)"
       }
     }
 
+    public void LoadBTicketID(int ticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText =
+    @"SELECT o.* FROM Organizations o 
+LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID 
+WHERE ot.TicketID = @TicketID 
+ORDER BY o.Name";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@TicketID", ticketID);
+            Fill(command, "Organizations,OrganizationTickets");
+        }
+    }
+
     /// <summary>
     /// Loads ONLY the organizations associated with a ticket, but not already associated with a specific contact
     /// </summary>
