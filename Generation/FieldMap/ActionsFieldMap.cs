@@ -34,6 +34,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("JiraID", "JiraID", false, false, false);
       _fieldMap.AddMap("Pinned", "Pinned", false, false, false);
       _fieldMap.AddMap("Description", "Description", false, false, false);
+      _fieldMap.AddMap("IsClean", "IsClean", false, false, false);
             
     }
   }

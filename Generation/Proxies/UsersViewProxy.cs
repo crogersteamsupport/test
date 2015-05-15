@@ -43,6 +43,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsOnline { get; set; }
     [DataMember] public string CryptedPassword { get; set; }
     [DataMember] public bool IsChatUser { get; set; }
+    [DataMember] public bool PortalLimitOrgTickets { get; set; }
           
   }
   
@@ -51,6 +52,7 @@ namespace TeamSupport.Data
     public UsersViewItemProxy GetProxy()
     {
       UsersViewItemProxy result = new UsersViewItemProxy();
+      result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;
       result.IsChatUser = this.IsChatUser;
       result.CryptedPassword = this.CryptedPassword;
       result.IsOnline = this.IsOnline;

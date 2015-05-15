@@ -43,6 +43,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsOnline", "IsOnline", false, false, false);
       _fieldMap.AddMap("CryptedPassword", "CryptedPassword", false, false, false);
       _fieldMap.AddMap("IsChatUser", "IsChatUser", false, false, false);
+      _fieldMap.AddMap("PortalLimitOrgTickets", "PortalLimitOrgTickets", false, false, false);
             
     }
   }

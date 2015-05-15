@@ -47,6 +47,7 @@ namespace TeamSupport.Data
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public int CustDisIndex { get; set; }
     [DataMember] public int? CustDistIndexTrend { get; set; }
+    [DataMember] public string PhoneNumbers { get; set; }
           
   }
   
@@ -55,6 +56,7 @@ namespace TeamSupport.Data
     public OrganizationsViewItemProxy GetProxy()
     {
       OrganizationsViewItemProxy result = new OrganizationsViewItemProxy();
+      result.PhoneNumbers = this.PhoneNumbers;
       result.CustDistIndexTrend = this.CustDistIndexTrend;
       result.CustDisIndex = this.CustDisIndex;
       result.NeedsIndexing = this.NeedsIndexing;

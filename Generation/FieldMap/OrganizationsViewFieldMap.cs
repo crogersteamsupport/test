@@ -47,6 +47,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
       _fieldMap.AddMap("CustDisIndex", "CustDisIndex", false, false, false);
       _fieldMap.AddMap("CustDistIndexTrend", "CustDistIndexTrend", false, false, false);
+      _fieldMap.AddMap("PhoneNumbers", "PhoneNumbers", false, false, false);
             
     }
   }

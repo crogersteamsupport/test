@@ -34,6 +34,7 @@ namespace TeamSupport.Data
     [DataMember] public int? JiraID { get; set; }
     [DataMember] public bool Pinned { get; set; }
     [DataMember] public string Description { get; set; }
+    [DataMember] public bool IsClean { get; set; }
           
   }
   
@@ -42,6 +43,7 @@ namespace TeamSupport.Data
     public ActionProxy GetProxy()
     {
       ActionProxy result = new ActionProxy();
+      result.IsClean = this.IsClean;
       result.Description = this.Description;
       result.Pinned = this.Pinned;
       result.JiraID = this.JiraID;
