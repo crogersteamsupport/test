@@ -121,7 +121,7 @@ function SetupTicketPage() {
     CreateNewActionLI();
 
     top.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
-        jQuery.each(order, function (i, val) { AddTicketProperty(val); });
+        jQuery.each(order, function (i, val) { if(val.Disabled == "false") AddTicketProperty(val); });
         SetupTicketProperties();
     });
 
@@ -173,6 +173,8 @@ function SetupTicketProperties() {
     _ticketCreator.UserID = info.Ticket.CreatorID;
     _ticketCreator.Name = info.Ticket.CreatorName;
     _productFamilyID = info.Ticket.ProductFamilyID;
+    //create timeline now that we have a ticketID
+    FetchTimeLineItems(0);
 
     top.Ts.System.logAction('View Ticket');
 
@@ -207,8 +209,7 @@ function SetupTicketProperties() {
     $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name));
     //get total number of actions so we can use it to number each action
     GetActionCount();
-    //create timeline now that we have a ticketID
-    FetchTimeLineItems(0);
+
 
     //action timers
     SetupActionTimers();
@@ -780,9 +781,10 @@ function LoadTicketControls() {
             });
         }
         else {
+            $('#ticket-CommunityInfo-RO').show();
             $('#ticket-Community-RO').text((_ticketInfo.Ticket.CategoryName == null ? 'Unassigned' : _ticketInfo.Ticket.CategoryDisplayString));
             $('#ticket-Community-RO').show();
-            $('#ticket-Community').remove();
+            $('#ticket-Community').closest('.form-horizontal').remove();
         }
     }
     else {
