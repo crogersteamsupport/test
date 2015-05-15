@@ -40,6 +40,14 @@ namespace TeamSupport.ServiceLibrary
         {
           orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive ?? 30, daysSinceLastRebuild ?? 14);
           result = orgs.IsEmpty ? null : orgs[0];
+          if (result != null)
+          {
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "UPDATE Organizations SET IsRebuildingIndex = 1 WHERE OrganizationID = @OrganizationID";
+            command.Parameters.AddWithValue("OrganizationID", result.OrganizationID);
+            SqlExecutor.ExecuteNonQuery(loginUser, command);
+
+          }
         }
       }
 

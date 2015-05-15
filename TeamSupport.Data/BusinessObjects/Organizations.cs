@@ -2050,21 +2050,13 @@ ORDER BY DateLastIndexed";
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText =
-@"DECLARE @TIndex TABLE (ID int);
-UPDATE Organizations
-SET IsRebuildingIndex = 1
-OUTPUT inserted.OrganizationID
-INTO @TIndex
-WHERE OrganizationID IN (
-  SELECT TOP 1 OrganizationID FROM Organizations o  
+@"  SELECT * FROM Organizations o  
     WHERE o.ParentID = 1 
     AND o.IsActive = 1
     AND o.IsRebuildingIndex=0
-    AND DATEDIFF(day, o.LastIndexRebuilt, GETUTCDATE()) > @DaysOld
-    AND ISNULL((SELECT MAX(u.LastActivity) FROM Users u WHERE u.OrganizationID = o.OrganizationID),'1999-01-01 00:00:00.000') < DATEADD(minute, @LastActive, GETUTCDATE())
-    ORDER BY o.LastIndexRebuilt ASC
-)
-SELECT * FROM Organizations o WHERE OrganizationID IN (SELECT ID FROM  @TIndex)";
+    AND DATEDIFF(day, o.LastIndexRebuilt, GETUTCDATE()) > -14
+    AND ISNULL((SELECT MAX(u.LastActivity) FROM Users u WHERE u.OrganizationID = o.OrganizationID),'1999-01-01 00:00:00.000') < DATEADD(minute, 30, GETUTCDATE())
+    ORDER BY o.LastIndexRebuilt ASC";
 
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@DaysOld", daysSinceLastRebuild);
