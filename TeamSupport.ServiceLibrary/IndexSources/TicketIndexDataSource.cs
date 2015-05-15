@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 using TeamSupport.Data;
 
@@ -32,7 +33,24 @@ namespace TeamSupport.ServiceLibrary
 
         try
         {
+          if (!action.IsClean)
+          {
+            try
+            {
+              actionText = HtmlUtility.Sanitize(actionText);
+              SqlCommand command = new SqlCommand();
+              command.CommandText = "UPDATE Actions SET Description = @Description, ModifierID=-5, IsClean=1 WHERE ActionID=@ActionID";
+              command.Parameters.AddWithValue("ActionID", action.ActionID);
+              command.Parameters.AddWithValue("Description", actionText);
+              SqlExecutor.ExecuteNonQuery(_loginUser, command);
+            }
+            catch (Exception)
+            {
+              
+            }
+          }
           actionText = HtmlToText.ConvertHtml(actionText);
+  
         }
         catch (Exception)
         {
