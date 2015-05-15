@@ -968,29 +968,29 @@ function SetupTicketPropertyEvents() {
         });
     });
 
-    $('#ticket-status').change(function (e) {
-        var self = $(this);
-        var value = self.val();
-        var status = top.Ts.Cache.getTicketStatus(value);
-        isFormValidToClose(status.IsClosed, function (isValid) {
-            if (isValid == true) {
-                top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
-                    if (result !== null) {
-                        top.Ts.System.logAction('Ticket - Status Changed');
-                        $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
-                        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
-                    }
-                },
-                function (error) {
-                    alert('There was an error setting your ticket status.');
-                });
-            }
-            else {
-                alert("Please fill in the required fields before closing the ticket.");
-                return;
-            }
-        });
-    });
+    //$('#ticket-status').change(function (e) {
+    //    var self = $(this);
+    //    var value = self.val();
+    //    var status = top.Ts.Cache.getTicketStatus(value);
+    //    isFormValidToClose(status.IsClosed, function (isValid) {
+    //        if (isValid == true) {
+    //            top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
+    //                if (result !== null) {
+    //                    top.Ts.System.logAction('Ticket - Status Changed');
+    //                    $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
+    //                    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
+    //                }
+    //            },
+    //            function (error) {
+    //                alert('There was an error setting your ticket status.');
+    //            });
+    //        }
+    //        else {
+    //            alert("Please fill in the required fields before closing the ticket.");
+    //            return;
+    //        }
+    //    });
+    //});
 
     $('#ticket-severity').change(function (e) {
         var self = $(this);
@@ -2411,14 +2411,45 @@ var SetupStatusField = function (StatusId) {
   $("#ticket-status").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    onChange: function(value) {
+      var status = top.Ts.Cache.getTicketStatus(value);
+      isFormValidToClose(status.IsClosed, function (isValid) {
+        if (isValid == true) {
+          top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
+            if (result !== null) {
+              top.Ts.System.logAction('Ticket - Status Changed');
+              $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
+            }
+          },
+          function (error) {
+            alert('There was an error setting your ticket status.');
+          });
+        }
+        else {
+          alert("Please fill in the required fields before closing the ticket.");
+          return;
+        }
+      });
+    },
+    render: {
+      item: function (item, escape) {
+        if (item.data.IsClosed) {
+          return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option"><s>' + escape(item.text) + '</s></div>';
+        }
+        else {
+          return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option">' + escape(item.text) + '</div>';
+        }
+      }
+    },
   });
   var selectize = $("#ticket-status")[0].selectize;
   selectize.clear(true);
   selectize.clearOptions();
 
   for (var i = 0; i < statuses.length; i++) {
-    selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name });
+    selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
   }
 
   selectize.addItem(StatusId, true)
@@ -2536,73 +2567,78 @@ function UpdateActionElement(val) {
 };
 
 function CreateHandleBarHelpers() {
-    Handlebars.registerHelper('FormatDateTime', function (Date) {
-        return Date.localeFormat(top.Ts.Utils.getDateTimePattern())
-    });
+  Handlebars.registerHelper('UserImageTag', function () {
+    if (this.item.CreatorID !== -1) return '<img class="user-avatar pull-left" src="../../../dc/' + this.item.OrganizationID + '/useravatar/' + this.item.CreatorID + '/48" />';
+    return '';
+  });
 
-    Handlebars.registerHelper('TimeLineLabel', function () {
-        if (this.item.IsVisibleOnPortal) {
-            return '<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>';
-        }
-        else if (!this.item.IsWC) {
-            return '<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>';
-        }
-        else if (this.item.IsWC) {
-            return '<div class="bgcolor-blue"><span class="bgcolor-blue">&nbsp;</span><label>WC</label></div>';
-        }
+  Handlebars.registerHelper('FormatDateTime', function (Date) {
+    return Date.localeFormat(top.Ts.Utils.getDateTimePattern())
+  });
 
-        return '';
-    });
+  Handlebars.registerHelper('TimeLineLabel', function () {
+    if (this.item.IsVisibleOnPortal) {
+      return '<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>';
+    }
+    else if (!this.item.IsWC) {
+      return '<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>';
+    }
+    else if (this.item.IsWC) {
+      return '<div class="bgcolor-blue"><span class="bgcolor-blue">&nbsp;</span><label>WC</label></div>';
+    }
 
-    Handlebars.registerHelper('ActionData', function () {
-        return JSON.stringify(this.item);
-    });
+    return '';
+  });
 
-    Handlebars.registerHelper('TagData', function () {
-        return JSON.stringify(this.data);
-    });
+  Handlebars.registerHelper('ActionData', function () {
+    return JSON.stringify(this.item);
+  });
 
-    Handlebars.registerHelper('ActionNumber', function () {
-        _workingActionNumer = _workingActionNumer - 1;
-        return _workingActionNumer + 1;
-    });
+  Handlebars.registerHelper('TagData', function () {
+    return JSON.stringify(this.data);
+  });
 
-    Handlebars.registerHelper('CanPin', function (options) {
-        if (top.Ts.System.User.UserCanPinAction || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
-    });
+  Handlebars.registerHelper('ActionNumber', function () {
+    _workingActionNumer = _workingActionNumer - 1;
+    return _workingActionNumer + 1;
+  });
 
-    Handlebars.registerHelper('CanEdit', function (options) {
-        var action = this.item;
-        var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === action.CreatorID;
-        var restrictedFromEditingAnyActions = !top.Ts.System.User.IsSystemAdmin && top.Ts.System.User.RestrictUserFromEditingAnyActions;
+  Handlebars.registerHelper('CanPin', function (options) {
+    if (top.Ts.System.User.UserCanPinAction || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
+  });
 
-        if (!(!top.Ts.System.User.AllowUserToEditAnyAction && (!canEdit || restrictedFromEditingAnyActions))) { return options.fn(this); }
-    });
+  Handlebars.registerHelper('CanEdit', function (options) {
+    var action = this.item;
+    var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === action.CreatorID;
+    var restrictedFromEditingAnyActions = !top.Ts.System.User.IsSystemAdmin && top.Ts.System.User.RestrictUserFromEditingAnyActions;
 
-    Handlebars.registerHelper('CanKB', function (options) {
-        if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
-    });
+    if (!(!top.Ts.System.User.AllowUserToEditAnyAction && (!canEdit || restrictedFromEditingAnyActions))) { return options.fn(this); }
+  });
 
-    Handlebars.registerHelper('CanMakeVisible', function (options) {
-        if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
-    });
+  Handlebars.registerHelper('CanKB', function (options) {
+    if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
+  });
 
-    Handlebars.registerHelper('TimeSpent', function () {
-      var hours = Math.floor(this.item.TimeSpent / 60);
-      var mins = Math.floor(this.item.TimeSpent % 60);
-      var timeSpentString = "";
-      if (hours > 0) timeSpentString = hours + ((hours > 1) ? " hours " : " hour ");
-      if (mins > 0) timeSpentString += mins + ((mins > 1) ? " minutes " : " minute ");
+  Handlebars.registerHelper('CanMakeVisible', function (options) {
+    if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
+  });
 
-      return timeSpentString;
-    });
+  Handlebars.registerHelper('TimeSpent', function () {
+    var hours = Math.floor(this.item.TimeSpent / 60);
+    var mins = Math.floor(this.item.TimeSpent % 60);
+    var timeSpentString = "";
+    if (hours > 0) timeSpentString = hours + ((hours > 1) ? " hours " : " hour ");
+    if (mins > 0) timeSpentString += mins + ((mins > 1) ? " minutes " : " minute ");
 
-    
-    Handlebars.registerHelper('WCLikes', function () {
-        if (this.Likes > 0) {
-            return "+" + this.Likes;
-        }
-    });
+    return timeSpentString;
+  });
+
+
+  Handlebars.registerHelper('WCLikes', function () {
+    if (this.Likes > 0) {
+      return "+" + this.Likes;
+    }
+  });
 };
 
 function CreateTimeLineDelegates() {
