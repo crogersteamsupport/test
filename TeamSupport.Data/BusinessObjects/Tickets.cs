@@ -103,7 +103,10 @@ AND ot.TicketID = @TicketID
 
     public static bool UserHasProductFamilyRights(User user, int ticketID)
     {
-        SqlCommand command = new SqlCommand();
+      using (SqlConnection connection = new SqlConnection(user.Collection.LoginUser.ConnectionString))
+      {
+        connection.Open();
+        SqlCommand command = connection.CreateCommand();
         command.CommandText = @"
             SELECT
                 COUNT(*) 
@@ -127,7 +130,10 @@ AND ot.TicketID = @TicketID
         ";
         command.Parameters.AddWithValue("UserID", user.UserID);
         command.Parameters.AddWithValue("TicketID", ticketID);
-        return SqlExecutor.ExecuteInt(user.Collection.LoginUser, command) > 0;
+        int result = (int)command.ExecuteScalar();
+        connection.Close();
+        return result > 0;
+      }
     }
 
     public void FullReadFromXml(string data, bool isInsert, ref string description, ref int? contactID)
