@@ -46,14 +46,14 @@ namespace TeamSupport.ServiceLibrary
             }
             catch (Exception)
             {
-              
+              _logs.WriteEvent("Unable to sanitize action: " + action.ActionID);
             }
           }
           actionText = HtmlToText.ConvertHtml(actionText);
-  
         }
         catch (Exception)
         {
+          _logs.WriteEvent("Unable to convert action html: " + action.ActionID);
         }
 
         actionsBuilder.AppendLine(actionText);
