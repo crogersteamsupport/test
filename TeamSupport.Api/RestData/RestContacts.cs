@@ -190,33 +190,10 @@ namespace TeamSupport.Api
       Organization organization = Organizations.GetOrganization(command.LoginUser, user.OrganizationID);
       if (organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
-      user.ReadFromXml(command.Data, false, true);
+      user.ReadFromXml(command.Data, false);
       if (user.CryptedPassword != oldUser.CryptedPassword) 
         user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(user.CryptedPassword, "MD5");
-
-      //Let's follow the same reflexes as the UI (..\webapp\app_code\customerservice.cs SetContactCompany())
-      Tickets t = new Tickets(command.LoginUser);
-      t.LoadByContact(id);
-
-      foreach (Ticket tix in t)
-      {
-        tix.Collection.RemoveContact(id, tix.TicketID);
-      }
-
-      user.PortalAutoReg = false;
-
-      EmailPosts ep = new EmailPosts(command.LoginUser);
-      ep.LoadByRecentUserID(id);
-      ep.DeleteAll();
-      ep.Save();
-
       user.Collection.Save();
-
-      foreach (Ticket tix in t)
-      {
-        tix.Collection.AddContact(id, tix.TicketID);
-      }
-
       user.UpdateCustomFieldsFromXml(command.Data);
       return ContactsView.GetContactsViewItem(command.LoginUser, user.UserID).GetXml("Contact", true);
     }

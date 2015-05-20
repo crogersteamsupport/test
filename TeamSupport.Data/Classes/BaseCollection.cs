@@ -219,7 +219,7 @@ namespace TeamSupport.Data
 
     }
     
-    public void ReadFromXml(string data, bool isInsert, bool isFromAPI = false)
+    public void ReadFromXml(string data, bool isInsert)
     {
       StringReader reader = new StringReader(data);
       DataSet dataSet = new DataSet();
@@ -236,8 +236,7 @@ namespace TeamSupport.Data
           }
           else
           {
-            bool allowOrganizationUpdateFromAPI = isFromAPI && item.PublicName == "OrganizationID";
-            if (!item.Update && !allowOrganizationUpdateFromAPI) continue;
+            if (!item.Update) continue;
           }
           
           string columnName = column.ColumnName.ToLower();
