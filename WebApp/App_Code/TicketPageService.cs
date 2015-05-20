@@ -17,6 +17,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using System.Diagnostics;
 
 namespace TSWebServices
 {
@@ -204,7 +205,7 @@ namespace TSWebServices
 
                     TimeLineItem timeLineItem = new TimeLineItem();
                     timeLineItem.item = viewItem.GetProxy();
-                    timeLineItem.item.Message = SanitizeMessage(timeLineItem.item.Message);
+                    timeLineItem.item.Message = SanitizeMessage(timeLineItem.item.Message, loginUser);
                     timeLineItem.Attachments = attachments.GetAttachmentProxies();
 
                     timeLineItems.Add(timeLineItem);
@@ -245,7 +246,6 @@ namespace TSWebServices
                     timeLineItems.Add(wcItem);
                 }
             }
-
             return timeLineItems.ToArray();
         }
 
@@ -693,10 +693,29 @@ namespace TSWebServices
           }
         }
 
-        private string SanitizeMessage(string message)
+        private string CleanMessage(string message,  LoginUser loginUser)
         {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            return HtmlUtility.TagHtml(loginUser, HtmlUtility.Sanitize(HtmlUtility.CheckScreenR(loginUser, message)));
+          return HtmlUtility.TagHtml(loginUser, HTMLSanitizeMessage(HtmlUtility.CheckScreenR(loginUser, message)));
+        }
+
+        private string HTMLSanitizeMessage(string message)
+        {
+          return HtmlUtility.Sanitize(message);
+        }
+
+        private string SanitizeMessage(string message, LoginUser loginUser)
+        {
+          return TagMessage(AddScreenrToMessage(message, loginUser), loginUser);
+        }
+
+        private string TagMessage(string message, LoginUser loginUser)
+        {
+          return HtmlUtility.TagHtml(loginUser, message);
+        }
+
+        private string AddScreenrToMessage(string message, LoginUser loginUser)
+        {
+          return HtmlUtility.CheckScreenR(loginUser, message);
         }
 
         private bool CanEditAction(TeamSupport.Data.Action action)
@@ -752,7 +771,7 @@ namespace TSWebServices
                 RefID = action.ActionID,
                 IsWC = false,
                 MessageType = action.ActionTypeName,
-                Message = SanitizeMessage(action.Description),
+                Message = SanitizeMessage(action.Description, loginUser),
                 DateCreated = action.DateCreated,
                 OrganizationID = TSAuthentication.OrganizationID,
                 CreatorID = action.CreatorID,
