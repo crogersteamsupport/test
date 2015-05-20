@@ -17,6 +17,15 @@
   }
 }
 
+    .ts-loading {
+      background-color: transparent;
+      background-image: url('../images/loading/loading2.gif');
+      background-repeat: no-repeat;
+      background-position: 50% 25%;
+      height: 100%;
+      min-height: 200px;
+    }
+
 /* Sidebar navigation */
 .wiki-sidebar {
   margin-right: -21px;
