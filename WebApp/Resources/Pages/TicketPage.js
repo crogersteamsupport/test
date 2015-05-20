@@ -2366,7 +2366,7 @@ var SetupDueDateField = function (duedate) {
   var dateLink = $('<a>')
                       .attr('href', '#')
                       .text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                      .addClass('control-label ticket-anchor')
+                      .addClass('control-label ticket-anchor ticket-nullable-link')
                       .appendTo(dateContainer);
 
   dateLink.click(function (e) {

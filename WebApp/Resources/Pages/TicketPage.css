@@ -492,6 +492,14 @@
     
 /*    Right Hand Ticket Options*/
 
+    .ticket-nullable-link {
+      padding-top: 0px !important;
+      margin-top: 0px !important;
+      display: -moz-inline-box;
+      display: inline-block;
+      min-width: 100px;
+    }
+
     .ticket-content-wrapper {
         float: left;
         width: 100%;
