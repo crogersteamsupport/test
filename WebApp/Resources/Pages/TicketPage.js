@@ -221,6 +221,11 @@ function SetupTicketProperties() {
     top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
       LoadTicketNotes(note);
     });
+    
+    if (typeof refresh === "undefined") {
+      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+    }
+
     $('.page-loading').hide().next().show();
   });
 };
@@ -3642,7 +3647,7 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
 };
 
 var addUserViewing = function (userID) {
-  $('.ticket-now-viewing').show();
+  $('#ticket-now-viewing').show();
   if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
     top.Ts.Services.Users.GetUser(userID, function (user) {
       var fullName = user.FirstName + " " + user.LastName;
@@ -3659,6 +3664,23 @@ var addUserViewing = function (userID) {
     });
   }
 }
+
+var removeUserViewing = function (ticketNum, userID) {
+  if (ticketNum != _ticketNumber) {
+    var usersViewing = $('.ticket-viewer');
+    for (i = 0; i < usersViewing.length; i++) {
+      var ChatUserID = usersViewing.data('ChatID');
+      if (ChatUserID == userID) {
+        usersViewing[i].remove();
+      }
+    }
+
+    if ($('.ticket-viewer').length < 1) {
+      $('#ticket-now-viewing').hide();
+    }
+  }
+}
+
 
 var setSLAInfo = function () {
   if (_ticketInfo.Ticket.SlaViolationTime === null) {
