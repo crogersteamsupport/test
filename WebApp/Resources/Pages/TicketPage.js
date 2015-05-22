@@ -116,6 +116,64 @@ $(document).ready(function () {
     SetupWCArea();
 });
 
+var loadTicket = function (ticketNumber, refresh) {
+  top.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+    _ticketInfo = info;
+    _ticketID = info.Ticket.TicketID;
+    top.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
+      if (result !== null) {
+        _ticketSender = new Object();
+        _ticketSender.UserID = result.UserID;
+        _ticketSender.Name = result.FirstName + ' ' + result.LastName;
+      }
+    });
+    _ticketCreator = new Object();
+    _ticketCreator.UserID = info.Ticket.CreatorID;
+    _ticketCreator.Name = info.Ticket.CreatorName;
+    _productFamilyID = info.Ticket.ProductFamilyID;
+    _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
+
+    $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name));
+
+    top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
+      LoadTicketNotes(note);
+    });
+
+    
+    $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
+    $('#ticket-visible').attr("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
+    $('#ticket-isKB').attr("checked", _ticketInfo.Ticket.IsKnowledgeBase);
+    $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
+    SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
+    SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
+
+    //TODO:Need to test more
+    SetDueDate(_ticketInfo.Ticket.DueDate);
+
+    //TODO:  Need to set product 
+
+    AssignUser(_ticketInfo.Ticket.UserID);
+    SetGroup(_ticketInfo.Ticket.GroupID);
+    SetType(_ticketInfo.Ticket.TicketTypeID);
+    SetStatus(_ticketInfo.Ticket.TicketStatusID);
+    SetSeverity(_ticketInfo.Ticket.TicketSeverityID);
+
+
+
+    setSLAInfo();
+    AddCustomers(_ticketInfo.Customers);
+    AddAssociatedTickets(_ticketInfo.Related);
+    AddTags(_ticketInfo.Tags);
+    AppenCustomValues(_ticketInfo.CustomValues);
+    AddSubscribers(_ticketInfo.Subscribers);
+    AddQueues(_ticketInfo.Queuers);
+    AddReminders(_ticketInfo.Reminders);
+    AddInventory(_ticketInfo.Assets);
+    LoadTicketHistory();
+
+  });
+};
+
 function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
@@ -672,21 +730,7 @@ function LoadTicketControls() {
     $('#Ticket-Subscribe').children().addClass('color-green');
   }
 
-  //setUserName(_ticketInfo.Ticket.UserName, _ticketInfo.Ticket.UserID);'
-
   SetupAssignedField();
-
-  //top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-  //  	for (var i = 0; i < users.length; i++) {
-  //  	  AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].ID, users[i].Name, users[i].IsSelected);
-  //  	}
-
-  //  	$('#ticket-assigned').selectize({
-  //  	  onDropdownClose: function ($dropdown) {
-  //  	    $($dropdown).prev().find('input').blur();
-  //  	  }
-  //  	});
-  //});
 
     top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
         for (var i = 0; i < groups.length; i++) {
@@ -859,58 +903,7 @@ function SetupTicketPropertyEvents() {
         alert('There was an error saving the ticket name.');
       });
     });
-
-
   });
-
-  //$('#ticket-assigned-group').on('click', '#ticket-assigned-anchor', function (e) {
-  //  e.preventDefault();
-  //  e.stopPropagation();
-  //  var anchor = $(this);
-  //  anchor.hide();
-    
-  //  var span = $('#ticket-assigned-span');
-  //  var $select = $('<select>').appendTo(span);
-    
-  //  $select.selectize({
-  //    valueField: 'id',
-  //    labelField: 'label',
-  //    searchField: 'label',
-  //    load: function (query, callback) {
-  //      top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
-  //        callback(result);
-  //      });
-
-  //    },
-  //    onDropdownClose: function ($dropdown) {
-  //      $($dropdown).prev().find('input').blur();
-  //    }
-  //  });
-
-  //  var selectize = $select[0].selectize;
-
-  //  $('#ticket-assigned-span').show();
-
-  //  $select.change(function (e) {
-  //    span.hide();
-  //    var thisSelect = $(this);
-  //    var selectElement = $(this);
-  //    var value = selectElement.val();
-  //    anchor.text(value);
-  //    top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-  //      selectize.destroy();
-  //      $select.remove();
-  //      setUserName(userInfo);
-  //      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-  //    },
-  //  function (error) {
-  //    alert('There was an error setting the user.');
-  //  });
-
-
-  //    anchor.show();
-  //  });
-  //});
 
   $('#ticket-assigned').change(function (e) {
     var self = $(this);
@@ -974,38 +967,13 @@ function SetupTicketPropertyEvents() {
         });
     });
 
-    //$('#ticket-status').change(function (e) {
-    //    var self = $(this);
-    //    var value = self.val();
-    //    var status = top.Ts.Cache.getTicketStatus(value);
-    //    isFormValidToClose(status.IsClosed, function (isValid) {
-    //        if (isValid == true) {
-    //            top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
-    //                if (result !== null) {
-    //                    top.Ts.System.logAction('Ticket - Status Changed');
-    //                    $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
-    //                    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
-    //                }
-    //            },
-    //            function (error) {
-    //                alert('There was an error setting your ticket status.');
-    //            });
-    //        }
-    //        else {
-    //            alert("Please fill in the required fields before closing the ticket.");
-    //            return;
-    //        }
-    //    });
-    //});
-
     $('#ticket-severity').change(function (e) {
         var self = $(this);
         var value = self.val();
         top.Ts.Services.Tickets.SetTicketSeverity(_ticketID, value, function (result) {
           if (result !== null) {
-            //self.closest('.ticket-input-container').addClass('hasSaved');
-                window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName);
-            }
+            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName);
+          }
         },
         function (error) {
             alert('There was an error setting your ticket severity.');
@@ -1820,7 +1788,7 @@ function SetupRemindersSection() {
 
     });
 }
-
+//TODO:  not working for some reaosn
 function AddReminders(reminders) {
     var remindersDiv = $("#ticket-reminder-span");
     remindersDiv.empty();
@@ -1859,6 +1827,11 @@ function AppenCustomValues(fields) {
         }
     }
     appendCategorizedCustomValues(fields);
+}
+
+var AssignUser = function(UserID){
+  var selectize = $('#ticket-assigned')[0].selectize;
+  selectize.setValue(UserID);
 }
 
 var appendCategorizedCustomValues = function (fields) {
@@ -2371,7 +2344,7 @@ var SetupDueDateField = function (duedate) {
   var dateLink = $('<a>')
                       .attr('href', '#')
                       .text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                      .addClass('control-label ticket-anchor ticket-nullable-link')
+                      .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
                       .appendTo(dateContainer);
 
   dateLink.click(function (e) {
@@ -2410,7 +2383,7 @@ var SetupDueDateField = function (duedate) {
       });
     })
   });
-}
+};
 
 var SetupStatusField = function (StatusId) {
   var statuses = top.Ts.Cache.getNextStatuses(StatusId);
@@ -2458,7 +2431,7 @@ var SetupStatusField = function (StatusId) {
     selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
   }
 
-  selectize.addItem(StatusId, true)
+  selectize.addItem(StatusId, true);
 }
 
 var getUrls = function (input) {
@@ -3034,8 +3007,7 @@ function CreateTicketToolbarDomEvents() {
     $('#Ticket-Owner').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        var selectize = $('#ticket-assigned')[0].selectize;
-        selectize.setValue(top.Ts.System.User.UserID);
+        AssignUser(top.Ts.System.User.UserID);
         top.Ts.System.logAction('Ticket - Take Ownership');
     });
 
@@ -3681,8 +3653,8 @@ var removeUserViewing = function (ticketNum, userID) {
   }
 }
 
-
 var setSLAInfo = function () {
+  $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
   if (_ticketInfo.Ticket.SlaViolationTime === null) {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
@@ -3701,3 +3673,70 @@ var setSLAInfo = function () {
   }
   $('#ticket-SLAStatus').data('placement', 'left').data('ticketid', _ticketID);
 }
+
+var SetKBCategory = function (KnowledgeBaseCategoryID) {
+  var selectField = $('#ticket-KB-Category');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-KB-Category')[0].selectize;
+    selectize.setValue(KnowledgeBaseCategoryID);
+  }
+  else {
+    $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
+  }
+}
+
+var SetCommunityCategory = function (ForumCategory) {
+  var selectField = $('#ticket-Community');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-Community')[0].selectize;
+    selectize.setValue(ForumCategory);
+  }
+  else {
+    $('#ticket-Community-RO').text((_ticketInfo.Ticket.CategoryName == null ? 'Unassigned' : _ticketInfo.Ticket.CategoryDisplayString));
+  }
+}
+
+var SetDueDate = function (duedate) {
+  $('.ticket-duedate-anchor').text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())));
+};
+
+var SetGroup = function (GroupID) {
+  var selectField = $('#ticket-group');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-group')[0].selectize;
+    selectize.setValue(GroupID);
+  }
+}
+
+var SetStatus = function (StatusID) {
+  var selectField = $('#ticket-status');
+  if (selectField.length > 0) {
+    var statuses = top.Ts.Cache.getNextStatuses(StatusID);
+    var selectize = selectField[0].selectize;
+    selectize.clear(true);
+    selectize.clearOptions();
+
+    for (var i = 0; i < statuses.length; i++) {
+      selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+    }
+
+    selectize.addItem(StatusID, true);
+
+  }
+};
+
+var SetType = function (TypeID) {
+  var selectField = $('#ticket-type');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-type')[0].selectize;
+    selectize.setValue(TypeID);
+  }
+};
+
+var SetSeverity = function (SeverityID) {
+  var selectField = $('#ticket-severity');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-severity')[0].selectize;
+    selectize.setValue(SeverityID);
+  }
+};
