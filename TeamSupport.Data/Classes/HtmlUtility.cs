@@ -218,11 +218,12 @@ namespace TeamSupport.Data
         }
 
         public static string StripHTML(string Content) {
-            // While researching Ticket #20811 realized further Regex.Replace break in multiple lines. This added to temporarily remove break lines.
+            // While researching Ticket #20811 realized further Regex.Replace break in multiple lines. This added to temporarily remove break lines, and carriage returns.
             Content = Regex.Replace(Content, @"\n", "TeamSupportNewLine");
+            Content = Regex.Replace(Content, @"\r", "TeamSupportNewLine");
             
             // Added to remove <style> tag and its contect based on http://forums.asp.net/t/1901224.aspx?Remove+Head+tag+from+HTML+
-            Content = Regex.Replace(Content, "<style>(.|\n)*?</style>", string.Empty);
+            Content = Regex.Replace(Content, "<style(.|\n)*?</style>", string.Empty);
             Content = Regex.Replace(Content, "<w:WordDocument>(.|\n)*?</w:WordDocument>", string.Empty);
             
             Content = Regex.Replace(Content, "<.*?>", string.Empty);
