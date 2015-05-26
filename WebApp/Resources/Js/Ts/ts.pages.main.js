@@ -891,7 +891,8 @@ Ts.Pages.Main.prototype = {
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', 'vcr/1_9_0/Pages/NewTicket.html' + query);
+                      //.attr('src', 'vcr/1_9_0/Pages/NewTicket.html' + query);
+                      .attr('src', (top.Ts.System.User.IsClassicView) ? 'vcr/1_9_0/Pages/CreateTicketPage.html' + query : 'vcr/1_9_0/Pages/NewTicket.html' + query);
                         //.attr('src', 'frames/newticket.aspx' + query);
                     } else {
                         div.show();

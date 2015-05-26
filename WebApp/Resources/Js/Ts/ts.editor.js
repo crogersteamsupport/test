@@ -1,4 +1,4 @@
-﻿var initEditor = function (element, shouldResize, init) {
+﻿var initEditor = function (element, shouldResize, init, postinit) {
     top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
         var resizePluginCode = '';
         if (shouldResize)
@@ -50,7 +50,10 @@
                             ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSize + 1);
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize + 1);
                         }
+
+                        postinit();
                     });
+                    
                 });
 
                 ed.on('paste', function (ed, e) {
