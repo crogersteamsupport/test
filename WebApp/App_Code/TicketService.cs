@@ -2788,7 +2788,8 @@ WHERE t.TicketID = @TicketID
       if (actionInfo.Action.Description != null)
       {
           actionInfo.Action.Description = actionInfo.Action.Description + "&nbsp;";
-        actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.Sanitize(HtmlUtility.CheckScreenR(loginUser, actionInfo.Action.Description)));
+        //actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.Sanitize(HtmlUtility.CheckScreenR(loginUser, actionInfo.Action.Description)));
+        actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.CheckScreenR(loginUser, actionInfo.Action.Description));
       }
 
       UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);

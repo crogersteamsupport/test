@@ -75,7 +75,7 @@ namespace TeamSupport.ServiceLibrary
           if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
           Logs.WriteEventFormat("SMTP: Host: {0}, Port: {1}, User: {2}", client.Host, client.Port.ToString(), username);
           client.Timeout = 500000;
-          client.EnableSsl = true;
+          //client.EnableSsl = true; does not work on socket labs
           email.Attempts = email.Attempts + 1;
           email.Collection.Save();
           Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
