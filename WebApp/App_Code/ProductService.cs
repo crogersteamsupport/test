@@ -33,7 +33,7 @@ namespace TSWebServices
     [WebMethod]
     public ProductVersionsViewItemProxy GetVersion(int versionID)
     {
-      ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItem(TSAuthentication.GetLoginUser(), versionID);
+      ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItemByUserRights(TSAuthentication.GetLoginUser(), versionID);
       if (version == null || version.OrganizationID != TSAuthentication.OrganizationID) return null;
       return version.GetProxy();
     }

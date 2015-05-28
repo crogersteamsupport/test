@@ -438,17 +438,7 @@ namespace TeamSupport.Data
             command.CommandText = @"
                 SET NOCOUNT OFF; 
                 SELECT 
-                    p.[ProductID]
-                    , p.[OrganizationID]
-                    , p.[Name]
-                    , p.[Description]
-                    , p.[ImportID]
-                    , p.[DateCreated]
-                    , p.[DateModified]
-                    , p.[CreatorID]
-                    , p.[ModifierID]
-                    , p.[NeedsIndexing]
-                    , p.[ProductFamilyID] 
+                    p.* 
                 FROM 
                     [dbo].[Products] p
                     JOIN Organizations o

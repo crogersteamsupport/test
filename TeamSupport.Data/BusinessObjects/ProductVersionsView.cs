@@ -210,23 +210,7 @@ namespace TeamSupport.Data
             command.CommandText = @"
                 SET NOCOUNT OFF; 
                 SELECT
-                    pvv.[ProductVersionID]
-                    , pvv.[ProductID]
-                    , pvv.[ProductVersionStatusID]
-                    , pvv.[VersionNumber]
-                    , pvv.[ReleaseDate]
-                    , pvv.[IsReleased]
-                    , pvv.[Description]
-                    , pvv.[ImportID]
-                    , pvv.[DateCreated]
-                    , pvv.[DateModified]
-                    , pvv.[CreatorID]
-                    , pvv.[ModifierID]
-                    , pvv.[NeedsIndexing]
-                    , pvv.[VersionStatus]
-                    , pvv.[ProductName]
-                    , pvv.[OrganizationID]
-                    , pvv.[ProductFamilyID]
+                    pvv.*
                 FROM 
                     [dbo].[ProductVersionsView] pvv
                     JOIN Products p
