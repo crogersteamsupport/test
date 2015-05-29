@@ -457,6 +457,7 @@ namespace TeamSupport.Data
         case "ticketgridview": result = ReferenceType.Tickets; break;
         case "ticketsview": result = ReferenceType.Tickets; break;
         case "usersview": result = ReferenceType.Users; break;
+        case "assetsview": result = ReferenceType.Assets; break;
 
         default: result = ReferenceType.None;
           break;
