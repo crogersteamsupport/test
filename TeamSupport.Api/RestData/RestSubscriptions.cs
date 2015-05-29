@@ -18,6 +18,9 @@ namespace TeamSupport.Api
 
       if (ticket == null || ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
+      UsersViewItem subscribingUser = UsersView.GetUsersViewItem(command.LoginUser, userId);
+      if (subscribingUser == null || subscribingUser.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+
       Subscriptions.AddSubscription(command.LoginUser, userId, ReferenceType.Tickets, ticket.TicketID);
 
       return ticket.GetXml("Ticket", true);
