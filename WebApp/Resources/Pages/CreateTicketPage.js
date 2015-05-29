@@ -177,8 +177,41 @@ function SetupTicketProperties() {
   SetupAssociatedTicketsSection();
 
   //TODO:  Custom Fields
-  //SetupCustomFieldsSection();
   //AppenCustomValues();
+};
+
+function SaveTicket(_doClose) {
+  isFormValid(function (isValid) {
+    if (isValid == false) {
+    }
+  });
+};
+
+function isFormValid(callback) {
+  top.Ts.Services.Organizations.IsProductRequired(function (isProductRequired) {
+    top.Ts.Services.Organizations.IsProductVersionRequired(function (isProductVersionRequired) {
+      top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {debugger
+        var result = true;
+        var product = $('#ticket-Product');
+        var reportversion = $('#ticket-Versions');
+        var productID = product.val();
+        var reportversionID = reportversion.val();
+
+        if (isProductRequired && (productID == -1 || productID == ""))
+        {
+          product.closest('.form-group').addClass('hasError');
+          return false;
+        }
+
+        if (isProductVersionRequired && (reportversionID == -1 || reportversionID == "")) {
+          reportversion.closest('.form-group').addClass('hasError');
+          return false;
+        }
+
+        callback(result);
+      });
+    });
+  });
 };
 
 function SetupDescriptionEditor() {
@@ -230,10 +263,6 @@ function SetupActionTypeSelect() {
       }
     });
   });
-};
-
-function SaveTicket(_doClose) {
-
 };
 
 function AppendSelect(parent, data, type, id, name, isSelected) {
@@ -556,7 +585,7 @@ function SetupProductSection() {
       var self = $(this);
       var product = top.Ts.Cache.getProduct(self.val());
       loadVersions(product);
-      AppenCustomValues();
+      //AppenCustomValues();
       top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
         if (IsRequired)
           $('#ticket-Product').closest('.form-group').addClass('hasError');
@@ -613,15 +642,16 @@ function loadVersions(product) {
 
 function SetupProductVersionsControl(product) {
   var $select = $("#ticket-Versions").selectize({
-    onDropdownClose: function ($dropdown) {
+    onItemAdd: function (value, $item) {
+      var reportversion = $('#ticket-Versions');
+      reportversion.closest('.form-group').removeClass('hasError');
+    },
+    onDropdownClose: function ($dropdown) {alert('dropdown')
       $($dropdown).prev().find('input').blur();
     }
   });
   var versionInput = $select[0].selectize;
 
-  if (versionInput) {
-    versionInput.destroy();
-  }
 
   var $select = $("#ticket-Resolved").selectize({
     onDropdownClose: function ($dropdown) {
@@ -630,9 +660,6 @@ function SetupProductVersionsControl(product) {
   });
   var resolvedInput = $select[0].selectize;
 
-  if (resolvedInput) {
-    resolvedInput.destroy();
-  }
 
   if (product !== null && product.Versions.length > 0) {
     var versions = product.Versions;
@@ -640,17 +667,14 @@ function SetupProductVersionsControl(product) {
       AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
       AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
     }
-    $('#ticket-Versions').selectize({
-      onDropdownClose: function ($dropdown) {
-        $($dropdown).prev().find('input').blur();
-      }
-    });
-    $('#ticket-Resolved').selectize({
-      onDropdownClose: function ($dropdown) {
-        $($dropdown).prev().find('input').blur();
-      }
-    });
   }
+
+  top.Ts.Services.Organizations.IsProductVersionRequired(function (result) {
+    if (result)
+      $('#ticket-Versions').closest('.form-group').addClass('hasError');
+    else
+      $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+  });
 }
 
 function SetProductVersionAndResolved(versionId, resolvedId) {
@@ -659,28 +683,12 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
       $($dropdown).prev().find('input').blur();
     }
   });
-  var versionInput = $select[0].selectize;
-
-  if (versionId !== null) {
-    versionInput.setValue(versionId);
-  }
-  else {
-    versionInput.clear();
-  }
 
   var $select = $("#ticket-Resolved").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     }
   });
-  var resolvedInput = $select[0].selectize;
-
-  if (resolvedId !== null) {
-    resolvedInput.setValue(resolvedId);
-  }
-  else {
-    resolvedInput.clear();
-  }
 };
 
 function SetupInventorySection() {
