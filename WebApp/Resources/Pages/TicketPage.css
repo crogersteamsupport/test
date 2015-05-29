@@ -528,6 +528,7 @@
         -webkit-box-shadow: -2px 2px 4px rgba(0,0,0,.15);
         box-shadow: -2px 2px 4px rgba(0,0,0,.15);
         background-color:white;
+        margin-bottom: 10px;
     }
 
     #ticket-properties-area > .form-group {

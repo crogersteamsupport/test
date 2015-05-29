@@ -705,7 +705,8 @@ namespace TSWebServices
 
         private string SanitizeMessage(string message, LoginUser loginUser)
         {
-          return TagMessage(AddScreenrToMessage(message, loginUser), loginUser);
+          //return TagMessage(AddScreenrToMessage(message, loginUser), loginUser)
+          return AddScreenrToMessage(message, loginUser);
         }
 
         private string TagMessage(string message, LoginUser loginUser)

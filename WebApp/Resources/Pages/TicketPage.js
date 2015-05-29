@@ -1112,6 +1112,9 @@ function SetupCustomerSection() {
             },
             option: function (item, escape) {
                 return '<div data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" class="option">' + item.label + '</div>';
+            },
+            option_create: function (data, escape) {
+              return '<div class="create">Create <strong>' + escape(data.input) + '</strong></div>';
             }
         },
         onDropdownClose: function ($dropdown) {
@@ -1788,7 +1791,7 @@ function SetupRemindersSection() {
 
     });
 }
-//TODO:  not working for some reaosn
+
 function AddReminders(reminders) {
     var remindersDiv = $("#ticket-reminder-span");
     remindersDiv.empty();

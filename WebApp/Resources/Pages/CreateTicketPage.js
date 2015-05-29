@@ -122,6 +122,7 @@ function SetupTicketProperties() {
   for (var i = 0; i < types.length; i++) {
     AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name);
   }
+  
   $('#ticket-type').selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
@@ -169,8 +170,15 @@ function SetupTicketProperties() {
   //Subscribers Section
   SetupSubscribedUsersSection();
 
-  //Custom Fields
-  SetupCustomFieldsSection();
+  //Reminders
+  SetupRemindersSection();
+
+  //Associate Tickets
+  SetupAssociatedTicketsSection();
+
+  //TODO:  Custom Fields
+  //SetupCustomFieldsSection();
+  //AppenCustomValues();
 };
 
 function SetupDescriptionEditor() {
@@ -413,9 +421,7 @@ function SetupCustomerSection() {
       'sticky_placeholder': {}
     },
     onItemAdd: function (value, $item) {
-      var customerData = $item.data();
-      //customerData object not what we need.  Need more info to load label tag.
-      AddCustomers(customerData);
+      AddCustomers($item.data());
       this.removeItem(value, true);
     },
     render: {
@@ -424,6 +430,9 @@ function SetupCustomerSection() {
       },
       option: function (item, escape) {
         return '<div data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" class="option">' + item.label + '</div>';
+      },
+      option_create: function (data, escape) {
+        return '<div class="create">Create <strong>' + escape(data.input) + '</strong></div>';
       }
     },
     onDropdownClose: function ($dropdown) {
@@ -442,15 +451,19 @@ function SetupCustomerSection() {
     var companyName = $('#customer-company-input').val();
     top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
       if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
-        //TODO:  Need to add customer
-        AddCustomers(result);
+        var customerData = new Object();
+        customerData.type = result.substring(0, 1);
+        customerData.value = result.substring(1);
+        AddCustomers(customerData)
       }
       else if (result.indexOf("The company you have specified is invalid") !== -1) {
         if (top.Ts.System.User.CanCreateCompany || top.Ts.System.User.IsSystemAdmin) {
           if (confirm('Unknown company, would you like to create it?')) {
             top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
-              //TODO:  Need to add customer
-              AddCustomers(result);
+              var customerData = new Object();
+              customerData.type = result.substring(0, 1);
+              customerData.value = result.substring(1);
+              AddCustomers(customerData)
                 $('.ticket-new-customer-email').val('');
                 $('.ticket-new-customer-first').val('');
                 $('.ticket-new-customer-last').val('');
@@ -481,40 +494,43 @@ function SetupCustomerSection() {
   });
 };
 
-function AddCustomers(customer) {
-  if (customer == null) return;
-  top.Ts.System.logAction('New Ticket - Customer Added');
-  var customerDiv = $("#ticket-Customer");
-  //customerDiv.empty();
-  $("#ticket-Customers-Input").val('');
-  var label = "";
+function AddCustomers(customerdata) {
+  top.Ts.Services.Tickets.GetTicketCustomer(customerdata.type, customerdata.value, function (result) {
+    var customer = result;
+    if (customer == null) return;
+    top.Ts.System.logAction('New Ticket - Customer Added');
+    var customerDiv = $("#ticket-Customer");
+    //customerDiv.empty();
+    $("#ticket-Customers-Input").val('');
+    var label = "";
 
-  if (customer.Contact !== null && customer.Company !== null) {
-    label = customer.Contact + '<br/>' + customer.Company;
-  }
-  else if (customer.Contact !== null) {
-    label = customer.Contact;
-  }
-  else if (customer.Company !== null) {
-    label = customer.Company;
-  }
+    if (customer.Contact !== null && customer.Company !== null) {
+      label = customer.Contact + '<br/>' + customer.Company;
+    }
+    else if (customer.Contact !== null) {
+      label = customer.Contact;
+    }
+    else if (customer.Company !== null) {
+      label = customer.Company;
+    }
 
-  var cssClasses = "tag-item";
+    var cssClasses = "tag-item";
 
-  if (customer.Flag) {
-    cssClasses = cssClasses + " tag-error"
-  }
+    if (customer.Flag) {
+      cssClasses = cssClasses + " tag-error"
+    }
 
-  if (customer.UserID !== null) {
-    cssClasses = cssClasses + ' UserAnchor';
-    var newelement = PrependTag(customerDiv, customer.UserID, label, customer, cssClasses);
-    newelement.data('userid', customer.UserID).data('placement', 'left').data('ticketid', 0);
-  }
-  else {
-    cssClasses = cssClasses + ' OrgAnchor';
-    var newelement = PrependTag(customerDiv, customer.OrganizationID, label, customer, cssClasses);
-    newelement.data('orgid', customer.OrganizationID).data('placement', 'left').data('ticketid', 0);
-  }
+    if (customer.UserID !== null) {
+      cssClasses = cssClasses + ' UserAnchor';
+      var newelement = PrependTag(customerDiv, customer.UserID, label, customer, cssClasses);
+      newelement.data('userid', customer.UserID).data('placement', 'left').data('ticketid', 0);
+    }
+    else {
+      cssClasses = cssClasses + ' OrgAnchor';
+      var newelement = PrependTag(customerDiv, customer.OrganizationID, label, customer, cssClasses);
+      newelement.data('orgid', customer.OrganizationID).data('placement', 'left').data('ticketid', 0);
+    }
+  });
 };
 
 function SetupProductSection() {
@@ -529,10 +545,6 @@ function SetupProductSection() {
       LoadProductList(products);
     }
 
-    top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
-
-    });
-
     top.Ts.Services.Organizations.IsProductRequired(function (result) {
       if (result)
         $('#ticket-Product').closest('.form-group').addClass('hasError');
@@ -540,12 +552,11 @@ function SetupProductSection() {
         $('#ticket-Product').closest('.form-group').removeClass('hasError');
     });
 
-    $('#ticket-Product').change(function (e) {debugger
+    $('#ticket-Product').change(function (e) {
       var self = $(this);
       var product = top.Ts.Cache.getProduct(self.val());
-      SetupProductVersionsControl(product);
-      SetProductVersionAndResolved(null, null);
-      //TODO:  Need to lookup custom values and append them
+      loadVersions(product);
+      AppenCustomValues();
       top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
         if (IsRequired)
           $('#ticket-Product').closest('.form-group').addClass('hasError');
@@ -581,7 +592,25 @@ function LoadProductList(products) {
   });
 }
 
-//TODO:  This is not reloading the selectized list properly.  it does not seem to be destroyin gthe select. 
+function loadVersions(product) {
+  var selectizeVersion = $("#ticket-Versions")[0].selectize;
+  selectizeVersion.clear(true);
+  selectizeVersion.clearOptions();
+
+  var selectizeResolved = $("#ticket-Resolved")[0].selectize;
+  selectizeResolved.clear(true);
+  selectizeResolved.clearOptions();
+
+  if (product !== null) {
+    var versions = product.Versions;
+
+    for (var i = 0; i < versions.length; i++) {
+      selectizeVersion.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+      selectizeResolved.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+    }
+  }
+}
+
 function SetupProductVersionsControl(product) {
   var $select = $("#ticket-Versions").selectize({
     onDropdownClose: function ($dropdown) {
@@ -663,8 +692,7 @@ function SetupInventorySection() {
       getAssets(query, callback)
     },
     onItemAdd: function (value, $item) {
-//TODO:  Need addinventory method
-      top.Ts.System.logAction('Ticket - Asset Added');
+      AddInventory(value);
       this.removeItem(value, true);
     },
     onDropdownClose: function ($dropdown) {
@@ -675,25 +703,16 @@ function SetupInventorySection() {
       'sticky_placeholder': {}
     }
   });
-
-  $('#ticket-Inventory').on('click', 'span.tagRemove', function (e) {
-    var self = $(this);
-    var data = self.parent().data().tag;
-    top.Ts.Services.Tickets.RemoveTicketAsset(_ticketID, data.AssetID, function (assets) {
-      AddInventory(assets);
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removeasset", userFullName);
-    }, function () {
-      alert('There was a problem removing the asset from the ticket.');
-    });
-  });
 };
 
 function AddInventory(Inventory) {
-  var InventoryDiv = $("#ticket-Inventory");
-  $("#ticket-Inventory-Input").val('');
+  top.Ts.Services.Assets.GetAsset(Inventory, function (asset) {
+    var InventoryDiv = $("#ticket-Inventory");
+    $("#ticket-Inventory-Input").val('');
 
-  var newelement = PrependTag(InventoryDiv, Inventory.AssetID, Inventory.Name, Inventory, "tag-item AssetAnchor");
-  newelement.data('assetid', Inventory.AssetID).data('placement', 'left');
+    var newelement = PrependTag(InventoryDiv, asset.AssetID, ellipseString(asset.Name, 30), asset, "tag-item AssetAnchor");
+    newelement.data('assetid', asset.AssetID).data('placement', 'left');
+  });
 };
 
 function SetupUserQueuesSection() {
@@ -760,6 +779,49 @@ function AddSubscribers(Subscribers) {
   newelement.data('userid', Subscribers.id).data('placement', 'left').data('ticketid', 0);
 }
 
+function SetupRemindersSection() {
+  $('#ticket-reminder-date').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
+
+  var $reminderSelect = $('#ticket-reminder-who').selectize({
+    valueField: 'id',
+    labelField: 'label',
+    searchField: 'label',
+    load: function (query, callback) {
+      top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
+        callback(result);
+      });
+
+    },
+    onDropdownClose: function ($dropdown) {
+      $($dropdown).prev().find('input').blur();
+    }
+  });
+
+  $('#ticket-reminder-save').click(function (e) {
+    var selectizeControl = $reminderSelect[0].selectize;
+    var date = top.Ts.Utils.getMsDate($('#ticket-reminder-date').val());
+    var userid = selectizeControl.getValue();
+    if (userid == "") {
+      $('#ticket-reminder-who').parent().addClass('has-error').removeClass('has-success');
+    }
+    else {
+      $('#ticket-reminder-who').closest('form-group').addClass('has-success').removeClass('has-error');
+    }
+    var title = $('#ticket-reminder-title').val();
+    if (title == "") {
+      $('#ticket-reminder-title').parent().addClass('has-error').removeClass('has-success');
+    }
+    else {
+      $('#ticket-reminder-title').parent().addClass('has-success').removeClass('has-error');
+    }
+
+    $('#reminder-success').show();
+    var label = ellipseString(title, 30) + '<br>' + date.localeFormat(top.Ts.Utils.getDateTimePattern())
+    PrependTag($("#ticket-reminder-span"), userid, label, null);
+    setTimeout(function () { $('#RemindersModal').modal('hide'); }, 2000);
+  });
+}
+
 function SetupAssociatedTicketsSection() {
   $('#ticket-AssociatedTickets-Input').selectize({
     valueField: 'data',
@@ -793,45 +855,64 @@ function SetupAssociatedTicketsSection() {
     $('#associate-success').show();
 
     //TODO: Need add method
-    //AddAssociatedTickets(tickets);
+    $("#ticket-AssociatedTickets-Input").val('');
+    AddAssociatedTickets(TicketID2, IsParent);
     setTimeout(function () { $('#AssociateTicketModal').modal('hide'); }, 2000);
   });
 };
 
-function SetupCustomFieldsSection() {
-  top.Ts.Services.CustomFields.GetParentCustomFields(top.Ts.ReferenceTypes.Tickets, null, function (result) {
-    AppenCustomValues(result);
+function AddAssociatedTickets(ticketid, IsParent) {
+  top.Ts.Services.Tickets.GetTicket(ticketid, function (ticket) {
+    if (ticket !== null) {
+      var AssociatedTicketsDiv = $("#ticket-AssociatedTickets");
+      if (IsParent !== null) {
+        caption = (IsParent === true ? 'Parent' : 'Child');
+      }
+      var label = caption + "<br />" + ellipseString(ticket.TicketNumber + ': ' + ticket.Name, 30);
+
+      var newelement = PrependTag(AssociatedTicketsDiv, ticket.TicketID, ticket.IsClosed ? '<s>' + label + '</s>' : label, ticket, 'tag-item TicketAnchor');
+      newelement.data('ticketid', related.TicketID).data('placement', 'left');
+    }
+  });
+};
+
+function AppenCustomValues() {
+  var ticketTypeID = $('#ticket-type').val();
+  var productID = $('#ticket-Product').val();
+  if (ticketTypeID == undefined || ticketTypeID == "") ticketTypeID = -1;
+  if (productID == undefined || productID == "") productID = -1;
+
+  top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, ticketTypeID, productID, function (fields) {
+    debugger
+    var parentContainer = $('#ticket-group-custom-fields');
+    if (fields === null || fields.length < 1) { parentContainer.empty().hide(); return; }
+    parentContainer.empty()
+    parentContainer.show();
+    _parentFields = [];
+
+    for (var i = 0; i < fields.length; i++) {
+      var field = fields[i];
+
+      if (field.CustomFieldCategoryID == null) {
+        switch (field.FieldType) {
+          case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, parentContainer); break;
+          case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, parentContainer); break;
+          case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, parentContainer); break;
+          case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, parentContainer); break;
+          case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, parentContainer); break;
+          case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, parentContainer); break;
+          case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, parentContainer, false); break;
+          default:
+        }
+      }
+    }
+    appendCategorizedCustomValues(fields);
   });
 }
 
-function AppenCustomValues(fields) {
-  var parentContainer = $('#ticket-group-custom-fields');
-  if (fields === null || fields.length < 1) { parentContainer.empty().hide(); return; }
-  parentContainer.empty()
-  parentContainer.show();
-  _parentFields = [];
-
-  for (var i = 0; i < fields.length; i++) {
-    var field = fields[i];
-
-    if (field.CustomFieldCategoryID == -1) {
-      switch (field.FieldType) {
-        case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, parentContainer); break;
-        case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, parentContainer); break;
-        case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, parentContainer); break;
-        case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, parentContainer); break;
-        case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, parentContainer); break;
-        case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, parentContainer); break;
-        case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, parentContainer, false); break;
-        default:
-      }
-    }
-  }
-  appendCategorizedCustomValues(fields);
-};
-
 var appendCategorizedCustomValues = function (fields) {
-  top.Ts.Services.CustomFields.GetCategories(top.Ts.ReferenceTypes.Tickets, _ticketTypeID, function (categories) {
+  var ticketTypeID = $('#ticket-type').val();
+  top.Ts.Services.CustomFields.GetCategories(top.Ts.ReferenceTypes.Tickets, ticketTypeID, function (categories) {
     var container = $('#ticket-group-custom-fields');
     for (var j = 0; j < categories.length; j++) {
       var isFirstFieldAdded = true;
@@ -875,26 +956,26 @@ var appendConditionalFields = function () {
 }
 
 var appendMatchingParentValueFields = function (container, parentField) {
-  top.Ts.Services.Tickets.GetMatchingParentValueFields(_ticketID, parentField.CustomFieldID, parentField.Value, function (fields) {
-    for (var i = 0; i < fields.length; i++) {
-      var field = fields[i];
-      var div = $('<div>').addClass('form-group form-group-sm').data('field', field);
-      $('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
+  //top.Ts.Services.Tickets.GetMatchingParentValueFields(_ticketID, parentField.CustomFieldID, parentField.Value, function (fields) {
+  //  for (var i = 0; i < fields.length; i++) {
+  //    var field = fields[i];
+  //    var div = $('<div>').addClass('form-group form-group-sm').data('field', field);
+  //    $('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
 
-      container.append(div);
+  //    container.append(div);
 
-      switch (field.FieldType) {
-        case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, div); break;
-        case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, div); break;
-        case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, div); break;
-        case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, div); break;
-        case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, div); break;
-        case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, div); break;
-        case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, div, true); break;
-        default:
-      }
-    }
-  });
+  //    switch (field.FieldType) {
+  //      case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, div); break;
+  //      case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, div); break;
+  //      case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, div); break;
+  //      case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, div); break;
+  //      case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, div); break;
+  //      case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, div); break;
+  //      case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, div, true); break;
+  //      default:
+  //    }
+  //  }
+  //});
 }
 
 var AddCustomFieldEdit = function (field, parentContainer) {
@@ -940,14 +1021,6 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     else {
       groupContainer.removeClass('isEmpty');
     }
-    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-      groupContainer.data('field', result);
-      groupContainer.find('.external-link').remove();
-      input.after(getUrls(result.Value));
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-    }, function () {
-      alert("There was a problem saving your ticket property.");
-    });
   });
 
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -1011,12 +1084,6 @@ var AddCustomFieldDate = function (field, parentContainer) {
       else {
         groupContainer.removeClass('isEmpty');
       }
-
-      top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-      }, function () {
-        alert("There was a problem saving your ticket property.");
-      });
     })
   });
 
@@ -1081,12 +1148,6 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
       else {
         groupContainer.removeClass('isEmpty');
       }
-
-      top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-      }, function () {
-        alert("There was a problem saving your ticket property.");
-      });
     })
   });
 
@@ -1151,12 +1212,6 @@ var AddCustomFieldTime = function (field, parentContainer) {
       else {
         groupContainer.removeClass('isEmpty');
       }
-
-      top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-      }, function () {
-        alert("There was a problem saving your ticket property.");
-      });
     })
   });
 
@@ -1188,13 +1243,7 @@ var AddCustomFieldBool = function (field, parentContainer) {
   input.attr("checked", value);
 
   input.change(function (e) {
-    var isChecked = input.is(':checked')
-    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, isChecked, function (result) {
-      groupContainer.data('field', result);
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-    }, function () {
-      alert("There was a problem saving your ticket property.");
-    });
+    var isChecked = input.is(':checked');
   });
 }
 
@@ -1231,12 +1280,6 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     else {
       groupContainer.removeClass('isEmpty');
     }
-    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-      groupContainer.data('field', result);
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-    }, function () {
-      alert("There was a problem saving your ticket property.");
-    });
   });
 
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -1296,15 +1339,10 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         groupContainer.removeClass('isEmpty');
       }
 
-      top.Ts.System.logAction('Ticket - Custom Value Set');
-      top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-        $('.' + field.CustomFieldID + 'children').remove();
-        var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
-        appendMatchingParentValueFields(childrenContainer, result);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-      }, function () {
-        alert("There was a problem saving your ticket property.");
-      });
+      $('.' + field.CustomFieldID + 'children').remove();
+      var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
+      //TODO:  need to test if this workds
+      appendMatchingParentValueFields(childrenContainer, field);
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
@@ -1333,4 +1371,30 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
   else {
     _parentFields.push(groupContainer);
   }
+}
+
+var getUrls = function (input) {
+  var source = (input || '').toString();
+  var parentDiv = $('<div>').addClass('input-group-addon external-link')
+  var url;
+  var matchArray;
+  var result = '';
+
+  // Regular expression to find FTP, HTTP(S) and email URLs. Updated to include urls without http
+  var regexToken = /(((ftp|https?|www):?\/?\/?)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+
+  // Iterate through any URLs in the text.
+  while ((matchArray = regexToken.exec(source)) !== null) {
+    url = matchArray[0];
+    if (url.length > 2 && url.substring(0, 3) == 'www') {
+      url = 'http://' + url;
+    }
+    result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-external-link fa-lg custom-field-link"></i></a>';
+  }
+
+  if (result !== '') {
+    return parentDiv.append(result);
+  }
+
+  return result;
 }

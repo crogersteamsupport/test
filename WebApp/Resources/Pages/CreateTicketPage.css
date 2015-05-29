@@ -2,7 +2,7 @@
         background-color:white;
     }
 
-        .fa-paste   { color: #5CB85C !important}
+      .fa-paste   { color: #5CB85C !important}
     .fa-book    { color: #3276B1 !important}
     .fa-ticket  { color: #FEC21E !important}
     .mce-i-image{ color: #BA55D3 !important}
@@ -353,6 +353,7 @@
         -webkit-box-shadow: -2px 2px 4px rgba(0,0,0,.15);
         box-shadow: -2px 2px 4px rgba(0,0,0,.15);
         background-color:white;
+        margin-bottom: 10px;
     }
 
     #ticket-properties-area > .form-group {
