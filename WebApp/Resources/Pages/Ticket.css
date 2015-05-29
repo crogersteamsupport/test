@@ -223,3 +223,17 @@
     .mce-i-image{ color: #BA55D3 !important}
     .fa-dropbox { color: #3d9ae8 !important}
     .fa-circle  { color: #D9534F !important}
+
+#publisher {
+    width: 300px;
+    height: 300px;
+}
+
+#tempContainer{
+    width: 300px;
+    height: 300px;
+}   
+
+video:hover{
+    cursor: pointer;
+}

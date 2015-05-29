@@ -32,8 +32,20 @@ var userFullName = top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastN
 var canKbEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
 var alertMessage = null;
 var dateFormat;
+var session;
+var token;
+var recordingID;
+var apiKey;
+var sessionId;
+var tokurl;
+var publisher;
 
 $(document).ready(function () {
+
+  apiKey = "45228242";
+   
+  $('video').click(function () { this.paused ? this.play() : this.pause(); });
+
   if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
 
   $('.page-loading').show().next().hide();
@@ -767,7 +779,7 @@ $(document).ready(function () {
     top.Ts.System.logAction('Ticket - New Action Started');
     createActionForm($('<div>').appendTo('.ticket-action-new-form'), null, function (result) {
       if ($('.ticket-action-form').length < 2) {
-        top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+          top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
       }
       if (result !== null) {
         /*var actionDiv = createActionElement().prependTo('#divActions');
@@ -2595,11 +2607,11 @@ var appendReminder = function (reminder) {
 }
 
 //tinymce editor
-var initEditor = function (element, init) {
+var initEditor = function (element, actionElement, init) {
   top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
     var editorOptions = {
       plugins: "autoresize paste link code textcolor image moxiemanager table",
-      toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+      toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
       toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote | code | table",
       statusbar: false,
       gecko_spellcheck: true,
@@ -2804,6 +2816,42 @@ var initEditor = function (element, init) {
             }
           });
         }
+
+        ed.addButton('recordVideo', {
+            title: 'Record video',
+            //image: '../images/icons/Symbol_Record.png',
+            icon: 'awesome fa fa-video-camera',
+            onclick: function () {
+                var dynamicPub = actionElement.find("#publisher");
+                actionElement.find("#recordVideoContainer").show();
+                dynamicPub.show();
+                dynamicPub.attr("id", "tempContainer");
+                dynamicPub.attr("width", "400px");
+                dynamicPub.attr("height", "400px");
+
+                if (dynamicPub.length == 0)
+                    dynamicPub = actionElement.find("#tempContainer");
+
+
+
+                top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                    sessionId = resultID[0];
+                    token = resultID[1];
+                    session = OT.initSession(apiKey, sessionId);
+                    session.connect(token, function (error) {
+                            publisher = OT.initPublisher(dynamicPub.attr('id'), {
+                            insertMode: 'append',
+                            width: '100%',
+                            height: '100%'
+                        });
+                        session.publish(publisher);
+                    });
+                });
+
+
+            }
+        });
+
       }
         , oninit: init
     };
@@ -2882,7 +2930,7 @@ var createActionForm = function (element, action, callback) {
   if (action != null) {
     element.find('.ticket-action-form-portal').prop('checked', action.IsVisibleOnPortal);
   }
-  initEditor(element.find('.ticket-action-form-description'), function (ed) {
+  initEditor(element.find('.ticket-action-form-description'), element, function (ed) {
     if (action != null && action.Description != null) {
       ed.setContent(action.Description);
     }
@@ -2892,6 +2940,7 @@ var createActionForm = function (element, action, callback) {
     clearTimeout(_timerid);
     _timerElapsed = 0;
     counter = 0;
+    session.unpublish(publisher);
     callback(null); element.remove();
 
   });
@@ -3041,7 +3090,68 @@ var createActionForm = function (element, action, callback) {
       element.remove();
 
     }
+
   });
+
+  element.find('#rcdtok').click(function (e) {
+      top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+          element.find('#rcdtok').hide();
+          element.find('#stoptok').show();
+          element.find('#inserttok').hide();
+          element.find('#deletetok').hide();
+          recordingID = resultID;
+      });
+  });
+
+  element.find('#stoptok').hide();
+
+  element.find('#stoptok').click(function (e) {
+      top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+          element.find('#rcdtok').show();
+          element.find('#stoptok').hide();
+          element.find('#inserttok').show();
+          element.find('#deletetok').show();
+          tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+      });
+  });
+
+  element.find('#inserttok').hide();
+
+  element.find('#inserttok').click(function (e) {
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400"><source src="' + tokurl + '"> type="video/mp4"</video>');
+      session.unpublish(publisher);
+      element.find('#recordVideoContainer').hide();
+  });
+
+  element.find('#deletetok').hide();
+  element.find('#deletetok').click(function (e) {
+      top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+          element.find('#rcdtok').show();
+          element.find('#stoptok').hide();
+          session.unpublish(publisher);
+          element.find('#recordVideoContainer').hide();
+1      });
+  });
+
+  element.find('#canceltok').click(function (e) {
+      if (recordingID)
+      {
+          top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+              element.find('#rcdtok').show();
+              element.find('#stoptok').hide();
+              session.unpublish(publisher);
+              element.find('#recordVideoContainer').hide();
+          });
+      }
+      else
+      {
+          session.unpublish(publisher);
+          element.find('#recordVideoContainer').hide();
+      }
+
+  });
+  element.find('#recordVideoContainer').hide();
+
 }
 
 var saveAction = function (form, oldAction, callback) {

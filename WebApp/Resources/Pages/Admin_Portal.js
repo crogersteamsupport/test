@@ -241,6 +241,7 @@ AdminPortal = function () {
     $('#portal_show_grouplist').prop('checked', portalOption.DisplayGroups == null ? false : portalOption.DisplayGroups);
     $('#portal_show_product').prop('checked', portalOption.DisplayProducts == null ? false : portalOption.DisplayProducts);
     $('#portal_show_version').prop('checked', portalOption.DisplayProductVersion == null ? false : portalOption.DisplayProductVersion);
+    $('#portal_restrict_version').prop('checked', portalOption.RestrictProductVersion == null ? false : portalOption.RestrictProductVersion);
     $('#portal_show_closed_button').prop('checked', portalOption.HideCloseButton == null ? false : !portalOption.HideCloseButton);
     $('#portal_theme').combobox('setValue', portalOption.Theme);
     $('#portal_header').val(portalOption.PortalHTMLHeader);
@@ -302,6 +303,7 @@ AdminPortal = function () {
     portalOption.DisplayGroups = $('#portal_show_grouplist').prop('checked');
     portalOption.DisplayProducts = $('#portal_show_product').prop('checked');
     portalOption.DisplayProductVersion = $('#portal_show_version').prop('checked');
+    portalOption.RestrictProductVersion = $('#portal_restrict_version').prop('checked');
     portalOption.HideCloseButton = !$('#portal_show_closed_button').prop('checked');
     portalOption.Theme = $('#portal_theme').val();
     portalOption.RequestGroup = $('#portal_req_group').val();

@@ -23,6 +23,13 @@
     //setup the dateformat
     top.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
+
+        if (dateFormat.indexOf("DD") == -1)
+            dateFormat = dateFormat.replace("D", "DD");
+
+        if (dateFormat.indexOf("MM") == -1)
+            dateFormat = dateFormat.replace("M", "MM");
+
         if (dateFormat.length < 8) {
             var dateArr = dateFormat.split('/');
             if (dateArr[0].length < 2) {
@@ -138,6 +145,7 @@
                             id: this.id,
                             description: this.description,
                             end: this.end,
+                            allDay: this.allday,
                             isallDay: this.allday,
                             references: this.references,
                             creatorID: this.creatorID,

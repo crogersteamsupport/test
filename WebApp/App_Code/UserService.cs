@@ -1479,7 +1479,10 @@ namespace TSWebServices
                 CalEvent cal = new CalEvent();
                 cal.color = "green";
                 DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)c.StartDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
-                cal.start = ((DateTime)c.StartDateUtc).ToString("o");
+                if (c.AllDay)
+                    cal.start = ((DateTime)c.StartDateUtc).ToString("o").Substring(0, 10);
+                else
+                    cal.start = ((DateTime)c.StartDateUtc).ToString("o");
                 cal.end = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
                 cal.title = c.Title;
                 cal.type = "cal";

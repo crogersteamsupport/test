@@ -31,6 +31,7 @@
   <script src="../Js/jquery.data-selector.js" type="text/javascript"></script>
   <script src="Ticket.js" type="text/javascript"></script>
   <script src="../Js/jquery.maskedinput.min.js" type="text/javascript"></script>
+  <script src="//static.opentok.com/v2/js/opentok.min.js"></script>
 
 <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropbox.js" id="dropboxjs" data-app-key="ebdoql1dhyy7l72"></script>
 
@@ -66,6 +67,16 @@
                 <span class="label">Name</span>
                 <input style="width: 100%;" class="ui-corner-all ui-widget-content text ticket-action-form-name">
               </div>
+
+            <div style="margin-top: 1em;" id="recordVideoContainer">
+                <div id="publisher">
+                </div>
+                <button id="rcdtok">Record</button>
+                <button id="stoptok">Stop</button>
+                <button id="inserttok">Insert</button>
+                <button id="deletetok">Delete</button>
+                <button id="canceltok">Cancel</button>
+            </div>
 
               <div style="margin-top: 1em; style="clear:both;">
                 <div class="label-block ticket-action-form-block-actiontype">

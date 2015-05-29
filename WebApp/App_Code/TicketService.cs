@@ -23,6 +23,7 @@ using System.Net;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Diagnostics;
+using OpenTokSDK;
 
 namespace TSWebServices
 {
@@ -3608,6 +3609,72 @@ WHERE t.TicketID = @TicketID
       }
       return result;
     }
+
+    [WebMethod]
+    public List<string> GetSessionInfo()
+    {
+        const int ApiKey = 45228242; // YOUR API KEY
+        const string ApiSecret = "058e12ca5b9139d08c18f4fe1ece434635a4abfb";
+        var OpenTok = new OpenTok(ApiKey, ApiSecret);
+
+        // Create a session that uses the OpenTok Media Router (which is required for archiving)
+        var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED, archiveMode: ArchiveMode.MANUAL);
+        var token = OpenTok.GenerateToken(session.Id, Role.PUBLISHER);
+        var values = new List<string>();
+        // Store this sessionId in the database for later use:
+        //string sessionId = session.Id;
+        //var archive = OpenTok.StartArchive(session.Id);
+        values.Add(session.Id);
+        values.Add(token);
+        return values;
+    }
+
+      [WebMethod]
+    public string StartArchiving(string sessionId)
+    {
+        const int ApiKey = 45228242; // YOUR API KEY
+        const string ApiSecret = "058e12ca5b9139d08c18f4fe1ece434635a4abfb";
+        var OpenTok = new OpenTok(ApiKey, ApiSecret);
+
+        // Create a session that uses the OpenTok Media Router (which is required for archiving)
+        //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
+        // Store this sessionId in the database for later use:
+        //string sessionId = session.Id;
+        var archive = OpenTok.StartArchive(sessionId);
+        return archive.Id.ToString();
+    }
+
+
+      [WebMethod]
+      public string StopArchiving(string archiveId)
+      {
+          int ApiKey = 45228242; // YOUR API KEY
+          string ApiSecret = "058e12ca5b9139d08c18f4fe1ece434635a4abfb";
+          var OpenTok = new OpenTok(ApiKey, ApiSecret);
+
+          // Create a session that uses the OpenTok Media Router (which is required for archiving)
+          //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
+          // Store this sessionId in the database for later use:
+          //string sessionId = session.Id;
+          var archive = OpenTok.StopArchive(archiveId);
+          return archive.Id.ToString();
+
+      }
+
+      [WebMethod]
+      public bool DeleteArchive(string archiveId)
+      {
+          int ApiKey = 45228242; // YOUR API KEY
+          string ApiSecret = "058e12ca5b9139d08c18f4fe1ece434635a4abfb";
+          var OpenTok = new OpenTok(ApiKey, ApiSecret);
+
+          // Create a session that uses the OpenTok Media Router (which is required for archiving)
+          //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
+          // Store this sessionId in the database for later use:
+          OpenTok.DeleteArchive(archiveId);
+
+          return true;
+      }
   }
 
 

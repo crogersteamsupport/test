@@ -233,6 +233,7 @@ namespace TSWebServices
       option.DisplayLandingPage = proxy.DisplayLandingPage;
       option.LandingPageHtml = proxy.LandingPageHtml;
       option.DisplayProductVersion = proxy.DisplayProductVersion;
+      option.RestrictProductVersion = proxy.RestrictProductVersion;
       option.DisplayAdvKB = proxy.DisplayAdvKB;
       option.DisplayAdvProducts = proxy.DisplayAdvProducts;
       option.DisplaySettings = proxy.DisplaySettings;

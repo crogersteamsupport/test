@@ -43,6 +43,7 @@ namespace TeamSupport.Data
     [DataMember] public bool DisplayLogout { get; set; }
     [DataMember] public bool DisplayAdvKB { get; set; }
     [DataMember] public bool DisplayProductVersion { get; set; }
+    [DataMember] public bool RestrictProductVersion { get; set; }
     [DataMember] public string LandingPageHtml { get; set; }
     [DataMember] public bool DisplayLandingPage { get; set; }
     [DataMember] public bool EnableScreenr { get; set; }
@@ -84,6 +85,7 @@ namespace TeamSupport.Data
       result.DisplayLandingPage = this.DisplayLandingPage;
       result.LandingPageHtml = this.LandingPageHtml;
       result.DisplayProductVersion = this.DisplayProductVersion;
+      result.RestrictProductVersion = this.RestrictProductVersion;
       result.DisplayAdvKB = this.DisplayAdvKB;
       result.DisplayAdvProducts = this.DisplayAdvProducts;
       result.DisplaySettings = this.DisplaySettings;
