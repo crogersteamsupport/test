@@ -1828,7 +1828,7 @@ AND a.OrganizationID = @OrganizationID
           return;
         }
 
-        TeamSupport.Data.Action action = Actions.GetTicketDescription(_loginUser, ticket.TicketID);
+        TeamSupport.Data.Action action = Actions.GetTicketFirstAction(_loginUser, ticket.TicketID);
         if (action == null)
         {
           _log.AppendError(row, "Attachment skipped due to action description does not exist.");

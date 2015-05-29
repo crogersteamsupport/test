@@ -213,6 +213,23 @@ namespace TeamSupport.Data
         return actions[0];
     }
 
+    public static Action GetTicketFirstAction(LoginUser loginUser, int ticketID)
+    {
+      Actions actions = new Actions(loginUser);
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.TicketID = @TicketID ORDER BY a.DateCreated";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        actions.Fill(command);
+      }
+
+      if (actions.IsEmpty)
+        return null;
+      else
+        return actions[0];
+    }
     public void LoadAll()
     {
       using (SqlCommand command = new SqlCommand())
