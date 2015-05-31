@@ -524,18 +524,29 @@ namespace TeamSupport.Data
     private TicketStatus GetTicketStatus(TicketStatuses statuses, string name, TicketType ticketType)
     {
       name = name.Trim();
-      TicketStatus result = statuses.FindByName(name, ticketType.TicketTypeID);
+      TicketStatus result = null;
+      int statusID = -1;
+      if (int.TryParse(name, out statusID))
+      {
+        result = statuses.FindByTicketStatusID(statusID);
+      }
+
+
       if (result == null)
       {
-        result = (new TicketStatuses(_loginUser)).AddNewTicketStatus();
-        result.Name = name;
-        result.Description = "";
-        result.TicketTypeID = ticketType.TicketTypeID;
-        result.OrganizationID = _organizationID;
-        result.Position = statuses.GetMaxPosition(_organizationID) + 1;
-        result.IsClosed = false;
-        result.Collection.Save();
+        result = statuses.FindByName(name, ticketType.TicketTypeID);
 
+        if (result == null)
+        {
+          result = (new TicketStatuses(_loginUser)).AddNewTicketStatus();
+          result.Name = name;
+          result.Description = "";
+          result.TicketTypeID = ticketType.TicketTypeID;
+          result.OrganizationID = _organizationID;
+          result.Position = statuses.GetMaxPosition(_organizationID) + 1;
+          result.IsClosed = false;
+          result.Collection.Save();
+        }
       }
       statuses.LoadAllPositions(ticketType.TicketTypeID);
       return result;
