@@ -369,7 +369,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       return orgTemplate.IsEmpty ? null : orgTemplate[0];
     }
 
-    public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, ProductType productType, SignUpParams signUpParams)
+    public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, string evalProcess, string potentialSeats, ProductType productType, SignUpParams signUpParams)
     {
       try
       {
@@ -401,8 +401,8 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         organization.CultureName = "en-US";
         organization.PromoCode = "";
         organization.PrimaryInterest = "";
-        organization.PotentialSeats = "";
-        organization.EvalProcess = "";
+        organization.PotentialSeats = potentialSeats;
+        organization.EvalProcess = evalProcess;
         organization.AddEmailViaTS = true;
         organization.RequireKnownUserForNewEmail = sourceOrg.RequireKnownUserForNewEmail;
         organization.RequireNewKeyword = sourceOrg.RequireNewKeyword;

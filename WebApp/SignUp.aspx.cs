@@ -46,7 +46,7 @@ public partial class SignUp : System.Web.UI.Page
     string fname = names[0];
     string lname = string.Join(" ", names.Skip(1).ToArray());
 
-    User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, null);
+    User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, "", "", (ProductType)version, null);
     return user.UserID;
   }
 

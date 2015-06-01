@@ -143,6 +143,8 @@ namespace TeamSupport.Handlers
       string password = GetValueString(values["password"]);
       string promo = GetValueString(values["promo"]);
       string product = GetValueString(values["product"]);
+      string eval = GetValueString(values["eval"]);
+      string seats = GetValueString(values["seats"]);
       string source = "";
 
       int version = (int)ProductType.Enterprise;
@@ -252,7 +254,7 @@ namespace TeamSupport.Handlers
         prams.promo = promo;
         prams.hubspotutk = cookies["hubspotutk"] != null ? cookies["hubspotutk"].Value : "";
         prams.source = source;
-        return Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
+        return Organizations.SetupNewAccount(fname, lname, email, company, phone, eval, seats, (ProductType)version, prams);
       }
       else
       {
