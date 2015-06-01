@@ -74,6 +74,8 @@ namespace TeamSupport.Handlers
             case "productcustomers": ProcessProductCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
             case "productversioncustomers": ProcessProductVersionCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
             case "calendarfeed": ProcessCalendarFeed(context, segments.ToArray(), organizationID); break;
+            case "companylogo": ProcessCompanyLogo(context, segments.ToArray(), organizationID); break;
+            case "contactavatar": ProcessContactAvatar(context, segments.ToArray(), organizationID); break;
             default: context.Response.End(); break;
           }
         }
@@ -425,7 +427,94 @@ namespace TeamSupport.Handlers
       return;
 
     }
-   
+
+    //https://app.teamsupport.com/dc/{OrganizationID}/CompanyLogo/{orgIdLogo}/{Size}
+    private void ProcessCompanyLogo(HttpContext context, string[] segments, int organizationID)
+    {
+      int logoOrganizationId  = int.Parse(segments[2]);
+      int size                = int.Parse(segments[3]);
+      string cacheFileName = "";
+      string cachePath = Path.Combine(GetImageCachePath(), "CompanyLogo\\" + organizationID.ToString());
+
+      if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+
+      cacheFileName = Path.Combine(cachePath, logoOrganizationId.ToString() + "-" + size.ToString() + ".jpg");
+      // found the last cache
+      if (File.Exists(cacheFileName))
+      {
+        WriteImage(context, cacheFileName);
+        return;
+      }
+
+      //New image, check if one has been uploaded
+      string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.OrganizationsLogo), logoOrganizationId.ToString());
+
+      if (File.Exists(originalFileName))
+      {
+        // original image, resize, cache it
+        using (Image image = Image.FromFile(originalFileName))
+        using (Image scaledImage = ScaleImage(image, size, size))
+        {
+          scaledImage.Save(cacheFileName, ImageFormat.Jpeg);
+        }
+        WriteImage(context, cacheFileName);
+        return;
+      }
+
+      return;
+    }
+
+    //https://app.teamsupport.com/dc/{OrganizationID}/contactavatar/{userId}/{Size}
+    private void ProcessContactAvatar(HttpContext context, string[] segments, int organizationID)
+    {
+      int organizationParentId = (int)Organizations.GetOrganization(LoginUser.Anonymous, organizationID).ParentID;
+      int userId = int.Parse(segments[2]);
+      int size = int.Parse(segments[3]);
+      string cacheFileName = "";
+      string cachePath = Path.Combine(GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+
+      if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+
+      cacheFileName = Path.Combine(cachePath, userId.ToString() + "-" + size.ToString() + ".jpg");
+      // found the last cache
+      if (File.Exists(cacheFileName))
+      {
+        WriteImage(context, cacheFileName);
+        return;
+      }
+
+      //New image, check if one has been uploaded
+      string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationParentId, AttachmentPath.Folder.ContactImages), userId.ToString() + "avatar");
+
+      if (File.Exists(originalFileName))
+      {
+        // original image, resize, make circle, cache it
+        using (Image image = Image.FromFile(originalFileName))
+        using (Image scaledImage = ScaleImage(image, size, size))
+        using (Image croppedImage = CropImage(scaledImage, size))
+        {
+          croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
+        }
+        WriteImage(context, cacheFileName);
+        return;
+      }
+
+      // no picture found, make a circle with first initial and cache it
+      User user = Users.GetUser(LoginUser.Anonymous, userId);
+      string initial = "A";
+
+      if (user != null && !string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
+
+      using (Image initialImage = MakeInitialSquare(initial, GetInitialColor(initial), size))
+      {
+        initialImage.Save(cacheFileName, ImageFormat.Jpeg);
+      }
+
+      WriteImage(context, cacheFileName);
+
+      return;
+    }
+
     private static Color GetInitialColor(string initial)
     {
       

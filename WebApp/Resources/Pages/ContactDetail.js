@@ -163,6 +163,10 @@ $(document).ready(function () {
         top.Ts.Services.Customers.GetUser(userID, function (user) {
             var firstLast = user.FirstName + " " + user.LastName;
             $('#contactName').text(user.FirstName + " " + user.LastName);
+
+            var userAvatarPath = "../../../dc/" + user.OrganizationID + "/contactavatar/" + userID + "/48";
+            $('#contactAvatar').attr("src", userAvatarPath);
+
             $('.userProperties #fieldName').text(firstLast.length > 1 ? user.FirstName + " " + user.LastName : "Unassigned");
             $('.userProperties #fieldName').attr("first", user.FirstName);
             $('.userProperties #fieldName').attr("middle", user.MiddleName);

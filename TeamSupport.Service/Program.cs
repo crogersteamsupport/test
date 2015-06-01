@@ -43,6 +43,7 @@ namespace TeamSupport.Service
         case "TSReminderProcessor": result = new ReminderProcessor(); break;
         case "TSImportProcessor": result = new ImportProcessor(); break;
         case "TSWebHooks": result = new WebHooks(); break;
+        case "TSCustomerInsights": result = new CustomerInsightsProcessor(); break;
         default: result = null; break;
       }
 

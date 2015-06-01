@@ -80,13 +80,6 @@ Namespace TeamSupport
 
           Log = New SyncLog(LogPath, CRMType)
 
-          'Try
-          'Log = New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()), CRMType)
-          'Catch ex As Exception
-          ' ExceptionLogs.LogException(LoginUser, ex, "CRM Processor rev.2381", CRMLinkTableItem.Row)
-          'Log = New SyncLog(Path.Combine("C:\CrmLogs\", CRMLinkTableItem.OrganizationID.ToString()), CRMType)
-          'End Try
-
           Dim CRM As Integration = Nothing
 
           Select Case CRMType

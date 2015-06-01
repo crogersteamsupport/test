@@ -134,6 +134,9 @@
             <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbUseProductFamilies" runat="server" Text="Use product families"/></td>
         </tr>
         <tr>
+            <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbIsCustomerInsightsActive" runat="server" Text="Customer Insights"/></td>
+        </tr>
+        <tr>
           <td>Business Day Start:</td>
           <td>
             <telerik:RadTimePicker ID="timeBDStart" runat="server">

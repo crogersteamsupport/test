@@ -2147,6 +2147,72 @@ ORDER BY o.Name";
 
     }
 
+    public void LoadByCustomerInsightsNewOrModifiedByDate(DateTime lastProcessed, int waitBeforeNewUpdate)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"SELECT *
+FROM
+	Organizations WITH(NOLOCK)
+	JOIN Organizations AS Parent WITH(NOLOCK)
+		ON Organizations.parentId = Parent.organizationId
+  LEFT JOIN FullContactUpdates WITH(NOLOCK)
+		ON Organizations.organizationId = FullContactUpdates.organizationId
+WHERE
+	Parent.isActive = 1
+	AND Parent.IsCustomerInsightsActive = 1
+	AND Organizations.parentId != 1
+	AND (
+			Organizations.dateCreated > @lastProcessed
+			OR Organizations.dateModified > @lastProcessed
+		)
+  AND (
+			FullContactUpdates.id IS NULL
+			OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE()
+		)
+ORDER BY Organizations.Name";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@lastProcessed", lastProcessed);
+        command.Parameters.AddWithValue("@waitBeforeNewUpdate", waitBeforeNewUpdate);
+
+        Fill(command);
+      }
+    }
+
+    public void LoadByCustomerInsightsByCompanyTotalTickets(int waitBeforeNewUpdate, int? top = null)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string sql = @"SELECT {0} Organizations.*
+FROM
+	Organizations WITH(NOLOCK)
+	JOIN (
+		SELECT COUNT(1) AS Total, OrganizationTickets.organizationId
+		FROM
+			TicketsView WITH(NOLOCK)
+			JOIN OrganizationTickets WITH(NOLOCK)
+				ON TicketsView.ticketId = OrganizationTickets.ticketId
+		WHERE
+			TicketsView.isClosed = 0
+		GROUP BY
+			OrganizationTickets.organizationId
+		) AS TicketCount
+		ON Organizations.organizationid = TicketCount.organizationId
+  LEFT JOIN FullContactUpdates WITH(NOLOCK)
+		ON Organizations.organizationId = FullContactUpdates.organizationId
+WHERE
+  FullContactUpdates.id IS NULL
+  OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE()
+ORDER BY
+	TicketCount.Total DESC,
+	Organizations.name";
+        command.CommandText = string.Format(sql, top == null ? "" : "TOP " + top.ToString());
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@waitBeforeNewUpdate", waitBeforeNewUpdate);
+
+        Fill(command);
+      }
+    }
 
     public static int GetChatCount(LoginUser loginUser, int organizationID)
     {

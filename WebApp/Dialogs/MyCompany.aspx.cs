@@ -195,6 +195,8 @@ public partial class Dialogs_Organization : BaseDialogPage
         cbUseProductFamilies.Visible = false;
     }
 
+    cbIsCustomerInsightsActive.Checked = organization.IsCustomerInsightsActive;
+
     if (string.IsNullOrEmpty(organization.TimeZoneID))
       cmbTimeZones.SelectedValue = "Central Standard Time";
     else
@@ -281,6 +283,8 @@ public partial class Dialogs_Organization : BaseDialogPage
     organization.ProductVersionRequired = cbRequireProductVersion.Checked;
 
     organization.UseProductFamilies = cbUseProductFamilies.Checked;
+
+    organization.IsCustomerInsightsActive = cbIsCustomerInsightsActive.Checked;
 
     try
     {

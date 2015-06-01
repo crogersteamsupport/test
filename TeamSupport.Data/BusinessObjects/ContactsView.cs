@@ -532,6 +532,71 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public void LoadByCustomerInsightsNewOrModifiedByDate(DateTime lastProcessed, int waitBeforeNewUpdate)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"SELECT ContactsView.*
+FROM
+	ContactsView WITH(NOLOCK)
+	JOIN Organizations WITH(NOLOCK)
+		ON ContactsView.organizationParentId = Organizations.organizationId
+  LEFT JOIN FullContactUpdates WITH(NOLOCK)
+		ON ContactsView.userID = FullContactUpdates.userId
+WHERE
+	ContactsView.isActive = 1
+	AND Organizations.IsCustomerInsightsActive = 1
+	AND ContactsView.organizationParentId != 1
+	AND (
+			ContactsView.dateCreated > @lastProcessed
+			OR ContactsView.dateModified > @lastProcessed
+		)
+  AND (
+			FullContactUpdates.id IS NULL
+			OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE()
+		)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@lastProcessed", lastProcessed);
+        command.Parameters.AddWithValue("@waitBeforeNewUpdate", waitBeforeNewUpdate);
+
+        Fill(command);
+      }
+    }
+
+    public void LoadByCustomerInsightsByContactTotalTickets(int waitBeforeNewUpdate, int? top = null)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string sql = @"SELECT {0} ContactsView.*
+FROM
+	ContactsView WITH(NOLOCK)
+	JOIN (
+		SELECT COUNT(1) AS Total, UserTickets.userId
+		FROM
+			TicketsView WITH(NOLOCK)
+			JOIN UserTickets WITH(NOLOCK)
+				ON TicketsView.ticketId = UserTickets.ticketId
+		WHERE
+			TicketsView.isClosed = 0
+		GROUP BY
+			UserTickets.userId
+		) AS TicketCount
+		ON ContactsView.userId = TicketCount.userId
+  LEFT JOIN FullContactUpdates WITH(NOLOCK)
+    ON ContactsView.userID = FullContactUpdates.userId
+WHERE
+  FullContactUpdates.id IS NULL
+  OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE()
+ORDER BY
+	TicketCount.Total DESC,
+	ContactsView.lastName";
+        command.CommandText = string.Format(sql, top == null ? "" : "TOP " + top.ToString());
+        command.Parameters.AddWithValue("@waitBeforeNewUpdate", waitBeforeNewUpdate);
+
+        Fill(command);
+      }
+    }
   }
 
   public class CustomerSearchContact

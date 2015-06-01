@@ -215,6 +215,7 @@
     <Compile Include="BusinessObjects\ForumCategories.cs" />
     <Compile Include="BusinessObjects\ForumPermissions.cs" />
     <Compile Include="BusinessObjects\ForumTickets.cs" />
+    <Compile Include="BusinessObjects\FullContactUpdates.cs" />
     <Compile Include="BusinessObjects\GroupAssignmentHistory.cs" />
     <Compile Include="BusinessObjects\ImportFields.cs" />
     <Compile Include="BusinessObjects\ImportMaps.cs" />
@@ -310,6 +311,7 @@
     <Compile Include="FieldMaps\ForumLogsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumPermissionsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumTicketsFieldMap.cs" />
+    <Compile Include="FieldMaps\FullContactUpdatesFieldMap.cs" />
     <Compile Include="FieldMaps\GroupAssignmentHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\ImportFieldsFieldMap.cs" />
     <Compile Include="FieldMaps\ImportMapsFieldMap.cs" />
@@ -551,6 +553,7 @@
     <Compile Include="Generated\GeneratedForumLogs.cs" />
     <Compile Include="Generated\GeneratedForumPermissions.cs" />
     <Compile Include="Generated\GeneratedForumTickets.cs" />
+    <Compile Include="Generated\GeneratedFullContactUpdates.cs" />
     <Compile Include="Generated\GeneratedGroupAssignmentHistory.cs" />
     <Compile Include="Generated\GeneratedGroups.cs" />
     <Compile Include="Generated\GeneratedImportFields.cs" />
@@ -652,6 +655,7 @@
     <Compile Include="Proxies\CalendarRefProxy.cs" />
     <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
     <Compile Include="Proxies\CustomPortalColumnsProxy.cs" />
+    <Compile Include="Proxies\FullContactUpdatesProxy.cs" />
     <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
     <Compile Include="Proxies\ImportFieldsProxy.cs" />
     <Compile Include="Proxies\ImportMapsProxy.cs" />

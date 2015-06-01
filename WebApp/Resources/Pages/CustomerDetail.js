@@ -959,7 +959,9 @@ $(document).ready(function () {
     $('#productCustomer').val(organizationID);
 
     top.Ts.Services.Organizations.GetOrganization(organizationID, function (org) {
-        $('#companyName').text(org.Name);
+      $('#companyName').text(org.Name);
+      var companyLogoPath = "../../../dc/" + org.ParentID + "/companylogo/" + organizationID + "/80";
+      $('#companyLogo').attr("src", companyLogoPath);
     });
 
     $("input[type=text], textarea").autoGrow();
@@ -2409,6 +2411,9 @@ $(document).ready(function () {
         }
     });
 
+    $("#companyLogo").error(function () {
+      $(this).hide();
+    })
 });
 
 var initEditor = function (element, init) {

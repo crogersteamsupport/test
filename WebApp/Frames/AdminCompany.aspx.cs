@@ -183,6 +183,7 @@ public partial class Frames_AdminCompany : BaseFramePage
       organization.OrganizationID == 493740)
     table.Rows.Add(new string[] { "Use Product Families:", organization.UseProductFamilies.ToString() });
 
+    table.Rows.Add(new string[] { "Customer Insights:", organization.IsCustomerInsightsActive.ToString() });
     
     rptProperties.DataSource = table;
     rptProperties.DataBind();
