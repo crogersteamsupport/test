@@ -500,8 +500,8 @@ Namespace TeamSupport
                         .RefType = ReferenceType.Organizations
                         .RefID = thisCompany.OrganizationID
                         If CRMPhoneType IsNot Nothing Then
-                          If (Not phoneNeedsUpdate) Then
-                            phoneNeedsUpdate = .PhoneTypeID <> CRMPhoneType.PhoneTypeID
+                          If Not phoneNeedsUpdate Then
+                            phoneNeedsUpdate = IIf(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
                           End If
 
                           .PhoneTypeID = CRMPhoneType.PhoneTypeID
@@ -509,7 +509,7 @@ Namespace TeamSupport
 
                         If phoneNeedsUpdate Then
                           .Collection.Save()
-                          Log.Write("Account phone number added/upated.")
+                          Log.Write("Account phone number added/updated.")
                         End If
                     End With
                 End If
@@ -534,9 +534,10 @@ Namespace TeamSupport
                     End If
 
                     With thisFax
-                        If .Number <> company.Fax Or _
-                          .RefType <> ReferenceType.Organizations Or _
-                          .RefID <> thisCompany.OrganizationID Or _
+                        If .Number <> company.Fax OrElse _
+                          .RefType <> ReferenceType.Organizations OrElse _
+                          .RefID <> thisCompany.OrganizationID OrElse _
+                          .PhoneTypeID Is Nothing OrElse _
                           .PhoneTypeID = faxType.PhoneTypeID Then
                           faxNeedsUpdate = True
                         End If
@@ -761,8 +762,11 @@ Namespace TeamSupport
                                 .RefType = ReferenceType.Users
                                 .RefID = thisUser.UserID
                                 If CRMPhoneType IsNot Nothing Then
-                                    phoneNeedsUpdate = .PhoneTypeID <> CRMPhoneType.PhoneTypeID
-                                    .PhoneTypeID = CRMPhoneType.PhoneTypeID
+                                  If Not phoneNeedsUpdate Then
+                                    phoneNeedsUpdate = IIf(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
+                                  End If
+
+                                  .PhoneTypeID = CRMPhoneType.PhoneTypeID
                                 End If
 
                                 'Custom mapping for Tenmast.
@@ -789,9 +793,10 @@ Namespace TeamSupport
                             Dim mobileNeedsUpdate As Boolean = False
 
                             With mobilePhone
-                                If .Number <> person.Cell Or _
-                                    .RefType <> ReferenceType.Users Or _
-                                    .RefID <> thisUser.UserID Or _
+                                If .Number <> person.Cell OrElse _
+                                    .RefType <> ReferenceType.Users OrElse _
+                                    .RefID <> thisUser.UserID OrElse _
+                                    .PhoneTypeID Is Nothing OrElse _
                                     .PhoneTypeID <> mobileType.PhoneTypeID Then
                                   mobileNeedsUpdate = True
                                 End If
@@ -819,9 +824,10 @@ Namespace TeamSupport
                             Dim faxNeedsUpdate As Boolean = False
 
                             With faxPhone
-                                If .Number <> person.Fax Or _
-                                .RefType <> ReferenceType.Users Or _
-                                .RefID <> thisUser.UserID Or _
+                                If .Number <> person.Fax OrElse _
+                                .RefType <> ReferenceType.Users OrElse _
+                                .RefID <> thisUser.UserID OrElse _
+                                .PhoneTypeID Is Nothing OrElse _
                                 .PhoneTypeID <> faxType.PhoneTypeID Then
                                   faxNeedsUpdate = True
                                 End If
