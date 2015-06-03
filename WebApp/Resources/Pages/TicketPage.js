@@ -281,7 +281,7 @@ function SetupTicketProperties() {
     });
     
     if (typeof refresh === "undefined") {
-      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+      //window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
 
     $('.page-loading').hide().next().show();
@@ -909,8 +909,7 @@ function SetupTicketPropertyEvents() {
     var self = $(this);
     var value = self.val();
     top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-      var selectize = self[0].selectize;
-
+      //var selectize = self[0].selectize;
           window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
         },
       function (error) {

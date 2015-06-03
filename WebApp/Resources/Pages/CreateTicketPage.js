@@ -4,6 +4,7 @@ var _ticketGroupUsers = null;
 var _ticketTypeID = null;
 var _parentFields = [];
 var _productFamilyID = null;
+var _lastTicketTypeID = null;
 
 var _timerid;
 var _timerElapsed = 0;
@@ -56,6 +57,32 @@ var selectTicket = function (request, response) {
 }
 
 var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
+
+var getUrls = function (input) {
+  var source = (input || '').toString();
+  var parentDiv = $('<div>').addClass('input-group-addon external-link')
+  var url;
+  var matchArray;
+  var result = '';
+
+  // Regular expression to find FTP, HTTP(S) and email URLs. Updated to include urls without http
+  var regexToken = /(((ftp|https?|www):?\/?\/?)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+
+  // Iterate through any URLs in the text.
+  while ((matchArray = regexToken.exec(source)) !== null) {
+    url = matchArray[0];
+    if (url.length > 2 && url.substring(0, 3) == 'www') {
+      url = 'http://' + url;
+    }
+    result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-external-link fa-lg custom-field-link"></i></a>';
+  }
+
+  if (result !== '') {
+    return parentDiv.append(result);
+  }
+
+  return result;
+}
 
 Selectize.define('sticky_placeholder', function (options) {
   var self = this;
@@ -129,6 +156,13 @@ function SetupTicketProperties() {
     }
   });
 
+  $('#ticket-type').change(function (e) {
+    showCustomFields();
+    _lastTicketTypeID = $(this).val();
+  });
+
+  _lastTicketTypeID = types[0].TicketTypeID;
+
   //Status
   SetupStatusField();
 
@@ -178,6 +212,7 @@ function SetupTicketProperties() {
 
   //TODO:  Custom Fields
   //AppenCustomValues();
+  createCustomFields();
 };
 
 function SaveTicket(_doClose) {
@@ -585,7 +620,8 @@ function SetupProductSection() {
       var self = $(this);
       var product = top.Ts.Cache.getProduct(self.val());
       loadVersions(product);
-      //AppenCustomValues();
+      //TODO: Need a way to remove old product custom fields no longer applicable on product change
+      AppendProductMatchingCustomFields();
       top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
         if (IsRequired)
           $('#ticket-Product').closest('.form-group').addClass('hasError');
@@ -884,44 +920,43 @@ function AddAssociatedTickets(ticketid, IsParent) {
   });
 };
 
-function AppenCustomValues() {
-  var ticketTypeID = $('#ticket-type').val();
-  var productID = $('#ticket-Product').val();
-  if (ticketTypeID == undefined || ticketTypeID == "") ticketTypeID = -1;
-  if (productID == undefined || productID == "") productID = -1;
-
-  top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, ticketTypeID, productID, function (fields) {
-    debugger
+function createCustomFields() {
+  top.Ts.Services.CustomFields.GetParentCustomFields(top.Ts.ReferenceTypes.Tickets, null, function (result) {
     var parentContainer = $('#ticket-group-custom-fields');
-    if (fields === null || fields.length < 1) { parentContainer.empty().hide(); return; }
+    if (result === null || result.length < 1) { parentContainer.empty().hide(); return; }
     parentContainer.empty()
     parentContainer.show();
     _parentFields = [];
 
-    for (var i = 0; i < fields.length; i++) {
-      var field = fields[i];
-
-      if (field.CustomFieldCategoryID == null) {
-        switch (field.FieldType) {
-          case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, parentContainer); break;
-          case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, parentContainer); break;
-          case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, parentContainer); break;
-          case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, parentContainer); break;
-          case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, parentContainer); break;
-          case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, parentContainer); break;
-          case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, parentContainer, false); break;
-          default:
+    for (var i = 0; i < result.length; i++) {
+      if (!result[i].CustomFieldCategoryID) {
+        try {
+          switch (result[i].FieldType) {
+            case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(result[i], parentContainer); break;
+            case top.Ts.CustomFieldType.Date: AddCustomFieldDate(result[i], parentContainer); break;
+            case top.Ts.CustomFieldType.Time: AddCustomFieldTime(result[i], parentContainer); break;
+            case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(result[i], parentContainer); break;
+            case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(result[i], parentContainer); break;
+            case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(result[i], parentContainer); break;
+            case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(result[i], parentContainer); break;
+            default:
+          }
+        } catch (err) {
+          var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
+          for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
+          top.Ts.Services.System.LogException(err.message, errorString);
         }
       }
     }
-    appendCategorizedCustomValues(fields);
-  });
-}
 
-var appendCategorizedCustomValues = function (fields) {
-  var ticketTypeID = $('#ticket-type').val();
-  top.Ts.Services.CustomFields.GetCategories(top.Ts.ReferenceTypes.Tickets, ticketTypeID, function (categories) {
+    appendCategorizedCustomFields(result, null);
+  });
+};
+
+var appendCategorizedCustomFields = function (fields, className) {
+  top.Ts.Services.CustomFields.GetAllTypesCategories(top.Ts.ReferenceTypes.Tickets, function (categories) {
     var container = $('#ticket-group-custom-fields');
+    //var container = $('<div>').addClass('customFieldCategoryGroupDiv').appendTo($('#ticket-group-custom-fields'));
     for (var j = 0; j < categories.length; j++) {
       var isFirstFieldAdded = true;
       for (var i = 0; i < fields.length; i++) {
@@ -932,7 +967,7 @@ var appendCategorizedCustomValues = function (fields) {
         if (field.CustomFieldCategoryID == categories[j].CustomFieldCategoryID) {
           if (isFirstFieldAdded) {
             isFirstFieldAdded = false;
-            var header = $('<label>').text(categories[j].Category).addClass('customFieldCategoryHeader');
+            var header = $('<label id=CFCat-' + categories[j].CustomFieldCategoryID + '>').text(categories[j].Category).addClass('customFieldCategoryHeader');
             container.append(header);
           }
 
@@ -950,45 +985,30 @@ var appendCategorizedCustomValues = function (fields) {
       }
     }
     appendConditionalFields();
+    showCustomFields();
   });
 }
 
-var appendConditionalFields = function () {
-  for (var i = 0; i < _parentFields.length; i++) {
-    var field = _parentFields[i].data('field');
-    $('.' + field.CustomFieldID + 'children').remove();
-    var parentContainer = $('#ticket-group-custom-fields');
-    var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
-    appendMatchingParentValueFields(childrenContainer, field);
-  }
-}
-
-var appendMatchingParentValueFields = function (container, parentField) {
-  //top.Ts.Services.Tickets.GetMatchingParentValueFields(_ticketID, parentField.CustomFieldID, parentField.Value, function (fields) {
-  //  for (var i = 0; i < fields.length; i++) {
-  //    var field = fields[i];
-  //    var div = $('<div>').addClass('form-group form-group-sm').data('field', field);
-  //    $('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
-
-  //    container.append(div);
-
-  //    switch (field.FieldType) {
-  //      case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, div); break;
-  //      case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, div); break;
-  //      case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, div); break;
-  //      case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, div); break;
-  //      case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, div); break;
-  //      case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, div); break;
-  //      case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, div, true); break;
-  //      default:
-  //    }
-  //  }
-  //});
-}
+function showCustomFields() {
+  var ticketTypeID = $('#ticket-type').val();
+  $('.custom-field').hide().each(function () {
+    var field = $(this).data('field');
+    if (field.AuxID == ticketTypeID) {
+      $(this).show();
+      if (field.CustomFieldCategoryID !== null) $('#CFCat-' + field.CustomFieldCategoryID).show();
+      if (field.ParentProductID !== null) $('#CFGroupProduct-' + field.ParentProductID).show();
+    }
+    else {
+      $(this).hide();
+      if (field.CustomFieldCategoryID !== null) $('#CFCat-' + field.CustomFieldCategoryID).hide();
+      if (field.ParentProductID !== null) $('#CFGroupProduct-' + field.ParentProductID).hide();
+    }
+  });
+};
 
 var AddCustomFieldEdit = function (field, parentContainer) {
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-  var groupContainer = $('<div>').addClass('form-group form-group-sm')
+  var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field')
                           .data('field', field)
                           .appendTo(formcontainer)
                           .append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
@@ -1029,6 +1049,14 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     else {
       groupContainer.removeClass('isEmpty');
     }
+    //top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+    //  groupContainer.data('field', result);
+    //  groupContainer.find('.external-link').remove();
+    //  input.after(getUrls(result.Value));
+    //  window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+    //}, function () {
+    //  alert("There was a problem saving your ticket property.");
+    //});
   });
 
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -1048,7 +1076,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 var AddCustomFieldDate = function (field, parentContainer) {
   var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-  var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
@@ -1112,7 +1140,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
 var AddCustomFieldDateTime = function (field, parentContainer) {
   var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-  var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
@@ -1176,7 +1204,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 var AddCustomFieldTime = function (field, parentContainer) {
   var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-  var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
@@ -1240,7 +1268,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
 var AddCustomFieldBool = function (field, parentContainer) {
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>')
-                          .addClass('form-group form-group-sm')
+                          .addClass('form-group form-group-sm custom-field')
                           .data('field', field)
                           .appendTo(formcontainer)
                           .append($('<label>').addClass('col-sm-4 control-label').text(field.Name));
@@ -1249,15 +1277,11 @@ var AddCustomFieldBool = function (field, parentContainer) {
   var input = $('<input type="checkbox">').appendTo(inputDiv);
   var value = (field.Value === null || $.trim(field.Value) === '' || field.Value === 'False' ? false : true);
   input.attr("checked", value);
-
-  input.change(function (e) {
-    var isChecked = input.is(':checked');
-  });
-}
+};
 
 var AddCustomFieldNumber = function (field, parentContainer) {
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-  var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
   var input = $('<input type="text">')
                   .addClass('form-control ticket-simple-input')
@@ -1306,7 +1330,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
 
 var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFields) {
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-  var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var selectContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
   var select = $('<select>').addClass('hidden-select').appendTo(selectContainer);
   var options = field.ListValues.split('|');
@@ -1346,11 +1370,13 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
       else {
         groupContainer.removeClass('isEmpty');
       }
-
+      //TODO:  Need to add this back in.  
       $('.' + field.CustomFieldID + 'children').remove();
       var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
-      //TODO:  need to test if this workds
-      appendMatchingParentValueFields(childrenContainer, field);
+      appendMatchingParentValueFields(childrenContainer, result);
+
+
+
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
@@ -1379,30 +1405,77 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
   else {
     _parentFields.push(groupContainer);
   }
+};
+
+var appendConditionalFields = function () {
+  for (var i = 0; i < _parentFields.length; i++) {
+    var field = _parentFields[i].data('field');
+    $('.' + field.CustomFieldID + 'children').remove();
+    var parentContainer = $('#ticket-group-custom-fields');
+    var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
+    appendMatchingParentValueFields(childrenContainer, field);
+  }
 }
 
-var getUrls = function (input) {
-  var source = (input || '').toString();
-  var parentDiv = $('<div>').addClass('input-group-addon external-link')
-  var url;
-  var matchArray;
-  var result = '';
+var appendMatchingParentValueFields = function (container, field) {
+  var items = field.ListValues.split('|');
+  var ticketTypeID = $('#ticket-type').val();
+  if (field.AuxID == ticketTypeID && items.length > 0) {
+    var productID = $('#ticket-Product').val();
+    if (productID == undefined || productID == "") productID = "-1";
+    top.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, items[0], productID, function (result) {
+      for (var i = 0; i < result.length; i++) {
+        var field = result[i];
+        var div = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field);
+        $('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
 
-  // Regular expression to find FTP, HTTP(S) and email URLs. Updated to include urls without http
-  var regexToken = /(((ftp|https?|www):?\/?\/?)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+        container.append(div);
 
-  // Iterate through any URLs in the text.
-  while ((matchArray = regexToken.exec(source)) !== null) {
-    url = matchArray[0];
-    if (url.length > 2 && url.substring(0, 3) == 'www') {
-      url = 'http://' + url;
+        switch (field.FieldType) {
+          case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, div); break;
+          case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, div); break;
+          case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, div); break;
+          case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, div); break;
+          case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, div); break;
+          case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, div); break;
+          case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, div, true); break;
+          default:
+        }
+      }
+    });
+  }
+  showCustomFields();
+};
+
+
+function AppendProductMatchingCustomFields() {
+  var productID = $('#ticket-Product').val();
+  if (productID == undefined || productID == "") productID = "-1";
+  top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
+    //var container = $('#ticket-group-custom-fields');
+    var container = $('<div id="CFGroupProduct-'+ productID +'">').appendTo($('#ticket-group-custom-fields'));
+
+    for (var i = 0; i < result.length; i++) {
+      if (!result[i].CustomFieldCategoryID) {
+        try {
+          var field = result[i];
+          switch (field.FieldType) {
+            case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, container); break;
+            case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, container); break;
+            case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, container); break;
+            case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, container); break;
+            case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, container); break;
+            case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, container); break;
+            case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, container, false); break;
+            default:
+          }
+        } catch (err) {
+          var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
+          for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
+          top.Ts.Services.System.LogException(err.message, errorString);
+        }
+      }
     }
-    result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-external-link fa-lg custom-field-link"></i></a>';
-  }
-
-  if (result !== '') {
-    return parentDiv.append(result);
-  }
-
-  return result;
-}
+    appendCategorizedCustomFields(result, null);
+  });
+};

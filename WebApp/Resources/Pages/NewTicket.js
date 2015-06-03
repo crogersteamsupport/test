@@ -498,7 +498,7 @@ $(document).ready(function () {
     }
 
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
-    if (field.AuxID == ticketTypeID && items.length > 0) {
+    if (field.AuxID == ticketTypeID && items.length > 0) {debugger
         var productID = $('.newticket-product option:selected').val();
         top.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, items[0], productID, function (result) {
             for (var i = 0; i < result.length; i++) {
