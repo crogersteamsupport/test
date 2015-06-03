@@ -46,6 +46,8 @@ $(document).ready(function () {
    
   $('video').click(function () { this.paused ? this.play() : this.pause(); });
 
+  $('body').delegate('video', 'click', function (e) { this.paused ? this.play() : this.pause(); });
+
   if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
 
   $('.page-loading').show().next().hide();
@@ -3118,9 +3120,11 @@ var createActionForm = function (element, action, callback) {
   element.find('#inserttok').hide();
 
   element.find('#inserttok').click(function (e) {
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400"><source src="' + tokurl + '"> type="video/mp4"</video>');
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400"><source src="' + tokurl + '" type="video/mp4"></video>');
       session.unpublish(publisher);
       element.find('#recordVideoContainer').hide();
+      element.find('#inserttok').show();
+      element.find('#deletetok').show();
   });
 
   element.find('#deletetok').hide();
@@ -3129,6 +3133,8 @@ var createActionForm = function (element, action, callback) {
           element.find('#rcdtok').show();
           element.find('#stoptok').hide();
           session.unpublish(publisher);
+          element.find('#inserttok').show();
+          element.find('#deletetok').show();
           element.find('#recordVideoContainer').hide();
 1      });
   });
@@ -3141,6 +3147,8 @@ var createActionForm = function (element, action, callback) {
               element.find('#stoptok').hide();
               session.unpublish(publisher);
               element.find('#recordVideoContainer').hide();
+              element.find('#inserttok').show();
+              element.find('#deletetok').show();
           });
       }
       else

@@ -57,7 +57,7 @@
         </div>
       </div>
       <p>* You may need to refresh your browser before your changes are visible.</p>
-      <p style="color:Red; font-weight:bold;">** Important:  If you are making changes to your ticket statuses, please remember you need to visit the Workflow tab to define the workflow.  More specifically, what statuses will be visible as next possible selections based on the current status selected within each ticket.  You can also read more about workflow <a target="_blank" href="http://help.teamsupport.com/administration/workflow">here</a>.</p>
+      <p style="color:Red; font-weight:bold;">** Important:  If you are making changes to your ticket statuses, please remember you need to visit the Workflow tab to define the workflow.  More specifically, what statuses will be visible as next possible selections based on the current status selected within each ticket.  You can also read more about workflow <a target="_blank" href="http://help.teamsupport.com/1/en/topic/workflow">here</a>.</p>
     </div>
   </div>
   <telerik:RadWindow ID="wndDeleteType" runat="server" Width="350px" Height="250px"

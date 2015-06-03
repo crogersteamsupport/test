@@ -709,7 +709,7 @@ namespace TSWebServices
     {
       User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
       WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
-      return wcv.GetLatestWatercoolerCount(user.LastPingUtc.ToString());
+      return wcv.GetLatestWatercoolerCount(user.LastLoginUtc.ToString());
     }
 
     [WebMethod]

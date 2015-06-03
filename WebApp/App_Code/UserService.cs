@@ -1450,22 +1450,40 @@ namespace TSWebServices
                 {
                     case ReferenceType.Tickets:
                         Ticket t = Tickets.GetTicket(TSAuthentication.GetLoginUser(), r.RefID);
-                        cal.type = "reminder-ticket";
-                        cal.id = t.TicketNumber;
-                        cal.description = t.Name;
-                        break;
+                        if (t != null)
+                        {
+                            cal.type = "reminder-ticket";
+                            cal.id = t.TicketNumber;
+                            cal.description = t.Name;
+                            break;
+                        }
+                        else
+                            continue;
+                        
                     case ReferenceType.Organizations:
                         Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), r.RefID);
-                        cal.type = "reminder-org";
-                        cal.id = o.OrganizationID;
-                        cal.description = o.Name;
-                        break;
+                        if (o != null)
+                        {
+                            cal.type = "reminder-org";
+                            cal.id = o.OrganizationID;
+                            cal.description = o.Name;
+                            break;
+                        }
+                        else
+                            continue;
+
                     case ReferenceType.Contacts:
                         User u = Users.GetUser(TSAuthentication.GetLoginUser(), r.RefID);
-                        cal.id = u.UserID;
-                        cal.type = "reminder-user";
-                        cal.description = u.FirstLastName;
-                        break;
+                        if (u != null)
+                        {
+                            cal.id = u.UserID;
+                            cal.type = "reminder-user";
+                            cal.description = u.FirstLastName;
+                            break;
+                        }
+                        else
+                            continue;
+
                 }
 
 
