@@ -3121,10 +3121,12 @@ var createActionForm = function (element, action, callback) {
 
   element.find('#inserttok').click(function (e) {
       tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400"><source src="' + tokurl + '" type="video/mp4"></video>');
+      element.find('#rcdtok').show();
+      element.find('#stoptok').hide();
+      element.find('#inserttok').hide();
+      element.find('#deletetok').hide();
       session.unpublish(publisher);
       element.find('#recordVideoContainer').hide();
-      element.find('#inserttok').show();
-      element.find('#deletetok').show();
   });
 
   element.find('#deletetok').hide();
@@ -3132,9 +3134,9 @@ var createActionForm = function (element, action, callback) {
       top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
           element.find('#rcdtok').show();
           element.find('#stoptok').hide();
+          element.find('#inserttok').hide();
+          element.find('#deletetok').hide();
           session.unpublish(publisher);
-          element.find('#inserttok').show();
-          element.find('#deletetok').show();
           element.find('#recordVideoContainer').hide();
 1      });
   });
@@ -3145,10 +3147,10 @@ var createActionForm = function (element, action, callback) {
           top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
               element.find('#rcdtok').show();
               element.find('#stoptok').hide();
+              element.find('#inserttok').hide();
+              element.find('#deletetok').hide();
               session.unpublish(publisher);
               element.find('#recordVideoContainer').hide();
-              element.find('#inserttok').show();
-              element.find('#deletetok').show();
           });
       }
       else
