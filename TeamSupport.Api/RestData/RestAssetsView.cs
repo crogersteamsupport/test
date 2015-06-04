@@ -23,7 +23,16 @@ namespace TeamSupport.Api
     public static string GetAssetsView(RestCommand command)
     {
       AssetsView assetsView = new AssetsView(command.LoginUser);
-      assetsView.LoadByOrganizationID(command.Organization.OrganizationID);
+
+      try
+      {
+        assetsView.LoadByOrganizationID(command.Organization.OrganizationID, command.Filters);
+      }
+      catch (Exception ex)
+      {
+        //if something fails use the old method
+        assetsView.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
 
       if (command.Format == RestFormat.XML)
       {
