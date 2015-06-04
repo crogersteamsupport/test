@@ -225,7 +225,7 @@ function SaveTicket(_doClose) {
 function isFormValid(callback) {
   top.Ts.Services.Organizations.IsProductRequired(function (isProductRequired) {
     top.Ts.Services.Organizations.IsProductVersionRequired(function (isProductVersionRequired) {
-      top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {debugger
+      top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
         var result = true;
         var product = $('#ticket-Product');
         var reportversion = $('#ticket-Versions');
@@ -621,6 +621,7 @@ function SetupProductSection() {
       var product = top.Ts.Cache.getProduct(self.val());
       loadVersions(product);
       //TODO: Need a way to remove old product custom fields no longer applicable on product change
+      
       AppendProductMatchingCustomFields();
       top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
         if (IsRequired)
@@ -1449,11 +1450,13 @@ var appendMatchingParentValueFields = function (container, field) {
 
 
 function AppendProductMatchingCustomFields() {
+  $('.CFProductGroup').remove();
   var productID = $('#ticket-Product').val();
   if (productID == undefined || productID == "") productID = "-1";
   top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
+    debugger
     //var container = $('#ticket-group-custom-fields');
-    var container = $('<div id="CFGroupProduct-'+ productID +'">').appendTo($('#ticket-group-custom-fields'));
+    var container = $('<div>').addClass('CFProductGroup').appendTo($('#ticket-group-custom-fields'));
 
     for (var i = 0; i < result.length; i++) {
       if (!result[i].CustomFieldCategoryID) {
