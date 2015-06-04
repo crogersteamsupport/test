@@ -1867,11 +1867,11 @@ Namespace TeamSupport
                             Log.Write(String.Format("Description before htmlstrip: {0}", description))
                           End If
 
-                          result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(description))))
+                          result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(description)))))
 
                           '//vv temp logging for Ticket#20811. Logging only for organization FISCAL Technologies (784292) and Fiscal Technology Ltd - Sandbox (871653)
                           If ticket.OrganizationID = 784292 OrElse ticket.OrganizationID = 871653 Then
-                            Log.Write(String.Format("Description after TruncateCaseCommentBody and htmlstrip: {0}", TruncateCaseCommentBody(HtmlUtility.StripHTML(description))))
+                            Log.Write(String.Format("Description after TruncateCaseCommentBody, htmlstrip and agilitypack: {0}", TruncateCaseCommentBody(HtmlUtility.StripHTML(description))))
                           End If
                         Else
                           logError = True
