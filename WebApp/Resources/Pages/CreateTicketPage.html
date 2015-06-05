@@ -43,9 +43,11 @@
       <div class="row" >
         <div class="ticket-content-wrapper" style="background-color: #e5e5e5; padding-top: 10px; ">
           <div class="ticket-timeline">
-            <div class="row" style="margin-bottom:5px;">
+            <div class="row">
               <div class="col-sm-12">
-                <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter a name for the ticket...">
+                <div class="form-group">
+                  <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter a name for the ticket...">
+                </div>
               </div>
             </div>
             <div class="row">
@@ -150,7 +152,6 @@
                 <label id="ticket-status-label" for="ticket-status" class="col-sm-4 control-label select-label">Status</label>
                 <div class="col-sm-8 ticket-input-container">
                   <select id="ticket-status" class="form-control hidden-select">
-                    <option>Unassiged</option>
                   </select>
                 </div>
               </div>
@@ -162,7 +163,6 @@
                 <label for="ticket-severity" class="col-sm-4 control-label select-label">Severity</label>
                 <div class="col-sm-8 ticket-input-container">
                   <select id="ticket-severity" class="form-control ticket-select hidden-select">
-                    <option>Unassiged</option>
                   </select>
                 </div>
               </div>

@@ -217,7 +217,8 @@ function SetupTicketProperties() {
 
 function SaveTicket(_doClose) {
   isFormValid(function (isValid) {
-    if (isValid == false) {
+    alert(isValid);
+    if (isValid == true) {
     }
   });
 };
@@ -231,17 +232,95 @@ function isFormValid(callback) {
         var reportversion = $('#ticket-Versions');
         var productID = product.val();
         var reportversionID = reportversion.val();
+        var status = top.Ts.Cache.getTicketStatus($('#ticket-status').val());
 
+        //Check if we need a product
+        product.closest('.form-group').removeClass('hasError');
         if (isProductRequired && (productID == -1 || productID == ""))
         {
           product.closest('.form-group').addClass('hasError');
-          return false;
+          result = false;
         }
 
+        //See if we need a version
+        reportversion.closest('.form-group').removeClass('hasError');
         if (isProductVersionRequired && (reportversionID == -1 || reportversionID == "")) {
           reportversion.closest('.form-group').addClass('hasError');
-          return false;
+          result = false;
         }
+
+        //Ensure there is a name
+        $('#ticket-title-input').closest('.form-group').removeClass('has-error hasError');
+        if ($.trim($('#ticket-title-input').val()) == '') {
+          $('#ticket-title-input').closest('.form-group').addClass('has-error hasError');
+          result = false;
+        }
+        //Check required custom fields
+        $('.custom-field:visible').each(function () {
+          $(this).removeClass('hasError');
+          var field = $(this).data('field');
+          if (field.IsRequired) {
+            switch (field.FieldType) {
+              case top.Ts.CustomFieldType.Text:
+              case top.Ts.CustomFieldType.Number:
+                if ($.trim($(this).find('input').val()) == '') {
+                  $(this).addClass('hasError');
+                  result = false;
+                }
+                break;
+              case top.Ts.CustomFieldType.Date:
+              case top.Ts.CustomFieldType.Time:
+              case top.Ts.CustomFieldType.DateTime:
+                var date = $.trim($(this).find('a').text());
+                if (date == null || date == '' || date == 'Unassigned') {
+                  $(this).addClass('hasError');
+                  result = false;
+                }
+                break;
+              case top.Ts.CustomFieldType.PickList:
+                if ($(this).hasClass('isEmpty')) {
+                  $(this).addClass('hasError');
+                  result = false;
+                }
+                break;
+              default:
+            }
+          }
+          debugger
+          if (status.IsClosed) {
+            if (field.IsRequiredToClose) {
+              switch (field.FieldType) {
+                case top.Ts.CustomFieldType.Text:
+                case top.Ts.CustomFieldType.Number:
+                  if ($.trim($(this).find('input').val()) == '') {
+                    $(this).addClass('hasError');
+                    result = false;
+                  }
+                  break;
+                case top.Ts.CustomFieldType.Date:
+                case top.Ts.CustomFieldType.Time:
+                case top.Ts.CustomFieldType.DateTime:
+                  var date = $.trim($(this).find('a').text());
+                  if (date == null || date == '' || date == 'Unassigned') {
+                    $(this).addClass('hasError');
+                    result = false;
+                  }
+                  break;
+                case top.Ts.CustomFieldType.PickList:
+                  if ($(this).hasClass('isEmpty')) {
+                    $(this).addClass('hasError');
+                    result = false;
+                  }
+                  break;
+                default:
+              }
+            }
+          }
+        });
+
+        //If status is closed check required to close custom fields
+
+        //If custom required check if the ticket is a KB if not then see if we have at least one customer
 
         callback(result);
       });
@@ -308,11 +387,8 @@ function AppendSelect(parent, data, type, id, name, isSelected) {
 };
 
 function SetupStatusField() {
-  var statuses = top.Ts.Cache.getTicketStatuses();
   $("#ticket-status").selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
+    closeAfterSelect: true,
     render: {
       item: function (item, escape) {
         if (item.data.IsClosed) {
@@ -328,9 +404,20 @@ function SetupStatusField() {
   selectize.clear(true);
   selectize.clearOptions();
 
+  var statuses = top.Ts.Cache.getTicketStatuses();
+  var ticketTypeID = $('#ticket-type').val();
+
+  var flag = true;
   for (var i = 0; i < statuses.length; i++) {
-    selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+    if (statuses[i].TicketTypeID == ticketTypeID) {
+      selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+      if (flag) {
+        selectize.addItem(statuses[i].TicketStatusID);
+        flag = false;
+      }
+    }
   }
+  
 }
 
 function SetupKBFields() {
@@ -683,7 +770,7 @@ function SetupProductVersionsControl(product) {
       var reportversion = $('#ticket-Versions');
       reportversion.closest('.form-group').removeClass('hasError');
     },
-    onDropdownClose: function ($dropdown) {alert('dropdown')
+    onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     }
   });
@@ -957,7 +1044,6 @@ function createCustomFields() {
 var appendCategorizedCustomFields = function (fields, className) {
   top.Ts.Services.CustomFields.GetAllTypesCategories(top.Ts.ReferenceTypes.Tickets, function (categories) {
     var container = $('#ticket-group-custom-fields');
-    //var container = $('<div>').addClass('customFieldCategoryGroupDiv').appendTo($('#ticket-group-custom-fields'));
     for (var j = 0; j < categories.length; j++) {
       var isFirstFieldAdded = true;
       for (var i = 0; i < fields.length; i++) {
@@ -1371,12 +1457,9 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
       else {
         groupContainer.removeClass('isEmpty');
       }
-      //TODO:  Need to add this back in.  
       $('.' + field.CustomFieldID + 'children').remove();
       var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
       appendMatchingParentValueFields(childrenContainer, result);
-
-
 
     },
     onDropdownClose: function ($dropdown) {
@@ -1448,14 +1531,11 @@ var appendMatchingParentValueFields = function (container, field) {
   showCustomFields();
 };
 
-
 function AppendProductMatchingCustomFields() {
   $('.CFProductGroup').remove();
   var productID = $('#ticket-Product').val();
   if (productID == undefined || productID == "") productID = "-1";
   top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
-    debugger
-    //var container = $('#ticket-group-custom-fields');
     var container = $('<div>').addClass('CFProductGroup').appendTo($('#ticket-group-custom-fields'));
 
     for (var i = 0; i < result.length; i++) {
