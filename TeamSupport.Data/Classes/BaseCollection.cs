@@ -210,15 +210,73 @@ namespace TeamSupport.Data
         {
           if (field.ApiFieldName.ToLower() == column.ColumnName.ToLower())
           {
-            field.SetValue(PrimaryKeyID, row[column]);
+            bool isValid = false;
+
+            try
+            {
+              isValid = IsValid(row[column], field.FieldType, field.IsRequired);
+            }
+            catch (Exception ex)
+            {
+              isValid = true;
+              //if the validation check threw an exception then set the value anyway, basically what was done before, and log the exception
+              string columnName = string.Empty;
+              string value = string.Empty;
+
+              if (column != null)
+              {
+                columnName = column.ColumnName;
+
+                if (row != null)
+                {
+                  value = row[column].ToString();
+                }
+              }
+
+              ExceptionLogs.LogException(_baseCollection.LoginUser,
+                                        ex,
+                                        "BaseCollection.UpdateCustomFieldsFromXml",
+                                        string.Format("Validating {0} with value {1}",
+                                                      string.IsNullOrEmpty(columnName) ? "a field" : columnName,
+                                                      string.IsNullOrEmpty(value) ? "{ex.found}" : value));
+            }
+            
+            if (isValid)
+            {
+              field.SetValue(PrimaryKeyID, row[column]);
+            }
+
             break;
           }
         }
+      }
+    }
 
+    private bool IsValid(object customFieldValue, CustomFieldType customFieldType, bool isRequired)
+    {
+      bool isValid = false;
+
+      if (isRequired && string.IsNullOrEmpty(customFieldValue.ToString()))
+      {
+        isValid = false;
+      }
+      else
+      {
+        switch (customFieldType)
+        {
+          case CustomFieldType.Number:
+            int intValue = 0;
+            isValid = int.TryParse(customFieldValue.ToString(), out intValue);
+            break;
+          default:
+            isValid = true;
+            break;
+        }
       }
 
+      return isValid;
     }
-    
+
     public void ReadFromXml(string data, bool isInsert, bool allowOrganizationUpdateFromAPI = false)
     {
       StringReader reader = new StringReader(data);
