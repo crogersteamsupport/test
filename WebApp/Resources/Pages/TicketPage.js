@@ -2367,7 +2367,7 @@ var SetupDueDateField = function (duedate) {
 
       top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
         var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-        input.remove();
+        this.remove();
         dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
         _dueDate = top.Ts.Utils.getMsDate(value); //result;
 

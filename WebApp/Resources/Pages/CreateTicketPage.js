@@ -1,4 +1,5 @@
 ﻿var dateformat;
+var _dueDate = null;
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
 var _ticketTypeID = null;
@@ -82,6 +83,22 @@ var getUrls = function (input) {
   }
 
   return result;
+};
+
+var tickettimer = function () {
+  var real = (counter * speed),
+  ideal = (new Date().getTime() - start);
+
+  counter++;
+
+  var diff = (ideal - real);
+
+  if (_timerElapsed != Math.floor(ideal / 60000)) {
+    var oldVal = parseInt($('#action-new-minutes').val()) || 0;
+    $('#action-new-minutes').val(oldVal + 1);
+    _timerElapsed = Math.floor(ideal / 60000);
+  }
+  _timerid = setTimeout(tickettimer, (speed - diff));
 }
 
 Selectize.define('sticky_placeholder', function (options) {
@@ -102,6 +119,7 @@ Selectize.define('sticky_placeholder', function (options) {
 $(document).ready(function () {
   LoadTicketPageOrder();
   SetupDescriptionEditor();
+  SetupActionTimers();
 
   $('.page-loading').hide().next().show();
 });
@@ -217,8 +235,104 @@ function SetupTicketProperties() {
 
 function SaveTicket(_doClose) {
   isFormValid(function (isValid) {
-    alert(isValid);
     if (isValid == true) {
+      var info = new Object();
+      info.Name = $('#ticket-title-input').val();
+      info.TicketTypeID = $('#ticket-type').val();
+      info.TicketStatusID = $('#ticket-status').val();
+      info.TicketSeverityID = $('#ticket-severity').val();
+      info.UserID = $('#ticket-assigned').val();
+      info.GroupID = $('#ticket-group').val();
+      var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
+      info.DueDate = _dueDate;
+
+      info.CategoryID = $('#ticket-KB-Category').val();
+      info.ProductID = $('#ticket-Product').val();
+      info.ReportedID = $('#ticket-Versions').val();
+      info.ResolvedID = $('#ticket-Resolved').val();
+      info.IsVisibleOnPortal = $('#ticket-visible').prop('checked')
+      info.IsKnowledgebase = $('#ticket-isKB').prop('checked');
+      info.KnowledgeBaseCategoryID = $('#ticket-KB-Category').val();
+      info.Description = tinyMCE.activeEditor.getContent();
+      info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
+
+      //TODO:need custom fields
+      // Custom Values
+      info.Fields = new Array();
+
+      // Associated Tickets
+      info.ChildTickets = new Array();
+      info.RelatedTickets = new Array();
+      $('#ticket-AssociatedTickets > div.tag-item').each(function () {
+        //TODO:  Need to add ability to put in appropriate arrays
+        info.RelatedTickets[info.RelatedTickets.length] = $(this).attr('id');
+      });
+
+      //Tags
+      info.Tags = new Array();
+      $('#ticket-tags > div.tag-item').each(function () {
+        //TODO:  Need to get this working correctly
+        info.Tags[info.Tags.length] = $(this).text();
+      });
+
+      //Subscribers
+      info.Subscribers = new Array();
+      $('#ticket-SubscribedUsers > div.tag-item').each(function () {
+        info.Subscribers[info.Subscribers.length] = $(this).attr('id');
+      });
+
+      //Reminders
+      info.Reminders = new Array();
+      $('#ticket-SubscribedUsers > div.tag-item').each(function () {
+        info.Reminders[info.Reminders.length] = $(this).attr('id');
+      });
+
+      //Queues
+      info.Queuers = new Array();
+      $('#ticket-UserQueue > div.tag-item').each(function () {
+        info.Queuers[info.Queuers.length] = $(this).attr('id');
+      });
+
+      //Inventory
+      info.Assets = new Array();
+      $('#ticket-Inventory > div.tag-item').each(function () {
+        info.Assets[info.Assets.length] = $(this).attr('id');
+      });
+      
+      //Customers
+      info.Customers = new Array();
+      info.Contacts = new Array();
+      $('#ticket-SubscribedUsers > div.tag-item').each(function () {
+        //tODO:  Need way to distinguish what type of user they are
+        var data = $(this).data();
+        //info.Customers[info.Customers.length] = $(this).attr('id');
+      });
+
+      ////
+      //info.Contacts = new Array();
+      //$('#ticket-SubscribedUsers > div.tag-item').each(function () {
+      //  info.Contacts[info.Contacts.length] = $(this).attr('id');
+      //});
+
+      //
+      var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+      if (chatID && chatID != null) {
+        info.ChatID = chatID;
+      }
+
+      top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
+        if (result == null) {
+          alert('There was an error saving your ticket.  Please try again.');
+          $('.new-ticket-save-buttons').removeClass('saving');
+          return;
+        }
+        _ticketID = result[0];
+        top.Ts.System.logAction('Ticket Created');
+
+        if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
+        top.Ts.MainPage.closeNewTicketTab();
+
+      });
     }
   });
 };
@@ -286,7 +400,7 @@ function isFormValid(callback) {
               default:
             }
           }
-          debugger
+
           if (status.IsClosed) {
             if (field.IsRequiredToClose) {
               switch (field.FieldType) {
@@ -318,9 +432,18 @@ function isFormValid(callback) {
           }
         });
 
-        //If status is closed check required to close custom fields
-
         //If custom required check if the ticket is a KB if not then see if we have at least one customer
+        if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false)
+        { 
+          if($('#ticket-Customer > div.tag-item').length < 1)
+          {
+            $('#ticket-Customer').closest('.form-group').addClass('hasError');
+          }
+          else
+          {
+            $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+          }
+        }
 
         callback(result);
       });
@@ -486,7 +609,7 @@ function SetupDueDateField(duedate) {
     $(this).hide();
     var input = $('<input type="text">')
                     .addClass('form-control')
-                    //.val('')
+                    .val('')
                     .datetimepicker({
                       showClear: true,
                       sideBySide: true
@@ -496,7 +619,8 @@ function SetupDueDateField(duedate) {
 
     input.focusout(function (e) {
       var value = top.Ts.Utils.getMsDate(input.val());
-      input.remove();
+      _dueDate = value;
+      this.remove();
       dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
     })
   });
@@ -572,6 +696,7 @@ function SetupCustomerSection() {
       'sticky_placeholder': {}
     },
     onItemAdd: function (value, $item) {
+      $('#ticket-Customer').closest('.form-group').removeClass('hasError');
       AddCustomers($item.data());
       this.removeItem(value, true);
     },
@@ -620,6 +745,7 @@ function SetupCustomerSection() {
                 $('.ticket-new-customer-last').val('');
                 $('.ticket-new-customer-company').val('');
                 $('.ticket-new-customer-phone').val('');
+                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
                 $('#NewCustomerModal').modal('hide');
             });
           }
@@ -631,6 +757,7 @@ function SetupCustomerSection() {
           $('.ticket-new-customer-last').val('');
           $('.ticket-new-customer-company').val('');
           $('.ticket-new-customer-phone').val('');
+          $('#ticket-Customer').closest('.form-group').removeClass('hasError');
           $('#NewCustomerModal').modal('hide');
         }
       }
@@ -1003,7 +1130,7 @@ function AddAssociatedTickets(ticketid, IsParent) {
       var label = caption + "<br />" + ellipseString(ticket.TicketNumber + ': ' + ticket.Name, 30);
 
       var newelement = PrependTag(AssociatedTicketsDiv, ticket.TicketID, ticket.IsClosed ? '<s>' + label + '</s>' : label, ticket, 'tag-item TicketAnchor');
-      newelement.data('ticketid', related.TicketID).data('placement', 'left');
+      newelement.data('ticketid', ticket.TicketID).data('placement', 'left');
     }
   });
 };
@@ -1092,6 +1219,34 @@ function showCustomFields() {
     }
   });
 };
+
+function SetupActionTimers() {
+  $('#action-new-date-started').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
+
+  $('.spinner .btn:first-of-type').click(function () {
+    var spinner = $(this).parent().prev();
+    spinner.val(parseInt(spinner.val(), 10) + 1);
+  });
+
+  $('.spinner .btn:last-of-type').click(function () {
+    var spinner = $(this).parent().prev();
+    spinner.val(parseInt(spinner.val(), 10) - 1);
+  });
+  $('#action-new-timer').click(function (e) {
+    var hasStarted = $(this).data('hasstarted');
+
+    if (!hasStarted) {
+      start = new Date().getTime();
+      tickettimer();
+      $(this).find(':first-child').css('color', 'green');
+    }
+    else {
+      $(this).find(':first-child').css('color', 'red');
+      clearTimeout(_timerid);
+    }
+    $(this).data('hasstarted', !hasStarted);
+  });
+}
 
 var AddCustomFieldEdit = function (field, parentContainer) {
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);

@@ -107,7 +107,7 @@
               <div class="col-sm-12">
                 <div id="action-save-alert" class="alert alert-danger" role="alert" style="display:none;"></div>
                 <button id="ticket-create" type="button" class="btn btn-primary">Create</button>
-                <button id="ticket-createandclose" type="button" class="btn btn-default">Create & Close</button>
+                <button id="ticket-createandclose" type="button" class="btn btn-default">Create & Close Window</button>
                 <button id="ticket-cancel" type="button" class="btn btn-default">Cancel</button>
               </div>
             </div>
@@ -211,22 +211,6 @@
                 </div>
               </div>
             </div>
-            <!--<div class="form-horizontal" id="ticket-KBVisible-RO" style="display:none;">
-              <div class="form-group form-group-sm">
-                <label for="ticket-DueDate" class="col-sm-4 control-label">KB</label>
-                <div class="col-sm-8 ticket-input-container">
-                  <label id="ticket-isKB-RO" class="control-label"></label>
-                </div>
-              </div>
-            </div>
-            <div class="form-horizontal" id="ticket-KBCat-RO" style="display:none;">
-              <div class="form-group form-group-sm">
-                <label for="ticket-KB-Category-RO" class="col-sm-4 control-label">KB</label>
-                <div class="col-sm-8 ticket-input-container">
-                  <label id="ticket-KB-Category-RO" class="control-label"></label>
-                </div>
-              </div>
-            </div>-->
           </script>
 
           <script id="ticket-group-Community" type="text/x-handlebars-template">
@@ -238,15 +222,6 @@
                 </div>
               </div>
             </div>
-            <!--<div class="form-horizontal" id="ticket-CommunityInfo-RO" style="display:none;">
-              <div class="form-group form-group-sm">
-                <label for="ticket-Community-RO" class="col-sm-4 control-label">Community</label>
-                <div class="col-sm-8 ticket-input-container">
-                  <label id="ticket-Community-RO" class="control-label" style="color: #333333;"></label>
-                </div>
-
-              </div>
-            </div>-->
           </script>
           <script id="ticket-group-Customers" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
@@ -304,7 +279,7 @@
           </script>
           <script id="ticket-group-Inventory" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-UserQueue" class="TagCategoryLabel">Inventory:&nbsp;</label>
+              <label for="ticket-Inventory" class="TagCategoryLabel">Inventory:&nbsp;</label>
               <div class="tagContainer">
                 <span id="ticket-Inventory" style="z-index:100;"></span>
                 <input id="ticket-Inventory-Input" class="tagInput hidden-select" type="text" placeholder="Add Inventory">
