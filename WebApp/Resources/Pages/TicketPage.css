@@ -532,6 +532,7 @@
     }
 
     #ticket-properties-area > hr { margin: 4px -15px 4px -15px; }
+    #ticket-group-custom-fields > hr { margin: 4px -15px 4px -15px; }
 
     #ticket-properties-area > .form-group {
       margin-bottom: 0px;
@@ -623,8 +624,8 @@
     }
 
     .customFieldCategoryHeader {
-      border-bottom: 3px solid #eee;
-      padding-bottom: 5px;
+      /*border-bottom: 3px solid #eee;
+      padding-bottom: 5px;*/
       width: 100%;
       color: DimGray !important;
       font-weight: bold !important;
