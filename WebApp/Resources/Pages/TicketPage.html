@@ -361,8 +361,9 @@
           </div>
         </div>
         <div id="ticket-properties-area" class="ticket-property-section">
-
-
+          <script id="ticket-group-hr" type="text/x-handlebars-template">
+            <hr />
+          </script>
           <script id="ticket-group-AssignedTo" type="text/x-handlebars-template">
             <div class="form-horizontal">
               <div class="form-group form-group-sm">
@@ -533,7 +534,7 @@
             </div>
           </script>
           <script id="ticket-group-Customers" type="text/x-handlebars-template">
-            <hr />
+            
             <div class="form-group ticket-group">
               <label for="ticket-Customers" class="TagCategoryLabel">Customers:&nbsp;</label>
               <div class="tagContainer">
@@ -543,7 +544,7 @@
                 <input id="ticket-Customers-Input" class="tagInput hidden-select" type="text" placeholder="Add/Create Customer">
               </div>
             </div>
-            <hr />
+            
           </script>
           <script id="ticket-group-Product" type="text/x-handlebars-template">
             <div class="form-horizontal">

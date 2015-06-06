@@ -54,6 +54,20 @@ function CreateDOMEvents() {
         window.location = window.location;
     });
     $('button').button();
+    $('#btnAddSpacerNewTicket').click(function (e) {
+      var item = Object();
+      item.CatID = 'hr';
+      item.CatName = 'Line Break'
+      CreateOrderElement('.admin-newticket-page-fields', 'admin-newticket-page-field', item);
+      SaveOrder('.admin-newticket-page-fields', '.admin-newticket-page-field', 'NewTicketFieldsOrder');
+    });
+    $('#btnAddSpacerExistingTicket').click(function (e) {
+      var item = Object();
+      item.CatID = 'hr';
+      item.CatName = 'Line Break'
+      CreateOrderElement('.admin-ticket-page-fields', 'admin-ticket-page-field', item);
+      SaveOrder('.admin-ticket-page-fields', '.admin-ticket-page-field', 'TicketFieldsOrder');
+    });
 };
 
 
