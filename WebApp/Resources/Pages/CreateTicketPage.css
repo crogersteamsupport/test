@@ -467,7 +467,7 @@
     .nonrequired-field-error-font {color: #cd0a0a !important}
     .ticket-closed { font-style: italic; text-decoration:line-through;}
     .hasError label, .hasError .selectize-input {color: #cd0a0a !important}
-    .hasError > div.tagContainer {border-color: #cd0a0a !important}
+    .hasError > div.tagContainer {color: #cd0a0a !important}
 
     .ui-autocomplete {
         z-index: 99999 !important;

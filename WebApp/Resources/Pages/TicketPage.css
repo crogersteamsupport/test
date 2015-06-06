@@ -531,13 +531,17 @@
         margin-bottom: 10px;
     }
 
+    #ticket-properties-area > hr { margin: 4px -15px 4px -15px; }
+
     #ticket-properties-area > .form-group {
-        margin-bottom: 5px;
-    }    
+      margin-bottom: 0px;
+      padding-top: 0px;
+    }  
 
 
     #ticket-properties-area > .form-horizontal > .form-group {
-        margin-bottom:5px;
+        margin-bottom: 0px;
+      padding-top: 0px;
     }  
 
     #ticket-properties-area > .form-horizontal > .form-group > div > select.hidden-select {
@@ -652,8 +656,8 @@
 
     .tagContainer {
         background-color: #FFF;
-        border: 1px solid #CCC;
-        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+        /*border: 1px solid #CCC;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;*/
         display: inline-block;
         /*padding: 4px 6px;
         margin-bottom: 10px;*/
@@ -663,7 +667,7 @@
         width: 100%;
         /*line-height: 22px;*/
         cursor: text;
-        padding: 5px 5px 2px 9px;
+         padding: 0px 5px 2px 9px;
     }
 
     #ticket-Customer > a {
@@ -727,12 +731,13 @@
 
 
     .TagCategoryLabel {
-        width: 100%;
-        padding-bottom: 5px;
-        color: DimGray !important;
-        font-weight: bold !important;
-        -webkit-font-smoothing: inherit;
-        font-size: 14px !important;
+      width: 100%;
+      padding-bottom: 0px;
+      margin-bottom: 0px;
+      color: DimGray !important;
+      font-weight: bold !important;
+      -webkit-font-smoothing: inherit;
+      font-size: 14px !important;
     }
 
     .ticket-group {
