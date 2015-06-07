@@ -536,12 +536,13 @@
           <script id="ticket-group-Customers" type="text/x-handlebars-template">
             
             <div class="form-group ticket-group">
-              <label for="ticket-Customers" class="TagCategoryLabel">Customers:&nbsp;</label>
+              
               <div class="tagContainer">
+                <input id="ticket-Customers-Input" class="tagInput hidden-select" type="text" placeholder="Add/Create Customer">
                 <span id="ticket-Customer" style="z-index:100;">
 
                 </span>
-                <input id="ticket-Customers-Input" class="tagInput hidden-select" type="text" placeholder="Add/Create Customer">
+                
               </div>
             </div>
             
@@ -574,12 +575,13 @@
           </script>
           <script id="ticket-group-Tags" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-tags" class="TagCategoryLabel">Tags:&nbsp;</label>
+              <!--<label for="ticket-tags" class="TagCategoryLabel">Tags:&nbsp;</label>-->
               <div class="tagContainer">
+                <input id="ticket-tag-Input" class="tagInput" type="text" placeholder="Add Tag" style="font-size:12px; margin-bottom:10px;">
                 <span id="ticket-tags">
 
                 </span>
-                <input id="ticket-tag-Input" class="tagInput" type="text" placeholder="Add Tag" style="font-size:12px; margin-bottom:10px;">
+                
               </div>
             </div>
           </script>
@@ -591,46 +593,51 @@
           </script>
           <script id="ticket-group-Inventory" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-UserQueue" class="TagCategoryLabel">Inventory:&nbsp;</label>
+              <!--<label for="ticket-UserQueue" class="TagCategoryLabel">Inventory:&nbsp;</label>-->
               <div class="tagContainer">
-                <span id="ticket-Inventory" style="z-index:100;"></span>
                 <input id="ticket-Inventory-Input" class="tagInput hidden-select" type="text" placeholder="Add Inventory">
+                <span id="ticket-Inventory" style="z-index:100;"></span>
+                
               </div>
             </div>
           </script>
           <script id="ticket-group-UserQueue" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-UserQueue" class="TagCategoryLabel">User Queues:&nbsp;</label>
+              <!--<label for="ticket-UserQueue" class="TagCategoryLabel">User Queues:&nbsp;</label>-->
               <div class="tagContainer">
-                <span id="ticket-UserQueue" style="z-index:100;"></span>
                 <input id="ticket-UserQueue-Input" class="tagInput hidden-select" type="text" placeholder="Add to Queue">
+                <span id="ticket-UserQueue" style="z-index:100;"></span>
+                
               </div>
             </div>
           </script>
           <script id="ticket-group-SubscribedUsers" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-SubscribedUsers" class="TagCategoryLabel">Subscribed Users:&nbsp;</label>
+              
               <div class="tagContainer">
-                <span id="ticket-SubscribedUsers" style="z-index:100;"></span>
                 <input id="ticket-SubscribedUsers-Input" class="tagInput hidden-select" type="text" placeholder="Subscribe User">
+                <span id="ticket-SubscribedUsers" style="z-index:100;"></span>
+                
               </div>
             </div>
           </script>
           <script id="ticket-group-AssociatedTickets" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-AssociatedTickets" class="TagCategoryLabel">Associated Tickets:&nbsp;</label>
+              <!--<label for="ticket-AssociatedTickets" class="TagCategoryLabel">Associated Tickets:&nbsp;</label>-->
               <div class="tagContainer">
-                <span id="ticket-AssociatedTickets" style="z-index:100;"></span>
                 <input id="ticket-AssociatedTickets-Input" class="tagInput hidden-select" type="text" placeholder="Add Ticket">
+                <span id="ticket-AssociatedTickets" style="z-index:100;"></span>
+                
               </div>
             </div>
           </script>
             <script id="ticket-group-Reminders" type="text/x-handlebars-template">
               <div class="form-group ticket-group" id="ticket-group-Reminders">
-                <label for="ticket-Reminders" class="TagCategoryLabel">Reminders:&nbsp;</label>
+               
                 <div class="tagContainer">
-                  <span id="ticket-reminder-span"></span>
                   <a class="btn btn-link" style="color: darkgray; padding-left: 0px; padding-bottom: 0px; font-size: 12px; margin-bottom:10px;" data-toggle="modal" data-target="#RemindersModal">Add Reminder</a>
+                  <span id="ticket-reminder-span"></span>
+                  
                 </div>
               </div>
             </script>
