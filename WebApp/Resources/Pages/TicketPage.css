@@ -585,23 +585,23 @@
         font-weight: normal;
     }
 
-    #ticket-properties-area .selectize-control.single .selectize-input:after {
-        display:none;
-    }
+    #ticket-properties-area .selectize-control.single .selectize-input:after { display:none; }
 
-    #ticket-properties-area .selectize-input input::-webkit-input-placeholder {
+    #ticket-properties-area .selectize-input input::-webkit-input-placeholder,
+    #ticket-tag-Input::-webkit-input-placeholder
+     {
      color: #428bca;
     }
 
-    #ticket-properties-area .selectize-input input:-moz-placeholder { /* Firefox 18- */
+    #ticket-properties-area .selectize-input input:-moz-placeholder,
+     #ticket-tag-Input:-moz-placeholder
+    { /* Firefox 18- */
          color: #428bca; 
     }
 
-    #ticket-properties-area .selectize-input input::-moz-placeholder {  /* Firefox 19+ */
-         color: #428bca; 
-    }
-
-     #ticket-properties-area .selectize-input input:-ms-input-placeholder {  
+    #ticket-properties-area .selectize-input input::-moz-placeholder,
+    #ticket-tag-Input::-moz-placeholder
+    {  /* Firefox 19+ */
          color: #428bca; 
     }
 
@@ -711,6 +711,7 @@
       zoom: 1;
       line-height: 20px;
       -webkit-font-smoothing: inherit;
+      font-size: 12px;
     }
 
     .tag-error {

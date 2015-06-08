@@ -715,7 +715,10 @@ function SetupAssignedField() {
     $('#ticket-assigned').selectize({
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
-      }
+      },
+      plugins: {
+        'sticky_placeholder': {}
+      },
     });
   });
 }
@@ -1766,10 +1769,13 @@ function SetupRemindersSection() {
         }
 
         top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Tickets, _ticketID, title, date, userid, function (result) {
-            $('#reminder-success').show();
+            //$('#reminder-success').show();
             var label = ellipseString(result.Description, 30) + '<br>' + result.DueDate.localeFormat(top.Ts.Utils.getDateTimePattern())
             PrependTag($("#ticket-reminder-span"), result.ReminderID, label, result);
-            setTimeout(function () { $('#RemindersModal').modal('hide'); }, 2000);
+            $('#RemindersModal').modal('hide');
+            $('#ticket-reminder-title').val('');
+            $('#ticket-reminder-date').val('');
+            selectizeControl.clear();
         },
         function () {
             $('#reminder-error').show();
