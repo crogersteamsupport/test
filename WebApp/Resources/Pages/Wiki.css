@@ -69,4 +69,16 @@
 .fa-dropbox { color: #3d9ae8 !important}
 .fa-circle  { color: #D9534F !important}
 
+    #deployJavaPlugin
+    {
+        position: absolute;    left: -10px;
+    }
 
+    .divScreenRecorderMessages
+    {
+      border-radius: 5px;
+      background: #e6e6e6;
+      padding: 5px; 
+      font-family: inherit;
+      font-style: inherit;
+    }

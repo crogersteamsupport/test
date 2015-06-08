@@ -603,3 +603,17 @@
     .custom-field-link { margin-left: 6px; }
 
     .mce-path {display:none !important;}
+
+    #deployJavaPlugin
+    {
+        position: absolute;    left: -10px;
+    }
+
+    .divScreenRecorderMessages
+    {
+      border-radius: 5px;
+      background: #e6e6e6;
+      padding: 5px; 
+      font-family: inherit;
+      font-style: inherit;
+    }

@@ -937,15 +937,111 @@ $(document).ready(function () {
               //image: '../images/icons/Symbol_Record.png',
               icon: 'awesome fa fa-circle',
               onclick: function () {
-                top.Ts.MainPage.recordScreen(null, function (result) {
-                  var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
-                  var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
-                  ed.selection.setContent(html);
-                  ed.execCommand('mceAutoResize');
-                  ed.focus();
-                  top.Ts.System.logAction('New Ticket - ScreenR Inserted');
+                if ($("#recorder").length == 0) {
 
-                });
+                  switch (BrowserDetect.browser) {
+                    case "Chrome":
+                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingChromeInfo', 0, function (alreadyReadInfo) {
+                        if (alreadyReadInfo == 0) {
+                          $(".pAllowPluginsToRunInstructions").html("\
+To use screen recording in this browser before September of 2015 \
+<a href='https://support.google.com/chrome/answer/6213033' target='_blank' class='ui-state-default ts-link'>these instructions</a> \
+need to be followed, otherwise the browser will continue to ask to install Java. \
+After September 2015 you’ll need to use an alternate web browser like FireFox or Internet Explorer.<br><br>\
+Also, the Java plugins need to be allowed to run by clicking on the \
+<img src='../Images/icons/ChromePluginIcon.png' alt='plugins icon'> \
+on the right side of the address bar");
+                          $('.divScreenRecorderMessages').show();
+                        }
+                      });
+                      break;
+                    case "Firefox":
+                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingFirefoxInfo', 0, function (alreadyReadInfo) {
+                        if (alreadyReadInfo == 0) {
+                          $(".pAllowPluginsToRunInstructions").html("\
+Please allow the screen recorder Java plugins to run on your browser by clicking on the \
+<img src='../Images/icons/FirefoxPluginIcon.png' alt='plugins icon'> \
+on the left side of the address bar.");
+                          $('.divScreenRecorderMessages').show();
+                        }
+                      });
+                      break;
+                    case "Explorer":
+                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingExplorerInfo', 0, function (alreadyReadInfo) {
+                        if (alreadyReadInfo == 0) {
+                          $(".pAllowPluginsToRunInstructions").html("\
+Please allow the screen recorder Java plugins to run on your browser by clicking on Allow button at the bottom of the page: \
+<img src='../Images/icons/IEPluginWindow.png' alt='plugins icon' width='100%' style='margin-top: 10px'>");
+                          $('.divScreenRecorderMessages').show();
+                        }
+                      });
+                      break;
+                    case "Safari":
+                      if (BrowserDetect.OS == "Windows") {
+                        top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInWindowsInfo', 0, function (alreadyReadInfo) {
+                          if (alreadyReadInfo == 0) {
+                            $(".pAllowPluginsToRunInstructions").html("\
+This browser in Windows usually fails to detect Java preventing the recorder to start. Read \
+<a href='http://stackoverflow.com/questions/11235578/when-viewing-an-applet-why-does-safari-for-windows-display-java-is-unavailable' target='_blank' class='ui-state-default ts-link'>this</a> \
+for more information or use an alternate browser like Firefox or Internet Explorer.");
+                            $('.divScreenRecorderMessages').show();
+                          }
+                        });
+                      }
+                      else {
+                        top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInfo', 0, function (alreadyReadInfo) {
+                          if (alreadyReadInfo == 0) {
+                            $(".pAllowPluginsToRunInstructions").html("Please verify java is supported and allowed to run in your browser.");
+                            $('.divScreenRecorderMessages').show();
+                          }
+                        });
+                      }
+
+                      break;
+                    default:
+                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingInfo', 0, function (alreadyReadInfo) {
+                        if (alreadyReadInfo == 0) {
+                          $(".pAllowPluginsToRunInstructions").html("Please verify java is supported and allowed to run in your browser.");
+                          $('.divScreenRecorderMessages').show();
+                        }
+                      });
+                  }
+
+                  if (deployJava.versionCheck("1.8.0_45+")) {
+                    var applet = document.createElement("applet");
+                    applet.id = "recorder";
+                    applet.archive = "Launch.jar"
+                    applet.code = "com.bixly.pastevid.driver.Launch";
+                    applet.width = 200;
+                    applet.height = 150;
+                    var orgId = top.Ts.System.Organization.OrganizationID;
+                    var param1 = document.createElement("param");
+                    param1.name = "jnlp_href";
+                    param1.value = "launch.jnlp";
+                    applet.appendChild(param1);
+                    var param2 = document.createElement("param");
+                    param2.name = "orgId";
+                    param2.value = orgId;
+                    applet.appendChild(param2);
+                    var param3 = document.createElement("param");
+                    param3.name = "permissions";
+                    param3.value = 'all-permissions';
+                    applet.appendChild(param3);
+
+                    $('.fa-circle').removeClass("fa-circle").addClass("fa-circle-o-notch fa-spin");
+                    document.getElementsByTagName("body")[0].appendChild(applet);
+
+                  }
+                  else {
+                    userInput = confirm(
+                            "You need the latest Java(TM) Runtime Environment.\n" +
+                            "Please restart your computer after updating.\n" +
+                            "Would you like to update now?");
+                    if (userInput == true) {
+                      window.open("http://java.com/en/download", '_blank');
+                    }
+                  }
+                }
               }
             });
           }
@@ -956,6 +1052,43 @@ $(document).ready(function () {
       $(element).tinymce(editorOptions);
     });
   }
+
+  var onScreenRecordStart = function () {
+    $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
+    switch (BrowserDetect.browser) {
+      case "Chrome":
+        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
+        break;
+      case "Firefox":
+        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
+        break;
+      case "Explorer":
+        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
+        break;
+      case "Safari":
+        if (BrowserDetect.OS == "Windows") {
+          top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
+        }
+        else {
+          top.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
+        }
+        break;
+      default:
+        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
+    }
+    $('.divScreenRecorderMessages').hide();
+  };
+
+  var onScreenRecordComplete = function (url) {
+    $('#recorder').remove();
+    var link = '<a href="' + url + '" target="_blank">Click here to view screen recording video.</a>';
+    var html = '<div class="video_holder"><video style="width: 640px; height: 360px;" controls="controls"><source src="' + url + '" type="video/mp4" />' + link + '</video></div>'
+    var ed = tinyMCE.activeEditor;
+    ed.selection.setContent(html);
+    ed.execCommand('mceAutoResize');
+    ed.focus();
+    top.Ts.System.logAction('Ticket - Screen Recorded');
+  };
 
   $('.ticket-rail .collapsable')
     .prepend('<span class="ui-icon ui-icon-triangle-1-s">')
@@ -2195,189 +2328,192 @@ $(document).ready(function () {
   $('.newticket-save-close').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    _doClose = true;
-    $('.newticket-save').click();
-    top.Ts.System.logAction('New Ticket - Save & Closed');
-
+    if ($("#recorder").length == 0) {
+      _doClose = true;
+      $('.newticket-save').click();
+      top.Ts.System.logAction('New Ticket - Save & Closed');
+    }
   });
 
 
   $('.newticket-save').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    $('.new-ticket-save-buttons').addClass('saving');
-    isFormValid(function (isValid) {
-      if (isValid == false) {
-        $('.new-ticket-save-buttons').removeClass('saving');
-        return;
-      }
-      //setTimeout(function () { $('.new-ticket-save-buttons').removeClass('saving'); }, 2000); return;
-
-      var info = new Object();
-      info.Name = $('.newticket-name').val();
-      info.TicketTypeID = $('.newticket-type').val();
-      info.TicketStatusID = $('.newticket-status').val();
-      info.TicketSeverityID = $('.newticket-severity').val();
-      info.UserID = $('.newticket-user').val();
-      info.GroupID = $('.newticket-group').val();
-      var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
-      if (dueDate != null) {
-
-          if (dateFormat.indexOf("m") != 0) {
-              var dateArr = $('.ticket-action-form-dueDate').val().replace(/\./g, '/').replace(/-/g, '/').split('/');
-              if (dateFormat.indexOf("d") == 0)
-                  var day = dateArr[0];
-              if (dateFormat.indexOf("y") == 0)
-                  var year = dateArr[0];
-              if (dateFormat.indexOf("m") == 3)
-                  var month = dateArr[1];
-
-              var timeSplit = dateArr[2].split(' ');
-              if (dateFormat.indexOf("y") == 6)
-                  var year = timeSplit[0];
-              else
-                  var day = timeSplit[0];
-
-              var theTime = timeSplit[1];
-
-              var formattedDate = month + "/" + day + "/" + year + " " + theTime;
-              info.DueDate = top.Ts.Utils.getMsDate(formattedDate);
-          }
-          else
-              info.DueDate = top.Ts.Utils.getMsDate(dueDate);
-      }
-      info.CategoryID = $('.newticket-community').val();
-      info.ProductID = $('.newticket-product').val();
-      info.ReportedID = $('.newticket-reported').val();
-      info.ResolvedID = $('.newticket-resolved').val();
-      info.IsVisibleOnPortal = $('.newticket-portal').prop('checked')
-      info.IsKnowledgebase = $('.newticket-kb').prop('checked');
-      info.KnowledgeBaseCategoryID = $('.newticket-kbCategory').val();
-      info.Description = $('.newticket-desc').html();
-
-      info.TimeSpent = parseInt($('.ticket-action-form-hours').val()) * 60 + parseInt($('.ticket-action-form-minutes').val());
-      info.DateStarted = top.Ts.Utils.getMsDate($('.ticket-action-form-date').datetimepicker('getDate'));
-
-
-      // Custom Values
-      info.Fields = new Array();
-      $('.newticket-custom-field:visible').each(function () {
-        var field = new Object();
-        field.CustomFieldID = $(this).data('o').CustomFieldID;
-        switch ($(this).data('o').FieldType) {
-          case top.Ts.CustomFieldType.Boolean:
-            field.Value = $(this).find('input').prop('checked');
-            break;
-          case top.Ts.CustomFieldType.PickList:
-            field.Value = $(this).find('select').val();
-            break;
-          case top.Ts.CustomFieldType.Date:
-            var dt = $(this).find('input').datepicker('getDate');
-            field.Value = dt == null ? null : dt.toUTCString();
-            break;
-          case top.Ts.CustomFieldType.Time:
-            var time = new Date("January 1, 1970 00:00:00");
-            time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
-            time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
-            field.Value = $(this).find('input').timepicker('getDate')[0].value == '' ? null : time.toUTCString();
-            break;
-          case top.Ts.CustomFieldType.DateTime:
-            //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
-            var dt = $(this).find('input').datetimepicker('getDate');
-            field.Value = dt == null ? null : dt.toUTCString();
-            //field.Value = $(this).find('input').datetimepicker('getDate');
-            break;
-          default:
-            field.Value = $(this).find('input').val();
-        }
-        info.Fields[info.Fields.length] = field;
-      });
-
-      // Parent Ticket
-      var parentTicket = $('#divRelated .ts-icon-ticket-parent').closest('.ticket-related').data('data');
-      if (parentTicket && parentTicket != null) info.ParentTicketID = parentTicket.TicketID;
-
-      // Child Tickets
-      info.ChildTickets = new Array();
-      $('#divRelated .ts-icon-ticket-child').each(function () {
-        info.ChildTickets[info.ChildTickets.length] = $(this).closest('.ticket-related').data('data').TicketID;
-      });
-
-      // Related Tickets
-      info.RelatedTickets = new Array();
-      $('#divRelated .ts-icon-ticket-related').each(function () {
-        info.RelatedTickets[info.RelatedTickets.length] = $(this).closest('.ticket-related').data('data').TicketID;
-      });
-
-      info.Tags = new Array();
-      $('.ticket-tag').each(function () {
-        info.Tags[info.Tags.length] = $(this).data('data');
-      });
-
-      info.Subscribers = new Array();
-      $('.ticket-subscriber').each(function () {
-        info.Subscribers[info.Subscribers.length] = $(this).data('data').UserID;
-      });
-
-      info.Reminders = new Array();
-      $('.ticket-reminder').each(function () {
-        info.Reminders[info.Reminders.length] = $(this).data('o');
-      });
-
-
-      info.Queuers = new Array();
-      $('.ticket-queue').each(function () {
-        info.Queuers[info.Queuers.length] = $(this).data('data').UserID;
-      });
-
-      info.Assets = new Array();
-      $('.ticket-asset').each(function () {
-        info.Assets[info.Assets.length] = $(this).data('data').AssetID;
-      });
-
-      info.Customers = new Array();
-      $('.ticket-customer-company').each(function () {
-        info.Customers[info.Customers.length] = $(this).data('data').OrganizationID;
-      });
-
-      info.Contacts = new Array();
-      $('.ticket-customer-contact').each(function () {
-        info.Contacts[info.Contacts.length] = $(this).data('data').UserID;
-      });
-
-      var chatID = top.Ts.Utils.getQueryValue('chatid', window)
-      if (chatID && chatID != null) {
-        info.ChatID = chatID;
-      }
-
-      top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
-
-        if (result == null) {
-          alert('There was an error saving your ticket.  Please try again.');
+    if ($("#recorder").length == 0) {
+      $('.new-ticket-save-buttons').addClass('saving');
+      isFormValid(function (isValid) {
+        if (isValid == false) {
           $('.new-ticket-save-buttons').removeClass('saving');
           return;
         }
-        _ticketID = result[0];
-        top.Ts.System.logAction('Ticket Created');
+        //setTimeout(function () { $('.new-ticket-save-buttons').removeClass('saving'); }, 2000); return;
 
-        if ($('.upload-queue li').length > 0) {
-          $('.upload-queue li').each(function (i, o) {
-            var data = $(o).data('data');
-            data.url = '../../../Upload/Actions/' + result[1];
-            data.jqXHR = data.submit();
-            $(o).data('data', data);
-          });
+        var info = new Object();
+        info.Name = $('.newticket-name').val();
+        info.TicketTypeID = $('.newticket-type').val();
+        info.TicketStatusID = $('.newticket-status').val();
+        info.TicketSeverityID = $('.newticket-severity').val();
+        info.UserID = $('.newticket-user').val();
+        info.GroupID = $('.newticket-group').val();
+        var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
+        if (dueDate != null) {
+
+          if (dateFormat.indexOf("m") != 0) {
+            var dateArr = $('.ticket-action-form-dueDate').val().replace(/\./g, '/').replace(/-/g, '/').split('/');
+            if (dateFormat.indexOf("d") == 0)
+              var day = dateArr[0];
+            if (dateFormat.indexOf("y") == 0)
+              var year = dateArr[0];
+            if (dateFormat.indexOf("m") == 3)
+              var month = dateArr[1];
+
+            var timeSplit = dateArr[2].split(' ');
+            if (dateFormat.indexOf("y") == 6)
+              var year = timeSplit[0];
+            else
+              var day = timeSplit[0];
+
+            var theTime = timeSplit[1];
+
+            var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+            info.DueDate = top.Ts.Utils.getMsDate(formattedDate);
+          }
+          else
+            info.DueDate = top.Ts.Utils.getMsDate(dueDate);
         }
-        else {
-          if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
-          top.Ts.MainPage.closeNewTicketTab();
+        info.CategoryID = $('.newticket-community').val();
+        info.ProductID = $('.newticket-product').val();
+        info.ReportedID = $('.newticket-reported').val();
+        info.ResolvedID = $('.newticket-resolved').val();
+        info.IsVisibleOnPortal = $('.newticket-portal').prop('checked')
+        info.IsKnowledgebase = $('.newticket-kb').prop('checked');
+        info.KnowledgeBaseCategoryID = $('.newticket-kbCategory').val();
+        info.Description = $('.newticket-desc').html();
+
+        info.TimeSpent = parseInt($('.ticket-action-form-hours').val()) * 60 + parseInt($('.ticket-action-form-minutes').val());
+        info.DateStarted = top.Ts.Utils.getMsDate($('.ticket-action-form-date').datetimepicker('getDate'));
+
+
+        // Custom Values
+        info.Fields = new Array();
+        $('.newticket-custom-field:visible').each(function () {
+          var field = new Object();
+          field.CustomFieldID = $(this).data('o').CustomFieldID;
+          switch ($(this).data('o').FieldType) {
+            case top.Ts.CustomFieldType.Boolean:
+              field.Value = $(this).find('input').prop('checked');
+              break;
+            case top.Ts.CustomFieldType.PickList:
+              field.Value = $(this).find('select').val();
+              break;
+            case top.Ts.CustomFieldType.Date:
+              var dt = $(this).find('input').datepicker('getDate');
+              field.Value = dt == null ? null : dt.toUTCString();
+              break;
+            case top.Ts.CustomFieldType.Time:
+              var time = new Date("January 1, 1970 00:00:00");
+              time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
+              time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
+              field.Value = $(this).find('input').timepicker('getDate')[0].value == '' ? null : time.toUTCString();
+              break;
+            case top.Ts.CustomFieldType.DateTime:
+              //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+              var dt = $(this).find('input').datetimepicker('getDate');
+              field.Value = dt == null ? null : dt.toUTCString();
+              //field.Value = $(this).find('input').datetimepicker('getDate');
+              break;
+            default:
+              field.Value = $(this).find('input').val();
+          }
+          info.Fields[info.Fields.length] = field;
+        });
+
+        // Parent Ticket
+        var parentTicket = $('#divRelated .ts-icon-ticket-parent').closest('.ticket-related').data('data');
+        if (parentTicket && parentTicket != null) info.ParentTicketID = parentTicket.TicketID;
+
+        // Child Tickets
+        info.ChildTickets = new Array();
+        $('#divRelated .ts-icon-ticket-child').each(function () {
+          info.ChildTickets[info.ChildTickets.length] = $(this).closest('.ticket-related').data('data').TicketID;
+        });
+
+        // Related Tickets
+        info.RelatedTickets = new Array();
+        $('#divRelated .ts-icon-ticket-related').each(function () {
+          info.RelatedTickets[info.RelatedTickets.length] = $(this).closest('.ticket-related').data('data').TicketID;
+        });
+
+        info.Tags = new Array();
+        $('.ticket-tag').each(function () {
+          info.Tags[info.Tags.length] = $(this).data('data');
+        });
+
+        info.Subscribers = new Array();
+        $('.ticket-subscriber').each(function () {
+          info.Subscribers[info.Subscribers.length] = $(this).data('data').UserID;
+        });
+
+        info.Reminders = new Array();
+        $('.ticket-reminder').each(function () {
+          info.Reminders[info.Reminders.length] = $(this).data('o');
+        });
+
+
+        info.Queuers = new Array();
+        $('.ticket-queue').each(function () {
+          info.Queuers[info.Queuers.length] = $(this).data('data').UserID;
+        });
+
+        info.Assets = new Array();
+        $('.ticket-asset').each(function () {
+          info.Assets[info.Assets.length] = $(this).data('data').AssetID;
+        });
+
+        info.Customers = new Array();
+        $('.ticket-customer-company').each(function () {
+          info.Customers[info.Customers.length] = $(this).data('data').OrganizationID;
+        });
+
+        info.Contacts = new Array();
+        $('.ticket-customer-contact').each(function () {
+          info.Contacts[info.Contacts.length] = $(this).data('data').UserID;
+        });
+
+        var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+        if (chatID && chatID != null) {
+          info.ChatID = chatID;
         }
 
-      }, function () {
-        alert('There was an error saving your ticket.  Please try again.');
-        $('.new-ticket-save-buttons').removeClass('saving');
+        top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
+
+          if (result == null) {
+            alert('There was an error saving your ticket.  Please try again.');
+            $('.new-ticket-save-buttons').removeClass('saving');
+            return;
+          }
+          _ticketID = result[0];
+          top.Ts.System.logAction('Ticket Created');
+
+          if ($('.upload-queue li').length > 0) {
+            $('.upload-queue li').each(function (i, o) {
+              var data = $(o).data('data');
+              data.url = '../../../Upload/Actions/' + result[1];
+              data.jqXHR = data.submit();
+              $(o).data('data', data);
+            });
+          }
+          else {
+            if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
+            top.Ts.MainPage.closeNewTicketTab();
+          }
+
+        }, function () {
+          alert('There was an error saving your ticket.  Please try again.');
+          $('.new-ticket-save-buttons').removeClass('saving');
+        })
       })
-    })
+    }
   });
 
   $('.timerbutton').click(function (e) {

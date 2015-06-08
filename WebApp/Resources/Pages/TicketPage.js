@@ -342,6 +342,7 @@ function CreateNewActionLI() {
           tinymce.activeEditor.destroy();
         });
         top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        $('#recorder').remove();
     });
 
     $('#action-timeline').on('click', '#newcommentcancel', function (e) {
@@ -349,27 +350,29 @@ function CreateNewActionLI() {
     });
 
     $('#action-new-save').click(function (e) {
+      if ($("#recorder").length == 0) {
         e.preventDefault();
         e.stopPropagation();
         var self = $(this);
         var oldActionID = self.data('actionid');
         SaveAction(oldActionID, _isNewActionPrivate, function (result) {
-            UploadAttachments(result);
-            $('#action-new-editor').parent().fadeOut('normal', function () {
-              tinymce.activeEditor.destroy();
-            });
-            top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
-              result.Attachments = attachments;
-              if (oldActionID === -1) {
-                _actionTotal = _actionTotal + 1;
-                var actionElement = CreateActionElement(result, false);
-                actionElement.find('.ticket-action-number').text(_actionTotal);
-              }
-              else {
-                UpdateActionElement(result, false);
-              }
-            });
+          UploadAttachments(result);
+          $('#action-new-editor').parent().fadeOut('normal', function () {
+            tinymce.activeEditor.destroy();
+          });
+          top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
+            result.Attachments = attachments;
+            if (oldActionID === -1) {
+              _actionTotal = _actionTotal + 1;
+              var actionElement = CreateActionElement(result, false);
+              actionElement.find('.ticket-action-number').text(_actionTotal);
+            }
+            else {
+              UpdateActionElement(result, false);
+            }
+          });
         });
+      }
     });
 
     $('#action-timeline').on('click', '.action-create-option', function (e) {

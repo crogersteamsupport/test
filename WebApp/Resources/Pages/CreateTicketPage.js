@@ -234,107 +234,109 @@ function SetupTicketProperties() {
 };
 
 function SaveTicket(_doClose) {
-  isFormValid(function (isValid) {
-    if (isValid == true) {
-      var info = new Object();
-      info.Name = $('#ticket-title-input').val();
-      info.TicketTypeID = $('#ticket-type').val();
-      info.TicketStatusID = $('#ticket-status').val();
-      info.TicketSeverityID = $('#ticket-severity').val();
-      info.UserID = $('#ticket-assigned').val();
-      info.GroupID = $('#ticket-group').val();
-      var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
-      info.DueDate = _dueDate;
+  if ($("#recorder").length == 0) {
+    isFormValid(function (isValid) {
+      if (isValid == true) {
+        var info = new Object();
+        info.Name = $('#ticket-title-input').val();
+        info.TicketTypeID = $('#ticket-type').val();
+        info.TicketStatusID = $('#ticket-status').val();
+        info.TicketSeverityID = $('#ticket-severity').val();
+        info.UserID = $('#ticket-assigned').val();
+        info.GroupID = $('#ticket-group').val();
+        var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
+        info.DueDate = _dueDate;
 
-      info.CategoryID = $('#ticket-KB-Category').val();
-      info.ProductID = $('#ticket-Product').val();
-      info.ReportedID = $('#ticket-Versions').val();
-      info.ResolvedID = $('#ticket-Resolved').val();
-      info.IsVisibleOnPortal = $('#ticket-visible').prop('checked')
-      info.IsKnowledgebase = $('#ticket-isKB').prop('checked');
-      info.KnowledgeBaseCategoryID = $('#ticket-KB-Category').val();
-      info.Description = tinyMCE.activeEditor.getContent();
-      info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
+        info.CategoryID = $('#ticket-KB-Category').val();
+        info.ProductID = $('#ticket-Product').val();
+        info.ReportedID = $('#ticket-Versions').val();
+        info.ResolvedID = $('#ticket-Resolved').val();
+        info.IsVisibleOnPortal = $('#ticket-visible').prop('checked')
+        info.IsKnowledgebase = $('#ticket-isKB').prop('checked');
+        info.KnowledgeBaseCategoryID = $('#ticket-KB-Category').val();
+        info.Description = tinyMCE.activeEditor.getContent();
+        info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
 
-      //TODO:need custom fields
-      // Custom Values
-      info.Fields = new Array();
+        //TODO:need custom fields
+        // Custom Values
+        info.Fields = new Array();
 
-      // Associated Tickets
-      info.ChildTickets = new Array();
-      info.RelatedTickets = new Array();
-      $('#ticket-AssociatedTickets > div.tag-item').each(function () {
-        //TODO:  Need to add ability to put in appropriate arrays
-        info.RelatedTickets[info.RelatedTickets.length] = $(this).attr('id');
-      });
+        // Associated Tickets
+        info.ChildTickets = new Array();
+        info.RelatedTickets = new Array();
+        $('#ticket-AssociatedTickets > div.tag-item').each(function () {
+          //TODO:  Need to add ability to put in appropriate arrays
+          info.RelatedTickets[info.RelatedTickets.length] = $(this).attr('id');
+        });
 
-      //Tags
-      info.Tags = new Array();
-      $('#ticket-tags > div.tag-item').each(function () {
-        //TODO:  Need to get this working correctly
-        info.Tags[info.Tags.length] = $(this).text();
-      });
+        //Tags
+        info.Tags = new Array();
+        $('#ticket-tags > div.tag-item').each(function () {
+          //TODO:  Need to get this working correctly
+          info.Tags[info.Tags.length] = $(this).text();
+        });
 
-      //Subscribers
-      info.Subscribers = new Array();
-      $('#ticket-SubscribedUsers > div.tag-item').each(function () {
-        info.Subscribers[info.Subscribers.length] = $(this).attr('id');
-      });
+        //Subscribers
+        info.Subscribers = new Array();
+        $('#ticket-SubscribedUsers > div.tag-item').each(function () {
+          info.Subscribers[info.Subscribers.length] = $(this).attr('id');
+        });
 
-      //Reminders
-      info.Reminders = new Array();
-      $('#ticket-SubscribedUsers > div.tag-item').each(function () {
-        info.Reminders[info.Reminders.length] = $(this).attr('id');
-      });
+        //Reminders
+        info.Reminders = new Array();
+        $('#ticket-SubscribedUsers > div.tag-item').each(function () {
+          info.Reminders[info.Reminders.length] = $(this).attr('id');
+        });
 
-      //Queues
-      info.Queuers = new Array();
-      $('#ticket-UserQueue > div.tag-item').each(function () {
-        info.Queuers[info.Queuers.length] = $(this).attr('id');
-      });
+        //Queues
+        info.Queuers = new Array();
+        $('#ticket-UserQueue > div.tag-item').each(function () {
+          info.Queuers[info.Queuers.length] = $(this).attr('id');
+        });
 
-      //Inventory
-      info.Assets = new Array();
-      $('#ticket-Inventory > div.tag-item').each(function () {
-        info.Assets[info.Assets.length] = $(this).attr('id');
-      });
-      
-      //Customers
-      info.Customers = new Array();
-      info.Contacts = new Array();
-      $('#ticket-SubscribedUsers > div.tag-item').each(function () {
-        //tODO:  Need way to distinguish what type of user they are
-        var data = $(this).data();
-        //info.Customers[info.Customers.length] = $(this).attr('id');
-      });
+        //Inventory
+        info.Assets = new Array();
+        $('#ticket-Inventory > div.tag-item').each(function () {
+          info.Assets[info.Assets.length] = $(this).attr('id');
+        });
 
-      ////
-      //info.Contacts = new Array();
-      //$('#ticket-SubscribedUsers > div.tag-item').each(function () {
-      //  info.Contacts[info.Contacts.length] = $(this).attr('id');
-      //});
+        //Customers
+        info.Customers = new Array();
+        info.Contacts = new Array();
+        $('#ticket-SubscribedUsers > div.tag-item').each(function () {
+          //tODO:  Need way to distinguish what type of user they are
+          var data = $(this).data();
+          //info.Customers[info.Customers.length] = $(this).attr('id');
+        });
 
-      //
-      var chatID = top.Ts.Utils.getQueryValue('chatid', window)
-      if (chatID && chatID != null) {
-        info.ChatID = chatID;
-      }
+        ////
+        //info.Contacts = new Array();
+        //$('#ticket-SubscribedUsers > div.tag-item').each(function () {
+        //  info.Contacts[info.Contacts.length] = $(this).attr('id');
+        //});
 
-      top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
-        if (result == null) {
-          alert('There was an error saving your ticket.  Please try again.');
-          $('.new-ticket-save-buttons').removeClass('saving');
-          return;
+        //
+        var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+        if (chatID && chatID != null) {
+          info.ChatID = chatID;
         }
-        _ticketID = result[0];
-        top.Ts.System.logAction('Ticket Created');
 
-        if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
-        top.Ts.MainPage.closeNewTicketTab();
+        top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
+          if (result == null) {
+            alert('There was an error saving your ticket.  Please try again.');
+            $('.new-ticket-save-buttons').removeClass('saving');
+            return;
+          }
+          _ticketID = result[0];
+          top.Ts.System.logAction('Ticket Created');
 
-      });
-    }
-  });
+          if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
+          top.Ts.MainPage.closeNewTicketTab();
+
+        });
+      }
+    });
+  }
 };
 
 function isFormValid(callback) {
@@ -476,6 +478,7 @@ function SetupDescriptionEditor() {
         top.Ts.MainPage.closeNewTicketTab();
       }
       top.Ts.System.logAction('New Ticket - Canceled');
+      $('#recorder').remove();
     });
   },
   function (ed) {

@@ -2806,15 +2806,111 @@ var initEditor = function (element, actionElement, init) {
             //image: '../images/icons/Symbol_Record.png',
             icon: 'awesome fa fa-circle',
             onclick: function () {
-              //var x = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/e75084e0156749969d4c82ed05e35a9c" frameborder="0" width="650" height="400"><a href="http://google.com" target="_blank">Click here to view screen recording video</a></iframe>&nbsp;</div>';
-              top.Ts.MainPage.recordScreen(null, function (result) {
-                var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
-                var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
-                ed.selection.setContent(html);
-                ed.execCommand('mceAutoResize');
-                ed.focus();
-                top.Ts.System.logAction('Ticket - Screen Recorded');
-              });
+              if ($("#recorder").length == 0) {
+
+                switch (BrowserDetect.browser) {
+                  case "Chrome":
+                    top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingChromeInfo', 0, function (alreadyReadInfo) {
+                      if (alreadyReadInfo == 0) {
+                        $(".pAllowPluginsToRunInstructions").html("\
+To use screen recording in this browser before September of 2015 \
+<a href='https://support.google.com/chrome/answer/6213033' target='_blank' class='ui-state-default ts-link'>these instructions</a> \
+need to be followed, otherwise the browser will continue to ask to install Java. \
+After September 2015 you’ll need to use an alternate web browser like FireFox or Internet Explorer.<br><br>\
+Also, the Java plugins need to be allowed to run by clicking on the \
+<img src='../Images/icons/ChromePluginIcon.png' alt='plugins icon'> \
+on the right side of the address bar");
+                        $('.divScreenRecorderMessages').show();
+                      }
+                    });
+                    break;
+                  case "Firefox":
+                    top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingFirefoxInfo', 0, function (alreadyReadInfo) {
+                      if (alreadyReadInfo == 0) {
+                        $(".pAllowPluginsToRunInstructions").html("\
+Please allow the screen recorder Java plugins to run on your browser by clicking on the \
+<img src='../Images/icons/FirefoxPluginIcon.png' alt='plugins icon'> \
+on the left side of the address bar.");
+                        $('.divScreenRecorderMessages').show();
+                      }
+                    });
+                    break;
+                  case "Explorer":
+                    top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingExplorerInfo', 0, function (alreadyReadInfo) {
+                      if (alreadyReadInfo == 0) {
+                        $(".pAllowPluginsToRunInstructions").html("\
+Please allow the screen recorder Java plugins to run on your browser by clicking on Allow button at the bottom of the page: \
+<img src='../Images/icons/IEPluginWindow.png' alt='plugins icon' width='100%' style='margin-top: 10px'>");
+                        $('.divScreenRecorderMessages').show();
+                      }
+                    });
+                    break;
+                  case "Safari":
+                    if (BrowserDetect.OS == "Windows") {
+                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInWindowsInfo', 0, function (alreadyReadInfo) {
+                        if (alreadyReadInfo == 0) {
+                          $(".pAllowPluginsToRunInstructions").html("\
+This browser in Windows usually fails to detect Java preventing the recorder to start. Read \
+<a href='http://stackoverflow.com/questions/11235578/when-viewing-an-applet-why-does-safari-for-windows-display-java-is-unavailable' target='_blank' class='ui-state-default ts-link'>this</a> \
+for more information or use an alternate browser like Firefox or Internet Explorer.");
+                          $('.divScreenRecorderMessages').show();
+                        }
+                      });
+                    }
+                    else {
+                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInfo', 0, function (alreadyReadInfo) {
+                        if (alreadyReadInfo == 0) {
+                          $(".pAllowPluginsToRunInstructions").html("Please verify java is supported and allowed to run in your browser.");
+                          $('.divScreenRecorderMessages').show();
+                        }
+                      });
+                    }
+
+                    break;
+                  default:
+                    top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingInfo', 0, function (alreadyReadInfo) {
+                      if (alreadyReadInfo == 0) {
+                        $(".pAllowPluginsToRunInstructions").html("Please verify java is supported and allowed to run in your browser.");
+                        $('.divScreenRecorderMessages').show();
+                      }
+                    });
+                }
+
+                if (deployJava.versionCheck("1.8.0_45+")) {
+                  var applet = document.createElement("applet");
+                  applet.id = "recorder";
+                  applet.archive = "Launch.jar"
+                  applet.code = "com.bixly.pastevid.driver.Launch";
+                  applet.width = 200;
+                  applet.height = 150;
+                  var orgId = top.Ts.System.Organization.OrganizationID;
+                  var param1 = document.createElement("param");
+                  param1.name = "jnlp_href";
+                  param1.value = "launch.jnlp";
+                  applet.appendChild(param1);
+                  var param2 = document.createElement("param");
+                  param2.name = "orgId";
+                  param2.value = orgId;
+                  applet.appendChild(param2);
+                  var param3 = document.createElement("param");
+                  param3.name = "permissions";
+                  param3.value = 'all-permissions';
+                  applet.appendChild(param3);
+
+                  $('.fa-circle').removeClass("fa-circle").addClass("fa-circle-o-notch fa-spin");
+                  document.getElementsByTagName("body")[0].appendChild(applet);
+
+                }
+                else {
+                  userInput = confirm(
+                          "You need the latest Java(TM) Runtime Environment.\n" +
+                          "Please restart your computer after updating.\n" +
+                          "Would you like to update now?");
+                  if (userInput == true) {
+                    window.open("http://java.com/en/download", '_blank');
+                  }
+                }
+              }
             }
           });
         }
@@ -2861,9 +2957,36 @@ var initEditor = function (element, actionElement, init) {
   });
 }
 
-var onScreenBirdRecordComplete = function (url) {
-  var link = '<a href="' + url + '" target="_blank">Click here to view screen recording video</a>';
-  var html = '<div><iframe src="' + url + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
+var onScreenRecordStart = function () {
+  $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
+  switch (BrowserDetect.browser) {
+    case "Chrome":
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
+      break;
+    case "Firefox":
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
+      break;
+    case "Explorer":
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
+      break;
+    case "Safari":
+      if (BrowserDetect.OS == "Windows") {
+        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
+      }
+      else {
+        top.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
+      }
+      break;
+    default:
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
+  }
+  $('.divScreenRecorderMessages').hide();
+};
+
+var onScreenRecordComplete = function (url) {
+  $('#recorder').remove();
+  var link = '<a href="' + url + '" target="_blank">Click here to view screen recording video.</a>';
+  var html = '<div class="video_holder"><video style="width: 640px; height: 360px;" controls="controls"><source src="' + url + '" type="video/mp4" />' + link + '</video></div>'
   var ed = tinyMCE.activeEditor;
   ed.selection.setContent(html);
   ed.execCommand('mceAutoResize');
@@ -2944,39 +3067,42 @@ var createActionForm = function (element, action, callback) {
     counter = 0;
     session.unpublish(publisher);
     callback(null); element.remove();
+    $('#recorder').remove();
 
   });
   element.find('.ticket-action-form-save').click(function () {
-    var saveButton = $(this);
-    isFormValid(function (isValid) {
-      if (isValid == false) {
-        alert("Please fill in the required fields before submitting this action.");
-        return;
-      }
+    if ($("#recorder").length == 0) {
+      var saveButton = $(this);
+      isFormValid(function (isValid) {
+        if (isValid == false) {
+          alert("Please fill in the required fields before submitting this action.");
+          return;
+        }
 
-      saveButton.closest('.ticket-action-form-buttons').addClass('saving');
-      var saved = saveAction(element, action, function (result) {
-        if (element.find('.upload-queue li').length > 0 && result !== null) {
-          newAction = result;
-          element.find('.upload-queue li').each(function (i, o) {
-            var data = $(o).data('data');
-            //data.form.prop('action', '../../Upload/Actions/' + newAction.ActionID);
-            data.url = '../../../Upload/Actions/' + newAction.Action.ActionID;
-            data.jqXHR = data.submit();
-            $(o).data('data', data);
-          });
-          //loadTicket(_ticketNumber, 0);
-        }
-        else {
-          saveButton.closest('.ticket-action-form-buttons').removeClass('saving');
-          element.remove();
-          loadTicket(_ticketNumber, 0);
-          callback(result);
-        }
+        saveButton.closest('.ticket-action-form-buttons').addClass('saving');
+        var saved = saveAction(element, action, function (result) {
+          if (element.find('.upload-queue li').length > 0 && result !== null) {
+            newAction = result;
+            element.find('.upload-queue li').each(function (i, o) {
+              var data = $(o).data('data');
+              //data.form.prop('action', '../../Upload/Actions/' + newAction.ActionID);
+              data.url = '../../../Upload/Actions/' + newAction.Action.ActionID;
+              data.jqXHR = data.submit();
+              $(o).data('data', data);
+            });
+            //loadTicket(_ticketNumber, 0);
+          }
+          else {
+            saveButton.closest('.ticket-action-form-buttons').removeClass('saving');
+            element.remove();
+            loadTicket(_ticketNumber, 0);
+            callback(result);
+          }
+        });
+        if (saved == false) saveButton.closest('.ticket-action-form-buttons').removeClass('saving');
+
       });
-      if (saved == false) saveButton.closest('.ticket-action-form-buttons').removeClass('saving');
-
-    });
+    }
   });
 
   element.find('.ticket-action-form-kb').click(function (e) {
