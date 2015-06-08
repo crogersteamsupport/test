@@ -46,6 +46,7 @@ namespace TeamSupport.ServiceLibrary
             Settings.WriteString(_lastProcessedKey, DateTime.Now.ToString());
           }
         }
+        UpdateHealth();
       }
       catch (Exception ex)
       {
