@@ -1703,7 +1703,7 @@ function SetupAssociatedTicketsSection() {
     top.Ts.Services.Tickets.AddRelated(_ticketID, TicketID2, IsParent, function (tickets) {
       AddAssociatedTickets(tickets);
       $('#associate-success').show();
-      setTimeout(function () { $('#AssociateTicketModal').modal('hide'); }, 2000);
+      $('#AssociateTicketModal').modal('hide');
       window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
     }, function (error) {
       $('#associate-error').text(error.get_message()).show();
@@ -3184,7 +3184,7 @@ function CreateTicketToolbarDomEvents() {
       top.Ts.System.logAction('Ticket - Emailed');
       top.Ts.Services.Tickets.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function () {
         $('#email-success').show();
-        setTimeout(function () { $('#EmailModal').modal('hide'); }, 2000);
+        $('#EmailModal').modal('hide');
       }, function () {
         $('#email-error').show();
       });
@@ -3622,7 +3622,7 @@ function SetupWCArea() {
 
 var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
   $('#merge-success').show();
-  setTimeout(function () { $('#MergeModal').modal('hide'); }, 2000);
+  $('#MergeModal').modal('hide');
   top.Ts.MainPage.closeTicketTab(_ticketNumber);
   top.Ts.MainPage.openTicket(winningTicketNumber, true);
   window.location = window.location;

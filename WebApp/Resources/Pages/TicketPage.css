@@ -585,7 +585,7 @@
         font-weight: normal;
     }
 
-    #ticket-properties-area .selectize-control.single .selectize-input:after { display:none; }
+    .selectize-control.single .selectize-input:after { display:none; }
 
     #ticket-properties-area .selectize-input input::-webkit-input-placeholder,
     #ticket-tag-Input::-webkit-input-placeholder
