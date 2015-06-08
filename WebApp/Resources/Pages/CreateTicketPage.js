@@ -340,6 +340,7 @@ function SaveTicket(_doClose) {
 };
 
 function isFormValid(callback) {
+  $('#newticket-create-errors').empty();
   top.Ts.Services.Organizations.IsProductRequired(function (isProductRequired) {
     top.Ts.Services.Organizations.IsProductVersionRequired(function (isProductVersionRequired) {
       top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
@@ -349,12 +350,13 @@ function isFormValid(callback) {
         var productID = product.val();
         var reportversionID = reportversion.val();
         var status = top.Ts.Cache.getTicketStatus($('#ticket-status').val());
-
+        
         //Check if we need a product
         product.closest('.form-group').removeClass('hasError');
         if (isProductRequired && (productID == -1 || productID == ""))
         {
           product.closest('.form-group').addClass('hasError');
+          InsertCreateError("Product is a required field.");
           result = false;
         }
 
@@ -362,6 +364,7 @@ function isFormValid(callback) {
         reportversion.closest('.form-group').removeClass('hasError');
         if (isProductVersionRequired && (reportversionID == -1 || reportversionID == "")) {
           reportversion.closest('.form-group').addClass('hasError');
+          InsertCreateError("Product version is a required field.");
           result = false;
         }
 
@@ -369,9 +372,11 @@ function isFormValid(callback) {
         $('#ticket-title-input').closest('.form-group').removeClass('has-error hasError');
         if ($.trim($('#ticket-title-input').val()) == '') {
           $('#ticket-title-input').closest('.form-group').addClass('has-error hasError');
+          InsertCreateError("Please enter a title above.");
           result = false;
         }
         //Check required custom fields
+        var cfHasError = false;
         $('.custom-field:visible').each(function () {
           $(this).removeClass('hasError');
           var field = $(this).data('field');
@@ -381,6 +386,7 @@ function isFormValid(callback) {
               case top.Ts.CustomFieldType.Number:
                 if ($.trim($(this).find('input').val()) == '') {
                   $(this).addClass('hasError');
+                  cfHasError = true;
                   result = false;
                 }
                 break;
@@ -390,12 +396,14 @@ function isFormValid(callback) {
                 var date = $.trim($(this).find('a').text());
                 if (date == null || date == '' || date == 'Unassigned') {
                   $(this).addClass('hasError');
+                  cfHasError = true;
                   result = false;
                 }
                 break;
               case top.Ts.CustomFieldType.PickList:
                 if ($(this).hasClass('isEmpty')) {
                   $(this).addClass('hasError');
+                  cfHasError = true;
                   result = false;
                 }
                 break;
@@ -410,6 +418,7 @@ function isFormValid(callback) {
                 case top.Ts.CustomFieldType.Number:
                   if ($.trim($(this).find('input').val()) == '') {
                     $(this).addClass('hasError');
+                    cfHasError = true;
                     result = false;
                   }
                   break;
@@ -419,12 +428,14 @@ function isFormValid(callback) {
                   var date = $.trim($(this).find('a').text());
                   if (date == null || date == '' || date == 'Unassigned') {
                     $(this).addClass('hasError');
+                    cfHasError = true;
                     result = false;
                   }
                   break;
                 case top.Ts.CustomFieldType.PickList:
                   if ($(this).hasClass('isEmpty')) {
                     $(this).addClass('hasError');
+                    cfHasError = true;
                     result = false;
                   }
                   break;
@@ -434,12 +445,15 @@ function isFormValid(callback) {
           }
         });
 
+        if (cfHasError) { InsertCreateError("Please fill in the red required custom fields."); }
+
         //If custom required check if the ticket is a KB if not then see if we have at least one customer
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false)
         { 
           if($('#ticket-Customer > div.tag-item').length < 1)
           {
             $('#ticket-Customer').closest('.form-group').addClass('hasError');
+            InsertCreateError("A customer is required to create a ticket.")
           }
           else
           {
@@ -452,6 +466,10 @@ function isFormValid(callback) {
     });
   });
 };
+
+function InsertCreateError(message) {
+  var alert = $('<div>').addClass('alert alert-danger').text(message).appendTo($('#newticket-create-errors'));
+}
 
 function SetupDescriptionEditor() {
   initEditor($('#ticket-description'), true, function (ed) {
