@@ -109,7 +109,7 @@ namespace TeamSupport.Data
 
     public static int ExecuteNonQuery(LoginUser loginUser, SqlCommand command)
     {
-      BaseCollection.FixCommandParameters(command);
+      //BaseCollection.FixCommandParameters(command);
       int rows = 0;
       int deadlockCount = 0;
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
