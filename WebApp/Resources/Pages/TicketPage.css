@@ -585,8 +585,24 @@
         font-weight: normal;
     }
 
-    .selectize-control.single .selectize-input:after {
+    #ticket-properties-area .selectize-control.single .selectize-input:after {
         display:none;
+    }
+
+    #ticket-properties-area .selectize-input input::-webkit-input-placeholder {
+     color: #428bca;
+    }
+
+    #ticket-properties-area .selectize-input input:-moz-placeholder { /* Firefox 18- */
+         color: #428bca; 
+    }
+
+    #ticket-properties-area .selectize-input input::-moz-placeholder {  /* Firefox 19+ */
+         color: #428bca; 
+    }
+
+     #ticket-properties-area .selectize-input input:-ms-input-placeholder {  
+         color: #428bca; 
     }
 
     .form-group-sm .selectize-input { font-size: 12px; padding-top: 3px; padding-bottom: 3px; min-height: 30px; overflow: inherit; }
