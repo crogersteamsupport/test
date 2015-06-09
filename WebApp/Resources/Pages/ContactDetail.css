@@ -107,3 +107,15 @@
 .expandProductsContainer {
     width: auto;
 }
+
+#contactAvatar {
+  margin-bottom: 8px;
+}
+
+.contactTitleHeader {
+  margin-bottom: 5px;
+}
+
+.contactHeader {
+  padding-top: 8px;
+}

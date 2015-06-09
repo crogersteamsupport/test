@@ -88,7 +88,35 @@
     }
 
     function appendItem(container, item) {
-        var el = $('<tr>');
+      var hasCustomerInsights = top.Ts.System.Organization.IsCustomerInsightsActive;
+      var organizationId = top.Ts.System.Organization.OrganizationID;
+      var imageObject = new Image();
+      var hasImage = false;
+
+      if (hasCustomerInsights) {
+        var image = $('<img>');
+        hasImage = true;
+        var imagePath;
+
+        if (item.userID) {
+          imagePath = "../../../dc/" + item.organizationID + "/contactavatar/" + item.userID + "/48/index";
+        }
+        else {
+          imagePath = "../../../dc/" + organizationId + "/companylogo/" + item.organizationID + "/48/index";
+        }
+
+        imageObject.src = imagePath;
+        if (imageObject.complete) {
+          hasImage = true;
+        }
+        else {
+          hasImage = false;
+        }
+      }
+
+      var el = $('<tr>');
+
+      if (!hasCustomerInsights || !hasImage) {
         var circle = $('<i>').addClass('fa fa-circle fa-stack-2x');
         var icon = $('<i>').addClass('fa fa-stack-1x fa-inverse');
 
@@ -107,16 +135,41 @@
         $('<td>').append(div).appendTo(el);
 
         if (item.userID) {
-            circle.addClass('color-orange');
-            icon.addClass('fa-user');
-            appendContact(div, item);
+          circle.addClass('color-orange');
+          icon.addClass('fa-user');
+          appendContact(div, item);
         }
         else {
-            circle.addClass('color-green');
-            icon.addClass('fa-building-o');
-            appendCompany(div, item);
+          circle.addClass('color-green');
+          icon.addClass('fa-building-o');
+          appendCompany(div, item);
         }
-        el.appendTo(container);
+      }
+      else {
+        $('<td>').addClass('result-icon').append(
+          $('<span>').addClass('fa-stack fa-2x').append(imageObject)
+        ).appendTo(el);
+
+        var div = $('<div>')
+          .addClass('peopleinfo')
+          .append(
+            $('<div>')
+              .addClass('pull-right')
+              .append($('<p>').text(item.openTicketCount + ' open tickets'))
+          );
+
+        $('<td>').append(div).appendTo(el);
+
+        if (item.userID) {
+          appendContact(div, item);
+        }
+        else {          
+          appendCompany(div, item);
+        }
+      }
+
+
+      el.appendTo(container);
     }
 
     function appendCompany(el, item) {

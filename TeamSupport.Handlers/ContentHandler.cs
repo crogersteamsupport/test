@@ -428,17 +428,19 @@ namespace TeamSupport.Handlers
 
     }
 
-    //https://app.teamsupport.com/dc/{OrganizationID}/CompanyLogo/{orgIdLogo}/{Size}
+    //https://app.teamsupport.com/dc/{OrganizationID}/CompanyLogo/{orgIdLogo}/{Size}/{page}
     private void ProcessCompanyLogo(HttpContext context, string[] segments, int organizationID)
     {
-      int logoOrganizationId  = int.Parse(segments[2]);
-      int size                = int.Parse(segments[3]);
-      string cacheFileName = "";
-      string cachePath = Path.Combine(GetImageCachePath(), "CompanyLogo\\" + organizationID.ToString());
+      int     logoOrganizationId  = int.Parse(segments[2]);
+      int     size                = int.Parse(segments[3]);
+      string  type                = segments.Length == 5 ? segments[4] : string.Empty;
+      string  cacheFileName       = "";
+      string  cachePath           = Path.Combine(GetImageCachePath(), "CompanyLogo\\" + organizationID.ToString());
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
-      cacheFileName = Path.Combine(cachePath, logoOrganizationId.ToString() + "-" + size.ToString() + ".jpg");
+      cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", logoOrganizationId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
+
       // found the last cache
       if (File.Exists(cacheFileName))
       {
@@ -455,7 +457,20 @@ namespace TeamSupport.Handlers
         using (Image image = Image.FromFile(originalFileName))
         using (Image scaledImage = ScaleImage(image, size, size))
         {
-          scaledImage.Save(cacheFileName, ImageFormat.Jpeg);
+          //If coming from the index page crop it and circle it.
+          if (!string.IsNullOrEmpty(type) && type.ToLower() == "index")
+          {
+            using (Image croppedImage = CropImage(scaledImage, size))
+            using (Image roundedImage = MakeRound(croppedImage, Color.White))
+            {
+              roundedImage.Save(cacheFileName, ImageFormat.Jpeg);
+            }
+          }
+          else
+          {
+            scaledImage.Save(cacheFileName, ImageFormat.Jpeg);
+          }
+          
         }
         WriteImage(context, cacheFileName);
         return;
@@ -464,18 +479,20 @@ namespace TeamSupport.Handlers
       return;
     }
 
-    //https://app.teamsupport.com/dc/{OrganizationID}/contactavatar/{userId}/{Size}
+    //https://app.teamsupport.com/dc/{OrganizationID}/contactavatar/{userId}/{Size}/{page}
     private void ProcessContactAvatar(HttpContext context, string[] segments, int organizationID)
     {
-      int organizationParentId = (int)Organizations.GetOrganization(LoginUser.Anonymous, organizationID).ParentID;
-      int userId = int.Parse(segments[2]);
-      int size = int.Parse(segments[3]);
-      string cacheFileName = "";
-      string cachePath = Path.Combine(GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+      int     organizationParentId  = (int)Organizations.GetOrganization(LoginUser.Anonymous, organizationID).ParentID;
+      int     userId                = int.Parse(segments[2]);
+      int     size                  = int.Parse(segments[3]);
+      string  type                  = segments.Length == 5 ? segments[4] : string.Empty;
+      string  cacheFileName         = "";
+      string  cachePath             = Path.Combine(GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
-      cacheFileName = Path.Combine(cachePath, userId.ToString() + "-" + size.ToString() + ".jpg");
+      cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", userId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
+
       // found the last cache
       if (File.Exists(cacheFileName))
       {
@@ -493,24 +510,37 @@ namespace TeamSupport.Handlers
         using (Image scaledImage = ScaleImage(image, size, size))
         using (Image croppedImage = CropImage(scaledImage, size))
         {
-          croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
+          if (!string.IsNullOrEmpty(type) && type.ToLower() == "index")
+          {
+            using (Image roundedImage = MakeRound(croppedImage, Color.White))
+            {
+              roundedImage.Save(cacheFileName, ImageFormat.Jpeg);
+            }
+          }
+          else
+          {
+            croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
+          }
         }
         WriteImage(context, cacheFileName);
         return;
       }
 
-      // no picture found, make a circle with first initial and cache it
-      User user = Users.GetUser(LoginUser.Anonymous, userId);
-      string initial = "A";
-
-      if (user != null && !string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
-
-      using (Image initialImage = MakeInitialSquare(initial, GetInitialColor(initial), size))
+      // no picture found and it not the index page (it is the details page then), make a circle with first initial and cache it
+      if (string.IsNullOrEmpty(type) || type.ToLower() != "index")
       {
-        initialImage.Save(cacheFileName, ImageFormat.Jpeg);
-      }
+        User user = Users.GetUser(LoginUser.Anonymous, userId);
+        string initial = "A";
 
-      WriteImage(context, cacheFileName);
+        if (user != null && !string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
+
+        using (Image initialImage = MakeInitialSquare(initial, GetInitialColor(initial), size))
+        {
+          initialImage.Save(cacheFileName, ImageFormat.Jpeg);
+        }
+
+        WriteImage(context, cacheFileName);
+      }
 
       return;
     }
@@ -650,11 +680,16 @@ namespace TeamSupport.Handlers
 
     public static Image MakeRound(Image img)
     {
+      return MakeRound(img, Color.Transparent);
+    }
+
+    public static Image MakeRound(Image img, Color backgroundColor)
+    {
       Bitmap bmp = new Bitmap(img.Width, img.Height, PixelFormat.Format32bppPArgb);
       GraphicsPath gp = new GraphicsPath();
       using (Graphics gr = Graphics.FromImage(bmp))
       {
-        gr.Clear(Color.Transparent);
+        gr.Clear(backgroundColor);
         using (gp)
         {
           gp.AddEllipse(0, 0, img.Width, img.Height);
