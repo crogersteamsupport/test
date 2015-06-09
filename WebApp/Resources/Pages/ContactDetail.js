@@ -164,8 +164,15 @@ $(document).ready(function () {
             var firstLast = user.FirstName + " " + user.LastName;
             $('#contactName').text(user.FirstName + " " + user.LastName);
 
-            var userAvatarPath = "../../../dc/" + user.OrganizationID + "/contactavatar/" + userID + "/48";
-            $('#contactAvatar').attr("src", userAvatarPath);
+            var hasCustomerInsights = top.Ts.System.Organization.IsCustomerInsightsActive;
+
+            if (hasCustomerInsights) {
+              var userAvatarPath = "../../../dc/" + user.OrganizationID + "/contactavatar/" + userID + "/48";
+              $('#contactAvatar').attr("src", userAvatarPath);
+            }
+            else {
+              $('#contactAvatar').hide();
+            }
 
             $('.userProperties #fieldName').text(firstLast.length > 1 ? user.FirstName + " " + user.LastName : "Unassigned");
             $('.userProperties #fieldName').attr("first", user.FirstName);

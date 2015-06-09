@@ -960,8 +960,17 @@ $(document).ready(function () {
 
     top.Ts.Services.Organizations.GetOrganization(organizationID, function (org) {
       $('#companyName').text(org.Name);
-      var companyLogoPath = "../../../dc/" + org.ParentID + "/companylogo/" + organizationID + "/80";
-      $('#companyLogo').attr("src", companyLogoPath);
+
+      var hasCustomerInsights = top.Ts.System.Organization.IsCustomerInsightsActive;
+
+      if (hasCustomerInsights) {
+        var companyLogoPath = "../../../dc/" + org.ParentID + "/companylogo/" + organizationID + "/80";
+        $('#companyLogo').attr("src", companyLogoPath);
+      }
+      else {
+        $('#companyLogo').hide();
+      }
+      
     });
 
     $("input[type=text], textarea").autoGrow();

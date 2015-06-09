@@ -436,6 +436,7 @@ namespace TeamSupport.Handlers
       string  type                = segments.Length == 5 ? segments[4] : string.Empty;
       string  cacheFileName       = "";
       string  cachePath           = Path.Combine(GetImageCachePath(), "CompanyLogo\\" + organizationID.ToString());
+      bool    isIndexPage           = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
@@ -458,7 +459,7 @@ namespace TeamSupport.Handlers
         using (Image scaledImage = ScaleImage(image, size, size))
         {
           //If coming from the index page crop it and circle it.
-          if (!string.IsNullOrEmpty(type) && type.ToLower() == "index")
+          if (isIndexPage)
           {
             using (Image croppedImage = CropImage(scaledImage, size))
             using (Image roundedImage = MakeRound(croppedImage, Color.White))
@@ -476,6 +477,24 @@ namespace TeamSupport.Handlers
         return;
       }
 
+      // no picture found, make a circle with first initial and cache it. If it is for the index/search page
+      if (isIndexPage)
+      {
+        Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, logoOrganizationId);
+        string initial = "A";
+
+        if (organization != null && !string.IsNullOrWhiteSpace(organization.Name)) initial = organization.Name.Substring(0, 1).ToUpper();
+
+        Color initialColor = ColorTranslator.FromHtml("#4CAF50");
+
+        using (Image initialImage = MakeInitialCircle(initial, initialColor, Color.White, size))
+        {
+          initialImage.Save(cacheFileName, ImageFormat.Jpeg);
+        }
+
+        WriteImage(context, cacheFileName);
+      }
+
       return;
     }
 
@@ -488,6 +507,7 @@ namespace TeamSupport.Handlers
       string  type                  = segments.Length == 5 ? segments[4] : string.Empty;
       string  cacheFileName         = "";
       string  cachePath             = Path.Combine(GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+      bool    isIndexPage           = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
@@ -510,7 +530,7 @@ namespace TeamSupport.Handlers
         using (Image scaledImage = ScaleImage(image, size, size))
         using (Image croppedImage = CropImage(scaledImage, size))
         {
-          if (!string.IsNullOrEmpty(type) && type.ToLower() == "index")
+          if (isIndexPage)
           {
             using (Image roundedImage = MakeRound(croppedImage, Color.White))
             {
@@ -526,22 +546,19 @@ namespace TeamSupport.Handlers
         return;
       }
 
-      // no picture found and it not the index page (it is the details page then), make a circle with first initial and cache it
-      if (string.IsNullOrEmpty(type) || type.ToLower() != "index")
+      // no picture found, make a circle with first initial and cache it
+      User user = Users.GetUser(LoginUser.Anonymous, userId);
+      string initial = "A";
+
+      if (user != null && !string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
+
+      using (Image initialImage = MakeInitialCircle(initial, !isIndexPage ? GetInitialColor(initial) : ColorTranslator.FromHtml("#FF9800"), Color.White, size))
       {
-        User user = Users.GetUser(LoginUser.Anonymous, userId);
-        string initial = "A";
-
-        if (user != null && !string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
-
-        using (Image initialImage = MakeInitialSquare(initial, GetInitialColor(initial), size))
-        {
-          initialImage.Save(cacheFileName, ImageFormat.Jpeg);
-        }
-
-        WriteImage(context, cacheFileName);
+        initialImage.Save(cacheFileName, ImageFormat.Jpeg);
       }
 
+      WriteImage(context, cacheFileName);
+      
       return;
     }
 
@@ -649,11 +666,16 @@ namespace TeamSupport.Handlers
 
     public static Image MakeInitialCircle(string initial, Color color, int size)
     {
+      return MakeInitialCircle(initial, color, Color.Transparent, size);
+    }
+
+    public static Image MakeInitialCircle(string initial, Color color, Color backgroundColor, int size)
+    {
       Bitmap bmp = new Bitmap(size, size, PixelFormat.Format32bppPArgb);
       GraphicsPath gp = new GraphicsPath();
       using (Graphics gr = Graphics.FromImage(bmp))
       {
-        gr.Clear(Color.Transparent);
+        gr.Clear(backgroundColor);
         using (gp)
         {
           using (gr)
@@ -664,8 +686,8 @@ namespace TeamSupport.Handlers
             using (Pen pen = new Pen(color, 3))
             using (Brush brush = new SolidBrush(color))
             {
-              gr.DrawEllipse(pen, 1, 1, size-3, size-3);
-              gr.FillEllipse(brush, 1,1,size-3, size-3);
+              gr.DrawEllipse(pen, 1, 1, size - 3, size - 3);
+              gr.FillEllipse(brush, 1, 1, size - 3, size - 3);
               gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
               StringFormat strFormat = new StringFormat();
               strFormat.Alignment = StringAlignment.Center;
