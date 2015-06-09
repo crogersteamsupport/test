@@ -56,24 +56,37 @@ namespace TeamSupport.ServiceLibrary
 
     private void InitializeGlobalVariables()
     {
-      _securityToken = Settings.ReadString(_securityTokenKey, _securityToken);
-      _maxContactApiCalls = Settings.ReadInt(_maxContactApiCallsKey, 200000);
-      _maxCompanyApiCalls = Settings.ReadInt(_maxCompanyApiCallsKey, 100000);
+      _securityToken          = Settings.ReadString(_securityTokenKey, _securityToken);
+      _maxContactApiCalls     = Settings.ReadInt(_maxContactApiCallsKey, 200000);
+      _maxCompanyApiCalls     = Settings.ReadInt(_maxCompanyApiCallsKey, 100000);
       _currentContactApiCalls = Settings.ReadInt(_currentContactApiCallsKey, 1);
       _currentCompanyApiCalls = Settings.ReadInt(_currentCompanyApiCallsKey, 1);
-      _waitBeforeNewUpdate = Settings.ReadInt(_waitBeforeNewUpdateKey, 24);
+      _waitBeforeNewUpdate    = Settings.ReadInt(_waitBeforeNewUpdateKey, 24);
       _maxToProcessByTicketCount = Settings.ReadInt(_maxToProcessByTicketCountKey, 100);
       Service service = Services.GetService(_loginUser, ServiceName);
-      _lastProcessed = DateTime.Parse(Settings.ReadString(_lastProcessedKey, DateTime.Now.AddDays(-1).ToString()));
+      _lastProcessed  = DateTime.Parse(Settings.ReadString(_lastProcessedKey, DateTime.Now.AddDays(-1).ToString()));
+
+      // we need to check if month changed, to reset the counter
+      DateTime  today               = DateTime.Now;
+      int       lastProcessedMonth  = _lastProcessed.Month;
+      int       todayMonth          = today.Month;
+      bool      monthChange         = lastProcessedMonth != todayMonth;
+
+      if (monthChange)
+      {
+        _currentCompanyApiCalls = 0;
+        _currentContactApiCalls = 0;
+        Settings.WriteInt(_currentCompanyApiCallsKey, 1);
+        Settings.WriteInt(_currentContactApiCallsKey, 1);
+        Logs.WriteEvent("API calls reset due to start of new month.");
+      }
     }
 
     private void ProcessCustomerInsights()
     {
       try
       {
-        Logs.WriteEvent("***********************************************************************************");
-        Logs.WriteEvent("Starting Customer Insights Processor");
-        Logs.WriteEvent("***********************************************************************************");
+        Logs.WriteEvent("********************** Starting Customer Insights Processor ***********************");
 
         Organizations companies = new Organizations(LoginUser);
         companies.LoadByCustomerInsightsNewOrModifiedByDate(_lastProcessed.AddMinutes(-10), _waitBeforeNewUpdate);
@@ -161,12 +174,12 @@ namespace TeamSupport.ServiceLibrary
 
         if (skipCompanyUpdates)
         {
-          Logs.WriteEventFormat("Maximum Company api calls {0} have been reached.", _maxCompanyApiCalls);
+          Logs.WriteEventFormat("Maximum Company api calls {0} have been reached for this month.", _maxCompanyApiCalls);
         }
 
         if (skipContactUpdates)
         {
-          Logs.WriteEventFormat("Maximum Contact api calls {0} have been reached.", _maxContactApiCalls);
+          Logs.WriteEventFormat("Maximum Contact api calls {0} have been reached for this month.", _maxContactApiCalls);
         }
       }
       catch (Exception ex)
@@ -174,7 +187,7 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteException(ex);
       }
 
-      Logs.WriteEvent("Customer Insights Processor Finished");
+      Logs.WriteEvent("********************** Customer Insights Processor Finished **********************");
     }
 
     private void SyncOrganizationInformation(Organization company)
