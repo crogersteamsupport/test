@@ -735,11 +735,12 @@ namespace TeamSupport.Handlers
       return newImage;
     }
 
-    private static string GetImageCachePath()
+    private string GetImageCachePath()
     {
-      string result = System.Web.Configuration.WebConfigurationManager.AppSettings["ImageCachePath"];
-      return result == null ? "C:\\TSCache" : result;
-    
+      string root = SystemSettings.ReadString(LoginUser.Anonymous, "FilePath", "C:\\TSData");
+      string path = Path.Combine(root, "ImageCache");
+      Directory.CreateDirectory(path);
+      return path;
     }
 
     private void ProcessAttachment(HttpContext context, int attachmentID)
