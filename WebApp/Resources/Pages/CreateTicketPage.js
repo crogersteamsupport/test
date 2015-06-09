@@ -1203,7 +1203,7 @@ var appendCategorizedCustomFields = function (fields, className) {
           if (isFirstFieldAdded) {
             isFirstFieldAdded = false;
             var header = $('<label id=CFCat-' + categories[j].CustomFieldCategoryID + '>').text(categories[j].Category).addClass('customFieldCategoryHeader');
-            container.append(header);
+            container.append($('<hr>')).append(header);
           }
 
           switch (field.FieldType) {

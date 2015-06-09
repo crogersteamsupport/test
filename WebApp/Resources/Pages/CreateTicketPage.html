@@ -125,12 +125,15 @@
           </div>
         </div>
         <div id="ticket-properties-area" class="ticket-property-section">
+          <script id="ticket-group-hr" type="text/x-handlebars-template">
+            <hr />
+          </script>
           <script id="ticket-group-AssignedTo" type="text/x-handlebars-template">
             <div class="form-horizontal">
               <div class="form-group form-group-sm">
                 <label for="ticket-assigned" class="col-sm-4 control-label select-label">Assigned</label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-assigned" class="form-control hidden-select"><option>Unassiged</option></select>
+                  <select id="ticket-assigned" class="form-control hidden-select  muted-placeholder" placeholder="Assign User"><option>Unassiged</option></select>
                 </div>
               </div>
             </div>
@@ -140,7 +143,7 @@
               <div class="form-group form-group-sm">
                 <label for="ticket-group" class="col-sm-4 control-label select-label">Group</label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-group" class="form-control hidden-select"><option>Unassiged</option></select>
+                  <select id="ticket-group" class="form-control hidden-select muted-placeholder" placeholder="Assign Group"><option>Unassiged</option></select>
                 </div>
               </div>
             </div>
@@ -150,9 +153,7 @@
               <div class="form-group form-group-sm">
                 <label for="ticket-type" class="col-sm-4 control-label select-label">Type</label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-type" class="form-control ticket-select hidden-select">
-                    
-                  </select>
+                  <select id="ticket-type" class="form-control ticket-select hidden-select  muted-placeholder" placeholder="Change Type"></select>
                 </div>
               </div>
             </div>
@@ -160,9 +161,9 @@
           <script id="ticket-group-Status" type="text/x-handlebars-template">
             <div class="form-horizontal">
               <div class="form-group form-group-sm">
-                <label id="ticket-status-label" for="ticket-status" class="col-sm-4 control-label select-label">Status</label>
+                <label id="ticket-status-label" for="ticket-status" class="col-sm-4 control-label select-label" placeholder="Change Status">Status</label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-status" class="form-control hidden-select">
+                  <select id="ticket-status" class="form-control  hidden-select  muted-placeholder">
                   </select>
                 </div>
               </div>
@@ -173,8 +174,7 @@
               <div class="form-group form-group-sm">
                 <label for="ticket-severity" class="col-sm-4 control-label select-label">Severity</label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-severity" class="form-control ticket-select hidden-select">
-                  </select>
+                  <select id="ticket-severity" class="form-control ticket-select  hidden-select  muted-placeholder" placeholder="Add Severity"></select>
                 </div>
               </div>
             </div>
@@ -216,7 +216,7 @@
               <div class="form-group form-group-sm" id="ticket-group-KBCat">
                 <label for="ticket-KB-Category" class="col-sm-4 control-label select-label">Category</label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-KB-Category" class="form-control hidden-select">
+                  <select id="ticket-KB-Category" class="form-control  hidden-select  muted-placeholder">
                     <option>Unassiged</option>
                   </select>
                 </div>
@@ -229,19 +229,16 @@
               <div class="form-group form-group-sm">
                 <label for="ticket-Community" class="col-sm-4 control-label select-label">Community</label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-Community" class="form-control hidden-select"></select>
+                  <select id="ticket-Community" class="form-control  hidden-select  muted-placeholder" placeholder="Change Community"></select>
                 </div>
               </div>
             </div>
           </script>
           <script id="ticket-group-Customers" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-Customers" class="TagCategoryLabel">Customers:&nbsp;</label>
               <div class="tagContainer">
-                <span id="ticket-Customer" style="z-index:100;">
-
-                </span>
                 <input id="ticket-Customers-Input" class="tagInput hidden-select" type="text" placeholder="Add Customer">
+                <span id="ticket-Customer" style="z-index:100;"></span>
               </div>
             </div>
           </script>
@@ -250,7 +247,7 @@
               <div class="form-group form-group-sm">
                 <label for="ticket-Product" class="col-sm-4 control-label select-label">Product</label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-Product" class="hidden-select"></select>
+                  <select id="ticket-Product" class=" hidden-select  muted-placeholder"></select>
                 </div>
               </div>
             </div>
@@ -258,7 +255,7 @@
               <div class="form-group form-group-sm">
                 <label for="ticket-Product-Reported-Version" class="col-sm-4 control-label select-label">Reported <abbr title="Version">Ver.</abbr></label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-Versions" class="hidden-select"></select>
+                  <select id="ticket-Versions" class=" hidden-select  muted-placeholder"></select>
                 </div>
               </div>
             </div>
@@ -266,19 +263,16 @@
               <div class="form-group form-group-sm">
                 <label for="ticket-Product-Resolved-Version" class="col-sm-4 control-label select-label">Resolved <abbr title="Version">Ver.</abbr></label>
                 <div class="col-sm-8 ticket-input-container">
-                  <select id="ticket-Resolved" class="hidden-select"></select>
+                  <select id="ticket-Resolved" class=" hidden-select  muted-placeholder"></select>
                 </div>
               </div>
             </div>
           </script>
           <script id="ticket-group-Tags" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-tags" class="TagCategoryLabel">Tags:&nbsp;</label>
               <div class="tagContainer">
-                <span id="ticket-tags">
-
-                </span>
-                <input id="ticket-tag-Input" class="tagInput" type="text" placeholder="Add Tag" style="font-size:12px; margin-bottom:10px;">
+                <input id="ticket-tag-Input" class="tagInput ui-autocomplete-input" type="text" placeholder="Add Tag" style="font-size:12px; margin-bottom: 10px; padding-left: 5px;padding-top: 8px;" autocomplete="off">
+                <span id="ticket-tags"></span>
               </div>
             </div>
           </script>
@@ -290,46 +284,41 @@
           </script>
           <script id="ticket-group-Inventory" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-Inventory" class="TagCategoryLabel">Inventory:&nbsp;</label>
               <div class="tagContainer">
-                <span id="ticket-Inventory" style="z-index:100;"></span>
                 <input id="ticket-Inventory-Input" class="tagInput hidden-select" type="text" placeholder="Add Inventory">
+                <span id="ticket-Inventory" style="z-index:100;"></span>
               </div>
             </div>
           </script>
           <script id="ticket-group-UserQueue" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-UserQueue" class="TagCategoryLabel">User Queues:&nbsp;</label>
               <div class="tagContainer">
-                <span id="ticket-UserQueue" style="z-index:100;"></span>
                 <input id="ticket-UserQueue-Input" class="tagInput hidden-select" type="text" placeholder="Add to Queue">
+                <span id="ticket-UserQueue" style="z-index:100;"></span>
               </div>
             </div>
           </script>
           <script id="ticket-group-SubscribedUsers" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-SubscribedUsers" class="TagCategoryLabel">Subscribed Users:&nbsp;</label>
               <div class="tagContainer">
-                <span id="ticket-SubscribedUsers" style="z-index:100;"></span>
                 <input id="ticket-SubscribedUsers-Input" class="tagInput hidden-select" type="text" placeholder="Subscribe User">
+                <span id="ticket-SubscribedUsers" style="z-index:100;"></span>   
               </div>
             </div>
           </script>
           <script id="ticket-group-AssociatedTickets" type="text/x-handlebars-template">
             <div class="form-group ticket-group">
-              <label for="ticket-AssociatedTickets" class="TagCategoryLabel">Associated Tickets:&nbsp;</label>
               <div class="tagContainer">
-                <span id="ticket-AssociatedTickets" style="z-index:100;"></span>
                 <input id="ticket-AssociatedTickets-Input" class="tagInput hidden-select" type="text" placeholder="Add Ticket">
+                <span id="ticket-AssociatedTickets" style="z-index:100;"></span>
               </div>
             </div>
           </script>
           <script id="ticket-group-Reminders" type="text/x-handlebars-template">
             <div class="form-group ticket-group" id="ticket-group-Reminders">
-              <label for="ticket-Reminders" class="TagCategoryLabel">Reminders:&nbsp;</label>
               <div class="tagContainer">
+                <a class="btn btn-link" style="color: #428bca; padding-left: 3px; padding-bottom: 0px; font-size: 12px; margin-bottom:10px; text-align: left; width:100%;" data-toggle="modal" data-target="#RemindersModal">Add Reminder</a>
                 <span id="ticket-reminder-span"></span><br />
-                <a class="btn btn-link" style="color: darkgray; padding-left: 0px; padding-bottom: 0px; font-size: 12px; margin-bottom:10px;" data-toggle="modal" data-target="#RemindersModal">Add Reminder</a>
               </div>
             </div>
           </script>

@@ -534,13 +534,7 @@
     #ticket-properties-area > hr { margin: 4px -15px 4px -15px; }
     #ticket-group-custom-fields > hr { margin: 4px -15px 4px -15px; }
 
-    #ticket-properties-area > .form-group {
-      margin-bottom: 0px;
-      padding-top: 0px;
-    }  
-
-
-    #ticket-properties-area > .form-horizontal > .form-group {
+    #ticket-properties-area .form-group {
         margin-bottom: 0px;
       padding-top: 0px;
     }  
@@ -609,11 +603,6 @@
     .muted-placeholder .selectize-input input::-webkit-input-placeholder
      { color:#D4D4D4 !important; }
 
-    /*#ticket-properties-area .selectize-input input::-webkit-input-placeholder
-     {
-     color: #428bca;
-    }*/
-
     .form-group-sm .selectize-input { font-size: 12px; padding-top: 3px; padding-bottom: 3px; min-height: 30px; overflow: inherit; }
     .form-group-sm .selectize-input input { font-size: 12px; }
     .form-group-sm .select-label { padding-top: 5px !important; }
@@ -653,7 +642,6 @@
       /*border-bottom: 3px solid #eee;
       padding-bottom: 5px;*/
       width: 100%;
-      color: DimGray !important;
       font-weight: bold !important;
       -webkit-font-smoothing: inherit;
       font-size: 14px;
