@@ -2920,33 +2920,39 @@ for more information or use an alternate browser like Firefox or Internet Explor
             //image: '../images/icons/Symbol_Record.png',
             icon: 'awesome fa fa-video-camera',
             onclick: function () {
-                var dynamicPub = actionElement.find("#publisher");
-                actionElement.find("#recordVideoContainer").show();
-                dynamicPub.show();
-                dynamicPub.attr("id", "tempContainer");
-                dynamicPub.attr("width", "400px");
-                dynamicPub.attr("height", "400px");
 
-                if (dynamicPub.length == 0)
-                    dynamicPub = actionElement.find("#tempContainer");
+                if (OT.checkSystemRequirements() == 1) {
+                    var dynamicPub = actionElement.find("#publisher");
+                    actionElement.find("#recordVideoContainer").show();
+                    dynamicPub.show();
+                    dynamicPub.attr("id", "tempContainer");
+                    dynamicPub.attr("width", "400px");
+                    dynamicPub.attr("height", "400px");
+
+                    if (dynamicPub.length == 0)
+                        dynamicPub = actionElement.find("#tempContainer");
 
 
 
-                top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
-                    sessionId = resultID[0];
-                    token = resultID[1];
-                    session = OT.initSession(apiKey, sessionId);
-                    session.connect(token, function (error) {
+                    top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                        sessionId = resultID[0];
+                        token = resultID[1]; 
+                        session = OT.initSession(apiKey, sessionId);
+                        session.connect(token, function (error) {
                             publisher = OT.initPublisher(dynamicPub.attr('id'), {
-                            insertMode: 'append',
-                            width: '100%',
-                            height: '100%'
+                                insertMode: 'append',
+                                width: '100%',
+                                height: '100%'
+                            });
+                            session.publish(publisher);
                         });
-                        session.publish(publisher);
                     });
-                });
 
-
+                }
+                else
+                {
+                    alert("Your client does not support video recording.")
+                }
             }
         });
 
@@ -3224,6 +3230,7 @@ var createActionForm = function (element, action, callback) {
   element.find('#rcdtok').click(function (e) {
       top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
           element.find('#rcdtok').hide();
+          element.find('#rcdtok span').text('Re-Record');
           element.find('#stoptok').show();
           element.find('#inserttok').hide();
           element.find('#deletetok').hide();
@@ -3238,7 +3245,7 @@ var createActionForm = function (element, action, callback) {
           element.find('#rcdtok').show();
           element.find('#stoptok').hide();
           element.find('#inserttok').show();
-          element.find('#deletetok').show();
+          element.find('#canceltok').show();
           tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
       });
   });
@@ -3246,37 +3253,35 @@ var createActionForm = function (element, action, callback) {
   element.find('#inserttok').hide();
 
   element.find('#inserttok').click(function (e) {
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400"><source src="' + tokurl + '" type="video/mp4"></video>');
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
       element.find('#rcdtok').show();
       element.find('#stoptok').hide();
       element.find('#inserttok').hide();
-      element.find('#deletetok').hide();
       session.unpublish(publisher);
       element.find('#recordVideoContainer').hide();
   });
 
   element.find('#deletetok').hide();
-  element.find('#deletetok').click(function (e) {
-      top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
-          element.find('#rcdtok').show();
-          element.find('#stoptok').hide();
-          element.find('#inserttok').hide();
-          element.find('#deletetok').hide();
-          session.unpublish(publisher);
-          element.find('#recordVideoContainer').hide();
-1      });
-  });
+//  element.find('#deletetok').click(function (e) {
+//      top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+//          element.find('#rcdtok').show();
+//          element.find('#stoptok').hide();
+//          element.find('#inserttok').hide();
+//          session.unpublish(publisher);
+//          element.find('#recordVideoContainer').hide();
+//1      });
+//  });
 
+  element.find('#canceltok').hide();
   element.find('#canceltok').click(function (e) {
       if (recordingID)
       {
-          top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
-              element.find('#rcdtok').show();
-              element.find('#stoptok').hide();
-              element.find('#inserttok').hide();
-              element.find('#deletetok').hide();
-              session.unpublish(publisher);
-              element.find('#recordVideoContainer').hide();
+              top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+                  element.find('#rcdtok').show();
+                  element.find('#stoptok').hide();
+                  element.find('#inserttok').hide();
+                  session.unpublish(publisher);
+                  element.find('#recordVideoContainer').hide();
           });
       }
       else

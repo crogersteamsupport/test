@@ -238,6 +238,11 @@ video:hover{
     cursor: pointer;
 }
 
+#tempContainer{
+    margin: 0 auto;
+    padding-bottom: 10px;
+}
+
     #deployJavaPlugin
     {
         position: absolute;    left: -10px;
