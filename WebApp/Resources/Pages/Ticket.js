@@ -3230,7 +3230,7 @@ var createActionForm = function (element, action, callback) {
   element.find('#rcdtok').click(function (e) {
       top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
           element.find('#rcdtok').hide();
-          element.find('#rcdtok span').text('Re-Record');
+          //element.find('#rcdtok span').text('Re-Record');
           element.find('#stoptok').show();
           element.find('#inserttok').hide();
           element.find('#deletetok').hide();
