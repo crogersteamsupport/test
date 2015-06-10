@@ -2969,6 +2969,7 @@ function CreateTimeLineDelegates() {
                 self.parent().hide();
                 self.parent().parent().find('.wc-option-replyarea').show();
                 self.closest('.wc-textarea').find('textarea').val('');
+                window.top.chatHubClient.server.newThread(Message.MessageID, top.Ts.System.User.OrganizationID);
             });
         }
 
@@ -2988,15 +2989,14 @@ function CreateTimeLineDelegates() {
         var hasLiked = self.data('liked');
         if (!hasLiked) {
             var messageID = self.closest('div.timeline-wc-reply').data().messageid;
-
             top.Ts.System.logAction('Water Cooler - Message Liked');
             top.Ts.Services.WaterCooler.AddCommentLike(messageID, function (likes) {
                 var countSpan = self.find('.wc-reply-like-total');
                 countSpan.html("+" + likes.length);
                 self.data('liked', true);
                 countSpan.next().hide();
-
-                //window.top.chatHubClient.server.addLike(likes, messageID, thread.Message.MessageParent, _orgID);
+              //TODO:  need to update signalr
+                //window.top.chatHubClient.server.addLike(likes, messageID, thread.Message.MessageParent, top.Ts.System.User.OrganizationID);
             });
         };
     });
