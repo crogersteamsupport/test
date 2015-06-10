@@ -3071,7 +3071,8 @@ var createActionForm = function (element, action, callback) {
     clearTimeout(_timerid);
     _timerElapsed = 0;
     counter = 0;
-    session.unpublish(publisher);
+    if(recordingID)
+        session.unpublish(publisher);
     callback(null); element.remove();
     $('#recorder').remove();
 
