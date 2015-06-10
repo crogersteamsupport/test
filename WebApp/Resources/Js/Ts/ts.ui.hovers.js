@@ -29,6 +29,7 @@
 	    e.popover({
 	      html: true,
 	      trigger: 'hover',
+	      delay: { "show": 1, "hide": 1 },
 	      content: function () {
 	        return $.ajax({
 	          url: '../../../Tips/User.aspx?UserID=' + userid + '&TicketID=' + ticketid,
@@ -47,6 +48,7 @@
 	  e.popover({
 	    html: true,
 	    trigger: 'hover',
+	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
 	      return $.ajax({
 	        url: '../../../Tips/Asset.aspx?AssetID=' + assetid,
@@ -65,6 +67,7 @@
 	  e.popover({
 	    html: true,
 	    trigger: 'hover',
+	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
 	      return $.ajax({
 	        url: '../../../Tips/Customer.aspx?CustomerID=' + orgid + '&TicketID=' + ticketid,
@@ -82,6 +85,7 @@
 	  e.popover({
 	    html: true,
 	    trigger: 'hover',
+	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
 	      return $.ajax({
 	        url: '../../../Tips/Sla.aspx?TicketID=' + ticketid,
@@ -99,6 +103,7 @@
 	  e.popover({
 	    html: true,
 	    trigger: 'hover',
+	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
 	      return $.ajax({
 	        url: '../../../Tips/Ticket.aspx?TicketID=' + ticketid,
