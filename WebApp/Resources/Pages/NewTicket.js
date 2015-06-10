@@ -1053,43 +1053,6 @@ for more information or use an alternate browser like Firefox or Internet Explor
     });
   }
 
-  var onScreenRecordStart = function () {
-    $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
-    switch (BrowserDetect.browser) {
-      case "Chrome":
-        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
-        break;
-      case "Firefox":
-        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
-        break;
-      case "Explorer":
-        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
-        break;
-      case "Safari":
-        if (BrowserDetect.OS == "Windows") {
-          top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
-        }
-        else {
-          top.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
-        }
-        break;
-      default:
-        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
-    }
-    $('.divScreenRecorderMessages').hide();
-  };
-
-  var onScreenRecordComplete = function (url) {
-    $('#recorder').remove();
-    var link = '<a href="' + url + '" target="_blank">Click here to view screen recording video.</a>';
-    var html = '<div class="video_holder"><video style="width: 640px; height: 360px;" controls="controls"><source src="' + url + '" type="video/mp4" />' + link + '</video></div>'
-    var ed = tinyMCE.activeEditor;
-    ed.selection.setContent(html);
-    ed.execCommand('mceAutoResize');
-    ed.focus();
-    top.Ts.System.logAction('Ticket - Screen Recorded');
-  };
-
   $('.ticket-rail .collapsable')
     .prepend('<span class="ui-icon ui-icon-triangle-1-s">')
     .click(function (e) {
@@ -2624,5 +2587,42 @@ function GetTinyMCEFontName(fontFamily) {
   }
   return result;
 }
+
+var onScreenRecordStart = function () {
+  $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
+  switch (BrowserDetect.browser) {
+    case "Chrome":
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
+      break;
+    case "Firefox":
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
+      break;
+    case "Explorer":
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
+      break;
+    case "Safari":
+      if (BrowserDetect.OS == "Windows") {
+        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
+      }
+      else {
+        top.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
+      }
+      break;
+    default:
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
+  }
+  $('.divScreenRecorderMessages').hide();
+};
+
+var onScreenRecordComplete = function (url) {
+  $('#recorder').remove();
+  var link = '<a href="' + url + '" target="_blank">Click here to view screen recording video.</a>';
+  var html = '<div class="video_holder"><video style="width: 640px; height: 360px;" controls="controls"><source src="' + url + '" type="video/mp4" />' + link + '</video></div>'
+  var ed = tinyMCE.activeEditor;
+  ed.selection.setContent(html);
+  ed.execCommand('mceAutoResize');
+  ed.focus();
+  top.Ts.System.logAction('Ticket - Screen Recorded');
+};
 
 
