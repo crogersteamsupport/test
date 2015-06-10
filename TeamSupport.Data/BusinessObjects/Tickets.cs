@@ -103,37 +103,53 @@ AND ot.TicketID = @TicketID
 
     public static bool UserHasProductFamilyRights(User user, int ticketID)
     {
-      using (SqlConnection connection = new SqlConnection(user.Collection.LoginUser.ConnectionString))
+      ProductFamilies productFamiliesWithRights = new ProductFamilies(user.Collection.LoginUser);
+      productFamiliesWithRights.LoadByUserRights(user.UserID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(user.Collection.LoginUser, ticketID);
+      bool result = false;
+      foreach (ProductFamily productFamilyWithRights in productFamiliesWithRights)
       {
-        connection.Open();
-        SqlCommand command = connection.CreateCommand();
-        command.CommandText = @"
-            SELECT
-                COUNT(*) 
-            FROM 
-                Users u           
-                JOIN Organizations o
-                    ON u.OrganizationID = o.OrganizationID 
-                LEFT JOIN UserRightsProductFamilies urpf
-                    ON u.UserID = urpf.UserID 
-                LEFT JOIN Products p
-                    ON urpf.ProductFamilyID = p.ProductFamilyID
-                LEFT JOIN Tickets t
-                    ON p.ProductID = t.ProductID
-            WHERE
-                u.UserID = @UserID
-                AND
-                (
-                    o.UseProductFamilies = 0
-                    OR t.TicketID = @TicketID
-                )              
-        ";
-        command.Parameters.AddWithValue("UserID", user.UserID);
-        command.Parameters.AddWithValue("TicketID", ticketID);
-        int result = (int)command.ExecuteScalar();
-        connection.Close();
-        return result > 0;
+        if (ticket.ProductFamilyID == productFamilyWithRights.ProductFamilyID)
+        {
+          result = true;
+          break;
+        }
       }
+
+      return result;
+
+//      This code works but is taking too long in production. Till we figure out a way to fix that it needs to be replaced.
+//      using (SqlConnection connection = new SqlConnection(user.Collection.LoginUser.ConnectionString))
+//      {
+//        connection.Open();
+//        SqlCommand command = connection.CreateCommand();
+//        command.CommandText = @"
+//            SELECT
+//                COUNT(*) 
+//            FROM 
+//                Users u           
+//                JOIN Organizations o
+//                    ON u.OrganizationID = o.OrganizationID 
+//                LEFT JOIN UserRightsProductFamilies urpf
+//                    ON u.UserID = urpf.UserID 
+//                LEFT JOIN Products p
+//                    ON urpf.ProductFamilyID = p.ProductFamilyID
+//                LEFT JOIN Tickets t
+//                    ON p.ProductID = t.ProductID
+//            WHERE
+//                u.UserID = @UserID
+//                AND
+//                (
+//                    o.UseProductFamilies = 0
+//                    OR t.TicketID = @TicketID
+//                )              
+//        ";
+//        command.Parameters.AddWithValue("UserID", user.UserID);
+//        command.Parameters.AddWithValue("TicketID", ticketID);
+//        int result = (int)command.ExecuteScalar();
+//        connection.Close();
+//        return result > 0;
+//      }
     }
 
     public void FullReadFromXml(string data, bool isInsert, ref string description, ref int? contactID)
