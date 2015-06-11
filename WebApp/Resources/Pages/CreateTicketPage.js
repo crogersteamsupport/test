@@ -257,6 +257,7 @@ function SaveTicket(_doClose) {
         info.Description = tinyMCE.activeEditor.getContent();
         info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
 
+
         // Custom Values
         info.Fields = new Array();
         $('.custom-field:visible').each(function () {
