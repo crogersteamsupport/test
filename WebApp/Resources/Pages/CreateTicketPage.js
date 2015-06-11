@@ -241,19 +241,19 @@ function SaveTicket(_doClose) {
         info.Name = $('#ticket-title-input').val();
         info.TicketTypeID = $('#ticket-type').val();
         info.TicketStatusID = $('#ticket-status').val();
-        info.TicketSeverityID = $('#ticket-severity').val();
-        info.UserID = $('#ticket-assigned').val();
-        info.GroupID = $('#ticket-group').val();
+        info.TicketSeverityID = $('#ticket-severity').val(); 
+        info.UserID = ($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
+        info.GroupID = ($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
         var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
         info.DueDate = _dueDate;
 
-        info.CategoryID = $('#ticket-KB-Category').val();
-        info.ProductID = $('#ticket-Product').val();
-        info.ReportedID = $('#ticket-Versions').val();
-        info.ResolvedID = $('#ticket-Resolved').val();
+        info.CategoryID = $('#ticket-Category').val();
+        info.ProductID = ($('#ticket-Product').val() == '') ? '-1' : $('#ticket-Product').val();
+        info.ReportedID = ($('#ticket-Versions').val() == '') ? '-1' : $('#ticket-Versions').val();
+        info.ResolvedID = ($('#ticket-Resolved').val() == '') ? '-1' : $('#ticket-Resolved').val();
         info.IsVisibleOnPortal = $('#ticket-visible').prop('checked')
         info.IsKnowledgebase = $('#ticket-isKB').prop('checked');
-        info.KnowledgeBaseCategoryID = $('#ticket-KB-Category').val();
+        info.KnowledgeBaseCategoryID = ($('#ticket-KB-Category').val() == '') ? '-1' : $('#ticket-KB-Category').val();
         info.Description = tinyMCE.activeEditor.getContent();
         info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
 
