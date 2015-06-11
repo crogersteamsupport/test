@@ -13,7 +13,7 @@ namespace TeamSupport.Data
   
   public partial class ProductFamilies
   {
-      public void LoadBySearchTerm(string searchTerm, int start, int organizationID)
+      public void LoadBySearchTerm(string searchTerm, int start, int organizationID, int userID)
       {
           int end = start + 20;
           using (SqlCommand command = new SqlCommand())
@@ -29,12 +29,16 @@ namespace TeamSupport.Data
                   FROM
                   (
                     SELECT
-                      *
+                      pf.*
                     FROM
-                      ProductFamilies
+                      ProductFamilies pf
                     WHERE 
-                      OrganizationID = @OrganizationID
-                      AND (@SearchTerm = '' OR (Name LIKE '%' + @SearchTerm + '%') OR (Description LIKE '%' + @SearchTerm + '%'))
+                      pf.OrganizationID = @OrganizationID
+                      AND (@SearchTerm = '' OR (pf.Name LIKE '%' + @SearchTerm + '%') OR (pf.Description LIKE '%' + @SearchTerm + '%'))
+                      AND (
+                        0 = (SELECT ProductFamiliesRights FROM Users WHERE UserID = @UserID)
+                        OR pf.ProductFamilyID IN (SELECT ProductFamilyID FROM UserRightsProductFamilies WHERE UserID = @UserID)
+                      )
                   ) as temp
                 ) as results
                 WHERE
@@ -47,6 +51,7 @@ namespace TeamSupport.Data
               command.Parameters.AddWithValue("@SearchTerm", searchTerm);
               command.Parameters.AddWithValue("@start", start + 1);
               command.Parameters.AddWithValue("@end", end);
+              command.Parameters.AddWithValue("@UserID", userID);
               Fill(command);
           }
       }

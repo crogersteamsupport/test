@@ -33,8 +33,14 @@ $(document).ready(function () {
   top.Ts.Services.Products.GetVersion(_productVersionID, function (productVersion) {
     if (productVersion == null)
     {
-        alert('This product version has either been deleted or you do not have permission to view it.');
-        top.Ts.MainPage.closeNewProductVersionTab(_productVersionID);
+      //alert('This product version has either been deleted or you do not have permission to view it.');
+      //top.Ts.MainPage.closeNewProductVersionTab(_productVersionID);
+      var url = window.location.href;
+      if (url.indexOf('.') > -1) {
+        url = url.substring(0, url.lastIndexOf('/') + 1);
+      }
+      window.location = url + 'NoTicketAccess.html?type=productversion';
+      return;
     }
     else
     {

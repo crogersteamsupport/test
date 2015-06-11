@@ -47,6 +47,7 @@
             $('.searchresults').fadeTo(0, 1);
             $('.results-loading').hide();
             $('.results-done').hide();
+            $('.results-empty').hide();
 
             if (start == 0) {
                 $('.searchresults').empty();

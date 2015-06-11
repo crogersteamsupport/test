@@ -1589,7 +1589,7 @@ SELECT
     {
         LoginUser loginUser = TSAuthentication.GetLoginUser();
         ProductFamilies productFamilies = new ProductFamilies(TSAuthentication.GetLoginUser());
-        productFamilies.LoadBySearchTerm(searchTerm, from, loginUser.OrganizationID);
+        productFamilies.LoadBySearchTerm(searchTerm, from, loginUser.OrganizationID, loginUser.UserID);
 
         return productFamilies.GetProductFamilyProxies();
     }

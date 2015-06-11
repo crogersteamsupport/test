@@ -32,8 +32,14 @@ $(document).ready(function () {
   top.Ts.Services.Products.GetProduct(_productID, function (product) {
     if (product == null)
     {
-      alert('This product has either been deleted or you do not have permission to view it.');
-      top.Ts.MainPage.closeNewProductTab(_productID);
+      //alert('This product has either been deleted or you do not have permission to view it.');
+      //top.Ts.MainPage.closeNewProductTab(_productID);
+      var url = window.location.href;
+      if (url.indexOf('.') > -1) {
+        url = url.substring(0, url.lastIndexOf('/') + 1);
+      }
+      window.location = url + 'NoTicketAccess.html?type=product';
+      return;
     }
     else
     {
