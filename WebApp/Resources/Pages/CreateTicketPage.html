@@ -277,7 +277,7 @@
             </div>
           </script>
           <script id="ticket-tag" type="text/x-handlebars-template">
-            <div id="{{id}}" data-tag="{{TagData}}" class="{{css}}">
+            <div id="{{id}}" class="{{css}}">
               <span class="tagRemove" aria-hidden="true">&times;</span>
               {{{value}}}
             </div>
@@ -512,8 +512,8 @@
         <div class="modal-body">
           <div class="center-block">
             <button class="btn btn-default btn-block ticket-association" data-isparent="null">Related</button>
-            <button class="btn btn-default btn-block ticket-association" data-isparent="false">Parent</button>
-            <button class="btn btn-default btn-block ticket-association" data-isparent="true">Child</button>
+            <button class="btn btn-default btn-block ticket-association" data-isparent="true">Parent</button>
+            <button class="btn btn-default btn-block ticket-association" data-isparent="false">Child</button>
           </div>
           <br />
           <div id="associate-success" class="alert alert-success" role="alert" style="display:none;">Ticket Associated!</div>

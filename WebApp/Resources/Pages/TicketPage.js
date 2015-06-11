@@ -1318,7 +1318,7 @@ function PrependTag(parent, id, value, data, cssclass) {
   if (cssclass === undefined) cssclass = 'tag-item';
     var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
-    return $(tagHTML).prependTo(parent);
+    return $(tagHTML).prependTo(parent).data('tag', data);
 }
   
 function SetupProductSection() {
@@ -1701,9 +1701,8 @@ function SetupAssociatedTicketsSection() {
       return;
     }
     top.Ts.Services.Tickets.AddRelated(_ticketID, TicketID2, IsParent, function (tickets) {
-      AddAssociatedTickets(tickets);
-      $('#associate-success').show();
       $('#AssociateTicketModal').modal('hide');
+      AddAssociatedTickets(tickets);
       window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
     }, function (error) {
       $('#associate-error').text(error.get_message()).show();
@@ -1725,7 +1724,7 @@ function AddAssociatedTickets(Tickets) {
       var label = caption + "<br />" + ellipseString(related.TicketNumber + ': ' + related.Name, 30);
 
       var newelement = PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related, 'tag-item TicketAnchor');
-      newelement.data('ticketid', related.TicketID).data('placement', 'left');
+      newelement.data('ticketid', ticket.TicketID).data('placement', 'left').data('IsParent', IsParent);
     };
   }
 }

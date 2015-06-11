@@ -265,8 +265,19 @@ function SaveTicket(_doClose) {
         info.ChildTickets = new Array();
         info.RelatedTickets = new Array();
         $('#ticket-AssociatedTickets > div.tag-item').each(function () {
-          //TODO:  Need to add ability to put in appropriate arrays
-          info.RelatedTickets[info.RelatedTickets.length] = $(this).attr('id');
+          var data = $(this).data('tag');
+          var IsParent = $(this).data('IsParent');
+          if (IsParent === null)
+          {
+            info.RelatedTickets[info.RelatedTickets.length] = data.TicketID
+          }
+          else if (IsParent)
+          {
+            info.ParentTicketID = data.TicketID;
+          }
+          else {
+            info.ChildTickets[info.ChildTickets.length] = data.TicketID
+          }
         });
 
         //Tags
@@ -284,7 +295,7 @@ function SaveTicket(_doClose) {
 
         //Reminders
         info.Reminders = new Array();
-        $('#ticket-SubscribedUsers > div.tag-item').each(function () {
+        $('#ticket-Reminders > div.tag-item').each(function () {
           info.Reminders[info.Reminders.length] = $(this).attr('id');
         });
 
@@ -303,19 +314,18 @@ function SaveTicket(_doClose) {
         //Customers
         info.Customers = new Array();
         info.Contacts = new Array();
-        $('#ticket-SubscribedUsers > div.tag-item').each(function () {
-          //tODO:  Need way to distinguish what type of user they are
-          var data = $(this).data();
-          //info.Customers[info.Customers.length] = $(this).attr('id');
+        $('#ticket-Customer > div.tag-item').each(function () {
+          var data = $(this).data('tag');
+          if (customer.UserID)
+          {
+            info.Customers[info.Customers.length] = data.OrganizationID;
+          }
+          else
+          {
+            info.Contacts[info.Contacts.length] = data.UserID;
+          }
         });
 
-        ////
-        //info.Contacts = new Array();
-        //$('#ticket-SubscribedUsers > div.tag-item').each(function () {
-        //  info.Contacts[info.Contacts.length] = $(this).attr('id');
-        //});
-
-        //
         var chatID = top.Ts.Utils.getQueryValue('chatid', window)
         if (chatID && chatID != null) {
           info.ChatID = chatID;
@@ -697,7 +707,7 @@ function PrependTag(parent, id, value, data, cssclass) {
   if (cssclass === undefined) cssclass = 'tag-item';
   var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
   var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
-  return $(tagHTML).prependTo(parent);
+  return $(tagHTML).prependTo(parent).data('tag', data);
 }
 
 function SetupCustomerSection() {
@@ -1130,11 +1140,11 @@ function SetupAssociatedTicketsSection() {
 
   $('.ticket-association').click(function (e) {
     var IsParent = $(this).data('isparent');
+    alert(IsParent)
     var TicketID2 = $(this).closest('#AssociateTicketModal').data('ticketid');
     $('#associate-error').hide();
     $('#associate-success').show();
 
-    //TODO: Need add method
     $("#ticket-AssociatedTickets-Input").val('');
     AddAssociatedTickets(TicketID2, IsParent);
     setTimeout(function () { $('#AssociateTicketModal').modal('hide'); }, 2000);
@@ -1145,13 +1155,14 @@ function AddAssociatedTickets(ticketid, IsParent) {
   top.Ts.Services.Tickets.GetTicket(ticketid, function (ticket) {
     if (ticket !== null) {
       var AssociatedTicketsDiv = $("#ticket-AssociatedTickets");
+      var caption = 'Related';
       if (IsParent !== null) {
         caption = (IsParent === true ? 'Parent' : 'Child');
       }
       var label = caption + "<br />" + ellipseString(ticket.TicketNumber + ': ' + ticket.Name, 30);
 
       var newelement = PrependTag(AssociatedTicketsDiv, ticket.TicketID, ticket.IsClosed ? '<s>' + label + '</s>' : label, ticket, 'tag-item TicketAnchor');
-      newelement.data('ticketid', ticket.TicketID).data('placement', 'left');
+      newelement.data('ticketid', ticket.TicketID).data('placement', 'left').data('IsParent', IsParent);
     }
   });
 };
@@ -1736,5 +1747,32 @@ function AppendProductMatchingCustomFields() {
       }
     }
     appendCategorizedCustomFields(result, null);
+  });
+};
+
+function CreateHandleBarHelpers() {
+  Handlebars.registerHelper('UserImageTag', function () {
+    if (this.item.CreatorID !== -1) return '<img class="user-avatar pull-left" src="../../../dc/' + this.item.OrganizationID + '/useravatar/' + this.item.CreatorID + '/48" />';
+    return '';
+  });
+
+  Handlebars.registerHelper('FormatDateTime', function (Date) {
+    return Date.localeFormat(top.Ts.Utils.getDateTimePattern())
+  });
+
+  Handlebars.registerHelper('ActionData', function () {
+    return JSON.stringify(this.item);
+  });
+
+  Handlebars.registerHelper('TagData', function () {
+    return JSON.stringify(this.data);
+  });
+
+  Handlebars.registerHelper('CanKB', function (options) {
+    if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
+  });
+
+  Handlebars.registerHelper('CanMakeVisible', function (options) {
+    if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
   });
 };
