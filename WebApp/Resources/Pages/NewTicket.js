@@ -2372,6 +2372,7 @@ for more information or use an alternate browser like Firefox or Internet Explor
             case top.Ts.CustomFieldType.Date:
               var dt = $(this).find('input').datepicker('getDate');
               field.Value = dt == null ? null : dt.toUTCString();
+              debugger
               break;
             case top.Ts.CustomFieldType.Time:
               var time = new Date("January 1, 1970 00:00:00");
@@ -2390,7 +2391,6 @@ for more information or use an alternate browser like Firefox or Internet Explor
           }
           info.Fields[info.Fields.length] = field;
         });
-
         // Parent Ticket
         var parentTicket = $('#divRelated .ts-icon-ticket-parent').closest('.ticket-related').data('data');
         if (parentTicket && parentTicket != null) info.ParentTicketID = parentTicket.TicketID;

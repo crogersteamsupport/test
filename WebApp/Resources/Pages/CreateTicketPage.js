@@ -257,9 +257,35 @@ function SaveTicket(_doClose) {
         info.Description = tinyMCE.activeEditor.getContent();
         info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
 
-        //TODO:need custom fields
         // Custom Values
         info.Fields = new Array();
+        $('.custom-field:visible').each(function () {
+          var data = $(this).data('field');
+          var field = new Object();
+          field.CustomFieldID = data.CustomFieldID;
+          switch (data.FieldType) {
+            case top.Ts.CustomFieldType.Boolean:
+              field.Value = $(this).find('input').prop('checked');
+              break;
+            case top.Ts.CustomFieldType.PickList:
+              field.Value = $(this).find('select').val();
+              break;
+            case top.Ts.CustomFieldType.Time:
+              var text = $(this).find('a').text();
+              var value = top.Ts.Utils.getMsDate("1/1/1900 " + text);
+              field.Value = text == null ? null : value.toUTCString();
+              break;
+            case top.Ts.CustomFieldType.Date:
+            case top.Ts.CustomFieldType.DateTime:
+              var text = $(this).find('a').text();
+              var value = top.Ts.Utils.getMsDate(text);
+              field.Value = text == null ? null : value.toUTCString();
+              break;
+            default:
+              field.Value = $(this).find('input').val();
+          }
+          info.Fields[info.Fields.length] = field;
+        });
 
         // Associated Tickets
         info.ChildTickets = new Array();
@@ -283,8 +309,9 @@ function SaveTicket(_doClose) {
         //Tags
         info.Tags = new Array();
         $('#ticket-tags > div.tag-item').each(function () {
-          //TODO:  Need to get this working correctly
-          info.Tags[info.Tags.length] = $(this).text();
+          var data = $(this).data('tag');
+          info.Tags[info.Tags.length] = data.value;
+
         });
 
         //Subscribers
@@ -1646,7 +1673,8 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
       }
       $('.' + field.CustomFieldID + 'children').remove();
       var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
-      appendMatchingParentValueFields(childrenContainer, result);
+
+      appendMatchingParentValueFields(childrenContainer, field);
 
     },
     onDropdownClose: function ($dropdown) {
