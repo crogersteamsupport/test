@@ -16,7 +16,7 @@ Namespace TeamSupport
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.MailChimp)
 
                 'parse the api key to get datacenter for url
-        datacenter = CRMLinkRow.SecurityToken1.Substring(CRMLinkRow.SecurityToken1.LastIndexOf("-") + 1)
+                datacenter = CRMLinkRow.SecurityToken1.Substring(CRMLinkRow.SecurityToken1.LastIndexOf("-") + 1)
             End Sub
 
 
@@ -55,7 +55,7 @@ Namespace TeamSupport
                                 If (CRMLinkRow.LastLink Is Nothing Or CType(contact.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink _
                                     Or CType(customer.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink) And Not contact.MarkDeleted Then
                                     If emailBatch Is Nothing Then
-                    emailBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken1 _
+                                      emailBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken1 _
                                                                        & "&id=" & listID _
                                                                        & "&double_optin=false")
                                     End If
@@ -64,6 +64,24 @@ Namespace TeamSupport
                                     emailBatch.Append("&batch[" & emailIndex & "][EMAIL_TYPE]=html")
                                     emailBatch.Append("&batch[" & emailIndex & "][FNAME]=" & contact.FirstName)
                                     emailBatch.Append("&batch[" & emailIndex & "][LNAME]=" & contact.LastName)
+
+                                    'Send company name to MMERGE3 field of MC. Only for TeamSupport (1078)
+                                    If CRMLinkRow.OrganizationID = 1078 Then
+                                      Log.Write(String.Format("OrgId {0}: Company name of the most recently updated contact (if multiple) sent to the MMERGE3 field.", CRMLinkRow.OrganizationID.ToString()))
+                                      Dim contactView As ContactsView = New ContactsView(User)
+                                      Dim filter As Specialized.NameValueCollection = New Specialized.NameValueCollection()
+                                      filter.Add("email", contact.Email)
+                                      contactView.LoadByParentOrganizationID(CRMLinkRow.OrganizationID, filter, orderBy:="DateModified DESC", limitNumber:=1)
+
+                                      Dim contactCompany As String = String.Empty
+                                      If Not contactView Is Nothing AndAlso contactView.Count > 0 Then
+                                        contactCompany = contactView(0).Organization
+                                      End If
+
+                                      emailBatch.Append("&batch[" & emailIndex & "][MMERGE3]=" & Web.HttpUtility.UrlEncode(contactCompany))
+                                      emailBatch.Append("&update_existing=true")
+                                    End If
+
                                     emailIndex += 1
                                 End If
 
@@ -79,7 +97,7 @@ Namespace TeamSupport
                                     Or CType(customer.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink Then
 
                                     If unsubBatch Is Nothing Then
-                    unsubBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken1 _
+                                      unsubBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken1 _
                                                                        & "&id=" & listID _
                                                                        & "&send_goodbye=false")
                                     End If
