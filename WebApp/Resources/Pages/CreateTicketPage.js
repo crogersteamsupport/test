@@ -6,6 +6,9 @@ var _ticketTypeID = null;
 var _parentFields = [];
 var _productFamilyID = null;
 var _lastTicketTypeID = null;
+var _ticketID = null;
+var _doClose = false;
+
 
 var _timerid;
 var _timerElapsed = 0;
@@ -145,6 +148,7 @@ function SetupTicketProperties() {
     AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].UserID, users[i].Name + ' - ' + users[i].InOfficeComment);
   }
 
+  $('#ticket-assigned').val(top.Ts.System.User.UserID);
   $('#ticket-assigned').selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
@@ -239,7 +243,7 @@ function SetupTicketProperties() {
   createCustomFields();
 };
 
-function SaveTicket(_doClose) {
+function SaveTicket() {
   if ($("#recorder").length == 0) {
     isFormValid(function (isValid) {
       if (isValid == true) {
@@ -373,7 +377,7 @@ function SaveTicket(_doClose) {
           }
           _ticketID = result[0];
           top.Ts.System.logAction('Ticket Created');
-
+          debugger
           if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
               var data = $(o).data('data');
@@ -531,16 +535,19 @@ function InsertCreateError(message) {
 function SetupDescriptionEditor() {
   initEditor($('#ticket-description'), true, function (ed) {
     SetupActionTypeSelect();
+    SetupUploadQueue();
     $('#ticket-create').click(function (e) {
       e.preventDefault();
       e.stopPropagation();
-      SaveTicket(false);
+      _doClose = false;
+      SaveTicket();
     });
 
     $('#ticket-createandclose').click(function (e) {
       e.preventDefault();
       e.stopPropagation();
-      SaveTicket(true);
+      _doClose = true;
+      SaveTicket();
     });
 
     $('#ticket-cancel').click(function (e) {
@@ -579,6 +586,81 @@ function SetupActionTypeSelect() {
     });
   });
 };
+
+function SetupUploadQueue() {
+  var element = $('.upload-area');
+  $('.file-upload').fileupload({
+    namespace: 'new_action',
+    dropZone: element,
+    add: function (e, data) {
+      for (var i = 0; i < data.files.length; i++) {
+        var item = $('<li>')
+        .appendTo(element.find('.upload-queue'));
+
+        data.context = item;
+        item.data('data', data);
+
+        var bg = $('<div>')
+        .appendTo(item);
+
+        $('<div>')
+        .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+        .addClass('filename')
+        .appendTo(bg);
+
+        $('<div>')
+        .addClass('progress')
+        .hide()
+        .appendTo(bg);
+
+        $('<span>')
+        .addClass('ui-icon ui-icon-close')
+        .click(function (e) {
+          e.preventDefault();
+          $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+        })
+        .appendTo(bg);
+
+        //<span class="tagRemove" aria-hidden="true">×</span>
+
+        $('<span>')
+        .addClass('ui-icon ui-icon-cancel')
+        .hide()
+        .click(function (e) {
+          e.preventDefault();
+          var data = $(this).closest('li').data('data');
+          data.jqXHR.abort();
+        })
+        .appendTo(bg);
+      }
+
+    },
+    send: function (e, data) {
+      if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
+        data.context.find('.progress').progressbar('value', 50);
+      }
+    },
+    fail: function (e, data) {
+      if (data.errorThrown === 'abort') return;
+      alert('There was an error uploading "' + data.files[0].name + '".');
+      callback(null);
+    },
+    progress: function (e, data) {
+      data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 100, 10));
+    },
+    start: function (e, data) {
+      element.find('.progress').progressbar().show();
+      element.find('.upload-queue .ui-icon-close').hide();
+      element.find('.upload-queue .ui-icon-cancel').show();
+    },
+    stop: function (e, data) {
+      $('.progress').progressbar('value', 100);
+
+      if (_doClose != true) top.Ts.MainPage.openTicketByID(_ticketID);
+      top.Ts.MainPage.closeNewTicketTab();
+    }
+  });
+}
 
 function AppendSelect(parent, data, type, id, name, isSelected) {
   var option = $('<option>').val(id).text(name).appendTo(parent).data(type, data);
