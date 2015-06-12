@@ -195,6 +195,12 @@ function SetupTicketProperties() {
     }
   });
 
+  $('#ticket-properties-area').on('click', 'span.tagRemove', function (e) {
+    var tag = $(this).parent()[0];
+    tag.remove();
+
+  });
+
   //KB
   SetupKBFields();
 
@@ -368,8 +374,21 @@ function SaveTicket(_doClose) {
           _ticketID = result[0];
           top.Ts.System.logAction('Ticket Created');
 
-          if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
-          top.Ts.MainPage.closeNewTicketTab();
+          if ($('.upload-queue li').length > 0) {
+            $('.upload-queue li').each(function (i, o) {
+              var data = $(o).data('data');
+              data.url = '../../../Upload/Actions/' + result[1];
+              data.jqXHR = data.submit();
+              $(o).data('data', data);
+            });
+          }
+          else {
+            if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
+            top.Ts.MainPage.closeNewTicketTab();
+          }
+
+          //if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
+          //top.Ts.MainPage.closeNewTicketTab();
 
         });
       }
@@ -722,13 +741,6 @@ function SetupTagsSection() {
         .append("<a>" + item.label + "</a>")
         .appendTo(ul);
   };
-
-  $('#ticket-tags').on('click', 'span.tagRemove', function (e) {
-    var tag = $(this).parent()[0];
-    tag.remove();
-
-  });
-
 };
 
 function PrependTag(parent, id, value, data, cssclass) {
@@ -824,10 +836,6 @@ function SetupCustomerSection() {
         alert(result);
       }
     });
-  });
-
-  $('#ticket-Customer').on('click', 'span.tagRemove', function (e) {
-    var self = $(this);
   });
 };
 
