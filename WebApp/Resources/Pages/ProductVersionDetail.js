@@ -567,7 +567,7 @@ $(document).ready(function () {
   $('#fieldReleased').click(function (e) {
       if (!$(this).hasClass('editable'))
           return false;
-      top.Ts.Services.Products.SetProductVersionReleased(_productVersionID, ($(this).text() !== 'true'), function (result) {
+      top.Ts.Services.Products.SetProductVersionReleased(_productVersionID, ($(this).text() !== 'True'), function (result) {
           top.Ts.System.logAction('Product Version Detail - Toggle Released State');
           $('#fieldReleased').text((result === true ? 'True' : 'False'));
       },
