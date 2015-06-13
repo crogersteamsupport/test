@@ -352,15 +352,16 @@ function SaveTicket() {
         //Customers
         info.Customers = new Array();
         info.Contacts = new Array();
+
         $('#ticket-Customer > div.tag-item').each(function () {
           var data = $(this).data('tag');
-          if (customer.UserID)
+          if (data.UserID)
           {
-            info.Customers[info.Customers.length] = data.OrganizationID;
+            info.Contacts[info.Contacts.length] = data.UserID;
           }
           else
           {
-            info.Contacts[info.Contacts.length] = data.UserID;
+            info.Customers[info.Customers.length] = data.OrganizationID;
           }
         });
 
@@ -377,7 +378,6 @@ function SaveTicket() {
           }
           _ticketID = result[0];
           top.Ts.System.logAction('Ticket Created');
-          debugger
           if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
               var data = $(o).data('data');
@@ -390,10 +390,6 @@ function SaveTicket() {
             if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
             top.Ts.MainPage.closeNewTicketTab();
           }
-
-          //if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
-          //top.Ts.MainPage.closeNewTicketTab();
-
         });
       }
     });
@@ -534,7 +530,7 @@ function InsertCreateError(message) {
 
 function SetupDescriptionEditor() {
   initEditor($('#ticket-description'), true, function (ed) {
-    SetupActionTypeSelect();
+    //SetupActionTypeSelect();
     SetupUploadQueue();
     $('#ticket-create').click(function (e) {
       e.preventDefault();
@@ -568,24 +564,24 @@ function SetupDescriptionEditor() {
   });
 };
 
-function SetupActionTypeSelect() {
-  var selectType = $('#action-new-type');
-  selectType.empty();
-  var types = top.Ts.Cache.getActionTypes();
-  for (var i = 0; i < types.length; i++) {
-    $('<option>').attr('value', types[i].ActionTypeID).text(types[i].Name).data('data', types[i]).appendTo(selectType);
-  };
+//function SetupActionTypeSelect() {
+//  var selectType = $('#action-new-type');
+//  selectType.empty();
+//  var types = top.Ts.Cache.getActionTypes();
+//  for (var i = 0; i < types.length; i++) {
+//    $('<option>').attr('value', types[i].ActionTypeID).text(types[i].Name).data('data', types[i]).appendTo(selectType);
+//  };
 
-  $('#action-new-type').change(function (e) {
-    var action = $(this).val();
-    top.Ts.Services.TicketPage.GetActionTicketTemplate(action, function (result) {
-      if (result != null && result != "" && result != "<br>") {
-        var currenttext = tinyMCE.activeEditor.getContent();
-        tinyMCE.activeEditor.setContent(currenttext + result);
-      }
-    });
-  });
-};
+//  $('#action-new-type').change(function (e) {
+//    var action = $(this).val();
+//    top.Ts.Services.TicketPage.GetActionTicketTemplate(action, function (result) {
+//      if (result != null && result != "" && result != "<br>") {
+//        var currenttext = tinyMCE.activeEditor.getContent();
+//        tinyMCE.activeEditor.setContent(currenttext + result);
+//      }
+//    });
+//  });
+//};
 
 function SetupUploadQueue() {
   var element = $('.upload-area');
@@ -1223,10 +1219,9 @@ function SetupRemindersSection() {
       $('#ticket-reminder-title').parent().addClass('has-success').removeClass('has-error');
     }
 
-    $('#reminder-success').show();
     var label = ellipseString(title, 30) + '<br>' + date.localeFormat(top.Ts.Utils.getDateTimePattern())
     PrependTag($("#ticket-reminder-span"), userid, label, null);
-    setTimeout(function () { $('#RemindersModal').modal('hide'); }, 2000);
+    $('#RemindersModal').modal('hide')
   });
 }
 
@@ -1261,11 +1256,10 @@ function SetupAssociatedTicketsSection() {
     alert(IsParent)
     var TicketID2 = $(this).closest('#AssociateTicketModal').data('ticketid');
     $('#associate-error').hide();
-    $('#associate-success').show();
 
     $("#ticket-AssociatedTickets-Input").val('');
     AddAssociatedTickets(TicketID2, IsParent);
-    setTimeout(function () { $('#AssociateTicketModal').modal('hide'); }, 2000);
+    $('#AssociateTicketModal').modal('hide');
   });
 };
 
