@@ -1271,7 +1271,15 @@ namespace TSWebServices
     {
         LoginUser loginUser = TSAuthentication.GetLoginUser();
         ProductFamilies productFamilies = new ProductFamilies(loginUser);
-        productFamilies.LoadByOrganizationID(loginUser.OrganizationID);
+        User user = loginUser.GetUser();
+        if (user.ProductFamiliesRights == (int)ProductFamiliesRightType.AllFamilies)
+        {
+          productFamilies.LoadByOrganizationID(loginUser.OrganizationID);
+        }
+        else
+        {
+          productFamilies.LoadByUserRights(loginUser.UserID);
+        }
         return productFamilies.GetProductFamilyProxies();
     }
 
