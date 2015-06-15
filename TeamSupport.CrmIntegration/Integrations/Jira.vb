@@ -57,7 +57,7 @@ Namespace TeamSupport
 
       Private Function SyncTickets() As Boolean
         Dim ticketsLinksToJiraToPushAsIssues As TicketLinkToJira = Nothing
-        Dim ticketsToPushAsIssues As TicketsView  = GetTicketsToPushAsIssues(ticketsLinksToJiraToPushAsIssues)
+        Dim ticketsToPushAsIssues As TicketsView = GetTicketsToPushAsIssues(ticketsLinksToJiraToPushAsIssues)
         Dim numberOfIssuesToPullAsTickets As Integer = 0
         Dim issuesToPullAsTickets As List(Of JObject) = GetIssuesToPullAsTickets(numberOfIssuesToPullAsTickets)
         Dim allStatuses As TicketStatuses = New TicketStatuses(User)
@@ -689,7 +689,7 @@ Namespace TeamSupport
               End If
 
               If String.IsNullOrEmpty(jiraProjectKey) Then
-                  Dim message As String = IIf(CRMLinkRow.AlwaysUseDefaultProjectKey, "AlwaysUseDefaultProjectKey but no Default Project.", "Couldn't find a Jira Project Key in ProductVersion, Product, Product Name in Ticket, or Default Project to use for integration.")
+                  Dim message As String = If(CRMLinkRow.AlwaysUseDefaultProjectKey, "AlwaysUseDefaultProjectKey but no Default Project.", "Couldn't find a Jira Project Key in ProductVersion, Product, Product Name in Ticket, or Default Project to use for integration.")
                   Dim ex As Exception = New Exception(message)
                   Throw ex
               End If
@@ -1051,7 +1051,7 @@ Namespace TeamSupport
         Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer, creatorId As Integer) As String
           Dim result As StringBuilder = New StringBuilder()
           Dim creatorUser As UsersViewItem = UsersView.GetUsersViewItem(User, creatorId)
-          Dim creatorUserName As String = IIf(Not creatorUser Is Nothing, String.Format(" added by {0} {1}", creatorUser.FirstName, creatorUser.LastName), String.Empty)
+          Dim creatorUserName As String = If(creatorUser IsNot Nothing, String.Format(" added by {0} {1}", creatorUser.FirstName, creatorUser.LastName), String.Empty)
 
           result.Append("{")
           result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() + creatorUserName + ":\n\n")
@@ -1332,24 +1332,8 @@ Namespace TeamSupport
                                     Dim updateType As Boolean = CRMLinkRow.UpdateTicketType
 
                                     If updateType AndAlso newType IsNot Nothing AndAlso newType.TicketTypeID <> currentType.TicketTypeID Then
-                                        updateTicket(0).TicketTypeID = newType.TicketTypeID
-                                        ticketValuesChanged = True
-                                    ElseIf Not updateType Then
-                                      Dim newAction As Actions = New Actions(User)
-                                      newAction.AddNewAction()
-                                      newAction(0).ActionTypeID = newActionsTypeID
-                                      newAction(0).TicketID = updateTicket(0).TicketID
-                                      newAction(0).Description = "Jira's Issue " + issue("key").ToString() + "'s type changed from """ + currentType.Name + """ to """ + value + """."
-
-                                      Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
-                                      Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()
-                                      actionLinkToJiraItem.JiraID = -1
-
-                                      actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow()
-                                      newAction.Save()
-
-                                      actionLinkToJiraItem.ActionID = newAction(0).ActionID
-                                      actionLinkToJira.Save()
+                                      updateTicket(0).TicketTypeID = newType.TicketTypeID
+                                      ticketValuesChanged = True
                                     End If
                                 Case "project"
                                     Dim allProducts As Products = New Products(User)
@@ -1421,12 +1405,15 @@ Namespace TeamSupport
 
             Private Function GetFieldNameByKey(ByVal fieldKey As String, ByVal issueFields As JObject)
                 Dim result As StringBuilder = New StringBuilder()
-                For Each field As KeyValuePair(Of String, JToken) In issueFields
-                    If fieldKey = field.Key Then
-                        result.Append(field.Value("name").ToString())
-                        Exit For
-                    End If
-                Next
+
+                If issueFields IsNot Nothing Then
+                  For Each field As KeyValuePair(Of String, JToken) In issueFields
+                      If field.Key IsNot Nothing AndAlso fieldKey = field.Key Then
+                          result.Append(field.Value("name").ToString())
+                          Exit For
+                      End If
+                  Next
+                End If
 
                 If result.Length = 0 Then
                     result.Append(fieldKey)
