@@ -2991,13 +2991,18 @@ var onScreenRecordStart = function () {
 
 var onScreenRecordComplete = function (url) {
   $('#recorder').remove();
-  var link = '<a href="' + url + '" target="_blank">Click here to view screen recording video.</a>';
-  var html = '<div class="video_holder"><video style="width: 640px; height: 360px;" controls="controls"><source src="' + url + '" type="video/mp4" />' + link + '</video></div>'
-  var ed = tinyMCE.activeEditor;
-  ed.selection.setContent(html);
-  ed.execCommand('mceAutoResize');
-  ed.focus();
-  top.Ts.System.logAction('Ticket - Screen Recorded');
+  if (url) {
+    var link = '<a href="' + url + '" target="_blank">Click here to view screen recording video.</a>';
+    var html = '<div class="video_holder"><video style="width: 640px; height: 360px;" controls="controls"><source src="' + url + '" type="video/mp4" />' + link + '</video></div>'
+    var ed = tinyMCE.activeEditor;
+    ed.selection.setContent(html);
+    ed.execCommand('mceAutoResize');
+    ed.focus();
+    top.Ts.System.logAction('Ticket - Screen Recorded');
+  }
+  else {
+    top.Ts.System.logAction('Ticket - Screen Record Cancelled');
+  }
 };
 
 //actions
