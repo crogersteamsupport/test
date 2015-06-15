@@ -79,6 +79,11 @@ $(document).ready(function () {
         else if ($(".userProperties #fieldEmail").text() != "Empty")
             $(".userProperties #fieldEmail").addClass("link");
 
+        if ($(".userProperties #fieldLinkedIn").hasClass('editable'))
+          $(".userProperties #fieldLinkedIn").removeClass("link");
+        else if ($(".userProperties #fieldLinkedIn").text() != "Empty")
+          $(".userProperties #fieldLinkedIn").addClass("link");
+
         $(".userProperties #fieldCompany").toggleClass("link");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
@@ -316,6 +321,58 @@ $(document).ready(function () {
               .insertAfter(container1);
             $('#contactEdit').addClass("disabled");
         }
+    });
+    $('.userProperties').on('click', '#fieldLinkedIn', function (e) {
+      if ($(this).hasClass('link')) {
+        window.open($(this).text(), '_blank');
+        return;
+      }
+      else {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+          return false;
+
+        top.Ts.System.logAction('Contact Detail - Edit Contact LinkedIn');
+        var header = $(this).hide();
+        var container = $('<div>')
+          .insertAfter(header);
+
+        var container1 = $('<div>')
+            .addClass('col-md-9')
+          .appendTo(container);
+
+        var test = $('<input type="text">')
+          .addClass('col-md-10 form-control')
+          .val($(this).text() == "Empty" ? "" : $(this).text())
+          .appendTo(container1)
+          .focus();
+
+        $('<i>')
+          .addClass('col-md-1 fa fa-times')
+          .click(function (e) {
+            $(this).closest('div').remove();
+            header.show();
+            $('#contactEdit').removeClass("disabled");
+          })
+          .insertAfter(container1);
+        $('<i>')
+          .addClass('col-md-1 fa fa-check')
+          .click(function (e) {
+            top.Ts.Services.Customers.SetContactLinkedIn(userID, $(this).prev().find('input').val(), function (result) {
+              header.text(result);
+              $('#contactEdit').removeClass("disabled");
+            },
+            function (error) {
+              header.show();
+              alert('There was an error saving the customer linkedin.');
+              $('#contactEdit').removeClass("disabled");
+            });
+            $(this).closest('div').remove();
+            header.show();
+          })
+          .insertAfter(container1);
+        $('#contactEdit').addClass("disabled");
+      }
     });
     $('.userProperties').on('click', '#fieldTitle', function (e) {
         e.preventDefault();
@@ -1030,6 +1087,11 @@ $(document).ready(function () {
                 $('.userProperties #fieldCompany').attr('orgID', user1.OrganizationID);
                 $('.userProperties #fieldCompany').addClass("link");
             });
+
+            if ($('#fieldLinkedIn').text() != "Empty")
+            {
+              $('.userProperties #fieldLinkedIn').addClass("link");
+            }
         });
 
     }

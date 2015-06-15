@@ -227,6 +227,17 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string SetContactLinkedIn(int userID, string linkedin)
+        {
+          User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          u.LinkedIn = linkedin;
+          u.Collection.Save();
+          string description = String.Format("{0} set contact linkedin to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, linkedin);
+          ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
+          return linkedin != "" ? linkedin : "Empty";
+        }
+
+        [WebMethod]
         public string SetContactCompany(int userID, int value)
         {
             Tickets t = new Tickets(TSAuthentication.GetLoginUser());
@@ -406,6 +417,7 @@ namespace TSWebServices
             contactInfo.AppendLine(CreateFormElement("Title", user.Title, "editable"));
             Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), user.OrganizationID);
             contactInfo.AppendLine(CreateFormElement("Company", organization.Name, "editable"));
+            contactInfo.AppendLine(CreateFormElement("LinkedIn", user.LinkedIn, "editable"));
 
             html.AppendLine(CreateFormElement("Active", user.IsActive, "editable"));
             html.AppendLine(CreateFormElement("Portal User", user.IsPortalUser, "editable"));
