@@ -15,6 +15,15 @@ $(document).ready(function () {
   var alertMessage = null;
   var dateFormat;
   top.Ts.System.logAction('New Ticket - Started');
+  var session;
+  var token;
+  var recordingID;
+  var apiKey;
+  var sessionId;
+  var tokurl;
+  var publisher;
+
+  apiKey = "45228242";
 
   $('#knowledgeBaseCategoryDiv').hide();
 
@@ -56,6 +65,8 @@ $(document).ready(function () {
   });
 
   $('.newticket-kbCategory').combobox();
+
+  $("#recordVideoContainer").hide();
 
   $('.ticket-content-header h1').click(function (e) {
     e.preventDefault();
@@ -768,7 +779,7 @@ $(document).ready(function () {
 
       var editorOptions = {
         plugins: "autoresize paste link code textcolor image moxiemanager table",
-        toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote | code | table",
         statusbar: false,
         gecko_spellcheck: true,
@@ -929,6 +940,46 @@ $(document).ready(function () {
                 });
               });
             }
+          });
+
+          ed.addButton('recordVideo', {
+              title: 'Record video',
+              //image: '../images/icons/Symbol_Record.png',
+              icon: 'awesome fa fa-video-camera',
+              onclick: function () {
+
+                  if (OT.checkSystemRequirements() == 1) {
+                      var dynamicPub = $("#publisher");
+                      $("#recordVideoContainer").show();
+                      dynamicPub.show();
+                      dynamicPub.attr("id", "tempContainer");
+                      dynamicPub.attr("width", "400px");
+                      dynamicPub.attr("height", "400px");
+
+                      if (dynamicPub.length == 0)
+                          dynamicPub = $("#tempContainer");
+
+
+
+                      top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                          sessionId = resultID[0];
+                          token = resultID[1];
+                          session = OT.initSession(apiKey, sessionId);
+                          session.connect(token, function (error) {
+                              publisher = OT.initPublisher(dynamicPub.attr('id'), {
+                                  insertMode: 'append',
+                                  width: '100%',
+                                  height: '100%'
+                              });
+                              session.publish(publisher);
+                          });
+                      });
+
+                  }
+                  else {
+                      alert("Your client does not support video recording.")
+                  }
+              }
           });
 
           if (enableScreenR.toLowerCase() != 'false') {
@@ -2499,6 +2550,59 @@ for more information or use an alternate browser like Firefox or Internet Explor
   $('.ticket-rail a').addClass('ui-state-default ts-link');
 
   top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
+
+  $('#rcdtok').click(function (e) {
+      top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+          $('#rcdtok').hide();
+          //element.find('#rcdtok span').text('Re-Record');
+          $('#stoptok').show();
+          $('#inserttok').hide();
+          $('#deletetok').hide();
+          recordingID = resultID;
+      });
+  });
+
+  $('#stoptok').hide();
+
+  $('#stoptok').click(function (e) {
+      top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+          $('#rcdtok').show();
+          $('#stoptok').hide();
+          $('#inserttok').show();
+          $('#canceltok').show();
+          tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+      });
+  });
+
+  $('#inserttok').hide();
+
+  $('#inserttok').click(function (e) {
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+      $('#rcdtok').show();
+      $('#stoptok').hide();
+      $('#inserttok').hide();
+      session.unpublish(publisher);
+      $('#recordVideoContainer').hide();
+  });
+
+  $('#canceltok').click(function (e) {
+      if (recordingID) {
+          top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+              $('#rcdtok').show();
+              $('#stoptok').hide();
+              $('#inserttok').hide();
+              session.unpublish(publisher);
+              $('#recordVideoContainer').hide();
+          });
+      }
+      else {
+          session.unpublish(publisher);
+          $('#recordVideoContainer').hide();
+      }
+
+  });
+  $('#recordVideoContainer').hide();
+
 
 });
 

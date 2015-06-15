@@ -31,7 +31,7 @@
   <script src="NewTicket.js" type="text/javascript"></script>
   <script src="../Js/browser.js" type="text/javascript"></script>
   <script src="../Js/jquery.maskedinput.min.js" type="text/javascript"></script>
-
+  <script src="//static.opentok.com/v2/js/opentok.min.js"></script>
   <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropbox.js" id="dropboxjs" data-app-key="ebdoql1dhyy7l72"></script>
 
   <style type="text/css">
@@ -80,6 +80,16 @@
           </div>
 
           <textarea class="newticket-desc" style="width: 100%; height: 50px;"></textarea>
+
+          <div style="margin-top: 10px;text-align: center;" id="recordVideoContainer">
+            <div id="publisher">
+            </div>
+
+            <button id="rcdtok" title="Record"><i class="fa fa-video-camera fa-2x"></i></button>
+            <button id="stoptok" title="Stop"><i class="fa fa-stop fa-2x"></i></button>
+            <button id="inserttok" title="Insert Video"><i class="fa fa-cloud-upload fa-2x"></i></button>
+            <button id="canceltok" title="Cancel"><i class="fa fa-eject fa-2x"></i></button>
+          </div>
 
           <ul class="upload-queue"></ul>
           <div class="ui-helper-clearfix"></div>

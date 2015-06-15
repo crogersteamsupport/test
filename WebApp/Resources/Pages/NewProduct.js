@@ -19,7 +19,7 @@ $(document).ready(function () {
   }
 
   if (top.Ts.Cache.GetIsJiraLinkActiveForOrganization()) {
-    alert('vv1');
+    //alert('vv1');
     $('#jiraProjectKeyRow').show();
     $('#productVersionJiraProjectKeyRow').show();
   }

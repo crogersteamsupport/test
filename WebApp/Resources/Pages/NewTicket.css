@@ -24,3 +24,8 @@
       font-family: inherit;
       font-style: inherit;
     }
+
+    #tempContainer{
+    margin: 0 auto;
+    padding-bottom: 10px;
+}
