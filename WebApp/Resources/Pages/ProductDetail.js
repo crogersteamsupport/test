@@ -524,7 +524,7 @@ $(document).ready(function () {
       if (!$(this).hasClass('editable'))
           return false;
       var header = $(this).hide();
-      top.Ts.System.logAction('Product Detail - Edit Product Family');
+      top.Ts.System.logAction('Product Detail - Edit Product Line');
       var container = $('<div>')
         .insertAfter(header);
 
@@ -556,7 +556,7 @@ $(document).ready(function () {
           var value = $(this).val();
           var name = this.options[this.selectedIndex].innerHTML;
           container.remove();
-          top.Ts.System.logAction('Product Detail - Save Product Family Edit');
+          top.Ts.System.logAction('Product Detail - Save Product Line Edit');
           top.Ts.Services.Products.SetProductFamily(_productID, value, function (result) {
               header.data('field', result);
               header.text(name);

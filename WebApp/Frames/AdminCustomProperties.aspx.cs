@@ -91,7 +91,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       ProductFamilies productFamilies = new ProductFamilies(UserSession.LoginUser);
       productFamilies.LoadByOrganizationID(UserSession.LoginUser.OrganizationID);
       ImageComboBoxData withoutProductFamily = new ImageComboBoxData();
-      withoutProductFamily.Text = "Without Product Family";
+      withoutProductFamily.Text = "Without Product Line";
       withoutProductFamily.Value = "-1";
       data.Add(withoutProductFamily);
 
@@ -293,7 +293,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         {
             TicketTypesView ticketTypes = new TicketTypesView(UserSession.LoginUser);
             ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
-            table.Columns.Add("Product Family");
+            table.Columns.Add("Product Line");
             foreach (TicketTypesViewItem ticketType in ticketTypes)
             {
                 table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString(), ticketType.ProductFamilyName });

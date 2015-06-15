@@ -64,8 +64,8 @@ UserPage = function () {
 
   function userProductFamiliesRightsToString(value) {
     switch (value) {
-      case 0: return "All product families"; break;
-      case 1: return "Only specific product families"; break;
+      case 0: return "All product lines"; break;
+      case 1: return "Only specific product lines"; break;
       default: return "";
     }
   }
@@ -1180,14 +1180,14 @@ UserPage = function () {
               parent.show().find('img').show();
               var type = $(ui.item).data('type');
               top.Ts.Services.Users.SetProductFamiliesRights(_user.UserID, type, function () {
-                top.Ts.System.logAction('User Info - User Product Families Rights Changed');
+                top.Ts.System.logAction('User Info - User Product Lines Rights Changed');
                 $('#userProductFamiliesRights').html(userProductFamiliesRightsToString(type)).data('o', type);
                 $('#divProductFamiliesContainer').toggle(type == 1);
                 parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
               },
             function (error) {
               parent.show().find('img').hide();
-              alert('There was an error setting user product families rights.');
+              alert('There was an error setting user product lines rights.');
             });
               container.remove();
             },
@@ -1827,9 +1827,9 @@ UserPage = function () {
     var input = $('#divAddProductFamily input').val('');
     var item = input.data('o');
     if (!item) return;
-    top.Ts.Services.Users.AddUserProductFamily(_user.UserID, item.id, appendProductFamilies, function () { alert('There was a problem adding the product family.'); });
+    top.Ts.Services.Users.AddUserProductFamily(_user.UserID, item.id, appendProductFamilies, function () { alert('There was a problem adding the product line.'); });
     input.removeData();
-    top.Ts.System.logAction('User - Product Family Added');
+    top.Ts.System.logAction('User - Product Line Added');
   });
 
   $('#divProductFamilies').delegate('.removable-item .ui-icon-close', 'click', function (e) {
@@ -1837,8 +1837,8 @@ UserPage = function () {
     e.stopPropagation();
     var item = $(this).parent();
     var data = item.data('data');
-    top.Ts.Services.Users.RemoveUserProductFamily(_user.UserID, data.ProductFamilyID, appendProductFamilies, function () { alert('There was a problem removing the product family from the user.'); });
-    top.Ts.System.logAction('User - Product Family Removed');
+    top.Ts.Services.Users.RemoveUserProductFamily(_user.UserID, data.ProductFamilyID, appendProductFamilies, function () { alert('There was a problem removing the product line from the user.'); });
+    top.Ts.System.logAction('User - Product Line Removed');
   });
 
   function appendProductFamilies(productFamilies) {

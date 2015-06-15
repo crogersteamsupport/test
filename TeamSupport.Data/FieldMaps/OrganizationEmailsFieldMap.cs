@@ -18,7 +18,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EmailTemplateID", "EmailTemplateID", false, false, false);
       _fieldMap.AddMap("Subject", "Subject", false, false, false);
       _fieldMap.AddMap("Body", "Body", false, false, false);
-      _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
+      _fieldMap.AddMap("ProductFamilyID", "ProductLineID", false, false, false);
             
     }
   }

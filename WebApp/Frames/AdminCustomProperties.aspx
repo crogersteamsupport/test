@@ -116,7 +116,7 @@
                 ID="cbIsDiscontinued" runat="server" Text="Is Discontinued" /></div>
             <div id="divTicketTypeProductFamily" style="display: none" runat="server">
                 <div style="padding-bottom: 3px;">
-                Product Family:</div>
+                Product Line:</div>
                 <div>
                 <div style="margin-bottom: 10px;">
                     <telerik:RadComboBox ID="cmbTicketTypeProductFamilies" runat="server" Width="200px" ExpandAnimation-Type="None"

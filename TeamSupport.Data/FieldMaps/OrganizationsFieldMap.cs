@@ -67,7 +67,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
       _fieldMap.AddMap("ShowGroupMembersFirstInTicketAssignmentList", "ShowGroupMembersFirstInTicketAssignmentList", false, false, false);
       _fieldMap.AddMap("UpdateTicketChildrenGroupWithParent", "UpdateTicketChildrenGroupWithParent", false, false, false);
-      _fieldMap.AddMap("UseProductFamilies", "UseProductFamilies", false, false, false);
+      _fieldMap.AddMap("UseProductFamilies", "UseProductLines", false, false, false);
 	  _fieldMap.AddMap("IsCustomerInsightsActive", "IsCustomerInsightsActive", false, false, false);
             
     }

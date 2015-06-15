@@ -69,7 +69,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         {
             ProductFamilies productFamilies = new ProductFamilies(UserSession.LoginUser);
             productFamilies.LoadByOrganizationID(organization.OrganizationID);
-            cmbProductFamily.Items.Add(new Telerik.Web.UI.RadComboBoxItem("<Without Product Family>", "-1"));
+            cmbProductFamily.Items.Add(new Telerik.Web.UI.RadComboBoxItem("<Without Product Line>", "-1"));
             foreach (ProductFamily productFamily in productFamilies)
             {
                 cmbProductFamily.Items.Add(new Telerik.Web.UI.RadComboBoxItem(productFamily.Name, productFamily.ProductFamilyID.ToString()));

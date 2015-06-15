@@ -1097,7 +1097,7 @@ $(document).ready(function () {
       if (select[0].childElementCount == 0) {
         parent.show().find('img').hide();
         container.remove();
-        alert('There are no ticket types available for this product family. Please contact your TeamSupport administrator.');
+        alert('There are no ticket types available for this product line. Please contact your TeamSupport administrator.');
       }
     }
     else {

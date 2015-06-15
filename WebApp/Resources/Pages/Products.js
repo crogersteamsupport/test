@@ -335,7 +335,7 @@
         e.preventDefault();
 
         var id = $(this).data('productfamilyid');
-        top.Ts.System.logAction('Products Page - View Recent Product Family');
+        top.Ts.System.logAction('Products Page - View Recent Product Line');
         top.Ts.MainPage.openNewProductFamily(id);
 
         top.Ts.Services.Products.UpdateRecentlyViewed('f' + id, function (resultHtml) {

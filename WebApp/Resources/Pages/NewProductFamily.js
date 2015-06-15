@@ -66,7 +66,7 @@ $(document).ready(function () {
 
         if (isValid) {
             var productFamilyInfo = new Object();
-            top.Ts.System.logAction('New Product Family Page - Added New Product Family');
+            top.Ts.System.logAction('New Product Line Page - Added New Product Line');
             productFamilyInfo.Name = $("#inputName").val();
             productFamilyInfo.Description = $("#Description").val();
 
@@ -74,7 +74,7 @@ $(document).ready(function () {
                 top.Ts.MainPage.openNewProductFamily(f);
                 top.Ts.MainPage.closenewProductFamilyTab();
             }, function () {
-                alert('There was an error saving this product family.  Please try again.');
+                alert('There was an error saving this product line.  Please try again.');
             });
         }
     });

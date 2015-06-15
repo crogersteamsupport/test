@@ -173,15 +173,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Show Group Members First in Ticket Assignment List:", organization.ShowGroupMembersFirstInTicketAssignmentList.ToString() });
     table.Rows.Add(new string[] { "Update Ticket Children Group With Parent:", organization.UpdateTicketChildrenGroupWithParent.ToString() });
     table.Rows.Add(new string[] { "Hide Alert Dismiss for Non Admins:", organization.HideDismissNonAdmins.ToString() });
-    if (organization.OrganizationID == 13679 || 
-      organization.OrganizationID == 686086 || 
-      organization.OrganizationID == 1088 ||
-      organization.OrganizationID == 1078 ||
-      organization.OrganizationID == 2081 ||
-      organization.OrganizationID == 2390 ||
-      organization.OrganizationID == 2012 ||
-      organization.OrganizationID == 493740)
-    table.Rows.Add(new string[] { "Use Product Families:", organization.UseProductFamilies.ToString() });
+    table.Rows.Add(new string[] { "Use Product Lines:", organization.UseProductFamilies.ToString() });
 
     table.Rows.Add(new string[] { "Customer Insights:", organization.IsCustomerInsightsActive.ToString() });
     
