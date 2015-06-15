@@ -152,7 +152,8 @@ function SetupTicketProperties() {
   $('#ticket-assigned').selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   //Group
@@ -163,7 +164,8 @@ function SetupTicketProperties() {
   $('#ticket-group').selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   //Type
@@ -175,7 +177,8 @@ function SetupTicketProperties() {
   $('#ticket-type').selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   $('#ticket-type').change(function (e) {
@@ -196,7 +199,8 @@ function SetupTicketProperties() {
   $('#ticket-severity').selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   $('#ticket-properties-area').on('click', 'span.tagRemove', function (e) {
@@ -715,7 +719,8 @@ function SetupKBFields() {
     $('#ticket-KB-Category').selectize({
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
-      }
+      },
+      closeAfterSelect: true
     });
   }
   else {
@@ -740,7 +745,8 @@ function SetupCommunityField() {
       $('#ticket-Community').selectize({
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
-        }
+        },
+        closeAfterSelect: true
       });
     }
     else {
@@ -862,7 +868,8 @@ function SetupCustomerSection() {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   $('#Customer-Create').click(function (e) {
@@ -1004,7 +1011,8 @@ function LoadProductList(products) {
     var $productselect = $('#ticket-Product').selectize({
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
-      }
+      },
+      closeAfterSelect: true
     });
 
     SetupProductVersionsControl(product);
@@ -1044,7 +1052,8 @@ function SetupProductVersionsControl(product) {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
   var versionInput = $select[0].selectize;
 
@@ -1052,7 +1061,8 @@ function SetupProductVersionsControl(product) {
   var $select = $("#ticket-Resolved").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
   var resolvedInput = $select[0].selectize;
 
@@ -1077,13 +1087,15 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
   var $select = $("#ticket-Versions").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   var $select = $("#ticket-Resolved").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 };
 
@@ -1102,7 +1114,7 @@ function SetupInventorySection() {
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     },
-
+    closeAfterSelect: true,
     plugins: {
       'sticky_placeholder': {}
     }
@@ -1139,7 +1151,8 @@ function SetupUserQueuesSection() {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 }
 
@@ -1171,7 +1184,8 @@ function SetupSubscribedUsersSection() {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 };
 
@@ -1198,7 +1212,8 @@ function SetupRemindersSection() {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   $('#ticket-reminder-save').click(function (e) {
@@ -1242,7 +1257,8 @@ function SetupAssociatedTicketsSection() {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   $('#ticket-AssociatedTickets').on('click', 'div.tag-item', function (e) {
@@ -1764,7 +1780,8 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   var items = field.ListValues.split('|');
