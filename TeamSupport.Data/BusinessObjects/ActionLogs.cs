@@ -512,7 +512,7 @@ namespace TeamSupport.Data
                 ON u.UserID = al.CreatorID
             WHERE 
               pf.ProductFamilyID = @ProductFamilyID
-                                
+            /*                    
             UNION 
                                 
             SELECT
@@ -577,6 +577,7 @@ namespace TeamSupport.Data
                 ON pv.ProductID = p.ProductID
             WHERE
               p.ProductFamilyID = @ProductFamilyID
+            */
           ) as temp
         ) as results
         WHERE
