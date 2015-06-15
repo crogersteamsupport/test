@@ -182,7 +182,7 @@ namespace TSWebServices
                 {
                     ID = g.GroupID,
                     Name = g.Name,
-                    IsSelected = false
+                    IsSelected = (ticket[0].GroupID == g.GroupID)
                 }).ToArray();
             }
         }
