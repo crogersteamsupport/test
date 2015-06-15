@@ -714,6 +714,7 @@ function SetupAssignedField() {
       plugins: {
         'sticky_placeholder': {}
       },
+      closeAfterSelect: true
     });
 
     var assignedSelect = $("#ticket-assigned")[0].selectize;
@@ -751,7 +752,8 @@ function LoadTicketControls() {
         $('#ticket-group').selectize({
           onDropdownClose : function ($dropdown) {
             $($dropdown).prev().find('input').blur();
-          }
+          },
+          closeAfterSelect: true
         });
     });
 
@@ -798,7 +800,8 @@ function LoadTicketControls() {
         $('#ticket-KB-Category').selectize({
           onDropdownClose: function ($dropdown) {
             $($dropdown).prev().find('input').blur();
-          }
+          },
+          closeAfterSelect: true
         });
     }
     else {
@@ -837,7 +840,8 @@ function LoadTicketControls() {
             $('#ticket-Community').selectize({
               onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
-              }
+              },
+              closeAfterSelect: true
             });
         }
         else {
@@ -855,7 +859,8 @@ function LoadTicketControls() {
     $('.ticket-select').selectize({
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
-      }
+      },
+      closeAfterSelect: true
     });
 
     setSLAInfo();
@@ -1130,7 +1135,8 @@ function SetupCustomerSection() {
         },
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
-        }
+        },
+        closeAfterSelect: true
     });
 
     $('#Customer-Create').click(function (e) {
@@ -1411,7 +1417,8 @@ function LoadProductList(products)
   var $productselect = $('#ticket-Product').selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   if (_ticketInfo.Ticket.ProductID == null) {
@@ -1424,7 +1431,8 @@ function SetupProductVersionsControl(product) {
   var $select = $("#ticket-Versions").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
   var versionInput = $select[0].selectize;
 
@@ -1435,7 +1443,8 @@ function SetupProductVersionsControl(product) {
   var $select = $("#ticket-Resolved").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
   var resolvedInput = $select[0].selectize;
 
@@ -1452,12 +1461,14 @@ function SetupProductVersionsControl(product) {
     $('#ticket-Versions').selectize({
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
-      }
+      },
+      closeAfterSelect: true
     });
     $('#ticket-Resolved').selectize({
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
-      }
+      },
+      closeAfterSelect: true
     });
   }
 }
@@ -1466,7 +1477,8 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
   var $select = $("#ticket-Versions").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
   var versionInput = $select[0].selectize;
 
@@ -1481,7 +1493,8 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
   var $select = $("#ticket-Resolved").selectize({
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
   var resolvedInput = $select[0].selectize;
 
@@ -1519,7 +1532,7 @@ function SetupInventorySection() {
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     },
-  
+    closeAfterSelect: true,
     plugins: {
       'sticky_placeholder': {}
     }
@@ -1574,7 +1587,8 @@ function SetupUserQueuesSection() {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   $('#ticket-UserQueue').on('click', 'span.tagRemove', function (e) {
@@ -1627,7 +1641,8 @@ function SetupSubscribedUsersSection() {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   $('#ticket-SubscribedUsers').on('click', 'span.tagRemove', function (e) {
@@ -1673,7 +1688,8 @@ function SetupAssociatedTicketsSection() {
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
-    }
+    },
+    closeAfterSelect: true
   });
 
   $('#ticket-AssociatedTickets').on('click', 'span.tagRemove', function (e) {
@@ -1730,7 +1746,7 @@ function AddAssociatedTickets(Tickets) {
       var label = caption + "<br />" + ellipseString(related.TicketNumber + ': ' + related.Name, 30);
 
       var newelement = PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related, 'tag-item TicketAnchor');
-      newelement.data('ticketid', ticket.TicketID).data('placement', 'left').data('IsParent', IsParent);
+      newelement.data('ticketid', related.TicketID).data('placement', 'left').data('IsParent', related.IsParent);
     };
   }
 }
@@ -1748,11 +1764,11 @@ function SetupRemindersSection() {
             top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
                 callback(result);
             });
-
         },
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
-        }
+        },
+        closeAfterSelect: true
     });
 
     $('#ticket-reminder-save').click(function (e) {
@@ -2330,7 +2346,8 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         },
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
-        }
+        },
+        closeAfterSelect: true
     });
 
     var items = field.ListValues.split('|');
@@ -2409,6 +2426,7 @@ var SetupStatusField = function (StatusId) {
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     },
+    closeAfterSelect: true,
     onChange: function(value) {
       var status = top.Ts.Cache.getTicketStatus(value);
       isFormValidToClose(status.IsClosed, function (isValid) {
