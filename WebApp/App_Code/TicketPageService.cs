@@ -112,22 +112,24 @@ namespace TSWebServices
 
                 string postLine = "";
 
-                if (ticket.CreatorID == user.UserID)
-                {
-                    postLine = "(Sender";
-                }
-
                 if (sender.Count > 0 && sender[0].UserID == user.UserID)
                 {
-                    if (postLine.Length > 0)
-                    {
-                        postLine += " and Creator";
-                    }
-                    else
-                    {
-                        postLine = "(Creator";
-                    }
+                  postLine = "(Sender";
                 }
+
+                if (ticket.CreatorID == user.UserID)
+                {
+
+                  if (postLine.Length > 0)
+                  {
+                    postLine += " and Creator";
+                  }
+                  else
+                  {
+                    postLine = "(Creator";
+                  }
+                }
+
 
                 if (postLine.Length > 0)
                 {

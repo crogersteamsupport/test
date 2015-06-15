@@ -706,12 +706,7 @@ function GetActionCount() {
 };
 
 function SetupAssignedField() {
-  //TODO:  Need ability to recreate selectize field
   top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-    for (var i = 0; i < users.length; i++) {
-      AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].ID, users[i].Name, users[i].IsSelected);
-    }
-
     $('#ticket-assigned').selectize({
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
@@ -720,6 +715,17 @@ function SetupAssignedField() {
         'sticky_placeholder': {}
       },
     });
+
+    var assignedSelect = $("#ticket-assigned")[0].selectize;
+    assignedSelect.clear(true);
+    assignedSelect.clearOptions();
+
+    for (var i = 0; i < users.length; i++) {
+      assignedSelect.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
+      if (users[i].IsSelected) assignedSelect.addItem(users[i].ID, true);
+    }
+
+
   });
 }
 
@@ -915,12 +921,12 @@ function SetupTicketPropertyEvents() {
     var self = $(this);
     var value = self.val();
     top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-      //var selectize = self[0].selectize;
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-        },
-      function (error) {
-        alert('There was an error setting the user.');
-      });
+      SetupAssignedField();
+      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+    },
+    function (error) {
+      alert('There was an error setting the user.');
+    });
   });
 
     $('#ticket-group').change(function (e) {
