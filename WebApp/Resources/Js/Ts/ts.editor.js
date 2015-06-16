@@ -260,7 +260,7 @@ for more information or use an alternate browser like Firefox or Internet Explor
                                 });
                             }
 
-                            if (deployJava.versionCheck("1.8.0_45+")) {
+                            //if (deployJava.versionCheck("1.8.0_45+")) {
                               var applet = document.createElement("applet");
                               applet.id = "recorder";
                               applet.archive = "Launch.jar"
@@ -284,16 +284,16 @@ for more information or use an alternate browser like Firefox or Internet Explor
                               $('.fa-circle').removeClass("fa-circle").addClass("fa-circle-o-notch fa-spin");
                               document.getElementsByTagName("body")[0].appendChild(applet);
 
-                            }
-                            else {
-                              userInput = confirm(
-                                      "You need the latest Java(TM) Runtime Environment.\n" +
-                                      "Please restart your computer after updating.\n" +
-                                      "Would you like to update now?");
-                              if (userInput == true) {
-                                window.open("http://java.com/en/download", '_blank');
-                              }
-                            }
+                            //}
+                            //else {
+                            //  userInput = confirm(
+                            //          "You need the latest Java(TM) Runtime Environment.\n" +
+                            //          "Please restart your computer after updating.\n" +
+                            //          "Would you like to update now?");
+                            //  if (userInput == true) {
+                            //    window.open("http://java.com/en/download", '_blank');
+                            //  }
+                            //}
                           }
                         }
                     });
