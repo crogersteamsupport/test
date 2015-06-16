@@ -134,6 +134,7 @@
 
         var imageObject = new Image();
         imageObject.src = imagePath;
+        imageObject.className = "user-avatar";
 
         $('<td>').addClass('result-icon').append(
           $('<span>').addClass('fa-stack fa-2x').append(imageObject)

@@ -437,7 +437,7 @@ namespace TeamSupport.Handlers
       string  type                = segments.Length == 5 ? segments[4] : string.Empty;
       string  cacheFileName       = "";
       string  cachePath           = Path.Combine(AttachmentPath.GetImageCachePath(), "CompanyLogo\\" + organizationID.ToString());
-      bool    isIndexPage           = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
+      bool    isIndexPage         = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
@@ -459,13 +459,12 @@ namespace TeamSupport.Handlers
         using (Image image = Image.FromFile(originalFileName))
         using (Image scaledImage = ScaleImage(image, size, size))
         {
-          //If coming from the index page crop it and circle it.
+          //If coming from the index/search page crop it
           if (isIndexPage)
           {
             using (Image croppedImage = CropImage(scaledImage, size))
-            using (Image roundedImage = MakeRound(croppedImage, Color.White))
             {
-              roundedImage.Save(cacheFileName, ImageFormat.Jpeg);
+              croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
             }
           }
           else
@@ -478,7 +477,7 @@ namespace TeamSupport.Handlers
         return;
       }
 
-      // no picture found, make a circle with first initial and cache it. If it is for the index/search page
+      // no picture found, if it is for the index/search page then make a square with first initial and cache it. It'll be circled with css.
       if (isIndexPage)
       {
         Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, logoOrganizationId);
@@ -488,7 +487,7 @@ namespace TeamSupport.Handlers
 
         Color initialColor = ColorTranslator.FromHtml("#4CAF50");
 
-        using (Image initialImage = MakeInitialCircle(initial, initialColor, Color.White, size))
+        using (Image initialImage = MakeInitialSquare(initial, initialColor, size))
         {
           initialImage.Save(cacheFileName, ImageFormat.Jpeg);
         }
@@ -507,7 +506,7 @@ namespace TeamSupport.Handlers
       int     size                  = int.Parse(segments[3]);
       string  type                  = segments.Length == 5 ? segments[4] : string.Empty;
       string  cacheFileName         = "";
-      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+      string  cachePath             = Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
       bool    isIndexPage           = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
@@ -526,34 +525,24 @@ namespace TeamSupport.Handlers
 
       if (File.Exists(originalFileName))
       {
-        // original image, resize, make circle, cache it
+        // original image, resize, crop, cache it. It'll be circled with css.
         using (Image image = Image.FromFile(originalFileName))
         using (Image scaledImage = ScaleImage(image, size, size))
         using (Image croppedImage = CropImage(scaledImage, size))
         {
-          if (isIndexPage)
-          {
-            using (Image roundedImage = MakeRound(croppedImage, Color.White))
-            {
-              roundedImage.Save(cacheFileName, ImageFormat.Jpeg);
-            }
-          }
-          else
-          {
-            croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
-          }
+          croppedImage.Save(cacheFileName, ImageFormat.Jpeg);
         }
         WriteImage(context, cacheFileName);
         return;
       }
 
-      // no picture found, make a circle with first initial and cache it
+      // no picture found, make a square with first initial and cache it. It'll be circled with css.
       User user = Users.GetUser(LoginUser.Anonymous, userId);
       string initial = "A";
 
       if (user != null && !string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
 
-      using (Image initialImage = MakeInitialCircle(initial, !isIndexPage ? GetInitialColor(initial) : ColorTranslator.FromHtml("#FF9800"), Color.White, size))
+      using (Image initialImage = MakeInitialSquare(initial, !isIndexPage ? GetInitialColor(initial) : ColorTranslator.FromHtml("#FF9800"), size))
       {
         initialImage.Save(cacheFileName, ImageFormat.Jpeg);
       }
