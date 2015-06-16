@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 
 namespace TeamSupport.Data
 {
@@ -73,6 +74,12 @@ namespace TeamSupport.Data
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.ProductVersions, productVersionID, description);
     }
 
+    public string GetDateFormatNormal()
+    {
+        CultureInfo us = new CultureInfo(LoginUser.CultureInfo.ToString());
+        return us.DateTimeFormat.ShortDatePattern;
+    }
+
     partial void BeforeRowEdit(ProductVersion productVersion)
     {
       Product product = (Product)Products.GetProduct(LoginUser, productVersion.ProductID);
@@ -93,7 +100,7 @@ namespace TeamSupport.Data
 
       if (oldVersion.ReleaseDate != productVersion.ReleaseDate)
       {
-        description = "Changed the release date for version '" + productVersion.VersionNumber + "' on product '" + product.Name + "' from " + oldVersion.ReleaseDate.ToString() + "' to '" + productVersion.ReleaseDate.ToString() + "'";
+          description = "Changed the release date for version '" + productVersion.VersionNumber + "' on product '" + product.Name + "' from " + ((DateTime)oldVersion.ReleaseDate).ToString(GetDateFormatNormal()) + "' to '" + ((DateTime)productVersion.ReleaseDate).ToString(GetDateFormatNormal()) + "'";
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.ProductVersions, productVersion.ProductVersionID, description);
       }
 
