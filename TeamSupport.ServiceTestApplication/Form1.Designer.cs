@@ -38,6 +38,7 @@
       this.btnReminders = new System.Windows.Forms.Button();
       this.button1 = new System.Windows.Forms.Button();
       this.button2 = new System.Windows.Forms.Button();
+      this.btnTestEmail = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // btnEmailProcessor
@@ -136,11 +137,24 @@
       this.button2.UseVisualStyleBackColor = true;
       this.button2.Click += new System.EventHandler(this.button2_Click);
       // 
+      // btnTestEmail
+      // 
+      this.btnTestEmail.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btnTestEmail.ForeColor = System.Drawing.Color.Green;
+      this.btnTestEmail.Location = new System.Drawing.Point(12, 301);
+      this.btnTestEmail.Name = "btnTestEmail";
+      this.btnTestEmail.Size = new System.Drawing.Size(221, 29);
+      this.btnTestEmail.TabIndex = 30;
+      this.btnTestEmail.Text = "Send Test Email";
+      this.btnTestEmail.UseVisualStyleBackColor = true;
+      this.btnTestEmail.Click += new System.EventHandler(this.btnTestEmail_Click);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(248, 338);
+      this.ClientSize = new System.Drawing.Size(248, 343);
+      this.Controls.Add(this.btnTestEmail);
       this.Controls.Add(this.button2);
       this.Controls.Add(this.button1);
       this.Controls.Add(this.btnReminders);
@@ -167,6 +181,7 @@
     private System.Windows.Forms.Button btnReminders;
     private System.Windows.Forms.Button button1;
     private System.Windows.Forms.Button button2;
+    private System.Windows.Forms.Button btnTestEmail;
   }
 }
 

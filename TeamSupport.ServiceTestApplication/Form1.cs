@@ -130,6 +130,28 @@ namespace TeamSupport.ServiceTestApplication
       if (_importProcessor == null || _importProcessor.IsStopped) StartProcess(_importProcessor = new ImportProcessor(), sender as Button); else StopProcess(_importProcessor, sender as Button);
     }
 
+    private void btnTestEmail_Click(object sender, EventArgs e)
+    {
+      try
+      {
+        using (SmtpClient client = new SmtpClient("smtp.socketlabs.com", 25))
+        {
+          client.Credentials = new System.Net.NetworkCredential("MurocSystems", "k3C5Wtb8ZYs7");
+          client.Timeout = 20000;
+          client.EnableSsl = true; //does not work on socket labs
+          MailMessage message = new MailMessage("kjones@teamsupport.com", "kjones@teamsupport.com", "SMTP TEST", "THIS IS JUST A TEST");
+          //message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
+          //message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
+          client.Send(message);
+          MessageBox.Show("Message Sent");
+        }
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show("There was an error sending mail\n\n" + ex.Message);
+      }
+    }
+
 
   }
 }

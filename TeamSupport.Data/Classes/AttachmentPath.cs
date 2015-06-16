@@ -45,6 +45,14 @@ namespace TeamSupport.Data
       return path;
     }
 
+    public static string GetImageCachePath()
+    {
+      string root = SystemSettings.ReadString(LoginUser.Anonymous, "FilePath", "C:\\TSData");
+      string path = Path.Combine(root, "ImageCache");
+      Directory.CreateDirectory(path);
+      return path;
+    }
+
     /// <summary>
     /// Gets the default path for attachments.
     /// </summary>

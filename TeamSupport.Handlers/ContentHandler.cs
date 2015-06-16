@@ -184,6 +184,7 @@ namespace TeamSupport.Handlers
       }
     }
 
+    /* USER: UserAvatar instead. This is old style.  It will be going away */
     private void ProcessAvatar(HttpContext context, string[] segments, int organizationID)
     {
         StringBuilder builder = new StringBuilder();
@@ -220,13 +221,146 @@ namespace TeamSupport.Handlers
         if (File.Exists(fileName)) WriteImage(context, fileName);
     }
 
+    private void ProcessCalendarFeed(HttpContext context, string[] segments, int organizationID)
+    {
+      DDay.iCal.iCalendar iCal = new DDay.iCal.iCalendar();
+      string guid = segments[2];
+
+      Users u = new Users(LoginUser.Anonymous);
+      u.LoadByCalGUID(guid);
+
+      if (u.Count > 0)
+      {
+        if (u[0].TimeZoneID != null)
+        {
+          System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById(u[0].TimeZoneID);
+          iCalTimeZone timezone = iCalTimeZone.FromSystemTimeZone(timezoneinfo);
+          iCal.AddTimeZone(timezone);
+          iCal.AddChild(timezone);
+        }
+        else
+        {
+          iCal.AddLocalTimeZone();
+        }
+
+
+
+
+        TeamSupport.Data.CalendarEvents events = new CalendarEvents(LoginUser.Anonymous);
+        events.LoadAll(organizationID, u[0].UserID);
+
+        foreach (CalendarEvent calevent in events)
+        {
+          Event evt = iCal.Create<Event>();
+          evt.Summary = calevent.Title;
+          evt.Description = calevent.Description;
+          evt.IsAllDay = calevent.AllDay;
+
+          if (calevent.AllDay)
+          {
+            evt.Start = (iCalDateTime)calevent.StartDateUtc.Date;
+            DateTime dt = (DateTime)calevent.EndDateUtc;
+            evt.End = (iCalDateTime)dt.Date;
+          }
+          else
+          {
+            evt.Start = (iCalDateTime)calevent.StartDateUtc;
+            evt.End = (iCalDateTime)calevent.EndDateUtc;
+          }
+
+        }
+
+        Tickets tickets = new Tickets(LoginUser.Anonymous);
+        tickets.LoadAllDueDates(u[0].UserID, u[0].OrganizationID);
+        foreach (Ticket ticket in tickets)
+        {
+          Event evt = iCal.Create<Event>();
+          evt.Summary = ticket.Name;
+          evt.Start = (iCalDateTime)ticket.DueDate;
+        }
+
+        Reminders reminders = new Reminders(LoginUser.Anonymous);
+        reminders.LoadByUser(u[0].UserID);
+        foreach (Reminder reminder in reminders)
+        {
+          Event evt = iCal.Create<Event>();
+          switch (reminder.RefType)
+          {
+            case ReferenceType.Tickets:
+              Ticket t = Tickets.GetTicket(LoginUser.Anonymous, reminder.RefID);
+              if (t != null)
+                evt.Summary = "Ticket Reminder: " + t.Name;
+              break;
+            case ReferenceType.Organizations:
+              Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), reminder.RefID);
+              if (o != null)
+                evt.Summary = "Company Reminder: " + o.Name;
+              break;
+            case ReferenceType.Contacts:
+              User usr = Users.GetUser(TSAuthentication.GetLoginUser(), reminder.RefID);
+              if (usr != null)
+                evt.Summary = "Contact Reminder: " + usr.FirstLastName;
+              break;
+          }
+          evt.Start = (iCalDateTime)reminder.DueDate;
+        }
+
+
+        //Event evt = iCal.Create<Event>();
+        //// Set information about the event
+        //evt.Start = iCalDateTime.Today.AddHours(8);
+        //evt.End = evt.Start.AddHours(18); // This also sets the duration
+        //evt.Description = "The event description";
+        //evt.Location = "Event location";
+        //evt.Summary = "18 hour event summary";
+
+        //// Set information about the second event
+        //evt = iCal.Create<Event>();
+        //evt.Start = iCalDateTime.Today.AddDays(5);
+        //evt.End = evt.Start.AddDays(1);
+        //evt.IsAllDay = true;
+        //evt.Summary = "All-day event";
+
+        //// Set information about the second event
+        //evt = iCal.Create<Event>();
+        //evt.Start = iCalDateTime.Today.AddHours(13);
+        //evt.End = evt.Start.AddHours(3);
+        //evt.IsAllDay = true;
+        //evt.Summary = "Erics newer new event";
+
+        // Create a serialization context and serializer factory.
+        // These will be used to build the serializer for our object.
+        ISerializationContext ctx = new SerializationContext();
+        ISerializerFactory factory = new DDay.iCal.Serialization.iCalendar.SerializerFactory();
+        // Get a serializer for our object
+        IStringSerializer serializer = factory.Build(iCal.GetType(), ctx) as IStringSerializer;
+      }
+
+
+      var res = new DDay.iCal.Serialization.iCalendar.iCalendarSerializer().SerializeToString(iCal);
+      using (var file = new System.IO.StreamWriter(Path.GetTempPath() + "out.ics"))
+      {
+        file.Write(res);
+      }
+
+      context.Response.Write(res);
+      return;
+
+      //int userID = int.Parse(segments[2]);
+
+      //context.Response.Write(userID);
+
+      //return;
+
+    }
+
     private void ProcessUserAvatar(HttpContext context, string[] segments, int organizationID)
     {
 
       int userID = int.Parse(segments[2]);
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
-      string cachePath = Path.Combine(GetImageCachePath(), "Avatars\\" + organizationID.ToString());
+      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationID.ToString());
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
       
       cacheFileName = Path.Combine(cachePath, userID.ToString()+"-"+size.ToString()+".jpg");
@@ -268,146 +402,13 @@ namespace TeamSupport.Handlers
       
     }
 
-    private void ProcessCalendarFeed(HttpContext context, string[] segments, int organizationID)
-    {
-        DDay.iCal.iCalendar iCal = new DDay.iCal.iCalendar();
-        string guid = segments[2];
-
-        Users u = new Users(LoginUser.Anonymous);
-        u.LoadByCalGUID(guid);
-
-        if(u.Count>0)
-        {
-            if (u[0].TimeZoneID != null)
-            {
-                System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById(u[0].TimeZoneID);
-                iCalTimeZone timezone = iCalTimeZone.FromSystemTimeZone(timezoneinfo);
-                iCal.AddTimeZone(timezone);
-                iCal.AddChild(timezone);
-            }
-            else
-            {
-                iCal.AddLocalTimeZone();
-            }
-                
-
-            
-
-            TeamSupport.Data.CalendarEvents events = new CalendarEvents(LoginUser.Anonymous);
-            events.LoadAll(organizationID, u[0].UserID);
-
-            foreach (CalendarEvent calevent in events)
-            {
-                Event evt = iCal.Create<Event>();
-                evt.Summary = calevent.Title;
-                evt.Description = calevent.Description;
-                evt.IsAllDay = calevent.AllDay;
-
-                if (calevent.AllDay)
-                {
-                    evt.Start = (iCalDateTime)calevent.StartDateUtc.Date;
-                    DateTime dt = (DateTime)calevent.EndDateUtc;
-                    evt.End = (iCalDateTime)dt.Date; 
-                }
-                else
-                {
-                    evt.Start = (iCalDateTime)calevent.StartDateUtc;
-                    evt.End = (iCalDateTime)calevent.EndDateUtc; 
-                }
-
-            }
-
-            Tickets tickets = new Tickets(LoginUser.Anonymous);
-            tickets.LoadAllDueDates(u[0].UserID, u[0].OrganizationID);
-            foreach (Ticket ticket in tickets)
-            {
-                Event evt = iCal.Create<Event>();
-                evt.Summary = ticket.Name;
-                evt.Start = (iCalDateTime)ticket.DueDate;
-            }
-
-            Reminders reminders = new Reminders(LoginUser.Anonymous);
-            reminders.LoadByUser(u[0].UserID);
-            foreach (Reminder reminder in reminders)
-            {
-                Event evt = iCal.Create<Event>();
-                switch (reminder.RefType)
-                {
-                    case ReferenceType.Tickets:
-                        Ticket t = Tickets.GetTicket(LoginUser.Anonymous, reminder.RefID);
-                        if(t != null)
-                        evt.Summary = "Ticket Reminder: " + t.Name;
-                        break;
-                    case ReferenceType.Organizations:
-                        Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), reminder.RefID);
-                        if(o != null)
-                        evt.Summary = "Company Reminder: " + o.Name;
-                        break;
-                    case ReferenceType.Contacts:
-                        User usr = Users.GetUser(TSAuthentication.GetLoginUser(), reminder.RefID);
-                        if(usr != null)
-                        evt.Summary = "Contact Reminder: " + usr.FirstLastName;
-                        break;
-                }
-                evt.Start = (iCalDateTime)reminder.DueDate;
-            }
-
-
-            //Event evt = iCal.Create<Event>();
-            //// Set information about the event
-            //evt.Start = iCalDateTime.Today.AddHours(8);
-            //evt.End = evt.Start.AddHours(18); // This also sets the duration
-            //evt.Description = "The event description";
-            //evt.Location = "Event location";
-            //evt.Summary = "18 hour event summary";
-
-            //// Set information about the second event
-            //evt = iCal.Create<Event>();
-            //evt.Start = iCalDateTime.Today.AddDays(5);
-            //evt.End = evt.Start.AddDays(1);
-            //evt.IsAllDay = true;
-            //evt.Summary = "All-day event";
-
-            //// Set information about the second event
-            //evt = iCal.Create<Event>();
-            //evt.Start = iCalDateTime.Today.AddHours(13);
-            //evt.End = evt.Start.AddHours(3);
-            //evt.IsAllDay = true;
-            //evt.Summary = "Erics newer new event";
-
-            // Create a serialization context and serializer factory.
-            // These will be used to build the serializer for our object.
-            ISerializationContext ctx = new SerializationContext();
-            ISerializerFactory factory = new DDay.iCal.Serialization.iCalendar.SerializerFactory();
-            // Get a serializer for our object
-            IStringSerializer serializer = factory.Build(iCal.GetType(), ctx) as IStringSerializer;
-        }
-        
-
-        var res = new DDay.iCal.Serialization.iCalendar.iCalendarSerializer().SerializeToString(iCal);
-        using (var file = new System.IO.StreamWriter(Path.GetTempPath() + "out.ics"))
-        {
-            file.Write(res);
-        }
-
-        context.Response.Write(res);
-        return;
-
-        //int userID = int.Parse(segments[2]);
-
-        //context.Response.Write(userID);
-
-        //return;
-
-    }
-
     private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)
     {
 
       string initial = segments[2].ToUpper();
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
-      string cachePath = Path.Combine(GetImageCachePath(), "Initials");
+      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(), "Initials");
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
 
@@ -435,7 +436,7 @@ namespace TeamSupport.Handlers
       int     size                = int.Parse(segments[3]);
       string  type                = segments.Length == 5 ? segments[4] : string.Empty;
       string  cacheFileName       = "";
-      string  cachePath           = Path.Combine(GetImageCachePath(), "CompanyLogo\\" + organizationID.ToString());
+      string  cachePath           = Path.Combine(AttachmentPath.GetImageCachePath(), "CompanyLogo\\" + organizationID.ToString());
       bool    isIndexPage           = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
@@ -506,7 +507,7 @@ namespace TeamSupport.Handlers
       int     size                  = int.Parse(segments[3]);
       string  type                  = segments.Length == 5 ? segments[4] : string.Empty;
       string  cacheFileName         = "";
-      string  cachePath             = Path.Combine(GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
       bool    isIndexPage           = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
@@ -755,14 +756,6 @@ namespace TeamSupport.Handlers
       var newImage = new Bitmap(newWidth, newHeight);
       Graphics.FromImage(newImage).DrawImage(image, 0, 0, newWidth, newHeight);
       return newImage;
-    }
-
-    private string GetImageCachePath()
-    {
-      string root = SystemSettings.ReadString(LoginUser.Anonymous, "FilePath", "C:\\TSData");
-      string path = Path.Combine(root, "ImageCache");
-      Directory.CreateDirectory(path);
-      return path;
     }
 
     private void ProcessAttachment(HttpContext context, int attachmentID)
