@@ -2579,7 +2579,7 @@ for more information or use an alternate browser like Firefox or Internet Explor
   $('#inserttok').hide();
 
   $('#inserttok').click(function (e) {
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
       $('#rcdtok').show();
       $('#stoptok').hide();
       $('#inserttok').hide();

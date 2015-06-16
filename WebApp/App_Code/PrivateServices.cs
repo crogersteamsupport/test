@@ -785,6 +785,9 @@ namespace TeamSupport.Services
         userProducts.DeleteAll();
         userProducts.Save();
         organizationProducts.DeleteFromDB(organizationProductID);
+        Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), organizationProducts[0].ProductID);
+        string description = String.Format("{0} deleted product association to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, p.Name);
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Organizations, organizationProducts[0].OrganizationID, description);
       }
       catch (Exception ex)
       {

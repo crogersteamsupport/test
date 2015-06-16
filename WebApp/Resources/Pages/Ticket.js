@@ -3261,11 +3261,11 @@ var createActionForm = function (element, action, callback) {
   element.find('#inserttok').hide();
 
   element.find('#inserttok').click(function (e) {
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+      session.unpublish(publisher);
       element.find('#rcdtok').show();
       element.find('#stoptok').hide();
       element.find('#inserttok').hide();
-      session.unpublish(publisher);
       element.find('#recordVideoContainer').hide();
       element.find('#statusText').text("");
   });
