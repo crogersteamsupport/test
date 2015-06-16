@@ -3130,10 +3130,18 @@ function CreateTicketToolbarDomEvents() {
         var winningID = $('#Ticket-Merge-search').data('ticketid');
         var winningTicketNumber = $('#Ticket-Merge-search').data('ticketnumber');
         var JSTop = top;
-        top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
-          function () {
-          $('#merge-error').show();
+        //var window = window;
+        top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function () {debugger
+          $('#MergeModal').modal('hide');
+          JSTop.Ts.MainPage.closeTicketTab(_ticketNumber);
+          JSTop.Ts.MainPage.openTicket(winningTicketNumber, true);
+          //window.location = window.location;
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
         });
+        //top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+        //  function () {
+        //  $('#merge-error').show();
+        //});
       }
       else {
         alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
