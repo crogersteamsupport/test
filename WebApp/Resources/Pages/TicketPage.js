@@ -133,8 +133,8 @@ var loadTicket = function (ticketNumber, refresh) {
     _productFamilyID = info.Ticket.ProductFamilyID;
     _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
 
-    $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name));
-
+    $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
+    $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
     top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
       LoadTicketNotes(note);
     });
@@ -262,7 +262,9 @@ function SetupTicketProperties() {
     $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
     //set the ticket title 
-    $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name));
+    $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
+    $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
+    $('.ticket-source').css('backgroundImage', "url('../" + top.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
     //get total number of actions so we can use it to number each action
     GetActionCount();
     //create timeline now that we have a ticketID
@@ -911,14 +913,20 @@ function SetupTicketPropertyEvents() {
       top.Ts.Services.Tickets.SetTicketName(_ticketID, input.val(), function (result) {
         _ticketInfo.Ticket.Name = result;
         top.Ts.System.logAction('Ticket - Renamed');
-        self.text($.trim(_ticketInfo.Ticket.Name) === '' ? _ticketInfo.Ticket.TicketNumber + ': ' + '[Untitled Ticket]' : _ticketInfo.Ticket.TicketNumber + ': ' + $.trim(_ticketInfo.Ticket.Name)).show();
-
+        self.text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name)).show();
 
         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeticketname", userFullName);
       },
       function (error) {
         alert('There was an error saving the ticket name.');
       });
+    });
+
+    $('#ticket-title-cancel').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      titleInputContainer.hide();
+      self.show();
     });
   });
 
@@ -3664,6 +3672,7 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
 
 var addUserViewing = function (userID) {
   $('#ticket-now-viewing').show();
+  $('#ticket-viewing-users').empty();
   if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
     top.Ts.Services.Users.GetUser(userID, function (user) {
       var fullName = user.FirstName + " " + user.LastName;

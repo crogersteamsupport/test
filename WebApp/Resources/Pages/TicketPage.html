@@ -80,6 +80,10 @@
               <li><a id="Ticket-URL" data-clipboard-text="">URL</a></li>
             </ul>
           </div>
+          <div class="" style="display: inline; position: fixed; top: 33px; right: 15px;">
+            <div class="ticket-source"></div>
+            <label id="ticket-number"></label>
+          </div>
           <div class="btn-group ticket-toolbar pull-right" role="group" aria-label="...">
             <div class="ticket-badge pull-left">
               <div class="bgcolor-green filter-public"><a data-visible="true" href="#" class="ticket-filter-public">Public</a></div>
@@ -113,6 +117,7 @@
                       <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter name for ticket...">
                       <span class="input-group-btn">
                         <button id="ticket-title-save" class="btn btn-primary" type="button">Save</button>
+                        <button id="ticket-title-cancel" class="btn btn-default" type="button">Cancel</button>
                       </span>
                     </div>
                   </div>
@@ -564,6 +569,8 @@
                 </div>
               </div>
             </div>
+          </script>
+          <script id="ticket-group-Reported" type="text/x-handlebars-template">
             <div class="form-horizontal">
               <div class="form-group form-group-sm">
                 <label for="ticket-Product-Reported-Version" class="col-sm-4 control-label select-label">Reported <abbr title="Version">Ver.</abbr></label>
@@ -572,6 +579,8 @@
                 </div>
               </div>
             </div>
+          </script>
+          <script id="ticket-group-Resolved" type="text/x-handlebars-template">
             <div class="form-horizontal">
               <div class="form-group form-group-sm">
                 <label for="ticket-Product-Resolved-Version" class="col-sm-4 control-label select-label">Resolved <abbr title="Version">Ver.</abbr></label>
