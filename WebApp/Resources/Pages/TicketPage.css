@@ -46,6 +46,14 @@
     }
 
     .ticket-toolbar { margin-top: 10px; margin-bottom: 10px; }
+    .ticket-source {
+      float: left;
+      height: 16px;
+      width: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+    }
 
     button.ticket-option { background-color: white; }
 

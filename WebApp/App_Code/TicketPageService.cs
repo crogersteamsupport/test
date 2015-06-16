@@ -389,7 +389,7 @@ namespace TSWebServices
             {
                 list.Add(new AutocompleteItem
                 {
-                    label = String.Format("<strong>{0} {1}</strong></br>{1}", users[i].FirstName, users[i].LastName, users[i].Organization),
+                    label = String.Format("<strong>{0} {1}</strong></br>{2}", users[i].FirstName, users[i].LastName, users[i].Organization),
                     id = users[i].UserID.ToString(),
                     data = "u",
                     value = users[i].FirstName + " " + users[i].LastName

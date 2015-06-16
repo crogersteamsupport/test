@@ -35,7 +35,7 @@ var execGetUsers = null;
 var execGetRelated = null;
 var execSelectTicket = null;
 
-var getCustomers = function (request, response) {
+var getTicketCustomers = function (request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
     execGetCustomer = top.Ts.Services.TicketPage.GetUserOrOrganizationForTicket(request, function (result) { response(result); });
 }
@@ -1087,7 +1087,7 @@ function SetupCustomerSection() {
         labelField: 'label',
         searchField: 'label',
         load: function (query, callback) {
-            getCustomers(query, callback)
+          getTicketCustomers(query, callback)
         },
         initData: true,
         preload: true,
@@ -1232,7 +1232,6 @@ function AddCustomers(customers) {
     $("#ticket-Customers-Input").val('');
     for (var i = 0; i < customers.length; i++) {
         var label = "";
-
         if (customers[i].Contact !== null && customers[i].Company !== null) {
           label = customers[i].Contact + '<br/>' + customers[i].Company;
         }
