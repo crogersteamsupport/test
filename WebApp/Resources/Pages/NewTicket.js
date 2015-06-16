@@ -2559,6 +2559,7 @@ for more information or use an alternate browser like Firefox or Internet Explor
           $('#inserttok').hide();
           $('#deletetok').hide();
           recordingID = resultID;
+          $('#statusText').text("Currently Recording ...");
       });
   });
 
@@ -2571,6 +2572,7 @@ for more information or use an alternate browser like Firefox or Internet Explor
           $('#inserttok').show();
           $('#canceltok').show();
           tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+          $('#statusText').text("Recording Stopped");
       });
   });
 
@@ -2583,6 +2585,7 @@ for more information or use an alternate browser like Firefox or Internet Explor
       $('#inserttok').hide();
       session.unpublish(publisher);
       $('#recordVideoContainer').hide();
+      $('#statusText').text("");
   });
 
   $('#canceltok').click(function (e) {
@@ -2599,7 +2602,7 @@ for more information or use an alternate browser like Firefox or Internet Explor
           session.unpublish(publisher);
           $('#recordVideoContainer').hide();
       }
-
+      $('#statusText').text("");
   });
   $('#recordVideoContainer').hide();
 

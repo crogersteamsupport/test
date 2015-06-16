@@ -3241,6 +3241,7 @@ var createActionForm = function (element, action, callback) {
           element.find('#inserttok').hide();
           element.find('#deletetok').hide();
           recordingID = resultID;
+          element.find('#statusText').text("Currently Recording ...");
       });
   });
 
@@ -3253,6 +3254,7 @@ var createActionForm = function (element, action, callback) {
           element.find('#inserttok').show();
           element.find('#canceltok').show();
           tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+          element.find('#statusText').text("Recording Stopped");
       });
   });
 
@@ -3265,6 +3267,7 @@ var createActionForm = function (element, action, callback) {
       element.find('#inserttok').hide();
       session.unpublish(publisher);
       element.find('#recordVideoContainer').hide();
+      element.find('#statusText').text("");
   });
 
   element.find('#deletetok').hide();
@@ -3278,7 +3281,7 @@ var createActionForm = function (element, action, callback) {
 //1      });
 //  });
 
-  element.find('#canceltok').hide();
+  //element.find('#canceltok').hide();
   element.find('#canceltok').click(function (e) {
       if (recordingID)
       {
@@ -3295,7 +3298,7 @@ var createActionForm = function (element, action, callback) {
           session.unpublish(publisher);
           element.find('#recordVideoContainer').hide();
       }
-
+      element.find('#statusText').text("");
   });
   element.find('#recordVideoContainer').hide();
 
