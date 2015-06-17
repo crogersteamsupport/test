@@ -152,7 +152,7 @@ var loadTicket = function (ticketNumber, refresh) {
 
     //TODO:  Need to set product 
 
-    AssignUser(_ticketInfo.Ticket.UserID);
+    SetUser(_ticketInfo.Ticket.UserID);
     SetGroup(_ticketInfo.Ticket.GroupID);
     SetType(_ticketInfo.Ticket.TicketTypeID);
     SetStatus(_ticketInfo.Ticket.TicketStatusID);
@@ -1422,6 +1422,11 @@ function LoadProductList(products)
   }
 
   var $productselect = $('#ticket-Product').selectize({
+    render: {
+      item: function (item, escape) {
+        return '<div data-ticketid="' + _ticketID + '" data-productid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option ProductAnchor">' + escape(item.text) + '</div>';
+      }
+    },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     },
@@ -1866,11 +1871,6 @@ function AppenCustomValues(fields) {
         }
     }
     appendCategorizedCustomValues(fields);
-}
-
-var AssignUser = function(UserID){
-  var selectize = $('#ticket-assigned')[0].selectize;
-  selectize.setValue(UserID);
 }
 
 var appendCategorizedCustomValues = function (fields) {
@@ -3050,7 +3050,7 @@ function CreateTicketToolbarDomEvents() {
     $('#Ticket-Owner').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        AssignUser(top.Ts.System.User.UserID);
+        SetUser(top.Ts.System.User.UserID);
         top.Ts.System.logAction('Ticket - Take Ownership');
     });
 
@@ -3751,6 +3751,14 @@ var SetCommunityCategory = function (ForumCategory) {
 var SetDueDate = function (duedate) {
   $('.ticket-duedate-anchor').text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())));
 };
+
+var SetUser = function (UserID) {
+  var selectField = $('#ticket-assigned');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-assigned')[0].selectize;
+    selectize.setValue(UserID, true);
+  }
+}
 
 var SetGroup = function (GroupID) {
   var selectField = $('#ticket-group');
