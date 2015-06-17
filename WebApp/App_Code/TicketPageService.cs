@@ -696,7 +696,7 @@ namespace TSWebServices
 
         private string CleanMessage(string message,  LoginUser loginUser)
         {
-          return HtmlUtility.TagHtml(loginUser, HTMLSanitizeMessage(HtmlUtility.CheckScreenR(loginUser, message)));
+          return HTMLSanitizeMessage(HtmlUtility.CheckScreenR(loginUser, message));
         }
 
         private string HTMLSanitizeMessage(string message)
