@@ -966,6 +966,10 @@ $(document).ready(function () {
       if (hasCustomerInsights) {
         var companyLogoPath = "../../../dc/" + org.ParentID + "/companylogo/" + organizationID + "/80";
         $('#companyLogo').attr("src", companyLogoPath);
+
+        $("#companyLogo").error(function () {
+          $(this).hide();
+        })
       }
       else {
         $('#companyLogo').hide();
@@ -2419,10 +2423,6 @@ $(document).ready(function () {
             LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
         }
     });
-
-    $("#companyLogo").error(function () {
-      $(this).hide();
-    })
 });
 
 var initEditor = function (element, init) {
