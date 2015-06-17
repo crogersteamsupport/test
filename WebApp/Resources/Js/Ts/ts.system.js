@@ -386,6 +386,7 @@ var _startDate = new Date();
   Ts.ReferenceTypes.EmailPost = 35;
   Ts.ReferenceTypes.ForumCategories = 35;
   Ts.ReferenceTypes.KnowledgeBaseCategories = 42;
+  Ts.ReferenceTypes.ProductFamilies = 44;
   Ts.ReferenceTypes.UserProducts = 46;
 
   Ts.SystemActionTypes = {}

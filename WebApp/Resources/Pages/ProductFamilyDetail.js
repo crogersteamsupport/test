@@ -78,7 +78,7 @@ $(document).ready(function () {
         $('.scrollup').fadeOut();
         if (e.target.innerHTML == "Details") {
             createTestChart();
-            //LoadCustomProperties();
+            LoadCustomProperties();
             _viewingCustomers = false;
             _viewingInventory = false;
             _viewingProducts = false;
@@ -300,7 +300,7 @@ $(document).ready(function () {
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
     function LoadCustomProperties() {
-        top.Ts.Services.Assets.GetCustomValues(_productFamilyID, top.Ts.ReferenceTypes.Products, function (html) {
+        top.Ts.Services.Assets.GetCustomValues(_productFamilyID, top.Ts.ReferenceTypes.ProductFamilies, function (html) {
             appendCustomValues(html);
         });
     }

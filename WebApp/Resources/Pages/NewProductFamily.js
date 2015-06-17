@@ -53,6 +53,25 @@ $(document).ready(function () {
         $('#inputDescription').tinymce().focus();
     });
 
+    LoadCustomControls();
+    function LoadCustomControls() {
+      top.Ts.Services.Assets.LoadCustomControls(top.Ts.ReferenceTypes.ProductFamilies, function (html) {
+        if (html.length < 31) {
+          $('#productFamilyCustomInfoBox').hide();
+        }
+        else {
+          $('#productFamilyCustomInfo').append(html);
+          $('.customField:visible').each(function () {
+            var maskValue = $(this).attr("placeholder");
+            if (maskValue) {
+              $(this).mask(maskValue);
+            }
+          });
+          $('.datetimepicker').datetimepicker({});
+        }
+      });
+    }
+
     $('#productFamilySaveBtn').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -69,6 +88,29 @@ $(document).ready(function () {
             top.Ts.System.logAction('New Product Line Page - Added New Product Line');
             productFamilyInfo.Name = $("#inputName").val();
             productFamilyInfo.Description = $("#Description").val();
+
+            productFamilyInfo.Fields = new Array();
+            $('.customField:visible').each(function () {
+              var field = new Object();
+              field.CustomFieldID = $(this).attr("id");
+              switch ($(this).attr("type")) {
+                case "checkbox":
+                  field.Value = $(this).prop('checked');
+                  break;
+                case "date":
+                  field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+                  break;
+                case "time":
+                  field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                  break;
+                case "datetime":
+                  field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+                  break;
+                default:
+                  field.Value = $(this).val();
+              }
+              productFamilyInfo.Fields[productFamilyInfo.Fields.length] = field;
+            });
 
             top.Ts.Services.Products.SaveProductFamily(top.JSON.stringify(productFamilyInfo), function (f) {
                 top.Ts.MainPage.openNewProductFamily(f);

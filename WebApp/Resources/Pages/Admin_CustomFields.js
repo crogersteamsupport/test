@@ -38,6 +38,9 @@ AdminCustomFields = function () {
       if (top.Ts.System.Organization.ProductType != top.Ts.ProductType.HelpDesk) {
         $('<option>').text('Product').attr('value', 13).appendTo(select);
         $('<option>').text('Product Version').attr('value', 14).appendTo(select);
+        if (top.Ts.System.Organization.UseProductFamilies) {
+          $('<option>').text('Product Line').attr('value', 44).appendTo(select);
+        }
         $('<option>').text('Asset').attr('value', 34).appendTo(select);
       }
       $('<option>').text('Customer').attr('value', 9).appendTo(select);

@@ -433,33 +433,33 @@ namespace TSWebServices
         string description = String.Format("{0} created {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productFamily.Name);
         ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamily.ProductFamilyID, description);
 
-        //foreach (CustomFieldSaveInfo field in info.Fields)
-        //{
-        //    CustomValue customValue = CustomValues.GetValue(loginUser, field.CustomFieldID, productFamily.ProductFamilyID);
-        //    if (field.Value == null)
-        //    {
-        //        customValue.Value = "";
-        //    }
-        //    else
-        //    {
-        //        if (customValue.FieldType == CustomFieldType.DateTime)
-        //        {
-        //            customValue.Value = ((DateTime)field.Value).ToString();
-        //            //DateTime dt;
-        //            //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-        //            //{
-        //            //    customValue.Value = dt.ToUniversalTime().ToString();
-        //            //}
-        //        }
-        //        else
-        //        {
-        //            customValue.Value = field.Value.ToString();
-        //        }
+        foreach (CustomFieldSaveInfo field in info.Fields)
+        {
+          CustomValue customValue = CustomValues.GetValue(loginUser, field.CustomFieldID, productFamily.ProductFamilyID);
+          if (field.Value == null)
+          {
+            customValue.Value = "";
+          }
+          else
+          {
+            if (customValue.FieldType == CustomFieldType.DateTime)
+            {
+              customValue.Value = ((DateTime)field.Value).ToString();
+              //DateTime dt;
+              //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+              //{
+              //    customValue.Value = dt.ToUniversalTime().ToString();
+              //}
+            }
+            else
+            {
+              customValue.Value = field.Value.ToString();
+            }
 
-        //    }
+          }
 
-        //    customValue.Collection.Save();
-        //}
+          customValue.Collection.Save();
+        }
 
         return productFamily.ProductFamilyID;
 
