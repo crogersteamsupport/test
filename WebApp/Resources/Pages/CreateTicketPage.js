@@ -206,7 +206,7 @@ function SetupTicketProperties() {
   $('#ticket-properties-area').on('click', 'span.tagRemove', function (e) {
     var tag = $(this).parent()[0];
     tag.remove();
-
+    if ($(tag).hasClass("OrgAnchor")) ReloadProductList();
   });
 
   //KB
@@ -854,6 +854,7 @@ function SetupCustomerSection() {
     onItemAdd: function (value, $item) {
       $('#ticket-Customer').closest('.form-group').removeClass('hasError');
       AddCustomers($item.data());
+      
       this.removeItem(value, true);
     },
     render: {
@@ -896,7 +897,7 @@ function SetupCustomerSection() {
               var customerData = new Object();
               customerData.type = result.substring(0, 1);
               customerData.value = result.substring(1);
-              AddCustomers(customerData)
+              AddCustomers(customerData);
                 $('.ticket-new-customer-email').val('');
                 $('.ticket-new-customer-first').val('');
                 $('.ticket-new-customer-last').val('');
@@ -961,60 +962,59 @@ function AddCustomers(customerdata) {
       var newelement = PrependTag(customerDiv, customer.OrganizationID, label, customer, cssClasses);
       newelement.data('orgid', customer.OrganizationID).data('placement', 'left').data('ticketid', 0);
     }
+
+    ReloadProductList();
   });
 };
 
 function SetupProductSection() {
-  top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
-    if (showOnlyCustomers == "True") {
-      top.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
-        LoadProductList(CustomerProducts);
-      });
-    }
-    else {
-      var products = top.Ts.Cache.getProducts();
-      LoadProductList(products);
-    }
+  var products = top.Ts.Cache.getProducts();
 
-    top.Ts.Services.Organizations.IsProductRequired(function (result) {
-      if (result)
+  $('#ticket-Product').selectize({
+    onDropdownClose: function ($dropdown) {
+      $($dropdown).prev().find('input').blur();
+    },
+    closeAfterSelect: true
+  });
+
+  LoadProductList(products);
+
+  top.Ts.Services.Organizations.IsProductRequired(function (result) {
+    if (result)
+      $('#ticket-Product').closest('.form-group').addClass('hasError');
+    else
+      $('#ticket-Product').closest('.form-group').removeClass('hasError');
+  });
+
+  $('#ticket-Product').change(function (e) {
+    var self = $(this);
+    var product = top.Ts.Cache.getProduct(self.val());
+    loadVersions(product);
+    AppendProductMatchingCustomFields();
+    top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
+      if (IsRequired)
         $('#ticket-Product').closest('.form-group').addClass('hasError');
       else
         $('#ticket-Product').closest('.form-group').removeClass('hasError');
     });
-
-    $('#ticket-Product').change(function (e) {
-      var self = $(this);
-      var product = top.Ts.Cache.getProduct(self.val());
-      loadVersions(product);
-      //TODO: Need a way to remove old product custom fields no longer applicable on product change
-      
-      AppendProductMatchingCustomFields();
-      top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
-        if (IsRequired)
-          $('#ticket-Product').closest('.form-group').addClass('hasError');
-        else
-          $('#ticket-Product').closest('.form-group').removeClass('hasError');
-      });
-    });
-
-  })
+  });
 };
 
 function LoadProductList(products) {
   top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
     if (products == null) products = top.Ts.Cache.getProducts();
     var product = top.Ts.Cache.getProduct(productID);
-    for (var i = 0; i < products.length; i++) {
-      AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, products[i].ProductID == productID);
-    }
+    //for (var i = 0; i < products.length; i++) {
+    //  AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, products[i].ProductID == productID);
+    //}
 
-    var $productselect = $('#ticket-Product').selectize({
-      onDropdownClose: function ($dropdown) {
-        $($dropdown).prev().find('input').blur();
-      },
-      closeAfterSelect: true
-    });
+    var $productselect = $('#ticket-Product').selectize();
+    var $productselectInput = $productselect[0].selectize;
+    $productselectInput.clearOptions();
+
+    for (var i = 0; i < products.length; i++) {
+      $productselectInput.addOption({ value: products[i].ProductID, text: products[i].Name, data: products[i] });
+    }
 
     SetupProductVersionsControl(product);
     SetProductVersionAndResolved(null, null);
@@ -1023,8 +1023,49 @@ function LoadProductList(products) {
       var $productselectInput = $productselect[0].selectize;
       $productselectInput.clear();
     }
+    else {
+      $productselectInput.setValue(productID);
+    }
   });
 }
+
+function ReloadProductList() {
+  top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
+    if (showOnlyCustomers == "True") {
+      var organizationIDs = new Array();
+
+      $('#ticket-Customer > div.tag-item').each(function () {
+        var data = $(this).data('tag');
+        organizationIDs[organizationIDs.length] = data.OrganizationID;
+      });
+
+      if (organizationIDs.length < 1) {
+        var products = top.Ts.Cache.getProducts();
+        LoadProductList(products);
+      }
+      else {
+        top.Ts.Services.Tickets.GetCustomerProductIDs(top.JSON.stringify(organizationIDs), function (productIDs) {
+          if (!productIDs || productIDs == null || productIDs.length < 1) {
+            var products = top.Ts.Cache.getProducts();
+            LoadProductList(products);
+          }
+          else {
+            var products = new Array();
+            for (var j = 0; j < productIDs.length; j++) {
+              var product = top.Ts.Cache.getProduct(productIDs[j]);
+              products.push(product);
+            };
+            LoadProductList(products);
+          }
+        });
+      }
+    }
+    else {
+      var products = top.Ts.Cache.getProducts();
+      LoadProductList(products);
+    }
+  });
+};
 
 function loadVersions(product) {
   var selectizeVersion = $("#ticket-Versions")[0].selectize;
