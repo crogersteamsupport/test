@@ -417,11 +417,11 @@ Namespace TeamSupport
                 End If
 
                 With thisAddress
-                     If .Addr1 <> company.Street Or _
-                          .Addr2 <> company.Street2 Or _
-                          .City <> company.City Or _
-                          .State <> company.State Or _
-                          .Zip <> company.Zip Or _
+                     If .Addr1 <> company.Street OrElse _
+                          .Addr2 <> company.Street2 OrElse _
+                          .City <> company.City OrElse _
+                          .State <> company.State OrElse _
+                          .Zip <> company.Zip OrElse _
                           .Country <> company.Country Then
                       addressNeedsUpdate = True
                     End If
@@ -490,8 +490,8 @@ Namespace TeamSupport
                     Dim phoneNeedsUpdate As Boolean = False
 
                     With thisPhone
-                        If .Number <> company.Phone Or _
-                            .RefType <> ReferenceType.Organizations Or _
+                        If .Number <> company.Phone OrElse _
+                            .RefType <> ReferenceType.Organizations OrElse _
                             .RefID <> thisCompany.OrganizationID Then
                           phoneNeedsUpdate = True
                         End If
@@ -501,7 +501,7 @@ Namespace TeamSupport
                         .RefID = thisCompany.OrganizationID
                         If CRMPhoneType IsNot Nothing Then
                           If Not phoneNeedsUpdate Then
-                            phoneNeedsUpdate = IIf(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
+                            phoneNeedsUpdate = If(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
                           End If
 
                           .PhoneTypeID = CRMPhoneType.PhoneTypeID
@@ -631,17 +631,17 @@ Namespace TeamSupport
                         Dim contactNeedsUpdate As Boolean = False
 
                         With thisUser
-                            If .Email <> person.Email Or _
-                              .FirstLastName <> IIf(person.FirstName IsNot Nothing, person.FirstName, "") Or _
-                              .LastName <> person.LastName Or _
-                              .Title <> person.Title Or _
-                              .MarkDeleted Or _
+                            If .Email <> person.Email OrElse _
+                              .FirstLastName <> If(person.FirstName IsNot Nothing, person.FirstName, "") OrElse _
+                              .LastName <> person.LastName OrElse _
+                              .Title <> person.Title OrElse _
+                              .MarkDeleted OrElse _
                               .SalesForceID <> person.SalesForceID Then
                               contactNeedsUpdate = True
                             End If
 
                             .Email = person.Email
-                            .FirstName = IIf(person.FirstName IsNot Nothing, person.FirstName, "")
+                            .FirstName = If(person.FirstName IsNot Nothing, person.FirstName, "")
                             .LastName = person.LastName
                             .Title = person.Title
                             .MarkDeleted = False
@@ -752,8 +752,8 @@ Namespace TeamSupport
                             Dim phoneNeedsUpdate As Boolean = False
 
                             With phone
-                                If .Number <> person.Phone Or _
-                                    .RefType <> ReferenceType.Users Or _
+                                If .Number <> person.Phone OrElse _
+                                    .RefType <> ReferenceType.Users OrElse _
                                     .RefID <> thisUser.UserID Then
                                   phoneNeedsUpdate = True
                                 End If
@@ -763,7 +763,7 @@ Namespace TeamSupport
                                 .RefID = thisUser.UserID
                                 If CRMPhoneType IsNot Nothing Then
                                   If Not phoneNeedsUpdate Then
-                                    phoneNeedsUpdate = IIf(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
+                                    phoneNeedsUpdate = If(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
                                   End If
 
                                   .PhoneTypeID = CRMPhoneType.PhoneTypeID
@@ -771,7 +771,10 @@ Namespace TeamSupport
 
                                 'Custom mapping for Tenmast.
                                 If Type = IntegrationType.ZohoCRM Then
-                                    phoneNeedsUpdate = .Extension <> person.Extension
+                                    If Not phoneNeedsUpdate Then
+                                      phoneNeedsUpdate = .Extension <> person.Extension
+                                    End If
+
                                     .Extension = person.Extension
                                 End If
 
@@ -1106,8 +1109,10 @@ Namespace TeamSupport
                     thisCustom.RefID = RefID
                 End If
 
-                thisCustom.Value = Value
-                thisCustom.Collection.Save()
+                If thisCustom IsNot Nothing AndAlso thisCustom.Value <> Value Then
+                  thisCustom.Value = Value
+                  thisCustom.Collection.Save()
+                End If
             End Sub
         End Class
 

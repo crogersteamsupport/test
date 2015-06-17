@@ -16,10 +16,11 @@ Namespace TeamSupport
             Public Overrides Function PerformSync() As Boolean
                 Dim Success As Boolean = True
 
-                Success = SyncAccounts()
+                'Commented out per action #5 of Ticket 21795.
+                'Success = SyncAccounts()
 
                 If Success Then
-                    Success = SendTicketData(AddressOf CreateComment)
+                    'Success = SendTicketData(AddressOf CreateComment)
                 End If
 
                 Return Success
