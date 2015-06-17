@@ -213,8 +213,8 @@ AdminPortal = function () {
 
   }
 
-  var V2OrgID = top.Ts.System.User.OrganizationID;
-  if (!(V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372)) { $('.tabs-order').remove(); }
+  //var V2OrgID = top.Ts.System.User.OrganizationID;
+  //if (!(V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372)) { $('.tabs-order').remove(); }
 
   $('#recalculate-cdi').click(function () {
       top.Ts.Services.Organizations.ResetCDI();
