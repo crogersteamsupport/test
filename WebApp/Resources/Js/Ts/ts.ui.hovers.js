@@ -28,6 +28,7 @@
 	    var ticketid = e.data('ticketid');
 	    e.popover({
 	      html: true,
+	      container: 'body',
 	      trigger: 'hover',
 	      delay: { "show": 1, "hide": 1 },
 	      content: function () {
@@ -47,6 +48,7 @@
 	  var assetid = e.data('assetid');
 	  e.popover({
 	    html: true,
+	    container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
@@ -66,6 +68,7 @@
 	  var ticketid = e.data('ticketid');
 	  e.popover({
 	    html: true,
+	    container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
@@ -84,6 +87,7 @@
 	  var ticketid = e.data('ticketid');
 	  e.popover({
 	    html: true,
+	    container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
@@ -102,11 +106,32 @@
 	  var ticketid = e.data('ticketid');
 	  e.popover({
 	    html: true,
+	    container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
 	      return $.ajax({
 	        url: '../../../Tips/Ticket.aspx?TicketID=' + ticketid,
+	        dataType: 'html',
+	        async: false
+	      }).responseText;
+	    }
+	  }).popover('show');
+	});
+
+	$("body").on("mouseenter", ".ProductAnchor", function (event) {
+	  var e = $(this);
+	  e.unbind('hover');
+	  var ticketid = e.data('ticketid');
+	  var productid = e.data('productid');
+	  e.popover({
+	    html: true,
+      container: 'body',
+	    trigger: 'hover',
+	    delay: { "show": 1, "hide": 1 },
+	    content: function () {
+	      return $.ajax({
+	        url: '../../../Tips/Product.aspx?ProductID=' + productid + '&TicketID=' + ticketid,
 	        dataType: 'html',
 	        async: false
 	      }).responseText;

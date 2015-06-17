@@ -515,6 +515,7 @@ function isFormValid(callback) {
           {
             $('#ticket-Customer').closest('.form-group').addClass('hasError');
             InsertCreateError("A customer is required to create a ticket.")
+            result = false;
           }
           else
           {
