@@ -259,9 +259,9 @@
             </script>
             <script id="action-template" type="text/x-handlebars-template">
               {{#if item.IsPinned}}
-              <li data-id="{{item.RefID}}" data-action="{{ActionData}}" class="pinned">
+              <li data-id="{{item.RefID}}" data-isWC="{{item.IsWC}}" data-action="{{ActionData}}" class="pinned">
                 {{else}}
-              <li data-id="{{item.RefID}}" data-action="{{ActionData}}">
+              <li data-id="{{item.RefID}}" data-isWC="{{item.IsWC}}" data-action="{{ActionData}}">
                 {{/if}}
                 <div class="timeline-panel">
                   {{#unless item.IsWC}}

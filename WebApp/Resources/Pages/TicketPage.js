@@ -2867,8 +2867,8 @@ function CreateTimeLineDelegates() {
         if ($('.results-done').is(':visible')) return;
 
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            var count = $('#action-timeline > li').length;
-            FetchTimeLineItems($('#action-timeline > li').length);
+          var count = $('#action-timeline > li').length; debugger
+            FetchTimeLineItems($('#action-timeline > li').length - 1);
         }
     });
 
