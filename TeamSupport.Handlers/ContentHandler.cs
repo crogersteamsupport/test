@@ -360,7 +360,7 @@ namespace TeamSupport.Handlers
       int userID = int.Parse(segments[2]);
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
-      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationID.ToString());
+      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationID.ToString());
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
       
       cacheFileName = Path.Combine(cachePath, userID.ToString()+"-"+size.ToString()+".jpg");
@@ -408,7 +408,7 @@ namespace TeamSupport.Handlers
       string initial = segments[2].ToUpper();
       int size = int.Parse(segments[3]);
       string cacheFileName = "";
-      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(), "Initials");
+      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Initials");
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
 
@@ -436,7 +436,7 @@ namespace TeamSupport.Handlers
       int     size                = int.Parse(segments[3]);
       string  type                = segments.Length == 5 ? segments[4] : string.Empty;
       string  cacheFileName       = "";
-      string  cachePath           = Path.Combine(AttachmentPath.GetImageCachePath(), "CompanyLogo\\" + organizationID.ToString());
+      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "CompanyLogo\\" + organizationID.ToString());
       bool    isIndexPage         = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
@@ -506,7 +506,7 @@ namespace TeamSupport.Handlers
       int     size                  = int.Parse(segments[3]);
       string  type                  = segments.Length == 5 ? segments[4] : string.Empty;
       string  cacheFileName         = "";
-      string  cachePath             = Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
       bool    isIndexPage           = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
       if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);

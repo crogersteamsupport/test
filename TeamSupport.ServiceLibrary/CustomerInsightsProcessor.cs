@@ -316,7 +316,7 @@ namespace TeamSupport.ServiceLibrary
             string pattern = string.Empty;
             try
             {
-              cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(), "CompanyLogo\\" + currentCompanyInfo.ParentID.ToString());
+              cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(LoginUser), "CompanyLogo\\" + currentCompanyInfo.ParentID.ToString());
               pattern = currentCompanyInfo.OrganizationID.ToString() + "-*.*";
               string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
 
@@ -449,7 +449,7 @@ namespace TeamSupport.ServiceLibrary
               string pattern = string.Empty;
               try
               {
-                cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+                cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(LoginUser), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
                 pattern = currentContactInfo.UserID.ToString() + "-*.*";
                 string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
 
