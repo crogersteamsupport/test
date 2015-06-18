@@ -35,6 +35,7 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
+        UpdateHealth();
         if (Settings.ReadBool("CustomerInsights Enabled", true))
         {
           InitializeGlobalVariables();
@@ -46,7 +47,6 @@ namespace TeamSupport.ServiceLibrary
             Settings.WriteString(_lastProcessedKey, DateTime.Now.ToString());
           }
         }
-        UpdateHealth();
       }
       catch (Exception ex)
       {
@@ -308,7 +308,7 @@ namespace TeamSupport.ServiceLibrary
 
           if (CustomerInsightsUtilities.DownloadImage(customerInsightsOrganizationInfo.logo, logoFullPath, currentCompanyInfo.OrganizationID, TeamSupport.Data.ReferenceType.Organizations, LoginUser, out resultMessage))
           {
-            string description = string.Format("TeamSupport System updated Logo for '{0}'", currentCompanyInfo.Name);
+            string description = string.Format("Updated Logo for '{0}'", currentCompanyInfo.Name);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, currentCompanyInfo.OrganizationID, description);
           }
 
@@ -326,7 +326,7 @@ namespace TeamSupport.ServiceLibrary
         {
           currentCompanyInfo.Collection.Save();
           Logs.WriteEvent(string.Format("Bio pulled from {0}", useSocialProfile));
-          string description = "TeamSupport System changed description for organization '" + currentCompanyInfo.Name + "'";
+          string description = "Changed description for organization '" + currentCompanyInfo.Name + "'";
           ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, currentCompanyInfo.OrganizationID, description);
         }
 
@@ -382,14 +382,14 @@ namespace TeamSupport.ServiceLibrary
           if (isLinkedInUpdated)
           {
             Logs.WriteEventFormat("LinkedIn updated to {0}", currentContactInfo.LinkedIn);
-            description = string.Format("TeamSupport System changed LinkedIn to {0} ", currentContactInfo.LinkedIn);
+            description = string.Format("{0} changed LinkedIn to {1} ", "CRM Service", currentContactInfo.LinkedIn);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, currentContactInfo.UserID, description);
           }
 
           if (isTitleUpdated)
           {
             Logs.WriteEventFormat("Title updated to {0}", currentContactInfo.Title);
-            description = string.Format("TeamSupport System set contact title to {0} ", currentContactInfo.Title);
+            description = string.Format("{0} set contact title to {1} ", "CRM Service", currentContactInfo.Title);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, currentContactInfo.UserID, description);
           }
         }
@@ -418,7 +418,7 @@ namespace TeamSupport.ServiceLibrary
 
             if (CustomerInsightsUtilities.DownloadImage(photoUrl, logoFullPath, currentContactInfo.OrganizationID, TeamSupport.Data.ReferenceType.Contacts, LoginUser, out resultMessage))
             {
-              string description = "TeamSupport System updated Photo for  '" + currentContactInfo.DisplayName + "'";
+              string description = "Updated Photo for  '" + currentContactInfo.DisplayName + "'";
               ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, currentContactInfo.UserID, description);
             }
 
@@ -438,30 +438,18 @@ namespace TeamSupport.ServiceLibrary
     private bool CanUpdateCompanyBio(Organization organization, string bio)
     {
       bool canUpdate = false;
-      bool wasUpdatedByUser = false;
 
       ActionLogs actionLogs = new ActionLogs(LoginUser);
       actionLogs.LoadByOrganizationID(organization.OrganizationID);
 
       ActionLog lastActionLog = actionLogs.OrderByDescending(p => p.DateCreated)
                                                             .Where(p => p.RefType == ReferenceType.Organizations &&
-                                                                        (p.Description.ToLower().Contains("changed description"))
-                                                                        || p.Description.ToLower().Contains("set company description"))
+                                                                        p.Description.ToLower().Contains("changed description"))
                                                             .FirstOrDefault();
+      bool wasUpdatedByUser = lastActionLog != null && lastActionLog.ModifierID > 0;
 
-      //If the description has been updated before, we need to check if the user did it. If not then we can update.
-      if (lastActionLog != null)
+      if (lastActionLog == null || (!wasUpdatedByUser && (organization.Description != bio || string.IsNullOrEmpty(organization.Description))))
       {
-        wasUpdatedByUser = lastActionLog.ModifierID > 0;
-
-        if (!wasUpdatedByUser)
-        {
-          canUpdate = organization.Description != bio;
-        }
-      }
-      else if (string.IsNullOrEmpty(organization.Description))
-      {
-        //The description has never changed. Update it if empty
         canUpdate = true;
       }
 
@@ -471,31 +459,19 @@ namespace TeamSupport.ServiceLibrary
     private bool CanUpdateContactLinkedIn(User contact, string linkedIn)
 	  {
       bool canUpdate = false;
-      bool wasUpdatedByUser = false;
 
       ActionLogs actionLogs = new ActionLogs(LoginUser);
       actionLogs.LoadByUserID(contact.UserID);
 
       ActionLog lastActionLog = actionLogs.OrderByDescending(p => p.DateCreated)
                                                             .Where(p => p.RefType == ReferenceType.Users &&
-                                                                        (p.Description.ToLower().Contains("changed linkedin")
-                                                                        || p.Description.ToLower().Contains("set contact linkedin")))
+                                                                        p.Description.ToLower().Contains("changed linkedin"))
                                                             .FirstOrDefault();
+      bool wasUpdatedByUser = lastActionLog != null && lastActionLog.ModifierID > 0;
 
-      //If the linked has been updated before, we need to check if the user did it. If not then we can update.
-      if (lastActionLog != null)
+      if (lastActionLog == null || (!wasUpdatedByUser && (contact.LinkedIn != linkedIn || string.IsNullOrEmpty(contact.LinkedIn))))
       {
-        wasUpdatedByUser = lastActionLog.ModifierID > 0;
-
-        if (!wasUpdatedByUser)
-        {
-          canUpdate = contact.LinkedIn != linkedIn;
-        }
-      }
-      else if (string.IsNullOrEmpty(contact.LinkedIn))
-      {
-          //The linkedin has never changed. Update it if empty
-          canUpdate = true;  
+        canUpdate = true;
       }
 
       return canUpdate;
@@ -504,7 +480,6 @@ namespace TeamSupport.ServiceLibrary
     private bool CanUpdateContactTitle(User contact, string title)
     {
       bool canUpdate = false;
-      bool wasUpdatedByUser = false;
 
       ActionLogs actionLogs = new ActionLogs(LoginUser);
       actionLogs.LoadByUserID(contact.UserID);
@@ -513,21 +488,11 @@ namespace TeamSupport.ServiceLibrary
                                                             .Where(p => p.RefType == ReferenceType.Users &&
                                                                         p.Description.ToLower().Contains("set contact title"))
                                                             .FirstOrDefault();
+      bool wasUpdatedByUser = lastActionLog != null && lastActionLog.ModifierID > 0;
 
-      //If the title has been updated before, we need to check if the user did it. If not then we can update.
-      if (lastActionLog != null)
+      if (lastActionLog == null || (!wasUpdatedByUser && (contact.Title != title || string.IsNullOrEmpty(contact.Title))))
       {
-        wasUpdatedByUser = lastActionLog.ModifierID > 0;
-
-        if (!wasUpdatedByUser)
-        {
-          canUpdate = contact.Title != title;
-        }
-      }
-      else if (string.IsNullOrEmpty(contact.Title))
-      {
-        //The title has never changed. Update it if empty
-        canUpdate = true;  
+        canUpdate = true;
       }
 
       return canUpdate;
