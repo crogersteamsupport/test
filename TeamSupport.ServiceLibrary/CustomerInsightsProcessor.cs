@@ -312,10 +312,12 @@ namespace TeamSupport.ServiceLibrary
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, currentCompanyInfo.OrganizationID, description);
 
             //delete cached image
+            string cachePath = string.Empty;
+            string pattern = string.Empty;
             try
             {
-              string cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(), "CompanyLogo\\" + currentCompanyInfo.ParentID.ToString());
-              string pattern = currentCompanyInfo.OrganizationID.ToString() + "-*.*";
+              cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(), "CompanyLogo\\" + currentCompanyInfo.ParentID.ToString());
+              pattern = currentCompanyInfo.OrganizationID.ToString() + "-*.*";
               string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
 
               foreach (String file in files)
@@ -326,6 +328,10 @@ namespace TeamSupport.ServiceLibrary
             catch (Exception ex)
             {
               Logs.WriteEvent("Exception deleting cached images for company.");
+              Logs.WriteEventFormat("CachePath: {0}", cachePath.ToString());
+              Logs.WriteEventFormat("Pattern: {0}", pattern.ToString());
+              Logs.WriteEventFormat("Exception Message: {0}", ex.Message.ToString());
+              Logs.WriteEventFormat("Exception StackTrace: {0}", ex.StackTrace.ToString());
             }
           }
 
@@ -439,10 +445,12 @@ namespace TeamSupport.ServiceLibrary
               ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, currentContactInfo.UserID, description);
 
               //delete cached image
+              string cachePath = string.Empty;
+              string pattern = string.Empty;
               try
               {
-                string cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
-                string pattern = currentContactInfo.UserID.ToString() + "-*.*";
+                cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+                pattern = currentContactInfo.UserID.ToString() + "-*.*";
                 string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
 
                 foreach (String file in files)
@@ -453,6 +461,10 @@ namespace TeamSupport.ServiceLibrary
               catch (Exception ex)
               {
                 Logs.WriteEvent("Exception deleting cached images for contact.");
+                Logs.WriteEventFormat("CachePath: {0}", cachePath.ToString());
+                Logs.WriteEventFormat("Pattern: {0}", pattern.ToString());
+                Logs.WriteEventFormat("Exception Message: {0}", ex.Message.ToString());
+                Logs.WriteEventFormat("Exception StackTrace: {0}", ex.StackTrace.ToString());
               }
             }
 
