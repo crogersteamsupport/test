@@ -2200,9 +2200,12 @@ FROM
 		ON Organizations.organizationid = TicketCount.organizationId
   LEFT JOIN FullContactUpdates WITH(NOLOCK)
 		ON Organizations.organizationId = FullContactUpdates.organizationId
+  JOIN Organizations AS Parent WITH(NOLOCK)
+		ON Organizations.parentId = Parent.organizationId
 WHERE
-  FullContactUpdates.id IS NULL
-  OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE()
+  Parent.IsCustomerInsightsActive = 1
+  AND (FullContactUpdates.id IS NULL
+  OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE())
 ORDER BY
 	TicketCount.Total DESC,
 	Organizations.name";

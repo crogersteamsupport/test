@@ -585,9 +585,12 @@ FROM
 		ON ContactsView.userId = TicketCount.userId
   LEFT JOIN FullContactUpdates WITH(NOLOCK)
     ON ContactsView.userID = FullContactUpdates.userId
+  JOIN Organizations AS Parent WITH(NOLOCK)
+		ON ContactsView.OrganizationParentId = Parent.organizationId
 WHERE
-  FullContactUpdates.id IS NULL
-  OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE()
+  Parent.isCustomerInsightsActive = 1
+  AND (FullContactUpdates.id IS NULL
+  OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE())
 ORDER BY
 	TicketCount.Total DESC,
 	ContactsView.lastName";
