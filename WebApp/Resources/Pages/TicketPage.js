@@ -141,8 +141,8 @@ var loadTicket = function (ticketNumber, refresh) {
 
     
     $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
-    $('#ticket-visible').attr("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
-    $('#ticket-isKB').attr("checked", _ticketInfo.Ticket.IsKnowledgeBase);
+    $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
+    $('#ticket-isKB').prop( "checked", _ticketInfo.Ticket.IsKnowledgeBase ); 
     $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
     SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
     SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
@@ -152,7 +152,7 @@ var loadTicket = function (ticketNumber, refresh) {
 
     //TODO:  Need to set product 
 
-    SetUser(_ticketInfo.Ticket.UserID);
+    SetAssignedUser(_ticketInfo.Ticket.UserID);
     SetGroup(_ticketInfo.Ticket.GroupID);
     SetType(_ticketInfo.Ticket.TicketTypeID);
     SetStatus(_ticketInfo.Ticket.TicketStatusID);
@@ -707,72 +707,6 @@ function GetActionCount() {
     });
 };
 
-function SetupAssignedField() {
-  top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-    for (var i = 0; i < users.length; i++) {
-      AppendSelect('#ticket-assigned', users[i], 'group', users[i].ID, users[i].Name, users[i].IsSelected);
-    }
-
-    $('#ticket-assigned').selectize({
-      onDropdownClose: function ($dropdown) {
-        $($dropdown).prev().find('input').blur();
-      },
-      closeAfterSelect: true
-    });
-
-    $('#ticket-assigned').change(function (e) {
-      var self = $(this);
-      var UserID = self.val();
-      alert(UserID);
-      top.Ts.Services.Tickets.SetTicketUser(_ticketID, UserID, function (userInfo) {
-        
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-      },
-      function (error) {
-        alert('There was an error setting the assigned user.');
-      });
-    });
-  });
-};
-
-
-  //$('#ticket-assigned').change(function (e) {
-  //  var self = $(this);
-  //  var value = self.val();
-  //  top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-  //    //SetupAssignedField();
-  //    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-  //  },
-  //  function (error) {
-  //    alert('There was an error setting the user.');
-  //  });
-  //});
-
-//function SetupAssignedField() {
-//  top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-//    $('#ticket-assigned').selectize({
-//      onDropdownClose: function ($dropdown) {
-//        $($dropdown).prev().find('input').blur();
-//      },
-//      plugins: {
-//        'sticky_placeholder': {}
-//      },
-//      closeAfterSelect: true
-//    });
-
-//    var assignedSelect = $("#ticket-assigned")[0].selectize;
-//    assignedSelect.clear(true);
-//    assignedSelect.clearOptions();
-
-//    for (var i = 0; i < users.length; i++) {
-//      assignedSelect.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
-//      if (users[i].IsSelected) assignedSelect.addItem(users[i].ID, true);
-//    }
-
-
-//  });
-//}
-
 function LoadTicketControls() {
   if (_ticketInfo.Ticket.IsFlagged) {
     $('#Ticket-Flag').children().addClass('color-red');
@@ -786,7 +720,40 @@ function LoadTicketControls() {
     $('#Ticket-Subscribe').children().addClass('color-green');
   }
 
-  SetupAssignedField();
+  //SetupAssignedField();
+  top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+    for (var i = 0; i < users.length; i++) {
+      AppendSelect('#ticket-assigned', users[i], 'group', users[i].ID, users[i].Name, users[i].IsSelected);
+    }
+
+    $('#ticket-assigned').selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      onChange: function (value) {
+        top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+        },
+        function (error) {
+          alert('There was an error setting the assigned user.');
+        });
+      },
+      closeAfterSelect: true
+    });
+  });
+
+  //$('#ticket-assigned').change(function (e) {
+  //  var self = $(this);
+  //  var UserID = self.val();
+  //  alert(UserID);
+  //  top.Ts.Services.Tickets.SetTicketUser(_ticketID, UserID, function (userInfo) {
+
+  //    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+  //  },
+  //  function (error) {
+  //    alert('There was an error setting the assigned user.');
+  //  });
+  //});
 
     top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
         for (var i = 0; i < groups.length; i++) {
@@ -815,17 +782,17 @@ function LoadTicketControls() {
         AppendSelect('#ticket-severity', severities[i], 'severity', severities[i].TicketSeverityID, severities[i].Name, (_ticketInfo.Ticket.TicketSeverityID === severities[i].TicketSeverityID));
     }
 
-    $('#ticket-visible').attr("checked", _ticketInfo.Ticket.IsVisibleOnPortal)
+    $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal)
 
-    $('#ticket-isKB').attr("checked", _ticketInfo.Ticket.IsKnowledgeBase)
+    $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase)
 
     if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) {
         if (_ticketInfo.Ticket.IsKnowledgeBase) {
-            $('#ticket-isKB').attr("checked", true);
+          $('#ticket-isKB').prop("checked", true);
             $('#ticket-group-KBCat').show();
         }
         else {
-            $('#ticket-isKB').attr("checked", false);
+          $('#ticket-isKB').prop("checked", false);
             $('#ticket-group-KBCat').hide();
         }
 
@@ -971,7 +938,7 @@ function SetupTicketPropertyEvents() {
     });
   });
 
-    $('#ticket-group').change(function (e) {alert('group change')
+    $('#ticket-group').change(function (e) {
         var self = $(this);
         var GroupID = self.val();
         top.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
@@ -1049,18 +1016,7 @@ function SetupTicketPropertyEvents() {
     });
 
     $('#ticket-isKB').change(function (e) {
-        var self = $(this);
-
-        if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) {
-            var value = self.is(":checked");
-            top.Ts.System.logAction('Ticket - Visibility Changed');
-            top.Ts.Services.Tickets.SetIsVisibleOnPortal(_ticketID, value, function (result) {
-                window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeisportal", userFullName);
-            },
-            function (error) {
-                alert('There was an error saving the ticket portal visible\'s status.');
-            });
-        }
+      var self = $(this);
 
         if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) {
             var value = self.is(":checked");
@@ -2258,7 +2214,7 @@ var AddCustomFieldBool = function (field, parentContainer) {
     var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
     var input = $('<input type="checkbox">').appendTo(inputDiv);
     var value = (field.Value === null || $.trim(field.Value) === '' || field.Value === 'False' ? false : true);
-    input.attr("checked", value);
+    input.prop("checked", value);
 
     input.change(function (e) {
         var isChecked = input.is(':checked')
@@ -3781,19 +3737,11 @@ var SetDueDate = function (duedate) {
   $('.ticket-duedate-anchor').text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())));
 };
 
-//var SetUser = function (UserID) {
-//  var selectField = $('#ticket-assigned');
-//  if (selectField.length > 0) {
-//    var selectize = $('#ticket-assigned')[0].selectize;
-//    selectize.setValue(UserID, true);
-//  }
-//}
-
-var SetUser = function (UserID) {
-  var selectField = $('#ticket-assigned');
-  if (selectField.length > 0) {
-    var selectize = $('#ticket-assigned')[0].selectize;
-    selectize.addItem(UserID, true);
+var SetAssignedUser = function (ID) {
+  var selectUserField = $('#ticket-assigned');
+  if (selectUserField.length > 0) {
+    var selectizeUserField = $('#ticket-assigned')[0].selectize;
+    selectizeUserField.addItem(ID, false);
   }
 }
 
@@ -3801,7 +3749,7 @@ var SetGroup = function (GroupID) {
   var selectField = $('#ticket-group');
   if (selectField.length > 0) {
     var selectize = $('#ticket-group')[0].selectize;
-    selectize.addItem(GroupID, true);
+    selectize.addItem(GroupID, false);
   }
 }
 
@@ -3817,7 +3765,7 @@ var SetStatus = function (StatusID) {
       selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
     }
 
-    selectize.addItem(StatusID, true);
+    selectize.addItem(StatusID, false);
 
   }
 };
@@ -3826,7 +3774,7 @@ var SetType = function (TypeID) {
   var selectField = $('#ticket-type');
   if (selectField.length > 0) {
     var selectize = $('#ticket-type')[0].selectize;
-    selectize.addItem(TypeID, true);
+    selectize.addItem(TypeID, false);
   }
 };
 
@@ -3834,6 +3782,6 @@ var SetSeverity = function (SeverityID) {
   var selectField = $('#ticket-severity');
   if (selectField.length > 0) {
     var selectize = $('#ticket-severity')[0].selectize;
-    selectize.addItem(SeverityID, true);
+    selectize.addItem(SeverityID, false);
   }
 };
