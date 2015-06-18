@@ -709,28 +709,69 @@ function GetActionCount() {
 
 function SetupAssignedField() {
   top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+    for (var i = 0; i < users.length; i++) {
+      AppendSelect('#ticket-assigned', users[i], 'group', users[i].ID, users[i].Name, users[i].IsSelected);
+    }
+
     $('#ticket-assigned').selectize({
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
       },
-      plugins: {
-        'sticky_placeholder': {}
-      },
       closeAfterSelect: true
     });
 
-    var assignedSelect = $("#ticket-assigned")[0].selectize;
-    assignedSelect.clear(true);
-    assignedSelect.clearOptions();
-
-    for (var i = 0; i < users.length; i++) {
-      assignedSelect.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
-      if (users[i].IsSelected) assignedSelect.addItem(users[i].ID, true);
-    }
-
-
+    $('#ticket-assigned').change(function (e) {
+      var self = $(this);
+      var UserID = self.val();
+      alert(UserID);
+      top.Ts.Services.Tickets.SetTicketUser(_ticketID, UserID, function (userInfo) {
+        
+        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+      },
+      function (error) {
+        alert('There was an error setting the assigned user.');
+      });
+    });
   });
-}
+};
+
+
+  //$('#ticket-assigned').change(function (e) {
+  //  var self = $(this);
+  //  var value = self.val();
+  //  top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+  //    //SetupAssignedField();
+  //    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+  //  },
+  //  function (error) {
+  //    alert('There was an error setting the user.');
+  //  });
+  //});
+
+//function SetupAssignedField() {
+//  top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+//    $('#ticket-assigned').selectize({
+//      onDropdownClose: function ($dropdown) {
+//        $($dropdown).prev().find('input').blur();
+//      },
+//      plugins: {
+//        'sticky_placeholder': {}
+//      },
+//      closeAfterSelect: true
+//    });
+
+//    var assignedSelect = $("#ticket-assigned")[0].selectize;
+//    assignedSelect.clear(true);
+//    assignedSelect.clearOptions();
+
+//    for (var i = 0; i < users.length; i++) {
+//      assignedSelect.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
+//      if (users[i].IsSelected) assignedSelect.addItem(users[i].ID, true);
+//    }
+
+
+//  });
+//}
 
 function LoadTicketControls() {
   if (_ticketInfo.Ticket.IsFlagged) {
@@ -930,19 +971,7 @@ function SetupTicketPropertyEvents() {
     });
   });
 
-  $('#ticket-assigned').change(function (e) {
-    var self = $(this);
-    var value = self.val();
-    top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-      SetupAssignedField();
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-    },
-    function (error) {
-      alert('There was an error setting the user.');
-    });
-  });
-
-    $('#ticket-group').change(function (e) {
+    $('#ticket-group').change(function (e) {alert('group change')
         var self = $(this);
         var GroupID = self.val();
         top.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
@@ -3730,7 +3759,7 @@ var SetKBCategory = function (KnowledgeBaseCategoryID) {
   var selectField = $('#ticket-KB-Category');
   if (selectField.length > 0) {
     var selectize = $('#ticket-KB-Category')[0].selectize;
-    selectize.setValue(KnowledgeBaseCategoryID);
+    selectize.addItem(KnowledgeBaseCategoryID, true);
   }
   else {
     $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
@@ -3741,7 +3770,7 @@ var SetCommunityCategory = function (ForumCategory) {
   var selectField = $('#ticket-Community');
   if (selectField.length > 0) {
     var selectize = $('#ticket-Community')[0].selectize;
-    selectize.setValue(ForumCategory);
+    selectize.addItem(ForumCategory, true);
   }
   else {
     $('#ticket-Community-RO').text((_ticketInfo.Ticket.CategoryName == null ? 'Unassigned' : _ticketInfo.Ticket.CategoryDisplayString));
@@ -3752,11 +3781,19 @@ var SetDueDate = function (duedate) {
   $('.ticket-duedate-anchor').text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())));
 };
 
+//var SetUser = function (UserID) {
+//  var selectField = $('#ticket-assigned');
+//  if (selectField.length > 0) {
+//    var selectize = $('#ticket-assigned')[0].selectize;
+//    selectize.setValue(UserID, true);
+//  }
+//}
+
 var SetUser = function (UserID) {
   var selectField = $('#ticket-assigned');
   if (selectField.length > 0) {
     var selectize = $('#ticket-assigned')[0].selectize;
-    selectize.setValue(UserID, true);
+    selectize.addItem(UserID, true);
   }
 }
 
@@ -3764,7 +3801,7 @@ var SetGroup = function (GroupID) {
   var selectField = $('#ticket-group');
   if (selectField.length > 0) {
     var selectize = $('#ticket-group')[0].selectize;
-    selectize.setValue(GroupID);
+    selectize.addItem(GroupID, true);
   }
 }
 
@@ -3789,7 +3826,7 @@ var SetType = function (TypeID) {
   var selectField = $('#ticket-type');
   if (selectField.length > 0) {
     var selectize = $('#ticket-type')[0].selectize;
-    selectize.setValue(TypeID);
+    selectize.addItem(TypeID, true);
   }
 };
 
@@ -3797,6 +3834,6 @@ var SetSeverity = function (SeverityID) {
   var selectField = $('#ticket-severity');
   if (selectField.length > 0) {
     var selectize = $('#ticket-severity')[0].selectize;
-    selectize.setValue(SeverityID);
+    selectize.addItem(SeverityID, true);
   }
 };
