@@ -2986,7 +2986,7 @@ var onScreenRecordStart = function () {
         top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
       }
       else {
-        top.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
+        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
       }
       break;
     default:
