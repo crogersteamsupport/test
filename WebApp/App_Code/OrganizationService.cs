@@ -230,6 +230,7 @@ namespace TSWebServices
       option.PublicLandingPageBody = proxy.PublicLandingPageBody;
       option.PublicLandingPageHeader = proxy.PublicLandingPageHeader;
       option.EnableScreenr = proxy.EnableScreenr;
+      option.EnableVideoRecording = proxy.EnableVideoRecording;
       option.DisplayLandingPage = proxy.DisplayLandingPage;
       option.LandingPageHtml = proxy.LandingPageHtml;
       option.DisplayProductVersion = proxy.DisplayProductVersion;

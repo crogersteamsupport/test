@@ -247,6 +247,7 @@ AdminPortal = function () {
     $('#portal_header').val(portalOption.PortalHTMLHeader);
     $('#portal_footer').val(portalOption.PortalHTMLFooter);
     $('#portal_screen_rec').prop('checked', portalOption.EnableScreenr);
+    $('#portal_video_rec').prop('checked', portalOption.EnableVideoRecording);
     $('#portal_twocolumn').prop('checked', portalOption.TwoColumnFields);
     $('#portal_poweredby').prop('checked', portalOption.DisplayFooter);
 
@@ -311,6 +312,7 @@ AdminPortal = function () {
     portalOption.PortalHTMLHeader = $('#portal_header').val();
     portalOption.PortalHTMLFooter = $('#portal_footer').val();
     portalOption.EnableScreenr = $('#portal_screen_rec').prop('checked');
+    portalOption.EnableVideoRecording = $('#portal_video_rec').prop('checked');
     portalOption.TwoColumnFields = $('#portal_twocolumn').prop('checked');
     portalOption.DisplayFooter = $('#portal_poweredby').prop('checked');
 

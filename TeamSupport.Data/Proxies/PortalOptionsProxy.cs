@@ -47,6 +47,7 @@ namespace TeamSupport.Data
     [DataMember] public string LandingPageHtml { get; set; }
     [DataMember] public bool DisplayLandingPage { get; set; }
     [DataMember] public bool EnableScreenr { get; set; }
+    [DataMember] public bool EnableVideoRecording { get; set; }
     [DataMember] public string PublicLandingPageHeader { get; set; }
     [DataMember] public string PublicLandingPageBody { get; set; }
     [DataMember] public bool TwoColumnFields { get; set; }
@@ -82,6 +83,7 @@ namespace TeamSupport.Data
       result.PublicLandingPageBody = this.PublicLandingPageBody;
       result.PublicLandingPageHeader = this.PublicLandingPageHeader;
       result.EnableScreenr = this.EnableScreenr;
+      result.EnableVideoRecording = this.EnableVideoRecording;
       result.DisplayLandingPage = this.DisplayLandingPage;
       result.LandingPageHtml = this.LandingPageHtml;
       result.DisplayProductVersion = this.DisplayProductVersion;
