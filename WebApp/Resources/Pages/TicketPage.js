@@ -1907,7 +1907,7 @@ var appendMatchingParentValueFields = function (container, parentField) {
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
             var div = $('<div>').addClass('form-group form-group-sm').data('field', field);
-            $('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
+            //$('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
 
             container.append(div);
 
