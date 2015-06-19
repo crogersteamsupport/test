@@ -283,7 +283,7 @@ function SetupTicketProperties() {
     });
     
     if (typeof refresh === "undefined") {
-      //window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
 
     $('.page-loading').hide().next().show();
