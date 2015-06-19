@@ -747,6 +747,7 @@ function SetupCommunityField() {
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
         },
+        allowEmptyOption: true,
         closeAfterSelect: true
       });
     }
@@ -974,6 +975,7 @@ function SetupProductSection() {
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     },
+    allowEmptyOption: true,
     closeAfterSelect: true
   });
 
@@ -1001,13 +1003,7 @@ function SetupProductSection() {
 };
 
 function LoadProductList(products) {
-  top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
     if (products == null) products = top.Ts.Cache.getProducts();
-    var product = top.Ts.Cache.getProduct(productID);
-    //for (var i = 0; i < products.length; i++) {
-    //  AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, products[i].ProductID == productID);
-    //}
-
     var $productselect = $('#ticket-Product').selectize();
     var $productselectInput = $productselect[0].selectize;
     $productselectInput.clearOptions();
@@ -1016,17 +1012,8 @@ function LoadProductList(products) {
       $productselectInput.addOption({ value: products[i].ProductID, text: products[i].Name, data: products[i] });
     }
 
-    SetupProductVersionsControl(product);
+    SetupProductVersionsControl(null);
     SetProductVersionAndResolved(null, null);
-
-    if (productID == -1) {
-      var $productselectInput = $productselect[0].selectize;
-      $productselectInput.clear();
-    }
-    else {
-      $productselectInput.setValue(productID);
-    }
-  });
 }
 
 function ReloadProductList() {
@@ -1870,7 +1857,7 @@ var appendMatchingParentValueFields = function (container, field) {
       for (var i = 0; i < result.length; i++) {
         var field = result[i];
         var div = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field);
-        $('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
+       // $('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
 
         container.append(div);
 

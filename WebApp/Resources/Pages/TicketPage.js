@@ -1412,6 +1412,7 @@ function LoadProductList(products)
         return '<div data-ticketid="' + _ticketID + '" data-productid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option ProductAnchor">' + escape(item.text) + '</div>';
       }
     },
+    allowEmptyOption: true,
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     },
@@ -3123,7 +3124,7 @@ function CreateTicketToolbarDomEvents() {
         var winningTicketNumber = $('#Ticket-Merge-search').data('ticketnumber');
         var JSTop = top;
         //var window = window;
-        top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function () {debugger
+        top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function () {
           $('#MergeModal').modal('hide');
           JSTop.Ts.MainPage.closeTicketTab(_ticketNumber);
           JSTop.Ts.MainPage.openTicket(winningTicketNumber, true);
