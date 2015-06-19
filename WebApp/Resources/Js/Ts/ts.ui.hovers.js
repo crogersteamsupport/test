@@ -6,8 +6,9 @@
 	    var container, timeout;
 
 	    originalLeave.call(this, obj);
-
+    
 	    if (obj.currentTarget) {
+	      
 	        container = $(obj.currentTarget).siblings('.popover')
 	        timeout = self.timeout;
 	        container.one('mouseenter', function () {
@@ -28,7 +29,7 @@
 	    var ticketid = e.data('ticketid');
 	    e.popover({
 	      html: true,
-	      container: 'body',
+	      //container: 'body',
 	      trigger: 'hover',
 	      delay: { "show": 1, "hide": 1 },
 	      content: function () {
@@ -48,7 +49,7 @@
 	  var assetid = e.data('assetid');
 	  e.popover({
 	    html: true,
-	    container: 'body',
+	    //container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
@@ -68,7 +69,7 @@
 	  var ticketid = e.data('ticketid');
 	  e.popover({
 	    html: true,
-	    container: 'body',
+	    //container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
@@ -87,7 +88,7 @@
 	  var ticketid = e.data('ticketid');
 	  e.popover({
 	    html: true,
-	    container: 'body',
+	    //container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
@@ -106,7 +107,7 @@
 	  var ticketid = e.data('ticketid');
 	  e.popover({
 	    html: true,
-	    container: 'body',
+	    //container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
