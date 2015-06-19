@@ -2970,6 +2970,7 @@ The following steps will refresh your browser<br><br> \
 
 var onScreenRecordStart = function () {
   $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
+  $('.divScreenRecorderMessages').hide();
   switch (BrowserDetect.browser) {
     case "Chrome":
       top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
@@ -2991,7 +2992,6 @@ var onScreenRecordStart = function () {
     default:
       top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
   }
-  $('.divScreenRecorderMessages').hide();
 };
 
 var onScreenRecordComplete = function (url) {
