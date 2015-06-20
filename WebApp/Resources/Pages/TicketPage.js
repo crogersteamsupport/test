@@ -3036,7 +3036,7 @@ function CreateTicketToolbarDomEvents() {
     $('#Ticket-Owner').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        SetUser(top.Ts.System.User.UserID);
+        SetAssignedUser(top.Ts.System.User.UserID);
         top.Ts.System.logAction('Ticket - Take Ownership');
     });
 
