@@ -569,25 +569,6 @@ function SetupDescriptionEditor() {
   });
 };
 
-//function SetupActionTypeSelect() {
-//  var selectType = $('#action-new-type');
-//  selectType.empty();
-//  var types = top.Ts.Cache.getActionTypes();
-//  for (var i = 0; i < types.length; i++) {
-//    $('<option>').attr('value', types[i].ActionTypeID).text(types[i].Name).data('data', types[i]).appendTo(selectType);
-//  };
-
-//  $('#action-new-type').change(function (e) {
-//    var action = $(this).val();
-//    top.Ts.Services.TicketPage.GetActionTicketTemplate(action, function (result) {
-//      if (result != null && result != "" && result != "<br>") {
-//        var currenttext = tinyMCE.activeEditor.getContent();
-//        tinyMCE.activeEditor.setContent(currenttext + result);
-//      }
-//    });
-//  });
-//};
-
 function SetupUploadQueue() {
   var element = $('.upload-area');
   $('.file-upload').fileupload({
@@ -1804,7 +1785,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
       $('.' + field.CustomFieldID + 'children').remove();
       var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
 
-      appendMatchingParentValueFields(childrenContainer, field);
+      appendMatchingParentValueFields(childrenContainer, field, value);
 
     },
     onDropdownClose: function ($dropdown) {
@@ -1847,13 +1828,14 @@ var appendConditionalFields = function () {
   }
 }
 
-var appendMatchingParentValueFields = function (container, field) {
+var appendMatchingParentValueFields = function (container, field, value) {
   var items = field.ListValues.split('|');
   var ticketTypeID = $('#ticket-type').val();
   if (field.AuxID == ticketTypeID && items.length > 0) {
+    if (value == null) value = items[0];
     var productID = $('#ticket-Product').val();
     if (productID == undefined || productID == "") productID = "-1";
-    top.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, items[0], productID, function (result) {
+    top.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, value, productID, function (result) {
       for (var i = 0; i < result.length; i++) {
         var field = result[i];
         var div = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field);
