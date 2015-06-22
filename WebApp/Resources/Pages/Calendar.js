@@ -901,11 +901,34 @@
     {
         $('#inputTitle').val(event.title);
         
-        $('#inputStartTime').val(moment(event.start).format(dateFormat + ' hh:mm a'));
-        $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format(dateFormat + ' hh:mm a'));
-        $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
-        $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
-    
+        if (event.isallDay)
+        {
+            $('#inputStartTime').val(moment(event.start).format(dateFormat));
+            $('#inputEndTime').val(event.validend == null ? event.validend : moment(event.validend).format(dateFormat));
+
+            if ($('#inputStartTime').data("DateTimePicker"))
+                $('#inputStartTime').data("DateTimePicker").destroy();
+
+            $('#inputStartTime').datetimepicker({ format: dateFormat, pickTime: false });
+            if ($('#inputEndTime').data("DateTimePicker"))
+                $('#inputEndTime').data("DateTimePicker").destroy();
+
+            $('#inputEndTime').datetimepicker({ format: dateFormat, pickTime: false });
+        }
+        else
+        {
+            $('#inputStartTime').val(moment(event.start).format(dateFormat + ' hh:mm a'));
+            $('#inputEndTime').val(event.validend == null ? event.validend : moment(event.validend).format(dateFormat + ' hh:mm a'));
+            if ($('#inputStartTime').data("DateTimePicker"))
+                $('#inputStartTime').data("DateTimePicker").destroy();
+            if ($('#inputEndTime').data("DateTimePicker"))
+                $('#inputEndTime').data("DateTimePicker").destroy();
+            $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
+            $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
+        }
+            
+
+        
 
         $('#inputDescription').val(event.description);
         $('#inputAllDay').prop('checked', event.isallDay);
