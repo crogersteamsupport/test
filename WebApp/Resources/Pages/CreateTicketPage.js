@@ -1323,7 +1323,7 @@ function createCustomFields() {
             case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(result[i], parentContainer); break;
             case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(result[i], parentContainer); break;
             case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(result[i], parentContainer); break;
-            case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(result[i], parentContainer); break;
+            case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(result[i], parentContainer, true); break;
             default:
           }
         } catch (err) {

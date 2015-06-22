@@ -1867,7 +1867,7 @@ function AppenCustomValues(fields) {
                 case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, parentContainer); break;
                 case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, parentContainer); break;
                 case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, parentContainer); break;
-                case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, parentContainer, false); break;
+                case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, parentContainer, true); break;
                 default:
             }
         }
