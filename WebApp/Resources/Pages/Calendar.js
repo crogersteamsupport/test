@@ -905,6 +905,8 @@
         $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format(dateFormat + ' hh:mm a'));
         $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
         $('#inputEndTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
+    
+
         $('#inputDescription').val(event.description);
         $('#inputAllDay').prop('checked', event.isallDay);
 
