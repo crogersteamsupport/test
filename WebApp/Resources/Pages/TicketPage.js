@@ -402,8 +402,10 @@ function CreateNewActionLI() {
     });
 
     $('#action-new-type').change(function (e) {
-        var action = $(this).val();
-        top.Ts.Services.TicketPage.GetActionTicketTemplate(action, function (result) {
+      var actionID = $(this).val(); 
+      var action = $(this).find(':selected').data('data'); 
+      HideActionTimer(!action.IsTimed);
+      top.Ts.Services.TicketPage.GetActionTicketTemplate(actionID, function (result) {
             if (result != null && result != "" && result != "<br>") {
                 var currenttext = tinyMCE.activeEditor.getContent();
                 tinyMCE.activeEditor.setContent(currenttext + result);
@@ -576,7 +578,21 @@ function SetupActionTypeSelect() {
     for (var i = 0; i < types.length; i++) {
         $('<option>').attr('value', types[i].ActionTypeID).text(types[i].Name).data('data', types[i]).appendTo(selectType);
     }
+    HideActionTimer(!types[0].IsTimed)
 };
+
+function HideActionTimer(ShouldHide) {
+  if (ShouldHide) {
+    $('#action-new-minutes').closest('.form-group').hide();
+    $('#action-new-hours').closest('.form-group').hide();
+    $('#action-new-date-started').closest('.form-group').hide();
+  }
+  else {
+    $('#action-new-minutes').closest('.form-group').show();
+    $('#action-new-hours').closest('.form-group').show();
+    $('#action-new-date-started').closest('.form-group').show();
+  }
+}
 
 function FlipNewActionBadge(isPrivate) {
     if (isPrivate)
