@@ -2800,7 +2800,7 @@ var initEditor = function (element, actionElement, init) {
           }
         });
 
-        if (enableScreenR.toLowerCase() != 'false') {
+        if (enableScreenR.toLowerCase() != 'false' && !(BrowserDetect.browser == 'Safari' && BrowserDetect.OS == "Windows")) {
           ed.addButton('recordScreen', {
             title: 'Record Screen',
             //image: '../images/icons/Symbol_Record.png',

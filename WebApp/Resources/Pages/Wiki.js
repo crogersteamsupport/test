@@ -662,8 +662,8 @@ var initEditor = function (element, init) {
                     }
                 });
 
-                if (enableScreenR.toLowerCase() != 'false') {
-                    ed.addButton('recordScreen', {
+                if (enableScreenR.toLowerCase() != 'false' && !(BrowserDetect.browser == 'Safari' && BrowserDetect.OS == "Windows")) {
+                  ed.addButton('recordScreen', {
                         title: 'Record Screen',
                         //image: '../images/icons/Symbol_Record.png',
                         icon: 'awesome fa fa-circle',
