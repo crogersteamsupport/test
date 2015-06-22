@@ -763,10 +763,10 @@ function SetupDueDateField(duedate) {
                     .appendTo(dateContainer)
                     .focus();
 
-    input.focusout(function (e) {
+    input.change(function (e) {
       var value = top.Ts.Utils.getMsDate(input.val());
       _dueDate = value;
-      this.remove();
+      input.blur().remove();
       dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
     })
   });
@@ -975,12 +975,7 @@ function SetupProductSection() {
     var product = top.Ts.Cache.getProduct(self.val());
     loadVersions(product);
     AppendProductMatchingCustomFields();
-    top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
-      if (IsRequired)
-        $('#ticket-Product').closest('.form-group').addClass('hasError');
-      else
-        $('#ticket-Product').closest('.form-group').removeClass('hasError');
-    });
+    $('#ticket-Product').closest('.form-group').removeClass('hasError');
   });
 };
 
