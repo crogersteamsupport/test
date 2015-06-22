@@ -2393,7 +2393,7 @@ var SetupDueDateField = function (duedate) {
 
   dateLink.click(function (e) {
     e.preventDefault();
-    $(this).hide();
+    dateLink.hide();
     var input = $('<input type="text">')
                     .addClass('form-control')
                     .val(duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern()))
@@ -2409,7 +2409,7 @@ var SetupDueDateField = function (duedate) {
 
       top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
         var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-        this.remove();
+        input.remove();
         dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
         _dueDate = top.Ts.Utils.getMsDate(value); //result;
 
