@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using System.Diagnostics;
 using OpenTokSDK;
+using Jira = TeamSupport.JIRA;
 
 namespace TSWebServices
 {
@@ -1845,25 +1846,25 @@ namespace TSWebServices
                     TicketLinkToJiraItemProxy ticketLinktoJiraProxy = GetLinkToJira(ticketID);
                     if (null != ticketLinktoJiraProxy && linkToJira.Count > 0)
                     {
-
                         if (ticketLinktoJiraProxy.JiraID != null && !String.IsNullOrEmpty(ticketLinktoJiraProxy.JiraKey))
                         {
-                          TeamSupport.JIRA.JiraClient jiraClient = new TeamSupport.JIRA.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
-                          TeamSupport.JIRA.IssueRef issueRef = new TeamSupport.JIRA.IssueRef();
+                          Jira.JiraClient jiraClient = new Jira.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
+                          Jira.IssueRef issueRef = new Jira.IssueRef();
                           issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
                           issueRef.key = ticketLinktoJiraProxy.JiraKey;
                           var issue = jiraClient.LoadIssue(issueRef);
+
                           if (null != issue)
                           {
                             var remoteLinks = jiraClient.GetRemoteLinks(issueRef);
+
                             if (null != remoteLinks)
                             {
-                              foreach (TeamSupport.JIRA.RemoteLink linkItem in remoteLinks)
+                              Jira.RemoteLink linkItem = remoteLinks.Where(p => p.url.Contains("ticketid=" + ticketID.ToString())).FirstOrDefault();
+
+                              if (linkItem != null)
                               {
-                                if (linkItem.icon.title == "TeamSupport Logo")
-                                {
-                                  jiraClient.DeleteRemoteLink(issueRef, linkItem);
-                                }
+                                jiraClient.DeleteRemoteLink(issueRef, linkItem);
                               }
                             }
                           }
@@ -1879,7 +1880,7 @@ namespace TSWebServices
         catch(Exception ex)
         {
             result = false;
-            //To Do: Log Exception
+            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "UnSetSyncWithJira");
         }
 
         return result;
