@@ -3802,3 +3802,11 @@ var SetSeverity = function (SeverityID) {
     selectize.addItem(SeverityID, false);
   }
 };
+
+var SetProduct = function (ProductID) {
+  var selectField = $('#ticket-product');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-product')[0].selectize;
+    selectize.addItem(ProductID, false);
+  }
+};

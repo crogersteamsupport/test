@@ -8,7 +8,7 @@ var _productFamilyID = null;
 var _lastTicketTypeID = null;
 var _ticketID = null;
 var _doClose = false;
-
+var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
 
 var _timerid;
 var _timerElapsed = 0;
@@ -184,6 +184,7 @@ function SetupTicketProperties() {
   $('#ticket-type').change(function (e) {
     showCustomFields();
     _lastTicketTypeID = $(this).val();
+    AppendTicketTypeTemplate(_lastTicketTypeID);
   });
 
   _lastTicketTypeID = types[0].TicketTypeID;
@@ -242,9 +243,9 @@ function SetupTicketProperties() {
   //Associate Tickets
   SetupAssociatedTicketsSection();
 
-  //TODO:  Custom Fields
-  //AppenCustomValues();
   createCustomFields();
+
+  setInitialValue();
 };
 
 function SaveTicket() {
@@ -1891,6 +1892,108 @@ function AppendProductMatchingCustomFields() {
   });
 };
 
+function AppendTicketTypeTemplate(TicketType) {
+  top.Ts.Services.Tickets.GetTicketTypeTemplateText(TicketType, function (result) {
+    if (result != null && result != "" && result != "<br>") {
+      var currenttext = tinyMCE.activeEditor.getContent();
+      tinyMCE.activeEditor.setContent(currenttext + result);
+    }
+  });
+};
+
+function setInitialValue() {
+  var menuID = top.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
+  switch (menuID) {
+    case 'mniusers':
+      //top.Ts.Services.Settings.ReadUserSetting('SelectedUserID', -1, function (result) {
+      //  if (result > -1) $('.newticket-user').combobox('setValue', result);
+      //});
+      break;
+    case 'mniproducts':
+      //TODO: need version and resolved
+      top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
+        if (productID > -1) {
+          var product = top.Ts.Cache.getProduct(productID);
+          SetProduct(productID)
+          loadVersions(product);
+          AppendProductMatchingCustomFields();
+          top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
+            if (IsRequired)
+              $('#ticket-Product').closest('.form-group').addClass('hasError');
+            else
+              $('#ticket-Product').closest('.form-group').removeClass('hasError');
+          });
+
+        }
+      });
+      break;
+    case 'mnicustomers':
+      top.Ts.Services.Settings.ReadUserSetting('SelectedOrganizationID', -1, function (organizationID) {
+        if (organizationID > -1) {
+          var org = new Object();
+          org.value = organizationID;
+          org.type = "o";
+          AddCustomers(org);
+        }
+        else {
+          top.Ts.Services.Settings.ReadUserSetting('SelectedContactID', -1, function (contactID) {
+            if (contactID > -1) {
+              var org = new Object();
+              org.value = contactID;
+              org.type = "u";
+              AddCustomers(org);
+            }
+          });
+        }
+      });
+      break;
+    case 'mnikb':
+      if (canEdit) {
+        $('#ticket-isKB').prop('checked', true);
+      }
+      break;
+    case 'mniinventory':
+      top.Ts.Services.Settings.ReadUserSetting('SelectedAssetID', -1, function (assetID) {
+        if (assetID > -1) {
+          AddInventory(assetID);
+        }
+      });
+      break;
+    default:
+      if (menuID.indexOf('tickettype') > -1) {
+        var ticketTypeID = menuID.substr(14, menuID.length - 14);
+        SetType(ticketTypeID);
+        showCustomFields();
+        _lastTicketTypeID = ticketTypeID;
+        AppendTicketTypeTemplate(ticketTypeID);
+      }
+
+  }
+
+  var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+  if (chatID && chatID != null) {
+    top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
+      appendCustomer(result);
+    });
+  }
+}
+
+var SetType = function (TypeID) {
+  var selectField = $('#ticket-type');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-type')[0].selectize;
+    selectize.addItem(TypeID, false);
+  }
+};
+
+var SetProduct = function (ProductID) {
+  var selectField = $('#ticket-Product');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-Product')[0].selectize;
+    selectize.addItem(ProductID, false);
+  }
+};
+
 function CreateHandleBarHelpers() {
   Handlebars.registerHelper('UserImageTag', function () {
     if (this.item.CreatorID !== -1) return '<img class="user-avatar pull-left" src="../../../dc/' + this.item.OrganizationID + '/useravatar/' + this.item.CreatorID + '/48" />';
@@ -1917,3 +2020,4 @@ function CreateHandleBarHelpers() {
     if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
   });
 };
+
