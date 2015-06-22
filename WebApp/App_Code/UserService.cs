@@ -1373,6 +1373,7 @@ namespace TSWebServices
                 cal.id = t.TicketNumber;
                 cal.description = "";
                 cal.end = null;
+                cal.displayend = null;
                 cal.allday = false;
                     
                 cal.creatorID = -1;
@@ -1443,6 +1444,7 @@ namespace TSWebServices
                 cal.title = r.Description;
                 cal.start = ((DateTime)r.GetProxy().DueDate).ToString("o");
                 cal.end = null;
+                cal.displayend = null;
                 cal.allday = false;
                 cal.references = null;
                 cal.creatorID = -1;
@@ -1502,6 +1504,10 @@ namespace TSWebServices
                 else
                     cal.start = ((DateTime)c.StartDateUtc).ToString("o");
                 cal.end = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
+                if(c.AllDay)
+                    cal.displayend = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).AddDays(1).ToString("o");
+                else
+                    cal.displayend = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
                 cal.title = c.Title;
                 cal.type = "cal";
                 cal.id = c.CalendarID;
@@ -1844,7 +1850,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void ChangeEventDate(int eventID, DateTime newTime, DateTime endTime, string eventType)
+        public void ChangeEventDate(int eventID, DateTime newTime, DateTime endTime, string eventType, bool allDay)
         {
             switch (eventType)
             {
@@ -1859,7 +1865,13 @@ namespace TSWebServices
                     CalendarEvents events = new CalendarEvents(TSAuthentication.GetLoginUser());
                     events.LoadByCalendarID(eventID);
                     events[0].StartDate = newTime;
-                    events[0].EndDate = endTime;
+                    if(allDay)
+                    {
+                        TimeSpan ts = new TimeSpan(23, 59, 0);
+                        events[0].EndDate = endTime.Date + ts;
+                    }
+                    else
+                        events[0].EndDate = endTime;
                     events[0].Collection.Save();
                     break;
                 default:
@@ -1910,6 +1922,8 @@ namespace TSWebServices
             public string start { get; set; }
             [DataMember]
             public string end { get; set; }
+            [DataMember]
+            public string displayend { get; set; }
             [DataMember]
             public string color { get; set; }
             [DataMember]

@@ -144,7 +144,8 @@
                             type: this.type,
                             id: this.id,
                             description: this.description,
-                            end: this.end,
+                            validend: this.end,
+                            end: this.displayend,
                             allDay: this.allday,
                             isallDay: this.allday,
                             references: this.references,
@@ -160,7 +161,10 @@
             });
         },
         eventDrop: function (event, delta, revertFunc) {
-            top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.end ? event.end.utc().format() : event.start.format() , event.type)
+            top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), moment(event.end).utc().format(), event.type, event.allDay, function () {
+                $('#calendar').fullCalendar('refetchEvents');
+            });
+            
         },
         eventRender: function (event, element) {
             var evttitle;
@@ -339,10 +343,10 @@
     {
         var theTime = $("<div>")
             .text(moment(event.start).format(dateFormat + ' hh:mm a'));
-        if (event.end)
+        if (event.validend)
         {
             var endTime = $("<div>")
-                .text("to " + moment(event.end).format(dateFormat + ' hh:mm a')).appendTo(theTime);
+                .text("to " + moment(event.validend).format(dateFormat + ' hh:mm a')).appendTo(theTime);
         }
 
         if (event.type != "cal")
@@ -711,7 +715,9 @@
 
         if ($('#inputEndTime').val() != "")
         {
-            if ((new Date($('#inputEndTime').val()).getTime()) < (new Date($('#inputStartTime').val()).getTime()))
+            var start = moment($('#inputStartTime').val(), dateFormat);
+            var end = moment($('#inputEndTime').val(), dateFormat);
+            if (moment(end).isBefore(start))
             {
                 alert("The end date needs to be after the start date");
                 return;
@@ -894,7 +900,7 @@
     function loadModal(event, editable)
     {
         $('#inputTitle').val(event.title);
-
+        
         $('#inputStartTime').val(moment(event.start).format(dateFormat + ' hh:mm a'));
         $('#inputEndTime').val(event.end == null ? event.end : moment(event.end).format(dateFormat + ' hh:mm a'));
         $('#inputStartTime').datetimepicker({ format: dateFormat + ' hh:mm a' });
