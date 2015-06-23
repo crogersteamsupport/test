@@ -467,7 +467,7 @@ function SetupActionEditor(elem, action) {
   });
 
   var element = $('.action-new-area');
-  $('.file-upload').fileupload({
+  $('#action-file-upload').fileupload({
     namespace: 'new_action',
     dropZone: element,
     add: function (e, data) {
@@ -3600,7 +3600,7 @@ function SetupWCArea() {
   });
 
   var wcelement = $('.watercooler-new-area');
-  $('.file-upload').fileupload({
+  $('#wc-file-upload').fileupload({
     namespace: 'new_action',
     dropZone: wcelement,
     add: function (e, data) {
