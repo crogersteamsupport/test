@@ -745,7 +745,6 @@ function LoadTicketControls() {
     $('#Ticket-Subscribe').children().addClass('color-green');
   }
 
-  //SetupAssignedField();
   top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
     for (var i = 0; i < users.length; i++) {
       AppendSelect('#ticket-assigned', users[i], 'group', users[i].ID, users[i].Name, users[i].IsSelected);
@@ -766,19 +765,6 @@ function LoadTicketControls() {
       closeAfterSelect: true
     });
   });
-
-  //$('#ticket-assigned').change(function (e) {
-  //  var self = $(this);
-  //  var UserID = self.val();
-  //  alert(UserID);
-  //  top.Ts.Services.Tickets.SetTicketUser(_ticketID, UserID, function (userInfo) {
-
-  //    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-  //  },
-  //  function (error) {
-  //    alert('There was an error setting the assigned user.');
-  //  });
-  //});
 
     top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
         for (var i = 0; i < groups.length; i++) {
@@ -901,10 +887,21 @@ function LoadTicketControls() {
     setSLAInfo();
 
     SetupTicketPropertyEvents();
-    SetupCustomerSection();
+    if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express) {
+      $('#ticket-Customer').closest('.form-group').remove();
+    }
+    else SetupCustomerSection();
+
     SetupTagsSection();
     SetupProductSection();
     
+    if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express || top.Ts.System.Organization.ProductType === top.Ts.ProductType.HelpDesk) {
+      $('#ticket-Product').closest('.form-horizontal').remove();
+      $('#ticket-Resolved').closest('.form-horizontal').remove();
+      $('#ticket-Versions').closest('.form-horizontal').remove();
+    }
+    else SetupProductSection();
+
     if (top.Ts.System.Organization.IsInventoryEnabled === true) {
         SetupInventorySection();
     }

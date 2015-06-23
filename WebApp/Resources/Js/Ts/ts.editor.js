@@ -51,7 +51,7 @@
                             ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSize + 1);
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize + 1);
                         }
-
+                      debugger
                         postinit();
                     });
                     

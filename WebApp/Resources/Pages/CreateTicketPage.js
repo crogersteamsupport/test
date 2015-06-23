@@ -215,16 +215,27 @@ function SetupTicketProperties() {
   SetupKBFields();
 
   //Community
-  SetupCommunityField();
+  if (top.Ts.System.Organization.UseForums == false) {
+    $('#ticket-Community').closest('.form-horizontal').remove();
+  }
+  else SetupCommunityField();
 
   //DueDate
   SetupDueDateField();
 
   //Customer Section
-  SetupCustomerSection();
+  if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express) {
+    $('#ticket-Customer').closest('.form-group').remove();
+  }
+  else SetupCustomerSection();
 
   //Product Section
-  SetupProductSection();
+  if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express || top.Ts.System.Organization.ProductType === top.Ts.ProductType.HelpDesk) {
+    $('#ticket-Product').closest('.form-horizontal').remove();
+    $('#ticket-Resolved').closest('.form-horizontal').remove();
+    $('#ticket-Versions').closest('.form-horizontal').remove();
+  }
+  else SetupProductSection();
 
   //Inventory Section
   SetupInventorySection();
