@@ -2575,8 +2575,8 @@ function CreateActionElement(val, ShouldAppend) {
   }
   var html = _compiledActionTemplate(val);
   var actionElement = $(html);
+  actionElement.find('a').attr('target', '_blank');
   if (ShouldAppend) {
-    //$(html).appendTo($("#action-timeline"));
     $("#action-timeline").append(actionElement);
   }
   else {
