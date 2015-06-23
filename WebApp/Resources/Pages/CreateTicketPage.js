@@ -398,6 +398,10 @@ function SaveTicket() {
           }
         });
       }
+      else {
+        $('#ticket-create').prop('disabled', false);
+        $('#ticket-createandclose').prop('disabled', false);
+      }
     });
   }
 };
@@ -542,6 +546,7 @@ function SetupDescriptionEditor() {
     $('#ticket-create').click(function (e) {
       e.preventDefault();
       e.stopPropagation();
+      $(this).prop('disabled', true);
       _doClose = false;
       SaveTicket();
     });
@@ -549,6 +554,7 @@ function SetupDescriptionEditor() {
     $('#ticket-createandclose').click(function (e) {
       e.preventDefault();
       e.stopPropagation();
+      $(this).prop('disabled', true);
       _doClose = true;
       SaveTicket();
     });

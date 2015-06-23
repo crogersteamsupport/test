@@ -360,6 +360,7 @@ function CreateNewActionLI() {
       if ($("#recorder").length == 0) {
         e.preventDefault();
         e.stopPropagation();
+        $(this).prop('disabled', true);
         var self = $(this);
         var oldActionID = self.data('actionid');
         SaveAction(oldActionID, _isNewActionPrivate, function (result) {
@@ -421,6 +422,9 @@ function CreateNewActionLI() {
 };
 
 function SetupActionEditor(elem, action) {
+  $('button.wc-textarea-send').prop('disabled', false);
+  $('#action-new-save').prop('disabled', false);
+  $('#newcomment').prop('disabled', false);
   $('.watercooler-new-area').hide();
   top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
   initEditor(elem, true, function (ed) {
@@ -2958,6 +2962,7 @@ function CreateTimeLineDelegates() {
         var action = self.closest('li').data().action;
         var replyText = self.closest('.wc-textarea').find('textarea').val();
         if (replyText.length > 0) {
+            $(this).prop('disabled', true);
             var commentinfo = new Object();
             commentinfo.Description = replyText;
             commentinfo.Attachments = new Array();
@@ -3541,6 +3546,7 @@ function SetupWCArea() {
     e.stopPropagation();
     
     if ($('#inputDescription').val().length > 0) {
+      $(this).prop('disabled', true);
       var commentinfo = new Object();
       commentinfo.Description = $('#inputDescription').val();
       commentinfo.Attachments = new Array();
