@@ -55,7 +55,7 @@ Namespace TeamSupport
             End Function
 
             Private Function SyncAccounts() As Boolean
-        Dim SecurityToken As String = CRMLinkRow.SecurityToken1
+                Dim SecurityToken As String = CRMLinkRow.SecurityToken1
                 Dim CompanyName As String = CRMLinkRow.Username
                 Dim Password As String = CRMLinkRow.Password
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
@@ -449,12 +449,12 @@ Namespace TeamSupport
             Private Function SendTicketsAsAccountComments() As Boolean
                 Dim Success As Boolean = True
 
-        If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1)) = "OK" Then
-          Success = SendTicketData(AddressOf CreateNote)
+                If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1)) = "OK" Then
+                  Success = SendTicketData(AddressOf CreateNote)
 
-          Binding.logout()
-          Binding.logoutAsync()
-        End If
+                  Binding.logout()
+                  Binding.logoutAsync()
+                End If
 
                 Return Success
             End Function
@@ -1483,8 +1483,11 @@ Namespace TeamSupport
                         Dim result As SaveResult = Binding.create(New sObject() {salesForceCase})(0)
                         If result.errors Is Nothing Then
                           updateTicket(0).SalesForceID = result.id
-                          Dim actionLogDescription As String = "Sent Ticket to SalesForce as new Case with ID: '" + result.id + "'."
+                          Dim caseNumber As String = GetCaseNumber(result.id)
+                          Dim actionLogDescription As String = If(String.IsNullOrEmpty(caseNumber), String.Format("Sent Ticket to SalesForce as new Case with ID: '{0}'.", result.id), String.Format("Sent Ticket to SalesForce as new Case: '{0}'.", caseNumber))
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+                          Dim logDescription As String = String.Format("Sent Ticket to SalesForce as new Case {0}, ID {1}.", caseNumber, result.id)
+                          Log.Write(logDescription)
 
                           If crmLinkError IsNot Nothing then
                             crmLinkError.Delete()
@@ -1544,20 +1547,24 @@ Namespace TeamSupport
                       Try
                         Dim result As SaveResult = Binding.update(New sObject() {salesForceCase})(0) 
                         If result.errors Is Nothing Then
-                          Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
+                          Dim caseNumber As String = GetCaseNumber(ticket.SalesForceID)
+                          Dim actionLogDescription As String = If(String.IsNullOrEmpty(caseNumber), String.Format("Updated SalesForce Case ID: '{0}' with ticket changes.", ticket.SalesForceID), String.Format("Updated SalesForce Case Number: '{0}' with ticket changes.", caseNumber))
                           Dim lastLog As ActionLogs = New ActionLogs(User)
                           lastLog.LoadLastByTypeAndID(ReferenceType.Tickets, ticket.TicketID)
-                          If (lastLog.IsEmpty OrElse lastLog(0).Description <> actionLogDescription)
-                            ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription) 
-                          End If                             
-                          If crmLinkError IsNot Nothing then
+
+                          If (lastLog.IsEmpty OrElse lastLog(0).Description <> actionLogDescription) Then
+                            ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+                            Dim logDescription As String = String.Format("Updated SalesForce Case ID: '{0}', Case Number: {1} with ticket changes.", ticket.SalesForceID, caseNumber)
+                            Log.Write(logDescription)
+                          End If
+                          If crmLinkError IsNot Nothing Then
                             crmLinkError.Delete()
                             crmLinkErrors.Save()
                           End If
-                        Else If result.errors(0).message.ToLower() = "entity is deleted" Then
+                        ElseIf result.errors(0).message.ToLower() = "entity is deleted" Then
                           Dim actionLogDescription As String = "SalesForce Case ID: '" + ticket.SalesForceID + "' was not found. No update applied. Error: " + result.errors(0).message
-                          ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
-                          If crmLinkError IsNot Nothing then
+                          ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+                          If crmLinkError IsNot Nothing Then
                             crmLinkError.Delete()
                             crmLinkErrors.Save()
                           End If
@@ -1565,28 +1572,32 @@ Namespace TeamSupport
                           Log.Write("Updating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                           Log.Write("Attempting without impersonation...")
                           impersonation = False
-                          salesForceCase.Any  = GetSalesForceCaseData(
-                                                  ticket, 
-                                                  isNewCase, 
-                                                  salesForceCustomer, 
-                                                  casesToPullAsTickets, 
+                          salesForceCase.Any = GetSalesForceCaseData(
+                                                  ticket,
+                                                  isNewCase,
+                                                  salesForceCustomer,
+                                                  casesToPullAsTickets,
                                                   isNotCollidingWithACaseToPull,
                                                   numberOfCasesToPullAsTickets,
                                                   impersonation)
                           result = Binding.update(New sObject() {salesForceCase})(0)
                           If result.errors Is Nothing Then
-                            Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
+                            Dim caseNumber As String = GetCaseNumber(ticket.SalesForceID)
+                            Dim actionLogDescription As String = If(String.IsNullOrEmpty(caseNumber), String.Format("Updated SalesForce Case ID: '{0}' with ticket changes.", ticket.SalesForceID), String.Format("Updated SalesForce Case Number: '{0}' with ticket changes.", caseNumber))
                             Dim lastLog As ActionLogs = New ActionLogs(User)
                             lastLog.LoadLastByTypeAndID(ReferenceType.Tickets, ticket.TicketID)
-                            If (lastLog.IsEmpty OrElse lastLog(0).Description <> actionLogDescription)
+
+                            If (lastLog.IsEmpty OrElse lastLog(0).Description <> actionLogDescription) Then
                               ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
-                            End If                              
-                            If crmLinkError IsNot Nothing then
+                              Dim logDescription As String = String.Format("Updated SalesForce Case ID: '{0}', Case Number: {1} with ticket changes.", ticket.SalesForceID, caseNumber)
+                              Log.Write(logDescription)
+                            End If
+                            If crmLinkError IsNot Nothing Then
                               crmLinkError.Delete()
                               crmLinkErrors.Save()
                             End If
                           Else
-                            Throw(New Exception(result.errors(0).message))
+                            Throw (New Exception(result.errors(0).message))
                           End If
                         End If
                       Catch ex As Exception
@@ -2410,9 +2421,11 @@ Namespace TeamSupport
                       If creator IsNot Nothing Then
                         tickets.LoginUser = creator
                       End If
-                      tickets.ActionLogInstantMessage = "SalesForce Case ID: " + caseToBring.Id + " Created In TeamSupport With Ticket Number " 
+
+                      Dim caseNumber As String = GetCaseNumber(caseToBring.Id)
+                      tickets.ActionLogInstantMessage = If(String.IsNullOrEmpty(caseNumber), String.Format("SalesForce Case ID: {0} Created In TeamSupport With Ticket Number ", caseToBring.Id), String.Format("SalesForce Case Number: '{0}' Created In TeamSupport With Ticket Number ", caseNumber))
                       tickets.Save()              
-                      Log.Write("Creating ticketID: " + ticket.TicketID.ToString() + ", with caseID: " + caseToBring.Id)
+                      Log.Write("Creating ticketID: " + ticket.TicketID.ToString() + ", with caseID: " + caseToBring.Id + ", case number: " + caseNumber)
                     End If
 
                     Dim ticketValuesChanged As Boolean = False
@@ -2424,8 +2437,10 @@ Namespace TeamSupport
                       ticket.DateModifiedBySalesForceSync = DateTime.UtcNow
                       ticket.Collection.Save()
                       If isUpdate Then
-                        Dim actionLogDescription As String = "Updated Ticket with SalesForce Case ID: '" + ticket.SalesForceID + "' changes."
+                        Dim caseNumber As String = GetCaseNumber(ticket.SalesForceID)
+                        Dim actionLogDescription As String = If(String.IsNullOrEmpty(caseNumber), String.Format("Updated Ticket with SalesForce Case ID: '{0}' changes.", ticket.SalesForceID), String.Format("Updated Ticket with SalesForce Case Number: '{0}' changes.", caseNumber))
                         ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+                        Log.Write("Updated Ticket with SalesForce Case ID: '" + ticket.SalesForceID + "', case number: '" + caseNumber + "' changes.")
                       End If
                     Else
                       Dim errorMessageSuffix As new StringBuilder()
@@ -3480,6 +3495,29 @@ Namespace TeamSupport
                 halfHours += 1
               End If
               Return halfHours
+            End Function
+
+            Private Function GetCaseNumber(ByVal caseId As String) As String
+              Dim caseNumber As String = String.Empty
+              Dim result As List(Of QueryResult) = Nothing
+              Dim query As String = String.Format("SELECT CaseNumber FROM Case WHERE id = '{0}'", caseId)
+              Dim count As Integer
+
+              Try
+                login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1))
+                result = GetQueriesResults(query, count)
+
+                If result IsNot Nothing AndAlso count > 0 Then
+                  caseNumber = result(0).records(0).Any(0).InnerText
+                End If
+              Catch ex As Exception
+                Log.Write(String.Format("Error pulling case number from SalesForce. {0}", query))
+                Log.Write(ex.Message)
+                Log.Write(ex.StackTrace)
+                caseNumber = String.Empty
+              End Try
+
+              Return caseNumber
             End Function
         End Class
 
