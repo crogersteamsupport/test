@@ -182,6 +182,7 @@ function SetupTicketProperties() {
   });
 
   $('#ticket-type').change(function (e) {
+    SetupStatusField();
     showCustomFields();
     _lastTicketTypeID = $(this).val();
     AppendTicketTypeTemplate(_lastTicketTypeID);
