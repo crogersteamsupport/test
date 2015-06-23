@@ -171,6 +171,10 @@ var loadTicket = function (ticketNumber, refresh) {
     AddInventory(_ticketInfo.Assets);
     LoadTicketHistory();
 
+    if (typeof refresh === "undefined") {
+      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+    }
+
   });
 };
 
@@ -281,12 +285,13 @@ function SetupTicketProperties() {
     top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
       LoadTicketNotes(note);
     });
-    
+
+    $('.page-loading').hide().next().show();
+
     if (typeof refresh === "undefined") {
       window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
 
-    $('.page-loading').hide().next().show();
   });
 };
 
