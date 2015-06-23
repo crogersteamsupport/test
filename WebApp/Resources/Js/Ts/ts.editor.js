@@ -14,6 +14,7 @@
             extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1]",
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             convert_urls: true,
+            autoresize_bottom_margin: 20,
             remove_script_host: false,
             relative_urls: false,
             template_external_list_url: "tinymce/jscripts/template_list.js",
