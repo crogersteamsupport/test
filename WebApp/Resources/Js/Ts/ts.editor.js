@@ -1,6 +1,6 @@
 ﻿var initEditor = function (element, shouldResize, init, postinit) {
     top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
-        var resizePluginCode = '';
+        var resizePluginCode = ''; 
         if (shouldResize)
         {
             resizePluginCode = 'autoresize';
