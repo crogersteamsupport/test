@@ -542,20 +542,44 @@ FROM
 	ContactsView WITH(NOLOCK)
 	JOIN Organizations WITH(NOLOCK)
 		ON ContactsView.organizationParentId = Organizations.organizationId
-  LEFT JOIN FullContactUpdates WITH(NOLOCK)
+	LEFT JOIN FullContactUpdates WITH(NOLOCK)
 		ON ContactsView.userID = FullContactUpdates.userId
 WHERE
 	ContactsView.isActive = 1
 	AND Organizations.IsCustomerInsightsActive = 1
 	AND ContactsView.organizationParentId != 1
-	AND (
-			ContactsView.dateCreated > @lastProcessed
-			OR ContactsView.dateModified > @lastProcessed
+	AND
+	(
+		--recently updated, never processed
+		(
+			(
+				ContactsView.dateCreated > @lastProcessed
+				OR ContactsView.dateModified > @lastProcessed
+			)
+			AND FullContactUpdates.id IS NULL
 		)
-  AND (
-			FullContactUpdates.id IS NULL
-			OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE()
-		)";
+		--recently updated, processed more than @waitBeforeNewUpdate ago
+		OR
+		(
+			(
+				ContactsView.dateCreated > @lastProcessed
+				OR ContactsView.dateModified > @lastProcessed
+			)
+			AND FullContactUpdates.id IS NOT NULL
+			AND FullContactUpdates.dateModified <= DATEADD(HOUR, @waitBeforeNewUpdate * -1, @lastProcessed)
+		)
+		--updated, skipped because at that time was processed recently, but now it has been more than @waitBeforeNewUpdate
+		OR
+		(
+			(
+				ContactsView.dateCreated > DATEADD(HOUR, @waitBeforeNewUpdate * -1, @lastProcessed)
+				OR ContactsView.dateModified > DATEADD(HOUR, @waitBeforeNewUpdate * -1, @lastProcessed)
+			)
+			AND FullContactUpdates.id IS NOT NULL
+			AND FullContactUpdates.dateModified <= DATEADD(HOUR, @waitBeforeNewUpdate * -1, @lastProcessed)
+		)
+	)
+ORDER BY ContactsView.dateModified";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@lastProcessed", lastProcessed);
         command.Parameters.AddWithValue("@waitBeforeNewUpdate", waitBeforeNewUpdate);

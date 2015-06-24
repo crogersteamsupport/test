@@ -2151,26 +2151,49 @@ ORDER BY o.Name";
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT *
+        command.CommandText = @"SELECT Organizations.*
 FROM
 	Organizations WITH(NOLOCK)
 	JOIN Organizations AS Parent WITH(NOLOCK)
 		ON Organizations.parentId = Parent.organizationId
-  LEFT JOIN FullContactUpdates WITH(NOLOCK)
+	LEFT JOIN FullContactUpdates WITH(NOLOCK)
 		ON Organizations.organizationId = FullContactUpdates.organizationId
 WHERE
 	Parent.isActive = 1
 	AND Parent.IsCustomerInsightsActive = 1
 	AND Organizations.parentId != 1
-	AND (
-			Organizations.dateCreated > @lastProcessed
-			OR Organizations.dateModified > @lastProcessed
+	AND
+	(
+		--company was recently updated and not recently processed (within @waitBeforeNewUpdate)
+		(
+			(
+				Organizations.dateCreated > @lastProcessed
+				OR Organizations.dateModified > @lastProcessed
+			)
+			AND FullContactUpdates.id IS NULL
 		)
-  AND (
-			FullContactUpdates.id IS NULL
-			OR DATEADD(HOUR, @waitBeforeNewUpdate, FullContactUpdates.dateModified) < GETDATE()
+		--company was not processed last time it was updated because of previous restriction (see above) but @waitBeforeNewUpdate has passed already
+		OR
+		(
+			(
+				Organizations.dateCreated > @lastProcessed
+				OR Organizations.dateModified > @lastProcessed
+			)
+			AND FullContactUpdates.id IS NOT NULL
+			AND FullContactUpdates.dateModified <= DATEADD(HOUR, @waitBeforeNewUpdate * -1, @lastProcessed)
 		)
-ORDER BY Organizations.Name";
+		--updated, skipped because at that time was processed recently, but now it has been more than @waitBeforeNewUpdate
+		OR
+		(
+			(
+				Organizations.dateCreated > DATEADD(HOUR, @waitBeforeNewUpdate * -1, @lastProcessed)
+				OR Organizations.dateModified > DATEADD(HOUR, @waitBeforeNewUpdate * -1, @lastProcessed)
+			)
+			AND FullContactUpdates.id IS NOT NULL
+			AND FullContactUpdates.dateModified <= DATEADD(HOUR, @waitBeforeNewUpdate * -1, @lastProcessed)
+		)
+	)
+ORDER BY Organizations.dateModified";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@lastProcessed", lastProcessed);
         command.Parameters.AddWithValue("@waitBeforeNewUpdate", waitBeforeNewUpdate);

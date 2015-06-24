@@ -114,7 +114,7 @@ namespace TeamSupport.ServiceLibrary
           {
             int remainingCount = int.Parse(remaining[0]);
 
-            if (remainingCount == 0)
+            if (remainingCount == 1)
             {
               //wait
               RateLimitHeaders resetHeader = RateLimitHeaders.Reset;

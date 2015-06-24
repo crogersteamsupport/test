@@ -41,10 +41,10 @@ namespace TeamSupport.ServiceLibrary
           InitializeGlobalVariables();
           int customerInsightsInterval = Settings.ReadInt(_intervalKey, 60);
 
-          if (_lastProcessed.AddMinutes(customerInsightsInterval) < DateTime.Now)
+          if (_lastProcessed.AddMinutes(customerInsightsInterval) < DateTime.UtcNow)
           {
             ProcessCustomerInsights();
-            Settings.WriteString(_lastProcessedKey, DateTime.Now.ToString());
+            Settings.WriteString(_lastProcessedKey, DateTime.UtcNow.ToString());
           }
         }
       }
@@ -64,10 +64,10 @@ namespace TeamSupport.ServiceLibrary
       _waitBeforeNewUpdate    = Settings.ReadInt(_waitBeforeNewUpdateKey, 24);
       _maxToProcessByTicketCount = Settings.ReadInt(_maxToProcessByTicketCountKey, 100);
       Service service = Services.GetService(_loginUser, ServiceName);
-      _lastProcessed  = DateTime.Parse(Settings.ReadString(_lastProcessedKey, DateTime.Now.AddDays(-1).ToString()));
+      _lastProcessed  = DateTime.Parse(Settings.ReadString(_lastProcessedKey, DateTime.UtcNow.AddDays(-1).ToString()));
 
       // we need to check if month changed, to reset the counter
-      DateTime  today               = DateTime.Now;
+      DateTime  today               = DateTime.UtcNow;
       int       lastProcessedMonth  = _lastProcessed.Month;
       int       todayMonth          = today.Month;
       bool      monthChange         = lastProcessedMonth != todayMonth;
@@ -607,7 +607,7 @@ namespace TeamSupport.ServiceLibrary
         if (fullContactUpdates.Count > 0)
         {
           FullContactUpdatesItem fullContactUpdatesItem = fullContactUpdates.First();
-          fullContactUpdatesItem.DateModified = DateTime.Now;
+          fullContactUpdatesItem.DateModified = DateTime.UtcNow;
           fullContactUpdatesItem.Collection.Save();
         }
         else
@@ -624,7 +624,7 @@ namespace TeamSupport.ServiceLibrary
             fullContactUpdatesItem.UserId = (int)userId;
           }
 
-          fullContactUpdatesItem.DateModified = DateTime.Now;
+          fullContactUpdatesItem.DateModified = DateTime.UtcNow;
           newFullContactUpdate.Save();
         }
       }
