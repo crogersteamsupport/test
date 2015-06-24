@@ -149,24 +149,28 @@ function SetupTicketProperties() {
   }
 
   $('#ticket-assigned').val(top.Ts.System.User.UserID);
-  $('#ticket-assigned').selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+  if ($('#ticket-assigned').length) {
+    $('#ticket-assigned').selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
 
   //Group
   var groups = top.Ts.Cache.getGroups();
   for (var i = 0; i < groups.length; i++) {
     AppendSelect('#ticket-group', groups[i], 'group', groups[i].GroupID, groups[i].Name);
   }
-  $('#ticket-group').selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+  if ($('#ticket-group').length) {
+    $('#ticket-group').selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
 
   //Type
   var types = top.Ts.Cache.getTicketTypes();
@@ -174,12 +178,14 @@ function SetupTicketProperties() {
     AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name);
   }
   
-  $('#ticket-type').selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+  if ($('#ticket-type').length) {
+    $('#ticket-type').selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
 
   $('#ticket-type').change(function (e) {
     SetupStatusField();
@@ -198,12 +204,14 @@ function SetupTicketProperties() {
   for (var i = 0; i < severities.length; i++) {
     AppendSelect('#ticket-severity', severities[i], 'severity', severities[i].TicketSeverityID, severities[i].Name);
   }
-  $('#ticket-severity').selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+  if ($('#ticket-severity').length) {
+    $('#ticket-severity').selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
 
   $('#ticket-properties-area').on('click', 'span.tagRemove', function (e) {
     var tag = $(this).parent()[0];
@@ -671,37 +679,38 @@ function AppendSelect(parent, data, type, id, name, isSelected) {
 };
 
 function SetupStatusField() {
-  $("#ticket-status").selectize({
-    closeAfterSelect: true,
-    render: {
-      item: function (item, escape) {
-        if (item.data.IsClosed) {
-          return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option"><s>' + escape(item.text) + '</s></div>';
+  if ($('#ticket-status').length) {
+    $("#ticket-status").selectize({
+      closeAfterSelect: true,
+      render: {
+        item: function (item, escape) {
+          if (item.data.IsClosed) {
+            return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option"><s>' + escape(item.text) + '</s></div>';
+          }
+          else {
+            return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option">' + escape(item.text) + '</div>';
+          }
         }
-        else {
-          return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option">' + escape(item.text) + '</div>';
+      },
+    });
+    var selectize = $("#ticket-status")[0].selectize;
+    selectize.clear(true);
+    selectize.clearOptions();
+
+    var statuses = top.Ts.Cache.getTicketStatuses();
+    var ticketTypeID = $('#ticket-type').val();
+
+    var flag = true;
+    for (var i = 0; i < statuses.length; i++) {
+      if (statuses[i].TicketTypeID == ticketTypeID) {
+        selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+        if (flag) {
+          selectize.addItem(statuses[i].TicketStatusID);
+          flag = false;
         }
-      }
-    },
-  });
-  var selectize = $("#ticket-status")[0].selectize;
-  selectize.clear(true);
-  selectize.clearOptions();
-
-  var statuses = top.Ts.Cache.getTicketStatuses();
-  var ticketTypeID = $('#ticket-type').val();
-
-  var flag = true;
-  for (var i = 0; i < statuses.length; i++) {
-    if (statuses[i].TicketTypeID == ticketTypeID) {
-      selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
-      if (flag) {
-        selectize.addItem(statuses[i].TicketStatusID);
-        flag = false;
       }
     }
   }
-  
 }
 
 function SetupKBFields() {
@@ -716,13 +725,14 @@ function SetupKBFields() {
         AppendSelect('#ticket-KB-Category', subcat, 'subcategory', subcat.CategoryID, cat.CategoryName + ' -> ' + subcat.CategoryName);
       }
     }
-
-    $('#ticket-KB-Category').selectize({
-      onDropdownClose: function ($dropdown) {
-        $($dropdown).prev().find('input').blur();
-      },
-      closeAfterSelect: true
-    });
+    if ($('#ticket-KB-Category').length) {
+      $('#ticket-KB-Category').selectize({
+        onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+        },
+        closeAfterSelect: true
+      });
+    }
   }
   else {
     $('#ticket-KBInfo').remove();
@@ -742,14 +752,15 @@ function SetupCommunityField() {
           AppendSelect('#ticket-Community', subcat, 'subcategory', subcat.CategoryID, cat.CategoryName + ' -> ' + subcat.CategoryName, false);
         }
       }
-
-      $('#ticket-Community').selectize({
-        onDropdownClose: function ($dropdown) {
-          $($dropdown).prev().find('input').blur();
-        },
-        allowEmptyOption: true,
-        closeAfterSelect: true
-      });
+      if ($('#ticket-Community').length) {
+        $('#ticket-Community').selectize({
+          onDropdownClose: function ($dropdown) {
+            $($dropdown).prev().find('input').blur();
+          },
+          allowEmptyOption: true,
+          closeAfterSelect: true
+        });
+      }
     }
     else {
       $('#ticket-Community').closest('.form-horizontal').remove();
@@ -797,36 +808,38 @@ function AddTags(tag) {
 }
 
 function SetupTagsSection() {
-  $("#ticket-tag-Input").autocomplete({
-    minLength: 2,
-    source: getTags,
-    response: function (event, ui) {
-      var inputValue = $(this).val();
+  if ($("#ticket-tag-Input").length) {
+    $("#ticket-tag-Input").autocomplete({
+      minLength: 2,
+      source: getTags,
+      response: function (event, ui) {
+        var inputValue = $(this).val();
 
-      var filtered = $(ui.content).filter(function () {
-        return this.value == inputValue;
-      });
-
-      if (filtered.length === 0) {
-        ui.content.push({
-          label: inputValue,
-          value: inputValue,
-          id: 0
+        var filtered = $(ui.content).filter(function () {
+          return this.value == inputValue;
         });
+
+        if (filtered.length === 0) {
+          ui.content.push({
+            label: inputValue,
+            value: inputValue,
+            id: 0
+          });
+        }
+      },
+      select: function (event, ui) {
+        $(this).data('item', ui.item)
+        AddTags(ui.item);
+        this.removeItem(ui.item.value, true);
+        top.Ts.System.logAction('Ticket - Added');
       }
-    },
-    select: function (event, ui) {
-      $(this).data('item', ui.item)
-      AddTags(ui.item);
-      this.removeItem(ui.item.value, true);
-      top.Ts.System.logAction('Ticket - Added');
-    }
-  })
-  .data("autocomplete")._renderItem = function (ul, item) {
-    return $("<li>")
-        .append("<a>" + item.label + "</a>")
-        .appendTo(ul);
-  };
+    })
+    .data("autocomplete")._renderItem = function (ul, item) {
+      return $("<li>")
+          .append("<a>" + item.label + "</a>")
+          .appendTo(ul);
+    };
+  }
 };
 
 function PrependTag(parent, id, value, data, cssclass) {
@@ -837,44 +850,45 @@ function PrependTag(parent, id, value, data, cssclass) {
 }
 
 function SetupCustomerSection() {
-  $('#ticket-Customers-Input').selectize({
-    valueField: 'id',
-    labelField: 'label',
-    searchField: 'label',
-    load: function (query, callback) {
-      getCustomers(query, callback)
-    },
-    preload: true,
-    create: function (input, callback) {
-      $('#NewCustomerModal').modal('show');
-      callback(null);
-    },
-    plugins: {
-      'sticky_placeholder': {}
-    },
-    onItemAdd: function (value, $item) {
-      $('#ticket-Customer').closest('.form-group').removeClass('hasError');
-      AddCustomers($item.data());
-      
-      this.removeItem(value, true);
-    },
-    render: {
-      item: function (item, escape) {
-        return '<div data-value="' + item.value + '" data-type="' + item.data + '" data-selectable="" class="option">' + item.label + '</div>';
+  if ($('#ticket-Customers-Input').length) {
+    $('#ticket-Customers-Input').selectize({
+      valueField: 'id',
+      labelField: 'label',
+      searchField: 'label',
+      load: function (query, callback) {
+        getCustomers(query, callback)
       },
-      option: function (item, escape) {
-        return '<div data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" class="option">' + item.label + '</div>';
+      preload: true,
+      create: function (input, callback) {
+        $('#NewCustomerModal').modal('show');
+        callback(null);
       },
-      option_create: function (data, escape) {
-        return '<div class="create">Create <strong>' + escape(data.input) + '</strong></div>';
-      }
-    },
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+      plugins: {
+        'sticky_placeholder': {}
+      },
+      onItemAdd: function (value, $item) {
+        $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+        AddCustomers($item.data());
 
+        this.removeItem(value, true);
+      },
+      render: {
+        item: function (item, escape) {
+          return '<div data-value="' + item.value + '" data-type="' + item.data + '" data-selectable="" class="option">' + item.label + '</div>';
+        },
+        option: function (item, escape) {
+          return '<div data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" class="option">' + item.label + '</div>';
+        },
+        option_create: function (data, escape) {
+          return '<div class="create">Create <strong>' + escape(data.input) + '</strong></div>';
+        }
+      },
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
   $('#Customer-Create').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -970,14 +984,15 @@ function AddCustomers(customerdata) {
 
 function SetupProductSection() {
   var products = top.Ts.Cache.getProducts();
-
-  $('#ticket-Product').selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    allowEmptyOption: true,
-    closeAfterSelect: true
-  });
+  if ($('#ticket-Product').length) {
+    $('#ticket-Product').selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      allowEmptyOption: true,
+      closeAfterSelect: true
+    });
+  }
 
   LoadProductList(products);
 
@@ -998,6 +1013,7 @@ function SetupProductSection() {
 };
 
 function LoadProductList(products) {
+  if ($('#ticket-Product').length) {
     if (products == null) products = top.Ts.Cache.getProducts();
     var $productselect = $('#ticket-Product').selectize();
     var $productselectInput = $productselect[0].selectize;
@@ -1009,6 +1025,7 @@ function LoadProductList(products) {
 
     SetupProductVersionsControl(null);
     SetProductVersionAndResolved(null, null);
+  }
 }
 
 function ReloadProductList() {
@@ -1050,13 +1067,17 @@ function ReloadProductList() {
 };
 
 function loadVersions(product) {
-  var selectizeVersion = $("#ticket-Versions")[0].selectize;
-  selectizeVersion.clear(true);
-  selectizeVersion.clearOptions();
+  if ($('#ticket-Versions').length) {
+    var selectizeVersion = $("#ticket-Versions")[0].selectize;
+    selectizeVersion.clear(true);
+    selectizeVersion.clearOptions();
+  }
 
-  var selectizeResolved = $("#ticket-Resolved")[0].selectize;
-  selectizeResolved.clear(true);
-  selectizeResolved.clearOptions();
+  if ($('#ticket-Resolved').length) {
+    var selectizeResolved = $("#ticket-Resolved")[0].selectize;
+    selectizeResolved.clear(true);
+    selectizeResolved.clearOptions();
+  }
 
   if (product !== null) {
     var versions = product.Versions;
@@ -1069,27 +1090,29 @@ function loadVersions(product) {
 }
 
 function SetupProductVersionsControl(product) {
-  var $select = $("#ticket-Versions").selectize({
-    onItemAdd: function (value, $item) {
-      var reportversion = $('#ticket-Versions');
-      reportversion.closest('.form-group').removeClass('hasError');
-    },
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
-  var versionInput = $select[0].selectize;
+  if ($('#ticket-Versions').length) {
+    var $select = $("#ticket-Versions").selectize({
+      onItemAdd: function (value, $item) {
+        var reportversion = $('#ticket-Versions');
+        reportversion.closest('.form-group').removeClass('hasError');
+      },
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+    var versionInput = $select[0].selectize;
+  }
 
-
-  var $select = $("#ticket-Resolved").selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
-  var resolvedInput = $select[0].selectize;
-
+  if ($('#ticket-Resolved').length) {
+    var $select = $("#ticket-Resolved").selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+    var resolvedInput = $select[0].selectize;
+  }
 
   if (product !== null && product.Versions.length > 0) {
     var versions = product.Versions;
@@ -1108,41 +1131,46 @@ function SetupProductVersionsControl(product) {
 }
 
 function SetProductVersionAndResolved(versionId, resolvedId) {
-  var $select = $("#ticket-Versions").selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
-
-  var $select = $("#ticket-Resolved").selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+  if ($('#ticket-Versions').length) {
+    var $select = $("#ticket-Versions").selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
+  if ($('#ticket-Resolved').length) {
+    var $select = $("#ticket-Resolved").selectize({
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
 };
 
 function SetupInventorySection() {
-  $('#ticket-Inventory-Input').selectize({
-    valueField: 'id',
-    labelField: 'label',
-    searchField: 'label',
-    load: function (query, callback) {
-      getAssets(query, callback)
-    },
-    onItemAdd: function (value, $item) {
-      AddInventory(value);
-      this.removeItem(value, true);
-    },
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true,
-    plugins: {
-      'sticky_placeholder': {}
-    }
-  });
+  if ($('#ticket-Inventory-Input').length) {
+    $('#ticket-Inventory-Input').selectize({
+      valueField: 'id',
+      labelField: 'label',
+      searchField: 'label',
+      load: function (query, callback) {
+        getAssets(query, callback)
+      },
+      onItemAdd: function (value, $item) {
+        AddInventory(value);
+        this.removeItem(value, true);
+      },
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true,
+      plugins: {
+        'sticky_placeholder': {}
+      }
+    });
+  }
 };
 
 function AddInventory(Inventory) {
@@ -1156,28 +1184,30 @@ function AddInventory(Inventory) {
 };
 
 function SetupUserQueuesSection() {
-  $('#ticket-UserQueue-Input').selectize({
-    valueField: 'id',
-    labelField: 'label',
-    searchField: 'label',
-    load: function (query, callback) {
-      getUsers(query, callback)
-    },
-    onItemAdd: function (value, $item) {
-      var item = new Object();
-      item.name = $item.text();
-      item.id = value;
-      AddQueues(item);
-      this.removeItem(value, true);
-    },
-    plugins: {
-      'sticky_placeholder': {}
-    },
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+  if ($('#ticket-UserQueue-Input').length) {
+    $('#ticket-UserQueue-Input').selectize({
+      valueField: 'id',
+      labelField: 'label',
+      searchField: 'label',
+      load: function (query, callback) {
+        getUsers(query, callback)
+      },
+      onItemAdd: function (value, $item) {
+        var item = new Object();
+        item.name = $item.text();
+        item.id = value;
+        AddQueues(item);
+        this.removeItem(value, true);
+      },
+      plugins: {
+        'sticky_placeholder': {}
+      },
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
 }
 
 function AddQueues(queues) {
@@ -1189,28 +1219,30 @@ function AddQueues(queues) {
 }
 
 function SetupSubscribedUsersSection() {
-  $('#ticket-SubscribedUsers-Input').selectize({
-    valueField: 'id',
-    labelField: 'label',
-    searchField: 'label',
-    load: function (query, callback) {
-      getUsers(query, callback)
-    },
-    onItemAdd: function (value, $item) {
-      var item = new Object();
-      item.name = $item.text();
-      item.id = value;
-      AddSubscribers(item);
-      this.removeItem(value, true);
-    },
-    plugins: {
-      'sticky_placeholder': {}
-    },
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+  if ($('#ticket-SubscribedUsers-Input').length) {
+    $('#ticket-SubscribedUsers-Input').selectize({
+      valueField: 'id',
+      labelField: 'label',
+      searchField: 'label',
+      load: function (query, callback) {
+        getUsers(query, callback)
+      },
+      onItemAdd: function (value, $item) {
+        var item = new Object();
+        item.name = $item.text();
+        item.id = value;
+        AddSubscribers(item);
+        this.removeItem(value, true);
+      },
+      plugins: {
+        'sticky_placeholder': {}
+      },
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
 };
 
 function AddSubscribers(Subscribers) {
@@ -1224,21 +1256,23 @@ function AddSubscribers(Subscribers) {
 function SetupRemindersSection() {
   $('#ticket-reminder-date').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
 
-  var $reminderSelect = $('#ticket-reminder-who').selectize({
-    valueField: 'id',
-    labelField: 'label',
-    searchField: 'label',
-    load: function (query, callback) {
-      top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
-        callback(result);
-      });
+  if ($('#ticket-reminder-who').length) {
+    var $reminderSelect = $('#ticket-reminder-who').selectize({
+      valueField: 'id',
+      labelField: 'label',
+      searchField: 'label',
+      load: function (query, callback) {
+        top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
+          callback(result);
+        });
 
-    },
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+      },
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
+  }
 
   $('#ticket-reminder-save').click(function (e) {
     var selectizeControl = $reminderSelect[0].selectize;
@@ -1265,42 +1299,44 @@ function SetupRemindersSection() {
 }
 
 function SetupAssociatedTicketsSection() {
-  $('#ticket-AssociatedTickets-Input').selectize({
-    valueField: 'data',
-    labelField: 'label',
-    searchField: 'label',
-    load: function (query, callback) {
-      getRelated(query, callback)
-    },
-    onItemAdd: function (value, $item) {
-      $('#AssociateTicketModal').data('ticketid', value).modal('show');
-      this.removeItem(value, true);
-    },
-    plugins: {
-      'sticky_placeholder': {}
-    },
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
+  if ($('#ticket-AssociatedTickets-Input').length) {
+    $('#ticket-AssociatedTickets-Input').selectize({
+      valueField: 'data',
+      labelField: 'label',
+      searchField: 'label',
+      load: function (query, callback) {
+        getRelated(query, callback)
+      },
+      onItemAdd: function (value, $item) {
+        $('#AssociateTicketModal').data('ticketid', value).modal('show');
+        this.removeItem(value, true);
+      },
+      plugins: {
+        'sticky_placeholder': {}
+      },
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+    });
 
-  $('#ticket-AssociatedTickets').on('click', 'div.tag-item', function (e) {
-    var self = $(this);
-    var data = self.data().tag;
-    top.Ts.MainPage.openTicket(data.TicketNumber, true);
-  });
+    $('#ticket-AssociatedTickets').on('click', 'div.tag-item', function (e) {
+      var self = $(this);
+      var data = self.data().tag;
+      top.Ts.MainPage.openTicket(data.TicketNumber, true);
+    });
 
-  $('.ticket-association').click(function (e) {
-    var IsParent = $(this).data('isparent');
-    alert(IsParent)
-    var TicketID2 = $(this).closest('#AssociateTicketModal').data('ticketid');
-    $('#associate-error').hide();
+    $('.ticket-association').click(function (e) {
+      var IsParent = $(this).data('isparent');
+      alert(IsParent)
+      var TicketID2 = $(this).closest('#AssociateTicketModal').data('ticketid');
+      $('#associate-error').hide();
 
-    $("#ticket-AssociatedTickets-Input").val('');
-    AddAssociatedTickets(TicketID2, IsParent);
-    $('#AssociateTicketModal').modal('hide');
-  });
+      $("#ticket-AssociatedTickets-Input").val('');
+      AddAssociatedTickets(TicketID2, IsParent);
+      $('#AssociateTicketModal').modal('hide');
+    });
+  }
 };
 
 function AddAssociatedTickets(ticketid, IsParent) {
