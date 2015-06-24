@@ -663,6 +663,10 @@
 
     .ts-icon { width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
     .ts-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
+    .form-horizontal .control-label {
+         min-height:30px;
+    }
+
 
     .ticket-sla-status > i { position: relative; top: -3px; }
     .ts-icon-sla-good { background-position: -784px -16px; }

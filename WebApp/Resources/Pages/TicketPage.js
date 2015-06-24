@@ -2419,9 +2419,13 @@ var SetupDueDateField = function (duedate) {
   var dateContainer = $('#ticket-duedate-container');
   var dateLink = $('<a>')
                       .attr('href', '#')
-                      .text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                      //.text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
                       .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
                       .appendTo(dateContainer);
+  if (duedate !== null)
+  {
+    dateLink.text(duedate.localeFormat(top.Ts.Utils.getDateTimePattern()));
+  }
 
   dateLink.click(function (e) {
     e.preventDefault();
