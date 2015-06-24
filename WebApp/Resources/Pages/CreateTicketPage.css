@@ -651,7 +651,7 @@
     }
      
     .form-horizontal .control-label {
-        height:30px;
+        min-height:30px;
     }
 
     .ts-icon { width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
