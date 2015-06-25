@@ -68,6 +68,7 @@
         eventLimit: true, 
         height: '200',
         aspectRatio: 2.3,
+        nextDayThreshold: '00.00.01',
         viewRender: function (view, element, date)
         {
         },
