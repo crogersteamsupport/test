@@ -52,7 +52,7 @@ $(document).ready(function () {
       $('#fieldProduct').html(productVersion.ProductName);
       $('#fieldStatus').html(productVersion.VersionStatus);
       $('#fieldReleased').text((productVersion.IsReleased === true ? 'True' : 'False'));
-      $('#fieldReleaseDate').text(top.Ts.Utils.getMsDate(productVersion.ReleaseDate).localeFormat(top.Ts.Utils.getDatePattern()));
+      $('#fieldReleaseDate').text(top.Ts.Utils.getMsDate(productVersion.ReleaseDateUTC).localeFormat(top.Ts.Utils.getDatePattern()));
 
       top.Ts.Services.Admin.GetIsJiraLinkActiveForOrganization(function (result) {
         if (result)

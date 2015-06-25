@@ -18,6 +18,8 @@ namespace TeamSupport.Data
     [DataMember] public int ProductVersionStatusID { get; set; }
     [DataMember] public string VersionNumber { get; set; }
     [DataMember] public DateTime? ReleaseDate { get; set; }
+    [DataMember]
+    public DateTime? ReleaseDateUTC { get; set; }
     [DataMember] public bool IsReleased { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public string ImportID { get; set; }
@@ -58,8 +60,8 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.ReleaseDate = this.ReleaseDateUtc == null ? this.ReleaseDateUtc : DateTime.SpecifyKind((DateTime)this.ReleaseDateUtc, DateTimeKind.Utc); 
-       
+      result.ReleaseDate = this.ReleaseDateUtc == null ? this.ReleaseDateUtc : DateTime.SpecifyKind((DateTime)this.ReleaseDateUtc, DateTimeKind.Utc);
+      result.ReleaseDateUTC = this.ReleaseDateUtc;
       return result;
     }	
   }
