@@ -317,12 +317,17 @@ namespace TeamSupport.ServiceLibrary
             try
             {
               cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(LoginUser), "CompanyLogo\\" + currentCompanyInfo.ParentID.ToString());
-              pattern = currentCompanyInfo.OrganizationID.ToString() + "-*.*";
-              string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
 
-              foreach (String file in files)
+              if (System.IO.Directory.Exists(cachePath))
               {
-                System.IO.File.Delete(file);
+                pattern = currentCompanyInfo.OrganizationID.ToString() + "-*.*";
+                string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
+
+                foreach (String file in files)
+                {
+                  System.IO.File.Delete(file);
+                  Logs.WriteEvent(string.Format("Cached file {0} deleted.", file));
+                }
               }
             }
             catch (Exception ex)
