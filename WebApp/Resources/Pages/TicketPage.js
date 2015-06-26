@@ -3619,12 +3619,13 @@ function SetupWCArea() {
         if ($('.wc-attachments li').length > 0) {
           $('.wc-attachments li').each(function (i, o) {
             var data = $(o).data('data');
-            data.url = '../../../Upload/WaterCooler/' + message.RefID;
+            data.url = '../../../Upload/WaterCooler/' + message.item.RefID;
             data.jqXHR = data.submit();
             $(o).data('data', data);
           });
         }
-        window.top.chatHubClient.server.newThread(message.RefID, top.Ts.System.User.OrganizationID);
+        debugger
+        window.top.chatHubClient.server.newThread(message.item.RefID, top.Ts.System.User.OrganizationID);
         $('.wc-attachments').empty();
         CreateActionElement(message, false);
         $('.watercooler-new-area').fadeOut('normal');
