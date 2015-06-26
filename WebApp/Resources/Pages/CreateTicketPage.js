@@ -1837,7 +1837,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         groupContainer.removeClass('isEmpty');
       }
       $('.' + field.CustomFieldID + 'children').remove();
-      var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
+      var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').insertAfter(formcontainer);
 
       appendMatchingParentValueFields(childrenContainer, field, value);
 
@@ -1861,15 +1861,6 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
   if ((field.IsFirstIndexSelect == true && items[0] == field.Value) || field.Value == null || $.trim(field.Value) === '') {
     groupContainer.addClass('isEmpty');
   }
-
-  //if (loadConditionalFields) {
-  //  $('.' + field.CustomFieldID + 'children').remove();
-  //  var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
-  //  appendMatchingParentValueFields(childrenContainer, field);
-  //}
-  //else {
-  //  _parentFields.push(groupContainer);
-  //}
 };
 
 var appendConditionalFields = function () {

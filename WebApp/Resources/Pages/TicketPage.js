@@ -3624,7 +3624,6 @@ function SetupWCArea() {
             $(o).data('data', data);
           });
         }
-        debugger
         window.top.chatHubClient.server.newThread(message.item.RefID, top.Ts.System.User.OrganizationID);
         $('.wc-attachments').empty();
         CreateActionElement(message, false);
