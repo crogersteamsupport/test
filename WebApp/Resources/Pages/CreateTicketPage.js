@@ -1438,7 +1438,7 @@ function showCustomFields() {
     }
     else {
       $(this).hide();
-      if (field.CustomFieldCategoryID !== null) $('#CFCat-' + field.CustomFieldCategoryID).hide();
+      if (field.CustomFieldCategoryID !== null) $('#CFCat-' + field.CustomFieldCategoryID).hide().prev().hide();
       if (field.ParentProductID !== null) $('#CFGroupProduct-' + field.ParentProductID).hide();
     }
   });
