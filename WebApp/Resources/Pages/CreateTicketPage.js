@@ -1401,10 +1401,14 @@ var appendCategorizedCustomFields = function (fields, className) {
         if (field.CustomFieldCategoryID == categories[j].CustomFieldCategoryID) {
           if (isFirstFieldAdded) {
             isFirstFieldAdded = false;
+            //TODO:  Wrap header and hr together inside a span so they can both be removed easily
+            //var container = $('<div>').addClass('cf-category category-' + categories[j].CustomFieldCategoryID).appendTo(parentcontainer);
             var header = $('<label id=CFCat-' + categories[j].CustomFieldCategoryID + '>').text(categories[j].Category).addClass('customFieldCategoryHeader');
             container.append($('<hr>')).append(header);
           }
 
+          //TODO: need container for categories.
+         // var container = $('.category-' + categories[j].CustomFieldCategoryID);
           switch (field.FieldType) {
             case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, container); break;
             case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, container); break;
@@ -1858,14 +1862,14 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     groupContainer.addClass('isEmpty');
   }
 
-  if (loadConditionalFields) {
-    $('.' + field.CustomFieldID + 'children').remove();
-    var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
-    appendMatchingParentValueFields(childrenContainer, field);
-  }
-  else {
-    _parentFields.push(groupContainer);
-  }
+  //if (loadConditionalFields) {
+  //  $('.' + field.CustomFieldID + 'children').remove();
+  //  var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
+  //  appendMatchingParentValueFields(childrenContainer, field);
+  //}
+  //else {
+  //  _parentFields.push(groupContainer);
+  //}
 };
 
 var appendConditionalFields = function () {

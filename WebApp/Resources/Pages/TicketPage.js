@@ -3624,6 +3624,7 @@ function SetupWCArea() {
             $(o).data('data', data);
           });
         }
+        window.top.chatHubClient.server.newThread(message.RefID, top.Ts.System.User.OrganizationID);
         $('.wc-attachments').empty();
         CreateActionElement(message, false);
         $('.watercooler-new-area').fadeOut('normal');
