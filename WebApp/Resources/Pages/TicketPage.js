@@ -85,7 +85,7 @@ var isFormValidToClose = function (isClosed, callback) {
 }
 
 var isFormValid = function (callback) {
-  top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {debugger
+  top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
     var result = true;
 
     if ($('.hasError').length > 0) {
@@ -1450,6 +1450,7 @@ function SetupProductSection() {
     $('#ticket-Versions').change(function (e) {
       top.Ts.System.logAction('Ticket - Reported Version Changed');
       top.Ts.Services.Tickets.SetReportedVersion(_ticketID, $(this).val(), function (result) {
+        $('#ticket-Versions').closest('.form-group').removeClass('hasError');
         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changereported", userFullName);
       },
       function (error) {
@@ -1460,6 +1461,7 @@ function SetupProductSection() {
     $('#ticket-Resolved').change(function (e) {
       top.Ts.System.logAction('Ticket - Resolved Version Changed');
       top.Ts.Services.Tickets.SetSolvedVersion(_ticketID, $(this).val(), function (result) {
+        $('#ticket-Versions').closest('.form-group').removeClass('hasError');
         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeresolved", userFullName);
       },
       function (error) {
@@ -1587,6 +1589,13 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
       resolvedInput.clear();
     }
   }
+
+  top.Ts.Services.Organizations.IsProductVersionRequired(function (IsProductVersionRequired) {
+    if (IsProductVersionRequired && (versionId == null && resolvedId == null))
+      $('#ticket-Versions').closest('.form-group').addClass('hasError');
+    else
+      $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+  });
 };
 
 function SetupInventorySection() {
