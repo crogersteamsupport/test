@@ -125,12 +125,11 @@
 
     .timeline > li.action-new { background-color: transparent;  margin-bottom: 0px; }
 
-    .timeline > li.action-new > div.panel { position: relative; margin-left: 57px; margin-bottom: 10px;}
+    .timeline > li.action-new > div.panel { position: relative; margin-left: 45px; margin-bottom: 10px;}
     
-    .timeline > li.action-new > div.panel > p { display: table-cell; padding: 0 20px; vertical-align: middle;  height: 48px; }
+    .timeline > li.action-new > div.panel > p { display: table-cell; padding: 0 10px; vertical-align: middle;  height: 40px; }
 
     .timeline > li {
-        margin-bottom: 10px;
           margin-bottom: 10px;
         position: relative;
         background-color:white;
@@ -237,9 +236,18 @@
     div.ticket-badge > div > a:focus { color: white; }
     .UserAnchor { cursor:pointer; }
 
-    .timeline-header { height:80px; border-bottom: 1px solid lightgray; padding: 15px 10px 10px 10px; }
+    .timeline-header {
+      height: 50px;
+      border-bottom: 1px solid lightgray;
+      margin: 15px 10px 0px 0px;
+    }
 
-    .timeline-body { margin-bottom: 10px; margin-top: 10px; overflow-y: hidden; overflow-x: auto; }
+    .timeline-body {
+      margin-bottom: 5px;
+      margin-top: 5px;
+      overflow-y: hidden;
+      overflow-x: auto;
+    }
 
     .timeline-body > p {  padding: 0;  margin: 0; }
 
@@ -482,7 +490,10 @@
     }
 
     div.timeline-header > .user-avatar,
-    div.timeline-wc-response > .user-avatar { margin: -5px 10px 10px 0px; }
+    div.timeline-wc-response > .user-avatar {
+        margin: 0px 10px 10px 0px;
+        height: 40px;
+    }
 
     .TeamSupportBlue {
         color: #0057c2;   
