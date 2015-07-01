@@ -547,22 +547,21 @@
     #ticket-properties-area .form-group {
         margin-bottom: 0px;
       padding-top: 0px;
-    }  
+    }
 
     #ticket-properties-area > .form-horizontal > .form-group > div > select.hidden-select {
-
       font-size: 12px;
       font-weight: normal;
       height: 25px;
       line-height: 25px;
-      padding-left:0px;
+      padding-left: 0px;
       -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    padding: 2px 30px 2px 2px;
-    border: none;
-    background: transparent;
-    box-shadow:none;
+      -moz-appearance: none;
+      appearance: none;
+      padding: 2px 30px 2px 2px;
+      border: none;
+      background: transparent;
+      box-shadow: none;
     } 
 
     #ticket-properties-area > .form-horizontal > .form-group > div > select.hidden-select:hover {
@@ -675,6 +674,7 @@
     .nonrequired-field-error-font {color: #cd0a0a !important}
     .ticket-closed { font-style: italic; text-decoration:line-through;}
     .hasError label, .hasError .selectize-input {color: #cd0a0a !important}
+    .hasError .selectize-input  { border: 1px solid #a94442 !important; }
 
     .ui-autocomplete {
         z-index: 99999 !important;

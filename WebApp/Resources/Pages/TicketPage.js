@@ -84,6 +84,29 @@ var isFormValidToClose = function (isClosed, callback) {
     callback(result);
 }
 
+var isFormValid = function (callback) {
+  top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {debugger
+    var result = true;
+
+    if ($('.hasError').length > 0) {
+      result = false;
+    }
+
+    //If custom required check if the ticket is a KB if not then see if we have at least one customer
+    if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
+      if ($('#ticket-Customer > div.tag-item').length < 1) {
+        $('#ticket-Customer').closest('.form-group').addClass('hasError');
+        result = false;
+      }
+      else {
+        $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+      }
+    }
+
+    if (callback) callback(result);
+  });
+}
+
 Selectize.define('sticky_placeholder', function (options) {
     var self = this;
 
@@ -287,6 +310,8 @@ function SetupTicketProperties() {
     });
 
     $('.page-loading').hide().next().show();
+    
+    isFormValid();
 
     if (typeof refresh === "undefined") {
       window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
@@ -360,25 +385,36 @@ function CreateNewActionLI() {
       if ($("#recorder").length == 0) {
         e.preventDefault();
         e.stopPropagation();
-        $(this).prop('disabled', true);
         var self = $(this);
+        self.prop('disabled', true);
         var oldActionID = self.data('actionid');
-        SaveAction(oldActionID, _isNewActionPrivate, function (result) {
-          UploadAttachments(result);
-          $('#action-new-editor').parent().fadeOut('normal', function () {
-            tinymce.activeEditor.destroy();
-          });
-          top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
-            result.Attachments = attachments;
-            if (oldActionID === -1) {
-              _actionTotal = _actionTotal + 1;
-              var actionElement = CreateActionElement(result, false);
-              actionElement.find('.ticket-action-number').text(_actionTotal);
-            }
-            else {
-              UpdateActionElement(result, false);
-            }
-          });
+
+        isFormValid(function (isValid) {
+          if (isValid) {
+            SaveAction(oldActionID, _isNewActionPrivate, function (result) {
+              UploadAttachments(result);
+              $('#action-new-editor').parent().fadeOut('normal', function () {
+                tinymce.activeEditor.destroy();
+              });
+              top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
+                result.Attachments = attachments;
+                if (oldActionID === -1) {
+                  _actionTotal = _actionTotal + 1;
+                  var actionElement = CreateActionElement(result, false);
+                  actionElement.find('.ticket-action-number').text(_actionTotal);
+                }
+                else {
+                  UpdateActionElement(result, false);
+                }
+              });
+            });
+          }
+          else 
+          {
+            self.prop('disabled', false);
+            alert("Please fill in the required fields before submitting this action.");
+            return;
+          }
         });
       }
     });
@@ -618,6 +654,7 @@ function FlipNewActionBadge(isPrivate) {
 }
 
 function SaveAction(oldActionID, isPrivate, callback) {
+
     var action = new top.TeamSupport.Data.ActionProxy();
 
     action.ActionID = oldActionID;
@@ -1116,9 +1153,11 @@ function SetupCustomerSection() {
         create: function (input, callback) {
           $('#NewCustomerModal').modal('show');
           callback(null);
+          $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
         },
         onItemAdd: function (value, $item) {
           if (this.settings.initData === false) {
+            $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
             var customerData = $item.data();
 
             top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, customerData.type, value, function (customers) {
@@ -1827,7 +1866,7 @@ function SetupRemindersSection() {
         $('#ticket-reminder-who').parent().addClass('has-error').removeClass('has-success');
       }
       else {
-        $('#ticket-reminder-who').closest('form-group').addClass('has-success').removeClass('has-error');
+        $('#ticket-reminder-who').closest('.form-group').addClass('has-success').removeClass('has-error');
       }
       var title = $('#ticket-reminder-title').val();
       if (title == "") {
