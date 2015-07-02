@@ -133,11 +133,13 @@ $(document).ready(function () {
           $(e.target).closest('.ui-dialog-buttonpane').addClass('saving');
           var winningID = $('#dialog-ticketmerge-search').data('ticketid');
           var winningTicketNumber = $('#dialog-ticketmerge-search').data('ticketnumber');
-          top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function () {
+          top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function (result) {
+              if (result != "")
+                  alert(result);
             $(this).parent().remove();
           }, function () {
             $(this).parent().remove();
-            alert('There was an error merging the tickets.');
+            alert('There was an error merging the tickets.' + result);
           });
           $(this).dialog("close");
           clearDialog();

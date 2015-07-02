@@ -3474,22 +3474,150 @@ WHERE t.TicketID = @TicketID
     }
 
     [WebMethod]
-    public void MergeTickets(int winningTicketID, int losingTicketID)
+    public string MergeTickets(int winningTicketID, int losingTicketID)
     {
         Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), winningTicketID);
+        String errLocation = "";
 
-        MergeContacts(losingTicketID, winningTicketID, ticket);
+        try
+        {
+            MergeContacts(losingTicketID, winningTicketID, ticket);
+        }catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+            errLocation = string.Format("Error merging ticket contacts. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
         MergeTags(losingTicketID, winningTicketID, ticket);
-        MergeSubscribers(losingTicketID, winningTicketID, ticket);
-        MergeQueres(losingTicketID, winningTicketID, ticket);
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
 
+            errLocation = string.Format("Error merging ticket tags. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
+        MergeSubscribers(losingTicketID, winningTicketID, ticket);
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            errLocation = string.Format("Error merging ticket subscribers. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
+        MergeQueres(losingTicketID, winningTicketID, ticket);
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            errLocation = string.Format("Error merging ticket queres. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
         ticket.Collection.MergeUpdateReminders(losingTicketID, winningTicketID);
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            errLocation = string.Format("Error merging ticket reminders. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
         ticket.Collection.MergeUpdateAssets(losingTicketID, winningTicketID);
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            errLocation = string.Format("Error merging ticket assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
         ticket.Collection.MergeUpdateActions(losingTicketID, winningTicketID);
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            errLocation = string.Format("Error merging ticket actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
         ticket.Collection.MergeAttachments(losingTicketID, winningTicketID);
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            errLocation = string.Format("Error merging ticket attachments. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
         ticket.Collection.MergeUpdateRelationships(losingTicketID, winningTicketID);
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            errLocation = string.Format("Error merging ticket relationships. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+
+        try { 
         ticket.Collection.DeleteFromDB(losingTicketID);
-        return;
+        }
+        catch (Exception e)
+        {
+            ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+            log.ExceptionName = "Merge Exception " + e.Source;
+            log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            errLocation = string.Format("Error deleting losting ticket from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+        }
+        return errLocation;
     }
 
     public void MergeContacts(int losingTicketID, int winningTicketID, Ticket ticket)

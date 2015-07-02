@@ -3227,12 +3227,16 @@ function CreateTicketToolbarDomEvents() {
         var winningTicketNumber = $('#Ticket-Merge-search').data('ticketnumber');
         var JSTop = top;
         //var window = window;
-        top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function () {
-          $('#MergeModal').modal('hide');
-          JSTop.Ts.MainPage.closeTicketTab(_ticketNumber);
-          JSTop.Ts.MainPage.openTicket(winningTicketNumber, true);
-          //window.location = window.location;
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+        top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function (result) {
+            if (result != "")
+                alert(result);
+            else{
+              $('#MergeModal').modal('hide');
+              JSTop.Ts.MainPage.closeTicketTab(_ticketNumber);
+              JSTop.Ts.MainPage.openTicket(winningTicketNumber, true);
+              //window.location = window.location;
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+            }
         });
         //top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
         //  function () {
