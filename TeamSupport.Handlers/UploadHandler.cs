@@ -117,7 +117,22 @@ namespace TeamSupport.Handlers
             result.Add(new UploadResult(fileName, attachment.FileType, attachment.FileSize));
             attachment.Collection.Save();
           }
-
+          else
+          {
+            switch (refType)
+            {
+              case ReferenceType.Imports:
+                Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
+                import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
+                import.FileName = fileName;
+                import.OrganizationID = TSAuthentication.OrganizationID;
+                result.Add(new UploadResult(fileName, files[i].ContentType, files[i].ContentLength));
+                import.Collection.Save();
+                break;
+              default:
+                break;
+            }
+          }
         }
       }
       context.Response.Clear();

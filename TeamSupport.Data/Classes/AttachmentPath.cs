@@ -140,6 +140,7 @@ namespace TeamSupport.Data
         case Folder.OrganizationAttachments: result = ReferenceType.Organizations; break;
         case Folder.UserAttachments: result = ReferenceType.Users; break;
         case Folder.AssetAttachments: result = ReferenceType.Assets; break;
+        case Folder.Imports: result = ReferenceType.Imports; break;
         default: result = ReferenceType.None; break;
       }
       return result;

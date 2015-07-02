@@ -38,7 +38,7 @@
     <div class="frame-container">
         <div id="import-list" class="import-section">
             <h3>Imports <button class="btn btn-primary pull-right action-new">New Import</button></h3>
-            <table class="table table-hover table-striped">
+            <table id="tblImports" class="table table-hover table-striped">
                 <thead>
                     <tr>
                         <th>File Name</th>
@@ -48,21 +48,27 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="color-green">
+                    <!--<tr class="color-green">
                         <td>Actions.csv</td>
                         <td>Actions</td>
                         <td>March 11, 2015 12:54 am</td>
                         <td>75%</td>
-                    </tr>
+                    </tr>-->
                 </tbody>
 
             </table>
-
-
-
-
-
-
+          <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+          <div class="results-done">There are no more imports.</div>
+          <div class="results-empty">There are no imports.</div>
+          <div class="maincontainerx">
+            <a href="#" class="scrollup">Scroll</a>
+            <div class="row">
+              <div>
+                <div class="row">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="import-section hidden" id="import-new">
             <div class="row">
@@ -72,38 +78,49 @@
                             <div class="form-group">
                                 <label for="import-type">What would you like to import?</label>
                                 <select class="form-control" id="import-type">
-                                    <option value="users">Users</option>
-                                    <option value="groups">Groups</option>
-                                    <option value="usergroups">User Groups</option>
-                                    <option value="companies">Companies</option>
-                                    <option value="contacts">Contacts</option>
-                                    <option value="products">Products</option>
-                                    <option value="versions">Product Versions</option>
-                                    <option value="assets">Assets</option>
-                                    <option value="assethistory">Asset History</option>
-                                    <option value="tickets">Tickets</option>
-                                    <option value="actions">Actions</option>
-                                    <option value="companyaddresses">Company Addresses</option>
-                                    <option value="companyphonenumbers">Company Phone Numbers</option>
-                                    <option value="contactaddresses">Contact Addresses</option>
-                                    <option value="contactphonenumbers">Contact Phone Numbers</option>
-                                    <option value="wiki">Wiki</option>
-                                    <option value="companynotes">Company Notes</option>
-                                    <option value="companyproducts">Company Products</option>
-                                    <option value="companytickets">Company Tickets</option>
-                                    <option value="contacttickets">Contact Tickets</option>
-                                    <option value="assettickets">Asset Tickets</option>
-                                    <option value="parenttickets">Parent Tickets</option>
+                                  <option value="0">Actions</option>
+                                  <!--<option value="34">Assets</option>-->
+                                  <!--<option value="?">Asset History</option>-->
+                                  <!--<option value="?">Asset Tickets</option>-->
+                                  <!--<option value="9">Companies</option>-->
+                                  <!--<option value="?">Company Addresses</option>-->
+                                  <!--<option value="?">Company Notes</option>-->
+                                  <!--<option value="?">Company Phone Numbers</option>-->
+                                  <!--<option value="?">Company Products</option>-->
+                                  <!--<option value="?">Company Tickets</option>-->
+                                  <!--<option value="32">Contacts</option>-->
+                                  <!--<option value="?">Contact Addresses</option>-->
+                                  <!--<option value="?">Contact Phone Numbers</option>-->
+                                  <!--<option value="?">Contact Tickets</option>-->
+                                  <!--<option value="6">Groups</option>-->
+                                  <!--<option value="?">Parent Tickets</option>-->
+                                  <!--<option value="13">Products</option>-->
+                                  <!--<option value="14">Product Versions</option>-->
+                                  <!--<option value="17">Tickets</option>-->
+                                  <!--<option value="22">Users</option>-->
+                                  <!--<option value="?">User Groups</option>-->
+                                  <!--<option value="39">Wiki</option>-->
                                 </select>
                             </div>
                         </form>
 
-                        <div class="import-upload">
-                            <h3>Drag a file here</h3>
-                            <div>Or, if you prefer</div>
-                            <button class="btn btn-primary">Select a file from your computer</button>
+                      <form class="import-upload"
+                            action="Upload/Actions/555"
+                            method="POST"
+                            enctype="multipart/form-data">
+                        <div id="drop">
+                          <h3>Drag a file here</h3>
+                          <div>Or, if you prefer</div>
+                          <button id="btnSelectFile" class="btn btn-primary">Select a file from your computer</button>
+                          <input class="hiddenfile" type="file" name="file[]" multiple>
                         </div>
-                        <div class="import-new-action"><button class="btn btn-warning">Cancel</button><button class="btn btn-primary">Import</button></div>
+                        <ul class="upload-queue"></ul>
+                      </form>
+
+                        <div class="import-new-action">
+                          <button id="btnCancel" class="btn btn-warning">Cancel</button>
+                          <button id="btnImport" class="btn btn-primary">Import</button>
+                        </div>
                     </div>
 
 
@@ -197,7 +214,7 @@
                     </div>
 
                 </div>
-                <div class="col-xs-4">
+                <!--<div class="col-xs-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Available Fields</h3>
@@ -229,7 +246,7 @@
                     </div>
 
 
-                </div>
+                </div>-->
             </div>
             
         </div>

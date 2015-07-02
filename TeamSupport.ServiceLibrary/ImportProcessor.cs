@@ -27,13 +27,12 @@ namespace TeamSupport.ServiceLibrary
     {
       Imports imports = new Imports(LoginUser);
       imports.LoadWaiting();
-      Import import = imports[0];
 
       try
       {
         if (!imports.IsEmpty)
         {
-          ProcessImport(import);
+          ProcessImport(imports[0]);
         }
         UpdateHealth();
       }
@@ -73,6 +72,7 @@ namespace TeamSupport.ServiceLibrary
       import.TotalRows = GetTotalRows(csvFile);
       import.CompletedRows = 0;
       import.IsRunning = true;
+      import.DateStarted = DateTime.UtcNow;
       import.Collection.Save();
 
       _map = new SortedList<string, string>();
@@ -95,6 +95,7 @@ namespace TeamSupport.ServiceLibrary
       }
 
       import.IsDone = true;
+      import.DateEnded = DateTime.UtcNow;
       import.Collection.Save();
 
     }
@@ -104,7 +105,7 @@ namespace TeamSupport.ServiceLibrary
       using (CsvReader csv = new CsvReader(new StreamReader(csvFile), true))
       {
         while (csv.ReadNextRecord()) ;
-        return (int)csv.CurrentRecordIndex;
+        return (int)csv.CurrentRecordIndex + 1;
       }
     }
 
@@ -121,27 +122,34 @@ namespace TeamSupport.ServiceLibrary
 
       while (_csv.ReadNextRecord())
       {
-        int ticketID;
-        int creatorID = -1;
+        int ticketID = Convert.ToInt32(ReadString("TicketID"));
 
-        if (!ticketList.TryGetValue(ReadString("ActionID").ToUpper(), out ticketID))
+        if (!ticketList.ContainsValue(ticketID))
         {
           //_log.AppendError(row, "Action skipped due to missing ticket");
           continue;
         }
 
-        string actionType = ReadString("ActionType");
-        userList.TryGetValue(ReadString("CreatorID").ToUpper(), out creatorID);
-        string desc = ConvertHtmlLineBreaks(ReadString("Description"));
-
         TeamSupport.Data.Action action = actions.AddNewAction();
+
+        string actionType = ReadString("ActionType");
         action.SystemActionTypeID = GetSystemActionTypeID(actionType);
         action.ActionTypeID = GetActionTypeID(actionTypes, actionType);
-        action.CreatorID = (int)creatorID;
+
+        int creatorID = -2;
+        if (Int32.TryParse(ReadString("CreatorID"), out creatorID)) {
+          if (!userList.ContainsValue(creatorID)){
+            creatorID = -2;
+          }
+        }
+        action.CreatorID = creatorID;
+
+        string desc = ConvertHtmlLineBreaks(ReadString("Description"));
+        action.Description = desc;
+
         action.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
         action.DateModified = DateTime.UtcNow;
         action.DateStarted = ReadDateNull("DateStarted");
-        action.Description = desc;
         action.ActionSource = "Import";
         action.IsVisibleOnPortal = ReadBool("VisibleOnPortal");
         action.ModifierID = -2;

@@ -47,11 +47,11 @@ namespace TSWebServices
     [WebMethod]
     public int GetIDByExactName(string name)
     {
-        name = name.Replace('+', ' ').Replace('_', ' ');
-        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
-        organizations.LoadByOrganizationNameActive(name, TSAuthentication.OrganizationID);
-        if (organizations.IsEmpty) return -1;
-        return organizations[0].OrganizationID;
+      name = name.Replace('+', ' ').Replace('_', ' ');
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByOrganizationNameActive(name, TSAuthentication.OrganizationID);
+      if (organizations.IsEmpty) return -1;
+      return organizations[0].OrganizationID;
     }
 
     //[0] = orgid
@@ -60,7 +60,7 @@ namespace TSWebServices
     public int[] GetIDByPhone(string phone)
     {
       int[] result = new int[2] { -1, -1 };
-      phone = phone.Replace(")", "").Replace("(", "").Replace("-", "").Replace(".", "").Replace(" ", "").Replace("+1","").Replace("+","").ToLower();
+      phone = phone.Replace(")", "").Replace("(", "").Replace("-", "").Replace(".", "").Replace(" ", "").Replace("+1", "").Replace("+", "").ToLower();
 
       PhoneNumbers phoneNumbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
       phoneNumbers.LoadByOrganizationID(TSAuthentication.OrganizationID);
@@ -111,23 +111,23 @@ namespace TSWebServices
     {
       Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
       if (TSAuthentication.OrganizationID != 1088 && TSAuthentication.OrganizationID != 1078 && organization.ParentID != TSAuthentication.OrganizationID && organization.OrganizationID != TSAuthentication.OrganizationID) return null;
-       return organization.GetProxy();
+      return organization.GetProxy();
     }
 
     [WebMethod]
     public bool IsProductRequired()
-    {   
-        Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+    {
+      Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
 
-        return organization.ProductRequired;
+      return organization.ProductRequired;
     }
 
     [WebMethod]
     public bool IsProductVersionRequired()
     {
-        Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+      Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
 
-        return organization.ProductVersionRequired;
+      return organization.ProductVersionRequired;
     }
 
     [WebMethod]
@@ -151,42 +151,42 @@ namespace TSWebServices
     [WebMethod]
     public AgentRatingsOptionProxy GetAgentRatingOptions(int organizationID)
     {
-        
-        AgentRatingsOption options = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), organizationID);
-        if (options == null)
-            return null;
-        else
-            return options.GetProxy();
+
+      AgentRatingsOption options = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), organizationID);
+      if (options == null)
+        return null;
+      else
+        return options.GetProxy();
     }
 
     [WebMethod]
     public void SaveCDISettings(CDI_SettingProxy cdi)
     {
-        CDI_Setting cdiSettings = CDI_Settings.GetCDI_Setting(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
-        if (cdiSettings == null)
-        {
-            CDI_Setting cdiSetting = (new CDI_Settings(TSAuthentication.GetLoginUser())).AddNewCDI_Setting();
-            cdiSetting.OrganizationID = TSAuthentication.OrganizationID;
-            cdiSetting.TotalTicketsWeight = cdi.TotalTicketsWeight;
-            cdiSetting.OpenTicketsWeight = cdi.OpenTicketsWeight;
-            cdiSetting.Last30Weight = cdi.Last30Weight;
-            cdiSetting.AvgDaysOpenWeight = cdi.AvgDaysOpenWeight;
-            cdiSetting.AvgDaysToCloseWeight = cdi.AvgDaysToCloseWeight;
-            cdiSetting.GreenUpperRange = cdi.GreenUpperRange;
-            cdiSetting.YellowUpperRange = cdi.YellowUpperRange;
-            cdiSetting.Collection.Save();
-        }
-        else
-        {
-            cdiSettings.TotalTicketsWeight = cdi.TotalTicketsWeight;
-            cdiSettings.OpenTicketsWeight = cdi.OpenTicketsWeight;
-            cdiSettings.Last30Weight = cdi.Last30Weight;
-            cdiSettings.AvgDaysOpenWeight = cdi.AvgDaysOpenWeight;
-            cdiSettings.AvgDaysToCloseWeight = cdi.AvgDaysToCloseWeight;
-            cdiSettings.GreenUpperRange = cdi.GreenUpperRange;
-            cdiSettings.YellowUpperRange = cdi.YellowUpperRange;
-            cdiSettings.Collection.Save();
-        }
+      CDI_Setting cdiSettings = CDI_Settings.GetCDI_Setting(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+      if (cdiSettings == null)
+      {
+        CDI_Setting cdiSetting = (new CDI_Settings(TSAuthentication.GetLoginUser())).AddNewCDI_Setting();
+        cdiSetting.OrganizationID = TSAuthentication.OrganizationID;
+        cdiSetting.TotalTicketsWeight = cdi.TotalTicketsWeight;
+        cdiSetting.OpenTicketsWeight = cdi.OpenTicketsWeight;
+        cdiSetting.Last30Weight = cdi.Last30Weight;
+        cdiSetting.AvgDaysOpenWeight = cdi.AvgDaysOpenWeight;
+        cdiSetting.AvgDaysToCloseWeight = cdi.AvgDaysToCloseWeight;
+        cdiSetting.GreenUpperRange = cdi.GreenUpperRange;
+        cdiSetting.YellowUpperRange = cdi.YellowUpperRange;
+        cdiSetting.Collection.Save();
+      }
+      else
+      {
+        cdiSettings.TotalTicketsWeight = cdi.TotalTicketsWeight;
+        cdiSettings.OpenTicketsWeight = cdi.OpenTicketsWeight;
+        cdiSettings.Last30Weight = cdi.Last30Weight;
+        cdiSettings.AvgDaysOpenWeight = cdi.AvgDaysOpenWeight;
+        cdiSettings.AvgDaysToCloseWeight = cdi.AvgDaysToCloseWeight;
+        cdiSettings.GreenUpperRange = cdi.GreenUpperRange;
+        cdiSettings.YellowUpperRange = cdi.YellowUpperRange;
+        cdiSettings.Collection.Save();
+      }
     }
 
 
@@ -197,7 +197,7 @@ namespace TSWebServices
       if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
 
       PortalOption option = PortalOptions.GetPortalOption(organization.Collection.LoginUser, proxy.OrganizationID);
-      
+
       option.PortalName = PortalOptions.ValidatePortalNameChars(proxy.PortalName);
       PortalOptions options = new PortalOptions(organization.Collection.LoginUser);
       options.LoadByPortalName(option.PortalName);
@@ -213,17 +213,17 @@ namespace TSWebServices
       fb.LoadByOrganizationID(proxy.OrganizationID);
       if (fb.IsEmpty)
       {
-          FacebookOption fbo = (new FacebookOptions(TSAuthentication.GetLoginUser()).AddNewFacebookOption());
-          fbo.OrganizationID = proxy.OrganizationID;
-          fbo.DisplayArticles = proxy.DisplayFbArticles;
-          fbo.DisplayKB = proxy.DisplayFbKB;
-          fbo.Collection.Save();
+        FacebookOption fbo = (new FacebookOptions(TSAuthentication.GetLoginUser()).AddNewFacebookOption());
+        fbo.OrganizationID = proxy.OrganizationID;
+        fbo.DisplayArticles = proxy.DisplayFbArticles;
+        fbo.DisplayKB = proxy.DisplayFbKB;
+        fbo.Collection.Save();
       }
       else
       {
-          fb[0].DisplayArticles = proxy.DisplayFbArticles;
-          fb[0].DisplayKB = proxy.DisplayFbKB;
-          fb[0].Collection.Save();
+        fb[0].DisplayArticles = proxy.DisplayFbArticles;
+        fb[0].DisplayKB = proxy.DisplayFbKB;
+        fb[0].Collection.Save();
       }
 
       option.EnableSaExpiration = proxy.EnableSaExpiration;
@@ -290,24 +290,24 @@ namespace TSWebServices
       AgentRatingsOption agentRatingOption = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
       if (agentRatingOption == null)
       {
-          AgentRatingsOptions aro = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
-          aro.AddNewAgentRatingsOption();
-          aro[0].OrganizationID = TSAuthentication.OrganizationID;
-            aro[0].PositiveRatingText = agentproxy.PositiveRatingText;
-              aro[0].NeutralRatingText = agentproxy.NeutralRatingText;
-              aro[0].NegativeRatingText = agentproxy.NegativeRatingText;
-              aro[0].RedirectURL = agentproxy.RedirectURL;
-              aro[0].ExternalPageLink = agentproxy.ExternalPageLink;
-              aro[0].Collection.Save();
+        AgentRatingsOptions aro = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
+        aro.AddNewAgentRatingsOption();
+        aro[0].OrganizationID = TSAuthentication.OrganizationID;
+        aro[0].PositiveRatingText = agentproxy.PositiveRatingText;
+        aro[0].NeutralRatingText = agentproxy.NeutralRatingText;
+        aro[0].NegativeRatingText = agentproxy.NegativeRatingText;
+        aro[0].RedirectURL = agentproxy.RedirectURL;
+        aro[0].ExternalPageLink = agentproxy.ExternalPageLink;
+        aro[0].Collection.Save();
       }
       else
       {
-          agentRatingOption.PositiveRatingText = agentproxy.PositiveRatingText;
-          agentRatingOption.NeutralRatingText = agentproxy.NeutralRatingText;
-          agentRatingOption.NegativeRatingText = agentproxy.NegativeRatingText;
-          agentRatingOption.RedirectURL = agentproxy.RedirectURL;
-          agentRatingOption.ExternalPageLink = agentproxy.ExternalPageLink;
-          agentRatingOption.Collection.Save();
+        agentRatingOption.PositiveRatingText = agentproxy.PositiveRatingText;
+        agentRatingOption.NeutralRatingText = agentproxy.NeutralRatingText;
+        agentRatingOption.NegativeRatingText = agentproxy.NegativeRatingText;
+        agentRatingOption.RedirectURL = agentproxy.RedirectURL;
+        agentRatingOption.ExternalPageLink = agentproxy.ExternalPageLink;
+        agentRatingOption.Collection.Save();
       }
       return null;
     }
@@ -315,32 +315,32 @@ namespace TSWebServices
     [WebMethod]
     public void ResetRatingImage(int ratingID)
     {
-        AgentRatingsOptions ratingOptions = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
-        ratingOptions.LoadByOrganizationID(TSAuthentication.OrganizationID);
+      AgentRatingsOptions ratingOptions = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
+      ratingOptions.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
 
-        switch(ratingID)
-        {
-            case -1:
-                ratingOptions[0].NegativeImage = null;
-                break;
-            case 0:
-                ratingOptions[0].NeutralImage = null;
-                break;
-            case 1:
-                ratingOptions[0].PositiveImage = null;
-                break;
-        }
+      switch (ratingID)
+      {
+        case -1:
+          ratingOptions[0].NegativeImage = null;
+          break;
+        case 0:
+          ratingOptions[0].NeutralImage = null;
+          break;
+        case 1:
+          ratingOptions[0].PositiveImage = null;
+          break;
+      }
 
-        ratingOptions[0].Collection.Save();
-       
+      ratingOptions[0].Collection.Save();
 
-        return;
+
+      return;
     }
 
 
     [WebMethod]
-    public bool? UpdateUseCommunity(bool value) 
+    public bool? UpdateUseCommunity(bool value)
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
       Organization org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
@@ -421,29 +421,29 @@ namespace TSWebServices
 
     [WebMethod]
     public CRMLinkTableItemProxy SaveCrmLink(
-      int     crmLinkID, 
-      bool    isActive, 
-      string  crmType, 
-      string  password, 
-      string  token, 
-      string  tag, 
-      string  userName, 
-      bool    email, 
-      bool    portal, 
-      int?    defaultSlaLevelID,
-      bool    pullCasesAsTickets,
-      bool    pushTicketsAsCases,
-      bool    pushTicketsAsAccountComments,
-      bool    pullCustomerProducts,
-      int?    actionTypeIDToPush,
-      string  hostName,
-      string  defaultProject,
-      bool?   updateStatus,
-      bool    updateTicketType,
-      bool    matchAccountsByName,
-      bool    useSandBoxServer,
-      bool    alwaysUseDefaultProjectKey,
-      string  restrictedToTicketTypes
+      int crmLinkID,
+      bool isActive,
+      string crmType,
+      string password,
+      string token,
+      string tag,
+      string userName,
+      bool email,
+      bool portal,
+      int? defaultSlaLevelID,
+      bool pullCasesAsTickets,
+      bool pushTicketsAsCases,
+      bool pushTicketsAsAccountComments,
+      bool pullCustomerProducts,
+      int? actionTypeIDToPush,
+      string hostName,
+      string defaultProject,
+      bool? updateStatus,
+      bool updateTicketType,
+      bool matchAccountsByName,
+      bool useSandBoxServer,
+      bool alwaysUseDefaultProjectKey,
+      string restrictedToTicketTypes
     )
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
@@ -463,8 +463,8 @@ namespace TSWebServices
 
         if (item.TypeFieldMatch != tag && (crmType == "Batchbook" || crmType == "Highrise" || crmType == "Salesforce" || crmType == "ZohoCrm"))
         {
-              item.LastLink = null;
-          }
+          item.LastLink = null;
+        }
         if (item.OrganizationID != TSAuthentication.OrganizationID) return null;
       }
 
@@ -590,7 +590,7 @@ namespace TSWebServices
       if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
       Organizations.SetRebuildIndexes(TSAuthentication.GetLoginUser(), organizationID);
     }
-    
+
 
 
     [WebMethod]
@@ -609,10 +609,10 @@ namespace TSWebServices
           result.Add(new TypeAheadItem(organization.Name + " (" + organization.OrganizationID.ToString() + ")", organization.OrganizationID.ToString()));
           flag = false;
         }
-      
+
       }
 
-      if (flag) 
+      if (flag)
       {
         Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
         organizations.LoadByOrganizationName(query, parentID);
@@ -751,13 +751,13 @@ namespace TSWebServices
           if (newStatus == null)
           {
             foreach (TicketStatus item in statuses)
-	          {
+            {
               if (item.TicketTypeID == ticket.TicketTypeID && item.IsClosed == status.IsClosed)
               {
                 newStatus = item;
                 break;
               }
-	          }
+            }
           }
           if (newStatus != null)
           {
@@ -776,73 +776,73 @@ namespace TSWebServices
       string result = "No Access";
       if (TSAuthentication.UserID != 34) return result;
 
-/*      Organization source = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), sourceID);
-      Organization dest = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), sourceID);
+      /*      Organization source = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), sourceID);
+            Organization dest = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), sourceID);
 
-      dest.ChangeStatusIfClosed = source.ChangeStatusIfClosed;
-      dest.AddAdditionalContacts = source.AddAdditionalContacts;
-      //dest.ModifierID = source.ModifierID;
-      //dest.CreatorID = source.CreatorID;
-      dest.MatchEmailSubject = source.MatchEmailSubject;
-      dest.TimedActionsRequired = source.TimedActionsRequired;
-      dest.CultureName = source.CultureName;
-      dest.UseEuropeDate = source.UseEuropeDate;
-      dest.BusinessDays = source.BusinessDays;
-      dest.InternalSlaLevelID = source.InternalSlaLevelID;
-      dest.SlaLevelID = source.SlaLevelID;
-      dest.DefaultWikiArticleID = source.DefaultWikiArticleID;
-      dest.ShowWiki = source.ShowWiki;
-      dest.AdminOnlyReports = source.AdminOnlyReports;
-      dest.AdminOnlyCustomers = source.AdminOnlyCustomers;
-      dest.CompanyDomains = source.CompanyDomains;
-      dest.OrganizationReplyToAddress = source.OrganizationReplyToAddress;
-      dest.EmailDelimiter = source.EmailDelimiter;
-      dest.RequireKnownUserForNewEmail = source.RequireKnownUserForNewEmail;
-      dest.RequireNewKeyword = source.RequireNewKeyword;
-      dest.APIRequestLimit = source.APIRequestLimit;
-      dest.CRMLinkID = source.CRMLinkID;
-      dest.PortalGuid = source.PortalGuid;
-      dest.ChatID = source.ChatID;
-      dest.SystemEmailID = source.SystemEmailID;
-      dest.WebServiceID = source.WebServiceID;
-      dest.ParentID = source.ParentID;
-      dest.ProductType = source.ProductType;
-      dest.DefaultSupportUserID = source.DefaultSupportUserID;
-      dest.DefaultSupportGroupID = source.DefaultSupportGroupID;
-      dest.DefaultPortalGroupID = source.DefaultPortalGroupID;
-      dest.PrimaryUserID = source.PrimaryUserID;
-      dest.IsBasicPortal = source.IsBasicPortal;
-      dest.IsAdvancedPortal = source.IsAdvancedPortal;
-      dest.HasPortalAccess = source.HasPortalAccess;
-      dest.InActiveReason = source.InActiveReason;
-      dest.TimeZoneID = source.TimeZoneID;
-      dest.IsInventoryEnabled = source.IsInventoryEnabled;
-      dest.IsApiEnabled = source.IsApiEnabled;
-      dest.IsApiActive = source.IsApiActive;
-      dest.IsActive = source.IsActive;
-      dest.ImportID = source.ImportID;
-      dest.ExtraStorageUnits = source.ExtraStorageUnits;
-      dest.ChatSeats = source.ChatSeats;
-      dest.PortalSeats = source.PortalSeats;
-      dest.UserSeats = source.UserSeats;
-      dest.IsCustomerFree = source.IsCustomerFree;
-      dest.PromoCode = source.PromoCode;
-      dest.EvalProcess = source.EvalProcess;
-      dest.PotentialSeats = source.PotentialSeats;
-      dest.PrimaryInterest = source.PrimaryInterest;
-      dest.WhereHeard = source.WhereHeard;
-      dest.Website = source.Website;
-      dest.Description = source.Description;
-      dest.Name = source.Name;
-      dest.OrganizationID = source.OrganizationID;
+            dest.ChangeStatusIfClosed = source.ChangeStatusIfClosed;
+            dest.AddAdditionalContacts = source.AddAdditionalContacts;
+            //dest.ModifierID = source.ModifierID;
+            //dest.CreatorID = source.CreatorID;
+            dest.MatchEmailSubject = source.MatchEmailSubject;
+            dest.TimedActionsRequired = source.TimedActionsRequired;
+            dest.CultureName = source.CultureName;
+            dest.UseEuropeDate = source.UseEuropeDate;
+            dest.BusinessDays = source.BusinessDays;
+            dest.InternalSlaLevelID = source.InternalSlaLevelID;
+            dest.SlaLevelID = source.SlaLevelID;
+            dest.DefaultWikiArticleID = source.DefaultWikiArticleID;
+            dest.ShowWiki = source.ShowWiki;
+            dest.AdminOnlyReports = source.AdminOnlyReports;
+            dest.AdminOnlyCustomers = source.AdminOnlyCustomers;
+            dest.CompanyDomains = source.CompanyDomains;
+            dest.OrganizationReplyToAddress = source.OrganizationReplyToAddress;
+            dest.EmailDelimiter = source.EmailDelimiter;
+            dest.RequireKnownUserForNewEmail = source.RequireKnownUserForNewEmail;
+            dest.RequireNewKeyword = source.RequireNewKeyword;
+            dest.APIRequestLimit = source.APIRequestLimit;
+            dest.CRMLinkID = source.CRMLinkID;
+            dest.PortalGuid = source.PortalGuid;
+            dest.ChatID = source.ChatID;
+            dest.SystemEmailID = source.SystemEmailID;
+            dest.WebServiceID = source.WebServiceID;
+            dest.ParentID = source.ParentID;
+            dest.ProductType = source.ProductType;
+            dest.DefaultSupportUserID = source.DefaultSupportUserID;
+            dest.DefaultSupportGroupID = source.DefaultSupportGroupID;
+            dest.DefaultPortalGroupID = source.DefaultPortalGroupID;
+            dest.PrimaryUserID = source.PrimaryUserID;
+            dest.IsBasicPortal = source.IsBasicPortal;
+            dest.IsAdvancedPortal = source.IsAdvancedPortal;
+            dest.HasPortalAccess = source.HasPortalAccess;
+            dest.InActiveReason = source.InActiveReason;
+            dest.TimeZoneID = source.TimeZoneID;
+            dest.IsInventoryEnabled = source.IsInventoryEnabled;
+            dest.IsApiEnabled = source.IsApiEnabled;
+            dest.IsApiActive = source.IsApiActive;
+            dest.IsActive = source.IsActive;
+            dest.ImportID = source.ImportID;
+            dest.ExtraStorageUnits = source.ExtraStorageUnits;
+            dest.ChatSeats = source.ChatSeats;
+            dest.PortalSeats = source.PortalSeats;
+            dest.UserSeats = source.UserSeats;
+            dest.IsCustomerFree = source.IsCustomerFree;
+            dest.PromoCode = source.PromoCode;
+            dest.EvalProcess = source.EvalProcess;
+            dest.PotentialSeats = source.PotentialSeats;
+            dest.PrimaryInterest = source.PrimaryInterest;
+            dest.WhereHeard = source.WhereHeard;
+            dest.Website = source.Website;
+            dest.Description = source.Description;
+            dest.Name = source.Name;
+            dest.OrganizationID = source.OrganizationID;
 
 
-      CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
-      fields.LoadByOrganization(dest.OrganizationID);
-      fields.DeleteAll();
-      fields.Save();
+            CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+            fields.LoadByOrganization(dest.OrganizationID);
+            fields.DeleteAll();
+            fields.Save();
 
-      */
+            */
       return result;
     }
 
@@ -929,7 +929,7 @@ namespace TSWebServices
 
       return list.ToArray();
     }
-    
+
     public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
     {
       Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
@@ -1005,60 +1005,60 @@ namespace TSWebServices
     [WebMethod]
     public AutocompleteItem[] WCSearchOrganization(string searchTerm)
     {
-        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
-        organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
 
-        List<AutocompleteItem> list = new List<AutocompleteItem>();
-        foreach (Organization organization in organizations)
-        {
-            list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), organization.OrganizationID.ToString()));
-        }
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
+      foreach (Organization organization in organizations)
+      {
+        list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), organization.OrganizationID.ToString()));
+      }
 
-        return list.ToArray();
+      return list.ToArray();
     }
 
     [WebMethod]
     public List<string> OrgSearch(string searchTerm)
     {
-        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
-        organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
 
-        List<string> list = new List<string>();
-        foreach (Organization organization in organizations)
-        {
-            list.Add(organization.Name);
-        }
+      List<string> list = new List<string>();
+      foreach (Organization organization in organizations)
+      {
+        list.Add(organization.Name);
+      }
 
-        return list;
+      return list;
     }
 
     [WebMethod]
     public GroupProxy GetGroupInfo(string groupID)
     {
-        Groups groups = new Groups(TSAuthentication.GetLoginUser());
-        if (groupID == null)
-        {
-            groups.LoadByOrganizationIDForGrid(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser().UserID);
-            return groups[0].GetProxy();
-        }
-        else
-        {
-            groups.LoadByGroupID(Convert.ToInt16(groupID));
-            return groups[0].GetProxy();
-        }
+      Groups groups = new Groups(TSAuthentication.GetLoginUser());
+      if (groupID == null)
+      {
+        groups.LoadByOrganizationIDForGrid(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser().UserID);
+        return groups[0].GetProxy();
+      }
+      else
+      {
+        groups.LoadByGroupID(Convert.ToInt16(groupID));
+        return groups[0].GetProxy();
+      }
 
     }
 
     [WebMethod]
     public string GetGroups()
     {
-        StringBuilder html = new StringBuilder();
-        Groups groups = new Groups(TSAuthentication.GetLoginUser());
-        groups.LoadByOrganizationIDForGrid(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser().UserID);
+      StringBuilder html = new StringBuilder();
+      Groups groups = new Groups(TSAuthentication.GetLoginUser());
+      groups.LoadByOrganizationIDForGrid(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser().UserID);
 
-        foreach (GroupProxy group in groups.GetGroupProxies())
-        {
-            html.AppendFormat(@"<li>
+      foreach (GroupProxy group in groups.GetGroupProxies())
+      {
+        html.AppendFormat(@"<li>
                                 <div class='row'>
                                 <div class='col-xs-12'>
                                     <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
@@ -1067,10 +1067,10 @@ namespace TSWebServices
                                 </div>
                                 </li>
                                 ", group.GroupID, group.Name, group.Description, group.TicketCount);
-        }
+      }
 
 
-        return html.ToString();
+      return html.ToString();
     }
 
 
@@ -1081,7 +1081,7 @@ namespace TSWebServices
       string text = "UPDATE Tickets SET NeedsIndexing = 1";
       SqlCommand command = new SqlCommand(text);
       //SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), command);
-      
+
       text = "SELECT count(*) FROM tickets where needsindexing > 0 ";
       command = new SqlCommand(text);
       return DataTableToHTMLTable(SqlExecutor.ExecuteQuery(TSAuthentication.GetLoginUser(), command));
@@ -1136,15 +1136,15 @@ namespace TSWebServices
     [WebMethod]
     public string GetShortNameFromID(int orgID)
     {
-        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
-        organizations.LoadByOrganizationID(orgID);
-        
-        if (organizations.IsEmpty) return "N/A";
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByOrganizationID(orgID);
 
-        if (organizations[0].Name.Length > 10)
-            return organizations[0].Name.Substring(0, 10).ToString() + "...";
-        else
-            return organizations[0].Name.ToString();
+      if (organizations.IsEmpty) return "N/A";
+
+      if (organizations[0].Name.Length > 10)
+        return organizations[0].Name.Substring(0, 10).ToString() + "...";
+      else
+        return organizations[0].Name.ToString();
     }
 
     [WebMethod]
@@ -1152,140 +1152,147 @@ namespace TSWebServices
     {
       using (WebClient client = new WebClient())
       {
-                                                  //https://teamsupport.evergage.com/api/dataset/MainApp/account/muroc%20systems%2C%20inc.?_at=AD84A537-E376-65FC-3351-767A6DC6EB12
+        //https://teamsupport.evergage.com/api/dataset/MainApp/account/muroc%20systems%2C%20inc.?_at=AD84A537-E376-65FC-3351-767A6DC6EB12
         return client.DownloadString(string.Format("https://teamsupport.evergage.com/api/dataset/MainApp/account/{0}?_at=AD84A537-E376-65FC-3351-767A6DC6EB12", Uri.EscapeDataString(orgName.ToLower())));
       }
-    
+
     }
 
     [WebMethod]
     public void ResetCDI()
     {
-        //CDI_Setting cdi = (new CDI_Settings(TSAuthentication.GetLoginUser()).AddNewCDI_Setting());
-        CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
-        cdi.LoadByOrganizationID(TSAuthentication.OrganizationID);
+      //CDI_Setting cdi = (new CDI_Settings(TSAuthentication.GetLoginUser()).AddNewCDI_Setting());
+      CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
+      cdi.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
-        if (cdi.Count > 0)
-        {
-            cdi[0].NeedCompute = true;
-            cdi.Save();
-        }
-        else
-        {
-            CDI_Setting newCDI = (new CDI_Settings(TSAuthentication.GetLoginUser()).AddNewCDI_Setting());
-            newCDI.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
-            newCDI.NeedCompute = true;
-            newCDI.Collection.Save();
-        }
+      if (cdi.Count > 0)
+      {
+        cdi[0].NeedCompute = true;
+        cdi.Save();
+      }
+      else
+      {
+        CDI_Setting newCDI = (new CDI_Settings(TSAuthentication.GetLoginUser()).AddNewCDI_Setting());
+        newCDI.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+        newCDI.NeedCompute = true;
+        newCDI.Collection.Save();
+      }
     }
 
     [WebMethod]
     public CDI_SettingProxy LoadCDISettings(int organizationID)
     {
-        CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
-        cdi.LoadByOrganizationID(organizationID);
-        if (cdi.Count > 0)
-            return cdi[0].GetProxy();
-        else
-            return null;
+      CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
+      cdi.LoadByOrganizationID(organizationID);
+      if (cdi.Count > 0)
+        return cdi[0].GetProxy();
+      else
+        return null;
     }
 
     [WebMethod]
     public CustomPortalColumnProxy[] LoadCustomPortalColumns(int organizationID)
     {
-        CustomPortalColumns cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
-        cpc.LoadByOrganizationID(organizationID);
+      CustomPortalColumns cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+      cpc.LoadByOrganizationID(organizationID);
 
-        return cpc.GetCustomPortalColumnProxies();
+      return cpc.GetCustomPortalColumnProxies();
     }
 
     [WebMethod]
     public void RemoveCustomPortalColumn(string fieldID)
     {
-        CustomPortalColumns cpc;
-        int id = int.Parse(fieldID.Substring(1));
+      CustomPortalColumns cpc;
+      int id = int.Parse(fieldID.Substring(1));
 
-        if (fieldID.StartsWith("s"))
-        {
-            //loadstock
-            cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
-            cpc.LoadByStockFieldID(id, TSAuthentication.GetLoginUser().OrganizationID);
-        }
-        else
-        {
-            //load custom
-            cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
-            cpc.LoadByCustomFieldID(id, TSAuthentication.GetLoginUser().OrganizationID);
-        }
+      if (fieldID.StartsWith("s"))
+      {
+        //loadstock
+        cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+        cpc.LoadByStockFieldID(id, TSAuthentication.GetLoginUser().OrganizationID);
+      }
+      else
+      {
+        //load custom
+        cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+        cpc.LoadByCustomFieldID(id, TSAuthentication.GetLoginUser().OrganizationID);
+      }
 
 
 
-        cpc[0].Delete();
-        cpc[0].Collection.Save();
+      cpc[0].Delete();
+      cpc[0].Collection.Save();
     }
 
     [WebMethod]
     public void AddCustomPortalColumn(string fieldID, int position)
     {
-        CustomPortalColumn cpc;
-        int id = int.Parse(fieldID.Substring(1));
+      CustomPortalColumn cpc;
+      int id = int.Parse(fieldID.Substring(1));
 
-        cpc = (new CustomPortalColumns(TSAuthentication.GetLoginUser()).AddNewCustomPortalColumn());
-        cpc.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
-        cpc.Position = position-1;
+      cpc = (new CustomPortalColumns(TSAuthentication.GetLoginUser()).AddNewCustomPortalColumn());
+      cpc.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+      cpc.Position = position - 1;
 
-        if (fieldID.StartsWith("s"))
-            //save stock
-            cpc.StockFieldID = id;
-        else
-            //save custom
-            cpc.CustomFieldID = id;
-        
-        cpc.Collection.Save();
+      if (fieldID.StartsWith("s"))
+        //save stock
+        cpc.StockFieldID = id;
+      else
+        //save custom
+        cpc.CustomFieldID = id;
+
+      cpc.Collection.Save();
     }
 
     [WebMethod]
     public void SavePortalColOrder(string columns)
     {
-        List<string> orders = JsonConvert.DeserializeObject<List<string>>(columns);
-        CustomPortalColumns cols = new CustomPortalColumns(TSAuthentication.GetLoginUser());
-        cols.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+      List<string> orders = JsonConvert.DeserializeObject<List<string>>(columns);
+      CustomPortalColumns cols = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+      cols.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
 
-        int pos = 0;
-        foreach (string s in orders)
-        {
-            CustomPortalColumn c;
-            int id = int.Parse(s.Substring(1));
-            if(s.StartsWith("s"))
-                c = cols.FindByStockFieldID(id);
-            else
-                c = cols.FindByCustomFieldID(id);
+      int pos = 0;
+      foreach (string s in orders)
+      {
+        CustomPortalColumn c;
+        int id = int.Parse(s.Substring(1));
+        if (s.StartsWith("s"))
+          c = cols.FindByStockFieldID(id);
+        else
+          c = cols.FindByCustomFieldID(id);
 
-            c.Position = pos;
-            pos++;
-        }
-        cols.Save();
+        c.Position = pos;
+        pos++;
+      }
+      cols.Save();
     }
 
     [WebMethod]
     public ProductFamilyProxy[] LoadOrgProductFamilies(int organizationID)
     {
-        LoginUser loginUser = TSAuthentication.GetLoginUser();
-        ProductFamilies productFamilies = new ProductFamilies(loginUser);
-        User user = loginUser.GetUser();
-        if (user.ProductFamiliesRights == (int)ProductFamiliesRightType.AllFamilies)
-        {
-          productFamilies.LoadByOrganizationID(loginUser.OrganizationID);
-        }
-        else
-        {
-          productFamilies.LoadByUserRights(loginUser.UserID);
-        }
-        return productFamilies.GetProductFamilyProxies();
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      ProductFamilies productFamilies = new ProductFamilies(loginUser);
+      User user = loginUser.GetUser();
+      if (user.ProductFamiliesRights == (int)ProductFamiliesRightType.AllFamilies)
+      {
+        productFamilies.LoadByOrganizationID(loginUser.OrganizationID);
+      }
+      else
+      {
+        productFamilies.LoadByUserRights(loginUser.UserID);
+      }
+      return productFamilies.GetProductFamilyProxies();
     }
 
-  }
+    [WebMethod]
+    public ImportProxy[] LoadImports(int start)
+    {
+      Imports imports = new Imports(TSAuthentication.GetLoginUser());
+      imports.LoadByLimit(start);
 
+      return imports.GetImportProxies();
+    }
+  }
 
   [DataContract]
   public class ApiInfo

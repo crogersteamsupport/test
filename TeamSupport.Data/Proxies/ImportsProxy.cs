@@ -18,11 +18,15 @@ namespace TeamSupport.Data
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public Guid ImportGUID { get; set; }
     [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public string RefTypeString { get; set; }
     [DataMember] public int? AuxID { get; set; }
     [DataMember] public bool IsDone { get; set; }
     [DataMember] public bool IsRunning { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public DateTime? DateStarted { get; set; }
     [DataMember] public int CreatorID { get; set; }
+    [DataMember] public int CompletedRows { get; set; }
+    [DataMember] public int TotalRows { get; set; }
           
   }
   
@@ -36,12 +40,16 @@ namespace TeamSupport.Data
       result.IsDone = this.IsDone;
       result.AuxID = this.AuxID;
       result.RefType = this.RefType;
+      result.RefTypeString = this.RefType.ToString();
       result.ImportGUID = this.ImportGUID;
       result.OrganizationID = this.OrganizationID;
       result.FileName = this.FileName;
       result.ImportID = this.ImportID;
+      result.CompletedRows = this.CompletedRows;
+      result.TotalRows = this.TotalRows;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateStarted = this.DateStartedUtc == null ? this.DateStartedUtc : DateTime.SpecifyKind((DateTime)this.DateStartedUtc, DateTimeKind.Utc); 
        
        
       return result;
