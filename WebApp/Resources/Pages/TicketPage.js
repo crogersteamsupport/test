@@ -656,7 +656,6 @@ function SaveAction(oldActionID, isPrivate, callback) {
 
   action.ActionID = oldActionID;
   action.TicketID = _ticketID;
-
   var actionType = $('#action-new-type option:selected').data('data');
   action.ActionTypeID = actionType.ActionTypeID
 
@@ -679,6 +678,7 @@ function SaveAction(oldActionID, isPrivate, callback) {
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
   top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
     top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+    result.item.MessageType = actionType.Name;
     callback(result)
   }, function (error) {
     callback(null);
