@@ -305,7 +305,13 @@
                     <span class="pull-left">
                       <a data-userid="{{item.CreatorID}}" data-userid="{{item.CreatorID}}" data-name="{{item.CreatorName}}" onclick='top.Ts.MainPage.openUser({{item.CreatorID}}); return false;' class="TeamSupportBlue UserAnchor">{{item.CreatorName}}</a>
                       <br>
-                      <small class="text-muted">added a {{item.MessageType}} on {{FormatDateTime item.DateCreated}}</small>
+                      <small class="text-muted">added a 
+                      {{#if item.MessageType}}
+                        {{item.MessageType}}
+                      {{else}}
+                        Description
+                      {{/if}}
+                       on {{FormatDateTime item.DateCreated}}</small>
                       <br>
                       <small class="text-muted">{{TimeSpent}}</small>
                     </span>

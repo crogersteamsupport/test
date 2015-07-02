@@ -43,7 +43,7 @@ var publisher;
 $(document).ready(function () {
 
   apiKey = "45228242";
-   
+
   $('video').click(function () { this.paused ? this.play() : this.pause(); });
 
   $('body').delegate('video', 'click', function (e) { this.paused ? this.play() : this.pause(); });
@@ -134,8 +134,8 @@ $(document).ready(function () {
           var winningID = $('#dialog-ticketmerge-search').data('ticketid');
           var winningTicketNumber = $('#dialog-ticketmerge-search').data('ticketnumber');
           top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function (result) {
-              if (result != "")
-                  alert(result);
+            if (result != "")
+              alert(result);
             $(this).parent().remove();
           }, function () {
             $(this).parent().remove();
@@ -783,7 +783,7 @@ $(document).ready(function () {
     top.Ts.System.logAction('Ticket - New Action Started');
     createActionForm($('<div>').appendTo('.ticket-action-new-form'), null, function (result) {
       if ($('.ticket-action-form').length < 2) {
-          top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
       }
       if (result !== null) {
         /*var actionDiv = createActionElement().prependTo('#divActions');
@@ -1741,7 +1741,7 @@ $(document).ready(function () {
       }
       else {
         loadProducts();
-		
+
       }
       window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeproduct", userFullName);
     })
@@ -2884,28 +2884,28 @@ The following steps will refresh your browser<br><br> \
                 }
 
                 //if (deployJava.versionCheck("1.8.0_45+")) {
-                  var applet = document.createElement("applet");
-                  applet.id = "recorder";
-                  applet.archive = "Launch.jar"
-                  applet.code = "com.bixly.pastevid.driver.Launch";
-                  applet.width = 200;
-                  applet.height = 150;
-                  var orgId = top.Ts.System.Organization.OrganizationID;
-                  var param1 = document.createElement("param");
-                  param1.name = "jnlp_href";
-                  param1.value = "launch.jnlp";
-                  applet.appendChild(param1);
-                  var param2 = document.createElement("param");
-                  param2.name = "orgId";
-                  param2.value = orgId;
-                  applet.appendChild(param2);
-                  var param3 = document.createElement("param");
-                  param3.name = "permissions";
-                  param3.value = 'all-permissions';
-                  applet.appendChild(param3);
+                var applet = document.createElement("applet");
+                applet.id = "recorder";
+                applet.archive = "Launch.jar"
+                applet.code = "com.bixly.pastevid.driver.Launch";
+                applet.width = 200;
+                applet.height = 150;
+                var orgId = top.Ts.System.Organization.OrganizationID;
+                var param1 = document.createElement("param");
+                param1.name = "jnlp_href";
+                param1.value = "launch.jnlp";
+                applet.appendChild(param1);
+                var param2 = document.createElement("param");
+                param2.name = "orgId";
+                param2.value = orgId;
+                applet.appendChild(param2);
+                var param3 = document.createElement("param");
+                param3.name = "permissions";
+                param3.value = 'all-permissions';
+                applet.appendChild(param3);
 
-                  $('.fa-circle').removeClass("fa-circle").addClass("fa-circle-o-notch fa-spin");
-                  document.getElementsByTagName("body")[0].appendChild(applet);
+                $('.fa-circle').removeClass("fa-circle").addClass("fa-circle-o-notch fa-spin");
+                document.getElementsByTagName("body")[0].appendChild(applet);
 
                 //}
                 //else {
@@ -2923,44 +2923,43 @@ The following steps will refresh your browser<br><br> \
         }
 
         ed.addButton('recordVideo', {
-            title: 'Record video',
-            //image: '../images/icons/Symbol_Record.png',
-            icon: 'awesome fa fa-video-camera',
-            onclick: function () {
+          title: 'Record video',
+          //image: '../images/icons/Symbol_Record.png',
+          icon: 'awesome fa fa-video-camera',
+          onclick: function () {
 
-                if (OT.checkSystemRequirements() == 1) {
-                    var dynamicPub = actionElement.find("#publisher");
-                    actionElement.find("#recordVideoContainer").show();
-                    dynamicPub.show();
-                    dynamicPub.attr("id", "tempContainer");
-                    dynamicPub.attr("width", "400px");
-                    dynamicPub.attr("height", "400px");
+            if (OT.checkSystemRequirements() == 1) {
+              var dynamicPub = actionElement.find("#publisher");
+              actionElement.find("#recordVideoContainer").show();
+              dynamicPub.show();
+              dynamicPub.attr("id", "tempContainer");
+              dynamicPub.attr("width", "400px");
+              dynamicPub.attr("height", "400px");
 
-                    if (dynamicPub.length == 0)
-                        dynamicPub = actionElement.find("#tempContainer");
+              if (dynamicPub.length == 0)
+                dynamicPub = actionElement.find("#tempContainer");
 
 
 
-                    top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
-                        sessionId = resultID[0];
-                        token = resultID[1]; 
-                        session = OT.initSession(apiKey, sessionId);
-                        session.connect(token, function (error) {
-                            publisher = OT.initPublisher(dynamicPub.attr('id'), {
-                                insertMode: 'append',
-                                width: '100%',
-                                height: '100%'
-                            });
-                            session.publish(publisher);
-                        });
-                    });
+              top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                sessionId = resultID[0];
+                token = resultID[1];
+                session = OT.initSession(apiKey, sessionId);
+                session.connect(token, function (error) {
+                  publisher = OT.initPublisher(dynamicPub.attr('id'), {
+                    insertMode: 'append',
+                    width: '100%',
+                    height: '100%'
+                  });
+                  session.publish(publisher);
+                });
+              });
 
-                }
-                else
-                {
-                    alert("Your client does not support video recording.")
-                }
             }
+            else {
+              alert("Your client does not support video recording.")
+            }
+          }
         });
 
       }
@@ -3083,8 +3082,8 @@ var createActionForm = function (element, action, callback) {
     clearTimeout(_timerid);
     _timerElapsed = 0;
     counter = 0;
-    if(recordingID)
-        session.unpublish(publisher);
+    if (recordingID)
+      session.unpublish(publisher);
     callback(null); element.remove();
     $('#recorder').remove();
 
@@ -3241,71 +3240,69 @@ var createActionForm = function (element, action, callback) {
   });
 
   element.find('#rcdtok').click(function (e) {
-      top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
-          element.find('#rcdtok').hide();
-          //element.find('#rcdtok span').text('Re-Record');
-          element.find('#stoptok').show();
-          element.find('#inserttok').hide();
-          element.find('#deletetok').hide();
-          recordingID = resultID;
-          element.find('#statusText').text("Currently Recording ...");
-      });
+    top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+      element.find('#rcdtok').hide();
+      //element.find('#rcdtok span').text('Re-Record');
+      element.find('#stoptok').show();
+      element.find('#inserttok').hide();
+      element.find('#deletetok').hide();
+      recordingID = resultID;
+      element.find('#statusText').text("Currently Recording ...");
+    });
   });
 
   element.find('#stoptok').hide();
 
   element.find('#stoptok').click(function (e) {
-      top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
-          element.find('#rcdtok').show();
-          element.find('#stoptok').hide();
-          element.find('#inserttok').show();
-          element.find('#canceltok').show();
-          tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
-          element.find('#statusText').text("Recording Stopped");
-      });
+    top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+      element.find('#rcdtok').show();
+      element.find('#stoptok').hide();
+      element.find('#inserttok').show();
+      element.find('#canceltok').show();
+      tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+      element.find('#statusText').text("Recording Stopped");
+    });
   });
 
   element.find('#inserttok').hide();
 
   element.find('#inserttok').click(function (e) {
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
-      session.unpublish(publisher);
-      element.find('#rcdtok').show();
-      element.find('#stoptok').hide();
-      element.find('#inserttok').hide();
-      element.find('#recordVideoContainer').hide();
-      element.find('#statusText').text("");
+    tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+    session.unpublish(publisher);
+    element.find('#rcdtok').show();
+    element.find('#stoptok').hide();
+    element.find('#inserttok').hide();
+    element.find('#recordVideoContainer').hide();
+    element.find('#statusText').text("");
   });
 
   element.find('#deletetok').hide();
-//  element.find('#deletetok').click(function (e) {
-//      top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
-//          element.find('#rcdtok').show();
-//          element.find('#stoptok').hide();
-//          element.find('#inserttok').hide();
-//          session.unpublish(publisher);
-//          element.find('#recordVideoContainer').hide();
-//1      });
-//  });
+  //  element.find('#deletetok').click(function (e) {
+  //      top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+  //          element.find('#rcdtok').show();
+  //          element.find('#stoptok').hide();
+  //          element.find('#inserttok').hide();
+  //          session.unpublish(publisher);
+  //          element.find('#recordVideoContainer').hide();
+  //1      });
+  //  });
 
   //element.find('#canceltok').hide();
   element.find('#canceltok').click(function (e) {
-      if (recordingID)
-      {
-              top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
-                  element.find('#rcdtok').show();
-                  element.find('#stoptok').hide();
-                  element.find('#inserttok').hide();
-                  session.unpublish(publisher);
-                  element.find('#recordVideoContainer').hide();
-          });
-      }
-      else
-      {
-          session.unpublish(publisher);
-          element.find('#recordVideoContainer').hide();
-      }
-      element.find('#statusText').text("");
+    if (recordingID) {
+      top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+        element.find('#rcdtok').show();
+        element.find('#stoptok').hide();
+        element.find('#inserttok').hide();
+        session.unpublish(publisher);
+        element.find('#recordVideoContainer').hide();
+      });
+    }
+    else {
+      session.unpublish(publisher);
+      element.find('#recordVideoContainer').hide();
+    }
+    element.find('#statusText').text("");
   });
   element.find('#recordVideoContainer').hide();
 
