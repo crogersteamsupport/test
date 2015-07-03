@@ -3254,6 +3254,7 @@ var createActionForm = function (element, action, callback) {
   element.find('#stoptok').hide();
 
   element.find('#stoptok').click(function (e) {
+      element.find('#statusText').text("Processing...");
     top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
       element.find('#rcdtok').show();
       element.find('#stoptok').hide();
@@ -3289,13 +3290,15 @@ var createActionForm = function (element, action, callback) {
 
   //element.find('#canceltok').hide();
   element.find('#canceltok').click(function (e) {
-    if (recordingID) {
+      if (recordingID) {
+          element.find('#statusText').text("Cancelling Recording ...");
       top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
         element.find('#rcdtok').show();
         element.find('#stoptok').hide();
         element.find('#inserttok').hide();
         session.unpublish(publisher);
         element.find('#recordVideoContainer').hide();
+        element.find('#statusText').text("");
       });
     }
     else {

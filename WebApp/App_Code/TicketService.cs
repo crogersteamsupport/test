@@ -3786,6 +3786,12 @@ WHERE t.TicketID = @TicketID
           // Store this sessionId in the database for later use:
           //string sessionId = session.Id;
           var archive = OpenTok.StopArchive(archiveId);
+          do
+          {
+              
+          }
+          while (OpenTok.GetArchive(archiveId).Status != ArchiveStatus.UPLOADED);
+          
           return archive.Id.ToString();
 
       }
