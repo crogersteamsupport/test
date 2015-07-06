@@ -44,6 +44,7 @@ namespace TeamSupport.ServiceLibrary
           if (_lastProcessed.AddMinutes(customerInsightsInterval) < DateTime.UtcNow)
           {
             ProcessCustomerInsights();
+            ResetCurrentApiCalls();
             Settings.WriteString(_lastProcessedKey, DateTime.UtcNow.ToString());
           }
         }
@@ -54,18 +55,8 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
-    private void InitializeGlobalVariables()
+    private void ResetCurrentApiCalls()
     {
-      _securityToken          = Settings.ReadString(_securityTokenKey, _securityToken);
-      _maxContactApiCalls     = Settings.ReadInt(_maxContactApiCallsKey, 200000);
-      _maxCompanyApiCalls     = Settings.ReadInt(_maxCompanyApiCallsKey, 100000);
-      _currentContactApiCalls = Settings.ReadInt(_currentContactApiCallsKey, 1);
-      _currentCompanyApiCalls = Settings.ReadInt(_currentCompanyApiCallsKey, 1);
-      _waitBeforeNewUpdate    = Settings.ReadInt(_waitBeforeNewUpdateKey, 24);
-      _maxToProcessByTicketCount = Settings.ReadInt(_maxToProcessByTicketCountKey, 100);
-      Service service = Services.GetService(_loginUser, ServiceName);
-      _lastProcessed  = DateTime.Parse(Settings.ReadString(_lastProcessedKey, DateTime.UtcNow.AddDays(-1).ToString()));
-
       // we need to check if month changed, to reset the counter
       DateTime  today               = DateTime.UtcNow;
       int       lastProcessedMonth  = _lastProcessed.Month;
@@ -80,6 +71,19 @@ namespace TeamSupport.ServiceLibrary
         Settings.WriteInt(_currentContactApiCallsKey, 1);
         Logs.WriteEvent("API calls reset due to start of new month.");
       }
+    }
+
+    private void InitializeGlobalVariables()
+    {
+      _securityToken          = Settings.ReadString(_securityTokenKey, _securityToken);
+      _maxContactApiCalls     = Settings.ReadInt(_maxContactApiCallsKey, 200000);
+      _maxCompanyApiCalls     = Settings.ReadInt(_maxCompanyApiCallsKey, 100000);
+      _currentContactApiCalls = Settings.ReadInt(_currentContactApiCallsKey, 1);
+      _currentCompanyApiCalls = Settings.ReadInt(_currentCompanyApiCallsKey, 1);
+      _waitBeforeNewUpdate    = Settings.ReadInt(_waitBeforeNewUpdateKey, 24);
+      _maxToProcessByTicketCount = Settings.ReadInt(_maxToProcessByTicketCountKey, 100);
+      Service service = Services.GetService(_loginUser, ServiceName);
+      _lastProcessed  = DateTime.Parse(Settings.ReadString(_lastProcessedKey, DateTime.UtcNow.AddDays(-1).ToString()));
     }
 
     private void ProcessCustomerInsights()
