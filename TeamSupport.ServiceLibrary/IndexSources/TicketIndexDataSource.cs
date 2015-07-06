@@ -50,13 +50,14 @@ namespace TeamSupport.ServiceLibrary
             }
           }
           actionText = HtmlToText.ConvertHtml(actionText);
+          actionsBuilder.AppendLine(actionText);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
           _logs.WriteEvent("Unable to convert action html: " + action.ActionID);
+          _logs.WriteException(ex);
         }
 
-        actionsBuilder.AppendLine(actionText);
       }
 
       DocText = actionsBuilder.ToString();
