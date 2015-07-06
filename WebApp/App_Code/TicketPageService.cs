@@ -781,6 +781,7 @@ namespace TSWebServices
                 IsKnowledgeBase = action.IsKnowledgeBase,
                 IsVisibleOnPortal = action.IsVisibleOnPortal,
                 IsPinned = action.Pinned,
+                TimeSpent = action.TimeSpent,
                 WCUserID = null
             };
 

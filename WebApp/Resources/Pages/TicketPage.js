@@ -2736,6 +2736,8 @@ function CreateHandleBarHelpers() {
     var timeSpentString = "";
     if (hours > 0) timeSpentString = hours + ((hours > 1) ? " hours " : " hour ");
     if (mins > 0) timeSpentString += mins + ((mins > 1) ? " minutes " : " minute ");
+    if (timeSpentString == "") return ""
+    else return " - " + timeSpentString
 
     return timeSpentString;
   });

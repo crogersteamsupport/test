@@ -292,6 +292,8 @@ function SaveTicket() {
         info.Description = tinyMCE.activeEditor.getContent();
         info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
 
+        var timeSpent = parseInt($('#action-new-hours').val()) * 60 + parseInt($('#action-new-minutes').val());
+        info.TimeSpent = timeSpent;
 
         // Custom Values
         info.Fields = new Array();
