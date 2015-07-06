@@ -76,7 +76,9 @@ namespace TeamSupport.Data
           {
             try
             {
-              outText.Write(HtmlEntity.DeEntitize(html));
+              string de = HtmlEntity.DeEntitize(html);
+              outText.Write(de);
+
             }
             catch (Exception)
             {
