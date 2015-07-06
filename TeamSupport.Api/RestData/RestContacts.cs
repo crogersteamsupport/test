@@ -126,6 +126,7 @@ namespace TeamSupport.Api
 
       Users users = new Users(command.LoginUser);
       User user = users.AddNewUser();
+      user.IsActive = true;
       user.FullReadFromXml(command.Data, true, ref phoneNumber, ref address);
       if (organizationID == null && user.OrganizationID == 0)
       {
@@ -153,7 +154,6 @@ namespace TeamSupport.Api
       user.LastActivity = DateTime.UtcNow.AddHours(-1);
       user.IsPasswordExpired = true;
       user.NeedsIndexing = true;
-      user.IsActive = true;
       user.Collection.Save();
       user.UpdateCustomFieldsFromXml(command.Data);
       user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(user.CryptedPassword, "MD5");
