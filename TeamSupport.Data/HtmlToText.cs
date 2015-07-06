@@ -16,6 +16,7 @@ namespace TeamSupport.Data
     public static string Convert(string path)
     {
       HtmlDocument doc = new HtmlDocument();
+      doc.OptionDefaultStreamEncoding = Encoding.UTF8;
       doc.Load(path);
 
       StringWriter sw = new StringWriter();
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
     public static string ConvertHtml(string html)
     {
       HtmlDocument doc = new HtmlDocument();
+      doc.OptionDefaultStreamEncoding = Encoding.UTF8;
       doc.LoadHtml(html);
 
       StringWriter sw = new StringWriter();
