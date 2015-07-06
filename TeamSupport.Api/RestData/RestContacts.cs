@@ -153,6 +153,7 @@ namespace TeamSupport.Api
       user.LastActivity = DateTime.UtcNow.AddHours(-1);
       user.IsPasswordExpired = true;
       user.NeedsIndexing = true;
+      user.IsActive = true;
       user.Collection.Save();
       user.UpdateCustomFieldsFromXml(command.Data);
       user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(user.CryptedPassword, "MD5");

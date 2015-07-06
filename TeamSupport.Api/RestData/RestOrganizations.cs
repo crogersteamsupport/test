@@ -56,6 +56,7 @@ namespace TeamSupport.Api
       organization.ParentID = command.Organization.OrganizationID;
       organization.FullReadFromXml(command.Data, true, ref phoneNumber, ref address);
       organization.NeedsIndexing = true;
+      organization.IsActive = true;
       organization.Collection.Save();
       organization.UpdateCustomFieldsFromXml(command.Data);
 
