@@ -31,33 +31,33 @@ namespace TeamSupport.ServiceLibrary
       {
         string actionText = action.Description;
 
+        if (!action.IsClean)
+        {
+          try
+          {
+            actionText = HtmlUtility.Sanitize(actionText);
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "UPDATE Actions SET Description = @Description, ModifierID=-5, IsClean=1 WHERE ActionID=@ActionID";
+            command.Parameters.AddWithValue("ActionID", action.ActionID);
+            command.Parameters.AddWithValue("Description", actionText);
+            SqlExecutor.ExecuteNonQuery(_loginUser, command);
+          }
+          catch (Exception)
+          {
+            _logs.WriteEvent("Unable to sanitize action: " + action.ActionID);
+          }
+        }
+
         try
         {
-          if (!action.IsClean)
-          {
-            try
-            {
-              actionText = HtmlUtility.Sanitize(actionText);
-              SqlCommand command = new SqlCommand();
-              command.CommandText = "UPDATE Actions SET Description = @Description, ModifierID=-5, IsClean=1 WHERE ActionID=@ActionID";
-              command.Parameters.AddWithValue("ActionID", action.ActionID);
-              command.Parameters.AddWithValue("Description", actionText);
-              SqlExecutor.ExecuteNonQuery(_loginUser, command);
-            }
-            catch (Exception)
-            {
-              _logs.WriteEvent("Unable to sanitize action: " + action.ActionID);
-            }
-          }
-          actionText = HtmlToText.ConvertHtml(actionText);
           actionsBuilder.AppendLine(actionText);
+          actionText = HtmlToText.ConvertHtml(actionText);
         }
         catch (Exception ex)
         {
           _logs.WriteEvent("Unable to convert action html: " + action.ActionID);
           _logs.WriteException(ex);
         }
-
       }
 
       DocText = actionsBuilder.ToString();
