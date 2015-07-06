@@ -1766,6 +1766,7 @@ function SetupAssociatedTicketsSection() {
       valueField: 'data',
       labelField: 'label',
       searchField: 'label',
+      loadThrottle: null,
       load: function (query, callback) {
         getRelated(query, callback)
       },

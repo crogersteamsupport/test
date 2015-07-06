@@ -1306,6 +1306,7 @@ function SetupAssociatedTicketsSection() {
       valueField: 'data',
       labelField: 'label',
       searchField: 'label',
+      loadThrottle: null,
       load: function (query, callback) {
         getRelated(query, callback)
       },
@@ -1330,7 +1331,6 @@ function SetupAssociatedTicketsSection() {
 
     $('.ticket-association').click(function (e) {
       var IsParent = $(this).data('isparent');
-      alert(IsParent)
       var TicketID2 = $(this).closest('#AssociateTicketModal').data('ticketid');
       $('#associate-error').hide();
 
