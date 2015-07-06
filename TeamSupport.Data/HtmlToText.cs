@@ -74,7 +74,14 @@ namespace TeamSupport.Data
           // check the text is meaningful and not a bunch of whitespaces
           if (html.Trim().Length > 0)
           {
-            outText.Write(HtmlEntity.DeEntitize(html));
+            try
+            {
+              outText.Write(HtmlEntity.DeEntitize(html));
+            }
+            catch (Exception)
+            {
+              // usually means bad characters
+            }
           }
           break;
 
