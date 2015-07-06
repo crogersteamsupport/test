@@ -685,7 +685,9 @@
     .nonrequired-field-error-font {color: #cd0a0a !important}
     .ticket-closed { font-style: italic; text-decoration:line-through;}
     .hasError label, .hasError .selectize-input {color: #cd0a0a !important}
-    .hasError .selectize-input  { border: 1px solid #a94442 !important; }
+    .hasError .selectize-input { border: 1px solid #a94442 !important; }
+
+    .isEmpty.isRequiredToClose label {color: #cd0a0a !important}
 
     .ui-autocomplete {
         z-index: 99999 !important;

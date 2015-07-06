@@ -3,6 +3,7 @@ var _ticketNumber = null;
 var _ticketID = null;
 var _ticketCreator = new Object();
 var _ticketSender = null;
+var _ticketCurrStatus = null;
 
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
@@ -2508,6 +2509,7 @@ var SetupDueDateField = function (duedate) {
 
 var SetupStatusField = function (StatusId) {
   var statuses = top.Ts.Cache.getNextStatuses(StatusId);
+  _ticketCurrStatus = StatusId;
   if ($('#ticket-status').length) {
     $("#ticket-status").selectize({
       onDropdownClose: function ($dropdown) {
@@ -2520,16 +2522,19 @@ var SetupStatusField = function (StatusId) {
           if (isValid == true) {
             top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
               if (result !== null) {
+                _ticketCurrStatus = result.TicketStatusID;
                 top.Ts.System.logAction('Ticket - Status Changed');
                 $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
                 window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
               }
             },
             function (error) {
+              SetStatus(_ticketCurrStatus);
               alert('There was an error setting your ticket status.');
             });
           }
           else {
+            SetStatus(_ticketCurrStatus);
             alert("Please fill in the required fields before closing the ticket.");
             return;
           }
