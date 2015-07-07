@@ -12,6 +12,8 @@ var _parentFields = [];
 var _productFamilyID = null;
 
 var _isNewActionPrivate = true;
+var _newAction = null;
+var _oldActionID = null;
 
 var _timeLine = new Object();
 var _currDateSpan = null;
@@ -388,18 +390,23 @@ function CreateNewActionLI() {
       e.stopPropagation();
       var self = $(this);
       self.prop('disabled', true);
-      var oldActionID = self.data('actionid');
+      _oldActionID = self.data('actionid');
 
       isFormValid(function (isValid) {
         if (isValid) {
-          SaveAction(oldActionID, _isNewActionPrivate, function (result) {
-            UploadAttachments(result);
+          SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
+            
             $('#action-new-editor').parent().fadeOut('normal', function () {
               tinymce.activeEditor.destroy();
             });
-            top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
-              result.Attachments = attachments;
-              if (oldActionID === -1) {
+            if ($('.upload-queue li').length > 0) {
+              UploadAttachments(result);
+            }
+            else
+            {
+              //alert('no attachments')
+              _newAction = null;
+              if (_oldActionID === -1) {
                 _actionTotal = _actionTotal + 1;
                 var actionElement = CreateActionElement(result, false);
                 actionElement.find('.ticket-action-number').text(_actionTotal);
@@ -407,7 +414,18 @@ function CreateNewActionLI() {
               else {
                 UpdateActionElement(result, false);
               }
-            });
+            }
+            //top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
+            //  result.Attachments = attachments;
+            //  if (_oldActionID === -1) {
+            //    _actionTotal = _actionTotal + 1;
+            //    var actionElement = CreateActionElement(result, false);
+            //    actionElement.find('.ticket-action-number').text(_actionTotal);
+            //  }
+            //  else {
+            //    UpdateActionElement(result, false);
+            //  }
+            //});
           });
         }
         else {
@@ -423,8 +441,8 @@ function CreateNewActionLI() {
     e.preventDefault();
     e.stopPropagation();
     var self = $(this);
-    var oldActionID = self.data('actionid');
-    SaveAction(oldActionID, _isNewActionPrivate, function (result) {
+    var _oldActionID = self.data('actionid');
+    SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
       UploadAttachments(result);
       $('#action-new-editor').val('').parent().fadeOut('normal');
       tinymce.activeEditor.destroy();
@@ -568,7 +586,18 @@ function SetupActionEditor(elem, action) {
       element.find('.upload-queue .ui-icon-cancel').show();
     },
     stop: function (e, data) {
-
+      top.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {debugger
+        _newAction.Attachments = attachments;
+        if (_oldActionID === -1) {
+          _actionTotal = _actionTotal + 1;
+          var actionElement = CreateActionElement(_newAction, false);
+          actionElement.find('.ticket-action-number').text(_actionTotal);
+        }
+        else {
+          UpdateActionElement(_newAction, false);
+        }
+        _newAction = null;
+      });
     }
   });
 
@@ -651,11 +680,11 @@ function FlipNewActionBadge(isPrivate) {
   _isNewActionPrivate = isPrivate;
 }
 
-function SaveAction(oldActionID, isPrivate, callback) {
+function SaveAction(_oldActionID, isPrivate, callback) {
 
   var action = new top.TeamSupport.Data.ActionProxy();
 
-  action.ActionID = oldActionID;
+  action.ActionID = _oldActionID;
   action.TicketID = _ticketID;
   var actionType = $('#action-new-type option:selected').data('data');
   action.ActionTypeID = actionType.ActionTypeID
@@ -678,6 +707,7 @@ function SaveAction(oldActionID, isPrivate, callback) {
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
   top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
+    _newAction = result;
     top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
     result.item.MessageType = actionType.Name;
     callback(result)
