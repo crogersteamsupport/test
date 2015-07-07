@@ -949,35 +949,29 @@ function AddCustomers(customerdata) {
     if (customer == null) return;
     top.Ts.System.logAction('New Ticket - Customer Added');
     var customerDiv = $("#ticket-Customer");
-    //customerDiv.empty();
     $("#ticket-Customers-Input").val('');
+
     var label = "";
-
-    if (customer.Contact !== null && customer.Company !== null) {
-      label = customer.Contact + '<br/>' + customer.Company;
-    }
-    else if (customer.Contact !== null) {
-      label = customer.Contact;
-    }
-    else if (customer.Company !== null) {
-      label = customer.Company;
-    }
-
     var cssClasses = "tag-item";
 
-    if (customer.Flag) {
+    if (customerdata.Flag) {
       cssClasses = cssClasses + " tag-error"
     }
-
-    if (customer.UserID !== null) {
-      cssClasses = cssClasses + ' UserAnchor';
-      var newelement = PrependTag(customerDiv, customer.UserID, label, customer, cssClasses);
-      newelement.data('userid', customer.UserID).data('placement', 'left').data('ticketid', 0);
+    if (customerdata.Contact !== null && customerdata.Company !== null) {
+      label = '<span class="UserAnchor" data-userid="' + customerdata.UserID + '" data-placement="left">' + customerdata.Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customerdata.OrganizationID + '" data-placement="left">' + customerdata.Company + '</span>';
+      var newelement = PrependTag(customerDiv, customerdata.UserID, label, customerdata, cssClasses);
     }
-    else {
+    else if (customerdata.Contact !== null) {
+      label = customerdata.Contact;
+      cssClasses = cssClasses + ' UserAnchor';
+      var newelement = PrependTag(customerDiv, customerdata.UserID, label, customerdata, cssClasses);
+      newelement.data('userid', customerdata.UserID).data('placement', 'left').data('ticketid', _ticketID);
+    }
+    else if (customerdata.Company !== null) {
+      label = customerdata.Company;
       cssClasses = cssClasses + ' OrgAnchor';
-      var newelement = PrependTag(customerDiv, customer.OrganizationID, label, customer, cssClasses);
-      newelement.data('orgid', customer.OrganizationID).data('placement', 'left').data('ticketid', 0);
+      var newelement = PrependTag(customerDiv, customerdata.OrganizationID, label, customerdata, cssClasses);
+      newelement.data('orgid', customerdata.OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
     }
 
     ReloadProductList();

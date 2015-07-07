@@ -40,7 +40,12 @@
 	        }).responseText;
 	      }
 	    }).popover('show');
-	});
+	})
+  .on("click", ".UserAnchor", function (event) {
+    var self = $(this);
+    var userid = self.data('userid');
+    top.Ts.MainPage.openNewContact(userid);
+  })
 
 	$("body").on("mouseenter", ".AssetAnchor", function (event) {
 	  var e = $(this);
@@ -60,7 +65,12 @@
 	      }).responseText;
 	    }
 	  }).popover('show');
-	});
+	})
+  .on("click", ".AssetAnchor", function (event) {
+    var self = $(this);
+    var assetid = self.data('assetid');
+    top.Ts.MainPage.openAsset(assetid);
+  })
 
 	$("body").on("mouseenter", ".OrgAnchor", function (event) {
 	  var e = $(this);
@@ -80,7 +90,12 @@
 	      }).responseText;
 	    }
 	  }).popover('show');
-	});
+	})
+  .on("click", ".OrgAnchor", function (event) {
+    var self = $(this);
+    var orgid = self.data('orgid');
+    top.Ts.MainPage.openNewCustomer(orgid);
+  })
 
 	$("body").on("mouseenter", ".SLAAnchor", function (event) {
 	  var e = $(this);
@@ -118,7 +133,12 @@
 	      }).responseText;
 	    }
 	  }).popover('show');
-	});
+	})
+  .on("click", ".TicketAnchor", function (event) {
+    var self = $(this);
+    var ticketid = self.data('ticketid');
+    top.Ts.MainPage.openTicketByID(ticketid, true);
+  })
 
 	$("body").on("mouseenter", ".ProductAnchor", function (event) {
 	  var e = $(this);
@@ -127,7 +147,7 @@
 	  var productid = e.data('productid');
 	  e.popover({
 	    html: true,
-      container: 'body',
+	    container: 'body',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {

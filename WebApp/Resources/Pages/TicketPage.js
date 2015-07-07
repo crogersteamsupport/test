@@ -149,7 +149,7 @@ $(document).ready(function () {
 });
 
 var loadTicket = function (ticketNumber, refresh) {
-  top.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+  top.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
     _ticketInfo = info;
     _ticketID = info.Ticket.TicketID;
     top.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
@@ -178,8 +178,6 @@ var loadTicket = function (ticketNumber, refresh) {
     $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
     SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
     SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
-
-    //TODO:Need to test more
     SetDueDate(_ticketInfo.Ticket.DueDate);
 
     //TODO:  Need to set product 
@@ -189,8 +187,7 @@ var loadTicket = function (ticketNumber, refresh) {
     SetType(_ticketInfo.Ticket.TicketTypeID);
     SetStatus(_ticketInfo.Ticket.TicketStatusID);
     SetSeverity(_ticketInfo.Ticket.TicketSeverityID);
-
-
+    CreateNewAction(_ticketInfo.Actions)
 
     setSLAInfo();
     AddCustomers(_ticketInfo.Customers);
@@ -209,6 +206,12 @@ var loadTicket = function (ticketNumber, refresh) {
 
   });
 };
+
+function CreateNewAction(actions) {
+  top.Ts.Services.TicketPage.ConvertActionItem(actions[0].Action.ActionID, function (actionInfo) {
+    CreateActionElement(actionInfo, false);
+  });
+}
 
 function SetupTicketPage() {
   //Create the new action LI element
@@ -1248,8 +1251,8 @@ function SetupCustomerSection() {
     var firstName = $('#customer-fname-input').val();
     var lastName = $('#customer-lname-input').val();
     var phone = $('#customer-phone-input').val();;
-    var companyName = $('#customer-company-input').val();debugger
-    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {debugger
+    var companyName = $('#customer-company-input').val();
+    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
       if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
         top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
           AddCustomers(result);
@@ -1324,28 +1327,23 @@ function AddCustomers(customers) {
   $("#ticket-Customers-Input").val('');
   for (var i = 0; i < customers.length; i++) {
     var label = "";
-    if (customers[i].Contact !== null && customers[i].Company !== null) {
-      label = customers[i].Contact + '<br/>' + customers[i].Company;
-    }
-    else if (customers[i].Contact !== null) {
-      label = customers[i].Contact;
-    }
-    else if (customers[i].Company !== null) {
-      label = customers[i].Company;
-    }
-
     var cssClasses = "tag-item";
 
     if (customers[i].Flag) {
       cssClasses = cssClasses + " tag-error"
     }
-
-    if (customers[i].UserID !== null) {
+    if (customers[i].Contact !== null && customers[i].Company !== null) {
+      label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
+      var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
+    }
+    else if (customers[i].Contact !== null) {
+      label = customers[i].Contact;
       cssClasses = cssClasses + ' UserAnchor';
       var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
       newelement.data('userid', customers[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
     }
-    else {
+    else if (customers[i].Company !== null) {
+      label = customers[i].Company;
       cssClasses = cssClasses + ' OrgAnchor';
       var newelement = PrependTag(customerDiv, customers[i].OrganizationID, label, customers[i], cssClasses);
       newelement.data('orgid', customers[i].OrganizationID).data('placement', 'left').data('ticketid', _ticketID);

@@ -575,6 +575,15 @@ namespace TSWebServices
           return result.ToArray();
         }
 
+        [WebMethod]
+        public TimeLineItem ConvertActionItem(int actionID)
+        {
+          LoginUser loginUser = TSAuthentication.GetLoginUser();
+          TeamSupport.Data.Actions actions = new Actions(loginUser);
+          actions.LoadByActionID(actionID);
+          return GetActionTimelineItem(actions[0]);
+        }
+
         [DataContract]
         public class TicketPageInfo
         {
