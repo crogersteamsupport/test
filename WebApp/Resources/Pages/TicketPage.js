@@ -157,8 +157,6 @@ var loadTicket = function (ticketNumber, refresh) {
     _productFamilyID = info.Ticket.ProductFamilyID;
     _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
 
-    loadActions(info);
-
     $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
     $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
     top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
@@ -172,6 +170,8 @@ var loadTicket = function (ticketNumber, refresh) {
     $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
     SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
     SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
+
+    //TODO:Need to test more
     SetDueDate(_ticketInfo.Ticket.DueDate);
 
     //TODO:  Need to set product 
@@ -181,6 +181,8 @@ var loadTicket = function (ticketNumber, refresh) {
     SetType(_ticketInfo.Ticket.TicketTypeID);
     SetStatus(_ticketInfo.Ticket.TicketStatusID);
     SetSeverity(_ticketInfo.Ticket.TicketSeverityID);
+
+
 
     setSLAInfo();
     AddCustomers(_ticketInfo.Customers);
@@ -199,12 +201,6 @@ var loadTicket = function (ticketNumber, refresh) {
 
   });
 };
-
-function loadActions(info) {debugger
-  if (_actionTotal !== info.Actions.length) {
-
-  }
-}
 
 function SetupTicketPage() {
   //Create the new action LI element
@@ -397,23 +393,21 @@ function CreateNewActionLI() {
       isFormValid(function (isValid) {
         if (isValid) {
           SaveAction(oldActionID, _isNewActionPrivate, function (result) {
+            UploadAttachments(result);
             $('#action-new-editor').parent().fadeOut('normal', function () {
               tinymce.activeEditor.destroy();
             });
-
-            UploadAttachments(result, function () {
-              top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
-                result.Attachments = attachments;
-                if (oldActionID === -1) {
-                  _actionTotal = _actionTotal + 1;
-                  var actionElement = CreateActionElement(result, false);
-                  actionElement.find('.ticket-action-number').text(_actionTotal);
-                }
-                else {
-                  UpdateActionElement(result, false);
-                }
-              })
-            })
+            top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
+              result.Attachments = attachments;
+              if (oldActionID === -1) {
+                _actionTotal = _actionTotal + 1;
+                var actionElement = CreateActionElement(result, false);
+                actionElement.find('.ticket-action-number').text(_actionTotal);
+              }
+              else {
+                UpdateActionElement(result, false);
+              }
+            });
           });
         }
         else {
@@ -686,7 +680,6 @@ function SaveAction(oldActionID, isPrivate, callback) {
   top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
     top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
     result.item.MessageType = actionType.Name;
-    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
     callback(result)
   }, function (error) {
     callback(null);
@@ -702,7 +695,7 @@ var confirmVisibleToCustomers = function () {
   }
 }
 
-function UploadAttachments(newAction, callback) {
+function UploadAttachments(newAction) {
   if ($('.upload-queue li').length > 0 && newAction !== null) {
     $('.upload-queue li').each(function (i, o) {
       var data = $(o).data('data');
@@ -712,7 +705,6 @@ function UploadAttachments(newAction, callback) {
     });
   }
   $('.upload-queue').empty();
-  callback();
 }
 
 function tickettimer() {
