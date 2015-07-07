@@ -395,7 +395,6 @@ function CreateNewActionLI() {
       isFormValid(function (isValid) {
         if (isValid) {
           SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
-            
             $('#action-new-editor').parent().fadeOut('normal', function () {
               tinymce.activeEditor.destroy();
             });
@@ -404,7 +403,6 @@ function CreateNewActionLI() {
             }
             else
             {
-              //alert('no attachments')
               _newAction = null;
               if (_oldActionID === -1) {
                 _actionTotal = _actionTotal + 1;
@@ -415,17 +413,6 @@ function CreateNewActionLI() {
                 UpdateActionElement(result, false);
               }
             }
-            //top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
-            //  result.Attachments = attachments;
-            //  if (_oldActionID === -1) {
-            //    _actionTotal = _actionTotal + 1;
-            //    var actionElement = CreateActionElement(result, false);
-            //    actionElement.find('.ticket-action-number').text(_actionTotal);
-            //  }
-            //  else {
-            //    UpdateActionElement(result, false);
-            //  }
-            //});
           });
         }
         else {
@@ -2452,7 +2439,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
       top.Ts.System.logAction('Ticket - Custom Value Set');
       top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
         $('.' + field.CustomFieldID + 'children').remove();
-        var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
+        var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').insertAfter(formcontainer);
         appendMatchingParentValueFields(childrenContainer, result);
         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
       }, function () {
