@@ -134,6 +134,17 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByImportID(string importID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Assets a WHERE a.ImportID = @ImportID AND a.OrganizationID = @OrganizationID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ImportID", importID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
   }
   
 }

@@ -130,7 +130,40 @@ namespace TeamSupport.ServiceLibrary
           continue;
         }
 
-        TeamSupport.Data.Action action = actions.AddNewAction();
+        Actions existingAction = new Actions(_importUser);
+        TeamSupport.Data.Action action = null;
+        bool isUpdate = false;
+
+        int actionID = ReadInt("ActionID");
+        if (actionID != 0)
+        {
+          existingAction.LoadByActionID(actionID);
+          if (existingAction.Count > 0)
+          {
+            action = existingAction[0];
+            isUpdate = true;
+          }
+        }
+
+        if (action == null)
+        {
+          string importID = ReadString("ImportID");
+          if (importID != string.Empty)
+          {
+            existingAction = new Actions(_importUser);
+            existingAction.LoadByImportID(importID, _organizationID);
+            if (existingAction.Count > 0)
+            {
+              action = existingAction[0];
+              isUpdate = true;
+            }
+          }
+        }
+
+        if (action == null)
+        {
+          action = actions.AddNewAction();
+        }
 
         string actionType = ReadString("ActionType");
         action.SystemActionTypeID = GetSystemActionTypeID(actionType);
@@ -147,7 +180,7 @@ namespace TeamSupport.ServiceLibrary
         string desc = ConvertHtmlLineBreaks(ReadString("Description"));
         action.Description = desc;
 
-        action.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
+        action.DateCreated = ReadDate("DateCreated", DateTime.UtcNow);
         action.DateModified = DateTime.UtcNow;
         action.DateStarted = ReadDateNull("DateStarted");
         action.ActionSource = "Import";
@@ -159,7 +192,14 @@ namespace TeamSupport.ServiceLibrary
         action.TimeSpent = ReadIntNull("TimeSpent");
 
         action.Pinned = ReadBool("IsPinned");
+
+        if (isUpdate)
+        {
+          existingAction.Save();
+          // Add updated rows column as completed rows will reflect only adds
+        }
         count++;
+
         if (count % BULK_LIMIT == 0)
         {
           actions.BulkSave();
@@ -168,6 +208,370 @@ namespace TeamSupport.ServiceLibrary
         }
       }
       actions.BulkSave();
+      UpdateImportCount(import, count);
+      // _log.AppendMessage(count.ToString() + " Actions Imported.");
+    }
+
+    private void ImportAssets(Import import)
+    {
+      Products products = new Products(_importUser);
+      products.LoadByOrganizationID(_organizationID);
+      //IdList productIDs = GetIdList(products);
+
+      ProductVersions productVersions = new ProductVersions(_importUser);
+      productVersions.LoadByParentOrganizationID(_organizationID);
+
+      Assets assets = new Assets(_importUser);
+      //int orgCount = 0;
+      //int prodCount = 0;
+
+      SortedList<string, int> userList = GetUserAndContactList();
+
+      int count = 0;
+      while (_csv.ReadNextRecord())
+      {
+        //_currentRow = row;
+        //string organizationID = row["AssignedTo"].ToString().Trim().ToLower();
+
+        Product product = null;
+        string productName = ReadString("Product");
+        if (productName != string.Empty)
+        {
+          product = products.FindByName(productName);
+        }
+
+        if (product == null)
+        {
+          continue;
+        }
+
+        Assets existingAsset = new Assets(_importUser);
+        Asset asset = null;
+        bool isUpdate = false;
+
+        int assetID = ReadInt("AssetID");
+        if (assetID != 0)
+        {
+          existingAsset.LoadByAssetID(assetID);
+          if (existingAsset.Count > 0)
+          {
+            asset = existingAsset[0];
+            isUpdate = true;
+          }
+        }
+
+        if (asset == null)
+        {
+          string importID = ReadString("ImportID");
+          if (importID != string.Empty)
+          {
+            existingAsset = new Assets(_importUser);
+            existingAsset.LoadByImportID(importID, _organizationID);
+            if (existingAsset.Count > 0)
+            {
+              asset = existingAsset[0];
+              isUpdate = true;
+            }
+          }
+        }
+
+        string location = "2";
+        switch (ReadString("Location").ToLower().Trim())
+        {
+          case "assigned": location = "1"; break;
+          case "warehouse": location = "2"; break;
+          case "junkyard": location = "3"; break;
+          default:
+            break;
+        }
+
+        Assets newAssignedAsset = new Assets(_importUser);
+        if (asset == null)
+        {
+          if (location == "1")
+          {
+            asset = newAssignedAsset.AddNewAsset();
+          }
+          else
+          {
+            asset = assets.AddNewAsset();
+          }
+        }
+
+        asset.OrganizationID = _organizationID;
+        asset.SerialNumber = ReadString("SerialNumber");
+        asset.Name = ReadString("Name");
+        string oldLocation = asset.Location;
+        asset.Location = location;
+        asset.Notes = ReadString("Notes");
+        asset.ProductID = product.ProductID;
+        asset.WarrantyExpiration = (DateTime)ReadDate("WarrantyExpiration", DateTime.UtcNow);
+        asset.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
+        asset.DateModified = DateTime.UtcNow;
+
+        int creatorID = -2;
+        if (Int32.TryParse(ReadString("CreatorID"), out creatorID))
+        {
+          if (!userList.ContainsValue(creatorID))
+          {
+            creatorID = -2;
+          }
+        }
+        asset.CreatorID = creatorID;
+        asset.ModifierID = -2;
+        asset.SubPartOf = null;
+        //asset.Status = this is a deprecated field
+        asset.ImportID = import.ImportGUID.ToString();
+
+        ProductVersion productVersion = null;
+        string productVersionNumber = ReadString("ProductVersion");
+        if (productVersionNumber != string.Empty)
+        {
+          productVersion = productVersions.FindByVersionNumber(productVersionNumber, product.ProductID);
+          if (productVersion != null)
+          {
+            asset.ProductVersionID = productVersion.ProductVersionID;
+          }
+          else
+          {
+            // Log no product version found without continuing
+          }
+        }
+
+        if (asset.Location == "1" && (!isUpdate || oldLocation != "1"))
+        {
+          string nameOfCompanyAssignedTo = ReadString("NameOfCompanyAssignedTo");
+          if (!string.IsNullOrEmpty(nameOfCompanyAssignedTo))
+          {
+            Organizations companyAssignedTo = new Organizations(_importUser);
+            companyAssignedTo.LoadByOrganizationNameActive(nameOfCompanyAssignedTo, _organizationID);
+            if (companyAssignedTo.Count == 1)
+            {
+              string emailOfContactAssignedTo = ReadString("EmailOfContactAssignedTo");
+              if (!string.IsNullOrEmpty(emailOfContactAssignedTo))
+              {
+                Users contactAssignedTo = new Users(_importUser);
+                contactAssignedTo.LoadByEmail(emailOfContactAssignedTo, companyAssignedTo[0].OrganizationID);
+                if (contactAssignedTo.Count == 1)
+                {
+                  DateTime? dateShipped = ReadDateNull("DateShipped");
+                  string shippingMethod = ReadString("ShippingMethod");
+                  if (dateShipped == null || shippingMethod == string.Empty)
+                  {
+                    // Log dateShipped and shippingMethod are required
+                    continue;
+                  }
+
+                  DateTime validDateShipped = (DateTime)dateShipped;
+
+                  if (!isUpdate)
+                  {
+                    newAssignedAsset.Save();
+                  }
+
+                  AssetHistory assetHistory = new AssetHistory(_importUser);
+                  AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+                  DateTime now = DateTime.UtcNow;
+
+                  assetHistoryItem.AssetID = asset.AssetID;
+                  assetHistoryItem.OrganizationID = _organizationID;
+                  assetHistoryItem.ActionTime = now;
+                  assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
+                  assetHistoryItem.ShippedFrom = _organizationID;
+                  assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+                  assetHistoryItem.ShippedTo = contactAssignedTo[0].UserID;
+                  assetHistoryItem.TrackingNumber = ReadString("TrackingNumber");
+                  assetHistoryItem.ShippingMethod = shippingMethod;
+                  assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber");
+                  assetHistoryItem.Comments = ReadString("Comments");
+
+                  assetHistoryItem.DateCreated = now;
+                  assetHistoryItem.Actor = -2;
+                  assetHistoryItem.RefType = (int)ReferenceType.Contacts;
+                  assetHistoryItem.DateModified = now;
+                  assetHistoryItem.ModifierID = -2;
+
+                  assetHistory.Save();
+
+                  AssetAssignments assetAssignments = new AssetAssignments(_importUser);
+                  AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
+
+                  assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+
+                  assetAssignments.Save();
+
+                  string description = String.Format("Assigned asset to {0}.", contactAssignedTo[0].FirstLastName);
+                  ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
+                }
+                else if (contactAssignedTo.Count > 1)
+                {
+                  // Log more than one email matching contact found
+                  continue;
+                }
+                else
+                {
+                  // Log no email matching contact found
+                  continue;
+                }
+              }
+              else
+              {
+                DateTime? dateShipped = ReadDateNull("DateShipped");
+                string shippingMethod = ReadString("ShippingMethod");
+                if (dateShipped == null || shippingMethod == string.Empty)
+                {
+                  // Log dateShipped and shippingMethod are required
+                  continue;
+                }
+
+                DateTime validDateShipped = (DateTime)dateShipped;
+
+                if (!isUpdate)
+                {
+                  newAssignedAsset.Save();
+                }
+
+                AssetHistory assetHistory = new AssetHistory(_importUser);
+                AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+                DateTime now = DateTime.UtcNow;
+
+                assetHistoryItem.AssetID = asset.AssetID;
+                assetHistoryItem.OrganizationID = _organizationID;
+                assetHistoryItem.ActionTime = now;
+                assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
+                assetHistoryItem.ShippedFrom = _organizationID;
+                assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+                assetHistoryItem.ShippedTo = companyAssignedTo[0].OrganizationID;
+                assetHistoryItem.TrackingNumber = ReadString("TrackingNumber");
+                assetHistoryItem.ShippingMethod = shippingMethod;
+                assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber");
+                assetHistoryItem.Comments = ReadString("Comments");
+
+                assetHistoryItem.DateCreated = now;
+                assetHistoryItem.Actor = -2;
+                assetHistoryItem.RefType = (int)ReferenceType.Organizations;
+                assetHistoryItem.DateModified = now;
+                assetHistoryItem.ModifierID = -2;
+
+                assetHistory.Save();
+
+                AssetAssignments assetAssignments = new AssetAssignments(_importUser);
+                AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
+
+                assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+
+                assetAssignments.Save();
+
+                string description = String.Format("Assigned asset to {0}.", companyAssignedTo[0].Name);
+                ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
+              }
+            }
+            else if (companyAssignedTo.Count > 1)
+            {
+              // Log more than one name matching company found
+              continue;
+            }
+            else
+            {
+              // Log no name matching company found
+              continue;
+            }
+          }
+          else
+          {
+            string emailOfContactAssignedTo = ReadString("EmailOfContactAssignedTo");
+            if (!string.IsNullOrEmpty(emailOfContactAssignedTo))
+            {
+              Users contactAssignedTo = new Users(_importUser);
+              contactAssignedTo.LoadByEmail(_organizationID, emailOfContactAssignedTo);
+              if (contactAssignedTo.Count == 1)
+              {
+                DateTime? dateShipped = ReadDateNull("DateShipped");
+                string shippingMethod = ReadString("ShippingMethod");
+                if (dateShipped == null || shippingMethod == string.Empty)
+                {
+                  // Log dateShipped and shippingMethod are required
+                  continue;
+                }
+
+                DateTime validDateShipped = (DateTime)dateShipped;
+
+                if (!isUpdate)
+                {
+                  newAssignedAsset.Save();
+                }
+
+                AssetHistory assetHistory = new AssetHistory(_importUser);
+                AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+                DateTime now = DateTime.UtcNow;
+
+                assetHistoryItem.AssetID = asset.AssetID;
+                assetHistoryItem.OrganizationID = _organizationID;
+                assetHistoryItem.ActionTime = now;
+                assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
+                assetHistoryItem.ShippedFrom = _organizationID;
+                assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+                assetHistoryItem.ShippedTo = contactAssignedTo[0].UserID;
+                assetHistoryItem.TrackingNumber = ReadString("TrackingNumber");
+                assetHistoryItem.ShippingMethod = shippingMethod;
+                assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber");
+                assetHistoryItem.Comments = ReadString("Comments");
+
+                assetHistoryItem.DateCreated = now;
+                assetHistoryItem.Actor = -2;
+                assetHistoryItem.RefType = (int)ReferenceType.Contacts;
+                assetHistoryItem.DateModified = now;
+                assetHistoryItem.ModifierID = -2;
+
+                assetHistory.Save();
+
+                AssetAssignments assetAssignments = new AssetAssignments(_importUser);
+                AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
+
+                assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+
+                assetAssignments.Save();
+
+                string description = String.Format("Assigned asset to {0}.", contactAssignedTo[0].FirstLastName);
+                ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
+              }
+              else if (contactAssignedTo.Count > 1)
+              {
+                // Log more than one email matching contact found
+                continue;
+              }
+              else
+              {
+                // Log no email matching contact found
+                continue;
+              }
+            }
+            else
+            {
+              // Log no company or contact info to assign to
+              continue;
+            }
+          }
+        }
+
+        if (isUpdate)
+        {
+          existingAsset.Save();
+          // Add updated rows column as completed rows will reflect only adds
+        }
+        count++;
+
+        if (count % BULK_LIMIT == 0)
+        {
+          assets.BulkSave();
+          assets = new Assets(_importUser);
+          UpdateImportCount(import, count);
+        }
+      }
+      assets.BulkSave();
       UpdateImportCount(import, count);
       // _log.AppendMessage(count.ToString() + " Actions Imported.");
     }
