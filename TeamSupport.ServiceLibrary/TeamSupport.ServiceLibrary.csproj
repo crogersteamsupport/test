@@ -118,6 +118,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NewtonSoft.Json\Bin\Net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SMTP.Net">
+      <HintPath>..\packages\EasyMail\SMTP.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="SSL.Net">
+      <HintPath>..\packages\EasyMail\SSL.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">

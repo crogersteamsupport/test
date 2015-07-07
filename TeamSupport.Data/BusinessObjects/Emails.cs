@@ -44,6 +44,21 @@ namespace TeamSupport.Data
       return message;
     }
 
+    public string[] GetAttachments()
+    {
+      List<string> results = new List<string>();
+
+      if (!string.IsNullOrEmpty(Attachments))
+      {
+        foreach (string fileName in Attachments.Split(';'))
+        {
+          results.Add(fileName);
+        }
+      }
+
+      return results.ToArray();
+    }
+
     private void AddEmailAddressesFromString(MailAddressCollection collection, string text)
     {
       if (string.IsNullOrEmpty(text.Trim())) return;

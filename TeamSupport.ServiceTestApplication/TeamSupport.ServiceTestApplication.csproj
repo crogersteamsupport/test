@@ -105,6 +105,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\dtSearch\dtSearchNetApi3.dll</HintPath>
     </Reference>
+    <Reference Include="SMTP.Net">
+      <HintPath>..\packages\EasyMail\SMTP.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="SSL.Net">
+      <HintPath>..\packages\EasyMail\SSL.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

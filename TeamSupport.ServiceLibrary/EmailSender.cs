@@ -8,12 +8,13 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
-
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Threading;
 using System.ComponentModel;
+using Quiksoft.EasyMail.SMTP;
+
 
 
 namespace TeamSupport.ServiceLibrary
@@ -43,25 +44,51 @@ namespace TeamSupport.ServiceLibrary
     {
       _isDebug = Settings.ReadBool("Debug", false);
 
-      while (!IsStopped)
+      Quiksoft.EasyMail.SMTP.License.Key = "Muroc Systems, Inc. (Single Developer)/9983782F406978487783FBAA248A#E86A";
+      Quiksoft.EasyMail.SSL.License.Key = "Muroc Systems, Inc. (Single Developer)/9984652F406991896501FC33B3#02AE4B";
+
+      Quiksoft.EasyMail.SSL.SSL ssl = new Quiksoft.EasyMail.SSL.SSL();
+      SMTP smtp = new Quiksoft.EasyMail.SMTP.SMTP();
+      
+      //Set the SMTP server and secure port.
+      var smtpServer = new SMTPServer
       {
-        try
+        Name = Settings.ReadString("SMTP Host"),
+        Port = Settings.ReadInt("SMTP Port"), //465, //Secure port
+        Account = Settings.ReadString("SMTP UserName"),
+        Password = Settings.ReadString("SMTP Password"),
+        AuthMode = SMTPAuthMode.AuthLogin
+      };
+
+      smtp.SMTPServers.Add(smtpServer);
+      smtp.Connect(ssl.GetInterface());
+
+      try
+      {
+        while (!IsStopped)
         {
-          Email email = GetNextEmail(LoginUser.ConnectionString, (int)_threadPosition);
-          if (email == null) return;
-          SendEmail(email);
+          try
+          {
+            Email email = GetNextEmail(LoginUser.ConnectionString, (int)_threadPosition);
+            if (email == null) return;
+            SendEmail(email, smtp);
+          }
+          catch (Exception ex)
+          {
+            Logs.WriteEvent("Error sending email");
+            Logs.WriteException(ex);
+            ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
+          }
         }
-        catch (Exception ex)
-        {
-          Logs.WriteEvent("Error sending email");
-          Logs.WriteException(ex);
-          ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
-        }
+      }
+      finally
+      {
+        smtp.Disconnect();
       }
  
     }
 
-    private void SendEmail(Email email)
+    private void SendEmail(Email email, SMTP smtp)
     {
       Logs.WriteLine();
       Logs.WriteHeader("Processing Email");
@@ -69,45 +96,63 @@ namespace TeamSupport.ServiceLibrary
 
       try
       {
-        using (SmtpClient client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port")))
+        email.Attempts = email.Attempts + 1;
+        email.Collection.Save();
+        Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
+        Logs.WriteEventFormat("Size: {0}, Attachments: {1}", email.Size.ToString(), email.Attachments);
+        MailMessage message = email.GetMailMessage();
+        if (_isDebug == true)
         {
-          string username = Settings.ReadString("SMTP UserName", "");
-          if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
-          Logs.WriteEventFormat("SMTP: Host: {0}, Port: {1}, User: {2}", client.Host, client.Port.ToString(), username);
-          client.Timeout = 500000;
-          //client.EnableSsl = true; does not work on socket labs
-          email.Attempts = email.Attempts + 1;
-          email.Collection.Save();
-          Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
-          Logs.WriteEventFormat("Size: {0}, Attachments: {1}", email.Size.ToString(), email.Attachments);
-          MailMessage message = email.GetMailMessage();
-          message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
-          message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
-          if (_isDebug == true)
+          string debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
+          Logs.WriteEvent("DEBUG Addresses: " + debugAddresses);
+          StringBuilder builder = new StringBuilder("<div><strong>Orginal To List:</strong></div>");
+          foreach (MailAddress address in message.To)
           {
-            string debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
-            Logs.WriteEvent("DEBUG Addresses: " + debugAddresses);
-            StringBuilder builder = new StringBuilder("<div><strong>Orginal To List:</strong></div>");
-            foreach (MailAddress address in message.To)
-            {
-              builder.AppendLine(string.Format("<div>{0}</div>", WebUtility.HtmlEncode(address.ToString())));
-            }
-            builder.AppendLine("<br /><br /><br />");
-
-            message.To.Clear();
-            message.To.Add(debugAddresses);
-            message.Subject = "[DEBUG] " + message.Subject;
+            builder.AppendLine(string.Format("<div>{0}</div>", WebUtility.HtmlEncode(address.ToString())));
           }
-          Logs.WriteEvent("Sending email");
-          client.Send(message);
-          Logs.WriteEvent("Email sent");
-          email.IsSuccess = true;
-          email.IsWaiting = false;
-          email.Body = "";
-          email.DateSent = DateTime.UtcNow;
-          email.Collection.Save();
-          UpdateHealth();
+          builder.AppendLine("<br /><br /><br />");
+
+          message.To.Clear();
+          message.To.Add(debugAddresses);
+          message.Subject = "[DEBUG] " + message.Subject;
         }
+        Logs.WriteEvent("Sending email");
+
+        EmailMessage msg = new EmailMessage();
+
+        foreach (var recipient in message.To)
+        {
+          msg.Recipients.Add(recipient.Address, recipient.DisplayName);
+        }
+        msg.From.Name = message.From.DisplayName;
+        msg.From.Email = message.From.Address;
+        msg.ReplyTo = message.From.Address;
+        msg.Subject = message.Subject;
+        msg.CustomHeaders.Add("X-xsMessageId", email.OrganizationID.ToString());
+        msg.CustomHeaders.Add("X-xsMailingId", email.EmailID.ToString());
+
+        msg.BodyParts.Add(new Quiksoft.EasyMail.SMTP.BodyPart(message.Body, message.IsBodyHtml ? BodyPartFormat.HTML : BodyPartFormat.Plain));
+        string[] attachments = email.GetAttachments();
+        foreach (var attachment in attachments)
+        {
+          if (File.Exists(attachment))
+          {
+            msg.Attachments.Add(attachment);
+          }
+          else
+          {
+            Logs.WriteEvent("File unavailable :" + attachment);
+          }
+          
+        }
+        smtp.Send(msg);
+        Logs.WriteEvent("Email sent");
+        email.IsSuccess = true;
+        email.IsWaiting = false;
+        email.Body = "";
+        email.DateSent = DateTime.UtcNow;
+        email.Collection.Save();
+          UpdateHealth();
       }
       catch (Exception ex)
       {

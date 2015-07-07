@@ -39,6 +39,7 @@
       this.button1 = new System.Windows.Forms.Button();
       this.button2 = new System.Windows.Forms.Button();
       this.btnTestEmail = new System.Windows.Forms.Button();
+      this.btnFullContacts = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // btnEmailProcessor
@@ -141,7 +142,7 @@
       // 
       this.btnTestEmail.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btnTestEmail.ForeColor = System.Drawing.Color.Green;
-      this.btnTestEmail.Location = new System.Drawing.Point(12, 301);
+      this.btnTestEmail.Location = new System.Drawing.Point(12, 405);
       this.btnTestEmail.Name = "btnTestEmail";
       this.btnTestEmail.Size = new System.Drawing.Size(221, 29);
       this.btnTestEmail.TabIndex = 30;
@@ -149,11 +150,24 @@
       this.btnTestEmail.UseVisualStyleBackColor = true;
       this.btnTestEmail.Click += new System.EventHandler(this.btnTestEmail_Click);
       // 
+      // btnFullContacts
+      // 
+      this.btnFullContacts.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btnFullContacts.ForeColor = System.Drawing.Color.Green;
+      this.btnFullContacts.Location = new System.Drawing.Point(12, 301);
+      this.btnFullContacts.Name = "btnFullContacts";
+      this.btnFullContacts.Size = new System.Drawing.Size(221, 29);
+      this.btnFullContacts.TabIndex = 31;
+      this.btnFullContacts.Text = "Start Full Contacts";
+      this.btnFullContacts.UseVisualStyleBackColor = true;
+      this.btnFullContacts.Click += new System.EventHandler(this.btnFullContacts_Click);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(248, 343);
+      this.ClientSize = new System.Drawing.Size(248, 446);
+      this.Controls.Add(this.btnFullContacts);
       this.Controls.Add(this.btnTestEmail);
       this.Controls.Add(this.button2);
       this.Controls.Add(this.button1);
@@ -182,6 +196,7 @@
     private System.Windows.Forms.Button button1;
     private System.Windows.Forms.Button button2;
     private System.Windows.Forms.Button btnTestEmail;
+    private System.Windows.Forms.Button btnFullContacts;
   }
 }
 

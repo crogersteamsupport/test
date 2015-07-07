@@ -12,6 +12,7 @@ using TeamSupport.CrmIntegration;
 using Microsoft.Win32;
 using System.Net.Mail;
 using System.IO;
+using Quiksoft.EasyMail.SMTP;
 
 namespace TeamSupport.ServiceTestApplication
 {
@@ -25,6 +26,7 @@ namespace TeamSupport.ServiceTestApplication
     ReminderProcessor _reminderProcessor;
     ImportProcessor _importProcessor;
     WebHooks _webhooks;
+    CustomerInsightsProcessor _cip;
     
     public Form1()
     {
@@ -55,6 +57,7 @@ namespace TeamSupport.ServiceTestApplication
       if (_reminderProcessor != null) _reminderProcessor.Stop();
       if (_importProcessor != null) _importProcessor.Stop();
       if (_webhooks != null) _webhooks.Stop();
+      if (_cip != null) _cip.Stop();
     }
 
     private void StartProcess(ServiceThread thread, Button button)
@@ -132,24 +135,60 @@ namespace TeamSupport.ServiceTestApplication
 
     private void btnTestEmail_Click(object sender, EventArgs e)
     {
+      Quiksoft.EasyMail.SMTP.License.Key = "Muroc Systems, Inc. (Single Developer)/9983782F406978487783FBAA248A#E86A";
+      Quiksoft.EasyMail.SSL.License.Key = "Muroc Systems, Inc. (Single Developer)/9984652F406991896501FC33B3#02AE4B";
+
+      const string smtpServerHostName = "smtp.socketlabs.com";
+      const string smtpUserName = "MurocSystems";
+      const string smtpPassword = "k3C5Wtb8ZYs7";
+
+      var ssl = new Quiksoft.EasyMail.SSL.SSL();
+      var smtp = new Quiksoft.EasyMail.SMTP.SMTP();
+
+ 
+      EmailMessage msg = new EmailMessage();
+      msg.Recipients.Add("kevin4885@gmail.com", "Kevin Tst Jones", RecipientType.To);
+      msg.Subject = "KEVIN'S TEST EMAIL";
+      msg.From.Email = "blah@blah.com";
+      msg.From.Name = "Mr. blah";
+      msg.BodyParts.Add(new Quiksoft.EasyMail.SMTP.BodyPart("<h1>Hello</h1>", BodyPartFormat.HTML));
+      msg.Attachments.Add("c:\\tesxt.png");
+      msg.CustomHeaders.Add("X-xsMessageId", "");
+      msg.CustomHeaders.Add("X-xsMailingId", "");
+      //message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
+      //message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
+
+      //Set the SMTP server and secure port.
+      var smtpServer = new SMTPServer
+      {
+          Name = smtpServerHostName,
+          Port = 465, //Secure port
+          Account = smtpUserName,
+          Password = smtpPassword,
+          AuthMode = SMTPAuthMode.AuthLogin
+      };
+
+      smtp.SMTPServers.Add(smtpServer);
+
       try
       {
-        using (SmtpClient client = new SmtpClient("smtp.socketlabs.com", 25))
-        {
-          client.Credentials = new System.Net.NetworkCredential("MurocSystems", "k3C5Wtb8ZYs7");
-          client.Timeout = 20000;
-          client.EnableSsl = true; //does not work on socket labs
-          MailMessage message = new MailMessage("kjones@teamsupport.com", "kjones@teamsupport.com", "SMTP TEST", "THIS IS JUST A TEST");
-          //message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
-          //message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
-          client.Send(message);
+          smtp.Connect(ssl.GetInterface());
+          //For performance loop here to send multiple message on the same connection.
+          smtp.Send(msg);
+          //Disconnect when done.
+          smtp.Disconnect();
           MessageBox.Show("Message Sent");
-        }
       }
       catch (Exception ex)
       {
         MessageBox.Show("There was an error sending mail\n\n" + ex.Message);
       }
+    }
+
+    private void btnFullContacts_Click(object sender, EventArgs e)
+    {
+      if (_cip == null || _cip.IsStopped) StartProcess(_cip = new CustomerInsightsProcessor(), sender as Button); else StopProcess(_cip, sender as Button);
+
     }
 
 
