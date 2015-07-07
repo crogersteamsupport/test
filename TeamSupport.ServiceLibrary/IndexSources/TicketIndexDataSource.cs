@@ -50,8 +50,8 @@ namespace TeamSupport.ServiceLibrary
 
         try
         {
+          //actionText = HtmlToText.ConvertHtml(actionText);
           actionsBuilder.AppendLine(actionText);
-          actionText = HtmlToText.ConvertHtml(actionText);
         }
         catch (Exception ex)
         {
