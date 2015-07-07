@@ -37,6 +37,7 @@ var execGetAsset = null;
 var execGetUsers = null;
 var execGetRelated = null;
 var execSelectTicket = null;
+var execGetCompany = null;
 
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -61,6 +62,11 @@ var getUsers = function (request, response) {
 var getRelated = function (request, response) {
   if (execGetRelated) { execGetRelated._executor.abort(); }
   execGetRelated = top.Ts.Services.Tickets.SearchTickets(request, null, function (result) { response(result); });
+}
+
+var getCompany = function (request, response) {
+  if (execGetCompany) { execGetCompany._executor.abort(); }
+  execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request, function (result) { response(result); });
 }
 
 var selectTicket = function (request, response) {
@@ -1218,6 +1224,22 @@ function SetupCustomerSection() {
     });
   }
 
+  $('#customer-company-input').selectize({
+    valueField: 'label',
+    labelField: 'label',
+    searchField: 'label',
+    load: function (query, callback) {
+      getCompany(query, callback)
+    },
+    onDropdownClose: function ($dropdown) {
+      $($dropdown).prev().find('input').blur();
+    },
+    closeAfterSelect: true,
+    plugins: {
+      'sticky_placeholder': {}
+    }
+  });
+
   $('#Customer-Create').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -1226,8 +1248,8 @@ function SetupCustomerSection() {
     var firstName = $('#customer-fname-input').val();
     var lastName = $('#customer-lname-input').val();
     var phone = $('#customer-phone-input').val();;
-    var companyName = $('#customer-company-input').val();
-    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
+    var companyName = $('#customer-company-input').val();debugger
+    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {debugger
       if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
         top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
           AddCustomers(result);
