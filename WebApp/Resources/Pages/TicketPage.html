@@ -259,9 +259,9 @@
             </script>
             <script id="action-template" type="text/x-handlebars-template">
               {{#if item.IsPinned}}
-              <li data-id="{{item.RefID}}" data-isWC="{{item.IsWC}}" data-action="{{ActionData}}" class="pinned">
+              <li data-id="{{item.RefID}}" data-isWC="{{item.IsWC}}" data-action="{{ActionData}}" class="ticket-action pinned">
                 {{else}}
-              <li data-id="{{item.RefID}}" data-isWC="{{item.IsWC}}" data-action="{{ActionData}}">
+              <li data-id="{{item.RefID}}" data-iswc="{{item.IsWC}}" data-action="{{ActionData}}" class="ticket-action">
                 {{/if}}
                 <div class="timeline-panel">
                   {{#unless item.IsWC}}
@@ -305,13 +305,15 @@
                     <span class="pull-left">
                       <a data-userid="{{item.CreatorID}}" data-userid="{{item.CreatorID}}" data-name="{{item.CreatorName}}" onclick='top.Ts.MainPage.openUser({{item.CreatorID}}); return false;' class="TeamSupportBlue UserAnchor">{{item.CreatorName}}</a>
                       <br>
-                      <small class="text-muted">added a 
-                      {{#if item.MessageType}}
+                      <small class="text-muted">
+                        added a
+                        {{#if item.MessageType}}
                         {{item.MessageType}}
-                      {{else}}
+                        {{else}}
                         Description
-                      {{/if}}
-                       on {{FormatDateTime item.DateCreated}}</small>
+                        {{/if}}
+                        on {{FormatDateTime item.DateCreated}}
+                      </small>
                       <small class="text-muted">{{TimeSpent}}</small>
                     </span>
                   </div>

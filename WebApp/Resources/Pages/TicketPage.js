@@ -208,9 +208,16 @@ var loadTicket = function (ticketNumber, refresh) {
 };
 
 function CreateNewAction(actions) {
-  //top.Ts.Services.TicketPage.ConvertActionItem(actions[0].Action.ActionID, function (actionInfo) {
-  //  CreateActionElement(actionInfo, false);
-  //});
+  var firstAction = $(".ticket-action[data-iswc='false']").first();
+
+  var firstActionID = firstAction.data('id');
+  if (firstActionID !== actions[0].Action.ActionID)
+  {
+    top.Ts.Services.TicketPage.ConvertActionItem(actions[0].Action.ActionID, function (actionInfo) {
+      var actionElement = CreateActionElement(actionInfo, false);
+      actionElement.find('.ticket-action-number').text(_actionTotal + 1);
+    });
+  }
 }
 
 function SetupTicketPage() {
