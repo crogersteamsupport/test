@@ -479,8 +479,6 @@ function SetupActionEditor(elem, action) {
   top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
   initEditor(elem, true, function (ed) {
     $("#action-new-type").val($("#action-new-type option:first").val());
-
-
     $('#action-new-editor').val('');
     if (action) {
       $('#action-new-type').val(action.ActionTypeID);
@@ -496,13 +494,6 @@ function SetupActionEditor(elem, action) {
       $('#action-new-hours').val(0);
       $('#action-new-minutes').val(0);
       top.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
-        if (result != null && result != "" && result != "<br>") {
-          var currenttext = tinyMCE.activeEditor.getContent();
-          tinyMCE.activeEditor.setContent(currenttext + result);
-        }
-      });
-
-      top.Ts.Services.Tickets.GetTicketTypeTemplateText(_ticketTypeID, function (result) {
         if (result != null && result != "" && result != "<br>") {
           var currenttext = tinyMCE.activeEditor.getContent();
           tinyMCE.activeEditor.setContent(currenttext + result);
@@ -2561,6 +2552,7 @@ var SetupStatusField = function (StatusId) {
             top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
               if (result !== null) {
                 _ticketCurrStatus = result.TicketStatusID;
+                SetStatus(value);
                 top.Ts.System.logAction('Ticket - Status Changed');
                 $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
                 window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
