@@ -208,9 +208,9 @@ var loadTicket = function (ticketNumber, refresh) {
 };
 
 function CreateNewAction(actions) {
-  top.Ts.Services.TicketPage.ConvertActionItem(actions[0].Action.ActionID, function (actionInfo) {
-    CreateActionElement(actionInfo, false);
-  });
+  //top.Ts.Services.TicketPage.ConvertActionItem(actions[0].Action.ActionID, function (actionInfo) {
+  //  CreateActionElement(actionInfo, false);
+  //});
 }
 
 function SetupTicketPage() {
