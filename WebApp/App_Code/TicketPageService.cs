@@ -97,7 +97,9 @@ namespace TSWebServices
             users.LoadByOrganizationID(TSAuthentication.OrganizationID, true);
 
             ticketUsers.AddRange(users.Where(p => !ticketUsers.Any(p2 => p2.UserID == p.UserID)));
-
+            bool isSender = false;
+            bool hasSenderBeenAdded = false;
+            bool isCreator = false;
             foreach (User user in ticketUsers)
             {
                 TicketPropertySelectField selectUser = new TicketPropertySelectField();
@@ -115,11 +117,13 @@ namespace TSWebServices
                 if (sender.Count > 0 && sender[0].UserID == user.UserID)
                 {
                   postLine = "(Sender";
+                  isSender = true;
+
                 }
 
                 if (ticket.CreatorID == user.UserID)
                 {
-
+                  isCreator = true;
                   if (postLine.Length > 0)
                   {
                     postLine += " and Creator";
@@ -129,7 +133,6 @@ namespace TSWebServices
                     postLine = "(Creator";
                   }
                 }
-
 
                 if (postLine.Length > 0)
                 {
@@ -143,7 +146,25 @@ namespace TSWebServices
                     selectUser.IsSelected = true;
                 }
 
-                result.Add(selectUser);
+                if (isSender)
+                {
+                  result.Insert(0, selectUser);
+                  isSender = false;
+                  hasSenderBeenAdded = true;
+                }
+                else if(isCreator)
+                {
+                  if(hasSenderBeenAdded)
+                  {
+                    result.Insert(1, selectUser);
+                  }
+                  else
+                    result.Insert(0, selectUser);
+
+                  isCreator = false;
+                }
+                else
+                  result.Add(selectUser);
             }
 
             return result.ToArray();

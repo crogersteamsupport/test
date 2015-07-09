@@ -215,7 +215,8 @@ function CreateNewAction(actions) {
   {
     top.Ts.Services.TicketPage.ConvertActionItem(actions[0].Action.ActionID, function (actionInfo) {
       var actionElement = CreateActionElement(actionInfo, false);
-      actionElement.find('.ticket-action-number').text(_actionTotal + 1);
+      _actionTotal++;
+      actionElement.find('.ticket-action-number').text(_actionTotal);
     });
   }
 }
