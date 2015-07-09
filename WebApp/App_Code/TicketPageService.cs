@@ -100,7 +100,7 @@ namespace TSWebServices
             bool isSender = false;
             bool hasSenderBeenAdded = false;
             bool isCreator = false;
-            foreach (User user in ticketUsers)
+            foreach (User user in ticketUsers.OrderBy(tu => tu.DisplayName))
             {
                 TicketPropertySelectField selectUser = new TicketPropertySelectField();
                 selectUser.ID = user.UserID;
