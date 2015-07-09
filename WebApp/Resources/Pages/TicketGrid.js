@@ -44,6 +44,20 @@ TicketGrid = function (options) {
     this.defaults = { "isCompact": false };
     this.options = $.extend({}, this.defaults, options);
 
+    var execSelectTicket = null;
+    var selectTicket = function (request, response) {
+      if (execSelectTicket) { execSelectTicket._executor.abort(); }
+      var filter = $(this.element).data('filter');
+      if (filter === undefined) {
+        execSelectTicket = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
+      }
+      else {
+        execSelectTicket = top.Ts.Services.Tickets.SearchTickets(request.term, filter, function (result) { response(result); });
+      }
+    }
+
+    var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
+
     function saveOptions() {
         top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Settings', JSON.stringify(self.options));
     }
@@ -476,6 +490,80 @@ TicketGrid = function (options) {
         $('.dialog-columns').dialog('open');
         top.Ts.System.logAction('Ticket Grid - Columns Adjusted');
 
+    });
+
+    $("#Ticket-Merge-search").autocomplete({
+      minLength: 2,
+      source: selectTicket,
+      select: function (event, ui) {
+        var ids = getSelectedIDs();
+        for(i = 0; i < ids.length; i++)
+        {
+          if(ids[i] == ui.item.data)
+          {
+            alert("Sorry, but you can not merge this ticket into itself.");
+            return;
+            
+          }
+        }
+
+        $(this).data('ticketid', ui.item.data).removeClass('ui-autocomplete-loading');
+        $(this).data('ticketnumber', ui.item.id);
+
+        try {
+          top.Ts.Services.Tickets.GetTicketInfo(ui.item.id, function (info) {
+            var descriptionString = info.Actions[0].Action.Description;
+
+            if (ellipseString(info.Actions[0].Action.Description, 30).indexOf("<img src") !== -1)
+              descriptionString = "This ticket starts off with an embedded/linked image. We have disabled this for the preview.";
+            else if (ellipseString(info.Actions[0].Action.Description, 30).indexOf(".viewscreencast.com") !== -1)
+              descriptionString = "This ticket starts off with an embedded recorde video.  We have disabled this for the preview.";
+            else
+              descriptionString = ellipseString(info.Actions[0].Action.Description, 30);
+
+            var ticketPreviewName = "<div><strong>Ticket Name:</strong> " + info.Ticket.Name + "</div>";
+            var ticketPreviewAssigned = "<div><strong>Ticket Assigned To:</strong> " + info.Ticket.UserName + "</div>";
+            var ticketPreviewDesc = "<div><strong>Ticket Desciption Sample:</strong> " + descriptionString + "</div>";
+
+            $('#ticketmerge-preview-details').after(ticketPreviewName + ticketPreviewAssigned + ticketPreviewDesc);
+            $('#dialog-ticketmerge-preview').show();
+            $('#dialog-ticketmerge-warning').show();
+            $(".dialog-ticketmerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
+          })
+        }
+        catch (e) {
+          alert("Sorry, there was a problem loading the information for that ticket.");
+        }
+      },
+      position: { my: "right top", at: "right bottom", collision: "fit flip" }
+    });
+
+    $('#ticket-merge-complete').click(function (e) {
+      e.preventDefault();
+      if ($('#Ticket-Merge-search').val() == "") {
+        alert("Please select a valid ticket to merge");
+        return;
+      }
+
+      if ($('#dialog-ticketmerge-confirm').prop("checked")) {
+        var winningID = $('#Ticket-Merge-search').data('ticketid');
+        var ids = getSelectedIDs();
+        var data = JSON.stringify(ids);
+        var JSTop = top;
+        top.Ts.Services.Tickets.BulkMergeTickets(winningID, data, function () {
+          refreshGrid(); deselectRows();
+          $('#MergeModal').modal('hide');
+
+          //for (i = 0; i < ids.length; i++) {
+          //  JSTop.Ts.MainPage.closeTicketTab(ids[i]);
+          //}
+
+          //JSTop.Ts.MainPage.openTicket(winningID, true);
+        });
+      }
+      else {
+        alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+      }
     });
 
     function addDialogColumn(column, isChecked) {

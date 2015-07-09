@@ -3626,6 +3626,18 @@ WHERE t.TicketID = @TicketID
         return errLocation;
     }
 
+    [WebMethod]
+    public List<string> BulkMergeTickets(int winningTicketID, string losingTicketIDs)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(losingTicketIDs);
+      List<string> messages = new List<string>();
+      foreach (int ticketID in ids)
+      {
+        messages.Add(MergeTickets(winningTicketID, ticketID));
+      }
+      return messages;
+    }
+
     public void MergeContacts(int losingTicketID, int winningTicketID, Ticket ticket)
     {
         List<TicketCustomer> customers = new List<TicketCustomer>();
