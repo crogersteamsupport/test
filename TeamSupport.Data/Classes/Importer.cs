@@ -524,6 +524,7 @@ namespace TeamSupport.Data
     private TicketStatus GetTicketStatus(TicketStatuses statuses, string name, TicketType ticketType)
     {
       name = name.Trim();
+      if (string.IsNullOrWhiteSpace(name)) name = "None";
       TicketStatus result = null;
       int statusID = -1;
       if (int.TryParse(name, out statusID))
