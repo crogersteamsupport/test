@@ -465,6 +465,25 @@ function CreateNewActionLI() {
     });
   });
 
+  $('#action-timeline').on('click', '.remove-attachment', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var self = $(this);
+    var attachmentid = self.data('attachmentid');
+    var filename = self.data('name');
+
+    if (!confirm('Are you sure you would like to delete "' + filename + '."')) return;
+    top.Ts.Services.Tickets.DeleteAttachment(
+      attachmentid,
+      function () {
+        self.prev().remove();
+        self.remove();
+      }, function () {
+        alert('There was a problem deleting "' + attachment.FileName + '."');
+      });
+  });
+  //remove-attachment
+
   $('#action-new-type').change(function (e) {
     var actionID = $(this).val();
     var action = $(this).find(':selected').data('data');
