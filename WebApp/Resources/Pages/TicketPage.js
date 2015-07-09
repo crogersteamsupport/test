@@ -39,6 +39,14 @@ var execGetRelated = null;
 var execSelectTicket = null;
 var execGetCompany = null;
 
+var session;
+var token;
+var recordingID;
+var apiKey;
+var sessionId;
+var tokurl;
+var publisher;
+
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
   execGetCustomer = top.Ts.Services.TicketPage.GetUserOrOrganizationForTicket(request, function (result) { response(result); });
@@ -133,6 +141,8 @@ Selectize.define('sticky_placeholder', function (options) {
 
 $(document).ready(function () {
   _ticketNumber = top.Ts.Utils.getQueryValue("TicketNumber", window);
+
+  apiKey = "45228242";
 
   //Setup Ticket Elements
   SetupTicketPage();
@@ -614,6 +624,65 @@ function SetupActionEditor(elem, action) {
       });
     }
   });
+
+  element.find('#rcdtok').click(function (e) {
+      top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+          element.find('#rcdtok').hide();
+          element.find('#stoptok').show();
+          element.find('#inserttok').hide();
+          element.find('#deletetok').hide();
+          recordingID = resultID;
+          element.find('#statusText').text("Currently Recording ...");
+      });
+  });
+
+  element.find('#stoptok').hide();
+
+  element.find('#stoptok').click(function (e) {
+      element.find('#statusText').text("Processing...");
+      top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+          element.find('#rcdtok').show();
+          element.find('#stoptok').hide();
+          element.find('#inserttok').show();
+          element.find('#canceltok').show();
+          tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+          element.find('#statusText').text("Recording Stopped");
+      });
+  });
+
+  element.find('#inserttok').hide();
+
+  element.find('#inserttok').click(function (e) {
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+      session.unpublish(publisher);
+      element.find('#rcdtok').show();
+      element.find('#stoptok').hide();
+      element.find('#inserttok').hide();
+      element.find('#recordVideoContainer').hide();
+      element.find('#statusText').text("");
+  });
+
+  element.find('#deletetok').hide();
+
+  element.find('#canceltok').click(function (e) {
+      if (recordingID) {
+          element.find('#statusText').text("Cancelling Recording ...");
+          top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+              element.find('#rcdtok').show();
+              element.find('#stoptok').hide();
+              element.find('#inserttok').hide();
+              session.unpublish(publisher);
+              element.find('#recordVideoContainer').hide();
+              element.find('#statusText').text("");
+          });
+      }
+      else {
+          session.unpublish(publisher);
+          element.find('#recordVideoContainer').hide();
+      }
+      element.find('#statusText').text("");
+  });
+  element.find('#recordVideoContainer').hide();
 
   var statuses = top.Ts.Cache.getNextStatuses(_ticketInfo.Ticket.TicketStatusID);
   $('#action-new-saveoptions').empty();

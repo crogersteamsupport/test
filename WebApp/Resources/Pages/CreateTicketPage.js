@@ -24,6 +24,15 @@ var execGetUsers = null;
 var execGetRelated = null;
 var execSelectTicket = null;
 
+var session;
+var token;
+var recordingID;
+var apiKey;
+var sessionId;
+var tokurl;
+var publisher;
+
+
 var getCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
   execGetCustomer = top.Ts.Services.TicketPage.GetUserOrOrganizationForTicket(request, function (result) { response(result); });
@@ -120,6 +129,7 @@ Selectize.define('sticky_placeholder', function (options) {
 });
 
 $(document).ready(function () {
+  apiKey = "45228242";
   LoadTicketPageOrder();
   SetupDescriptionEditor();
   SetupActionTimers();
@@ -592,6 +602,66 @@ function SetupDescriptionEditor() {
       top.Ts.System.logAction('New Ticket - Canceled');
       $('#recorder').remove();
     });
+
+    $('#rcdtok').click(function (e) {
+        top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+            $('#rcdtok').hide();
+            $('#stoptok').show();
+            $('#inserttok').hide();
+            $('#deletetok').hide();
+            recordingID = resultID;
+            $('#statusText').text("Currently Recording ...");
+        });
+    });
+
+    $('#stoptok').hide();
+
+    $('#stoptok').click(function (e) {
+        $('#statusText').text("Processing...");
+        top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+            $('#rcdtok').show();
+            $('#stoptok').hide();
+            $('#inserttok').show();
+            $('#canceltok').show();
+            tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+            $('#statusText').text("Recording Stopped");
+        });
+    });
+
+    $('#inserttok').hide();
+
+    $('#inserttok').click(function (e) {
+        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+        session.unpublish(publisher);
+        $('#rcdtok').show();
+        $('#stoptok').hide();
+        $('#inserttok').hide();
+        $('#recordVideoContainer').hide();
+        $('#statusText').text("");
+    });
+
+    $('#deletetok').hide();
+
+    $('#canceltok').click(function (e) {
+        if (recordingID) {
+            $('#statusText').text("Cancelling Recording ...");
+            top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+                $('#rcdtok').show();
+                $('#stoptok').hide();
+                $('#inserttok').hide();
+                session.unpublish(publisher);
+                $('#recordVideoContainer').hide();
+                $('#statusText').text("");
+            });
+        }
+        else {
+            session.unpublish(publisher);
+            $('#recordVideoContainer').hide();
+        }
+        $('#statusText').text("");
+    });
+    $('#recordVideoContainer').hide();
+
   },
   function (ed) {
     $('#ticket-title-input').focus();

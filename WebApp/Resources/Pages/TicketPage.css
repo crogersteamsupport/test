@@ -838,3 +838,22 @@
       font-family: inherit;
       font-style: inherit;
     }   
+
+    #publisher {
+    width: 300px;
+    height: 300px;
+    }
+
+    #tempContainer{
+    width: 300px;
+    height: 300px;
+    }   
+
+    video:hover{
+    cursor: pointer;
+    }
+
+    #tempContainer{
+    margin: 0 auto;
+    padding-bottom: 10px;
+    }
