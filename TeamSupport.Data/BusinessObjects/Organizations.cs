@@ -2567,5 +2567,29 @@ ORDER BY
       }
 
     }
+
+    public void LoadByImportID(string importID, int parentID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Organizations WHERE ImportID = @ImportID AND ParentID = @ParentID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ImportID", importID);
+        command.Parameters.AddWithValue("@ParentID", parentID);
+        Fill(command);
+      }
+    }
+
+    public void LoadByName(string name, int parentID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Organizations WHERE ParentID = @ParentID AND Name = @Name";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@Name", name);
+        command.Parameters.AddWithValue("@ParentID", parentID);
+        Fill(command);
+      }
+    }
   }
 }

@@ -226,5 +226,18 @@ namespace TeamSupport.Data
         }
     }
 
+    public void LoadByGroupName(int parentID, string name)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Groups WHERE Name = @Name AND OrganizationID = @ParentID";
+        command.CommandType = CommandType.Text;
+
+        command.Parameters.AddWithValue("@Name", name);
+        command.Parameters.AddWithValue("@ParentID", parentID);
+        Fill(command);
+      }
+    }
+
   }
 }
