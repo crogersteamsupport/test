@@ -47,9 +47,9 @@ function addChartData(options, records) {
 
     //options.colors = old;
     options.colors = brightPastel;
-    options.exporting = { url: '../../../chartexport', filename: '"MyChart"', width: 1900 };
-    options.navigation = { buttonOptions: { enabled: false} };
-    
+    options.exporting = { url: '../../../chartexport', filename: '"MyChart"', sourceWidth: 1200 };
+    options.navigation = { buttonOptions: { enabled: false } };
+
     function fixRecordName(record, index) {
         if (record.fieldType == 'bool') {
             return record.name + (record.data[index] == true ? ' = True' : ' = False');
