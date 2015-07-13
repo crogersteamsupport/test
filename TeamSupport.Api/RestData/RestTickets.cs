@@ -143,7 +143,8 @@ namespace TeamSupport.Api
       ticket.OrganizationID = command.Organization.OrganizationID;
       string description = string.Empty;
       int? contactID = null;
-      ticket.FullReadFromXml(command.Data, true, ref description, ref contactID);
+      int? customerID = null;
+      ticket.FullReadFromXml(command.Data, true, ref description, ref contactID, ref customerID);
       ticket.TicketSource = "API";
       ticket.NeedsIndexing = true;
       ticket.Collection.Save();
@@ -152,6 +153,11 @@ namespace TeamSupport.Api
       if (contactID != null)
       {
         ticket.Collection.AddContact((int)contactID, ticket.TicketID);
+      }
+
+      if (customerID != null)
+      {
+        ticket.Collection.AddOrganization((int)customerID, ticket.TicketID);
       }
 
       Actions actions = new Actions(command.LoginUser);

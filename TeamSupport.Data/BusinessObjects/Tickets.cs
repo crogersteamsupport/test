@@ -152,7 +152,7 @@ AND ot.TicketID = @TicketID
 //      }
     }
 
-    public void FullReadFromXml(string data, bool isInsert, ref string description, ref int? contactID)
+    public void FullReadFromXml(string data, bool isInsert, ref string description, ref int? contactID, ref int? customerID)
     {
       LoginUser user = Collection.LoginUser;
       FieldMap fieldMap = Collection.FieldMap;
@@ -373,6 +373,18 @@ AND ot.TicketID = @TicketID
             newUserCollection.Save();
             contactID = newUser.UserID;
           }
+        }
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object customerIDObject = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "CustomerID", "CustomerName", Organization.GetIDByName, false, user.OrganizationID, true);
+        if (customerIDObject != null)
+        {
+          customerID = Convert.ToInt32(customerIDObject);
         }
       }
       catch

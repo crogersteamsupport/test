@@ -57,7 +57,11 @@ namespace TeamSupport.Api
           log.IPAddress = context.Request.UserHostAddress;
           RestProcessor processor = new RestProcessor(command);
 
-          if (ApiLogs.GetDailyRequestCount(_loginUser, _loginUser.OrganizationID) > _organization.APIRequestLimit)
+          int companyId = command.IsCustomerOnly ? (int)command.Organization.ParentID : _loginUser.OrganizationID;
+          int apiRequestLimit = command.IsCustomerOnly ? Organizations.GetOrganization(_loginUser, companyId).APIRequestLimit : _organization.APIRequestLimit;
+          int apiRequestCount = ApiLogs.GetDailyRequestCount(_loginUser, companyId);
+
+          if (apiRequestCount > apiRequestLimit)
             throw new RestException(HttpStatusCode.Forbidden, "You have exceeded your 24 hour API request limit of " + _organization.APIRequestLimit.ToString() + ".");
 
           processor.Process();

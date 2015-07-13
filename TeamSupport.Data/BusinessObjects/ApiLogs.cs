@@ -17,7 +17,18 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT COUNT(*) FROM ApiLogs WHERE DateCreated > DATEADD(d, -1, GETUTCDATE()) AND OrganizationID=@OrganizationID";
+        command.CommandText = @"SELECT COUNT(1)
+FROM
+	ApiLogs
+	JOIN (SELECT organizationId
+					FROM
+						Organizations
+					WHERE
+						organizationId = @organizationId
+						OR parentId = @organizationId) AS Organizations
+		ON ApiLogs.organizationId = Organizations.organizationId
+WHERE
+	DateCreated > DATEADD(d, -1, GETUTCDATE())";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
 
