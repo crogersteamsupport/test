@@ -999,6 +999,9 @@ namespace TeamSupport.ServiceLibrary
 
     private void ImportTickets(Import import)
     {
+      SortedList<string, int> userList = GetUserAndContactList();
+      SortedList<string, int> userOnlyList = GetUserList();
+
       TicketTypes ticketTypes = new TicketTypes(_importUser);
       ticketTypes.LoadAllPositions(_organizationID);
 
@@ -1008,23 +1011,122 @@ namespace TeamSupport.ServiceLibrary
       TicketSeverities ticketSeverities = new TicketSeverities(_importUser);
       ticketSeverities.LoadByOrganizationID(_organizationID);
 
-      Tickets users = new Tickets(_importUser);
+      Groups groups = new Groups(_importUser);
+      groups.LoadByOrganizationID(_organizationID);
+
+      Organizations account = new Organizations(_importUser);
+      account.LoadByOrganizationID(_organizationID);
+
+      Products products = new Products(_importUser);
+      products.LoadByOrganizationID(_organizationID);
+
+      ProductVersions productVersions = new ProductVersions(_importUser);
+      productVersions.LoadByParentOrganizationID(_organizationID);
+
+      ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(_importUser);
+      productVersionStatuses.LoadByOrganizationID(_organizationID);
+
+      KnowledgeBaseCategories kbCats = new KnowledgeBaseCategories(_loginUser);
+      kbCats.LoadAllCategories(_organizationID);
+
+      Tickets tickets = new Tickets(_importUser);
+
+      int maxTicketNumber = tickets.GetMaxTicketNumber(_organizationID);
+      if (maxTicketNumber < 0) maxTicketNumber++;
+
       int count = 0;
+
       while (_csv.ReadNextRecord())
       {
+        Tickets existingTicket = new Tickets(_importUser);
+        Ticket ticket = null;
+        bool isUpdate = false;
+
+        string importID = ReadString("ImportID");
+        if (importID != string.Empty)
+        {
+          existingTicket.LoadByImportID(importID, _organizationID);
+          if (existingTicket.Count == 1)
+          {
+            ticket = existingTicket[0];
+            isUpdate = true;
+          }
+          else if (existingTicket.Count > 1)
+          {
+            // More than one action matching the importID was found
+            continue;
+          }
+        }
+
+        int? ticketNumber;
+        if (ticket == null)
+        {
+          ticketNumber = ReadIntNull("TicketNumber");
+          if (ticketNumber != null)
+          {
+            existingTicket = new Tickets(_importUser);
+            existingTicket.LoadByTicketNumber(_organizationID, (int)ticketNumber);
+            if (existingTicket.Count == 1)
+            {
+              ticket = existingTicket[0];
+              isUpdate = true;
+              maxTicketNumber = Math.Max((int)ticketNumber, maxTicketNumber);
+            }
+            else if (existingTicket.Count > 0)
+            {
+              // More than one action matching the TicketNumber was found
+              continue;
+            }
+          }
+          else
+          {
+            ticketNumber = maxTicketNumber + 1;
+            maxTicketNumber++;
+          }
+        }
+        else
+        {
+          ticketNumber = ticket.TicketNumber;
+        }
+
+        if (ticket == null)
+        {
+          ticket = tickets.AddNewTicket();
+        }
+        ticket.TicketNumber = (int)ticketNumber;
+
         string name = ReadString("Name");
         if (string.IsNullOrEmpty(name))
         {
-          //_log.AppendError(row, "Ticket skipped due to missing name");
-          continue;
+          if (!isUpdate)
+          {
+            //_log.AppendError(row, "Ticket skipped due to missing name");
+            continue;
+          }
         }
+        else
+        {
+          ticket.Name = name;
+        }
+
+        int creatorID = -2;
+        if (Int32.TryParse(ReadString("CreatorID"), out creatorID)) {
+          if (!userList.ContainsValue(creatorID)){
+            creatorID = -2;
+          }
+        }
+
+        DateTime now = DateTime.UtcNow;
 
         TicketType ticketType = null;
         string ticketTypeString = ReadString("Type");
         if (string.IsNullOrEmpty(ticketTypeString))
         {
-          //_log.AppendError(row, "Ticket skipped due to missing ticket type");
-          continue;
+          if (!isUpdate)
+          {
+            //_log.AppendError(row, "Ticket skipped due to missing type");
+            continue;
+          }
         }
         else
         {
@@ -1036,6 +1138,10 @@ namespace TeamSupport.ServiceLibrary
             ticketType.Description = ticketTypeString;
             ticketType.Position = ticketTypes.GetMaxPosition(_organizationID) + 1;
             ticketType.OrganizationID = _organizationID;
+            ticketType.CreatorID = creatorID;
+            ticketType.ModifierID = -2;
+            ticketType.DateCreated = now;
+            ticketType.DateModified = now;
             ticketTypes.Save();
             ticketTypes.ValidatePositions(_organizationID);
 
@@ -1048,6 +1154,10 @@ namespace TeamSupport.ServiceLibrary
             newTicketStatus.TicketTypeID = ticketType.TicketTypeID;
             newTicketStatus.IsClosed = false;
             newTicketStatus.IsClosedEmail = false;
+            newTicketStatus.CreatorID = creatorID;
+            newTicketStatus.DateCreated = now;
+            newTicketStatus.ModifierID = -2;
+            newTicketStatus.DateModified = now;
 
             newTicketStatus = ticketStatuses.AddNewTicketStatus();
             newTicketStatus.Name = "Closed";
@@ -1057,17 +1167,25 @@ namespace TeamSupport.ServiceLibrary
             newTicketStatus.TicketTypeID = ticketType.TicketTypeID;
             newTicketStatus.IsClosed = true;
             newTicketStatus.IsClosedEmail = false;
+            newTicketStatus.CreatorID = creatorID;
+            newTicketStatus.DateCreated = now;
+            newTicketStatus.ModifierID = -2;
+            newTicketStatus.DateModified = now;
             newTicketStatus.Collection.Save();
             newTicketStatus.Collection.ValidatePositions(_organizationID);
           }
+          ticket.TicketTypeID = ticketType.TicketTypeID;
         }
 
         TicketStatus ticketStatus = null;
         string ticketStatusString = ReadString("Status");
         if (string.IsNullOrEmpty(ticketStatusString))
         {
-          //_log.AppendError(row, "Ticket skipped due to missing ticket type");
-          continue;
+          if (!isUpdate)
+          {
+            //_log.AppendError(row, "Ticket skipped due to missing status");
+            continue;
+          }
         }
         else
         {
@@ -1082,37 +1200,228 @@ namespace TeamSupport.ServiceLibrary
             ticketStatus.TicketTypeID = ticketType.TicketTypeID;
             ticketStatus.IsClosed = false;
             ticketStatus.IsClosedEmail = false;
+            ticketStatus.CreatorID = creatorID;
+            ticketStatus.DateCreated = now;
+            ticketStatus.ModifierID = -2;
+            ticketStatus.DateModified = now;
             ticketStatuses.Save();
             ticketStatuses.ValidatePositions(_organizationID);
           }
+          ticket.TicketStatusID = ticketStatus.TicketStatusID;
         }
 
         TicketSeverity ticketSeverity = null;
         string ticketSeverityString = ReadString("Severity");
         if (string.IsNullOrEmpty(ticketSeverityString))
         {
-          //_log.AppendError(row, "Ticket skipped due to missing ticket severity");
-          continue;
+          if (!isUpdate)
+          {
+            //_log.AppendError(row, "Ticket skipped due to missing severity");
+            continue;
+          }
         }
         else
         {
-          ticketStatus = ticketStatuses.FindByName(ticketStatusString, ticketType.TicketTypeID);
-          if (ticketStatus == null)
+          ticketSeverity = ticketSeverities.FindByName(ticketSeverityString);
+          if (ticketSeverity == null)
           {
-            ticketStatus = ticketStatuses.AddNewTicketStatus();
-            ticketStatus.Name = ticketTypeString;
-            ticketStatus.Description = ticketTypeString;
-            ticketStatus.Position = ticketStatuses.GetMaxPosition(ticketType.TicketTypeID) + 1;
-            ticketStatus.OrganizationID = _organizationID;
-            ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-            ticketStatus.IsClosed = false;
-            ticketStatus.IsClosedEmail = false;
-            ticketStatuses.Save();
-            ticketStatuses.ValidatePositions(_organizationID);
+            ticketSeverity = ticketSeverities.AddNewTicketSeverity();
+            ticketSeverity.Name = ticketSeverityString;
+            ticketSeverity.Description = ticketSeverityString;
+            ticketSeverity.Position = ticketSeverities.GetMaxPosition(_organizationID) + 1;
+            ticketSeverity.OrganizationID = _organizationID;
+            ticketSeverity.CreatorID = creatorID;
+            ticketSeverity.DateCreated = now;
+            ticketSeverity.ModifierID = -2;
+            ticketSeverity.DateModified = now;
+            ticketSeverities.Save();
+            ticketSeverities.ValidatePositions(_organizationID);
+          }
+          ticket.TicketSeverityID = ticketSeverity.TicketSeverityID;
+        }
+
+        string emailOfUserAssignedTo = ReadString("EmailOfUserAssignedTo");
+        if (!string.IsNullOrEmpty(emailOfUserAssignedTo))
+        {
+          int userID;
+          if (userOnlyList.TryGetValue(emailOfUserAssignedTo, out userID))
+          {
+            ticket.UserID = userID;
           }
         }
 
+        string groupName = ReadString("Group");
+        if (!string.IsNullOrEmpty(groupName))
+        {
+          TeamSupport.Data.Group group = groups.FindByName(groupName);
+          if (group == null)
+          {
+            group = groups.AddNewGroup();
+            group.Name = groupName;
+            group.Description = groupName;
+            group.OrganizationID = _organizationID;
+            group.CreatorID = creatorID;
+            group.ModifierID = -2;
+            group.DateCreated = now;
+            group.DateModified = now;
+            groups.Save();
+          }
+          ticket.GroupID = group.GroupID;
+        }
+
+        ticket.DueDate = ReadDateNull("DueDate");
+
+        string productName = ReadString("Product");
+        Product product;
+        if (!string.IsNullOrEmpty(productName))
+        {
+          product = products.FindByName(productName);
+          if (product == null)
+          {
+            product = products.AddNewProduct();
+            product.Name = groupName;
+            product.Description = groupName;
+            product.OrganizationID = _organizationID;
+            product.CreatorID = creatorID;
+            product.ModifierID = -2;
+            product.DateCreated = now;
+            product.DateModified = now;
+            products.Save();
+          }
+          ticket.ProductID = product.ProductID;
+        }
+        else if (!isUpdate && account[0].ProductRequired)
+        {
+          // Product is required and missing
+          continue;
+        }
+
+        string reportedVersionName = ReadString("ReportedVersion");
+        ProductVersion reportedVersion;
+        if (!string.IsNullOrEmpty(reportedVersionName) && ticket.ProductID != null)
+        {
+          reportedVersion = productVersions.FindByVersionNumber(reportedVersionName, (int)ticket.ProductID);
+          if (reportedVersion == null)
+          {
+            reportedVersion = productVersions.AddNewProductVersion();
+            reportedVersion.VersionNumber = reportedVersionName;
+            reportedVersion.Description = reportedVersionName;
+            reportedVersion.ProductID = (int)ticket.ProductID;
+            reportedVersion.ProductVersionStatusID = productVersionStatuses[0].ProductVersionStatusID;
+            reportedVersion.IsReleased = true;
+            reportedVersion.CreatorID = creatorID;
+            reportedVersion.ModifierID = -2;
+            reportedVersion.DateCreated = now;
+            reportedVersion.DateModified = now;
+            productVersions.Save();
+          }
+          ticket.ReportedVersionID = reportedVersion.ProductVersionID;
+        }
+        else if (!isUpdate && account[0].ProductVersionRequired)
+        {
+          // Reported Version is required and missing
+          continue;
+        }
+
+        string resolvedVersionName = ReadString("ResolvedVersion");
+        ProductVersion resolvedVersion;
+        if (!string.IsNullOrEmpty(resolvedVersionName) && ticket.ProductID != null)
+        {
+          resolvedVersion = productVersions.FindByVersionNumber(resolvedVersionName, (int)ticket.ProductID);
+          if (resolvedVersion == null)
+          {
+            resolvedVersion = productVersions.AddNewProductVersion();
+            resolvedVersion.VersionNumber = resolvedVersionName;
+            resolvedVersion.Description = resolvedVersionName;
+            resolvedVersion.ProductID = (int)ticket.ProductID;
+            resolvedVersion.ProductVersionStatusID = productVersionStatuses[0].ProductVersionStatusID;
+            resolvedVersion.IsReleased = true;
+            resolvedVersion.CreatorID = creatorID;
+            resolvedVersion.ModifierID = -2;
+            resolvedVersion.DateCreated = now;
+            resolvedVersion.DateModified = now;
+            productVersions.Save();
+          }
+          ticket.SolvedVersionID = resolvedVersion.ProductVersionID;
+        }
+
+        ticket.IsKnowledgeBase = ReadBool("Knowledgebase");
+        string parentCatName = ReadString("KBParentCatName");
+        string catName = ReadString("KBCatName");
+        KnowledgeBaseCategory cat = null;
+        if (catName != null)
+        {
+          if (parentCatName == null)
+          {
+            cat = kbCats.FindByName(catName, -1);
+            if (cat == null)
+            {
+              // craete cat
+              AddKnowledgeBaseCategory(null, catName);
+              kbCats = new KnowledgeBaseCategories(_loginUser);
+              kbCats.LoadAllCategories(_organizationID);
+              cat = kbCats.FindByName(catName, -1);
+            }
+          }
+          else
+          {
+            KnowledgeBaseCategory parent = kbCats.FindByName(parentCatName, -1);
+            if (parent != null)
+            {
+              cat = kbCats.FindByName(catName, parent.CategoryID);
+            }
+            else
+            {
+              // create parent 
+              KnowledgeBaseCategory parentCat = AddKnowledgeBaseCategory(null, parentCatName);
+              AddKnowledgeBaseCategory(parentCat.CategoryID, catName);
+              kbCats = new KnowledgeBaseCategories(_loginUser);
+              kbCats.LoadAllCategories(_organizationID);
+              cat = kbCats.FindByName(catName, parentCat.CategoryID);
+            }
+          }
+        }
+
+        if (cat != null)
+        {
+          ticket.KnowledgeBaseCategoryID = cat.CategoryID;
+        }
+
+        ticket.IsVisibleOnPortal = ReadBool("VisibleToCustomers");
+        ticket.OrganizationID = _organizationID;
+        ticket.TicketSource = ReadString("Source");
+        ticket.ImportID = ReadString("ImportID");
+        DateTime? dateCreated = ReadDateNull("DateCreated");
+        if (dateCreated != null)
+        {
+          ticket.DateCreated = (DateTime)dateCreated;
+        }
+        else
+        {
+          ticket.DateCreated = now;
+        }
+        ticket.CreatorID = creatorID;
+        ticket.DateModified = now;
+        ticket.ModifierID = -2;
+
+        if (isUpdate)
+        {
+          existingTicket.Save();
+          // Add updated rows column as completed rows will reflect only adds
+        }
+        count++;
+
+        if (count % BULK_LIMIT == 0)
+        {
+          tickets.BulkSave();
+          tickets = new Tickets(_importUser);
+          UpdateImportCount(import, count);
+          EmailPosts.DeleteImportEmails(_importUser);
+        }
       }
+      tickets.BulkSave();
+      UpdateImportCount(import, count);
+      EmailPosts.DeleteImportEmails(_importUser);
     }
 
     private void ImportCustomFieldPickList(Import import)
@@ -1351,6 +1660,36 @@ GROUP BY REPLACE(u.Email + '(' + o.Name + ')', ' ', '')";
       }
       return list;
     
+    }
+
+    public KnowledgeBaseCategory AddKnowledgeBaseCategory(int? parentID, string name)
+    {
+      KnowledgeBaseCategory cat = (new KnowledgeBaseCategories(_loginUser)).AddNewKnowledgeBaseCategory();
+      cat.OrganizationID = _organizationID;
+      cat.CategoryName = name;
+      cat.ParentID = parentID ?? -1;
+      cat.Position = GetKnowledgeBaseCategoryMaxPosition(parentID) + 1;
+      cat.VisibleOnPortal = true;
+      cat.Collection.Save();
+      return cat;
+    }
+
+    private int GetKnowledgeBaseCategoryMaxPosition(int? parentID)
+    {
+      parentID = parentID ?? -1;
+
+      KnowledgeBaseCategories cats = new KnowledgeBaseCategories(_loginUser);
+      if (parentID < 0) cats.LoadCategories(_organizationID);
+      else cats.LoadSubcategories((int)parentID);
+
+      int max = -1;
+
+      foreach (KnowledgeBaseCategory cat in cats)
+      {
+        if (cat.Position != null && cat.Position > max) max = (int)cat.Position;
+      }
+
+      return max;
     }
   }
 }

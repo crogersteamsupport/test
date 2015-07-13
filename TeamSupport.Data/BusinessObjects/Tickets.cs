@@ -2413,6 +2413,18 @@ WHERE
         return (int)o;
       }
     }
+
+    public void LoadByImportID(string importID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Tickets WHERE ImportID = @ImportID AND OrganizationID = @OrganizationID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ImportID", importID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
   }
 }
 

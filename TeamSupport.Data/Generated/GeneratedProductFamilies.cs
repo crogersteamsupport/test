@@ -413,6 +413,18 @@ namespace TeamSupport.Data
       return null;
     }
 
+    public ProductFamily FindByName(string name)
+    {
+      foreach (ProductFamily productFamily in this)
+      {
+        if (productFamily.Name.Trim().ToLower() == name.Trim().ToLower())
+        {
+          return productFamily;
+        }
+      }
+      return null;
+    }
+
     public virtual ProductFamily AddNewProductFamily()
     {
       if (Table.Columns.Count < 1) LoadColumns("ProductFamilies");

@@ -164,6 +164,29 @@ namespace TeamSupport.Data
               Fill(command);
           }
       }
+
+      public void LoadByName(int organizationID, string name)
+      {
+        using (SqlCommand command = new SqlCommand())
+        {
+          StringBuilder text = new StringBuilder(@"
+                SELECT
+                    * 
+                FROM 
+                    ProductFamilies 
+                WHERE 
+                    OrganizationID = @OrganizationID
+                    AND Name = @Name
+                ");
+
+          command.CommandText = text.ToString();
+          command.CommandType = CommandType.Text;
+
+          command.Parameters.AddWithValue("@Name", name.Trim());
+          command.Parameters.AddWithValue("@OrganizationID", organizationID);
+          Fill(command);
+        }
+      }
   }
   
 }
