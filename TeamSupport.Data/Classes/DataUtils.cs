@@ -276,15 +276,16 @@ namespace TeamSupport.Data
 
 
       //"(SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = 654) AND (RefID = TicketsView.TicketID)) AS [Approved By Manager]"
-      if (field.FieldType == CustomFieldType.PickList)
-      {
-        string[] items = field.ListValues.Split('|');
-        if (items.Length > 0)
-        {
-          builder.Insert(0, "ISNULL(");
-          builder.Append(", '" + items[0].Replace("'", "''") + "')");
-        }
-      }
+      //MT:  Removed on 7/13/15 because it is causing issues in tickets with select custom fields since its showing the first item in the list as the default. 
+      //if (field.FieldType == CustomFieldType.PickList)
+      //{
+        //string[] items = field.ListValues.Split('|');
+        //if (items.Length > 0)
+        //{
+        //  builder.Insert(0, "ISNULL(");
+        //  builder.Append(", '" + items[0].Replace("'", "''") + "')");
+        //}
+      //}
 
       if (writeAlias)
       {
