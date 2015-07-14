@@ -3010,6 +3010,7 @@ function CreateTimeLineDelegates() {
 
     if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) {
       top.Ts.System.logAction('Ticket - Action Visible Icon Clicked');
+      if (!action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
       top.Ts.Services.Tickets.SetActionPortal(action.RefID, !action.IsVisibleOnPortal,
       function (result) {
         var parentLI = self.closest('li');
