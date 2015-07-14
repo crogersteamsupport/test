@@ -190,7 +190,9 @@ var loadTicket = function (ticketNumber, refresh) {
     SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
     SetDueDate(_ticketInfo.Ticket.DueDate);
 
-    //TODO:  Need to set product 
+    SetProduct(_ticketInfo.Ticket.ProductID);
+    SetVersion(_ticketInfo.Ticket.ReportedVersionID);
+    SetSolved(_ticketInfo.Ticket.SolvedVersionID);
 
     SetAssignedUser(_ticketInfo.Ticket.UserID);
     SetGroup(_ticketInfo.Ticket.GroupID);
@@ -1052,7 +1054,6 @@ function LoadTicketControls() {
   else SetupCustomerSection();
 
   SetupTagsSection();
-  SetupProductSection();
 
   if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express || top.Ts.System.Organization.ProductType === top.Ts.ProductType.HelpDesk) {
     $('#ticket-Product').closest('.form-horizontal').remove();
@@ -1582,7 +1583,7 @@ function SetupProductSection() {
     $('#ticket-Resolved').change(function (e) {
       top.Ts.System.logAction('Ticket - Resolved Version Changed');
       top.Ts.Services.Tickets.SetSolvedVersion(_ticketID, $(this).val(), function (result) {
-        $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+        $('#ticket-Resolved').closest('.form-group').removeClass('hasError');
         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeresolved", userFullName);
       },
       function (error) {
@@ -1683,14 +1684,8 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
       },
       closeAfterSelect: true
     });
-    var versionInput = $select[0].selectize;
 
-    if (versionId !== null) {
-      versionInput.setValue(versionId);
-    }
-    else {
-      versionInput.clear();
-    }
+    SetVersion(versionId)
   }
 
   if ($('#ticket-Resolved').length) {
@@ -1700,14 +1695,8 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
       },
       closeAfterSelect: true
     });
-    var resolvedInput = $select[0].selectize;
 
-    if (resolvedId !== null) {
-      resolvedInput.setValue(resolvedId);
-    }
-    else {
-      resolvedInput.clear();
-    }
+    SetSolved(resolvedId);
   }
 
   top.Ts.Services.Organizations.IsProductVersionRequired(function (IsProductVersionRequired) {
@@ -4025,5 +4014,21 @@ var SetProduct = function (ProductID) {
   if (selectField.length > 0) {
     var selectize = $('#ticket-product')[0].selectize;
     selectize.addItem(ProductID, false);
+  }
+};
+
+var SetVersion = function (VersionID) {
+  var selectField = $('#ticket-Versions');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-Versions')[0].selectize;
+    selectize.addItem(VersionID, false);
+  }
+};
+
+var SetSolved = function (ResolvedID) {
+  var selectField = $('#ticket-Resolved');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-Resolved')[0].selectize;
+    selectize.addItem(ResolvedID, false);
   }
 };
