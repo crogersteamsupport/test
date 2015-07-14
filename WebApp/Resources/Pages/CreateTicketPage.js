@@ -276,6 +276,8 @@ function SetupTicketProperties() {
   createCustomFields();
 
   setInitialValue();
+
+  top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 };
 
 function SaveTicket() {

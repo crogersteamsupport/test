@@ -290,6 +290,7 @@ function SetupTicketProperties() {
     _productFamilyID = info.Ticket.ProductFamilyID;
 
     top.Ts.System.logAction('View Ticket');
+    top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 
     if (info == null) alert('no ticket');
 

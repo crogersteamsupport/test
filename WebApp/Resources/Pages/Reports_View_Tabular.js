@@ -150,8 +150,12 @@
                     column.formatter = floatFormatter;
                 } else if (repCol.DataType == "bit") {
                     column.formatter = bitFormatter;
+                } else if (repCol.DataType == "varchar") {
+                  column.formatter = stringFormatter;
+                } else if (repCol.DataType == "text") {
+                  column.formatter = stringFormatter;
                 } else if (repCol.IsEmail == true) {
-                    column.formatter = emailFormatter;
+                  column.formatter = emailFormatter;
                 } else if (repCol.IsLink == true) {
                     column.formatter = linkFormatter;
                 } else if (repCol.IsOpenable == true) {
@@ -162,6 +166,7 @@
                 } else if (low == 'companyname') {
                     column.formatter = companyFormatter;
                 }
+
                 columns.push(column);
             }
 
@@ -342,6 +347,12 @@
         return dataContext[columnDef.id] == true ? "True" : "False";
     };
 
+    var stringFormatter = function (row, cell, value, columnDef, dataContext) {
+      var tmp = document.createElement("DIV");
+      tmp.innerHTML = value;
+      return tmp.textContent || tmp.innerText || "";
+    };
+  
     var floatFormatter = function (row, cell, value, columnDef, dataContext) {
         return value;
     };
@@ -363,7 +374,7 @@
     }
 
 
-    var openFormatter = function (row, cell, value, columnDef, dataContext) {debugger
+    var openFormatter = function (row, cell, value, columnDef, dataContext) {
         if (columnDef.openField == "TicketID") {
             return '<a href="#" onclick="top.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "OrganizationID") {

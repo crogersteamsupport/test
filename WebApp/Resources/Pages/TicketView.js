@@ -703,6 +703,12 @@ TicketGrid = function (options) {
         return dataContext[columnDef.id] == true ? "True" : "False";
     };
 
+    var stringFormatter = function (row, cell, value, columnDef, dataContext) {
+      var tmp = document.createElement("DIV");
+      tmp.innerHTML = value;
+      return tmp.textContent || tmp.innerText || "";
+    };
+
     var floatFormatter = function (row, cell, value, columnDef, dataContext) {
         return value;
     };
@@ -871,6 +877,10 @@ TicketGrid = function (options) {
             column.formatter = floatFormatter;
         } else if (repCol.DataType == "bit") {
             column.formatter = bitFormatter;
+        } else if (repCol.DataType == "varchar") {
+          column.formatter = stringFormatter;
+        } else if (repCol.DataType == "varchar") {
+          column.formatter = stringFormatter;
         } else if (repCol.IsEmail == true) {
             column.formatter = emailFormatter;
         } else if (repCol.IsLink == true) {
