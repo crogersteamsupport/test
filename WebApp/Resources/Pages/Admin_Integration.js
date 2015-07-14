@@ -473,6 +473,7 @@ AdminInt = function () {
     else if (type.hasClass('salesforce')) crmType = 'Salesforce';
     else if (type.hasClass('zohocrm')) crmType = 'ZohoCrm';
     else if (type.hasClass('zohoreports')) crmType = 'ZohoReports';
+    else if (type.hasClass('hubspot')) crmType = 'HubSpot';
 
     var crmToken = crmToken = parent.find('.int-crm-token').val();
 

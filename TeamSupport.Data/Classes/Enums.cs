@@ -178,7 +178,8 @@ namespace TeamSupport.Data
       ZohoCRM,
       ZohoReports,
       Jira,
-      Oracle
+      Oracle,
+      HubSpot
   }
 
   public enum ReportType

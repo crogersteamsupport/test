@@ -122,6 +122,7 @@
     <Compile Include="Integration.vb" />
     <Compile Include="Integrations\BatchBook.vb" />
     <Compile Include="Integrations\Highrise.vb" />
+    <Compile Include="Integrations\HubSpot.vb" />
     <Compile Include="Integrations\Jira.vb" />
     <Compile Include="Integrations\MailChimp.vb" />
     <Compile Include="Integrations\Oracle.vb" />

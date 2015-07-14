@@ -1333,6 +1333,8 @@ Namespace TeamSupport
             Private _salesForceID As String
             Private _zohoId    As String
             Private _highriseID As String
+            Private _hubSpotvid As String
+            Private _hubSpotId As String
 
 
             Property FirstName As String
@@ -1479,6 +1481,24 @@ Namespace TeamSupport
                 End Get
                 Set(ByVal value As String)
                     _highriseID = value
+                End Set
+            End Property
+
+            Property HubSpotVid As String
+                Get
+                    Return _hubSpotvid
+                End Get
+                Set(ByVal value As String)
+                    _hubSpotvid = value
+                End Set
+            End Property
+
+            Property HubSpotId As String
+                Get
+                    Return _hubSpotId
+                End Get
+                Set(ByVal value As String)
+                    _hubSpotId = value
                 End Set
             End Property
         End Class

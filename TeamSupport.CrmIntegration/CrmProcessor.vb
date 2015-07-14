@@ -131,6 +131,10 @@ Namespace TeamSupport
               Else
                 Return
               End If
+            Case IntegrationType.HubSpot
+              If Settings.ReadBool("HubSpot Enabled", True) Then
+                CRM = New HubSpot(CRMLinkTableItem, Log, LogPath, LoginUser, Me)
+              End If
           End Select
 
           If CRM IsNot Nothing Then
