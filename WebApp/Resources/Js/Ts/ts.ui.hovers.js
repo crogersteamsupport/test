@@ -44,7 +44,7 @@
   .on("click", ".UserAnchor", function (event) {
     var self = $(this);
     var userid = self.data('userid');
-    top.Ts.MainPage.openNewContact(userid);
+    top.Ts.MainPage.openUser(userid);
   })
 
 	$("body").on("mouseenter", ".AssetAnchor", function (event) {

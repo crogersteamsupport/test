@@ -2927,6 +2927,7 @@ function CreateTimeLineDelegates() {
 
   });
 
+
   $('#action-timeline').on('click', 'a.ticket-action-pinned', function (e) {
     e.preventDefault();
     e.stopPropagation();

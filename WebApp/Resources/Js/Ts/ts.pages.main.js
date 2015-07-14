@@ -1518,9 +1518,21 @@ Ts.Pages.Main.prototype = {
         $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/wiki.html?ArticleID=' + articleID);
     },
     openUser: function (userID) {
-        this.MainMenu.find('mniUsers', 'users').select();
-        var element = $('.main-tab-content-item:visible');
-        $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/Users.html?UserID=' + userID);
+      var self = this;
+      Ts.Services.Organizations.IsUserContact(userID, function (isContact) {
+        if (isContact) {
+          self.openNewContact(userID);
+        }
+        else
+        {
+          self.MainMenu.find('mniUsers', 'users').select();
+          var element = $('.main-tab-content-item:visible');
+          $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/Users.html?UserID=' + userID);
+        }
+      });
+        //this.MainMenu.find('mniUsers', 'users').select();
+        //var element = $('.main-tab-content-item:visible');
+        //$(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/Users.html?UserID=' + userID);
     },
     hideWelcome: function () {
         this.MainMenu.find('mniDashboard', 'dashboard').select();
@@ -1819,7 +1831,7 @@ Ts.Pages.Main.prototype = {
             tab.remove();
         }
     },
-    openNewContact: function (contactID, orgID) {
+    openNewContact: function (contactID, orgID) {alert('open contact')
         var query = "?user=" + contactID;
         top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
             this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
