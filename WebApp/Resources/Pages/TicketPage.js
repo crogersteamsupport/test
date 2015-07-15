@@ -1609,6 +1609,7 @@ function LoadProductList(products) {
         }
       },
       allowEmptyOption: true,
+      loadThrottle: null,
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
       },
@@ -1628,7 +1629,8 @@ function SetupProductVersionsControl(product) {
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
       },
-      closeAfterSelect: true
+      closeAfterSelect: true,
+      loadThrottle: null,
     });
     var versionInput = $select[0].selectize;
 
@@ -1641,7 +1643,8 @@ function SetupProductVersionsControl(product) {
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
       },
-      closeAfterSelect: true
+      closeAfterSelect: true,
+      loadThrottle: null
     });
     var resolvedInput = $select[0].selectize;
 
