@@ -687,6 +687,11 @@
     .hasError label, .hasError .selectize-input {color: #cd0a0a !important}
     .hasError .selectize-input { border: 1px solid #a94442 !important; }
 
+    .fieldError label, .fieldError .selectize-input {color: #cd0a0a !important}
+    .fieldError .selectize-input { border: 1px solid #a94442 !important; }
+
+    /*.jiraLink { font-size:10px; cursor:pointer; position:relative; left:5px; }*/
+
     .isEmpty.isRequiredToClose label {color: #cd0a0a !important}
 
     .ui-autocomplete {
