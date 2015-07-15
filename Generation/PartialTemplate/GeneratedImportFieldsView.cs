@@ -8,29 +8,24 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class ImportField : BaseItem
+  public partial class ImportFieldsViewItem : BaseItem
   {
-    private ImportFields _importFields;
+    private ImportFieldsView _importFieldsView;
     
-    public ImportField(DataRow row, ImportFields importFields): base(row, importFields)
+    public ImportFieldsViewItem(DataRow row, ImportFieldsView importFieldsView): base(row, importFieldsView)
     {
-      _importFields = importFields;
+      _importFieldsView = importFieldsView;
     }
 	
     #region Properties
     
-    public ImportFields Collection
+    public ImportFieldsView Collection
     {
-      get { return _importFields; }
+      get { return _importFieldsView; }
     }
         
     
     
-    
-    public int ImportFieldID
-    {
-      get { return (int)Row["ImportFieldID"]; }
-    }
     
 
     
@@ -38,6 +33,42 @@ namespace TeamSupport.Data
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
       set { Row["Description"] = CheckValue("Description", value); }
+    }
+    
+    public int? ImportMapID
+    {
+      get { return Row["ImportMapID"] != DBNull.Value ? (int?)Row["ImportMapID"] : null; }
+      set { Row["ImportMapID"] = CheckValue("ImportMapID", value); }
+    }
+    
+    public int? ImportID
+    {
+      get { return Row["ImportID"] != DBNull.Value ? (int?)Row["ImportID"] : null; }
+      set { Row["ImportID"] = CheckValue("ImportID", value); }
+    }
+    
+    public string SourceName
+    {
+      get { return Row["SourceName"] != DBNull.Value ? (string)Row["SourceName"] : null; }
+      set { Row["SourceName"] = CheckValue("SourceName", value); }
+    }
+    
+    public bool? IsCustom
+    {
+      get { return Row["IsCustom"] != DBNull.Value ? (bool?)Row["IsCustom"] : null; }
+      set { Row["IsCustom"] = CheckValue("IsCustom", value); }
+    }
+    
+    public string FileName
+    {
+      get { return Row["FileName"] != DBNull.Value ? (string)Row["FileName"] : null; }
+      set { Row["FileName"] = CheckValue("FileName", value); }
+    }
+    
+    public int? OrganizationID
+    {
+      get { return Row["OrganizationID"] != DBNull.Value ? (int?)Row["OrganizationID"] : null; }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -90,6 +121,12 @@ namespace TeamSupport.Data
       set { Row["TableName"] = CheckValue("TableName", value); }
     }
     
+    public int ImportFieldID
+    {
+      get { return (int)Row["ImportFieldID"]; }
+      set { Row["ImportFieldID"] = CheckValue("ImportFieldID", value); }
+    }
+    
 
     /* DateTime */
     
@@ -105,9 +142,9 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class ImportFields : BaseCollection, IEnumerable<ImportField>
+  public partial class ImportFieldsView : BaseCollection, IEnumerable<ImportFieldsViewItem>
   {
-    public ImportFields(LoginUser loginUser): base (loginUser)
+    public ImportFieldsView(LoginUser loginUser): base (loginUser)
     {
     }
 
@@ -115,19 +152,19 @@ namespace TeamSupport.Data
 
     public override string TableName
     {
-      get { return "ImportFields"; }
+      get { return "ImportFieldsView"; }
     }
     
     public override string PrimaryKeyFieldName
     {
-      get { return "ImportFieldID"; }
+      get { return ""; }
     }
 
 
 
-    public ImportField this[int index]
+    public ImportFieldsViewItem this[int index]
     {
-      get { return new ImportField(Table.Rows[index], this); }
+      get { return new ImportFieldsViewItem(Table.Rows[index], this); }
     }
     
 
@@ -135,25 +172,25 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(ImportField importField);
-    partial void AfterRowInsert(ImportField importField);
-    partial void BeforeRowEdit(ImportField importField);
-    partial void AfterRowEdit(ImportField importField);
-    partial void BeforeRowDelete(int importFieldID);
-    partial void AfterRowDelete(int importFieldID);    
+    partial void BeforeRowInsert(ImportFieldsViewItem importFieldsViewItem);
+    partial void AfterRowInsert(ImportFieldsViewItem importFieldsViewItem);
+    partial void BeforeRowEdit(ImportFieldsViewItem importFieldsViewItem);
+    partial void AfterRowEdit(ImportFieldsViewItem importFieldsViewItem);
+    partial void BeforeRowDelete(int );
+    partial void AfterRowDelete(int );    
 
-    partial void BeforeDBDelete(int importFieldID);
-    partial void AfterDBDelete(int importFieldID);    
+    partial void BeforeDBDelete(int );
+    partial void AfterDBDelete(int );    
 
     #endregion
 
     #region Public Methods
 
-    public ImportFieldProxy[] GetImportFieldProxies()
+    public ImportFieldsViewItemProxy[] GetImportFieldsViewItemProxies()
     {
-      List<ImportFieldProxy> list = new List<ImportFieldProxy>();
+      List<ImportFieldsViewItemProxy> list = new List<ImportFieldsViewItemProxy>();
 
-      foreach (ImportField item in this)
+      foreach (ImportFieldsViewItem item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -161,9 +198,9 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int importFieldID)
+    public virtual void DeleteFromDB(int )
     {
-      BeforeDBDelete(importFieldID);
+      BeforeDBDelete();
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
         connection.Open();
@@ -172,28 +209,28 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ImportFields] WHERE ([ImportFieldID] = @ImportFieldID);";
-        deleteCommand.Parameters.Add("ImportFieldID", SqlDbType.Int);
-        deleteCommand.Parameters["ImportFieldID"].Value = importFieldID;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ImportFieldsView] WH);";
+        deleteCommand.Parameters.Add("", SqlDbType.Int);
+        deleteCommand.Parameters[""].Value = ;
 
-        BeforeRowDelete(importFieldID);
+        BeforeRowDelete();
         deleteCommand.ExecuteNonQuery();
 		connection.Close();
         if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
-        AfterRowDelete(importFieldID);
+        AfterRowDelete();
       }
-      AfterDBDelete(importFieldID);
+      AfterDBDelete();
       
     }
 
     public override void Save(SqlConnection connection)    {
-		//SqlTransaction transaction = connection.BeginTransaction("ImportFieldsSave");
+		//SqlTransaction transaction = connection.BeginTransaction("ImportFieldsViewSave");
 		SqlParameter tempParameter;
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ImportFields] SET     [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description,    [RefType] = @RefType  WHERE ([ImportFieldID] = @ImportFieldID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ImportFieldsView] SET     [ImportFieldID] = @ImportFieldID,    [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description,    [RefType] = @RefType,    [ImportMapID] = @ImportMapID,    [ImportID] = @ImportID,    [SourceName] = @SourceName,    [IsCustom] = @IsCustom,    [FileName] = @FileName,    [OrganizationID] = @OrganizationID  WH);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ImportFieldID", SqlDbType.Int, 4);
@@ -266,13 +303,97 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportMapID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ImportID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SourceName", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsCustom", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("FileName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ImportFields] (    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description],    [RefType]) VALUES ( @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description, @RefType); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ImportFieldsView] (    [ImportFieldID],    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description],    [RefType],    [ImportMapID],    [ImportID],    [SourceName],    [IsCustom],    [FileName],    [OrganizationID]) VALUES ( @ImportFieldID, @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description, @RefType, @ImportMapID, @ImportID, @SourceName, @IsCustom, @FileName, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("FileName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsCustom", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SourceName", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ImportID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ImportMapID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -337,28 +458,35 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = insertCommand.Parameters.Add("ImportFieldID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ImportFields] WHERE ([ImportFieldID] = @ImportFieldID);";
-		deleteCommand.Parameters.Add("ImportFieldID", SqlDbType.Int);
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ImportFieldsView] WH);";
+		deleteCommand.Parameters.Add("", SqlDbType.Int);
 
 		try
 		{
-		  foreach (ImportField importField in this)
+		  foreach (ImportFieldsViewItem importFieldsViewItem in this)
 		  {
-			if (importField.Row.RowState == DataRowState.Added)
+			if (importFieldsViewItem.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(importField);
+			  BeforeRowInsert(importFieldsViewItem);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = importField.Row[parameter.ParameterName];
+				  parameter.Value = importFieldsViewItem.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -366,30 +494,30 @@ namespace TeamSupport.Data
 			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
 
 			  insertCommand.ExecuteNonQuery();
-			  Table.Columns["ImportFieldID"].AutoIncrement = false;
-			  Table.Columns["ImportFieldID"].ReadOnly = false;
+			  Table.Columns[""].AutoIncrement = false;
+			  Table.Columns[""].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				importField.Row["ImportFieldID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(importField);
+				importFieldsViewItem.Row[""] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(importFieldsViewItem);
 			}
-			else if (importField.Row.RowState == DataRowState.Modified)
+			else if (importFieldsViewItem.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(importField);
+			  BeforeRowEdit(importFieldsViewItem);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = importField.Row[parameter.ParameterName];
+				parameter.Value = importFieldsViewItem.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(importField);
+			  AfterRowEdit(importFieldsViewItem);
 			}
-			else if (importField.Row.RowState == DataRowState.Deleted)
+			else if (importFieldsViewItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)importField.Row["ImportFieldID", DataRowVersion.Original];
-			  deleteCommand.Parameters["ImportFieldID"].Value = id;
+			  int id = (int)importFieldsViewItem.Row["", DataRowVersion.Original];
+			  deleteCommand.Parameters[""].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
@@ -409,10 +537,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (ImportField importField in this)
+      foreach (ImportFieldsViewItem importFieldsViewItem in this)
       {
-        if (importField.Row.Table.Columns.Contains("CreatorID") && (int)importField.Row["CreatorID"] == 0) importField.Row["CreatorID"] = LoginUser.UserID;
-        if (importField.Row.Table.Columns.Contains("ModifierID")) importField.Row["ModifierID"] = LoginUser.UserID;
+        if (importFieldsViewItem.Row.Table.Columns.Contains("CreatorID") && (int)importFieldsViewItem.Row["CreatorID"] == 0) importFieldsViewItem.Row["CreatorID"] = LoginUser.UserID;
+        if (importFieldsViewItem.Row.Table.Columns.Contains("ModifierID")) importFieldsViewItem.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -425,45 +553,45 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public ImportField FindByImportFieldID(int importFieldID)
+    public ImportFieldsViewItem FindBy(int )
     {
-      foreach (ImportField importField in this)
+      foreach (ImportFieldsViewItem importFieldsViewItem in this)
       {
-        if (importField.ImportFieldID == importFieldID)
+        if (importFieldsViewItem. == )
         {
-          return importField;
+          return importFieldsViewItem;
         }
       }
       return null;
     }
 
-    public virtual ImportField AddNewImportField()
+    public virtual ImportFieldsViewItem AddNewImportFieldsViewItem()
     {
-      if (Table.Columns.Count < 1) LoadColumns("ImportFields");
+      if (Table.Columns.Count < 1) LoadColumns("ImportFieldsView");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new ImportField(row, this);
+      return new ImportFieldsViewItem(row, this);
     }
     
-    public virtual void LoadByImportFieldID(int importFieldID)
+    public virtual void LoadBy(int )
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportFieldID], [TableName], [FieldName], [Alias], [DataType], [Size], [IsVisible], [IsRequired], [Description], [RefType] FROM [dbo].[ImportFields] WHERE ([ImportFieldID] = @ImportFieldID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportFieldID], [TableName], [FieldName], [Alias], [DataType], [Size], [IsVisible], [IsRequired], [Description], [RefType], [ImportMapID], [ImportID], [SourceName], [IsCustom], [FileName], [OrganizationID] FROM [dbo].[ImportFieldsView] WH);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("ImportFieldID", importFieldID);
+        command.Parameters.AddWithValue("", );
         Fill(command);
       }
     }
     
-    public static ImportField GetImportField(LoginUser loginUser, int importFieldID)
+    public static ImportFieldsViewItem GetImportFieldsViewItem(LoginUser loginUser, int )
     {
-      ImportFields importFields = new ImportFields(loginUser);
-      importFields.LoadByImportFieldID(importFieldID);
-      if (importFields.IsEmpty)
+      ImportFieldsView importFieldsView = new ImportFieldsView(loginUser);
+      importFieldsView.LoadBy();
+      if (importFieldsView.IsEmpty)
         return null;
       else
-        return importFields[0];
+        return importFieldsView[0];
     }
     
     
@@ -471,13 +599,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<ImportField> Members
+    #region IEnumerable<ImportFieldsViewItem> Members
 
-    public IEnumerator<ImportField> GetEnumerator()
+    public IEnumerator<ImportFieldsViewItem> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new ImportField(row, this);
+        yield return new ImportFieldsViewItem(row, this);
       }
     }
 

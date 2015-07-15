@@ -20,7 +20,7 @@ namespace TeamSupport.ServiceLibrary
     private int _organizationID;
     private LoginUser _importUser;
     private CsvReader _csv;
-    private SortedList<string, string> _map;
+    private ImportFieldsView _map;
     private string[] _headers;
 
     public override void Run()
@@ -75,8 +75,9 @@ namespace TeamSupport.ServiceLibrary
       import.DateStarted = DateTime.UtcNow;
       import.Collection.Save();
 
-      _map = new SortedList<string, string>();
-      // load maps
+      _map = new ImportFieldsView(_importUser);
+      _map.LoadByImportID(import.ImportID);
+
       using (_csv = new CsvReader(new StreamReader(csvFile), true))
       {
         _headers = _csv.GetFieldHeaders();
@@ -131,9 +132,25 @@ namespace TeamSupport.ServiceLibrary
 
       while (_csv.ReadNextRecord())
       {
-        int ticketID = ReadInt("TicketID");
+        Ticket ticket = null;
+        string ticketImportID = ReadString("TicketImportID");
+        if (!string.IsNullOrEmpty(ticketImportID))
+        {
+          Tickets tickets = new Tickets(_importUser);
+          tickets.LoadByImportID(ticketImportID, _organizationID);
+          if (tickets.Count == 1)
+          {
+            ticket = tickets[0];
+          }
+          else if (tickets.Count > 1)
+          {
+            // more than one ticket found matching TicketImportID
+            continue;
+          }
+        }
 
-        if (!ticketList.ContainsValue(ticketID))
+        int ticketID = ReadInt("TicketID");
+        if (!ticketList.ContainsValue(ticketID) && ticket == null)
         {
           //_log.AppendError(row, "Action skipped due to missing ticket");
           continue;
@@ -179,7 +196,7 @@ namespace TeamSupport.ServiceLibrary
           action = actions.AddNewAction();
         }
 
-        string actionType = ReadString("ActionType");
+        string actionType = ReadString("Type");
         action.SystemActionTypeID = GetSystemActionTypeID(actionType);
         action.ActionTypeID = GetActionTypeID(actionTypes, actionType);
 
@@ -198,7 +215,7 @@ namespace TeamSupport.ServiceLibrary
         action.DateModified = DateTime.UtcNow;
         action.DateStarted = ReadDateNull("DateStarted");
         action.ActionSource = "Import";
-        action.IsVisibleOnPortal = ReadBool("VisibleOnPortal");
+        action.IsVisibleOnPortal = ReadBool("Visible");
         action.ModifierID = -2;
         action.Name = "";
         action.TicketID = ticketID;
@@ -1472,8 +1489,15 @@ namespace TeamSupport.ServiceLibrary
 
     private string GetMappedName(string field)
     {
-      //return _map[field];
-      return field;
+      ImportFieldsViewItem map = _map.FindByFieldName(field);
+      if (map != null && map.SourceName.Trim() != string.Empty)
+      {
+        return map.SourceName.Trim();
+      }
+      else
+      {
+        return field;
+      }
     }
 
     private string GetMappedValue(string field)

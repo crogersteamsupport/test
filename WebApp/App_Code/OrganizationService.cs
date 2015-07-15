@@ -1292,6 +1292,31 @@ namespace TSWebServices
 
       return imports.GetImportProxies();
     }
+
+    [WebMethod]
+    public ImportFieldsViewItemProxy[] LoadImportFields(int refType)
+    {
+      ImportFieldsView importFields = new ImportFieldsView(TSAuthentication.GetLoginUser());
+      importFields.LoadByRefType(refType);
+
+      return importFields.GetImportFieldsViewItemProxies();
+    }
+
+    [WebMethod]
+    public void SaveImportFieldMaps(int importID, string fieldsData)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      ImportMaps importMaps = new ImportMaps(loginUser);
+      List<ImportFieldMap> fields = JsonConvert.DeserializeObject<List<ImportFieldMap>>(fieldsData);
+      foreach (ImportFieldMap field in fields)
+      {
+        ImportMap importMap = importMaps.AddNewImportMap();
+        importMap.ImportID = importID;
+        importMap.FieldID = field.ImportFieldID;
+        importMap.SourceName = field.SourceName;
+      }
+      importMaps.Save();
+    }  
   }
 
   [DataContract]
@@ -1308,5 +1333,14 @@ namespace TSWebServices
     [DataMember]
     public bool IsActive { get; set; }
 
+  }
+
+  [DataContract]
+  public class ImportFieldMap
+  {
+    [DataMember]
+    public int ImportFieldID { get; set; }
+    [DataMember]
+    public string SourceName { get; set; }
   }
 }

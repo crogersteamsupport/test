@@ -9,10 +9,10 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(ImportFieldProxy))]
-  public class ImportFieldProxy
+  [KnownType(typeof(ImportFieldsViewItemProxy))]
+  public class ImportFieldsViewItemProxy
   {
-    public ImportFieldProxy() {}
+    public ImportFieldsViewItemProxy() {}
     [DataMember] public int ImportFieldID { get; set; }
     [DataMember] public string TableName { get; set; }
     [DataMember] public string FieldName { get; set; }
@@ -23,14 +23,26 @@ namespace TeamSupport.Data
     [DataMember] public bool IsRequired { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int RefType { get; set; }
+    [DataMember] public int? ImportMapID { get; set; }
+    [DataMember] public int? ImportID { get; set; }
+    [DataMember] public string SourceName { get; set; }
+    [DataMember] public bool? IsCustom { get; set; }
+    [DataMember] public string FileName { get; set; }
+    [DataMember] public int? OrganizationID { get; set; }
           
   }
   
-  public partial class ImportField : BaseItem
+  public partial class ImportFieldsViewItem : BaseItem
   {
-    public ImportFieldProxy GetProxy()
+    public ImportFieldsViewItemProxy GetProxy()
     {
-      ImportFieldProxy result = new ImportFieldProxy();
+      ImportFieldsViewItemProxy result = new ImportFieldsViewItemProxy();
+      result.OrganizationID = this.OrganizationID;
+      result.FileName = this.FileName;
+      result.IsCustom = this.IsCustom;
+      result.SourceName = this.SourceName;
+      result.ImportID = this.ImportID;
+      result.ImportMapID = this.ImportMapID;
       result.RefType = this.RefType;
       result.Description = this.Description;
       result.IsRequired = this.IsRequired;

@@ -126,8 +126,8 @@ namespace TeamSupport.Handlers
                 import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
                 import.FileName = fileName;
                 import.OrganizationID = TSAuthentication.OrganizationID;
-                result.Add(new UploadResult(fileName, files[i].ContentType, files[i].ContentLength));
                 import.Collection.Save();
+                result.Add(new UploadResult(fileName, files[i].ContentType, files[i].ContentLength, import.ImportID));
                 break;
               default:
                 break;
@@ -242,6 +242,15 @@ namespace TeamSupport.Handlers
       this.name = name;
       this.size = size;
       this.type = type;
+      this.id = 0;
+    }
+
+    public UploadResult(string name, string type, long size, int id)
+    {
+      this.name = name;
+      this.size = size;
+      this.type = type;
+      this.id = id;
     }
 
     [DataMember]
@@ -250,5 +259,7 @@ namespace TeamSupport.Handlers
     public long size { get; set; }
     [DataMember]
     public string type { get; set; }
+    [DataMember]
+    public int id { get; set; }
   }
 }

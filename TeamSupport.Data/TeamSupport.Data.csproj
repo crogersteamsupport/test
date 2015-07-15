@@ -218,6 +218,7 @@
     <Compile Include="BusinessObjects\FullContactUpdates.cs" />
     <Compile Include="BusinessObjects\GroupAssignmentHistory.cs" />
     <Compile Include="BusinessObjects\ImportFields.cs" />
+    <Compile Include="BusinessObjects\ImportFieldsView.cs" />
     <Compile Include="BusinessObjects\ImportMaps.cs" />
     <Compile Include="BusinessObjects\Imports.cs" />
     <Compile Include="BusinessObjects\KnowledgeBaseCategories.cs" />
@@ -314,6 +315,7 @@
     <Compile Include="FieldMaps\FullContactUpdatesFieldMap.cs" />
     <Compile Include="FieldMaps\GroupAssignmentHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\ImportFieldsFieldMap.cs" />
+    <Compile Include="FieldMaps\ImportFieldsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ImportMapsFieldMap.cs" />
     <Compile Include="FieldMaps\ImportsFieldMap.cs" />
     <Compile Include="FieldMaps\KnowledgeBaseCategoriesFieldMap.cs" />
@@ -557,6 +559,7 @@
     <Compile Include="Generated\GeneratedGroupAssignmentHistory.cs" />
     <Compile Include="Generated\GeneratedGroups.cs" />
     <Compile Include="Generated\GeneratedImportFields.cs" />
+    <Compile Include="Generated\GeneratedImportFieldsView.cs" />
     <Compile Include="Generated\GeneratedImportMaps.cs" />
     <Compile Include="Generated\GeneratedImports.cs" />
     <Compile Include="Generated\GeneratedInvoices.cs" />
@@ -658,6 +661,7 @@
     <Compile Include="Proxies\FullContactUpdatesProxy.cs" />
     <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
     <Compile Include="Proxies\ImportFieldsProxy.cs" />
+    <Compile Include="Proxies\ImportFieldsViewProxy.cs" />
     <Compile Include="Proxies\ImportMapsProxy.cs" />
     <Compile Include="Proxies\ImportsProxy.cs" />
     <Compile Include="Proxies\ProductFamiliesProxy.cs" />
