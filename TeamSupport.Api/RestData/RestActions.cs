@@ -21,6 +21,8 @@ namespace TeamSupport.Api
         throw new RestException(HttpStatusCode.Unauthorized);
       }
 
+      action.Description = RemoveInvalidXmlChars(action.Description);
+
       return action.GetXml("Action", true);
     }
 
@@ -30,6 +32,8 @@ namespace TeamSupport.Api
       if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       ActionsView actions = new ActionsView(command.LoginUser);
       actions.LoadByTicketID(ticket.TicketID, limitNumber);
+
+      actions.Select(p => { p.Description = RemoveInvalidXmlChars(p.Description); return p; }).ToList();
 
       return actions.GetXml("Actions", "Action", true, command.Filters);
     }
@@ -60,7 +64,6 @@ namespace TeamSupport.Api
       action.UpdateCustomFieldsFromXml(command.Data);
       return ActionsView.GetActionsViewItem(command.LoginUser, action.ActionID).GetXml("Action", true);
     }
-
 
     public static string GetCustomerAction(RestCommand command, int actionID)
     {
@@ -111,5 +114,23 @@ namespace TeamSupport.Api
       return ActionsView.GetActionsViewItem(command.LoginUser, action.ActionID).GetXml("Action", true);
     }
 
+    private static string RemoveInvalidXmlChars(string text)
+    {
+      var validXmlChars = text.Where(ch => XmlConvert.IsXmlChar(ch)).ToArray();
+      return new string(validXmlChars);
+    }
+
+    private static bool IsValidXmlString(string text)
+    {
+      try
+      {
+        XmlConvert.VerifyXmlChars(text);
+        return true;
+      }
+      catch
+      {
+        return false;
+      }
+    }
   }
 }
