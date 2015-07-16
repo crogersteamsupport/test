@@ -672,6 +672,22 @@
                   <i id="jiraUnlink" class="glyphicon glyphicon-remove" style="font-size:10px; cursor:pointer; position:relative; left:5px;"></i>
                 </div>
               </div>
+
+              <div id="enterIssueKey" style="display:none;">
+                <div class="ticket-jira-issue">
+                  <label>Existing Issue Key:</label>
+                  <input id="issueKeyInput" type="text" class="form-control" style="margin-bottom:5px;" />
+                </div>
+                <div style="text-align:right">
+                  <button id="saveIssueKeyButton" class="btn btn-sm btn-default">Save</button>
+                  <button id="cancelIssueyKeyButton" class="btn btn-sm btn-default">Cancel</button>
+                </div>
+              </div>
+
+              <div class="ts-jira-buttons-container">
+                  <button id="newJiraIssue" class="btn btn-default btn-block">New Issue</button>
+                  <button id="existingJiraIssue" class="btn btn-default btn-block">Existing Issue</button>
+              </div>
             </div>
 
             <!--<div class="ticket-widget-jira ticket-widget">

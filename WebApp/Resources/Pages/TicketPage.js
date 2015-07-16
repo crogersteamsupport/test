@@ -211,6 +211,7 @@ var loadTicket = function (ticketNumber, refresh) {
     AddReminders(_ticketInfo.Reminders);
     AddInventory(_ticketInfo.Assets);
     LoadTicketHistory();
+    SetupJiraFieldValues();
 
     if (typeof refresh === "undefined") {
       window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
@@ -1075,6 +1076,7 @@ function LoadTicketControls() {
   SetupRemindersSection();
   SetupCustomFieldsSection();
   SetupJiraFields();
+  SetupJiraFieldValues();
 };
 
 function AppendSelect(parent, data, type, id, name, isSelected) {
@@ -1157,6 +1159,7 @@ function SetupTicketPropertyEvents() {
         $('#ticket-status-label').toggleClass('ticket-closed', result[0].IsClosed);
 
         AppenCustomValues(result[1]);
+        SetupJiraFieldValues();
 
         _ticketInfo.Ticket = result[2];
         setSLAInfo();
@@ -2683,7 +2686,95 @@ var SetupStatusField = function (StatusId) {
   }
 }
 
+//click events and logic
 var SetupJiraFields = function () {
+  $('#newJiraIssue').click(function (e) {
+    e.preventDefault();
+    $('.ts-jira-buttons-container').hide();
+    top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
+      if (result === true) {
+        $('#issueKeyValue').text('Pending...');
+        $('#issueKey').show();
+      }
+      else {
+        $('.ts-jira-buttons-container').show();
+        $('#issueKey').hide();
+        alert('There was an error setting your Jira Issue Key.');
+      }
+    },
+    function (error) {
+      $('.ts-jira-buttons-container').show();
+      $('#issueKey').hide();
+      alert('There was an error setting your Jira Issue Key.');
+    });
+  });
+
+  $('#existingJiraIssue').click(function (e) {
+    e.preventDefault();
+    $('.ts-jira-buttons-container').hide();
+    $('#enterIssueKey').show();
+    $('#issueKeyInput').focus();
+  });
+
+  $('#cancelIssueyKeyButton').click(function (e) {
+    $('.ts-jira-buttons-container').show();
+    $('#enterIssueKey').hide();
+  });
+
+  $('#saveIssueKeyButton').click(function (e) {
+    if ($.trim($('#issueKeyInput').val()) === '') {
+      $('.ts-jira-buttons-container').show();
+      $('#enterIssueKey').hide();
+    }
+    else {
+      $('#issueKeyValue').text($.trim($('#issueKeyInput').val()));
+      $('#enterIssueKey').hide();
+      $('#issueKey').show();
+      //$('#savingIssueKeyImg').show();
+      top.Ts.Services.Tickets.SetJiraIssueKey(_ticketID, $.trim($('#issueKeyInput').val()), function (result) {
+        if (result === false) {
+          $('.ts-jira-buttons-container').show();
+          $('#issueKey').hide();
+          alert('There was an error setting your Jira Issue Key.');
+        }
+      },
+    function (error) {
+      $('.ts-jira-buttons-container').show();
+      $('#issueKey').hide();
+      alert('There was an error setting your Jira Issue Key.');
+    });
+    }
+  });
+
+  $('#jiraUnlink').click(function (e) {
+    var currentStatus = $("#issueKeyValue").text().toLowerCase();
+    var confirmMessage = "Are you sure you want to " + ((currentStatus.indexOf("pending") > -1) ? "cancel" : "remove") + " link to JIRA?";
+
+    if (confirm(confirmMessage)) {
+      e.preventDefault();
+      $('.ts-jira-buttons-container').show();
+      $('#issueKey').hide();
+      top.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
+        if (result === true) {
+          //It was successful
+        }
+        else {
+          alert('There was an error setting your Jira Issue Key. Please try again later');
+          $('.ts-jira-buttons-container').hide();
+          $('#issueKey').show();
+        }
+      },
+      function (error) {
+        alert('There was an error setting your Jira Issue Key.');
+        $('.ts-jira-buttons-container').hide();
+        $('#issueKey').show();
+      });
+    }
+  });
+};
+
+//Load and display the proper fields/values
+var SetupJiraFieldValues = function () {
   top.Ts.Services.Admin.GetIsJiraLinkActiveForTicket(_ticketID, function (result) {
     if(result) {
       if (_ticketInfo.LinkToJira != null) {
@@ -2705,46 +2796,7 @@ var SetupJiraFields = function () {
             .attr('target', '_blank')
             .text(_ticketInfo.LinkToJira.JiraKey)
             .addClass('jiraLink control-label ticket-anchor ')
-            .prependTo($('#ticket-jirakey-container'))
-        }
-
-        $('#issueKey').show();
-      }
-      else {
-        $('#issueKey').hide();
-        $('.ts-jira-buttons-container').show();
-      }
-    }
-    else
-    {
-      $('#ticket-jirafields').remove();
-    }
-
-
-    if (result) {
-      $('#enterIssueKey').hide();
-      $('.ticket-widget-jira').show();
-
-      if (info.LinkToJira != null) {
-        if (!info.LinkToJira.JiraKey) {
-          $('#issueKeyValue').text('Pending...');
-        }
-        else if (!info.LinkToJira.JiraLinkURL) {
-          $('#issueKeyValue').text(info.LinkToJira.JiraKey);
-          if (info.LinkToJira.JiraKey.indexOf('Error') > -1) {
-            $('#issueKeyValue').addClass('nonrequired-field-error ui-corner-all');
-          }
-          else {
-            $('#issueKeyValue').removeClass('nonrequired-field-error ui-corner-all');
-          }
-        }
-        else {
-          var jiraLink = $('<a>')
-            .attr('href', info.LinkToJira.JiraLinkURL)
-            .attr('target', '_blank')
-            .text(info.LinkToJira.JiraKey)
-            .addClass('value ui-state-default ts-link')
-            .appendTo($('#issueKeyValue').parent())
+            .prependTo($('#ticket-jirakey-container'));
         }
 
         $('#issueKey').show();
@@ -2755,8 +2807,9 @@ var SetupJiraFields = function () {
         $('.ts-jira-buttons-container').show();
       }
     }
-    else {
-      $('.ticket-widget-jira').hide();
+    else
+    {
+      $('#ticket-jirafields').remove();
     }
   });
 };
