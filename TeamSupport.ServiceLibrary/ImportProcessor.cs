@@ -22,6 +22,7 @@ namespace TeamSupport.ServiceLibrary
     private CsvReader _csv;
     private ImportFieldsView _map;
     private string[] _headers;
+    private ImportLog _importLog;
 
     public override void Run()
     {
@@ -78,6 +79,11 @@ namespace TeamSupport.ServiceLibrary
       _map = new ImportFieldsView(_importUser);
       _map.LoadByImportID(import.ImportID);
 
+      string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
+      logPath = Path.Combine(logPath, import.OrganizationID.ToString());
+      _importLog = new ImportLog(logPath, import.ImportID);
+      _importLog.Write("Importing importID: " + import.ImportID.ToString());
+
       using (_csv = new CsvReader(new StreamReader(csvFile), true))
       {
         _headers = _csv.GetFieldHeaders();
@@ -94,6 +100,9 @@ namespace TeamSupport.ServiceLibrary
             break;
           case ReferenceType.Contacts:
             ImportContacts(import);
+            break;
+          case ReferenceType.Tickets:
+            ImportTickets(import);
             break;
           case ReferenceType.CustomFieldPickList:
             ImportCustomFieldPickList(import);
@@ -144,7 +153,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else if (tickets.Count > 1)
           {
-            // more than one ticket found matching TicketImportID
+            _importLog.Write("More than one ticket found matching TicketImportID");
             continue;
           }
         }
@@ -152,7 +161,7 @@ namespace TeamSupport.ServiceLibrary
         int ticketID = ReadInt("TicketID");
         if (!ticketList.ContainsValue(ticketID) && ticket == null)
         {
-          //_log.AppendError(row, "Action skipped due to missing ticket");
+          _importLog.Write("Action skipped due to missing ticket");
           continue;
         }
 
@@ -185,7 +194,7 @@ namespace TeamSupport.ServiceLibrary
             }
             else if (existingAction.Count > 1)
             {
-              // More than one action matching the importID was found
+              _importLog.Write("More than one action matching the importID was found");
               continue;
             }
           }
@@ -227,7 +236,7 @@ namespace TeamSupport.ServiceLibrary
         if (isUpdate)
         {
           existingAction.Save();
-          // Add updated rows column as completed rows will reflect only adds
+          _importLog.Write("ActionID " + action.ActionID.ToString() + " was updated.");
         }
         count++;
 
@@ -240,7 +249,7 @@ namespace TeamSupport.ServiceLibrary
       }
       actions.BulkSave();
       UpdateImportCount(import, count);
-      // _log.AppendMessage(count.ToString() + " Actions Imported.");
+      _importLog.Write(count.ToString() + " actions imported.");
     }
 
     private void ImportAssets(Import import)
@@ -273,6 +282,7 @@ namespace TeamSupport.ServiceLibrary
 
         if (product == null)
         {
+          _importLog.Write("No product found.");
           continue;
         }
 
@@ -305,7 +315,7 @@ namespace TeamSupport.ServiceLibrary
             }
             else if (existingAsset.Count > 1)
             {
-              // Log more than one asset already exists in the database with given importID
+              _importLog.Write("More than one asset already exists in the database with given importID");
               continue;
             }
           }
@@ -370,7 +380,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else
           {
-            // Log no product version found without continuing
+            _importLog.Write("No product version found.");
           }
         }
 
@@ -394,7 +404,7 @@ namespace TeamSupport.ServiceLibrary
                   string shippingMethod = ReadString("ShippingMethod");
                   if (dateShipped == null || shippingMethod == string.Empty)
                   {
-                    // Log dateShipped and shippingMethod are required
+                    _importLog.Write("DateShipped and shippingMethod are required.");
                     continue;
                   }
 
@@ -442,12 +452,12 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else if (contactAssignedTo.Count > 1)
                 {
-                  // Log more than one email matching contact found
+                  _importLog.Write("More than one email matching contact found.");
                   continue;
                 }
                 else
                 {
-                  // Log no email matching contact found
+                  _importLog.Write("No email matching contact found.");
                   continue;
                 }
               }
@@ -457,7 +467,7 @@ namespace TeamSupport.ServiceLibrary
                 string shippingMethod = ReadString("ShippingMethod");
                 if (dateShipped == null || shippingMethod == string.Empty)
                 {
-                  // Log dateShipped and shippingMethod are required
+                  _importLog.Write("DateShipped and shippingMethod are required.");
                   continue;
                 }
 
@@ -506,12 +516,12 @@ namespace TeamSupport.ServiceLibrary
             }
             else if (companyAssignedTo.Count > 1)
             {
-              // Log more than one name matching company found
+              _importLog.Write("More than one name matching company found.");
               continue;
             }
             else
             {
-              // Log no name matching company found
+              _importLog.Write("No name matching company found.");
               continue;
             }
           }
@@ -528,7 +538,7 @@ namespace TeamSupport.ServiceLibrary
                 string shippingMethod = ReadString("ShippingMethod");
                 if (dateShipped == null || shippingMethod == string.Empty)
                 {
-                  // Log dateShipped and shippingMethod are required
+                  _importLog.Write("DateShipped and shippingMethod are required");
                   continue;
                 }
 
@@ -576,18 +586,18 @@ namespace TeamSupport.ServiceLibrary
               }
               else if (contactAssignedTo.Count > 1)
               {
-                // Log more than one email matching contact found
+                _importLog.Write("More than one email matching contact found.");
                 continue;
               }
               else
               {
-                // Log no email matching contact found
+                _importLog.Write("No email matching contact found.");
                 continue;
               }
             }
             else
             {
-              // Log no company or contact info to assign to
+              _importLog.Write("No company or contact info to assign to.");
               continue;
             }
           }
@@ -596,7 +606,7 @@ namespace TeamSupport.ServiceLibrary
         if (isUpdate)
         {
           existingAsset.Save();
-          // Add updated rows column as completed rows will reflect only adds
+          _importLog.Write("AssetID " + asset.AssetID.ToString() + " was updated.");
         }
         count++;
 
@@ -609,7 +619,7 @@ namespace TeamSupport.ServiceLibrary
       }
       assets.BulkSave();
       UpdateImportCount(import, count);
-      // _log.AppendMessage(count.ToString() + " Actions Imported.");
+      _importLog.Write(count.ToString() + " assets imported.");
     }
 
     private void ImportCompanies(Import import)
@@ -623,7 +633,7 @@ namespace TeamSupport.ServiceLibrary
         string name = ReadString("Name");
         if (name == string.Empty)
         {
-          //_log.AppendError(row, "Action skipped due to missing name");
+          _importLog.Write("Action skipped due to missing name");
           continue;
         }
 
@@ -642,7 +652,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else if (existingCompany.Count > 1)
           {
-            // Log more than one company matching the importID was found.
+            _importLog.Write("More than one company matching the importID was found.");
             continue;
           }
         }
@@ -679,11 +689,11 @@ namespace TeamSupport.ServiceLibrary
           }
           else if (defaultSupportUser.Count > 1)
           {
-            // Log more than one user found matching email of default support user
+            _importLog.Write("More than one user found matching email of default support user.");
           }
           else
           {
-            // Log no user found matching email of default support user
+            _importLog.Write("No user found matching email of default support user.");
           }
         }
           
@@ -698,11 +708,11 @@ namespace TeamSupport.ServiceLibrary
           }
           else if (defaultSupportGroup.Count > 1)
           {
-            // Log more than one group found matching name of default support group
+            _importLog.Write("More than one group found matching name of default support group.");
           }
           else
           {
-            // Log no group found matching name of default support group
+            _importLog.Write("No group found matching name of default support group.");
           }
         }
           
@@ -720,11 +730,11 @@ namespace TeamSupport.ServiceLibrary
           }
           else if (sla.Count > 1)
           {
-            // Log more than one service level agreement found matching name.
+            _importLog.Write("More than one service level agreement found matching name.");
           }
           else
           {
-            // Log no service level agreement found matching name.
+            _importLog.Write("No service level agreement found matching name.");
           }
         }
           
@@ -769,7 +779,7 @@ namespace TeamSupport.ServiceLibrary
         if (isUpdate)
         {
           existingCompany.Save();
-          // Add updated rows column as completed rows will reflect only adds
+          _importLog.Write("CompanyID " + company.OrganizationID.ToString() + " was updated.");
         }
         count++;
 
@@ -782,7 +792,7 @@ namespace TeamSupport.ServiceLibrary
       }
       companies.BulkSave();
       UpdateImportCount(import, count);
-      // _log.AppendMessage(count.ToString() + " Actions Imported.");
+      _importLog.Write(count.ToString() + " companies imported.");
     }
 
     private void ImportContacts(Import import)
@@ -798,14 +808,14 @@ namespace TeamSupport.ServiceLibrary
         string firstName = ReadString("FirstName");
         if (string.IsNullOrEmpty(firstName))
         {
-          //_log.AppendError(row, "Action skipped due to missing first name");
+          _importLog.Write("Contact skipped due to missing first name");
           continue;
         }
 
         string lastName = ReadString("LastName");
         if (string.IsNullOrEmpty(lastName))
         {
-          //_log.AppendError(row, "Action skipped due to missing last name");
+          _importLog.Write("Contact skipped due to missing last name");
           continue;
         }
 
@@ -826,7 +836,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else if (existingUser.Count > 1)
           {
-            // Log more than one user matching importID was found
+            _importLog.Write("More than one user matching importID was found");
             continue;
           }
         }
@@ -850,12 +860,12 @@ namespace TeamSupport.ServiceLibrary
           }
           else if (companies.Count > 1)
           {
-            // log more than one company matching companyImportID found.
+            _importLog.Write("More than one company matching companyImportID found.");
             continue;
           }
           else
           {
-            // log no company matching companyImportID found.
+            _importLog.Write("No company matching companyImportID found.");
             continue;
           }
         }
@@ -873,17 +883,17 @@ namespace TeamSupport.ServiceLibrary
             }
             else if (companies[0].ParentID != _organizationID)
             {
-              // log invalid companyID provided.
+              _importLog.Write("Invalid companyID provided.");
               continue;
             }
             else if (companies.Count > 1)
             {
-              // log more than one company matching companyID found.
+              _importLog.Write("More than one company matching companyID found.");
               continue;
             }
             else
             {
-              // log no company matching companyID found.
+              _importLog.Write("No company matching companyID found.");
               continue;
             }
           }
@@ -902,12 +912,12 @@ namespace TeamSupport.ServiceLibrary
             }
             else if (companies.Count > 1)
             {
-              // log more than one company matching CompanyName found.
+              _importLog.Write("More than one company matching CompanyName found.");
               continue;
             }
             else
             {
-              // log no company matching CompanyName found.
+              _importLog.Write("No company matching CompanyName found.");
               continue;
             }
           }
@@ -998,6 +1008,7 @@ namespace TeamSupport.ServiceLibrary
           else
           {
             existingUser.Save();
+            _importLog.Write("UserID " + user.UserID.ToString() + " was updated.");
           }
           // Add updated rows column as completed rows will reflect only adds
         }
@@ -1012,6 +1023,7 @@ namespace TeamSupport.ServiceLibrary
       }
       users.BulkSave();
       UpdateImportCount(import, count);
+      _importLog.Write(count.ToString() + " contacts imported.");
     }
 
     private void ImportTickets(Import import)
@@ -1070,7 +1082,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else if (existingTicket.Count > 1)
           {
-            // More than one action matching the importID was found
+            _importLog.Write("More than one action matching the importID was found.");
             continue;
           }
         }
@@ -1091,7 +1103,7 @@ namespace TeamSupport.ServiceLibrary
             }
             else if (existingTicket.Count > 0)
             {
-              // More than one action matching the TicketNumber was found
+              _importLog.Write("More than one action matching the TicketNumber was found.");
               continue;
             }
           }
@@ -1117,7 +1129,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (!isUpdate)
           {
-            //_log.AppendError(row, "Ticket skipped due to missing name");
+            _importLog.Write("Ticket skipped due to missing name");
             continue;
           }
         }
@@ -1141,7 +1153,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (!isUpdate)
           {
-            //_log.AppendError(row, "Ticket skipped due to missing type");
+            _importLog.Write("Ticket skipped due to missing type");
             continue;
           }
         }
@@ -1200,7 +1212,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (!isUpdate)
           {
-            //_log.AppendError(row, "Ticket skipped due to missing status");
+            _importLog.Write("Ticket skipped due to missing status");
             continue;
           }
         }
@@ -1233,7 +1245,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (!isUpdate)
           {
-            //_log.AppendError(row, "Ticket skipped due to missing severity");
+            _importLog.Write("Ticket skipped due to missing severity");
             continue;
           }
         }
@@ -1309,7 +1321,7 @@ namespace TeamSupport.ServiceLibrary
         }
         else if (!isUpdate && account[0].ProductRequired)
         {
-          // Product is required and missing
+          _importLog.Write("Product is required and missing.");
           continue;
         }
 
@@ -1336,7 +1348,7 @@ namespace TeamSupport.ServiceLibrary
         }
         else if (!isUpdate && account[0].ProductVersionRequired)
         {
-          // Reported Version is required and missing
+          _importLog.Write("Reported Version is required and missing.");
           continue;
         }
 
@@ -1424,7 +1436,7 @@ namespace TeamSupport.ServiceLibrary
         if (isUpdate)
         {
           existingTicket.Save();
-          // Add updated rows column as completed rows will reflect only adds
+          _importLog.Write("TicketID " + ticket.TicketID.ToString() + " was updated.");
         }
         count++;
 
@@ -1439,6 +1451,7 @@ namespace TeamSupport.ServiceLibrary
       tickets.BulkSave();
       UpdateImportCount(import, count);
       EmailPosts.DeleteImportEmails(_importUser);
+      _importLog.Write(count.ToString() + " tickets imported.");
     }
 
     private void ImportCustomFieldPickList(Import import)
@@ -1716,4 +1729,38 @@ GROUP BY REPLACE(u.Email + '(' + o.Name + ')', ' ', '')";
       return max;
     }
   }
+
+  public class ImportLog
+  {
+    private string _logPath;
+    private string _fileName;
+
+    public ImportLog(string path, int importID)
+    {
+      _logPath = path;
+      _fileName = importID.ToString() + ".txt";
+
+      if (!Directory.Exists(_logPath))
+      {
+        Directory.CreateDirectory(_logPath);
+      }
+    }
+
+    public void Write(string text)
+    {
+      if (!File.Exists(_logPath + @"\" + _fileName))
+      {
+        foreach (string oldFileName in Directory.GetFiles(_logPath))
+        {
+          if (File.GetLastWriteTime(oldFileName).AddDays(30) < DateTime.Today)
+          {
+            File.Delete(oldFileName);
+          }
+        }
+      }
+
+      File.AppendAllText(_logPath + @"\" + _fileName, DateTime.Now.ToLongTimeString() + ": " + text + Environment.NewLine);
+    }
+  }
+
 }
