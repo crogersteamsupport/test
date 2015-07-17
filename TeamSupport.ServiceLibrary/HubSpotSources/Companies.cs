@@ -66,11 +66,11 @@ namespace TeamSupport.ServiceLibrary
             return wasDeleted;
         }
 
-        public HubSpotObject.Company.RootObject GetById(string companyId)
+        public HubSpotObject.Company.RootObject GetById(string companyId, bool log = true)
         {
             var subPath = string.Format("companies/{0}", companyId);
 
-            JObject jsonString = Call(subpath: subPath, contentType: "application/json");
+            JObject jsonString = Call(subpath: subPath, contentType: "application/json", log: log);
             HubSpotObject.Company.RootObject hubspotObject = JsonConvert.DeserializeObject<HubSpotObject.Company.RootObject>(jsonString.ToString());
 
             return hubspotObject;

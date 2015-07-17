@@ -36,6 +36,7 @@ namespace TeamSupport.ServiceLibrary.HubSpotSources.Objects
       public ObjectValue country { get; set; }
       public ObjectValue phone { get; set; }
       public ObjectValue fax { get; set; }
+      public ObjectValue lifecyclestage { get; set; }
       public ObjectValue twitterfollowers { get; set; }
       public ObjectValue website { get; set; }
       public ObjectValue num_associated_contacts { get; set; }

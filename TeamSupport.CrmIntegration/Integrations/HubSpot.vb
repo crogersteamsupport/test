@@ -13,7 +13,7 @@ Namespace TeamSupport
       Private _integrationType As IntegrationType
       Private _thisUser As LoginUser
       Private _crmLogPath As String
-      Private _hubspotAccountIds As List(Of Integer)
+      Private _hubspotAccountIds As List(Of String)
 
       Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal syncLog As SyncLog, ByVal crmLogPath As String, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
         MyBase.New(crmLinkOrg, syncLog, thisUser, thisProcessor, IntegrationType.HubSpot)
@@ -29,7 +29,7 @@ Namespace TeamSupport
           Success = SyncAccounts()
 
           If Success Then
-            _hubspotAccountIds = New List(Of Integer)
+            _hubspotAccountIds = New List(Of String)
             Success = SendTicketData(AddressOf CreateNote)
             _hubspotAccountIds.Clear()
           End If
@@ -57,6 +57,8 @@ Namespace TeamSupport
             Dim hubspotCompanies As Objects.Companies.RootObject = New Objects.Companies.RootObject()
             Dim companySyncData As New List(Of CompanyData)()
 
+            Log.Write(String.Format("Get and process only Companies in the lifecycle ""Customer"""))
+
             Do
               hubspotCompanies = hubspotApi.GetAllRecentlyModified(count:=maxCount, offset:=offset)
               offset = hubspotCompanies.offset
@@ -66,27 +68,32 @@ Namespace TeamSupport
                   Return False
                 End If
 
-                Dim modifiedValue As Long = company.properties.hs_lastmodifieddate.timestamp
-                Dim beginTicks As Long = New Date(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks
-                Dim modifiedDate As Date = New Date(beginTicks + modifiedValue * 10000)
+                'Get only the Companies that are the "Customer" lifecycle
+                If (company.properties.lifecyclestage IsNot Nothing AndAlso Not String.IsNullOrEmpty(company.properties.lifecyclestage.value) AndAlso company.properties.lifecyclestage.value.ToLower() = "customer") Then
+                  Dim modifiedValue As Long = company.properties.hs_lastmodifieddate.timestamp
+                  Dim beginTicks As Long = New Date(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks
+                  Dim modifiedDate As Date = New Date(beginTicks + modifiedValue * 10000)
 
-                If CRMLinkRow.LastLink Is Nothing OrElse modifiedDate.AddMinutes(30) > CRMLinkRow.LastLink Then
-                  Dim thisCustomer As New CompanyData()
+                  If CRMLinkRow.LastLink Is Nothing OrElse modifiedDate.AddMinutes(30) > CRMLinkRow.LastLink Then
+                    Dim thisCustomer As New CompanyData()
 
-                  With thisCustomer
-                    .AccountID = company.companyId
-                    .AccountName = If(company.properties.name IsNot Nothing, company.properties.name.value, String.Empty)
-                    .Street = If(company.properties.address IsNot Nothing, company.properties.address.value, String.Empty)
-                    .Street2 = If(company.properties.address2 IsNot Nothing, company.properties.address2.value, String.Empty)
-                    .City = If(company.properties.city IsNot Nothing, company.properties.city.value, String.Empty)
-                    .State = If(company.properties.state IsNot Nothing, company.properties.state.value, String.Empty)
-                    .Zip = If(company.properties.zip IsNot Nothing, company.properties.zip.value, String.Empty)
-                    .Country = If(company.properties.country IsNot Nothing, company.properties.country.value, String.Empty)
-                    .Phone = If(company.properties.phone IsNot Nothing, company.properties.phone.value, String.Empty)
-                    .Fax = If(company.properties.fax IsNot Nothing, company.properties.fax.value, String.Empty)
-                  End With
+                    With thisCustomer
+                      .AccountID = company.companyId
+                      .AccountName = If(company.properties.name IsNot Nothing, company.properties.name.value, String.Empty)
+                      .Street = If(company.properties.address IsNot Nothing, company.properties.address.value, String.Empty)
+                      .Street2 = If(company.properties.address2 IsNot Nothing, company.properties.address2.value, String.Empty)
+                      .City = If(company.properties.city IsNot Nothing, company.properties.city.value, String.Empty)
+                      .State = If(company.properties.state IsNot Nothing, company.properties.state.value, String.Empty)
+                      .Zip = If(company.properties.zip IsNot Nothing, company.properties.zip.value, String.Empty)
+                      .Country = If(company.properties.country IsNot Nothing, company.properties.country.value, String.Empty)
+                      .Phone = If(company.properties.phone IsNot Nothing, company.properties.phone.value, String.Empty)
+                      .Fax = If(company.properties.fax IsNot Nothing, company.properties.fax.value, String.Empty)
+                    End With
 
-                  companySyncData.Add(thisCustomer)
+                    companySyncData.Add(thisCustomer)
+                  End If
+                Else
+                  Log.Write(String.Format("Company {0} ({1}) not processed, is in lifecycle ""{2}""", company.properties.name.value, company.companyId.ToString(), If(company.properties.lifecyclestage IsNot Nothing, company.properties.lifecyclestage.value, "")))
                 End If
               Next
             Loop While hubspotCompanies.hasMore
@@ -147,6 +154,8 @@ Namespace TeamSupport
         Dim crmLinkContactErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
         crmLinkContactErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "contact")
 
+        Log.Write(String.Format("Get and process only Contacts in the lifecycle ""Customer"""))
+
         Do
           hubspotContacts = hubSpotApi.GetAllRecentlyModified(count:=maxCount, contactOffset:=contactOffset)
           contactOffset = hubspotContacts.offset
@@ -163,7 +172,13 @@ Namespace TeamSupport
                   Dim hubSpotApiContact As Contacts = New Contacts(apiKey:=hapiKey, logPath:=_crmLogPath)
                   Dim contact As Objects.Contact.RootObject = hubSpotApiContact.GetContactById(companyContact.vid.ToString())
 
-                  If contact.associatedCompany IsNot Nothing AndAlso contact.associatedCompany.companyId > 0 AndAlso Not String.IsNullOrEmpty(contact.properties.associatedcompanyid.value) Then
+                  'Get only contacts associated to a company and also in the 'Customer' lifecycle
+                  If contact.associatedCompany IsNot Nothing _
+                    AndAlso contact.associatedCompany.companyId > 0 _
+                    AndAlso Not String.IsNullOrEmpty(contact.properties.associatedcompanyid.value) _
+                    AndAlso contact.properties.lifecyclestage IsNot Nothing _
+                    AndAlso Not String.IsNullOrEmpty(contact.properties.lifecyclestage.value) _
+                    AndAlso contact.properties.lifecyclestage.value.ToLower() = "customer" Then
                     With thisPerson
                       .HubSpotVid = contact.vid
                       .HubSpotId = contact.properties.associatedcompanyid.value
@@ -177,6 +192,8 @@ Namespace TeamSupport
                     End With
 
                     ContactSyncData.Add(thisPerson)
+                  Else
+                    Log.Write(String.Format("Contact {0} {1} ({2}) not processed, is in lifecycle ""{3}"" or is not associated to any company", contact.properties.firstname.value, contact.properties.lastname.value, contact.vid.ToString(), contact.properties.lifecyclestage.value))
                   End If
                 End If
               Catch ex As Exception
@@ -231,54 +248,59 @@ Namespace TeamSupport
         Dim hapiKey As String = CRMLinkRow.SecurityToken1
         Dim hubSpotApiCompany As Companies = New Companies(apiKey:=hapiKey, logPath:=_crmLogPath)
 
-        If Not _hubspotAccountIds.Contains(accountId) AndAlso hubSpotApiCompany.GetById(accountId).companyId > 0 Then
-          _hubspotAccountIds.Add(accountId)
-        End If
-
-
-        If _hubspotAccountIds.Contains(accountId) Then
-          Dim authorName As String = Nothing
-
-          Using findAuthor As New Users(User)
-              findAuthor.LoadByUserID(thisTicket.CreatorID)
-
-              If findAuthor.Count > 0 Then
-                Dim author As User
-                author = findAuthor(0)
-
-                If author IsNot Nothing Then
-                  authorName = author.FirstLastName
-                End If
-              End If
-          End Using
-
-          Dim action As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
-          Dim description = String.Empty
-
-          If action IsNot Nothing Then
-            description = HtmlUtility.StripHTML(action.Description)
+        Try
+          If Not _hubspotAccountIds.Contains(accountId) AndAlso hubSpotApiCompany.GetById(accountId, False).companyId > 0 Then
+            _hubspotAccountIds.Add(accountId)
           End If
 
-          Dim noteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}{3}{4}", _
-                                thisTicket.Name, thisTicket.TicketID, description, Environment.NewLine, If(authorName IsNot Nothing, "Created by " & authorName, ""))
 
-          Dim hubSpotApi As Engagements = New Engagements(apiKey:=hapiKey, logPath:=_crmLogPath)
+          If _hubspotAccountIds.Contains(accountId) Then
+            Dim authorName As String = Nothing
 
-          Dim newEngagement As Objects.Engagement.RootObject = New Objects.Engagement.RootObject()
-          newEngagement.engagement = New Objects.Engagement.EngagementItem()
-          newEngagement.engagement.active = True
-          newEngagement.engagement.type = "NOTE"
-          newEngagement.engagement.timestamp = (DateTime.UtcNow - New DateTime(1970, 1, 1)).TotalMilliseconds
-          newEngagement.associations = New Objects.Engagement.Associations()
-          newEngagement.associations.companyIds = New List(Of Integer)(New Integer() {accountId})
-          newEngagement.metadata = New Objects.Engagement.Metadata()
-          newEngagement.metadata.body = noteBody
-          Dim engagementCreated As Objects.Engagement.RootObject = hubSpotApi.Create(newEngagement)
+            Using findAuthor As New Users(User)
+                findAuthor.LoadByUserID(thisTicket.CreatorID)
 
-          isSuccessful = engagementCreated.engagement.id > 0
-        Else
-          Log.Write(String.Format("The HubSpot accountId {0} in the crmlinkid field of ticket {1} (id: {2}) was not found in HubSpot. Note was not created.", accountId, thisTicket.TicketNumber, thisTicket.TicketID.ToString()))
-        End If
+                If findAuthor.Count > 0 Then
+                  Dim author As User
+                  author = findAuthor(0)
+
+                  If author IsNot Nothing Then
+                    authorName = author.FirstLastName
+                  End If
+                End If
+            End Using
+
+            Dim action As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+            Dim description = String.Empty
+
+            If action IsNot Nothing Then
+              description = HtmlUtility.StripHTML(action.Description)
+            End If
+
+            Dim noteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}{3}{4}", _
+                                  thisTicket.Name, thisTicket.TicketID, description, Environment.NewLine, If(authorName IsNot Nothing, "Created by " & authorName, ""))
+
+            Dim hubSpotApi As Engagements = New Engagements(apiKey:=hapiKey, logPath:=_crmLogPath)
+
+            Dim newEngagement As Objects.Engagement.RootObject = New Objects.Engagement.RootObject()
+            newEngagement.engagement = New Objects.Engagement.EngagementItem()
+            newEngagement.engagement.active = True
+            newEngagement.engagement.type = "NOTE"
+            newEngagement.engagement.timestamp = (DateTime.UtcNow - New DateTime(1970, 1, 1)).TotalMilliseconds
+            newEngagement.associations = New Objects.Engagement.Associations()
+            newEngagement.associations.companyIds = New List(Of Integer)(New Integer() {accountId})
+            newEngagement.metadata = New Objects.Engagement.Metadata()
+            newEngagement.metadata.body = noteBody
+            Dim engagementCreated As Objects.Engagement.RootObject = hubSpotApi.Create(newEngagement)
+
+            isSuccessful = engagementCreated.engagement.id > 0
+          Else
+            Log.Write(String.Format("The HubSpot accountId {0} in the crmlinkid field of ticket {1} (id: {2}) was not found in HubSpot. Note was not created.", accountId, thisTicket.TicketNumber, thisTicket.TicketID.ToString()))
+          End If
+        Catch ex As Exception
+          Log.Write(String.Format("Exception creating NOTE: {0}{1}{2}", ex.Message, Environment.NewLine, ex.InnerException.ToString()))
+          isSuccessful = False
+        End Try
 
         Return isSuccessful
       End Function

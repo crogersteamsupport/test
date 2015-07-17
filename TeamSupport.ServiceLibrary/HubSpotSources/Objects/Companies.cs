@@ -37,6 +37,7 @@ namespace TeamSupport.ServiceLibrary.HubSpotSources.Objects
       public ObjectValue website { get; set; }
       public ObjectValue description { get; set; }
       public ObjectValue industry { get; set; }
+      public ObjectValue lifecyclestage { get; set; }
       public ObjectValue timezone { get; set; }
       public ObjectValue createdate { get; set; }
       public ObjectValue numberofemployees { get; set; }

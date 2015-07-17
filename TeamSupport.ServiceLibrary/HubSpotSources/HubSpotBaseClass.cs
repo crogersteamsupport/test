@@ -50,7 +50,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         protected JObject Call(string subpath, string method = "GET", string query = "", string contentType = "application/text",
-                                  string data = "", Dictionary<string, string> optionalParams = null, string other = "")
+                                  string data = "", Dictionary<string, string> optionalParams = null, string other = "", bool log = true)
         {
             string uri;
             JObject jObject = new JObject();
@@ -86,9 +86,10 @@ namespace TeamSupport.ServiceLibrary
                                                              optionalParam.Value));
               }
 
-              Logs.Write(string.Format("{0}: ContentType {1}. uri: {2}", method, contentType, uri));
+              if (log)
+                Logs.Write(string.Format("{0}: ContentType {1}. uri: {2}", method, contentType, uri));
 
-              if (!string.IsNullOrEmpty(data))
+              if (log && !string.IsNullOrEmpty(data))
               {
                 Logs.Write(string.Format("Data:{0}{1}", Environment.NewLine, data));
               }
