@@ -1908,6 +1908,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
       var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').insertAfter(formcontainer);
 
       appendMatchingParentValueFields(childrenContainer, field, value);
+      appendTemplateText(value);
 
     },
     onDropdownClose: function ($dropdown) {
@@ -1930,6 +1931,15 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     groupContainer.addClass('isEmpty');
   }
 };
+
+var appendTemplateText = function (value) {
+  top.Ts.Services.Tickets.GetValueTemplateText(value, function (result) {
+    if (result != null && result != "" && result != "<br>") {
+      var currenttext = tinyMCE.activeEditor.getContent();
+      tinyMCE.activeEditor.setContent(currenttext + result);
+    }
+  });
+}
 
 var appendConditionalFields = function () {
   for (var i = 0; i < _parentFields.length; i++) {
