@@ -2905,8 +2905,12 @@ function CreateActionElement(val, ShouldAppend) {
     $("#action-timeline").append(actionElement);
   }
   else {
-    var actionElement
-    $('.action-placeholder').after(actionElement);
+    if ($('.ticket-action.pinned').length) {
+      $('.ticket-action.pinned').after(actionElement);
+    }
+    else {
+      $('.action-placeholder').after(actionElement);
+    }
   }
   return actionElement;
 };
@@ -3018,31 +3022,51 @@ function CreateTimeLineDelegates() {
     var parentLI = self.closest('li');
     var titleElement = $('.action-placeholder');
     var Action = parentLI.data().action;
+    var isPinned = parentLI.hasClass('pinned');
 
     parentLI.find(".action-option-items").hide();
     parentLI.find(".action-options-icon").fadeIn();
     if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
       $('a.ticket-action-pinned').addClass('hidden');
       top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-      top.Ts.Services.Tickets.SetActionPinned(_ticketID, Action.RefID, !Action.IsPinned,
+      top.Ts.Services.Tickets.SetActionPinned(_ticketID, Action.RefID, !isPinned,
       function (result) {
-        parentLI.data().action.IsPinned = result;
-        parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
-        var pinnedAction = $('.pinned');
-        var actionID = parseInt(pinnedAction.find('.ticket-action-number').text()) + 1;
+        if (result) {
+          Action.IsPinned = result;
+          //parentLI.data('action', Action);
+          parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
+          var pinnedAction = $('.pinned');
+          var actionID = parseInt(pinnedAction.find('.ticket-action-number').text()) + 1;
 
-        titleElement.after(parentLI.clone().addClass('pinned'));
-        parentLI.insertAfter(titleElement);
-        parentLI.remove();
+          titleElement.after(parentLI.clone().addClass('pinned'));
+          parentLI.insertAfter(titleElement);
+          parentLI.remove();
 
-        var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
-        if (InLineElement.length > 0) {
-          InLineElement.after(pinnedAction.clone().removeClass('pinned'));
+          var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
+          if (InLineElement.length > 0) {
+            InLineElement.after(pinnedAction.clone().removeClass('pinned'));
+          }
+          else {
+            titleElement.next().after(pinnedAction.clone().removeClass('pinned'));
+          }
+          pinnedAction.remove();
         }
         else {
-          titleElement.next().after(pinnedAction.clone().removeClass('pinned'));
+          parentLI.data().action.IsPinned = result;
+          parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
+
+          var actionID = parseInt(parentLI.find('.ticket-action-number').text()) + 1;
+
+          var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
+          if (InLineElement.length > 0) {
+            InLineElement.after(parentLI.clone().removeClass('pinned'));
+          }
+          else {
+            titleElement.next().after(parentLI.clone().removeClass('pinned'));
+          }
+          $('a.ticket-action-pinned').addClass('hidden');
+          parentLI.remove();
         }
-        pinnedAction.remove();
 
       }, function () {
         alert('There was an error editing this action.');
