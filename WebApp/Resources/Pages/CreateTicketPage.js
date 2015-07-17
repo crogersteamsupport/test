@@ -288,22 +288,30 @@ function SaveTicket() {
       if (isValid == true) {
         var info = new Object();
         info.Name = $('#ticket-title-input').val();
-        //TODO: Need to account for when field is not available due to ticket order. 
-        info.TicketTypeID = $('#ticket-type').val();
-        info.TicketStatusID = $('#ticket-status').val();
-        info.TicketSeverityID = $('#ticket-severity').val(); 
-        info.UserID = ($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
-        info.GroupID = ($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
+        info.TicketTypeID = ($('#ticket-type').length) ? $('#ticket-type').val() : '-1';//$('#ticket-type').val();
+        info.TicketStatusID = ($('#ticket-status').length) ? $('#ticket-status').val() : '-1';//$('#ticket-status').val();
+
+        if ($('#ticket-status').length) {
+          info.TicketStatusID = $('#ticket-status').val();
+        }
+        else {
+          var statuses = top.Ts.Cache.getTicketStatuses();
+          info.TicketStatusID = statuses[0].TicketStatusID;
+        }
+        
+        info.TicketSeverityID = ($('#ticket-severity').length) ? $('#ticket-severity').val() : '-1';//$('#ticket-severity').val(); 
+        info.UserID = ($('#ticket-assigned').length) ? $('#ticket-assigned').val() : '-1';//($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
+        info.GroupID = ($('#ticket-group').length) ? $('#ticket-group').val() : '-1';//($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
         var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
         info.DueDate = _dueDate;
 
-        info.CategoryID = $('#ticket-Category').val();
-        info.ProductID = ($('#ticket-Product').val() == '') ? '-1' : $('#ticket-Product').val();
-        info.ReportedID = ($('#ticket-Versions').val() == '') ? '-1' : $('#ticket-Versions').val();
-        info.ResolvedID = ($('#ticket-Resolved').val() == '') ? '-1' : $('#ticket-Resolved').val();
-        info.IsVisibleOnPortal = $('#ticket-visible').prop('checked')
-        info.IsKnowledgebase = $('#ticket-isKB').prop('checked');
-        info.KnowledgeBaseCategoryID = ($('#ticket-KB-Category').val() == '') ? '-1' : $('#ticket-KB-Category').val();
+        info.CategoryID = ($('#ticket-Category').length) ? $('#ticket-Category').val() : null;//$('#ticket-Category').val();
+        info.ProductID = ($('#ticket-Product').length) ? $('#ticket-Product').val() : '-1';//($('#ticket-Product').val() == '') ? '-1' : $('#ticket-Product').val();
+        info.ReportedID = ($('#ticket-Versions').length) ? $('#ticket-Versions').val() : '-1';//($('#ticket-Versions').val() == '') ? '-1' : $('#ticket-Versions').val();
+        info.ResolvedID = ($('#ticket-Resolved').length) ? $('#ticket-Resolved').val() : '-1';//($('#ticket-Resolved').val() == '') ? '-1' : $('#ticket-Resolved').val();
+        info.IsVisibleOnPortal = ($('#ticket-visible').length) ? $('#ticket-visible').prop('checked') : false;//$('#ticket-visible').prop('checked')
+        info.IsKnowledgebase = ($('#ticket-isKB').length) ? $('#ticket-isKB').prop('checked') : false;//$('#ticket-isKB').prop('checked');
+        info.KnowledgeBaseCategoryID = ($('#ticket-KB-Category').length) ? $('#ticket-KB-Category').val() : '-1'; //($('#ticket-KB-Category').val() == '') ? '-1' : $('#ticket-KB-Category').val();
         info.Description = tinyMCE.activeEditor.getContent();
         info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
 
