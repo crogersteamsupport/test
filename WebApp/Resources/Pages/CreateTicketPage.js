@@ -32,6 +32,8 @@ var sessionId;
 var tokurl;
 var publisher;
 
+//var defaultTemplateText = "";
+
 
 var getCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -286,6 +288,7 @@ function SaveTicket() {
       if (isValid == true) {
         var info = new Object();
         info.Name = $('#ticket-title-input').val();
+        //TODO: Need to account for when field is not available due to ticket order. 
         info.TicketTypeID = $('#ticket-type').val();
         info.TicketStatusID = $('#ticket-status').val();
         info.TicketSeverityID = $('#ticket-severity').val(); 
@@ -408,7 +411,7 @@ function SaveTicket() {
         if (chatID && chatID != null) {
           info.ChatID = chatID;
         }
-
+        debugger
         top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
           if (result == null) {
             alert('There was an error saving your ticket.  Please try again.');
@@ -1879,6 +1882,9 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     var option = $('<option>').text(optionValue).val(optionValue).appendTo(select);
     if (field.Value === options[i]) option.attr('selected', 'selected');
   }
+  
+  //appendTemplateText(options[0]);
+
   select.selectize({
     allowEmptyOption: true,
     onItemAdd: function (value, $item) {
