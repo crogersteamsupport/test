@@ -7,7 +7,7 @@
         }
         var editorOptions = {
             plugins: "paste link code textcolor image moxiemanager table " + resizePluginCode,
-            toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+            toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
             toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote | code | table",
             statusbar: true,
             gecko_spellcheck: true,
@@ -145,6 +145,46 @@
                             }
                         };
                         Dropbox.choose(options);
+                    }
+                });
+
+                ed.addButton('recordVideo', {
+                    title: 'Record video',
+                    //image: '../images/icons/Symbol_Record.png',
+                    icon: 'awesome fa fa-video-camera',
+                    onclick: function () {
+
+                        if (OT.checkSystemRequirements() == 1) {
+                            var dynamicPub = element.parent().find("#publisher");
+                            element.parent().find("#recordVideoContainer").show();
+                            dynamicPub.show();
+                            dynamicPub.attr("id", "tempContainer");
+                            dynamicPub.attr("width", "400px");
+                            dynamicPub.attr("height", "400px");
+
+                            if (dynamicPub.length == 0)
+                                dynamicPub = element.parent().find("#tempContainer");
+
+
+
+                            top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                                sessionId = resultID[0];
+                                token = resultID[1];
+                                session = OT.initSession(apiKey, sessionId);
+                                session.connect(token, function (error) {
+                                    publisher = OT.initPublisher(dynamicPub.attr('id'), {
+                                        insertMode: 'append',
+                                        width: '100%',
+                                        height: '100%'
+                                    });
+                                    session.publish(publisher);
+                                });
+                            });
+
+                        }
+                        else {
+                            alert("Your client does not support video recording.")
+                        }
                     }
                 });
 

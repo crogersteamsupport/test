@@ -10,13 +10,15 @@
 
         var listener = function () {
             try{
-                pasteCatcher.focus(); pasteCatcher.blur(); $('.ui-dialog').focus();
+                pasteCatcher.focus();
+                pasteCatcher.blur();
+                $('.ui-dialog').focus();
             } catch (e) { }
         };
 
         if (!window.Clipboard) {
             pasteCatcher = document.createElement("div");
-
+            pasteCatcher.style.visibility = "hidden";
             // Firefox allows images to be pasted into contenteditable elements
             pasteCatcher.setAttribute("contenteditable", "");
 
