@@ -74,27 +74,27 @@ $(document).ready(function () {
             .html(importFields[i].Description)
             .appendTo(li);
 
-          var formcontainer = $('<div>').addClass('form-horizontal').appendTo(li);
-          var groupContainer = $('<div>').addClass('form-group form-group-sm')
-                                  .appendTo(formcontainer)
-                                  .append($('<label>').addClass('col-sm-4 control-label select-label').text('Source Name:'));
-          var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
-          var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-          var input = $('<input>')
-            .addClass('form-control ticket-simple-input muted-placeholder col-sm-8')
-            .attr("placeholder", importFields[i].FieldName)
-            .val(importFields[i].SourceName)
-            .appendTo(inputGroupContainer)
+          //var formcontainer = $('<div>').addClass('form-horizontal').appendTo(li);
+          //var groupContainer = $('<div>').addClass('form-group form-group-sm')
+          //                        .appendTo(formcontainer)
+          //                        .append($('<label>').addClass('col-sm-4 control-label select-label').text('Source Name:'));
+          //var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
+          //var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
+          //var input = $('<input>')
+          //  .addClass('form-control ticket-simple-input muted-placeholder col-sm-8')
+          //  .attr("placeholder", importFields[i].FieldName)
+          //  .val(importFields[i].SourceName)
+          //  .appendTo(inputGroupContainer)
 
-          input.change(function (e) {
-            var value = input.val();
-            if (value != li.data('FieldName')) {
-              li.data('SourceName', value);
-            }
-            else {
-              li.data('SourceName', '');
-            }
-          });
+          //input.change(function (e) {
+          //  var value = input.val();
+          //  if (value != li.data('FieldName')) {
+          //    li.data('SourceName', value);
+          //  }
+          //  else {
+          //    li.data('SourceName', '');
+          //  }
+          //});
         }
       });
     }
