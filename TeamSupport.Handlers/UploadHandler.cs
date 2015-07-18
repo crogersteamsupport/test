@@ -122,12 +122,13 @@ namespace TeamSupport.Handlers
             switch (refType)
             {
               case ReferenceType.Imports:
-                Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
-                import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
-                import.FileName = fileName;
-                import.OrganizationID = TSAuthentication.OrganizationID;
-                import.Collection.Save();
-                result.Add(new UploadResult(fileName, files[i].ContentType, files[i].ContentLength, import.ImportID));
+                //Not saving import till user click on import button saving both imports and mappings
+                //Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
+                //import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
+                //import.FileName = fileName;
+                //import.OrganizationID = TSAuthentication.OrganizationID;
+                //import.Collection.Save();
+                result.Add(new UploadResult(fileName, files[i].ContentType, files[i].ContentLength));
                 break;
               default:
                 break;

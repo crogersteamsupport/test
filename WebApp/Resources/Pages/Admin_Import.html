@@ -103,28 +103,29 @@
                                 </select>
                             </div>
                         </form>
-
-                      <form class="import-upload"
-                            action="Upload/Actions/555"
-                            method="POST"
-                            enctype="multipart/form-data">
-                        <div id="drop">
-                          <h3>Drag a file here</h3>
-                          <div>Or, if you prefer</div>
-                          <button id="btnSelectFile" class="btn btn-primary">Select a file from your computer</button>
-                          <input class="hiddenfile" type="file" name="file[]" multiple>
-                        </div>
-                        <ul class="upload-queue"></ul>
-                      </form>
+                      <div id="importUpload">
+                        <form class="import-upload"
+                              action="Upload/Actions/555"
+                              method="POST"
+                              enctype="multipart/form-data">
+                          <div id="drop">
+                            <h3>Drag a file here</h3>
+                            <div>Or, if you prefer</div>
+                            <button id="btnSelectFile" class="btn btn-primary">Select a file from your computer</button>
+                            <input class="hiddenfile" type="file" name="file[]" multiple>
+                          </div>
+                          <ul class="upload-queue"></ul>
+                        </form>
 
                         <div class="import-new-action">
-                          <button id="btnCancel" class="btn btn-warning">Cancel</button>
-                          <button id="btnImport" class="btn btn-primary">Import</button>
+                          <button class="btn btn-warning btnCancel">Cancel</button>
+                          <button id="btnUpload" class="btn btn-primary">Upload</button>
                         </div>
+                      </div>
                     </div>
 
 
-                    <div class="row hidden import-fields">
+                    <div id="csvColumnsPanel" class="row hidden import-fields">
                         <div class="col-xs-6">
                             <div class="panel panel-primary field-panel">
                                 <div class="panel-heading">
@@ -210,7 +211,10 @@
                                 </div>
                             </div>
                         </div>
-
+                    </div>
+                    <div id="importButtons" class="import-new-action">
+                      <button class="btn btn-warning btnCancel">Cancel</button>
+                      <button id="btnImport" class="btn btn-primary">Import</button>
                     </div>
 
                 </div>

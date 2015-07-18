@@ -1,4 +1,5 @@
 ﻿var importPage = null;
+var _uploadedFileName = '';
 $(document).ready(function () {
     importPage = new ImportPage();
 
@@ -102,6 +103,9 @@ $(document).ready(function () {
       e.preventDefault();
       $('.import-section').addClass('hidden');
       $('#import-new').removeClass('hidden');
+      $('#importUpload').removeClass('hidden');
+      $('#csvColumnsPanel').addClass('hidden');
+      $('#importButtons').addClass('hidden');
       LoadFields($('#import-type').val());
     });
 
@@ -231,32 +235,113 @@ $(document).ready(function () {
       //data.context.find('.progress-bar').css('width', '100%');
       LoadImports(1);
       $('.upload-queue').empty();
-      $('.import-section').removeClass('hidden');
-      $('#import-new').addClass('hidden');
+      //No yet. This will be done once import button is pushed.
+      //$('.import-section').removeClass('hidden');
+      //$('#import-new').addClass('hidden');
+      $('#importUpload').addClass('hidden');
+      $('#csvColumnsPanel').removeClass('hidden');
+      $('#importButtons').removeClass('hidden');
     },
     done: function (e, data) {
-      var fields = [];
-      $('.available-field-list li').each(function (i, o) {
-        if ($(o).data('SourceName') != '') {
-          var field = new Object();
-          field.ImportFieldID = $(o).data('ImportFieldID');
-          field.SourceName = $(o).data('SourceName');
-          fields.push(field);
+      //var fields = [];
+      //$('.available-field-list li').each(function (i, o) {
+      //  if ($(o).data('SourceName') != '') {
+      //    var field = new Object();
+      //    field.ImportFieldID = $(o).data('ImportFieldID');
+      //    field.SourceName = $(o).data('SourceName');
+      //    fields.push(field);
+      //  }
+      //});
+      var result = JSON.parse(data.result);
+      //top.Ts.Services.Organizations.SaveImportFieldMaps(result[0].id, JSON.stringify(fields), function (importFields) {});
+      _uploadedFileName = result[0].name;
+      top.Ts.Services.Organizations.GetImportPanels(_uploadedFileName, $('#import-type').val(), function (panels) {
+        var fieldList = $('<select>')
+          .addClass('form-control');
+
+        var skippedOption = $('<option>')
+          .val(-1)
+          .text('Skipped')
+          .appendTo(fieldList);
+
+        panels = JSON.parse(panels);
+        for (i = 0; i < panels.ImportFields.length; i++) {
+          var option = $('<option>')
+            .val(panels.ImportFields[i].ImportFieldID)
+            .text(panels.ImportFields[i].FieldName)
+            .appendTo(fieldList);
+        }
+
+        $('#csvColumnsPanel').empty();
+        for (i = 0; i < panels.ImportFieldMap.length; i++) {
+          var panel = $('<div>')
+            .addClass('col-xs-6')
+            .appendTo($('#csvColumnsPanel'));
+
+          var panelDoc = $('<div>')
+            .addClass('panel panel-primary field-panel')
+            .appendTo(panel);
+
+          var panelHeading = $('<div>')
+            .addClass('panel-heading')
+            .appendTo(panelDoc);
+
+          var panelTitle = $('<h3>')
+            .addClass('panel-title')
+            .text(panels.ImportFieldMap[i].SourceName)
+            .appendTo(panelHeading);
+
+          var panelBody = $('<div>')
+            .addClass('panel-body')
+            .appendTo(panelDoc);
+
+          var panelForm = $('<form>')
+            .appendTo(panelBody);
+
+          var fieldListClone = fieldList.clone();
+
+          if (panels.ImportFieldMap[i].ImportFieldID != 0)
+          {
+            fieldListClone.val(panels.ImportFieldMap[i].ImportFieldID);
+          }
+          else
+          {
+            fieldListClone.find('option').filter(function () { return $(this).text() == panels.ImportFieldMap[i].SourceName; }).attr("selected", "selected");
+          }
+          fieldListClone.appendTo(panelForm);
+          panelTitle.data("MappedFieldName", fieldListClone.find(":selected").text());
+
+          fieldListClone.change(function () {
+            panelTitle.data("MappedFieldName", $(this).find(":selected").text());
+          });
+
+          var exampleValue = $('<div>')
+            .addClass('well well-sm')
+            .appendTo(panelForm);
+
+          var exampleValueLabel = $('<div>')
+            .addClass('text-muted')
+            .text('Value: ')
+            .appendTo(exampleValue);
+
+          var exampleValueContent = $('<div>')
+            .text(panels.ImportFieldMap[i].ExampleValue)
+            .appendTo(exampleValue);
         }
       });
-      var result = JSON.parse(data.result);
-      top.Ts.Services.Organizations.SaveImportFieldMaps(result[0].id, JSON.stringify(fields), function (importFields) {});
     }
   });
 
-  $("#btnCancel").click(function (e) {
+  $(".btnCancel").click(function (e) {
+    e.preventDefault();
     top.Ts.System.logAction('Import - Cancel Upload');
     $('.upload-queue').empty();
     $('.import-section').removeClass('hidden');
     $('#import-new').addClass('hidden');
   });
 
-  $('#btnImport').click(function (e) {
+  $('#btnUpload').click(function (e) {
+    e.preventDefault();
     top.Ts.System.logAction('Import - Upload Files');
     if ($('.upload-queue li').length > 0) {
       $('.upload-queue li').each(function (i, o) {
@@ -269,6 +354,26 @@ $(document).ready(function () {
     }
   });
 
+  $('#btnImport').click(function (e) {
+    e.preventDefault();
+    top.Ts.System.logAction('Import - Create import.');
+    var fields = [];
+    $('.panel-title').each(function (i, o) {
+      if ($(o).text() != 'Available Fields' && $(o).data('MappedFieldName') != 'Skipped' && $(o).data('MappedFieldName') != $(o).text()) {
+        var field = new Object();
+        field.ImportFieldName = $(o).data('MappedFieldName');
+        field.SourceName = $(o).text();
+        fields.push(field);
+      }
+    });
+    top.Ts.Services.Organizations.SaveImport(_uploadedFileName, $('#import-type').val(), JSON.stringify(fields), function (importFields) {
+      $('.import-section').removeClass('hidden');
+      $('#import-new').addClass('hidden');
+      $('#importUpload').addClass('hidden');
+      $('#csvColumnsPanel').removeClass('hidden');
+      $('#importButtons').removeClass('hidden');
+    });
+  });
 
 });
 

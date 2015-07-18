@@ -17,6 +17,7 @@ using dtSearch.Engine;
 using System.Net;
 using System.IO;
 using Newtonsoft.Json;
+using LumenWorks.Framework.IO.Csv;
 
 namespace TSWebServices
 {
@@ -1316,7 +1317,86 @@ namespace TSWebServices
         importMap.SourceName = field.SourceName;
       }
       importMaps.Save();
+    }
+
+    [WebMethod]
+    public void SaveImport(string fileName, int refType, string fieldsData)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+      ImportFieldsView importFields = new ImportFieldsView(loginUser);
+      importFields.LoadByRefType(refType);
+
+      Imports imports = new Imports(loginUser);
+      Import import = imports.AddNewImport();
+      import.RefType = (ReferenceType)refType;
+      import.FileName = fileName;
+      import.OrganizationID = TSAuthentication.OrganizationID;
+      import.Collection.Save();
+
+      List<ImportFieldMap> fields = JsonConvert.DeserializeObject<List<ImportFieldMap>>(fieldsData);
+      if (fields.Count > 0)
+      {
+        ImportMaps importMaps = new ImportMaps(loginUser);
+        foreach (ImportFieldMap field in fields)
+        {
+          ImportMap importMap = importMaps.AddNewImportMap();
+          importMap.ImportID = import.ImportID;
+          importMap.SourceName = field.SourceName;
+          foreach (ImportFieldsViewItem importField in importFields)
+          {
+            if (importField.FieldName.Trim().ToLower() == field.ImportFieldName.Trim().ToLower())
+            {
+              importMap.FieldID = importField.ImportFieldID;
+              break;
+            }
+          }
+        }
+        importMaps.Save();
+      }
+    }
+
+    [WebMethod]
+    public string GetImportPanels(string uploadedFileName, int refType)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+      ImportFieldsView importFieldsView = new ImportFieldsView(loginUser);
+      importFieldsView.LoadByRefType(refType);
+
+      ImportPanels result = new ImportPanels();
+      result.ImportFields = importFieldsView.GetImportFieldsViewItemProxies();
+
+      string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports), uploadedFileName);
+      using (CsvReader csv = new CsvReader(new StreamReader(csvFile), true))
+      {
+        string[] headers = csv.GetFieldHeaders();
+        result.ImportFieldMap = new ImportFieldMap[headers.Length];
+
+        while (csv.ReadNextRecord())
+        {
+          for(int i = 0; i < headers.Length; i++){
+            result.ImportFieldMap[i] = new ImportFieldMap();
+            result.ImportFieldMap[i].SourceName = headers[i];
+            result.ImportFieldMap[i].ExampleValue = csv[i];
+            if (!string.IsNullOrEmpty(headers[i].Trim()))
+            {
+              foreach (ImportFieldsViewItem field in importFieldsView)
+              {
+                if (field.SourceName != null && field.SourceName.Trim().ToLower() == headers[i].Trim().ToLower())
+                {
+                  result.ImportFieldMap[i].ImportFieldID = field.ImportFieldID;
+                  break;
+                }
+              }
+            }
+          }
+          break;
+        }
+      }
+      return JsonConvert.SerializeObject(result);
     }  
+  
   }
 
   [DataContract]
@@ -1342,5 +1422,20 @@ namespace TSWebServices
     public int ImportFieldID { get; set; }
     [DataMember]
     public string SourceName { get; set; }
+    [DataMember]
+    public string ExampleValue { get; set; }
+    [DataMember]
+    public string ImportFieldName { get; set; }
+
   }
+
+  [DataContract]
+  public class ImportPanels
+  {
+    [DataMember]
+    public ImportFieldsViewItemProxy[] ImportFields { get; set; }
+    [DataMember]
+    public ImportFieldMap[] ImportFieldMap { get; set; }
+  }
+
 }
