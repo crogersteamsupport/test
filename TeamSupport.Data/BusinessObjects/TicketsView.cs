@@ -432,6 +432,18 @@ namespace TeamSupport.Data
         return ticketsView[0];
     }
 
+    public void LoadUserTicketsByTicketId(int ticketId, int organizationId)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM UserTicketsView WHERE OrganizationID = @organizationId AND TicketID = @ticketId";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@organizationId", organizationId);
+        command.Parameters.AddWithValue("@ticketId", ticketId);
+        Fill(command);
+      }
+    }
+
     public void LoadByTicketNumber(int ticketNumber, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())

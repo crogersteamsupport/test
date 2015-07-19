@@ -58,6 +58,32 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public void ResetToUnreadOnSalesForceUpdate(int ticketID, List<int> userIds)
+    {
+      if (userIds != null && userIds.Count > 0)
+      {
+        string userIdsString = string.Join(",", userIds.Select(n => n.ToString()).ToArray());
+
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = @"UPDATE UserTicketStatuses
+SET
+	UserTicketStatuses.dateRead = Tickets.dateModified
+FROM
+	UserTicketStatuses
+	JOIN Tickets
+		ON UserTicketStatuses.ticketId = Tickets.ticketId
+WHERE
+	UserTicketStatuses.ticketId = @ticketId
+	AND UserTicketStatuses.userId IN ("+ userIdsString +")";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@ticketId", ticketID);
+          Fill(command);
+        }
+      }
+    }
+
   }
   
 }
