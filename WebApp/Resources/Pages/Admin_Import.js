@@ -2,158 +2,243 @@
 var _uploadedFileName = '';
 $(document).ready(function () {
     importPage = new ImportPage();
+});
 
-    LoadImports(1);
+function onShow() {
+    importPage.refresh();
+};
 
-    function LoadImports(start) {
-      showLoadingIndicator();
-      $('.results-empty').hide();
-      $('.results-done').hide();
+ImportPage = function () {
+  LoadImports(1);
 
-      if (start == 1)
-        $('#tblImports tbody').empty();
+  function LoadImports(start) {
+    showLoadingIndicator();
+    $('.results-empty').hide();
+    $('.results-done').hide();
 
-      top.Ts.Services.Organizations.LoadImports(start, function (imports) {
-        hideLoadingIndicator();
-        if (imports.length < 1) {
-          if (start == 1) {
-            $('.results-empty').show();
+    if (start == 1)
+      $('#tblImports tbody').empty();
+
+    top.Ts.Services.Organizations.LoadImports(start, function (imports) {
+      hideLoadingIndicator();
+      if (imports.length < 1) {
+        if (start == 1) {
+          $('.results-empty').show();
+        }
+        else {
+          $('.results-done').show();
+        }
+      } else {
+        for (var i = 0; i < imports.length; i++) {
+          var dateStarted = null;
+          if (imports[i].DateStarted == null) {
+            dateStarted = 'Not started';
           }
           else {
-            $('.results-done').show();
+            dateStarted = imports[i].DateStarted.toLocaleString();
           }
-        } else {
-          for (var i = 0; i < imports.length; i++) {
-            var dateStarted = null;
-            if (imports[i].DateStarted == null) {
-              dateStarted = 'Not started';
-            }
-            else {
-              dateStarted = imports[i].DateStarted.toLocaleString();
-            }
-            var status = 0;
-            if (imports[i].CompletedRows > 0) {
-              status = (imports[i].CompletedRows / imports[i].TotalRows) * 100;
-            }
+          var status = 0;
+          if (imports[i].CompletedRows > 0) {
+            status = (imports[i].CompletedRows / imports[i].TotalRows) * 100;
+          }
 
-            var tr = $('<tr>')
-                    .attr('id', imports[i].ImportID)
-                    .html('\
+          var tr = $('<tr>')
+                  .attr('id', imports[i].ImportID)
+                  .html('\
                     <td>' + imports[i].FileName + '</td>\
                     <td>' + imports[i].RefTypeString + '</td>\
                     <td>' + dateStarted + '</td>\
                     <td>' + status + '%</td>')
-                    .appendTo('#tblImports > tbody:last');
-          }
+                  .appendTo('#tblImports > tbody:last');
         }
-      });
-    }
-
-    function LoadFields(refType) {
-      top.Ts.Services.Organizations.LoadImportFields(refType, function (importFields) {
-        $('.available-field-list').empty();
-        for (var i = 0; i < importFields.length; i++) {
-          var li = $('<li>')
-            .data('ImportFieldID', importFields[i].ImportFieldID)
-            .data('FieldName', importFields[i].FieldName)
-            .data('SourceName', importFields[i].SourceName)
-            .appendTo('.available-field-list:last');
-
-          var firstRow = $('<div>')
-            .addClass('available-field-name')
-            .html(importFields[i].FieldName)
-            .appendTo(li);
-
-          var typeAndSizeSpan = $('<span>')
-            .addClass('text-muted available-field-type pull-right')
-            .html(importFields[i].DataType + ', ' + importFields[i].Size + ' bytes')
-            .appendTo(firstRow);
-
-          var secondRow = $('<div>')
-            .addClass('available-field-desc')
-            .html(importFields[i].Description)
-            .appendTo(li);
-
-          //var formcontainer = $('<div>').addClass('form-horizontal').appendTo(li);
-          //var groupContainer = $('<div>').addClass('form-group form-group-sm')
-          //                        .appendTo(formcontainer)
-          //                        .append($('<label>').addClass('col-sm-4 control-label select-label').text('Source Name:'));
-          //var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
-          //var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-          //var input = $('<input>')
-          //  .addClass('form-control ticket-simple-input muted-placeholder col-sm-8')
-          //  .attr("placeholder", importFields[i].FieldName)
-          //  .val(importFields[i].SourceName)
-          //  .appendTo(inputGroupContainer)
-
-          //input.change(function (e) {
-          //  var value = input.val();
-          //  if (value != li.data('FieldName')) {
-          //    li.data('SourceName', value);
-          //  }
-          //  else {
-          //    li.data('SourceName', '');
-          //  }
-          //});
-        }
-      });
-    }
-
-    $('.action-new').click(function (e) {
-      e.preventDefault();
-      $('.import-section').addClass('hidden');
-      $('#import-new').removeClass('hidden');
-      $('#importUpload').removeClass('hidden');
-      $('#csvColumnsPanel').addClass('hidden');
-      $('#importButtons').addClass('hidden');
-      LoadFields($('#import-type').val());
-    });
-
-    $('#import-type').change(function () {
-      LoadFields($('#import-type').val());
-    });
-
-    var _isLoading = false;
-    $('.frame-container').bind('scroll', function () {
-      if (_isLoading == true) return;
-      if ($('.results-done').is(':visible')) return;
-
-      if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-        LoadImports($('#tblImports > tbody > tr').length);
-      }
-
-      if ($(this).scrollTop() > 100) {
-        $('.scrollup').fadeIn();
-      } else {
-        $('.scrollup').fadeOut();
       }
     });
+  }
 
-    $('.scrollup').click(function () {
-      $('.frame-container').animate({
-        scrollTop: 0
-      }, 600);
-      return false;
+  function LoadFields(refType) {
+    top.Ts.Services.Organizations.LoadImportFields(refType, function (importFields) {
+      $('.available-field-list').empty();
+      for (var i = 0; i < importFields.length; i++) {
+        var li = $('<li>')
+          .data('ImportFieldID', importFields[i].ImportFieldID)
+          .data('FieldName', importFields[i].FieldName)
+          .data('SourceName', importFields[i].SourceName)
+          .appendTo('.available-field-list:last');
+
+        var firstRow = $('<div>')
+          .addClass('available-field-name')
+          .html(importFields[i].FieldName)
+          .appendTo(li);
+
+        var typeAndSizeSpan = $('<span>')
+          .addClass('text-muted available-field-type pull-right')
+          .html(importFields[i].DataType + ', ' + importFields[i].Size + ' bytes')
+          .appendTo(firstRow);
+
+        var secondRow = $('<div>')
+          .addClass('available-field-desc')
+          .html(importFields[i].Description)
+          .appendTo(li);
+
+        //var formcontainer = $('<div>').addClass('form-horizontal').appendTo(li);
+        //var groupContainer = $('<div>').addClass('form-group form-group-sm')
+        //                        .appendTo(formcontainer)
+        //                        .append($('<label>').addClass('col-sm-4 control-label select-label').text('Source Name:'));
+        //var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
+        //var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
+        //var input = $('<input>')
+        //  .addClass('form-control ticket-simple-input muted-placeholder col-sm-8')
+        //  .attr("placeholder", importFields[i].FieldName)
+        //  .val(importFields[i].SourceName)
+        //  .appendTo(inputGroupContainer)
+
+        //input.change(function (e) {
+        //  var value = input.val();
+        //  if (value != li.data('FieldName')) {
+        //    li.data('SourceName', value);
+        //  }
+        //  else {
+        //    li.data('SourceName', '');
+        //  }
+        //});
+      }
     });
+  }
 
-    function showLoadingIndicator() {
-      _isLoading = true;
-      $('.results-loading').show();
+  $('.action-new').click(function (e) {
+    e.preventDefault();
+    $('.import-section').addClass('hidden');
+    $('#import-new').removeClass('hidden');
+    $('#importUpload').removeClass('hidden');
+    $('#csvColumnsPanel').addClass('hidden');
+    $('#importButtons').addClass('hidden');
+    LoadFields($('#import-type').val());
+  });
+
+  $('#import-type').change(function () {
+    LoadFields($('#import-type').val());
+    if ($('#csvColumnsPanel').is(":visible"))
+    {
+      getImportPanels();
+    }
+  });
+
+  var _isLoading = false;
+  $('.frame-container').bind('scroll', function () {
+    if (_isLoading == true) return;
+    if ($('.results-done').is(':visible')) return;
+
+    if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+      LoadImports($('#tblImports > tbody > tr').length);
     }
 
-    function hideLoadingIndicator() {
-      _isLoading = false;
-      $('.results-loading').hide();
+    if ($(this).scrollTop() > 100) {
+      $('.scrollup').fadeIn();
+    } else {
+      $('.scrollup').fadeOut();
     }
+  });
 
-    $('#btnSelectFile').click(function (e) {
-      // Simulate a click on the file input button
-      // to show the file browser dialog
-      e.preventDefault();
-      $(this).parent().find('input').click();
+  $('.scrollup').click(function () {
+    $('.frame-container').animate({
+      scrollTop: 0
+    }, 600);
+    return false;
+  });
+
+  function showLoadingIndicator() {
+    _isLoading = true;
+    $('.results-loading').show();
+  }
+
+  function hideLoadingIndicator() {
+    _isLoading = false;
+    $('.results-loading').hide();
+  }
+
+  function getImportPanels() {
+    top.Ts.Services.Organizations.GetImportPanels(_uploadedFileName, $('#import-type').val(), function (panels) {
+      var fieldList = $('<select>')
+        .addClass('form-control');
+
+      var skippedOption = $('<option>')
+        .val(-1)
+        .text('Skipped')
+        .appendTo(fieldList);
+
+      panels = JSON.parse(panels);
+      for (i = 0; i < panels.ImportFields.length; i++) {
+        var option = $('<option>')
+          .val(panels.ImportFields[i].ImportFieldID)
+          .text(panels.ImportFields[i].FieldName)
+          .appendTo(fieldList);
+      }
+
+      $('#csvColumnsPanel').empty();
+      for (i = 0; i < panels.ImportFieldMap.length; i++) {
+        var panel = $('<div>')
+          .addClass('col-xs-6')
+          .appendTo($('#csvColumnsPanel'));
+
+        var panelDoc = $('<div>')
+          .addClass('panel panel-primary field-panel')
+          .appendTo(panel);
+
+        var panelHeading = $('<div>')
+          .addClass('panel-heading')
+          .appendTo(panelDoc);
+
+        var panelTitle = $('<h3>')
+          .addClass('panel-title')
+          .text(panels.ImportFieldMap[i].SourceName)
+          .appendTo(panelHeading);
+
+        var panelBody = $('<div>')
+          .addClass('panel-body')
+          .appendTo(panelDoc);
+
+        var panelForm = $('<form>')
+          .appendTo(panelBody);
+
+        var fieldListClone = fieldList.clone();
+
+        if (panels.ImportFieldMap[i].ImportFieldID != 0) {
+          fieldListClone.val(panels.ImportFieldMap[i].ImportFieldID);
+        }
+        else {
+          fieldListClone.find('option').filter(function () { return $(this).text() == panels.ImportFieldMap[i].SourceName; }).attr("selected", "selected");
+        }
+        fieldListClone.appendTo(panelForm);
+        panelTitle.data("MappedFieldName", fieldListClone.find(":selected").text());
+
+        fieldListClone.change(function () {
+          panelTitle.data("MappedFieldName", $(this).find(":selected").text());
+        });
+
+        var exampleValue = $('<div>')
+          .addClass('well well-sm')
+          .appendTo(panelForm);
+
+        var exampleValueLabel = $('<div>')
+          .addClass('text-muted')
+          .text('Value: ')
+          .appendTo(exampleValue);
+
+        var exampleValueContent = $('<div>')
+          .text(panels.ImportFieldMap[i].ExampleValue)
+          .appendTo(exampleValue);
+      }
     });
+  }
 
-    $('.import-upload').fileupload({
+  $('#btnSelectFile').click(function (e) {
+    // Simulate a click on the file input button
+    // to show the file browser dialog
+    e.preventDefault();
+    $(this).parent().find('input').click();
+  });
+
+  $('.import-upload').fileupload({
     namespace: 'import_file',
     dropZone: $('.import-upload'),
     add: function (e, data) {
@@ -255,80 +340,7 @@ $(document).ready(function () {
       var result = JSON.parse(data.result);
       //top.Ts.Services.Organizations.SaveImportFieldMaps(result[0].id, JSON.stringify(fields), function (importFields) {});
       _uploadedFileName = result[0].name;
-      top.Ts.Services.Organizations.GetImportPanels(_uploadedFileName, $('#import-type').val(), function (panels) {
-        var fieldList = $('<select>')
-          .addClass('form-control');
-
-        var skippedOption = $('<option>')
-          .val(-1)
-          .text('Skipped')
-          .appendTo(fieldList);
-
-        panels = JSON.parse(panels);
-        for (i = 0; i < panels.ImportFields.length; i++) {
-          var option = $('<option>')
-            .val(panels.ImportFields[i].ImportFieldID)
-            .text(panels.ImportFields[i].FieldName)
-            .appendTo(fieldList);
-        }
-
-        $('#csvColumnsPanel').empty();
-        for (i = 0; i < panels.ImportFieldMap.length; i++) {
-          var panel = $('<div>')
-            .addClass('col-xs-6')
-            .appendTo($('#csvColumnsPanel'));
-
-          var panelDoc = $('<div>')
-            .addClass('panel panel-primary field-panel')
-            .appendTo(panel);
-
-          var panelHeading = $('<div>')
-            .addClass('panel-heading')
-            .appendTo(panelDoc);
-
-          var panelTitle = $('<h3>')
-            .addClass('panel-title')
-            .text(panels.ImportFieldMap[i].SourceName)
-            .appendTo(panelHeading);
-
-          var panelBody = $('<div>')
-            .addClass('panel-body')
-            .appendTo(panelDoc);
-
-          var panelForm = $('<form>')
-            .appendTo(panelBody);
-
-          var fieldListClone = fieldList.clone();
-
-          if (panels.ImportFieldMap[i].ImportFieldID != 0)
-          {
-            fieldListClone.val(panels.ImportFieldMap[i].ImportFieldID);
-          }
-          else
-          {
-            fieldListClone.find('option').filter(function () { return $(this).text() == panels.ImportFieldMap[i].SourceName; }).attr("selected", "selected");
-          }
-          fieldListClone.appendTo(panelForm);
-          panelTitle.data("MappedFieldName", fieldListClone.find(":selected").text());
-
-          fieldListClone.change(function () {
-            panelTitle.data("MappedFieldName", $(this).find(":selected").text());
-          });
-
-          var exampleValue = $('<div>')
-            .addClass('well well-sm')
-            .appendTo(panelForm);
-
-          var exampleValueLabel = $('<div>')
-            .addClass('text-muted')
-            .text('Value: ')
-            .appendTo(exampleValue);
-
-          var exampleValueContent = $('<div>')
-            .text(panels.ImportFieldMap[i].ExampleValue)
-            .appendTo(exampleValue);
-        }
-      });
+      getImportPanels();
     }
   });
 
@@ -372,15 +384,9 @@ $(document).ready(function () {
       $('#importUpload').addClass('hidden');
       $('#csvColumnsPanel').removeClass('hidden');
       $('#importButtons').removeClass('hidden');
+      location.reload();
     });
   });
 
-});
-
-function onShow() {
-    importPage.refresh();
-};
-
-ImportPage = function () {
 }
 
