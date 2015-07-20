@@ -25,7 +25,7 @@
             // We can hide the element and append it to the body,
             pasteCatcher.style.opacity = 0;
             document.body.appendChild(pasteCatcher);
-
+            pasteCatcher.style.visibility = "initial";
             // as long as we make sure it is always in focus
             //pasteCatcher.focus();
             //document.getElementById("dialog-paste-imageID").addEventListener("click", listener);
