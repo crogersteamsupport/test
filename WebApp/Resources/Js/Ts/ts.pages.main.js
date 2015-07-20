@@ -1831,7 +1831,7 @@ Ts.Pages.Main.prototype = {
             tab.remove();
         }
     },
-    openNewContact: function (contactID, orgID) {alert('open contact')
+    openNewContact: function (contactID, orgID) {
         var query = "?user=" + contactID;
         top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
             this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
