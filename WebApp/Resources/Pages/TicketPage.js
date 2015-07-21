@@ -1258,10 +1258,13 @@ function SetupCustomerSection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getTicketCustomers(query, callback)
       },
+      delimiter: null,
       initData: true,
-      preload: true,
+      preload: false,
       onLoad: function () {
         if (this.settings.initData === true) {
           this.settings.initData = false;
@@ -1302,6 +1305,14 @@ function SetupCustomerSection() {
       },
       plugins: {
         'sticky_placeholder': {}
+      },
+      score: function (search)
+      {
+        return function (option)
+        {
+          return 1;
+          //return 0;
+        }
       },
       render: {
         item: function (item, escape) {
