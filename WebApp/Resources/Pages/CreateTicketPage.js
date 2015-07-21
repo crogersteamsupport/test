@@ -941,9 +941,15 @@ function SetupCustomerSection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getCustomers(query, callback)
       },
-      preload: true,
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
+      },
       create: function (input, callback) {
         $('#NewCustomerModal').modal('show');
         callback(null);
@@ -1235,7 +1241,14 @@ function SetupInventorySection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getAssets(query, callback)
+      },
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
       },
       onItemAdd: function (value, $item) {
         AddInventory(value);
@@ -1269,8 +1282,11 @@ function SetupUserQueuesSection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getUsers(query, callback)
       },
+      score: function (search) {return function (option) {return 1;}},
       onItemAdd: function (value, $item) {
         var item = new Object();
         item.name = $item.text();
@@ -1304,8 +1320,11 @@ function SetupSubscribedUsersSection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getUsers(query, callback)
       },
+      score: function (search) { return function (option) { return 1; } },
       onItemAdd: function (value, $item) {
         var item = new Object();
         item.name = $item.text();
@@ -1341,11 +1360,14 @@ function SetupRemindersSection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
           callback(result);
         });
 
       },
+      score: function (search) { return function (option) { return 1; } },
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
       },
@@ -1385,7 +1407,14 @@ function SetupAssociatedTicketsSection() {
       searchField: 'label',
       loadThrottle: null,
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getRelated(query, callback)
+      },
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
       },
       onItemAdd: function (value, $item) {
         $('#AssociateTicketModal').data('ticketid', value).modal('show');

@@ -1311,7 +1311,6 @@ function SetupCustomerSection() {
         return function (option)
         {
           return 1;
-          //return 0;
         }
       },
       render: {
@@ -1337,7 +1336,14 @@ function SetupCustomerSection() {
     labelField: 'label',
     searchField: 'label',
     load: function (query, callback) {
+      this.clearOptions();        // clear the data
+      this.renderCache = {};      // clear the html template cache
       getCompany(query, callback)
+    },
+    score: function (search) {
+      return function (option) {
+        return 1;
+      }
     },
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
@@ -1734,7 +1740,14 @@ function SetupInventorySection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getAssets(query, callback)
+      },
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
       },
       onItemAdd: function (value, $item) {
         top.Ts.Services.Tickets.AddTicketAsset(_ticketID, value, function (assets) {
@@ -1790,7 +1803,14 @@ function SetupUserQueuesSection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getUsers(query, callback)
+      },
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
       },
       onItemAdd: function (value, $item) {
         top.Ts.Services.Tickets.SetQueue(_ticketID, true, value, function (queues) {
@@ -1846,7 +1866,14 @@ function SetupSubscribedUsersSection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getUsers(query, callback)
+      },
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
       },
       onItemAdd: function (value, $item) {
         top.Ts.Services.Tickets.SetSubscribed(_ticketID, true, value, function (subscribers) {
@@ -1901,7 +1928,14 @@ function SetupAssociatedTicketsSection() {
       searchField: 'label',
       loadThrottle: null,
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         getRelated(query, callback)
+      },
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
       },
       onItemAdd: function (value, $item) {
         $('#AssociateTicketModal').data('ticketid', value).modal('show');
@@ -1986,9 +2020,16 @@ function SetupRemindersSection() {
       labelField: 'label',
       searchField: 'label',
       load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
         top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
           callback(result);
         });
+      },
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
       },
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
