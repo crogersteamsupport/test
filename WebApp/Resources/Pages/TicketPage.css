@@ -27,6 +27,13 @@
     }
     .popover-content dt { width: 35%; }
     .popover-content dd { width: 60%; }
+    blockquote {
+    background-color: #E3EEFC;
+    border: 1px solid #92B4DE;
+    margin: 1em 0;
+    padding: .5em .5em;
+    font-family: courier;
+  }
 
     .ts-loading {
       background-color: transparent;
