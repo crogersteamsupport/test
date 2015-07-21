@@ -60,7 +60,12 @@ namespace TeamSupport.Data
      ProductFamilies = 44,
      CustomFieldPickList =45,
       UserProducts = 46,
-    Imports = 47
+    Imports = 47,
+    //For import use:
+    CompanyAddresses = 48,
+    CompanyPhoneNumbers = 49,
+    ContactAddresses = 50,
+    ContactPhoneNumbers = 51
   };
 
   public enum SlaViolationType

@@ -33,12 +33,18 @@ namespace TeamSupport.ServiceLibrary
       {
         if (!imports.IsEmpty)
         {
+          string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
+          logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
+          _importLog = new ImportLog(logPath, imports[0].ImportID);
+          _importLog.Write("Importing importID: " + imports[0].ImportID.ToString());
+
           ProcessImport(imports[0]);
         }
         UpdateHealth();
       }
       catch (Exception ex)
       {
+        _importLog.Write(ex.Message);
         Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "ImportProcessor"); 
       }
@@ -65,12 +71,18 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteEvent("***********************************************************************************");
       _importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, import.OrganizationID, null);
 
-
       //string csvFile = "U:\\Development\\Imports\\TestFiles\test.csv"; // Path.Combine(path, import.FileName);
       string csvFile = Path.Combine(AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports), import.FileName);
       _organizationID = import.OrganizationID;
 
-      import.TotalRows = GetTotalRows(csvFile);
+      try
+      {
+        import.TotalRows = GetTotalRows(csvFile);
+      }
+      catch (Exception ex)
+      {
+        _importLog.Write(ex.Message);
+      }
       import.CompletedRows = 0;
       import.IsRunning = true;
       import.DateStarted = DateTime.UtcNow;
@@ -78,11 +90,6 @@ namespace TeamSupport.ServiceLibrary
 
       _map = new ImportFieldsView(_importUser);
       _map.LoadByImportID(import.ImportID);
-
-      string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
-      logPath = Path.Combine(logPath, import.OrganizationID.ToString());
-      _importLog = new ImportLog(logPath, import.ImportID);
-      _importLog.Write("Importing importID: " + import.ImportID.ToString());
 
       using (_csv = new CsvReader(new StreamReader(csvFile), true))
       {
@@ -98,8 +105,20 @@ namespace TeamSupport.ServiceLibrary
           case ReferenceType.Organizations:
             ImportCompanies(import);
             break;
+          case ReferenceType.CompanyAddresses:
+            ImportAddresses(import, ReferenceType.Organizations);
+            break;
+          case ReferenceType.CompanyPhoneNumbers:
+            ImportPhoneNumbers(import, ReferenceType.Organizations);
+            break;
           case ReferenceType.Contacts:
             ImportContacts(import);
+            break;
+          case ReferenceType.ContactAddresses:
+            ImportAddresses(import, ReferenceType.Contacts);
+            break;
+          case ReferenceType.ContactPhoneNumbers:
+            ImportPhoneNumbers(import, ReferenceType.Contacts);
             break;
           case ReferenceType.Tickets:
             ImportTickets(import);
@@ -781,6 +800,10 @@ namespace TeamSupport.ServiceLibrary
           existingCompany.Save();
           _importLog.Write("CompanyID " + company.OrganizationID.ToString() + " was updated.");
         }
+        else
+        {
+          _importLog.Write("Company " + company.Name + " was added to import set.");
+        }
         count++;
 
         if (count % BULK_LIMIT == 0)
@@ -788,11 +811,12 @@ namespace TeamSupport.ServiceLibrary
           companies.BulkSave();
           companies = new Organizations(_importUser);
           UpdateImportCount(import, count);
+          _importLog.Write("Import set with " + count.ToString() + " companies inserted in database.");
         }
       }
       companies.BulkSave();
       UpdateImportCount(import, count);
-      _importLog.Write(count.ToString() + " companies imported.");
+      _importLog.Write("Import set with " + count.ToString() + " companies inserted in database.");
     }
 
     private void ImportContacts(Import import)
@@ -1024,6 +1048,575 @@ namespace TeamSupport.ServiceLibrary
       users.BulkSave();
       UpdateImportCount(import, count);
       _importLog.Write(count.ToString() + " contacts imported.");
+    }
+
+    private void ImportAddresses(Import import, ReferenceType addressReferenceType)
+    {
+      SortedList<string, int> userList = GetUserList();
+      SortedList<string, int> companyList = GetCompanyList();
+      SortedList<string, int> contactList = null;
+      if (addressReferenceType == ReferenceType.Contacts)
+      {
+        contactList = GetContactList();
+      }
+
+      Addresses addresses = new Addresses(_importUser);
+      int count = 0;
+      while (_csv.ReadNextRecord())
+      {
+        long index = _csv.CurrentRecordIndex + 1;
+        DateTime now = DateTime.UtcNow;
+        Addresses newAddresses = new Addresses(_importUser);
+        Address newAddress = newAddresses.AddNewAddress();
+        newAddress.RefType = addressReferenceType;
+
+        DateTime? dateCreated = ReadDateNull("DateCreated");
+        if (dateCreated != null)
+        {
+          newAddress.DateCreated = (DateTime)dateCreated;
+        }
+
+        int creatorID = -2;
+        if (Int32.TryParse(ReadString("CreatorID"), out creatorID))
+        {
+          if (!userList.ContainsValue(creatorID))
+          {
+            creatorID = -2;
+          }
+        }
+        newAddress.CreatorID = creatorID;
+        newAddress.ModifierID = -2;
+
+        string companyName = ReadString("CompanyName");
+        int orgID;
+        if (!companyList.TryGetValue(companyName.Replace(" ", string.Empty), out orgID))
+        {
+          Organizations newCompanies = new Organizations(_importUser);
+          Organization newCompany = newCompanies.AddNewOrganization();
+          newCompany.Name = companyName;
+          newCompany.ParentID = _organizationID;
+          newCompany.IsActive = true;
+          newCompany.ExtraStorageUnits = 0;
+          newCompany.IsCustomerFree = false;
+          newCompany.PortalSeats = 0;
+          newCompany.PrimaryUserID = null;
+          newCompany.ProductType = ProductType.Express;
+          newCompany.UserSeats = 0;
+          newCompany.NeedsIndexing = true;
+          newCompany.SystemEmailID = Guid.NewGuid();
+          newCompany.WebServiceID = Guid.NewGuid();
+          if (dateCreated != null)
+          {
+            newCompany.DateCreated = (DateTime)dateCreated;
+          }
+          newCompany.CreatorID = creatorID;
+          newCompany.ModifierID = -2;
+          newCompanies.Save();
+          orgID = newCompany.OrganizationID;
+          companyList.Add(companyName.Replace(" ", string.Empty), orgID);
+        }
+
+        switch (addressReferenceType)
+        {
+          case ReferenceType.Organizations:
+            newAddress.RefID = orgID;
+            break;
+          case ReferenceType.Contacts:
+            string contactEmail = ReadString("ContactEmail");
+            int contactID;
+            string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
+            if (!contactList.TryGetValue(searchTerm, out contactID))
+            {
+              string firstName = ReadString("FirstName");
+              string lastName = ReadString("LastName");
+              if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
+              {
+                Users newContacts = new Users(_importUser);
+                User newContact = newContacts.AddNewUser();
+                newContact.FirstName = firstName;
+                newContact.LastName = lastName;
+                newContact.Email = contactEmail;
+                newContact.OrganizationID = orgID;
+                newContact.ActivatedOn = now;
+                newContact.CryptedPassword = "";
+                newContact.DeactivatedOn = null;
+                newContact.InOffice = false;
+                newContact.InOfficeComment = "";
+                newContact.IsFinanceAdmin = false;
+                newContact.IsPasswordExpired = true;
+                newContact.IsSystemAdmin = false;
+                newContact.LastActivity = now;
+                newContact.LastLogin = now;
+                newContact.NeedsIndexing = true;
+                newContact.PrimaryGroupID = null;
+                if (dateCreated != null)
+                {
+                  newContact.DateCreated = (DateTime)dateCreated;
+                }
+                newContact.CreatorID = creatorID;
+                newContact.ModifierID = -2;
+                newContacts.Save();
+                contactID = newContact.UserID;
+                contactList.Add(searchTerm, contactID);
+              }
+              else
+              {
+                _importLog.Write("Address in row " + index.ToString() + " could not be added as contact does not exists and either first or last name are missing.");
+                continue;
+              }
+            }
+            newAddress.RefID = contactID;
+            break;
+        }
+
+        newAddress.Description = ReadString("AddressDescription");
+        newAddress.Addr1 = ReadString("Addr1");
+        newAddress.Addr2 = ReadString("Addr2");
+        newAddress.Addr3 = ReadString("Addr3");
+        newAddress.City = ReadString("City");
+        newAddress.State = ReadString("State");
+        newAddress.Zip = ReadString("Zip");
+        newAddress.Country = ReadString("Country");
+        newAddress.Comment = ReadString("Comment");
+
+        Addresses existingAddresses = new Addresses(_importUser);
+        existingAddresses.LoadByID(newAddress.RefID, addressReferenceType);
+        bool alreadyExists = false;
+        foreach (Address existingAddress in existingAddresses)
+        {
+          if (
+            newAddress.Description.Replace(" ", string.Empty).ToLower() == existingAddress.Description.Replace(" ", string.Empty).ToLower() 
+            && newAddress.Addr1.Replace(" ", string.Empty).ToLower() == existingAddress.Addr1.Replace(" ", string.Empty).ToLower()
+            && newAddress.Addr2.Replace(" ", string.Empty).ToLower() == existingAddress.Addr2.Replace(" ", string.Empty).ToLower()
+            && newAddress.Addr3.Replace(" ", string.Empty).ToLower() == existingAddress.Addr3.Replace(" ", string.Empty).ToLower()
+            && newAddress.City.Replace(" ", string.Empty).ToLower() == existingAddress.City.Replace(" ", string.Empty).ToLower()
+            && newAddress.State.Replace(" ", string.Empty).ToLower() == existingAddress.State.Replace(" ", string.Empty).ToLower()
+            && newAddress.Zip.Replace(" ", string.Empty).ToLower() == existingAddress.Zip.Replace(" ", string.Empty).ToLower()
+            && newAddress.Country.Replace(" ", string.Empty).ToLower() == existingAddress.Country.Replace(" ", string.Empty).ToLower()
+            && newAddress.Comment.Replace(" ", string.Empty).ToLower() == existingAddress.Comment.Replace(" ", string.Empty).ToLower())
+          {
+            alreadyExists = true;
+            break;
+          }
+        }
+
+        if (!alreadyExists)
+        {
+          Address address = addresses.AddNewAddress();
+          address.RefType = newAddress.RefType;
+          address.DateCreated = newAddress.DateCreated;
+          address.CreatorID = newAddress.CreatorID;
+          address.ModifierID = newAddress.ModifierID;
+          address.RefID = newAddress.RefID;
+          address.Description = newAddress.Description;
+          address.Addr1 = newAddress.Addr1;
+          address.Addr2 = newAddress.Addr2;
+          address.Addr3 = newAddress.Addr3;
+          address.City = newAddress.City;
+          address.State = newAddress.State;
+          address.Zip = newAddress.Zip;
+          address.Country = newAddress.Country;
+          address.Comment = newAddress.Comment;
+          _importLog.Write("Address in row " + index.ToString() + " was added to addresses set.");
+        }
+        else
+        {
+          _importLog.Write("Address in row " + index.ToString() + " already exists and was not added to addresses set.");
+        }
+        count++;
+
+        if (count % BULK_LIMIT == 0)
+        {
+          addresses.BulkSave();
+          addresses = new Addresses(_importUser);
+          UpdateImportCount(import, count);
+          _importLog.Write("Import set with " + count.ToString() + " addresses inserted in database.");
+        }
+      }
+      addresses.BulkSave();
+      UpdateImportCount(import, count);
+      _importLog.Write("Import set with " + count.ToString() + " addresses inserted in database.");
+    }
+
+    private void ImportPhoneNumbers(Import import, ReferenceType phoneNumberReferenceType)
+    {
+      SortedList<string, int> userList = GetUserList();
+      SortedList<string, int> companyList = GetCompanyList();
+      SortedList<string, int> contactList = null;
+      if (phoneNumberReferenceType == ReferenceType.Contacts)
+      {
+        contactList = GetContactList();
+      }
+
+      PhoneTypes phoneTypes = new PhoneTypes(_importUser);
+      phoneTypes.LoadByOrganizationID(_organizationID);
+
+      PhoneNumbers phoneNumbers = new PhoneNumbers(_importUser);
+      int count = 0;
+      while (_csv.ReadNextRecord())
+      {
+        long index = _csv.CurrentRecordIndex + 1;
+        DateTime now = DateTime.UtcNow;
+        PhoneNumbers newPhoneNumbers = new PhoneNumbers(_importUser);
+        PhoneNumber newPhoneNumber = newPhoneNumbers.AddNewPhoneNumber();
+        PhoneNumber newPhoneNumber1 = newPhoneNumbers.AddNewPhoneNumber();
+        PhoneNumber newPhoneNumber2 = newPhoneNumbers.AddNewPhoneNumber();
+        PhoneNumber newPhoneNumber3 = newPhoneNumbers.AddNewPhoneNumber();
+        newPhoneNumber.RefType = phoneNumberReferenceType;
+        newPhoneNumber1.RefType = phoneNumberReferenceType;
+        newPhoneNumber2.RefType = phoneNumberReferenceType;
+        newPhoneNumber3.RefType = phoneNumberReferenceType;
+
+        DateTime? dateCreated = ReadDateNull("DateCreated");
+        if (dateCreated != null)
+        {
+          newPhoneNumber.DateCreated = (DateTime)dateCreated;
+          newPhoneNumber1.DateCreated = (DateTime)dateCreated;
+          newPhoneNumber2.DateCreated = (DateTime)dateCreated;
+          newPhoneNumber3.DateCreated = (DateTime)dateCreated;
+        }
+
+        int creatorID = -2;
+        if (Int32.TryParse(ReadString("CreatorID"), out creatorID))
+        {
+          if (!userList.ContainsValue(creatorID))
+          {
+            creatorID = -2;
+          }
+        }
+        newPhoneNumber.CreatorID = creatorID;
+        newPhoneNumber1.CreatorID = creatorID;
+        newPhoneNumber2.CreatorID = creatorID;
+        newPhoneNumber3.CreatorID = creatorID;
+        
+        newPhoneNumber.ModifierID = -2;
+        newPhoneNumber1.ModifierID = -2;
+        newPhoneNumber2.ModifierID = -2;
+        newPhoneNumber3.ModifierID = -2;
+
+        string companyName = ReadString("CompanyName");
+        int orgID;
+        if (!companyList.TryGetValue(companyName.Replace(" ", string.Empty), out orgID))
+        {
+          Organizations newCompanies = new Organizations(_importUser);
+          Organization newCompany = newCompanies.AddNewOrganization();
+          newCompany.Name = companyName;
+          newCompany.ParentID = _organizationID;
+          newCompany.IsActive = true;
+          newCompany.ExtraStorageUnits = 0;
+          newCompany.IsCustomerFree = false;
+          newCompany.PortalSeats = 0;
+          newCompany.PrimaryUserID = null;
+          newCompany.ProductType = ProductType.Express;
+          newCompany.UserSeats = 0;
+          newCompany.NeedsIndexing = true;
+          newCompany.SystemEmailID = Guid.NewGuid();
+          newCompany.WebServiceID = Guid.NewGuid();
+          if (dateCreated != null)
+          {
+            newCompany.DateCreated = (DateTime)dateCreated;
+          }
+          newCompany.CreatorID = creatorID;
+          newCompany.ModifierID = -2;
+          newCompanies.Save();
+          orgID = newCompany.OrganizationID;
+          companyList.Add(companyName.Replace(" ", string.Empty), orgID);
+        }
+
+        switch (phoneNumberReferenceType)
+        {
+          case ReferenceType.Organizations:
+            newPhoneNumber.RefID = orgID;
+            newPhoneNumber1.RefID = orgID;
+            newPhoneNumber2.RefID = orgID;
+            newPhoneNumber3.RefID = orgID;
+            break;
+          case ReferenceType.Contacts:
+            string contactEmail = ReadString("ContactEmail");
+            int contactID;
+            string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
+            if (!contactList.TryGetValue(searchTerm, out contactID))
+            {
+              string firstName = ReadString("FirstName");
+              string lastName = ReadString("LastName");
+              if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
+              {
+                Users newContacts = new Users(_importUser);
+                User newContact = newContacts.AddNewUser();
+                newContact.FirstName = firstName;
+                newContact.LastName = lastName;
+                newContact.Email = contactEmail;
+                newContact.OrganizationID = orgID;
+                newContact.ActivatedOn = now;
+                newContact.CryptedPassword = "";
+                newContact.DeactivatedOn = null;
+                newContact.InOffice = false;
+                newContact.InOfficeComment = "";
+                newContact.IsFinanceAdmin = false;
+                newContact.IsPasswordExpired = true;
+                newContact.IsSystemAdmin = false;
+                newContact.LastActivity = now;
+                newContact.LastLogin = now;
+                newContact.NeedsIndexing = true;
+                newContact.PrimaryGroupID = null;
+                if (dateCreated != null)
+                {
+                  newContact.DateCreated = (DateTime)dateCreated;
+                }
+                newContact.CreatorID = creatorID;
+                newContact.ModifierID = -2;
+                newContacts.Save();
+                contactID = newContact.UserID;
+                contactList.Add(searchTerm, contactID);
+              }
+              else
+              {
+                _importLog.Write("Phone number in row " + index.ToString() + " could not be added as contact does not exists and either first or last name are missing.");
+                continue;
+              }
+            }
+            newPhoneNumber.RefID = contactID;
+            newPhoneNumber1.RefID = contactID;
+            newPhoneNumber2.RefID = contactID;
+            newPhoneNumber3.RefID = contactID;
+            break;
+        }
+
+        string phoneTypeName = ReadString("PhoneType");
+        string phoneTypeName1 = ReadString("PhoneType1");
+        string phoneTypeName2 = ReadString("PhoneType2");
+        string phoneTypeName3 = ReadString("PhoneType3");
+        PhoneType phoneType = phoneTypes.FindByName(phoneTypeName);
+        if (phoneType == null)
+        {
+          phoneType = phoneTypes.AddNewPhoneType();
+          phoneType.Name = phoneTypeName;
+          phoneType.OrganizationID = _organizationID;
+          if (dateCreated != null)
+          {
+            phoneType.DateCreated = (DateTime)dateCreated;
+          }
+          phoneType.CreatorID = creatorID;
+          phoneTypes.Save();
+        }
+        newPhoneNumber.PhoneTypeID = phoneType.PhoneTypeID;
+
+        if (!string.IsNullOrEmpty(phoneTypeName1))
+        {
+          PhoneType phoneType1 = phoneTypes.FindByName(phoneTypeName1);
+          if (phoneType1 == null)
+          {
+            phoneType1 = phoneTypes.AddNewPhoneType();
+            phoneType1.Name = phoneTypeName1;
+            phoneType1.OrganizationID = _organizationID;
+            if (dateCreated != null)
+            {
+              phoneType1.DateCreated = (DateTime)dateCreated;
+            }
+            phoneType1.CreatorID = creatorID;
+            phoneTypes.Save();
+          }
+          newPhoneNumber1.PhoneTypeID = phoneType1.PhoneTypeID;
+        }
+
+        if (!string.IsNullOrEmpty(phoneTypeName2))
+        {
+          PhoneType phoneType2 = phoneTypes.FindByName(phoneTypeName2);
+          if (phoneType2 == null)
+          {
+            phoneType2 = phoneTypes.AddNewPhoneType();
+            phoneType2.Name = phoneTypeName2;
+            phoneType2.OrganizationID = _organizationID;
+            if (dateCreated != null)
+            {
+              phoneType2.DateCreated = (DateTime)dateCreated;
+            }
+            phoneType2.CreatorID = creatorID;
+            phoneTypes.Save();
+          }
+          newPhoneNumber2.PhoneTypeID = phoneType2.PhoneTypeID;
+        }
+
+        if (!string.IsNullOrEmpty(phoneTypeName3))
+        {
+          PhoneType phoneType3 = phoneTypes.FindByName(phoneTypeName3);
+          if (phoneType3 == null)
+          {
+            phoneType3 = phoneTypes.AddNewPhoneType();
+            phoneType3.Name = phoneTypeName3;
+            phoneType3.OrganizationID = _organizationID;
+            if (dateCreated != null)
+            {
+              phoneType3.DateCreated = (DateTime)dateCreated;
+            }
+            phoneType3.CreatorID = creatorID;
+            phoneTypes.Save();
+          }
+          newPhoneNumber3.PhoneTypeID = phoneType3.PhoneTypeID;
+        }
+
+        newPhoneNumber.Number = ReadString("Number");
+        newPhoneNumber1.Number = ReadString("Number1");
+        newPhoneNumber2.Number = ReadString("Number2");
+        newPhoneNumber3.Number = ReadString("Number3");
+
+        newPhoneNumber.Extension = ReadString("Extension");
+        newPhoneNumber1.Extension = ReadString("Extension1");
+        newPhoneNumber2.Extension = ReadString("Extension2");
+        newPhoneNumber3.Extension = ReadString("Extension3");
+
+        PhoneNumbers existingPhoneNumbers = new PhoneNumbers(_importUser);
+        existingPhoneNumbers.LoadByID(newPhoneNumber.RefID, phoneNumberReferenceType);
+        bool alreadyExists = false;
+        bool alreadyExists1 = false;
+        bool alreadyExists2 = false;
+        bool alreadyExists3 = false;
+
+        foreach (PhoneNumber existingPhoneNumber in existingPhoneNumbers)
+        {
+          if (
+            newPhoneNumber.Number.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Number.Replace(" ", string.Empty).ToLower()
+            && newPhoneNumber.Extension.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Extension.Replace(" ", string.Empty).ToLower()
+            && newPhoneNumber.PhoneTypeID == existingPhoneNumber.PhoneTypeID)
+          {
+            alreadyExists = true;
+            break;
+          }
+        }
+
+        if (!alreadyExists)
+        {
+          PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
+          phoneNumber.RefType = newPhoneNumber.RefType;
+          phoneNumber.DateCreated = newPhoneNumber.DateCreated;
+          phoneNumber.CreatorID = newPhoneNumber.CreatorID;
+          phoneNumber.ModifierID = newPhoneNumber.ModifierID;
+          phoneNumber.RefID = newPhoneNumber.RefID;
+          phoneNumber.Number = newPhoneNumber.Number;
+          phoneNumber.Extension = newPhoneNumber.Extension;
+          phoneNumber.PhoneTypeID = newPhoneNumber.PhoneTypeID;
+          _importLog.Write("Phone Number in row " + index.ToString() + " was added to phone numbers set.");
+        }
+        else
+        {
+          _importLog.Write("Phone Number in row " + index.ToString() + " already exists and was not added to phone numbers set.");
+        }
+        count++;
+
+        if (!string.IsNullOrEmpty(newPhoneNumber1.Number))
+        {
+          foreach (PhoneNumber existingPhoneNumber in existingPhoneNumbers)
+          {
+            if (
+              newPhoneNumber1.Number.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Number.Replace(" ", string.Empty).ToLower()
+              && newPhoneNumber1.Extension.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Extension.Replace(" ", string.Empty).ToLower()
+              && newPhoneNumber1.PhoneTypeID == existingPhoneNumber.PhoneTypeID)
+            {
+              alreadyExists1 = true;
+              break;
+            }
+          }
+
+          if (!alreadyExists1)
+          {
+            PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
+            phoneNumber.RefType = newPhoneNumber1.RefType;
+            phoneNumber.DateCreated = newPhoneNumber1.DateCreated;
+            phoneNumber.CreatorID = newPhoneNumber1.CreatorID;
+            phoneNumber.ModifierID = newPhoneNumber1.ModifierID;
+            phoneNumber.RefID = newPhoneNumber1.RefID;
+            phoneNumber.Number = newPhoneNumber1.Number;
+            phoneNumber.Extension = newPhoneNumber1.Extension;
+            phoneNumber.PhoneTypeID = newPhoneNumber1.PhoneTypeID;
+            _importLog.Write("Phone Number 1 in row " + index.ToString() + " was added to phone numbers set.");
+          }
+          else
+          {
+            _importLog.Write("Phone Number 1 in row " + index.ToString() + " already exists and was not added to phone numbers set.");
+          }
+          count++;
+        }
+
+        if (!string.IsNullOrEmpty(newPhoneNumber2.Number))
+        {
+          foreach (PhoneNumber existingPhoneNumber in existingPhoneNumbers)
+          {
+            if (
+              newPhoneNumber2.Number.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Number.Replace(" ", string.Empty).ToLower()
+              && newPhoneNumber2.Extension.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Extension.Replace(" ", string.Empty).ToLower()
+              && newPhoneNumber2.PhoneTypeID == existingPhoneNumber.PhoneTypeID)
+            {
+              alreadyExists2 = true;
+              break;
+            }
+          }
+
+          if (!alreadyExists2)
+          {
+            PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
+            phoneNumber.RefType = newPhoneNumber2.RefType;
+            phoneNumber.DateCreated = newPhoneNumber2.DateCreated;
+            phoneNumber.CreatorID = newPhoneNumber2.CreatorID;
+            phoneNumber.ModifierID = newPhoneNumber2.ModifierID;
+            phoneNumber.RefID = newPhoneNumber2.RefID;
+            phoneNumber.Number = newPhoneNumber2.Number;
+            phoneNumber.Extension = newPhoneNumber2.Extension;
+            phoneNumber.PhoneTypeID = newPhoneNumber2.PhoneTypeID;
+            _importLog.Write("Phone Number 2 in row " + index.ToString() + " was added to phone numbers set.");
+          }
+          else
+          {
+            _importLog.Write("Phone Number 2 in row " + index.ToString() + " already exists and was not added to phone numbers set.");
+          }
+          count++;
+        }
+
+        if (!string.IsNullOrEmpty(newPhoneNumber3.Number))
+        {
+          foreach (PhoneNumber existingPhoneNumber in existingPhoneNumbers)
+          {
+            if (
+              newPhoneNumber3.Number.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Number.Replace(" ", string.Empty).ToLower()
+              && newPhoneNumber3.Extension.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Extension.Replace(" ", string.Empty).ToLower()
+              && newPhoneNumber3.PhoneTypeID == existingPhoneNumber.PhoneTypeID)
+            {
+              alreadyExists3 = true;
+              break;
+            }
+          }
+
+          if (!alreadyExists3)
+          {
+            PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
+            phoneNumber.RefType = newPhoneNumber3.RefType;
+            phoneNumber.DateCreated = newPhoneNumber3.DateCreated;
+            phoneNumber.CreatorID = newPhoneNumber3.CreatorID;
+            phoneNumber.ModifierID = newPhoneNumber3.ModifierID;
+            phoneNumber.RefID = newPhoneNumber3.RefID;
+            phoneNumber.Number = newPhoneNumber3.Number;
+            phoneNumber.Extension = newPhoneNumber3.Extension;
+            phoneNumber.PhoneTypeID = newPhoneNumber3.PhoneTypeID;
+            _importLog.Write("Phone Number 3 in row " + index.ToString() + " was added to phone numbers set.");
+          }
+          else
+          {
+            _importLog.Write("Phone Number 3 in row " + index.ToString() + " already exists and was not added to phone numbers set.");
+          }
+          count++;
+        }
+
+
+        if (count % BULK_LIMIT == 0)
+        {
+          phoneNumbers.BulkSave();
+          phoneNumbers = new PhoneNumbers(_importUser);
+          UpdateImportCount(import, count);
+          _importLog.Write("Import set with " + count.ToString() + " phone numbers inserted in database.");
+        }
+      }
+      phoneNumbers.BulkSave();
+      UpdateImportCount(import, count);
+      _importLog.Write("Import set with " + count.ToString() + " phone numbers inserted in database.");
     }
 
     private void ImportTickets(Import import)
@@ -1660,6 +2253,19 @@ ON o.OrganizationID = u.OrganizationID
 WHERE (o.ParentID = @OrganizationID)
 AND (u.MarkDeleted = 0)
 GROUP BY REPLACE(u.Email + '(' + o.Name + ')', ' ', '')";
+      command.CommandType = CommandType.Text;
+      command.Parameters.AddWithValue("@OrganizationID", _organizationID);
+      return list == null ? GetList(command) : GetList(command, list);
+    }
+
+    private SortedList<string, int> GetCompanyList(SortedList<string, int> list = null)
+    {
+      SqlCommand command = new SqlCommand();
+      command.CommandText = @"
+SELECT DISTINCT(REPLACE(o.Name, ' ', '')), MAX(o.OrganizationID)
+FROM Organizations o
+WHERE (o.ParentID = @OrganizationID)
+GROUP BY o.Name";
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@OrganizationID", _organizationID);
       return list == null ? GetList(command) : GetList(command, list);
