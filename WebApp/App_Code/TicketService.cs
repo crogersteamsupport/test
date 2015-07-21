@@ -3809,7 +3809,15 @@ WHERE t.TicketID = @TicketID
               
           }
           while (OpenTok.GetArchive(archiveId).Status != ArchiveStatus.UPLOADED);
-          
+
+          TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
+          ts.AmazonPath = string.Format("https://s3.amazonaws.com/teamsupportvideos/45228242/{0}/archive.mp4", archive.Id);
+          ts.CreatedDate = DateTime.Now;
+          ts.CreatorID = TSAuthentication.GetLoginUser().UserID;
+          ts.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+          ts.ArchiveID = archive.Id.ToString();
+          ts.Collection.Save();
+
           return archive.Id.ToString();
 
       }
@@ -3825,6 +3833,13 @@ WHERE t.TicketID = @TicketID
           //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
           // Store this sessionId in the database for later use:
           OpenTok.DeleteArchive(archiveId);
+
+          TokStorage ts = new TokStorage(TSAuthentication.GetLoginUser());
+          ts.LoadByArchiveID(archiveId.ToString());
+          ts[0].Delete();
+          ts[0].Collection.Save();
+         
+
 
           return true;
       }
