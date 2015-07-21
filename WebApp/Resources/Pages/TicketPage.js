@@ -797,6 +797,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     _newAction = result;
     top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
     result.item.MessageType = actionType.Name;
+    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
     callback(result)
   }, function (error) {
     callback(null);

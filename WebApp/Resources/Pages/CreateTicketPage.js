@@ -301,14 +301,14 @@ function SaveTicket() {
         
         info.TicketSeverityID = ($('#ticket-severity').length) ? $('#ticket-severity').val() : '-1';//$('#ticket-severity').val(); 
         info.UserID = ($('#ticket-assigned').length) ? $('#ticket-assigned').val() : '-1';//($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
-        info.GroupID = ($('#ticket-group').length) ? $('#ticket-group').val() : '-1';//($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
+        info.GroupID = ($('#ticket-group').length && $('#ticket-group').val() !== '') ? $('#ticket-group').val() : '-1';//($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
         var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
         info.DueDate = _dueDate;
 
         info.CategoryID = ($('#ticket-Category').length) ? $('#ticket-Category').val() : null;//$('#ticket-Category').val();
-        info.ProductID = ($('#ticket-Product').length) ? $('#ticket-Product').val() : '-1';//($('#ticket-Product').val() == '') ? '-1' : $('#ticket-Product').val();
-        info.ReportedID = ($('#ticket-Versions').length) ? $('#ticket-Versions').val() : '-1';//($('#ticket-Versions').val() == '') ? '-1' : $('#ticket-Versions').val();
-        info.ResolvedID = ($('#ticket-Resolved').length) ? $('#ticket-Resolved').val() : '-1';//($('#ticket-Resolved').val() == '') ? '-1' : $('#ticket-Resolved').val();
+        info.ProductID = ($('#ticket-Product').length && $('#ticket-Product').val() !== '') ? $('#ticket-Product').val() : '-1';//($('#ticket-Product').val() == '') ? '-1' : $('#ticket-Product').val();
+        info.ReportedID = ($('#ticket-Versions').length && $('#ticket-Versions').val() !== '') ? $('#ticket-Versions').val() : '-1';//($('#ticket-Versions').val() == '') ? '-1' : $('#ticket-Versions').val();
+        info.ResolvedID = ($('#ticket-Resolved').length && $('#ticket-Resolved').val() !== '') ? $('#ticket-Resolved').val() : '-1';//($('#ticket-Resolved').val() == '') ? '-1' : $('#ticket-Resolved').val();
         info.IsVisibleOnPortal = ($('#ticket-visible').length) ? $('#ticket-visible').prop('checked') : false;//$('#ticket-visible').prop('checked')
         info.IsKnowledgebase = ($('#ticket-isKB').length) ? $('#ticket-isKB').prop('checked') : false;//$('#ticket-isKB').prop('checked');
         info.KnowledgeBaseCategoryID = ($('#ticket-KB-Category').length) ? $('#ticket-KB-Category').val() : '-1'; //($('#ticket-KB-Category').val() == '') ? '-1' : $('#ticket-KB-Category').val();
@@ -1026,9 +1026,9 @@ function SetupCustomerSection() {
   });
 };
 
-function AddCustomers(customerdata) {
-  top.Ts.Services.Tickets.GetTicketCustomer(customerdata.type, customerdata.value, function (result) {
-    var customer = result;
+function AddCustomers(customer) {
+  top.Ts.Services.Tickets.GetTicketCustomer(customer.type, customer.value, function (result) {
+    var customerdata = result;
     if (customer == null) return;
     top.Ts.System.logAction('New Ticket - Customer Added');
     var customerDiv = $("#ticket-Customer");
