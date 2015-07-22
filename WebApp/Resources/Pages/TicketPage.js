@@ -2173,7 +2173,7 @@ var appendMatchingParentValueFields = function (container, parentField) {
   top.Ts.Services.Tickets.GetMatchingParentValueFields(_ticketID, parentField.CustomFieldID, parentField.Value, function (fields) {
     for (var i = 0; i < fields.length; i++) {
       var field = fields[i];
-      var div = $('<div>').addClass('form-group form-group-sm').data('field', field);
+      var div = $('<div>').addClass('').data('field', field);
       //$('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
 
       container.append(div);
@@ -2596,7 +2596,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
       top.Ts.System.logAction('Ticket - Custom Value Set');
       top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
         $('.' + field.CustomFieldID + 'children').remove();
-        var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').insertAfter(formcontainer);
+        var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children').insertAfter(formcontainer);
         appendMatchingParentValueFields(childrenContainer, result);
         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
       }, function () {
@@ -2623,14 +2623,9 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     groupContainer.addClass('isEmpty');
   }
 
-  if (loadConditionalFields) {
-    $('.' + field.CustomFieldID + 'children').remove();
-    var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').appendTo(parentContainer);
-    appendMatchingParentValueFields(childrenContainer, field);
-  }
-  else {
-    _parentFields.push(groupContainer);
-  }
+  $('.' + field.CustomFieldID + 'children').remove();
+  var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').insertAfter(formcontainer);
+  appendMatchingParentValueFields(childrenContainer, field);
 }
 
 var SetupDueDateField = function (duedate) {
@@ -3076,9 +3071,9 @@ function CreateTimeLineDelegates() {
     var titleElement = $('.action-placeholder');
     var Action = parentLI.data().action;
     var isPinned = parentLI.hasClass('pinned');
+    if (isPinned) self.get(0).lastChild.nodeValue = "Pin";
+    else self.get(0).lastChild.nodeValue = "Unpin";
 
-    parentLI.find(".action-option-items").hide();
-    parentLI.find(".action-options-icon").fadeIn();
     if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
       $('a.ticket-action-pinned').addClass('hidden');
       top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');

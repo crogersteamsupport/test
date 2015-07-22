@@ -298,7 +298,11 @@
                       <a href="#" class="action-option-delete"><i class="glyphicon glyphicon-trash action-option-item"></i>Delete</a>
                       {{/CanEdit}}
                       {{#CanPin}}
-                      <a href="#" class="action-option-pin"><i class=" glyphicon glyphicon-pushpin action-option-item"></i>Pin</a>
+                       {{#if item.IsPinned}}
+                          <a href="#" class="action-option-pin"><i class=" glyphicon glyphicon-pushpin action-option-item"></i>Unpin</a>
+                        {{else}}
+                          <a href="#" class="action-option-pin"><i class=" glyphicon glyphicon-pushpin action-option-item"></i>Pin</a>
+                        {{/if}}
                       {{/CanPin}}
                       {{#CanKB}}
                       <a href="#" class="action-option-kb"><i class="glyphicon glyphicon-bookmark action-option-item"></i>KB</a>
