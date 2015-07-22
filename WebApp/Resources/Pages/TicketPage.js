@@ -773,16 +773,16 @@ function SaveAction(_oldActionID, isPrivate, callback) {
 
   action.ActionID = _oldActionID;
   action.TicketID = _ticketID;
-  var actionType = $('#action-new-type option:selected').data('data');
-  action.ActionTypeID = actionType.ActionTypeID
-
   action.SystemActionTypeID = 0;
 
   var timeSpent = parseInt($('#action-new-hours').val()) * 60 + parseInt($('#action-new-minutes').val());
-
-  if (timeSpent < 1 && actionType.IsTimed == true && top.Ts.System.Organization.TimedActionsRequired == true) {
-    $('#action-save-alert').text('Please enter the time you worked on this action.').show();
-    return false;
+  var actionType = $('#action-new-type option:selected').data('data');
+  if (actionType !== null) {
+    if (timeSpent < 1 && actionType.IsTimed == true && top.Ts.System.Organization.TimedActionsRequired == true) {
+      $('#action-save-alert').text('Please enter the time you worked on this action.').show();
+      return false;
+    }
+    action.ActionTypeID = actionType.ActionTypeID;
   }
 
   action.TimeSpent = timeSpent || 0;
@@ -796,7 +796,9 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
     _newAction = result;
     top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
-    result.item.MessageType = actionType.Name;
+    if (actionType !== null) {
+      result.item.MessageType = actionType.Name;
+    }
     window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
     callback(result)
   }, function (error) {
