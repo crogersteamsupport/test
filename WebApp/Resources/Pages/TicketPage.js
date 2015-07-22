@@ -426,23 +426,27 @@ function CreateNewActionLI() {
       isFormValid(function (isValid) {
         if (isValid) {
           SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
-            $('#action-new-editor').parent().fadeOut('normal', function () {
-              tinymce.activeEditor.destroy();
-            });
-            if ($('.upload-queue li').length > 0) {
-              UploadAttachments(result);
-            }
-            else
-            {
-              _newAction = null;
-              if (_oldActionID === -1) {
-                _actionTotal = _actionTotal + 1;
-                var actionElement = CreateActionElement(result, false);
-                actionElement.find('.ticket-action-number').text(_actionTotal);
+            if (result) {
+              $('#action-new-editor').parent().fadeOut('normal', function () {
+                tinymce.activeEditor.destroy();
+              });
+              if ($('.upload-queue li').length > 0) {
+                UploadAttachments(result);
               }
               else {
-                UpdateActionElement(result, false);
+                _newAction = null;
+                if (_oldActionID === -1) {
+                  _actionTotal = _actionTotal + 1;
+                  var actionElement = CreateActionElement(result, false);
+                  actionElement.find('.ticket-action-number').text(_actionTotal);
+                }
+                else {
+                  UpdateActionElement(result, false);
+                }
               }
+            }
+            else {
+              alert("There was a error creating your action.  Please try again.")
             }
           });
         }
@@ -800,7 +804,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
       result.item.MessageType = actionType.Name;
     }
     window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
-    callback(result)
+    callback(null)
   }, function (error) {
     callback(null);
   });
