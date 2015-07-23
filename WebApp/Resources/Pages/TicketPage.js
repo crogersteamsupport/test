@@ -804,7 +804,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
       result.item.MessageType = actionType.Name;
     }
     window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
-    callback(null)
+    callback(result)
   }, function (error) {
     callback(null);
   });
