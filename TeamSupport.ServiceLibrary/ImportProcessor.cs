@@ -104,6 +104,11 @@ namespace TeamSupport.ServiceLibrary
             break;
           case ReferenceType.Organizations:
             ImportCompanies(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportAddresses(import, ReferenceType.Organizations);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportPhoneNumbers(import, ReferenceType.Organizations);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
             break;
           case ReferenceType.CompanyAddresses:
             ImportAddresses(import, ReferenceType.Organizations);
@@ -112,7 +117,14 @@ namespace TeamSupport.ServiceLibrary
             ImportPhoneNumbers(import, ReferenceType.Organizations);
             break;
           case ReferenceType.Contacts:
+            ImportCompanies(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportContacts(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportAddresses(import, ReferenceType.Contacts);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportPhoneNumbers(import, ReferenceType.Contacts);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
             break;
           case ReferenceType.ContactAddresses:
             ImportAddresses(import, ReferenceType.Contacts);
@@ -281,10 +293,14 @@ namespace TeamSupport.ServiceLibrary
       productVersions.LoadByParentOrganizationID(_organizationID);
 
       Assets assets = new Assets(_importUser);
+      CustomValues customValues = new CustomValues(_importUser);
       //int orgCount = 0;
       //int prodCount = 0;
 
       SortedList<string, int> userList = GetUserAndContactList();
+
+      List<IndexesMap> csvAssetsMap = new List<IndexesMap>();
+      List<IndexesMap> csvCustomValuesMap = new List<IndexesMap>();
 
       int count = 0;
       while (_csv.ReadNextRecord())
@@ -360,6 +376,7 @@ namespace TeamSupport.ServiceLibrary
           else
           {
             asset = assets.AddNewAsset();
+            csvAssetsMap.Add(new IndexesMap((int)_csv.CurrentRecordIndex, assets.Count - 1));
           }
         }
 
@@ -432,6 +449,7 @@ namespace TeamSupport.ServiceLibrary
                   if (!isUpdate)
                   {
                     newAssignedAsset.Save();
+                    ImportCustomFields(asset.AssetID, creatorID);
                   }
 
                   AssetHistory assetHistory = new AssetHistory(_importUser);
@@ -495,6 +513,7 @@ namespace TeamSupport.ServiceLibrary
                 if (!isUpdate)
                 {
                   newAssignedAsset.Save();
+                  ImportCustomFields(asset.AssetID, creatorID);
                 }
 
                 AssetHistory assetHistory = new AssetHistory(_importUser);
@@ -626,19 +645,120 @@ namespace TeamSupport.ServiceLibrary
         {
           existingAsset.Save();
           _importLog.Write("AssetID " + asset.AssetID.ToString() + " was updated.");
+          ImportCustomFields(asset.AssetID, creatorID);
+        }
+        else
+        {
+          foreach (ImportFieldsViewItem field in _map)
+          {
+            if (field.IsCustom != null && (bool)field.IsCustom)
+            {
+              string value = ReadString(field.FieldName);
+              if (!string.IsNullOrEmpty(value.Trim()))
+              {
+                CustomValue customValue = customValues.AddNewCustomValue();
+                customValue.Value = value;
+                customValue.CustomFieldID = field.ImportFieldID;
+                customValue.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
+                customValue.CreatorID = creatorID;
+                customValue.ModifierID = -2;
+                csvCustomValuesMap.Add(new IndexesMap((int)_csv.CurrentRecordIndex, customValues.Count - 1));
+                _importLog.Write("Custom field: " + field.FieldName + "'s value: " + value + " was added to import set.");
+              }
+            }
+          }
         }
         count++;
 
         if (count % BULK_LIMIT == 0)
         {
           assets.BulkSave();
+          foreach (IndexesMap customValueIndexMap in csvCustomValuesMap)
+          {
+            int customValueIndex = customValueIndexMap.TSObjectIndex;
+            int assetIndex = GetTSIndex(csvAssetsMap, customValueIndexMap.CsvIndex);
+            if (assetIndex != -1)
+            {
+              customValues[customValueIndex].RefID = assets[assetIndex].AssetID;
+            }
+            else
+            {
+              _importLog.Write("No csvIndex " + customValueIndexMap.CsvIndex.ToString() + " was found in csvAssetsMap.");
+            }
+          }
+          customValues.Save();
           assets = new Assets(_importUser);
           UpdateImportCount(import, count);
         }
       }
       assets.BulkSave();
+      foreach (IndexesMap customValueIndexMap in csvCustomValuesMap)
+      {
+        int customValueIndex = customValueIndexMap.TSObjectIndex;
+        int assetIndex = GetTSIndex(csvAssetsMap, customValueIndexMap.CsvIndex);
+        if (assetIndex != -1)
+        {
+          customValues[customValueIndex].RefID = assets[assetIndex].AssetID;
+        }
+        else
+        {
+          _importLog.Write("No csvIndex " + customValueIndexMap.CsvIndex.ToString() + " was found in csvAssetsMap.");
+        }
+      }
+      customValues.Save();
       UpdateImportCount(import, count);
       _importLog.Write(count.ToString() + " assets imported.");
+    }
+
+    private int GetTSIndex(List<IndexesMap> list, int csvIndex)
+    {
+      int result = -1;
+      foreach (IndexesMap map in list)
+      {
+        if (map.CsvIndex == csvIndex)
+        {
+          result = map.TSObjectIndex;
+          break;
+        }
+      }
+      return result;
+    }
+
+    private void ImportCustomFields(int refID, int creatorID)
+    {
+      CustomValues existingObjectCustomValues = new CustomValues(_importUser);
+      foreach (ImportFieldsViewItem field in _map)
+      {
+        if (field.IsCustom != null && (bool)field.IsCustom)
+        {
+          string value = ReadString(field.FieldName);
+          if (!string.IsNullOrEmpty(value.Trim()))
+          {
+            CustomValues existingCustomValue = new CustomValues(_importUser);
+            existingCustomValue.LoadByFieldID(field.ImportFieldID, refID);
+            if (existingCustomValue.Count > 0)
+            {
+              existingCustomValue[0].Value = value;
+              existingCustomValue[0].ModifierID = -2;
+              existingCustomValue.Save();
+              _importLog.Write("Custom field: " + field.FieldName + "'s value: " + value + " was updated.");
+            }
+            else
+            {
+              CustomValue customValue = existingObjectCustomValues.AddNewCustomValue();
+              customValue.RefID = refID;
+              customValue.Value = value;
+              customValue.CustomFieldID = field.ImportFieldID;
+              customValue.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
+              customValue.CreatorID = creatorID;
+              customValue.ModifierID = -2;
+              _importLog.Write("Custom field: " + field.FieldName + "'s value: " + value + " was added to import set.");
+            }
+          }
+        }
+      }
+      existingObjectCustomValues.Save();
+      _importLog.Write("Asset custom fields updated.");
     }
 
     private void ImportCompanies(Import import)
@@ -646,6 +766,10 @@ namespace TeamSupport.ServiceLibrary
       SortedList<string, int> userList = GetUserAndContactList();
 
       Organizations companies = new Organizations(_importUser);
+      CustomValues customValues = new CustomValues(_importUser);
+      List<IndexesMap> csvCompaniesMap = new List<IndexesMap>();
+      List<IndexesMap> csvCustomValuesMap = new List<IndexesMap>();
+
       int count = 0;
       while (_csv.ReadNextRecord())
       {
@@ -690,6 +814,7 @@ namespace TeamSupport.ServiceLibrary
         if (company == null)
         {
           company = companies.AddNewOrganization();
+          csvCompaniesMap.Add(new IndexesMap((int)_csv.CurrentRecordIndex, companies.Count - 1));
         }
 
         company.Name = name;
@@ -799,16 +924,49 @@ namespace TeamSupport.ServiceLibrary
         {
           existingCompany.Save();
           _importLog.Write("CompanyID " + company.OrganizationID.ToString() + " was updated.");
+          ImportCustomFields(company.OrganizationID, creatorID);
         }
         else
         {
           _importLog.Write("Company " + company.Name + " was added to import set.");
+          foreach (ImportFieldsViewItem field in _map)
+          {
+            if (field.IsCustom != null && (bool)field.IsCustom)
+            {
+              string value = ReadString(field.FieldName);
+              if (!string.IsNullOrEmpty(value.Trim()))
+              {
+                CustomValue customValue = customValues.AddNewCustomValue();
+                customValue.Value = value;
+                customValue.CustomFieldID = field.ImportFieldID;
+                customValue.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
+                customValue.CreatorID = creatorID;
+                customValue.ModifierID = -2;
+                csvCustomValuesMap.Add(new IndexesMap((int)_csv.CurrentRecordIndex, customValues.Count - 1));
+                _importLog.Write("Custom field: " + field.FieldName + "'s value: " + value + " was added to import set.");
+              }
+            }
+          }
         }
         count++;
 
         if (count % BULK_LIMIT == 0)
         {
           companies.BulkSave();
+          foreach (IndexesMap customValueIndexMap in csvCustomValuesMap)
+          {
+            int customValueIndex = customValueIndexMap.TSObjectIndex;
+            int companyIndex = GetTSIndex(csvCompaniesMap, customValueIndexMap.CsvIndex);
+            if (companyIndex != -1)
+            {
+              customValues[customValueIndex].RefID = companies[companyIndex].OrganizationID;
+            }
+            else
+            {
+              _importLog.Write("No csvIndex " + customValueIndexMap.CsvIndex.ToString() + " was found in csvCompaniesMap.");
+            }
+          }
+          customValues.Save();
           companies = new Organizations(_importUser);
           UpdateImportCount(import, count);
           _importLog.Write("Import set with " + count.ToString() + " companies inserted in database.");
@@ -817,6 +975,20 @@ namespace TeamSupport.ServiceLibrary
       companies.BulkSave();
       UpdateImportCount(import, count);
       _importLog.Write("Import set with " + count.ToString() + " companies inserted in database.");
+      foreach (IndexesMap customValueIndexMap in csvCustomValuesMap)
+      {
+        int customValueIndex = customValueIndexMap.TSObjectIndex;
+        int companyIndex = GetTSIndex(csvCompaniesMap, customValueIndexMap.CsvIndex);
+        if (companyIndex != -1)
+        {
+          customValues[customValueIndex].RefID = companies[companyIndex].OrganizationID;
+        }
+        else
+        {
+          _importLog.Write("No csvIndex " + customValueIndexMap.CsvIndex.ToString() + " was found in csvAssetsMap.");
+        }
+      }
+      customValues.Save();
     }
 
     private void ImportContacts(Import import)
@@ -826,6 +998,10 @@ namespace TeamSupport.ServiceLibrary
       Organization unknownCompany = Organizations.GetUnknownCompany(_loginUser, _organizationID);
 
       Users users = new Users(_importUser);
+      CustomValues customValues = new CustomValues(_importUser);
+      List<IndexesMap> csvContactsMap = new List<IndexesMap>();
+      List<IndexesMap> csvCustomValuesMap = new List<IndexesMap>();
+
       int count = 0;
       while (_csv.ReadNextRecord())
       {
@@ -868,6 +1044,7 @@ namespace TeamSupport.ServiceLibrary
         if (user == null)
         {
           user = users.AddNewUser();
+          csvContactsMap.Add(new IndexesMap((int)_csv.CurrentRecordIndex, users.Count - 1));
         }
 
         Organizations companies = new Organizations(_importUser);
@@ -1012,6 +1189,7 @@ namespace TeamSupport.ServiceLibrary
             }
 
             existingUser.Save();
+            ImportCustomFields(user.UserID, creatorID);
 
             foreach (Ticket tix in t)
             {
@@ -1033,14 +1211,50 @@ namespace TeamSupport.ServiceLibrary
           {
             existingUser.Save();
             _importLog.Write("UserID " + user.UserID.ToString() + " was updated.");
+            ImportCustomFields(user.UserID, creatorID);
           }
           // Add updated rows column as completed rows will reflect only adds
+        }
+        else
+        {
+          foreach (ImportFieldsViewItem field in _map)
+          {
+            if (field.IsCustom != null && (bool)field.IsCustom)
+            {
+              string value = ReadString(field.FieldName);
+              if (!string.IsNullOrEmpty(value.Trim()))
+              {
+                CustomValue customValue = customValues.AddNewCustomValue();
+                customValue.Value = value;
+                customValue.CustomFieldID = field.ImportFieldID;
+                customValue.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
+                customValue.CreatorID = creatorID;
+                customValue.ModifierID = -2;
+                csvCustomValuesMap.Add(new IndexesMap((int)_csv.CurrentRecordIndex, customValues.Count - 1));
+                _importLog.Write("Custom field: " + field.FieldName + "'s value: " + value + " was added to import set.");
+              }
+            }
+          }
         }
         count++;
 
         if (count % BULK_LIMIT == 0)
         {
           users.BulkSave();
+          foreach (IndexesMap customValueIndexMap in csvCustomValuesMap)
+          {
+            int customValueIndex = customValueIndexMap.TSObjectIndex;
+            int contactIndex = GetTSIndex(csvContactsMap, customValueIndexMap.CsvIndex);
+            if (contactIndex != -1)
+            {
+              customValues[customValueIndex].RefID = users[contactIndex].UserID;
+            }
+            else
+            {
+              _importLog.Write("No csvIndex " + customValueIndexMap.CsvIndex.ToString() + " was found in csvContactsMap.");
+            }
+          }
+          customValues.Save();
           users = new Users(_importUser);
           UpdateImportCount(import, count);
         }
@@ -1048,6 +1262,20 @@ namespace TeamSupport.ServiceLibrary
       users.BulkSave();
       UpdateImportCount(import, count);
       _importLog.Write(count.ToString() + " contacts imported.");
+      foreach (IndexesMap customValueIndexMap in csvCustomValuesMap)
+      {
+        int customValueIndex = customValueIndexMap.TSObjectIndex;
+        int contactIndex = GetTSIndex(csvContactsMap, customValueIndexMap.CsvIndex);
+        if (contactIndex != -1)
+        {
+          customValues[customValueIndex].RefID = users[contactIndex].UserID;
+        }
+        else
+        {
+          _importLog.Write("No csvIndex " + customValueIndexMap.CsvIndex.ToString() + " was found in csvContactsMap.");
+        }
+      }
+      customValues.Save();
     }
 
     private void ImportAddresses(Import import, ReferenceType addressReferenceType)
@@ -1177,7 +1405,7 @@ namespace TeamSupport.ServiceLibrary
         newAddress.State = ReadString("State");
         newAddress.Zip = ReadString("Zip");
         newAddress.Country = ReadString("Country");
-        newAddress.Comment = ReadString("Comment");
+        newAddress.Comment = ReadString("AddressComment");
 
         Addresses existingAddresses = new Addresses(_importUser);
         existingAddresses.LoadByID(newAddress.RefID, addressReferenceType);
@@ -1653,6 +1881,10 @@ namespace TeamSupport.ServiceLibrary
 
       Tickets tickets = new Tickets(_importUser);
 
+      CustomValues customValues = new CustomValues(_importUser);
+      List<IndexesMap> csvTicketsMap = new List<IndexesMap>();
+      List<IndexesMap> csvCustomValuesMap = new List<IndexesMap>();
+
       int maxTicketNumber = tickets.GetMaxTicketNumber(_organizationID);
       if (maxTicketNumber < 0) maxTicketNumber++;
 
@@ -1714,6 +1946,7 @@ namespace TeamSupport.ServiceLibrary
         if (ticket == null)
         {
           ticket = tickets.AddNewTicket();
+          csvTicketsMap.Add(new IndexesMap((int)_csv.CurrentRecordIndex, tickets.Count - 1));
         }
         ticket.TicketNumber = (int)ticketNumber;
 
@@ -2030,12 +2263,48 @@ namespace TeamSupport.ServiceLibrary
         {
           existingTicket.Save();
           _importLog.Write("TicketID " + ticket.TicketID.ToString() + " was updated.");
+          ImportCustomFields(ticket.TicketID, creatorID);
+        }
+        else
+        {
+          foreach (ImportFieldsViewItem field in _map)
+          {
+            if (field.IsCustom != null && (bool)field.IsCustom)
+            {
+              string value = ReadString(field.FieldName);
+              if (!string.IsNullOrEmpty(value.Trim()))
+              {
+                CustomValue customValue = customValues.AddNewCustomValue();
+                customValue.Value = value;
+                customValue.CustomFieldID = field.ImportFieldID;
+                customValue.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
+                customValue.CreatorID = creatorID;
+                customValue.ModifierID = -2;
+                csvCustomValuesMap.Add(new IndexesMap((int)_csv.CurrentRecordIndex, customValues.Count - 1));
+                _importLog.Write("Custom field: " + field.FieldName + "'s value: " + value + " was added to import set.");
+              }
+            }
+          }
         }
         count++;
 
         if (count % BULK_LIMIT == 0)
         {
           tickets.BulkSave();
+          foreach (IndexesMap customValueIndexMap in csvCustomValuesMap)
+          {
+            int customValueIndex = customValueIndexMap.TSObjectIndex;
+            int ticketIndex = GetTSIndex(csvTicketsMap, customValueIndexMap.CsvIndex);
+            if (ticketIndex != -1)
+            {
+              customValues[customValueIndex].RefID = tickets[ticketIndex].TicketID;
+            }
+            else
+            {
+              _importLog.Write("No csvIndex " + customValueIndexMap.CsvIndex.ToString() + " was found in csvTicketsMap.");
+            }
+          }
+          customValues.Save();
           tickets = new Tickets(_importUser);
           UpdateImportCount(import, count);
           EmailPosts.DeleteImportEmails(_importUser);
@@ -2045,6 +2314,20 @@ namespace TeamSupport.ServiceLibrary
       UpdateImportCount(import, count);
       EmailPosts.DeleteImportEmails(_importUser);
       _importLog.Write(count.ToString() + " tickets imported.");
+      foreach (IndexesMap customValueIndexMap in csvCustomValuesMap)
+      {
+        int customValueIndex = customValueIndexMap.TSObjectIndex;
+        int ticketIndex = GetTSIndex(csvTicketsMap, customValueIndexMap.CsvIndex);
+        if (ticketIndex != -1)
+        {
+          customValues[customValueIndex].RefID = tickets[ticketIndex].TicketID;
+        }
+        else
+        {
+          _importLog.Write("No csvIndex " + customValueIndexMap.CsvIndex.ToString() + " was found in csvTicketsMap.");
+        }
+      }
+      customValues.Save();
     }
 
     private void ImportCustomFieldPickList(Import import)
@@ -2366,6 +2649,18 @@ GROUP BY o.Name";
       }
 
       File.AppendAllText(_logPath + @"\" + _fileName, DateTime.Now.ToLongTimeString() + ": " + text + Environment.NewLine);
+    }
+  }
+
+  public class IndexesMap
+  {
+    public int CsvIndex;
+    public int TSObjectIndex;
+
+    public IndexesMap(int csvIndex, int tSObjectIndex)
+    {
+      CsvIndex = csvIndex;
+      TSObjectIndex = tSObjectIndex;
     }
   }
 

@@ -30,12 +30,22 @@ ImportPage = function () {
         }
       } else {
         for (var i = 0; i < imports.length; i++) {
+          var logFileName = imports[i].ImportID + '.txt';
+          var logFileLink = '<a href="../../../dc/1/importlog/' + imports[i].ImportID + '">' + logFileName + '</a>';
+
           var dateStarted = null;
           if (imports[i].DateStarted == null) {
             dateStarted = 'Not started';
+            logFileLink = 'N/A';
           }
           else {
             dateStarted = imports[i].DateStarted.toLocaleString();
+            var today = new Date();
+            var oldest = today.setDate(today.getDate() - 30);
+            if (oldest > imports[i].DateStarted)
+            {
+              logFileLink = 'Expired';
+            }
           }
           var status = 0;
           if (imports[i].CompletedRows > 0) {
@@ -48,7 +58,8 @@ ImportPage = function () {
                     <td>' + imports[i].FileName + '</td>\
                     <td>' + imports[i].RefTypeString + '</td>\
                     <td>' + dateStarted + '</td>\
-                    <td>' + status + '%</td>')
+                    <td>' + status + '%</td>\
+                    <td>' + logFileLink + '</td>')
                   .appendTo('#tblImports > tbody:last');
         }
       }

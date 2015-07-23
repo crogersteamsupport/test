@@ -1348,6 +1348,10 @@ namespace TSWebServices
             if (importField.FieldName.Trim().ToLower() == field.ImportFieldName.Trim().ToLower())
             {
               importMap.FieldID = importField.ImportFieldID;
+              if (importField.IsCustom != null)
+              {
+                importMap.IsCustom = (bool)importField.IsCustom;
+              }
               break;
             }
           }

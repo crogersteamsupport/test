@@ -25,6 +25,7 @@ namespace TeamSupport.Data
             ImportFieldsView
           WHERE
             RefType = @RefType
+            AND (OrganizationID IS NULL OR OrganizationID = @OrganizationID)
             AND
             ( 
               ImportID IS NULL

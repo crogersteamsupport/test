@@ -76,6 +76,7 @@ namespace TeamSupport.Handlers
             case "calendarfeed": ProcessCalendarFeed(context, segments.ToArray(), organizationID); break;
             case "companylogo": ProcessCompanyLogo(context, segments.ToArray(), organizationID); break;
             case "contactavatar": ProcessContactAvatar(context, segments.ToArray(), organizationID); break;
+            case "importlog": ProcessImportLog(context, int.Parse(segments[2])); break;
             default: context.Response.End(); break;
           }
         }
@@ -842,6 +843,61 @@ namespace TeamSupport.Handlers
       context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
       context.Response.ContentType = fileType;
       context.Response.WriteFile(attachment.Path);
+    }
+
+    private void ProcessImportLog(HttpContext context, int importID)
+    {
+      System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
+      if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
+      //http://127.0.0.1/tsdev/dc/attachments/7401
+      //https://app.teamsupport.com/dc/attachments/{AttachmentID}
+      Import import = Imports.GetImport(LoginUser.Anonymous, importID);
+      Organization organization = Organizations.GetOrganization(import.Collection.LoginUser, import.OrganizationID);
+      User user = null;
+      bool isAuthenticated = import.OrganizationID == TSAuthentication.OrganizationID;
+
+
+      if (isAuthenticated)
+      {
+        user = Users.GetUser(import.Collection.LoginUser, TSAuthentication.UserID);
+      }
+      else
+      {
+        context.Response.Write("Unauthorized");
+        context.Response.ContentType = "text/html";
+        return;
+      }
+
+      string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
+      logPath = Path.Combine(logPath, import.OrganizationID.ToString());
+      string fileName = import.ImportID.ToString() + ".txt";
+      logPath = Path.Combine(logPath, fileName);
+
+      if (!File.Exists(logPath))
+      {
+        context.Response.Write("Invalid attachment.");
+        context.Response.ContentType = "text/html";
+        return;
+      }
+
+      /*
+      AttachmentDownload download = (new AttachmentDownloads(attachment.Collection.LoginUser)).AddNewAttachmentDownload();
+      download.AttachmentID = attachment.AttachmentID;
+      download.UserID = user.UserID;
+      download.DateDownloaded = DateTime.UtcNow;
+      download.Collection.Save();
+       */
+
+
+
+      string openType = "inline";
+      string fileType = "text/plain";
+
+      context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + fileName + "\"");
+      //context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
+      context.Response.ContentType = fileType;
+      context.Response.WriteFile(logPath);
     }
 
     private void ProcessTicketExport(HttpContext context)
