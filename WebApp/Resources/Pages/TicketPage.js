@@ -139,6 +139,64 @@ Selectize.define('sticky_placeholder', function (options) {
 
 });
 
+Selectize.define('no_results', function (options) {
+  var self = this;
+
+  options = $
+            .extend({
+              message: 'No results found.', html: function (data) {
+                return ('<div class="selectize-dropdown ' + data.classNames + ' dropdown-empty-message">' + '<div class="selectize-dropdown-content" style="padding: 3px 12px">' + data.message + '</div>' + '</div>');
+              }
+            }, options);
+
+  self.displayEmptyResultsMessage = function () {
+    this.$empty_results_container.css('top', this.$control.outerHeight());
+    this.$empty_results_container.show();
+  };
+
+  self.refreshOptions = (function () {
+    var original = self.refreshOptions;
+
+    return function () {
+      original.apply(self, arguments);
+      this.hasOptions ? this.$empty_results_container.hide() :
+          this.displayEmptyResultsMessage();
+    }
+  })();
+
+  self.onKeyDown = (function () {
+    var original = self.onKeyDown;
+
+    return function (e) {
+      original.apply(self, arguments);
+      if (e.keyCode === 27) {
+        this.$empty_results_container.hide();
+      }
+    }
+  })();
+
+  self.onBlur = (function () {
+    var original = self.onBlur;
+
+    return function () {
+      original.apply(self, arguments);
+      this.$empty_results_container.hide();
+    };
+  })();
+
+  self.setup = (function () {
+    var original = self.setup;
+    return function () {
+      original.apply(self, arguments);
+      self.$empty_results_container = $(options.html($.extend({
+        classNames: self.$input.attr('class')
+      }, options)));
+      self.$empty_results_container.insertBefore(self.$dropdown);
+      self.$empty_results_container.hide();
+    };
+  })();
+});
+
 $(document).ready(function () {
   _ticketNumber = top.Ts.Utils.getQueryValue("TicketNumber", window);
 
@@ -618,7 +676,7 @@ function SetupActionEditor(elem, action) {
       element.find('.upload-queue .ui-icon-cancel').show();
     },
     stop: function (e, data) {
-      top.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {debugger
+      top.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
         _newAction.Attachments = attachments;
         if (_oldActionID === -1) {
           _actionTotal = _actionTotal + 1;
@@ -906,29 +964,60 @@ function LoadTicketControls() {
 
   if ($('#ticket-assigned').length) {
     top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-      for (var i = 0; i < users.length; i++) {
-        AppendSelect('#ticket-assigned', users[i], 'group', users[i].ID, users[i].Name, users[i].IsSelected);
-      }
+      //AppendSelect('#ticket-assigned', null, 'group', -1, 'Unassigned', false);
+      //for (var i = 0; i < users.length; i++) {
+      //  AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].ID, users[i].Name, users[i].IsSelected);
+      //}
 
       $('#ticket-assigned').selectize({
+        dataAttr: 'assigned',
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
         },
         onChange: function (value) {
+          if (value == '-1') value = null;
           top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
             window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
           },
           function (error) {
             alert('There was an error setting the assigned user.');
           });
+          _ticketSender = new Object();
+          _ticketSender.UserID = top.Ts.System.User.UserID;
+          _ticketSender.Name = userFullName;
         },
-        closeAfterSelect: true
+        closeAfterSelect: true,
+        render: {
+          option: function (item, escape) {
+            debugger
+            var optionlabel = item.text;
+            if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
+
+            if (item.data.IsSender && item.data.IsCreator)
+              return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender and Creator)</div>';
+            else if (item.data.IsSender)
+              return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender)</div>';
+            else if (item.data.IsCreator)
+              return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Creator)</div>';
+            else 
+              return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + '</div>';
+          }
+        },
       });
+
+      var selectize = $("#ticket-assigned")[0].selectize;
+
+      for (var i = 0; i < users.length; i++) {
+        selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
+        if (users[i].IsSelected) SetAssignedUser(users[i].ID);
+      }
+
     });
   }
 
   if ($('#ticket-group').length) {
     top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
+      AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
       for (var i = 0; i < groups.length; i++) {
         AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
       }
@@ -1132,6 +1221,7 @@ function SetupTicketPropertyEvents() {
   $('#ticket-group').change(function (e) {
     var self = $(this);
     var GroupID = self.val();
+    if (GroupID == '-1') GroupID = null;
     top.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
       if (result !== null) {
         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
@@ -1310,7 +1400,8 @@ function SetupCustomerSection() {
         }
       },
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       },
       score: function (search)
       {
@@ -1773,7 +1864,8 @@ function SetupInventorySection() {
       },
       closeAfterSelect: true,
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       }
     });
 
@@ -1830,7 +1922,8 @@ function SetupUserQueuesSection() {
         this.removeItem(value, true);
       },
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       },
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
@@ -1892,7 +1985,8 @@ function SetupSubscribedUsersSection() {
         this.removeItem(value, true);
       },
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       },
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
@@ -1948,7 +2042,8 @@ function SetupAssociatedTicketsSection() {
         this.removeItem(value, true);
       },
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       },
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
@@ -2952,6 +3047,8 @@ function CreateActionElement(val, ShouldAppend) {
     $("#action-timeline").append(dateSpan);
     _currDateSpan = val.item.DateCreated;
   }
+
+  if(val.item.IsWC) val.item.Message = val.item.Message.replace(/\n\r?/g, '<br />');
   var html = _compiledActionTemplate(val);
   var actionElement = $(html);
   actionElement.find('a').attr('target', '_blank');

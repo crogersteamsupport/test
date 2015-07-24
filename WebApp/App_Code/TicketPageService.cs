@@ -73,18 +73,19 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public TicketPropertySelectField[] GetTicketUsers(int ticketID)
+        public TicketPageUser[] GetTicketUsers(int ticketID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Organization organization = TSAuthentication.GetOrganization(loginUser);
 
-            List<TicketPropertySelectField> result = new List<TicketPropertySelectField>();
+            List<TicketPageUser> result = new List<TicketPageUser>();
             Ticket ticket = Tickets.GetTicket(loginUser, ticketID);
 
             UsersView sender = new UsersView(TSAuthentication.GetLoginUser());
             sender.LoadLastSenderByTicketNumber(TSAuthentication.OrganizationID, ticketID);
 
             List<User> ticketUsers = new List<TeamSupport.Data.User>();
+            bool hasSenderBeenAdded = false;
 
             if (ticket.GroupID != null && organization.ShowGroupMembersFirstInTicketAssignmentList)
             {
@@ -96,75 +97,35 @@ namespace TSWebServices
             Users users = new Users(TSAuthentication.GetLoginUser());
             users.LoadByOrganizationID(TSAuthentication.OrganizationID, true);
 
-            ticketUsers.AddRange(users.Where(p => !ticketUsers.Any(p2 => p2.UserID == p.UserID)));
-            bool isSender = false;
-            bool hasSenderBeenAdded = false;
-            bool isCreator = false;
-            foreach (User user in ticketUsers.OrderBy(tu => tu.DisplayName))
+            ticketUsers.AddRange(users.Where(p => !ticketUsers.Any(p2 => p2.UserID == p.UserID)).OrderBy(tu => tu.DisplayName));
+
+            foreach (User user in ticketUsers)
             {
-                TicketPropertySelectField selectUser = new TicketPropertySelectField();
-                selectUser.ID = user.UserID;
+              TicketPageUser selectUser = new TicketPageUser();
+              selectUser.ID = user.UserID;
+              selectUser.Name = user.DisplayName;
 
-                string displayName = user.DisplayName + " ";
+              if (!string.IsNullOrEmpty(user.InOfficeComment)) selectUser.InOfficeMessage = user.InOfficeComment;
+              if (sender.Count > 0 && sender[0].UserID == user.UserID) selectUser.IsSender = true;
+              if (ticket.CreatorID == user.UserID) selectUser.IsCreator = true;
+              if (ticket.UserID == user.UserID) selectUser.IsSelected = true;
 
-                if (!string.IsNullOrEmpty(user.InOfficeComment))
+              if (selectUser.IsSender)
+              {
+                result.Insert(0, selectUser);
+                hasSenderBeenAdded = true;
+              }
+              else if (selectUser.IsCreator)
+              {
+                if (hasSenderBeenAdded)
                 {
-                    displayName = string.Format("{0} - {1} ", displayName, user.InOfficeComment);
-                }
-
-                string postLine = "";
-
-                if (sender.Count > 0 && sender[0].UserID == user.UserID)
-                {
-                  postLine = "(Sender";
-                  isSender = true;
-
-                }
-
-                if (ticket.CreatorID == user.UserID)
-                {
-                  isCreator = true;
-                  if (postLine.Length > 0)
-                  {
-                    postLine += " and Creator";
-                  }
-                  else
-                  {
-                    postLine = "(Creator";
-                  }
-                }
-
-                if (postLine.Length > 0)
-                {
-                    postLine += ")";
-                }
-
-                selectUser.Name = displayName + postLine;
-
-                if (ticket.UserID == user.UserID)
-                {
-                    selectUser.IsSelected = true;
-                }
-
-                if (isSender)
-                {
-                  result.Insert(0, selectUser);
-                  isSender = false;
-                  hasSenderBeenAdded = true;
-                }
-                else if(isCreator)
-                {
-                  if(hasSenderBeenAdded)
-                  {
-                    result.Insert(1, selectUser);
-                  }
-                  else
-                    result.Insert(0, selectUser);
-
-                  isCreator = false;
+                  result.Insert(1, selectUser);
                 }
                 else
-                  result.Add(selectUser);
+                  result.Insert(0, selectUser);
+              }
+              else
+                result.Add(selectUser);
             }
 
             return result.ToArray();
@@ -639,6 +600,17 @@ namespace TSWebServices
             public string Name { get; set; }
             [DataMember]
             public bool IsSelected { get; set; }
+        }
+
+        [DataContract]
+        public class TicketPageUser : TicketPropertySelectField
+        {
+          [DataMember]
+          public string InOfficeMessage { get; set; }
+          [DataMember]
+          public bool IsCreator { get; set; }
+          [DataMember]
+          public bool IsSender { get; set; }
         }
 
         [DataContract]

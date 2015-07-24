@@ -130,6 +130,64 @@ Selectize.define('sticky_placeholder', function (options) {
 
 });
 
+Selectize.define('no_results', function (options) {
+  var self = this;
+
+  options = $
+            .extend({
+              message: 'No results found.', html: function (data) {
+                return ('<div class="selectize-dropdown ' + data.classNames + ' dropdown-empty-message">' + '<div class="selectize-dropdown-content" style="padding: 3px 12px">' + data.message + '</div>' + '</div>');
+              }
+            }, options);
+
+  self.displayEmptyResultsMessage = function () {
+    this.$empty_results_container.css('top', this.$control.outerHeight());
+    this.$empty_results_container.show();
+  };
+
+  self.refreshOptions = (function () {
+    var original = self.refreshOptions;
+
+    return function () {
+      original.apply(self, arguments);
+      this.hasOptions ? this.$empty_results_container.hide() :
+          this.displayEmptyResultsMessage();
+    }
+  })();
+
+  self.onKeyDown = (function () {
+    var original = self.onKeyDown;
+
+    return function (e) {
+      original.apply(self, arguments);
+      if (e.keyCode === 27) {
+        this.$empty_results_container.hide();
+      }
+    }
+  })();
+
+  self.onBlur = (function () {
+    var original = self.onBlur;
+
+    return function () {
+      original.apply(self, arguments);
+      this.$empty_results_container.hide();
+    };
+  })();
+
+  self.setup = (function () {
+    var original = self.setup;
+    return function () {
+      original.apply(self, arguments);
+      self.$empty_results_container = $(options.html($.extend({
+        classNames: self.$input.attr('class')
+      }, options)));
+      self.$empty_results_container.insertBefore(self.$dropdown);
+      self.$empty_results_container.hide();
+    };
+  })();
+});
+
 $(document).ready(function () {
   apiKey = "45228242";
   LoadTicketPageOrder();
@@ -419,7 +477,7 @@ function SaveTicket() {
         if (chatID && chatID != null) {
           info.ChatID = chatID;
         }
-        debugger
+        
         top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
           if (result == null) {
             alert('There was an error saving your ticket.  Please try again.');
@@ -557,7 +615,7 @@ function isFormValid(callback) {
         });
 
         if (cfHasError) { InsertCreateError("Please fill in the red required custom fields."); }
-
+        
         //If custom required check if the ticket is a KB if not then see if we have at least one customer
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false)
         { 
@@ -955,7 +1013,8 @@ function SetupCustomerSection() {
         callback(null);
       },
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       },
       onItemAdd: function (value, $item) {
         $('#ticket-Customer').closest('.form-group').removeClass('hasError');
@@ -1029,6 +1088,17 @@ function SetupCustomerSection() {
         alert(result);
       }
     });
+  });
+
+  top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
+    if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
+      if ($('#ticket-Customer > div.tag-item').length < 1) {
+        $('#ticket-Customer').closest('.form-group').addClass('hasError');
+      }
+      else {
+        $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+      }
+    }
   });
 };
 
@@ -1259,7 +1329,8 @@ function SetupInventorySection() {
       },
       closeAfterSelect: true,
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       }
     });
   }
@@ -1295,7 +1366,8 @@ function SetupUserQueuesSection() {
         this.removeItem(value, true);
       },
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       },
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
@@ -1333,7 +1405,8 @@ function SetupSubscribedUsersSection() {
         this.removeItem(value, true);
       },
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       },
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
@@ -1421,7 +1494,8 @@ function SetupAssociatedTicketsSection() {
         this.removeItem(value, true);
       },
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       },
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();

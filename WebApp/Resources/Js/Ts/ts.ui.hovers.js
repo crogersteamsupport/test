@@ -54,7 +54,7 @@
 	  var assetid = e.data('assetid');
 	  e.popover({
 	    html: true,
-	    //container: 'body',
+	    container: '#ticket-properties-area',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {
@@ -149,7 +149,7 @@
 	    html: true,
 	    container: 'body',
 	    trigger: 'hover',
-	    delay: { "show": 1, "hide": 1 },
+	    delay: { "show": 1, "hide": 1000 },
 	    content: function () {
 	      return $.ajax({
 	        url: '../../../Tips/Product.aspx?ProductID=' + productid + '&TicketID=' + ticketid,
