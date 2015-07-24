@@ -1,5 +1,7 @@
 ﻿var importPage = null;
 var _uploadedFileName = '';
+var _fieldMaps = null;
+
 $(document).ready(function () {
     importPage = new ImportPage();
 });
@@ -186,6 +188,7 @@ ImportPage = function () {
       }
 
       $('#csvColumnsPanel').empty();
+      _fieldMaps = [];
       for (i = 0; i < panels.ImportFieldMap.length; i++) {
         var panel = $('<div>')
           .addClass('col-xs-6')
@@ -215,6 +218,10 @@ ImportPage = function () {
 
         if (panels.ImportFieldMap[i].ImportFieldID != 0) {
           fieldListClone.val(panels.ImportFieldMap[i].ImportFieldID);
+          var field = new Object();
+          field.ImportFieldID = panels.ImportFieldMap[i].ImportFieldID;
+          field.SourceName = panels.ImportFieldMap[i].SourceName;
+          _fieldMaps.push(field);
         }
         else {
           fieldListClone.find('option').filter(function () { return $(this).text() == panels.ImportFieldMap[i].SourceName; }).attr("selected", "selected");
@@ -223,6 +230,28 @@ ImportPage = function () {
         panelTitle.data("MappedFieldName", fieldListClone.find(":selected").text());
 
         fieldListClone.change(function () {
+          var csvColumnName = $(this).closest('.field-panel').children('.panel-heading').children('h3').text();
+          var selectedOptionText = $(this).find(":selected").text();
+          var selectedImportFieldID = $(this).find(":selected").val();
+          if (selectedOptionText != "Skipped" && selectedOptionText != csvColumnName)
+          {
+            var alreadyExists = false;
+            for (i = 0; i < _fieldMaps.length; i++) {
+              if (_fieldMaps[i].ImportFieldID == selectedImportFieldID)
+              {
+                _fieldMaps[i].SourceName = csvColumnName;
+                alreadyExists = true;
+                break;
+              }
+            }
+            if (!alreadyExists)
+            {
+              var field = new Object();
+              field.ImportFieldID = selectedImportFieldID;
+              field.SourceName = csvColumnName;
+              _fieldMaps.push(field);
+            }
+          }
           panelTitle.data("MappedFieldName", $(this).find(":selected").text());
         });
 
@@ -380,16 +409,7 @@ ImportPage = function () {
   $('#btnImport').click(function (e) {
     e.preventDefault();
     top.Ts.System.logAction('Import - Create import.');
-    var fields = [];
-    $('.panel-title').each(function (i, o) {
-      if ($(o).text() != 'Available Fields' && $(o).data('MappedFieldName') != 'Skipped' && $(o).data('MappedFieldName') != $(o).text()) {
-        var field = new Object();
-        field.ImportFieldName = $(o).data('MappedFieldName');
-        field.SourceName = $(o).text();
-        fields.push(field);
-      }
-    });
-    top.Ts.Services.Organizations.SaveImport(_uploadedFileName, $('#import-type').val(), JSON.stringify(fields), function (importFields) {
+    top.Ts.Services.Organizations.SaveImport(_uploadedFileName, $('#import-type').val(), JSON.stringify(_fieldMaps), function (importFields) {
       $('.import-section').removeClass('hidden');
       $('#import-new').addClass('hidden');
       $('#importUpload').addClass('hidden');

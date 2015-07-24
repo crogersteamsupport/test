@@ -1345,7 +1345,7 @@ namespace TSWebServices
           importMap.SourceName = field.SourceName;
           foreach (ImportFieldsViewItem importField in importFields)
           {
-            if (importField.FieldName.Trim().ToLower() == field.ImportFieldName.Trim().ToLower())
+            if (importField.ImportFieldID == field.ImportFieldID)
             {
               importMap.FieldID = importField.ImportFieldID;
               if (importField.IsCustom != null)
