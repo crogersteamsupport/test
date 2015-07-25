@@ -124,10 +124,11 @@ namespace TeamSupport.ServiceLibrary
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportContacts(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportCustomFields(import.RefType);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportAddresses(import, ReferenceType.Contacts);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportPhoneNumbers(import, ReferenceType.Contacts);
-            _csv = new CsvReader(new StreamReader(csvFile), true);
             break;
           case ReferenceType.ContactAddresses:
             ImportAddresses(import, ReferenceType.Contacts);
@@ -137,6 +138,8 @@ namespace TeamSupport.ServiceLibrary
             break;
           case ReferenceType.Tickets:
             ImportTickets(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportCustomFields(import.RefType);
             break;
           case ReferenceType.CustomFieldPickList:
             ImportCustomFieldPickList(import);
@@ -704,7 +707,7 @@ namespace TeamSupport.ServiceLibrary
                 break;
             }
             string key = assetSerialNumber + assetName + location;
-            if (!assetList.TryGetValue(key.Replace(" ", string.Empty), out refID))
+            if (!assetList.TryGetValue(key.ToUpper().Replace(" ", string.Empty), out refID))
             {
               errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as asset " + assetName + " does not exists.";
             }
@@ -728,7 +731,7 @@ namespace TeamSupport.ServiceLibrary
             string contactEmail = ReadString("ContactEmail");
             key = string.Empty;
             key = contactEmail + "(" + companyName + ")";
-            if (!assetList.TryGetValue(key.Replace(" ", string.Empty), out refID))
+            if (!contactList.TryGetValue(key.ToUpper().Replace(" ", string.Empty), out refID))
             {
               errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as contact " + key + " does not exists.";
             }
@@ -768,7 +771,7 @@ namespace TeamSupport.ServiceLibrary
             if (!string.IsNullOrEmpty(value.Trim()))
             {
               CustomValues existingCustomValue = new CustomValues(_importUser);
-              existingCustomValue.LoadByFieldID(field.ImportFieldID, (int)refType);
+              existingCustomValue.LoadByFieldID(field.ImportFieldID, refID);
               if (existingCustomValue.Count > 0)
               {
                 existingCustomValue[0].Value = value;
@@ -812,7 +815,7 @@ namespace TeamSupport.ServiceLibrary
       int count = 0;
       while (_csv.ReadNextRecord())
       {
-        string name = ReadString("Name");
+        string name = ReadString("CompanyName");
         if (name == string.Empty)
         {
           _importLog.Write("Action skipped due to missing name");
@@ -1029,6 +1032,19 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
+        string email = ReadString("ContactEmail");
+        if (email != string.Empty)
+        {
+          existingUser = new Users(_importUser);
+          existingUser.LoadByEmail(_organizationID, email);
+          if (existingUser.Count > 0)
+          {
+            user = existingUser[0];
+            oldOrganizationID = user.OrganizationID;
+            isUpdate = true;
+          }
+        }
+
         if (user == null)
         {
           user = users.AddNewUser();
@@ -1067,6 +1083,7 @@ namespace TeamSupport.ServiceLibrary
             companies.LoadByOrganizationID((int)companyID);
             if (companies.Count == 1 && companies[0].ParentID == _organizationID)
             {
+              company = companies[0];
               user.OrganizationID = companies[0].OrganizationID;
             }
             else if (companies[0].ParentID != _organizationID)
@@ -1096,6 +1113,7 @@ namespace TeamSupport.ServiceLibrary
             companies.LoadByOrganizationName(companyName, _organizationID);
             if (companies.Count == 1)
             {
+              company = companies[0];
               user.OrganizationID = companies[0].OrganizationID;
             }
             else if (companies.Count > 1)
@@ -1121,7 +1139,7 @@ namespace TeamSupport.ServiceLibrary
         user.MiddleName = ReadString("MiddleName");
         user.LastName = lastName;
         user.Title = ReadString("Title");
-        user.Email = ReadString("Email");
+        user.Email = ReadString("ContactEmail");
         user.BlockInboundEmail = ReadBool("PreventEmailFromCreatingAndUpdatingTickets");
         user.BlockEmailFromCreatingOnly = ReadBool("PreventEmailFromCreatingButAllowUpdatingTickets");
         user.IsPortalUser = ReadBool("PortalUser");
@@ -1293,7 +1311,7 @@ namespace TeamSupport.ServiceLibrary
             string contactEmail = ReadString("ContactEmail");
             int contactID;
             string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
-            if (!contactList.TryGetValue(searchTerm, out contactID))
+            if (!contactList.TryGetValue(searchTerm.ToUpper(), out contactID))
             {
               string firstName = ReadString("FirstName");
               string lastName = ReadString("LastName");
@@ -1427,11 +1445,9 @@ namespace TeamSupport.ServiceLibrary
         DateTime now = DateTime.UtcNow;
         PhoneNumbers newPhoneNumbers = new PhoneNumbers(_importUser);
         PhoneNumber newPhoneNumber = newPhoneNumbers.AddNewPhoneNumber();
-        PhoneNumber newPhoneNumber1 = newPhoneNumbers.AddNewPhoneNumber();
         PhoneNumber newPhoneNumber2 = newPhoneNumbers.AddNewPhoneNumber();
         PhoneNumber newPhoneNumber3 = newPhoneNumbers.AddNewPhoneNumber();
         newPhoneNumber.RefType = phoneNumberReferenceType;
-        newPhoneNumber1.RefType = phoneNumberReferenceType;
         newPhoneNumber2.RefType = phoneNumberReferenceType;
         newPhoneNumber3.RefType = phoneNumberReferenceType;
 
@@ -1439,7 +1455,6 @@ namespace TeamSupport.ServiceLibrary
         if (dateCreated != null)
         {
           newPhoneNumber.DateCreated = (DateTime)dateCreated;
-          newPhoneNumber1.DateCreated = (DateTime)dateCreated;
           newPhoneNumber2.DateCreated = (DateTime)dateCreated;
           newPhoneNumber3.DateCreated = (DateTime)dateCreated;
         }
@@ -1453,12 +1468,10 @@ namespace TeamSupport.ServiceLibrary
           }
         }
         newPhoneNumber.CreatorID = creatorID;
-        newPhoneNumber1.CreatorID = creatorID;
         newPhoneNumber2.CreatorID = creatorID;
         newPhoneNumber3.CreatorID = creatorID;
         
         newPhoneNumber.ModifierID = -2;
-        newPhoneNumber1.ModifierID = -2;
         newPhoneNumber2.ModifierID = -2;
         newPhoneNumber3.ModifierID = -2;
 
@@ -1500,7 +1513,6 @@ namespace TeamSupport.ServiceLibrary
         {
           case ReferenceType.Organizations:
             newPhoneNumber.RefID = orgID;
-            newPhoneNumber1.RefID = orgID;
             newPhoneNumber2.RefID = orgID;
             newPhoneNumber3.RefID = orgID;
             break;
@@ -1508,7 +1520,7 @@ namespace TeamSupport.ServiceLibrary
             string contactEmail = ReadString("ContactEmail");
             int contactID;
             string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
-            if (!contactList.TryGetValue(searchTerm, out contactID))
+            if (!contactList.TryGetValue(searchTerm.ToUpper(), out contactID))
             {
               string firstName = ReadString("FirstName");
               string lastName = ReadString("LastName");
@@ -1549,65 +1561,64 @@ namespace TeamSupport.ServiceLibrary
               }
             }
             newPhoneNumber.RefID = contactID;
-            newPhoneNumber1.RefID = contactID;
             newPhoneNumber2.RefID = contactID;
             newPhoneNumber3.RefID = contactID;
             break;
         }
 
         string phoneTypeName = ReadString("PhoneType");
-        string phoneTypeName1 = ReadString("PhoneType1");
         string phoneTypeName2 = ReadString("PhoneType2");
         string phoneTypeName3 = ReadString("PhoneType3");
         PhoneType phoneType = phoneTypes.FindByName(phoneTypeName);
+        int phoneTypeID = 0;
         if (phoneType == null)
         {
-          phoneType = phoneTypes.AddNewPhoneType();
-          phoneType.Name = phoneTypeName;
-          phoneType.OrganizationID = _organizationID;
+          PhoneTypes newPhoneTypes = new PhoneTypes(_importUser);
+          PhoneType newPhoneType = newPhoneTypes.AddNewPhoneType();
+          newPhoneType.Name = phoneTypeName;
+          newPhoneType.OrganizationID = _organizationID;
           if (dateCreated != null)
           {
-            phoneType.DateCreated = (DateTime)dateCreated;
+            newPhoneType.DateCreated = (DateTime)dateCreated;
           }
-          phoneType.CreatorID = creatorID;
-          phoneTypes.Save();
-        }
-        newPhoneNumber.PhoneTypeID = phoneType.PhoneTypeID;
+          newPhoneType.CreatorID = creatorID;
+          newPhoneTypes.Save();
+          phoneTypeID = newPhoneType.PhoneTypeID;
 
-        if (!string.IsNullOrEmpty(phoneTypeName1))
-        {
-          PhoneType phoneType1 = phoneTypes.FindByName(phoneTypeName1);
-          if (phoneType1 == null)
-          {
-            phoneType1 = phoneTypes.AddNewPhoneType();
-            phoneType1.Name = phoneTypeName1;
-            phoneType1.OrganizationID = _organizationID;
-            if (dateCreated != null)
-            {
-              phoneType1.DateCreated = (DateTime)dateCreated;
-            }
-            phoneType1.CreatorID = creatorID;
-            phoneTypes.Save();
-          }
-          newPhoneNumber1.PhoneTypeID = phoneType1.PhoneTypeID;
+          phoneTypes = new PhoneTypes(_importUser);
+          phoneTypes.LoadByOrganizationID(_organizationID);
         }
+        else
+        {
+          phoneTypeID = phoneType.PhoneTypeID;
+        }
+        newPhoneNumber.PhoneTypeID = phoneTypeID;
 
         if (!string.IsNullOrEmpty(phoneTypeName2))
         {
           PhoneType phoneType2 = phoneTypes.FindByName(phoneTypeName2);
           if (phoneType2 == null)
           {
-            phoneType2 = phoneTypes.AddNewPhoneType();
-            phoneType2.Name = phoneTypeName2;
-            phoneType2.OrganizationID = _organizationID;
+            PhoneTypes newPhoneTypes = new PhoneTypes(_importUser);
+            PhoneType newPhoneType = newPhoneTypes.AddNewPhoneType();
+            newPhoneType.Name = phoneTypeName;
+            newPhoneType.OrganizationID = _organizationID;
             if (dateCreated != null)
             {
-              phoneType2.DateCreated = (DateTime)dateCreated;
+              newPhoneType.DateCreated = (DateTime)dateCreated;
             }
-            phoneType2.CreatorID = creatorID;
-            phoneTypes.Save();
+            newPhoneType.CreatorID = creatorID;
+            newPhoneTypes.Save();
+            phoneTypeID = newPhoneType.PhoneTypeID;
+
+            phoneTypes = new PhoneTypes(_importUser);
+            phoneTypes.LoadByOrganizationID(_organizationID);
           }
-          newPhoneNumber2.PhoneTypeID = phoneType2.PhoneTypeID;
+          else
+          {
+            phoneTypeID = phoneType2.PhoneTypeID;
+          }
+          newPhoneNumber2.PhoneTypeID = phoneTypeID;
         }
 
         if (!string.IsNullOrEmpty(phoneTypeName3))
@@ -1615,33 +1626,39 @@ namespace TeamSupport.ServiceLibrary
           PhoneType phoneType3 = phoneTypes.FindByName(phoneTypeName3);
           if (phoneType3 == null)
           {
-            phoneType3 = phoneTypes.AddNewPhoneType();
-            phoneType3.Name = phoneTypeName3;
-            phoneType3.OrganizationID = _organizationID;
+            PhoneTypes newPhoneTypes = new PhoneTypes(_importUser);
+            PhoneType newPhoneType = newPhoneTypes.AddNewPhoneType();
+            newPhoneType.Name = phoneTypeName;
+            newPhoneType.OrganizationID = _organizationID;
             if (dateCreated != null)
             {
-              phoneType3.DateCreated = (DateTime)dateCreated;
+              newPhoneType.DateCreated = (DateTime)dateCreated;
             }
-            phoneType3.CreatorID = creatorID;
-            phoneTypes.Save();
+            newPhoneType.CreatorID = creatorID;
+            newPhoneTypes.Save();
+            phoneTypeID = newPhoneType.PhoneTypeID;
+
+            phoneTypes = new PhoneTypes(_importUser);
+            phoneTypes.LoadByOrganizationID(_organizationID);
           }
-          newPhoneNumber3.PhoneTypeID = phoneType3.PhoneTypeID;
+          else
+          {
+            phoneTypeID = phoneType3.PhoneTypeID;
+          }
+          newPhoneNumber3.PhoneTypeID = phoneTypeID;
         }
 
         newPhoneNumber.Number = ReadString("Number");
-        newPhoneNumber1.Number = ReadString("Number1");
         newPhoneNumber2.Number = ReadString("Number2");
         newPhoneNumber3.Number = ReadString("Number3");
 
         newPhoneNumber.Extension = ReadString("Extension");
-        newPhoneNumber1.Extension = ReadString("Extension1");
         newPhoneNumber2.Extension = ReadString("Extension2");
         newPhoneNumber3.Extension = ReadString("Extension3");
 
         PhoneNumbers existingPhoneNumbers = new PhoneNumbers(_importUser);
         existingPhoneNumbers.LoadByID(newPhoneNumber.RefID, phoneNumberReferenceType);
         bool alreadyExists = false;
-        bool alreadyExists1 = false;
         bool alreadyExists2 = false;
         bool alreadyExists3 = false;
         bool phoneAdded = false;
@@ -1676,41 +1693,6 @@ namespace TeamSupport.ServiceLibrary
         else
         {
           _importLog.Write("Phone Number in row " + index.ToString() + " already exists and was not added to phone numbers set.");
-        }
-
-        if (!string.IsNullOrEmpty(newPhoneNumber1.Number))
-        {
-          foreach (PhoneNumber existingPhoneNumber in existingPhoneNumbers)
-          {
-            if (
-              newPhoneNumber1.Number.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Number.Replace(" ", string.Empty).ToLower()
-              && newPhoneNumber1.Extension.Replace(" ", string.Empty).ToLower() == existingPhoneNumber.Extension.Replace(" ", string.Empty).ToLower()
-              && newPhoneNumber1.PhoneTypeID == existingPhoneNumber.PhoneTypeID)
-            {
-              alreadyExists1 = true;
-              break;
-            }
-          }
-
-          if (!alreadyExists1 && (newPhoneNumber1.Number.Trim() != string.Empty || newPhoneNumber1.Extension.Trim() != string.Empty))
-          {
-            phoneAdded = true;
-            bulkCount++;
-            PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
-            phoneNumber.RefType = newPhoneNumber1.RefType;
-            phoneNumber.DateCreated = newPhoneNumber1.DateCreated;
-            phoneNumber.CreatorID = newPhoneNumber1.CreatorID;
-            phoneNumber.ModifierID = newPhoneNumber1.ModifierID;
-            phoneNumber.RefID = newPhoneNumber1.RefID;
-            phoneNumber.Number = newPhoneNumber1.Number;
-            phoneNumber.Extension = newPhoneNumber1.Extension;
-            phoneNumber.PhoneTypeID = newPhoneNumber1.PhoneTypeID;
-            _importLog.Write("Phone Number 1 in row " + index.ToString() + " was added to phone numbers set.");
-          }
-          else
-          {
-            _importLog.Write("Phone Number 1 in row " + index.ToString() + " already exists and was not added to phone numbers set.");
-          }
         }
 
         if (!string.IsNullOrEmpty(newPhoneNumber2.Number))
@@ -2047,7 +2029,7 @@ namespace TeamSupport.ServiceLibrary
         if (!string.IsNullOrEmpty(emailOfUserAssignedTo))
         {
           int userID;
-          if (userOnlyList.TryGetValue(emailOfUserAssignedTo, out userID))
+          if (userOnlyList.TryGetValue(emailOfUserAssignedTo.ToUpper(), out userID))
           {
             ticket.UserID = userID;
           }
@@ -2239,7 +2221,7 @@ namespace TeamSupport.ServiceLibrary
         string apiFieldName = ReadString("ApiFieldName");
         string listValue = ReadString("PickListValue");
         List<string> list;
-        if (!fields.TryGetValue(apiFieldName, out list))
+        if (!fields.TryGetValue(apiFieldName.ToUpper(), out list))
         {
           list = new List<string>();
           fields.Add(apiFieldName, list);
