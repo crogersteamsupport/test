@@ -851,7 +851,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
 
   action.TimeSpent = timeSpent || 0;
   action.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
-  action.IsKnowledgeBase = false;
+  action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
   action.Description = tinymce.activeEditor.getContent();
