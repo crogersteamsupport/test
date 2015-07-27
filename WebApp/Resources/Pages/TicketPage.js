@@ -2160,7 +2160,6 @@ function SetupRemindersSection() {
 
       var reminderID = $('#reminderID').text();
       if (reminderID == '') reminderID = null;
-      debugger
       top.Ts.Services.System.EditReminder(reminderID, top.Ts.ReferenceTypes.Tickets, _ticketID, title, date, userid, function (result) {
         $('#RemindersModal').modal('hide');
         $('#reminderID').text('');
