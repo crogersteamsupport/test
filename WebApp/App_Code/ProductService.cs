@@ -371,7 +371,7 @@ namespace TSWebServices
       productVersion.ProductID = info.ProductID;
       productVersion.ProductVersionStatusID = info.ProductVersionStatusID;
       productVersion.VersionNumber = info.VersionNumber;
-      productVersion.ReleaseDate = info.ReleaseDate;
+      productVersion.ReleaseDate = (DateTime)info.ReleaseDate;
       productVersion.IsReleased = info.IsReleased;
       productVersion.Description = info.Description;
       productVersion.JiraProjectKey = info.JiraProjectKey;
@@ -887,19 +887,26 @@ namespace TSWebServices
       foreach (DataRow row in organizationProducts.Table.Rows)
       {
         ProductCustomOrganization test = new ProductCustomOrganization();
-        test.Customer = row["OrganizationName"].ToString();
+            test.Customer = row["OrganizationName"].ToString();
         test.VersionNumber = row["VersionNumber"].ToString();
         test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(loginUser, (((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
         test.VersionStatus = row["VersionStatus"].ToString();
         test.IsReleased = row["IsReleased"].ToString();
         test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
-        test.DateCreated = ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal());
+        test.DateCreated = ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal()); ;
         test.OrganizationProductID = (int)row["OrganizationProductID"];
         test.CustomFields = new List<string>();
         foreach (CustomField field in fields)
         {
           CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.OrganizationProductID);
-          test.CustomFields.Add(customValue.Value);
+          DateTime temp;
+          if(customValue.FieldType == CustomFieldType.Date)
+          {
+              DateTime.TryParse(customValue.Value, out temp);
+              test.CustomFields.Add(temp.ToString(GetDateFormatNormal()));
+          }
+          else        
+            test.CustomFields.Add(customValue.Value);
         }
 
 
