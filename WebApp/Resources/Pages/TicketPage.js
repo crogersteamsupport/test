@@ -2158,13 +2158,18 @@ function SetupRemindersSection() {
         $('#ticket-reminder-title').parent().addClass('has-success').removeClass('has-error');
       }
 
-      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Tickets, _ticketID, title, date, userid, function (result) {
-        var label = ellipseString(result.Description, 30) + '<br>' + result.DueDate.localeFormat(top.Ts.Utils.getDateTimePattern())
-        PrependTag($("#ticket-reminder-span"), result.ReminderID, label, result);
+      var reminderID = $('#reminderID').text();
+      if (reminderID == '') reminderID = null;
+      debugger
+      top.Ts.Services.System.EditReminder(reminderID, top.Ts.ReferenceTypes.Tickets, _ticketID, title, date, userid, function (result) {
         $('#RemindersModal').modal('hide');
+        $('#reminderID').text('');
         $('#ticket-reminder-title').val('');
         $('#ticket-reminder-date').val('');
         selectizeControl.clear();
+        top.Ts.Services.System.GetItemReminders(top.Ts.ReferenceTypes.Tickets, _ticketID, top.Ts.System.User.UserID, function (reminders) {
+          AddReminders(reminders);
+        })
       },
       function () {
         $('#reminder-error').show();
@@ -2185,6 +2190,17 @@ function SetupRemindersSection() {
         alert('There was a problem removing the reminder from the ticket.');
       }
     });
+
+    $('#ticket-reminder-span').on('click', '.tag-item', function (e) {
+      var reminder = $(this).data('tag');
+      $('#reminderID').text(reminder.ReminderID); 
+      //var selectizeControl = $reminderSelect[0].selectize;
+      //selectizeControl.addItem(1839999);
+      $('#ticket-reminder-title').val(reminder.Description);
+      var date = reminder.DueDate == null ? null : top.Ts.Utils.getMsDate(reminder.DueDate);
+      $('#ticket-reminder-date').val(date.localeFormat(top.Ts.Utils.getDateTimePattern()));
+      $('#RemindersModal').modal('show');
+    });
   }
 }
 
@@ -2194,7 +2210,7 @@ function AddReminders(reminders) {
 
   for (var i = 0; i < reminders.length; i++) {
     var label = ellipseString(reminders[i].Description, 30) + '<br>' + reminders[i].DueDate.localeFormat(top.Ts.Utils.getDateTimePattern())
-    PrependTag(remindersDiv, reminders[i].ReminderID, label, reminders[i]);
+    var reminderElem = PrependTag(remindersDiv, reminders[i].ReminderID, label, reminders[i]);
   };
 }
 
