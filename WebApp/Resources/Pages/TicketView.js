@@ -877,10 +877,6 @@ TicketGrid = function (options) {
             column.formatter = floatFormatter;
         } else if (repCol.DataType == "bit") {
             column.formatter = bitFormatter;
-        } else if (repCol.DataType == "varchar") {
-          column.formatter = stringFormatter;
-        } else if (repCol.DataType == "varchar") {
-          column.formatter = stringFormatter;
         } else if (repCol.IsEmail == true) {
             column.formatter = emailFormatter;
         } else if (repCol.IsLink == true) {
@@ -888,6 +884,10 @@ TicketGrid = function (options) {
         } else if (repCol.IsOpenable == true) {
             column.formatter = openFormatter;
             column.openField = repCol.OpenField;
+        } else if (repCol.DataType == "varchar") {
+          column.formatter = stringFormatter;
+        } else if (repCol.DataType == "varchar") {
+          column.formatter = stringFormatter;
         }
         return column;
     }

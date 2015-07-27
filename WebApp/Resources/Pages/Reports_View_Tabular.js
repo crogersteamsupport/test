@@ -150,10 +150,6 @@
                     column.formatter = floatFormatter;
                 } else if (repCol.DataType == "bit") {
                     column.formatter = bitFormatter;
-                } else if (repCol.DataType == "varchar") {
-                  column.formatter = stringFormatter;
-                } else if (repCol.DataType == "text") {
-                  column.formatter = stringFormatter;
                 } else if (repCol.IsEmail == true) {
                   column.formatter = emailFormatter;
                 } else if (repCol.IsLink == true) {
@@ -165,6 +161,10 @@
                     column.formatter = ticketNumberFormatter;
                 } else if (low == 'companyname') {
                     column.formatter = companyFormatter;
+                } else if (repCol.DataType == "varchar") {
+                  column.formatter = stringFormatter;
+                } else if (repCol.DataType == "text") {
+                  column.formatter = stringFormatter;
                 }
 
                 columns.push(column);

@@ -21,6 +21,7 @@ var _compiledActionTemplate = null;
 var _actionTotal = 0;
 var _workingActionNumer = 0;
 var _isLoading = false;
+var _isCreatingAction = false;
 var dateformat;
 
 var _timerid;
@@ -485,6 +486,7 @@ function CreateNewActionLI() {
         if (isValid) {
           SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
             if (result) {
+              _isCreatingAction = true;
               $('#action-new-editor').parent().fadeOut('normal', function () {
                 tinymce.activeEditor.destroy();
               });
@@ -3063,6 +3065,7 @@ function CreateActionElement(val, ShouldAppend) {
       $('.action-placeholder').after(actionElement);
     }
   }
+  _isCreatingAction = false;
   return actionElement;
 };
 
@@ -3112,8 +3115,10 @@ function CreateHandleBarHelpers() {
   });
 
   Handlebars.registerHelper('ActionNumber', function () {
-    _workingActionNumer = _workingActionNumer - 1;
-    return _workingActionNumer + 1;
+    if (!_isCreatingAction) {
+      _workingActionNumer = _workingActionNumer - 1;
+      return _workingActionNumer + 1;
+    }
   });
 
   Handlebars.registerHelper('CanPin', function (options) {
