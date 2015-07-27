@@ -991,7 +991,6 @@ function LoadTicketControls() {
         closeAfterSelect: true,
         render: {
           option: function (item, escape) {
-            debugger
             var optionlabel = item.text;
             if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
 
@@ -1008,6 +1007,7 @@ function LoadTicketControls() {
       });
 
       var selectize = $("#ticket-assigned")[0].selectize;
+      selectize.addOption({ value: -1, text: 'Unassigned', data: '' });
 
       for (var i = 0; i < users.length; i++) {
         selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
@@ -4336,14 +4336,17 @@ var SetVersion = function (VersionID) {
   var selectField = $('#ticket-Versions');
   if (selectField.length > 0) {
     var selectize = $('#ticket-Versions')[0].selectize;
-    selectize.addItem(VersionID, false);
+    if (VersionID) selectize.addItem(VersionID, false);
+    else selectize.clear(true);
   }
 };
+
 
 var SetSolved = function (ResolvedID) {
   var selectField = $('#ticket-Resolved');
   if (selectField.length > 0) {
     var selectize = $('#ticket-Resolved')[0].selectize;
-    selectize.addItem(ResolvedID, false);
+    if (ResolvedID) selectize.addItem(ResolvedID, false);
+    else selectize.clear(true);
   }
 };
