@@ -481,7 +481,6 @@ function CreateNewActionLI() {
       var self = $(this);
       self.prop('disabled', true);
       _oldActionID = self.data('actionid');
-
       isFormValid(function (isValid) {
         if (isValid) {
           SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
@@ -3419,6 +3418,7 @@ function CreateTimeLineDelegates() {
 
         top.Ts.Services.Tickets.GetAction(action.RefID, function (action) {
           parentLI.find('div.timeline-body').html(action.Description);
+          parentLI.data().action.Message = action.Description;
         });
 
       }, function () {
@@ -3433,15 +3433,14 @@ function CreateTimeLineDelegates() {
 
     var self = $(this);
     var action = self.closest('li').data().action;
-
     var editor = $('#action-new-editor');
     SetupActionEditor(editor, action);
     SetupActionTypeSelect();
 
 
 
-    //FlipNewActionBadge(false);
-    //_isNewActionPrivate = false;
+    FlipNewActionBadge(!action.IsVisibleOnPortal);
+    _isNewActionPrivate = !action.IsVisibleOnPortal;
     $('#action-save-alert').text('').hide();
 
   });
