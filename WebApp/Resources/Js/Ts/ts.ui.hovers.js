@@ -50,11 +50,11 @@
 	$("body").on("mouseenter", ".AssetAnchor", function (event) {
 	  var e = $(this);
 	  e.unbind('hover');
-	  var userid = e.data('userid');
+	  //var userid = e.data('userid');
 	  var assetid = e.data('assetid');
 	  e.popover({
 	    html: true,
-	    container: '#ticket-properties-area',
+	    //container: '#ticket-properties-area',
 	    trigger: 'hover',
 	    delay: { "show": 1, "hide": 1 },
 	    content: function () {

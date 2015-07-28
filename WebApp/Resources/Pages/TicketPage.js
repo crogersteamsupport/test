@@ -1888,9 +1888,9 @@ function AddInventory(Inventory) {
   var InventoryDiv = $("#ticket-Inventory");
   InventoryDiv.empty();
   $("#ticket-Inventory-Input").val('');
-
   for (var i = 0; i < Inventory.length; i++) {
-    var newelement = PrependTag(InventoryDiv, Inventory[i].AssetID, Inventory[i].Name, Inventory[i], "tag-item AssetAnchor");
+    var label = '<span class="AssetAnchor" data-assetid="' + Inventory[i].AssetID + '" data-placement="left">' + Inventory[i].Name + '</span>';
+    var newelement = PrependTag(InventoryDiv, Inventory[i].AssetID, label, Inventory[i], "tag-item");
     newelement.data('assetid', Inventory[i].AssetID).data('placement', 'left');
   };
 }
@@ -1954,7 +1954,8 @@ function AddQueues(queues) {
   $("#ticket-UserQueue-Input").val('');
 
   for (var i = 0; i < queues.length; i++) {
-    var newelement = PrependTag(UserQueueDiv, queues[i].UserID, queues[i].FirstName + " " + queues[i].LastName, queues[i], "tag-item UserAnchor");
+    var label = '<span class="UserAnchor" data-userid="' + queues[i].UserID + '" data-placement="left">' + queues[i].FirstName + " " + queues[i].LastName + '</span>';
+    var newelement = PrependTag(UserQueueDiv, queues[i].UserID, label, queues[i], "tag-item");
     newelement.data('userid', queues[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
   };
 }
@@ -2016,7 +2017,8 @@ function AddSubscribers(Subscribers) {
   $("#ticket-SubscribedUsers-Input").val('');
 
   for (var i = 0; i < Subscribers.length; i++) {
-    var newelement = PrependTag(SubscribersDiv, Subscribers[i].UserID, Subscribers[i].FirstName + " " + Subscribers[i].LastName, Subscribers[i], "tag-item UserAnchor");
+    var label = '<span class="UserAnchor" data-userid="' + Subscribers[i].UserID + '" data-placement="left">' + Subscribers[i].FirstName + " " + Subscribers[i].LastName + '</span>';
+    var newelement = PrependTag(SubscribersDiv, Subscribers[i].UserID, label, Subscribers[i], "tag-item");
     newelement.data('userid', Subscribers[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
   };
 }
@@ -2208,7 +2210,7 @@ function AddReminders(reminders) {
   remindersDiv.empty();
 
   for (var i = 0; i < reminders.length; i++) {
-    var label = ellipseString(reminders[i].Description, 30) + '<br>' + reminders[i].DueDate.localeFormat(top.Ts.Utils.getDateTimePattern())
+    var label = ellipseString(reminders[i].Description, 30) + '<br>' + reminders[i].DueDate.localeFormat(top.Ts.Utils.getDateTimePattern());
     var reminderElem = PrependTag(remindersDiv, reminders[i].ReminderID, label, reminders[i]);
   };
 }
@@ -4355,7 +4357,6 @@ var SetVersion = function (VersionID) {
     else selectize.clear(true);
   }
 };
-
 
 var SetSolved = function (ResolvedID) {
   var selectField = $('#ticket-Resolved');

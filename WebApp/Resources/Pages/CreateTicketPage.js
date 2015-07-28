@@ -2212,7 +2212,7 @@ function setInitialValue() {
   var chatID = top.Ts.Utils.getQueryValue('chatid', window)
   if (chatID && chatID != null) {
     top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
-      appendCustomer(result);
+      AddCustomers(result);
     });
   }
 }
