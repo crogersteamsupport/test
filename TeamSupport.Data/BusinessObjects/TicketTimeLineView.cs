@@ -20,7 +20,7 @@ namespace TeamSupport.Data
                 command.CommandText = @"WITH BaseQuery AS(
                                         SELECT *, ROW_NUMBER() OVER (ORDER BY DateCreated DESC) AS 'RowNum'
 	                                    FROM TicketTimelineView
-	                                    WHERE TicketID = @TicketID AND (WCUserID IS NULL OR  WCUserID = @UserID)
+	                                    WHERE TicketID = @TicketID
                                     )
 
                                     SELECT *
