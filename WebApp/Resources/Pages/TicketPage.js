@@ -863,11 +863,13 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     if (actionType !== null) {
       result.item.MessageType = actionType.Name;
     }
-    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
     callback(result)
   }, function (error) {
     callback(null);
   });
+
+  top.Ts.System.logAction('Action Saved');
+  window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
 }
 
 var confirmVisibleToCustomers = function () {
