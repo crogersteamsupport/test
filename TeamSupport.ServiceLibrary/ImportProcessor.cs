@@ -33,9 +33,11 @@ namespace TeamSupport.ServiceLibrary
       {
         if (!imports.IsEmpty)
         {
-          string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
-          logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
-          _importLog = new ImportLog(logPath, imports[0].ImportID);
+          _importUser = new Data.LoginUser(LoginUser.ConnectionString, -2, imports[0].OrganizationID, null);
+          string path = AttachmentPath.GetPath(_importUser, imports[0].OrganizationID, AttachmentPath.Folder.ImportLogs);
+          //string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
+          //logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
+          _importLog = new ImportLog(path, imports[0].ImportID);
           _importLog.Write("Importing importID: " + imports[0].ImportID.ToString());
 
           ProcessImport(imports[0]);
@@ -69,7 +71,6 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteData(import.Row);
       Logs.WriteLine();
       Logs.WriteEvent("***********************************************************************************");
-      _importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, import.OrganizationID, null);
 
       //string csvFile = "U:\\Development\\Imports\\TestFiles\test.csv"; // Path.Combine(path, import.FileName);
       string csvFile = Path.Combine(AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports), import.FileName);
@@ -140,6 +141,28 @@ namespace TeamSupport.ServiceLibrary
             ImportTickets(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportCustomFields(import.RefType);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportActions(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportOrganizationTickets(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportContactTickets(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportAssetTickets(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportTicketRelationships(import);
+            break;
+          case ReferenceType.OrganizationTickets:
+            ImportOrganizationTickets(import);
+            break;
+          case ReferenceType.ContactTickets:
+            ImportContactTickets(import);
+            break;
+          case ReferenceType.AssetTickets:
+            ImportAssetTickets(import);
+            break;
+          case ReferenceType.TicketRelationships:
+            ImportTicketRelationships(import);
             break;
           case ReferenceType.CustomFieldPickList:
             ImportCustomFieldPickList(import);
@@ -178,6 +201,7 @@ namespace TeamSupport.ServiceLibrary
 
       while (_csv.ReadNextRecord())
       {
+        int ticketID = 0;
         Ticket ticket = null;
         string ticketImportID = ReadString("TicketImportID");
         if (!string.IsNullOrEmpty(ticketImportID))
@@ -187,6 +211,7 @@ namespace TeamSupport.ServiceLibrary
           if (tickets.Count == 1)
           {
             ticket = tickets[0];
+            ticketID = ticket.TicketID;
           }
           else if (tickets.Count > 1)
           {
@@ -195,7 +220,31 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        int ticketID = ReadInt("TicketID");
+        if (ticket == null)
+        {
+          int? ticketNumber;
+          ticketNumber = ReadIntNull("TicketNumber");
+          if (ticketNumber != null)
+          {
+            Tickets tickets = new Tickets(_importUser);
+            tickets.LoadByTicketNumber(_organizationID, (int)ticketNumber);
+            if (tickets.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketNumber was found.");
+              continue;
+            }
+            else if (tickets.Count == 1)
+            {
+              ticket = tickets[0];
+              ticketID = ticket.TicketID;
+            }
+          }
+        }
+
+        if (ticketID == 0)
+        {
+          ticketID = ReadInt("TicketID");
+        }
         if (!ticketList.ContainsValue(ticketID) && ticket == null)
         {
           _importLog.Write("Action skipped due to missing ticket");
@@ -219,7 +268,7 @@ namespace TeamSupport.ServiceLibrary
 
         //if (action == null)
         //{
-          string importID = ReadString("ImportID");
+          string importID = ReadString("ActionImportID");
           if (importID != string.Empty)
           {
             existingAction = new Actions(_importUser);
@@ -257,7 +306,11 @@ namespace TeamSupport.ServiceLibrary
         string desc = ConvertHtmlLineBreaks(ReadString("Description"));
         action.Description = desc;
 
-        action.DateCreated = ReadDate("DateCreated", DateTime.UtcNow);
+        DateTime? dateCreated = ReadDateNull("DateCreated");
+        if (dateCreated != null)
+        {
+          action.DateCreated = (DateTime)dateCreated;
+        }
         action.DateModified = DateTime.UtcNow;
         action.DateStarted = ReadDateNull("DateStarted");
         action.ActionSource = "Import";
@@ -265,7 +318,7 @@ namespace TeamSupport.ServiceLibrary
         action.ModifierID = -2;
         action.Name = "";
         action.TicketID = ticketID;
-        action.ImportID = ReadString("ImportID");
+        action.ImportID = ReadString("ActionImportID");
         action.TimeSpent = ReadIntNull("TimeSpent");
 
         action.Pinned = ReadBool("IsPinned");
@@ -340,7 +393,7 @@ namespace TeamSupport.ServiceLibrary
 
         //if (asset == null)
         //{
-          string importID = ReadString("ImportID");
+          string importID = ReadString("AssetImportID");
           if (importID != string.Empty)
           {
             existingAsset = new Assets(_importUser);
@@ -388,8 +441,17 @@ namespace TeamSupport.ServiceLibrary
         asset.Location = location;
         asset.Notes = ReadString("Notes");
         asset.ProductID = product.ProductID;
-        asset.WarrantyExpiration = (DateTime)ReadDate("WarrantyExpiration", DateTime.UtcNow);
-        asset.DateCreated = (DateTime)ReadDate("DateCreated", DateTime.UtcNow);
+
+        DateTime? warrantyExipration = ReadDateNull("WarrantyExpiration");
+        if (warrantyExipration != null)
+        {
+          asset.WarrantyExpiration = (DateTime)warrantyExipration;
+        }
+        DateTime? dateCreated = ReadDateNull("DateCreated");
+        if (dateCreated != null)
+        {
+          asset.DateCreated = (DateTime)dateCreated;
+        }
         asset.DateModified = DateTime.UtcNow;
 
         int creatorID = -2;
@@ -404,7 +466,7 @@ namespace TeamSupport.ServiceLibrary
         asset.ModifierID = -2;
         asset.SubPartOf = null;
         //asset.Status = this is a deprecated field
-        asset.ImportID = ReadString("ImportID");
+        asset.ImportID = ReadString("AssetImportID");
 
         ProductVersion productVersion = null;
         string productVersionNumber = ReadString("ProductVersion");
@@ -737,10 +799,29 @@ namespace TeamSupport.ServiceLibrary
             }
             break;
           case ReferenceType.Tickets:
-            string ticketNumber = ReadString("TicketNumber");
-            if (!ticketList.TryGetValue(ticketNumber, out refID))
+            string importID = ReadString("TicketImportID");
+            if (importID != string.Empty)
             {
-              errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as ticket# " + ticketNumber + " does not exists.";
+              Tickets tickets = new Tickets(_importUser);
+              tickets.LoadByImportID(importID, _organizationID);
+              if (tickets.Count > 1)
+              {
+                _importLog.Write("More than one ticket matching the TicketImportID was found.");
+                continue;
+              }
+              else if (tickets.Count == 1)
+              {
+                refID = tickets[0].TicketID;
+              }
+            }
+
+            if (refID == 0)
+            {
+              string ticketNumber = ReadString("TicketNumber");
+              if (!ticketList.TryGetValue(ticketNumber, out refID))
+              {
+                errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as ticket# " + ticketNumber + " does not exists.";
+              }
             }
             break;
         }
@@ -826,7 +907,7 @@ namespace TeamSupport.ServiceLibrary
         Organization company = null;
         bool isUpdate = false;
 
-        string importID = ReadString("ImportID");
+        string importID = ReadString("CompanyImportID");
         if (importID != string.Empty)
         {
           existingCompany.LoadByImportID(importID, _organizationID);
@@ -931,7 +1012,7 @@ namespace TeamSupport.ServiceLibrary
         company.InActiveReason = ReadString("InactiveReason");
 
         company.ExtraStorageUnits = 0;
-        company.ImportID = ReadString("ImportID");
+        company.ImportID = ReadString("CompanyImportID");
         company.IsCustomerFree = false;
         company.ParentID = _organizationID;
         company.PortalSeats = 0;
@@ -1015,7 +1096,7 @@ namespace TeamSupport.ServiceLibrary
         bool isUpdate = false;
         int oldOrganizationID = 0;
 
-        string importID = ReadString("ImportID");
+        string importID = ReadString("ContactImportID");
         if (importID != string.Empty)
         {
           existingUser.LoadByImportID(importID, _organizationID);
@@ -1134,7 +1215,7 @@ namespace TeamSupport.ServiceLibrary
           user.OrganizationID = unknownCompany.OrganizationID;
         }
 
-        user.ImportID = ReadString("ImportID");
+        user.ImportID = ReadString("ContactImportID");
         user.FirstName = firstName;
         user.MiddleName = ReadString("MiddleName");
         user.LastName = lastName;
@@ -1827,7 +1908,7 @@ namespace TeamSupport.ServiceLibrary
         Ticket ticket = null;
         bool isUpdate = false;
 
-        string importID = ReadString("ImportID");
+        string importID = ReadString("TicketImportID");
         if (importID != string.Empty)
         {
           existingTicket.LoadByImportID(importID, _organizationID);
@@ -1857,7 +1938,7 @@ namespace TeamSupport.ServiceLibrary
               isUpdate = true;
               maxTicketNumber = Math.Max((int)ticketNumber, maxTicketNumber);
             }
-            else if (existingTicket.Count > 0)
+            else if (existingTicket.Count > 1)
             {
               _importLog.Write("More than one action matching the TicketNumber was found.");
               continue;
@@ -2134,9 +2215,9 @@ namespace TeamSupport.ServiceLibrary
         string parentCatName = ReadString("KBParentCatName");
         string catName = ReadString("KBCatName");
         KnowledgeBaseCategory cat = null;
-        if (catName != null)
+        if (!string.IsNullOrEmpty(catName))
         {
-          if (parentCatName == null)
+          if (string.IsNullOrEmpty(parentCatName))
           {
             cat = kbCats.FindByName(catName, -1);
             if (cat == null)
@@ -2175,7 +2256,7 @@ namespace TeamSupport.ServiceLibrary
         ticket.IsVisibleOnPortal = ReadBool("VisibleToCustomers");
         ticket.OrganizationID = _organizationID;
         ticket.TicketSource = ReadString("Source");
-        ticket.ImportID = ReadString("ImportID");
+        ticket.ImportID = ReadString("TicketImportID");
         DateTime? dateCreated = ReadDateNull("DateCreated");
         if (dateCreated != null)
         {
@@ -2208,6 +2289,833 @@ namespace TeamSupport.ServiceLibrary
       UpdateImportCount(import, count);
       EmailPosts.DeleteImportEmails(_importUser);
       _importLog.Write(count.ToString() + " tickets imported.");
+    }
+
+    private void ImportOrganizationTickets(Import import)
+    {
+      while (_csv.ReadNextRecord())
+      {
+        Tickets ticket = new Tickets(_importUser);
+
+        string importID = ReadString("TicketImportID");
+        if (importID != string.Empty)
+        {
+          ticket.LoadByImportID(importID, _organizationID);
+          if (ticket.Count > 1)
+          {
+            _importLog.Write("More than one ticket matching the TicketImportID was found.");
+            continue;
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          int? ticketNumber;
+          ticketNumber = ReadIntNull("TicketNumber");
+          if (ticketNumber != null)
+          {
+            ticket = new Tickets(_importUser);
+            ticket.LoadByTicketNumber(_organizationID, (int)ticketNumber);
+            if (ticket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketNumber was found.");
+              continue;
+            }
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          _importLog.Write("No ticket matching either the TicketImportID or the TicketNumber was found.");
+          continue;
+        }
+
+        Organizations company = new Organizations(_importUser);
+
+        string companyImportID = ReadString("CompanyImportID");
+        if (companyImportID != string.Empty)
+        {
+          company.LoadByImportID(companyImportID, _organizationID);
+          if (company.Count > 1)
+          {
+            _importLog.Write("More than one company matching the CompanyImportID was found.");
+            continue;
+          }
+        }
+
+        if (company.Count == 0)
+        {
+          string companyName = ReadString("CompanyName");
+          if (companyName != string.Empty)
+          {
+            company = new Organizations(_importUser);
+            company.LoadByName(companyName, _organizationID);
+            if (company.Count > 1)
+            {
+              _importLog.Write("More than one company matching the CompanyName was found.");
+              continue;
+            }
+          }
+        }
+
+        if (company.Count == 0)
+        {
+          _importLog.Write("No company matching either the CompanyImportID or the CompanyName was found.");
+        }
+        else
+        {
+          ticket.AddOrganization(company[0].OrganizationID, ticket[0].TicketID);
+          _importLog.Write("Company " + company[0].Name + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+        }
+
+
+        Organizations company2 = new Organizations(_importUser);
+
+        string companyImportID2 = ReadString("CompanyImportID2");
+        if (companyImportID2 != string.Empty)
+        {
+          company2.LoadByImportID(companyImportID2, _organizationID);
+          if (company2.Count > 1)
+          {
+            _importLog.Write("More than one company matching the CompanyImportID2 was found.");
+            continue;
+          }
+        }
+
+        if (company2.Count == 0)
+        {
+          string companyName2 = ReadString("CompanyName2");
+          if (companyName2 != string.Empty)
+          {
+            company2 = new Organizations(_importUser);
+            company2.LoadByName(companyName2, _organizationID);
+            if (company2.Count > 1)
+            {
+              _importLog.Write("More than one company matching the CompanyName2 was found.");
+              continue;
+            }
+          }
+        }
+
+        if (company2.Count == 0)
+        {
+          _importLog.Write("No company matching either the CompanyImportID2 or the CompanyName2 was found.");
+        }
+        else
+        {
+          ticket.AddOrganization(company2[0].OrganizationID, ticket[0].TicketID);
+          _importLog.Write("Company " + company2[0].Name + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+        }
+
+        Organizations company3 = new Organizations(_importUser);
+
+        string companyImportID3 = ReadString("CompanyImportID3");
+        if (companyImportID3 != string.Empty)
+        {
+          company3.LoadByImportID(companyImportID3, _organizationID);
+          if (company3.Count > 1)
+          {
+            _importLog.Write("More than one company matching the CompanyImportID3 was found.");
+            continue;
+          }
+        }
+
+        if (company3.Count == 0)
+        {
+          string companyName3 = ReadString("CompanyName3");
+          if (companyName3 != string.Empty)
+          {
+            company3 = new Organizations(_importUser);
+            company3.LoadByName(companyName3, _organizationID);
+            if (company3.Count > 1)
+            {
+              _importLog.Write("More than one company matching the CompanyName3 was found.");
+              continue;
+            }
+          }
+        }
+
+        if (company3.Count == 0)
+        {
+          _importLog.Write("No company matching either the CompanyImportID3 or the CompanyName3 was found.");
+        }
+        else
+        {
+          ticket.AddOrganization(company3[0].OrganizationID, ticket[0].TicketID);
+          _importLog.Write("Company " + company3[0].Name + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+        }
+      }   
+    }
+
+    private void ImportContactTickets(Import import)
+    {
+      while (_csv.ReadNextRecord())
+      {
+        Tickets ticket = new Tickets(_importUser);
+
+        string importID = ReadString("TicketImportID");
+        if (importID != string.Empty)
+        {
+          ticket.LoadByImportID(importID, _organizationID);
+          if (ticket.Count > 1)
+          {
+            _importLog.Write("More than one ticket matching the TicketImportID was found.");
+            continue;
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          int? ticketNumber;
+          ticketNumber = ReadIntNull("TicketNumber");
+          if (ticketNumber != null)
+          {
+            ticket = new Tickets(_importUser);
+            ticket.LoadByTicketNumber(_organizationID, (int)ticketNumber);
+            if (ticket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketNumber was found.");
+              continue;
+            }
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          _importLog.Write("No ticket matching either the TicketImportID or the TicketNumber was found.");
+          continue;
+        }
+
+        Organizations company = new Organizations(_importUser);
+
+        string companyImportID = ReadString("CompanyImportID");
+        if (companyImportID != string.Empty)
+        {
+          company.LoadByImportID(companyImportID, _organizationID);
+          if (company.Count > 1)
+          {
+            _importLog.Write("More than one company matching the CompanyImportID was found.");
+            continue;
+          }
+        }
+
+        if (company.Count == 0)
+        {
+          string companyName = ReadString("CompanyName");
+          if (companyName != string.Empty)
+          {
+            company = new Organizations(_importUser);
+            company.LoadByName(companyName, _organizationID);
+            if (company.Count > 1)
+            {
+              _importLog.Write("More than one company matching the CompanyName was found.");
+              continue;
+            }
+          }
+        }
+
+        if (company.Count == 0)
+        {
+          _importLog.Write("No company matching either the CompanyImportID or the CompanyName was found.");
+        }
+        else
+        {
+          Users contact = new Users(_importUser);
+
+          string contactImportID = ReadString("ContactImportID");
+          if (contactImportID != string.Empty)
+          {
+            contact.LoadByImportID(contactImportID, company[0].OrganizationID);
+            if (contact.Count > 1)
+            {
+              _importLog.Write("More than one contact matching the ContactImportID was found.");
+              continue;
+            }
+          }
+
+          if (contact.Count == 0)
+          {
+            string contactEmail = ReadString("ContactEmail");
+            if (contactEmail != string.Empty)
+            {
+              contact = new Users(_importUser);
+              contact.LoadByEmail(contactEmail, company[0].OrganizationID);
+              if (contact.Count > 1)
+              {
+                _importLog.Write("More than one contact matching the ContactEmail was found.");
+                continue;
+              }
+            }
+          }
+
+          if (contact.Count == 0)
+          {
+            string firstName = ReadString("FirstName");
+            string lastName = ReadString("LastName");
+            contact = new Users(_importUser);
+            contact.LoadByFirstAndLastName(firstName + " " + lastName, company[0].OrganizationID);
+            if (contact.Count > 1)
+            {
+              _importLog.Write("More than one contact matching the first and last name was found.");
+              continue;
+            }
+          }
+
+          if (contact.Count == 0)
+          {
+            _importLog.Write("No company matching either the ContactImportID, ContactEmail or the First and Last Name was found.");
+          }
+          else
+          {
+            ticket.AddContact(contact[0].UserID, ticket[0].TicketID);
+            _importLog.Write("Contact " + contact[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+          }
+        }
+
+
+        Organizations company2 = new Organizations(_importUser);
+
+        string companyImportID2 = ReadString("CompanyImportID2");
+        if (companyImportID2 != string.Empty)
+        {
+          company2.LoadByImportID(companyImportID2, _organizationID);
+          if (company2.Count > 1)
+          {
+            _importLog.Write("More than one company matching the CompanyImportID2 was found.");
+            continue;
+          }
+        }
+
+        if (company2.Count == 0)
+        {
+          string companyName2 = ReadString("CompanyName2");
+          if (companyName2 != string.Empty)
+          {
+            company2 = new Organizations(_importUser);
+            company2.LoadByName(companyName2, _organizationID);
+            if (company2.Count > 1)
+            {
+              _importLog.Write("More than one company matching the CompanyName2 was found.");
+              continue;
+            }
+          }
+        }
+
+        if (company2.Count == 0)
+        {
+          _importLog.Write("No company matching either the CompanyImportID2 or the CompanyName2 was found.");
+        }
+        else
+        {
+          Users contact2 = new Users(_importUser);
+
+          string contactImportID2 = ReadString("ContactImportID2");
+          if (contactImportID2 != string.Empty)
+          {
+            contact2.LoadByImportID(contactImportID2, company2[0].OrganizationID);
+            if (contact2.Count > 1)
+            {
+              _importLog.Write("More than one contact matching the ContactImportID2 was found.");
+              continue;
+            }
+          }
+
+          if (contact2.Count == 0)
+          {
+            string contactEmail2 = ReadString("ContactEmail2");
+            if (contactEmail2 != string.Empty)
+            {
+              contact2 = new Users(_importUser);
+              contact2.LoadByEmail(contactEmail2, company2[0].OrganizationID);
+              if (contact2.Count > 1)
+              {
+                _importLog.Write("More than one contact matching the ContactEmail2 was found.");
+                continue;
+              }
+            }
+          }
+
+          if (contact2.Count == 0)
+          {
+            string firstName2 = ReadString("FirstName2");
+            string lastName2 = ReadString("LastName2");
+            contact2 = new Users(_importUser);
+            contact2.LoadByFirstAndLastName(firstName2 + " " + lastName2, company2[0].OrganizationID);
+            if (contact2.Count > 1)
+            {
+              _importLog.Write("More than one contact matching the first and last name2 was found.");
+              continue;
+            }
+          }
+
+          if (contact2.Count == 0)
+          {
+            _importLog.Write("No company matching either the ContactImportID2, ContactEmail2 or the First and Last Name2 was found.");
+          }
+          else
+          {
+            ticket.AddContact(contact2[0].UserID, ticket[0].TicketID);
+            _importLog.Write("Contact " + contact2[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+          }
+        }
+
+        Organizations company3 = new Organizations(_importUser);
+
+        string companyImportID3 = ReadString("CompanyImportID3");
+        if (companyImportID3 != string.Empty)
+        {
+          company3.LoadByImportID(companyImportID3, _organizationID);
+          if (company3.Count > 1)
+          {
+            _importLog.Write("More than one company matching the CompanyImportID3 was found.");
+            continue;
+          }
+        }
+
+        if (company3.Count == 0)
+        {
+          string companyName3 = ReadString("CompanyName3");
+          if (companyName3 != string.Empty)
+          {
+            company3 = new Organizations(_importUser);
+            company3.LoadByName(companyName3, _organizationID);
+            if (company3.Count > 1)
+            {
+              _importLog.Write("More than one company matching the CompanyName3 was found.");
+              continue;
+            }
+          }
+        }
+
+        if (company3.Count == 0)
+        {
+          _importLog.Write("No company matching either the CompanyImportID3 or the CompanyName3 was found.");
+        }
+        else
+        {
+          Users contact3 = new Users(_importUser);
+
+          string contactImportID3 = ReadString("ContactImportID3");
+          if (contactImportID3 != string.Empty)
+          {
+            contact3.LoadByImportID(contactImportID3, company3[0].OrganizationID);
+            if (contact3.Count > 1)
+            {
+              _importLog.Write("More than one contact matching the ContactImportID3 was found.");
+              continue;
+            }
+          }
+
+          if (contact3.Count == 0)
+          {
+            string contactEmail3 = ReadString("ContactEmail3");
+            if (contactEmail3 != string.Empty)
+            {
+              contact3 = new Users(_importUser);
+              contact3.LoadByEmail(contactEmail3, company3[0].OrganizationID);
+              if (contact3.Count > 1)
+              {
+                _importLog.Write("More than one contact matching the ContactEmail3 was found.");
+                continue;
+              }
+            }
+          }
+
+          if (contact3.Count == 0)
+          {
+            string firstName3 = ReadString("FirstName3");
+            string lastName3 = ReadString("LastName3");
+            contact3 = new Users(_importUser);
+            contact3.LoadByFirstAndLastName(firstName3 + " " + lastName3, company3[0].OrganizationID);
+            if (contact3.Count > 1)
+            {
+              _importLog.Write("More than one contact matching the first and last name3 was found.");
+              continue;
+            }
+          }
+
+          if (contact3.Count == 0)
+          {
+            _importLog.Write("No contact matching either the ContactImportID3, ContactEmail3 or the First and Last Name3 was found.");
+          }
+          else
+          {
+            ticket.AddContact(contact3[0].UserID, ticket[0].TicketID);
+            _importLog.Write("Contact " + contact3[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+          }
+        }
+      }
+    }
+
+    private void ImportAssetTickets(Import import)
+    {
+      SortedList<string, int> assetList = GetAssetList();
+
+      while (_csv.ReadNextRecord())
+      {
+        Tickets ticket = new Tickets(_importUser);
+
+        string importID = ReadString("TicketImportID");
+        if (importID != string.Empty)
+        {
+          ticket.LoadByImportID(importID, _organizationID);
+          if (ticket.Count > 1)
+          {
+            _importLog.Write("More than one ticket matching the TicketImportID was found.");
+            continue;
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          int? ticketNumber;
+          ticketNumber = ReadIntNull("TicketNumber");
+          if (ticketNumber != null)
+          {
+            ticket = new Tickets(_importUser);
+            ticket.LoadByTicketNumber(_organizationID, (int)ticketNumber);
+            if (ticket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketNumber was found.");
+              continue;
+            }
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          _importLog.Write("No ticket matching either the TicketImportID or the TicketNumber was found.");
+          continue;
+        }
+
+        int assetID = 0;
+        string assetName = string.Empty;
+        string assetImportID = ReadString("AssetImportID");
+        if (!string.IsNullOrEmpty(assetImportID))
+        {
+          Assets asset = new Assets(_importUser);
+          asset.LoadByImportID(assetImportID, _organizationID);
+          if (asset.Count == 1)
+          {
+            assetID = asset[0].AssetID;
+            assetName = asset[0].Name;
+          }
+        }
+
+        if (assetID == 0)
+        {
+          assetName = ReadString("AssetName");
+          string assetSerialNumber = ReadString("AssetSerialNumber");
+          string location = ReadString("AssetLocation");
+          switch (location.Trim().ToLower())
+          {
+            case "assigned":
+              location = "1";
+              break;
+            case "warehouse":
+              location = "2";
+              break;
+            case "junkyard":
+              location = "3";
+              break;
+            default:
+              location = "2";
+              break;
+          }
+          string key = assetSerialNumber + assetName + location;
+          if (!assetList.TryGetValue(key.ToUpper().Replace(" ", string.Empty), out assetID))
+          {
+            _importLog.Write("Asset '" + assetName + "' does not exists.");
+          }
+        }
+
+        if (assetID != 0)
+        {
+          if (Tickets.GetAssetCount(_importUser, assetID, ticket[0].TicketID) > 0)
+          {
+            _importLog.Write("Asset '" + assetName + "' already in ticket #" + ticket[0].TicketNumber.ToString() + ".");
+          }
+          else
+          {
+            ticket.AddAsset(assetID, ticket[0].TicketID);
+            _importLog.Write("Asset '" + assetName + "' was added to ticket #" + ticket[0].TicketNumber.ToString() + ".");
+          }
+        }
+
+
+        int assetID2 = 0;
+        string assetName2 = string.Empty;
+        string assetImportID2 = ReadString("AssetImportID2");
+        if (!string.IsNullOrEmpty(assetImportID2))
+        {
+          Assets asset = new Assets(_importUser);
+          asset.LoadByImportID(assetImportID, _organizationID);
+          if (asset.Count == 1)
+          {
+            assetID2 = asset[0].AssetID;
+            assetName2 = asset[0].Name;
+          }
+        }
+
+        if (assetID2 == 0)
+        {
+          assetName2 = ReadString("AssetName2");
+          string assetSerialNumber2 = ReadString("AssetSerialNumber2");
+          string location2 = ReadString("AssetLocation2");
+          switch (location2.Trim().ToLower())
+          {
+            case "assigned":
+              location2 = "1";
+              break;
+            case "warehouse":
+              location2 = "2";
+              break;
+            case "junkyard":
+              location2 = "3";
+              break;
+            default:
+              location2 = "2";
+              break;
+          }
+          string key2 = assetSerialNumber2 + assetName2 + location2;
+          if (!assetList.TryGetValue(key2.ToUpper().Replace(" ", string.Empty), out assetID2))
+          {
+            _importLog.Write("Asset '" + assetName2 + "' does not exists.");
+          }
+        }
+
+        if (assetID2 != 0)
+        {
+          if (Tickets.GetAssetCount(_importUser, assetID2, ticket[0].TicketID) > 0)
+          {
+            _importLog.Write("Asset '" + assetName2 + "' already in ticket #" + ticket[0].TicketNumber.ToString() + ".");
+          }
+          else
+          {
+            ticket.AddAsset(assetID2, ticket[0].TicketID);
+            _importLog.Write("Asset '" + assetName2 + "' was added to ticket #" + ticket[0].TicketNumber.ToString() + ".");
+          }
+        }
+
+        int assetID3 = 0;
+        string assetName3 = string.Empty;
+        string assetImportID3 = ReadString("AssetImportID3");
+        if (!string.IsNullOrEmpty(assetImportID3))
+        {
+          Assets asset = new Assets(_importUser);
+          asset.LoadByImportID(assetImportID, _organizationID);
+          if (asset.Count == 1)
+          {
+            assetID3 = asset[0].AssetID;
+            assetName3 = asset[0].Name;
+          }
+        }
+
+        if (assetID3 == 0)
+        {
+          assetName3 = ReadString("AssetName3");
+          string assetSerialNumber3 = ReadString("AssetSerialNumber3");
+          string location3 = ReadString("AssetLocation3");
+          switch (location3.Trim().ToLower())
+          {
+            case "assigned":
+              location3 = "1";
+              break;
+            case "warehouse":
+              location3 = "2";
+              break;
+            case "junkyard":
+              location3 = "3";
+              break;
+            default:
+              location3 = "2";
+              break;
+          }
+          string key3 = assetSerialNumber3 + assetName3 + location3;
+          if (!assetList.TryGetValue(key3.ToUpper().Replace(" ", string.Empty), out assetID3))
+          {
+            _importLog.Write("Asset '" + assetName3 + "' does not exists.");
+          }
+        }
+
+        if (assetID3 != 0)
+        {
+          if (Tickets.GetAssetCount(_importUser, assetID3, ticket[0].TicketID) > 0)
+          {
+            _importLog.Write("Asset '" + assetName3 + "' already in ticket #" + ticket[0].TicketNumber.ToString() + ".");
+          }
+          else
+          {
+            ticket.AddAsset(assetID3, ticket[0].TicketID);
+            _importLog.Write("Asset '" + assetName3 + "' was added to ticket #" + ticket[0].TicketNumber.ToString() + ".");
+          }
+        }
+      }
+    }
+
+    private void ImportTicketRelationships(Import import)
+    {
+      while (_csv.ReadNextRecord())
+      {
+        Tickets ticket = new Tickets(_importUser);
+
+        string importID = ReadString("TicketImportID");
+        if (importID != string.Empty)
+        {
+          ticket.LoadByImportID(importID, _organizationID);
+          if (ticket.Count > 1)
+          {
+            _importLog.Write("More than one ticket matching the TicketImportID was found.");
+            continue;
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          int? ticketNumber;
+          ticketNumber = ReadIntNull("TicketNumber");
+          if (ticketNumber != null)
+          {
+            ticket = new Tickets(_importUser);
+            ticket.LoadByTicketNumber(_organizationID, (int)ticketNumber);
+            if (ticket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketNumber was found.");
+              continue;
+            }
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          _importLog.Write("No ticket matching either the TicketImportID or the TicketNumber was found.");
+          continue;
+        }
+
+        Tickets associatedTicket = new Tickets(_importUser);
+
+        string associatedImportID = ReadString("AssociatedTicketImportID");
+        if (associatedImportID != string.Empty)
+        {
+          associatedTicket.LoadByImportID(associatedImportID, _organizationID);
+          if (associatedTicket.Count > 1)
+          {
+            _importLog.Write("More than one ticket matching the AssociatedTicketImportID was found.");
+            continue;
+          }
+        }
+
+        if (associatedTicket.Count == 0)
+        {
+          int? associatedTicketNumber;
+          associatedTicketNumber = ReadIntNull("AssociatedTicketNumber");
+          if (associatedTicketNumber != null)
+          {
+            associatedTicket = new Tickets(_importUser);
+            associatedTicket.LoadByTicketNumber(_organizationID, (int)associatedTicketNumber);
+            if (associatedTicket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the AssociatedTicketNumber was found.");
+              continue;
+            }
+          }
+        }
+
+        if (associatedTicket.Count == 0)
+        {
+          _importLog.Write("No ticket matching either the AssociatedTicketImportID or the AssociatedTicketNumber was found.");
+          continue;
+        }
+
+        bool related = ReadBool("Related");
+        bool parent = ReadBool("Parent");
+        bool child = ReadBool("Child");
+        if (!related && !parent && !child)
+        {
+          related = true;
+        }
+
+        if (related) // just related
+        {
+
+          if (IsTicketRelated(ticket[0], associatedTicket[0]))
+          {
+            _importLog.Write("Ticket #" + ticket[0].TicketNumber.ToString() + " is already related to ticket #" + associatedTicket[0].TicketNumber.ToString() + ".");
+            continue;
+          }
+
+          TicketRelationship item = (new TicketRelationships(_importUser)).AddNewTicketRelationship();
+          item.OrganizationID = _organizationID;
+          item.Ticket1ID = ticket[0].TicketID;
+          item.Ticket2ID = associatedTicket[0].TicketID;
+          item.Collection.Save();
+        }
+        else if (parent) // parent
+        {
+          if (associatedTicket[0].ParentID != null)
+          {
+            if (ticket[0].ParentID == associatedTicket[0].TicketID)
+            {
+              _importLog.Write("Ticket #" + ticket[0].TicketNumber.ToString() + " is the child of ticket #" + associatedTicket[0].TicketNumber.ToString() + " whos has a parent.");
+              continue;
+            }
+            else
+            {
+              _importLog.Write("Ticket #" + associatedTicket[0].TicketNumber.ToString() + " is already the child of a different ticket.");
+              continue;
+            }
+          }
+
+          if (ticket[0].ParentID == associatedTicket[0].TicketID)
+          {
+            _importLog.Write("Ticket #" + ticket[0].TicketNumber.ToString() + " is the child of ticket #" + associatedTicket[0].TicketNumber.ToString() + " whos doesn't has a parent.");
+            continue;
+          }
+
+          TicketRelationship item = TicketRelationships.GetTicketRelationship(_importUser, ticket[0].TicketID, associatedTicket[0].TicketID);
+          if (item != null)
+          {
+            item.Delete();
+            item.Collection.Save();
+          }
+
+          associatedTicket[0].ParentID = ticket[0].TicketID;
+          associatedTicket.Save();
+          _importLog.Write("Ticket #" + ticket[0].TicketNumber.ToString() + " has been set as parent of ticket #" + associatedTicket[0].TicketNumber.ToString() + ".");
+        }
+        else // child
+        {
+          if (ticket[0].ParentID != null && ticket[0].ParentID == associatedTicket[0].TicketID)
+          {
+            _importLog.Write("Ticket #" + ticket[0].TicketNumber.ToString() + " is already the child of ticket #" + associatedTicket[0].TicketNumber.ToString() + ".");
+            continue;
+          }
+          if (associatedTicket[0].ParentID == ticket[0].TicketID)
+          {
+            _importLog.Write("Ticket #" + ticket[0].TicketNumber.ToString() + " is the parent of ticket #" + associatedTicket[0].TicketNumber.ToString() + ".");
+            continue;
+          }
+          TicketRelationship item = TicketRelationships.GetTicketRelationship(_importUser, ticket[0].TicketID, associatedTicket[0].TicketID);
+          if (item != null)
+          {
+            item.Delete();
+            item.Collection.Save();
+          }
+
+          ticket[0].ParentID = associatedTicket[0].TicketID;
+          ticket.Save();
+          _importLog.Write("Ticket #" + ticket[0].TicketNumber.ToString() + " has been set as the child of ticket #" + associatedTicket[0].TicketNumber.ToString() + ".");
+        }
+
+      }
+    }
+
+    private bool IsTicketRelated(Ticket ticket1, Ticket ticket2)
+    {
+      if (ticket1.ParentID != null && ticket1.ParentID == ticket2.TicketID) return true;
+      if (ticket2.ParentID != null && ticket2.ParentID == ticket1.TicketID) return true;
+      TicketRelationship item = TicketRelationships.GetTicketRelationship(ticket1.Collection.LoginUser, ticket1.TicketID, ticket2.TicketID);
+      return item != null;
     }
 
     private void ImportCustomFieldPickList(Import import)

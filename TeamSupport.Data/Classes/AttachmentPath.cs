@@ -29,7 +29,7 @@ namespace TeamSupport.Data
     public string DefaultRoot { get { return _defaultRoot; } }
     */
 
-    public enum Folder { None, Images, Styles, ChatImages, ChatStyles, TicketTypeImages, Products, Actions, Organizations, ProfileImages, WaterCooler, OrganizationAttachments, UserAttachments, AgentRating, AssetAttachments, Imports, OrganizationsLogo, ContactImages };
+    public enum Folder { None, Images, Styles, ChatImages, ChatStyles, TicketTypeImages, Products, Actions, Organizations, ProfileImages, WaterCooler, OrganizationAttachments, UserAttachments, AgentRating, AssetAttachments, Imports, OrganizationsLogo, ContactImages, ImportLogs };
 
     /// <summary>
     /// Gets the root path for attachments as specified in the SystemSettings table
@@ -116,6 +116,7 @@ namespace TeamSupport.Data
         case Folder.AgentRating: result = "AgentRating"; break;
         case Folder.AssetAttachments: result = "AssetAttachments"; break;
         case Folder.Imports: result = "Imports"; break;
+        case Folder.ImportLogs: result = "Imports\\Logs"; break;
         case Folder.OrganizationsLogo: result = "Images\\CompanyLogo"; break;
         case Folder.ContactImages: result = "Images\\Avatars\\Contacts"; break;
         default: result = ""; break;

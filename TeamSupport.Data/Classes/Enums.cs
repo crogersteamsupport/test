@@ -65,7 +65,10 @@ namespace TeamSupport.Data
     CompanyAddresses = 48,
     CompanyPhoneNumbers = 49,
     ContactAddresses = 50,
-    ContactPhoneNumbers = 51
+    ContactPhoneNumbers = 51,
+    ContactTickets = 52,
+    AssetTickets = 53,
+    TicketRelationships = 54
   };
 
   public enum SlaViolationType

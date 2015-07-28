@@ -869,8 +869,7 @@ namespace TeamSupport.Handlers
         return;
       }
 
-      string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
-      logPath = Path.Combine(logPath, import.OrganizationID.ToString());
+      string logPath = AttachmentPath.GetPath(import.Collection.LoginUser, import.OrganizationID, AttachmentPath.Folder.ImportLogs);
       string fileName = import.ImportID.ToString() + ".txt";
       logPath = Path.Combine(logPath, fileName);
 
@@ -891,7 +890,7 @@ namespace TeamSupport.Handlers
 
 
 
-      string openType = "inline";
+      string openType = "attachment";
       string fileType = "text/plain";
 
       context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + fileName + "\"");
