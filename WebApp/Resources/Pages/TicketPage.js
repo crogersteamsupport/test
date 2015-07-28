@@ -3272,7 +3272,7 @@ function CreateTimeLineDelegates() {
     if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
       $('a.ticket-action-pinned').addClass('hidden');
       top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-      top.Ts.Services.Tickets.SetActionPinned(_ticketID, Action.RefID, !isPinned,
+      top.Ts.Services.TicketPage.SetActionPinned(_ticketID, Action.RefID, !isPinned,
       function (result) {
         if (result) {
           Action.IsPinned = result;

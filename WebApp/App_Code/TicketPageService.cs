@@ -566,6 +566,39 @@ namespace TSWebServices
           return GetActionTimelineItem(actions[0]);
         }
 
+
+        [WebMethod]
+        public bool SetActionPinned(int ticketID, int actionID, bool pinned)
+        {
+          // When an action is pinned, all other actions need to be unpinned.
+          if (pinned)
+          {
+            Actions actions = new Actions(TSAuthentication.GetLoginUser());
+            actions.LoadByTicketID(ticketID);
+            foreach (TeamSupport.Data.Action action in actions)
+            {
+              if (action.ActionID == actionID)
+              {
+                action.Pinned = true;
+              }
+              else if(action.Pinned)
+              {
+                action.Pinned = false;
+              }
+            }
+            actions.Save();
+          }
+          // When unpin we only need to update the requested action.
+          else
+          {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            action.Pinned = false;
+            action.Collection.Save();
+          }
+          return pinned;
+        }
+
+
         [DataContract]
         public class TicketPageInfo
         {

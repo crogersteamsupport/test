@@ -1135,7 +1135,17 @@ function AddCustomers(customer) {
 
     ReloadProductList();
   });
+  
+  if (customer.type == 'o') SetDefaultSupportGroup(customer.value);
+
 };
+
+function SetDefaultSupportGroup(customerID) {
+  top.Ts.Services.Organizations.GetOrganization(customerID, function (customer) {
+    if (customer.DefaultSupportGroupID) SetGroup(customer.DefaultSupportGroupID);
+    if (customer.DefaultSupportUserID) SetAssignedUser(customer.DefaultSupportUserID);
+  });
+}
 
 function SetupProductSection() {
   var products = top.Ts.Cache.getProducts();
@@ -2230,6 +2240,22 @@ var SetProduct = function (ProductID) {
   if (selectField.length > 0) {
     var selectize = $('#ticket-Product')[0].selectize;
     selectize.addItem(ProductID, false);
+  }
+};
+
+var SetGroup = function (GroupID) {
+  var selectField = $('#ticket-group');
+  if (selectField.length > 0) {
+    var selectize = $('#ticket-group')[0].selectize;
+    selectize.addItem(GroupID, false);
+  }
+};
+
+var SetAssignedUser = function (ID) {
+  var selectUserField = $('#ticket-assigned');
+  if (selectUserField.length > 0) {
+    var selectizeUserField = $('#ticket-assigned')[0].selectize;
+    selectizeUserField.addItem(ID, false);
   }
 };
 
