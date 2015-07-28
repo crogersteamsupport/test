@@ -2761,6 +2761,75 @@ var SetupDueDateField = function (duedate) {
 
   dateLink.click(function (e) {
     e.preventDefault();
+    e.stopPropagation();
+    var header = $(this).hide();
+    var container = $('<div>')
+          .addClass('row')
+          .insertAfter(header);
+
+    var container1 = $('<div style="padding-right:0px;">')
+        .addClass('col-xs-10')
+      .appendTo(container);
+
+    var theinput = $('<input type="text">')
+      .addClass('form-control')
+      .val(duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern()))
+      .datetimepicker({ pickTime: true })
+      .appendTo(container1)
+      .focus();
+
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-times')
+      .click(function (e) {
+        $(this).closest('div').remove();
+        header.show();
+        $('#customerEdit').removeClass("disabled");
+      })
+      .insertAfter(container1);
+
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+        var value = top.Ts.Utils.getMsDate($(this).prev().find('input').val());
+        top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
+          var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+          dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
+          duedate = top.Ts.Utils.getMsDate(value); //result;
+
+          if (date != null && date < Date.now()) {
+            $('#ticket-DueDate').addClass('nonrequired-field-error-font');
+            $('#ticket-DueDate').parent().prev().addClass('nonrequired-field-error-font');
+          }
+          else {
+            $('#ticket-DueDate').removeClass('nonrequired-field-error-font');
+            $('#ticket-DueDate').parent().prev().removeClass('nonrequired-field-error-font');
+          }
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
+        }, function () {
+          alert("There was a problem saving your ticket property.");
+        });
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
+  });
+}
+
+var SetupDueDateField2 = function (duedate) {
+  var dateContainer = $('#ticket-duedate-container');
+  var dateLink = $('<a>')
+                      .attr('href', '#')
+                      //.text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                      .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
+                      .appendTo(dateContainer);
+  if (duedate !== null) {
+    dateLink.text(duedate.localeFormat(top.Ts.Utils.getDateTimePattern()));
+  }
+
+  dateLink.click(function (e) {
+    e.preventDefault();
     dateLink.hide();
     var input = $('<input type="text">')
                     .addClass('form-control')
