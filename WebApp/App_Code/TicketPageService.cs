@@ -298,7 +298,7 @@ namespace TSWebServices
                 action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
                 action.TicketID = proxy.TicketID;
                 action.CreatorID = TSAuthentication.UserID;
-                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal)
+                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase)
                 {
                     if (!proxy.Description.Contains(user.Signature))
                     {
@@ -316,7 +316,7 @@ namespace TSWebServices
             }
             else
             {
-                if (proxy.IsVisibleOnPortal)
+              if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase)
                 {
                     if (!string.IsNullOrWhiteSpace(user.Signature))
                     {
@@ -351,6 +351,44 @@ namespace TSWebServices
             action.Collection.Save();
 
             return GetActionTimelineItem(action);
+        }
+
+
+        [WebMethod]
+        public bool SetActionPortal(int actionID, bool isVisibleOnPortal)
+        {
+          TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+          User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+          User author = Users.GetUser(TSAuthentication.GetLoginUser(), action.CreatorID);
+          bool isKB = action.IsKnowledgeBase;
+          if (CanEditAction(action) || user.ChangeTicketVisibility)
+          {
+            if (author != null)
+            {
+              if (isVisibleOnPortal && !isKB)
+              {
+                if (!string.IsNullOrWhiteSpace(author.Signature))
+                {
+                  if (!action.Description.Contains(author.Signature.Replace(" />", ">")))
+                    action.Description = action.Description + "<br/><br/>" + author.Signature;
+                }
+              }
+              else
+              {
+                if (!string.IsNullOrWhiteSpace(author.Signature))
+                {
+                  if (action.Description.Contains(author.Signature.Replace(" />", ">")))
+                  {
+                    action.Description = action.Description.Replace("<p><br><br></p>\n" + author.Signature.Replace(" />", ">"), "").Replace("<br><br>" + author.Signature.Replace(" />", ">"), "");
+                    //action.Description = action.Description.Replace("<br><br>" + author.Signature.Replace(" />", ">"), "");
+                  }
+                }
+              }
+            }
+            action.IsVisibleOnPortal = isVisibleOnPortal;
+            action.Collection.Save();
+          }
+          return action.IsVisibleOnPortal;
         }
 
         public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
