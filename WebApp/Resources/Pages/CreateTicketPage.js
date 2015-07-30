@@ -2152,6 +2152,7 @@ function AppendTicketTypeTemplate(TicketType) {
 
 function setInitialValue() {
   var menuID = top.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
+  debugger
   switch (menuID) {
     case 'mniusers':
       //top.Ts.Services.Settings.ReadUserSetting('SelectedUserID', -1, function (result) {

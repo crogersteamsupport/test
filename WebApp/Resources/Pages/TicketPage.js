@@ -3118,10 +3118,27 @@ function FetchTimeLineItems(start) {
         var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
         $("#action-timeline").append(dateSpan);
       };
+      var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
+      var isPrivateFiltered = $('.filter-private').hasClass('bgcolor-darkgray');
+      var isWCFiltered = $('.filter-wc').hasClass('bgcolor-darkgray');
 
       for (i = 0; i < _timeLine.length; i++) {
         var timeLineItem = _timeLine[i];
-        CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
+        var actionElem = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
+
+        if (isPublicFiltered && timeLineItem.item.IsVisibleOnPortal) {
+          actionElem.hide();
+        }
+
+        if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
+          actionElem.hide();
+        }
+
+        if (isWCFiltered && timeLineItem.item.IsWC) {
+          actionElem.hide();
+        }
+
+        
       }
       _isLoading = false;
       $('.results-loading').hide();
