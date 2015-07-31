@@ -190,8 +190,9 @@ $(document).ready(function () {
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
     top.Ts.Services.Tickets.GetTicketTypeTemplateText(ticketTypeID, function (result) {
       if (result != null && result != "" && result != "<br>") {
-        var currenttext = $('.newticket-desc').html();
-        $('.newticket-desc').html(currenttext + result);
+          var currenttext = $('.newticket-desc').html();
+          tinyMCE.activeEditor.selection.setContent(currenttext + result);
+        //$('.newticket-desc').html(currenttext + result);
       }
     });
   }
@@ -541,8 +542,8 @@ $(document).ready(function () {
     select.combobox({ selected: function (e, ui) {
       top.Ts.Services.Tickets.GetValueTemplateText(ui.item.value, function (result) {
         if (result != null && result != "") {
-
-          $('.newticket-desc').html($('.newticket-desc').html() + '<br/><br/>' + result);
+            tinyMCE.activeEditor.selection.setContent($('.newticket-desc').html() + '<br/><br/>' + result);
+          //$('.newticket-desc').html($('.newticket-desc').html() + '<br/><br/>' + result);
         }
       });
 

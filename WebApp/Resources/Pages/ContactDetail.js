@@ -755,7 +755,7 @@ $(document).ready(function () {
 
     $('#tblNotes').on('click', '.editNote', function (e) {
         e.stopPropagation();
-        $(this).prop('disabled', true);
+        //$(this).prop('disabled', true);
         top.Ts.System.logAction('Contact Detail - Edit Note');
         top.Ts.Services.Customers.LoadNote($(this).parent().parent().attr('id'), function (note) {
             $('#fieldNoteTitle').val(note.Title);
@@ -827,7 +827,7 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save Note");
             LoadNotes();
             $('#noteForm').toggle();
-            $(this).prop('disabled', false);
+            $("#btnNotesSave").removeProp('disabled');
         });
     });
 
