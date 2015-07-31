@@ -70,14 +70,16 @@
 
                         top.Ts.MainPage.selectTicket(null, function (ticketID) {
                             top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
-                                ed.focus();
+                              ed.focus();
+                              if (_ticketID) {
                                 top.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
-                                    appendRelated(tickets);
-                                    //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
+                                  appendRelated(tickets);
+                                  //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
                                 }, function (error) {
-                                    //container.remove();
-                                    alert(error.get_message());
+                                  //container.remove();
+                                  alert(error.get_message());
                                 });
+                              }
                                 var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');

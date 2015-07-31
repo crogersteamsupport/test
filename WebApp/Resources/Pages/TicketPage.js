@@ -2793,13 +2793,12 @@ var SetupDueDateField = function (duedate) {
     $('<i>')
       .addClass('col-xs-1 fa fa-check')
       .click(function (e) {
-        debugger
         var currDate = $(this).prev().find('input').val();
         var value = '';
         if (currDate !== '') {
           value = top.Ts.Utils.getMsDate(currDate);
         }
-        top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {debugger
+        top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
           var date = result === null ? null : top.Ts.Utils.getMsDate(result);
           dateLink.text((value === '' ? '' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
           duedate = value === '' ? null : top.Ts.Utils.getMsDate(value); //result;
