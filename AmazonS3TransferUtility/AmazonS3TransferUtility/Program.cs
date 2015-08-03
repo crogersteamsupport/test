@@ -107,7 +107,8 @@ namespace AmazonS3TransferUtility
               TransferUtilityUploadRequest request = new TransferUtilityUploadRequest()
               {
                 BucketName = _bucket,
-                FilePath = downloadFile
+                FilePath = downloadFile,
+                CannedACL = S3CannedACL.PublicRead
               };
 
               _transferUtility.Upload(request);
