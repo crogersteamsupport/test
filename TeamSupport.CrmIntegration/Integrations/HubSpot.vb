@@ -14,6 +14,7 @@ Namespace TeamSupport
       Private _thisUser As LoginUser
       Private _crmLogPath As String
       Private _hubspotAccountIds As List(Of String)
+      Private _ticketsCustomerNote As List(Of TicketCustomer)
 
       Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal syncLog As SyncLog, ByVal crmLogPath As String, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
         MyBase.New(crmLinkOrg, syncLog, thisUser, thisProcessor, IntegrationType.HubSpot)
@@ -30,8 +31,10 @@ Namespace TeamSupport
 
           If Success Then
             _hubspotAccountIds = New List(Of String)
+            _ticketsCustomerNote = New List(Of TicketCustomer)
             Success = SendTicketData(AddressOf CreateNote)
             _hubspotAccountIds.Clear()
+            _ticketsCustomerNote.Clear()
           End If
 
           Return Success
@@ -247,6 +250,7 @@ Namespace TeamSupport
         Dim isSuccessful = False
         Dim hapiKey As String = CRMLinkRow.SecurityToken1
         Dim hubSpotApiCompany As Companies = New Companies(apiKey:=hapiKey, logPath:=_crmLogPath)
+        Dim isTicketCustomerProcessed As Boolean = False
 
         Try
           If Not _hubspotAccountIds.Contains(accountId) AndAlso hubSpotApiCompany.GetById(accountId, False).companyId > 0 Then
@@ -255,6 +259,17 @@ Namespace TeamSupport
 
 
           If _hubspotAccountIds.Contains(accountId) Then
+            '//sycn ticket+customer only once
+            Dim ticketCustomer As TicketCustomer = _ticketsCustomerNote.Find(Function(c) c.Ticket = thisTicket.TicketID AndAlso c.Customer = accountId)
+
+            If ticketCustomer Is Nothing Then
+              _ticketsCustomerNote.Add(New TicketCustomer() With {.Ticket = thisTicket.TicketID, .Customer = accountId})
+            Else
+              isTicketCustomerProcessed = True
+              isSuccessful = True
+            End If
+
+            If Not isTicketCustomerProcessed Then
             Dim authorName As String = Nothing
 
             Using findAuthor As New Users(User)
@@ -294,8 +309,13 @@ Namespace TeamSupport
             Dim engagementCreated As Objects.Engagement.RootObject = hubSpotApi.Create(newEngagement)
 
             isSuccessful = engagementCreated.engagement.id > 0
+            End If
+          Else
+            If isTicketCustomerProcessed Then
+              Log.Write(String.Format("This ticket #{0} (id: {1}) for this HubSpot accountId {2} was already processed in this round.", thisTicket.TicketNumber, thisTicket.TicketID, accountId))
           Else
             Log.Write(String.Format("The HubSpot accountId {0} in the crmlinkid field of ticket {1} (id: {2}) was not found in HubSpot. Note was not created.", accountId, thisTicket.TicketNumber, thisTicket.TicketID.ToString()))
+          End If
           End If
         Catch ex As Exception
           Log.Write(String.Format("Exception creating NOTE: {0}{1}{2}", ex.Message, Environment.NewLine, ex.InnerException.ToString()))
@@ -304,6 +324,11 @@ Namespace TeamSupport
 
         Return isSuccessful
       End Function
+
+      Private Class TicketCustomer
+        Public Ticket As String
+        Public Customer As String
+      End Class
     End Class
   End Namespace
 End Namespace
