@@ -267,6 +267,8 @@ namespace TSWebServices
             wiki.ModifiedDate = DateTime.UtcNow;
             wiki.ModifiedBy = loggedInUser.UserID;
             wiki.Collection.Save();
+
+            ReparentArticles(wikiID);
         }
 
         [WebMethod]
@@ -300,6 +302,19 @@ namespace TSWebServices
             newWikiHistory.Comment = comment;
 
             newWikiHistory.Collection.Save();
+        }
+
+        private void ReparentArticles(int parentID)
+        {
+          WikiArticles articles = WikiArticles.GetWikiSubArticles(TSAuthentication.GetLoginUser(), parentID);
+
+          foreach (WikiArticle article in articles)
+          {
+            article.ParentID = null;
+          }
+
+          articles.Save();
+
         }
 
         #endregion

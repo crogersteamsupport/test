@@ -7,6 +7,7 @@
     .mce-i-image{ color: #BA55D3 !important}
     .mce-i-awesome.fa-dropbox { color: #3d9ae8 !important}
     .mce-i-awesome.fa-circle  { color: #D9534F !important}
+    .mce-path {display:none !important;}
 
     .popover-content h1 { padding: 0 0 .5em 0; line-height: inherit; font-size: 1.5em; margin:0;}
     .popover-content h2 { padding: 0 0 .5em 0; font-size: 1.2em; font-weight: normal; line-height: inherit; margin: 0; }
@@ -836,7 +837,7 @@
 
     .input-group-addon.external-link { border: none; background:none; }
     .custom-field-link { margin-left: 6px; }
-    .mce-path {display:none !important;}
+   
 
     #deployJavaPlugin
     {

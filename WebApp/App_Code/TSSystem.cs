@@ -194,7 +194,7 @@ namespace TSWebServices
 
         if (org.ProductType != ProductType.Express && IsMenuItemActive(user, "mniWiki"))
         {
-          items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "vcr/1_9_0/images/nav/20/wiki.png", string.Format(data, "vcr/1_9_0/Pages/Wiki.html", "vcr/1_9_0/PaneInfo/Wiki.html")));
+          items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "vcr/1_9_0/images/nav/20/wiki.png", string.Format(data, "vcr/1_9_0/Pages/Wiki_view.html", "vcr/1_9_0/PaneInfo/Wiki_view.html")));
         }
 
         if (IsMenuItemActive(user, "mniSearch"))
