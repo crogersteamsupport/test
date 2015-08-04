@@ -744,6 +744,7 @@ namespace TeamSupport.Data
     {
       string fieldName = "";
       string dataType;
+      bool isUnicode = false;
       if (condition.FieldID < 0)
       {
         dataType = condition.DataType;
@@ -1042,7 +1043,7 @@ namespace TeamSupport.Data
         default:
           if (condition.Value1 != null)
           {
-            command.Parameters.AddWithValue(paramName, condition.Value1);
+            command.Parameters.Add(paramName, SqlDbType.VarChar).Value = condition.Value1;
           }
           switch (condition.Comparator.ToUpper())
           {
