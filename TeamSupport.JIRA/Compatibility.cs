@@ -72,6 +72,9 @@ namespace TeamSupport.JIRA
         /// <summary>Returns all issue types</summary>
         IEnumerable<IssueType> GetIssueTypes();
 
+        ///<summary>Returns all projects</summary>
+        IEnumerable<Project> GetProjects();
+
         /// <summary>Returns information about the JIRA server</summary>
         ServerInfo GetServerInfo();
     }
@@ -222,6 +225,11 @@ namespace TeamSupport.JIRA
         public IEnumerable<IssueType> GetIssueTypes()
         {
             return client.GetIssueTypes();
+        }
+
+        public IEnumerable<Project> GetProjects()
+        {
+          return client.GetProjects();
         }
 
         public ServerInfo GetServerInfo()

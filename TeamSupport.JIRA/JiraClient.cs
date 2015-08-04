@@ -596,6 +596,27 @@ namespace TeamSupport.JIRA
             }
         }
 
+        public IEnumerable<Project> GetProjects()
+        {
+          try
+          {
+            var request = CreateRequest(Method.GET, "project");
+            request.AddHeader("ContentType", "application/json");
+
+            var response = client.Execute(request);
+            AssertStatus(response, HttpStatusCode.OK);
+
+            var data = deserializer.Deserialize<List<Project>>(response);
+            return data;
+
+          }
+          catch (Exception ex)
+          {
+            Trace.TraceError("GetProjects() error: {0}", ex);
+            throw new JiraClientException("Could not load projects", ex);
+          }
+        }
+
         public ServerInfo GetServerInfo()
         {
             try

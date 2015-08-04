@@ -80,6 +80,49 @@ ORDER BY clt.LastProcessed ASC
         Fill(command);
       }
     }
+
+    public static List<string> GetOrganizationJiraProjectKeys(int organizationId, LoginUser login)
+    {
+      List<string> jiraProjectKeys = new List<string>();
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+@"SELECT JiraProjectKey
+FROM Products
+WHERE organizationId = @organizationId AND JiraProjectKey IS NOT NULL AND JiraProjectKey != ''
+UNION
+SELECT JiraProjectKey
+FROM ProductVersions
+WHERE productId IN (SELECT productId FROM Products WHERE organizationId = @organizationId AND JiraProjectKey IS NOT NULL AND JiraProjectKey != '') AND JiraProjectKey IS NOT NULL AND JiraProjectKey != ''
+UNION
+SELECT DefaultProject
+FROM CrmLinkTable
+WHERE organizationId = @organizationId AND crmType = 'Jira' AND DefaultProject IS NOT NULL AND DefaultProject != ''
+";
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@organizationId", organizationId);
+
+        using (SqlConnection connection = new SqlConnection(login.ConnectionString))
+        {
+          connection.Open();
+          SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+          command.Connection = connection;
+          command.Transaction = transaction;
+          command.CommandTimeout = 300;
+          SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+          while (reader.Read())
+          {
+            string jiraProjectKey = reader["JiraProjectKey"].ToString();
+            jiraProjectKeys.Add(jiraProjectKey);
+          }
+        }
+      }
+
+      return jiraProjectKeys.ToList();
+    }
   }
   
 }

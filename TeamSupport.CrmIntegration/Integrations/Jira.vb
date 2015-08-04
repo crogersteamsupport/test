@@ -6,6 +6,7 @@ Imports System.Text
 Imports System.Xml
 Imports TeamSupport.Data
 Imports Newtonsoft.Json
+Imports TeamSupport.JIRA
 
 Namespace TeamSupport
   Namespace CrmIntegration
@@ -35,7 +36,7 @@ Namespace TeamSupport
         Dim result As Boolean = True
         
         If CRMLinkRow.HostName Is Nothing Then
-          result = false
+          result = False
           Log.Write("HostName is missing and it is required to sync.")
         Else
           Dim protocol As String = String.Empty
@@ -46,7 +47,7 @@ Namespace TeamSupport
         End If
 
         If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
-          result = false
+          result = False
           Log.Write("Username and or Password are missing and they are required to sync.")
         Else
           _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
@@ -103,12 +104,45 @@ Namespace TeamSupport
             Return result
           End If
         End If
+
+        'Include the Project(s) in the jql clause to pull just issues that should/might be linked to TS instead of ALL.
+        'Adding this due to ticket 24174, so only for the account HERE (869700) and HERE - Sandbox (794765) for the moment. If it works as expected we will do this for all accounts.
+        Dim projectClause As String = String.Empty
+        If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 Then
+          Log.Write("Ticket: 24174. Org HERE (869700, 794765) having trouble pulling all issues from Jira, we'll get only those for their jira project keys instead.")
+
+          Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
+          Dim projects As IEnumerable(Of Project) = jiraClient.GetProjects()
+
+          If CRMLinkRow.AlwaysUseDefaultProjectKey Then
+            Dim defaultProjectFound As Boolean = projects.Where(Function(c) c.key = CRMLinkRow.DefaultProject).Any()
+
+            If defaultProjectFound Then
+              projectClause = String.Format("AND+project={0}+", CRMLinkRow.DefaultProject)
+            End If
+          Else
+            Dim jiraProjectKeys As List(Of String) = New List(Of String)()
+
+            For Each projectKey As String In CRMLinkTable.GetOrganizationJiraProjectKeys(CRMLinkRow.OrganizationID, User)
+              jiraProjectKeys.Add(projectKey)
+            Next
+
+            If jiraProjectKeys.Count > 0 Then
+              Dim projectsFound As List(Of String) = projects.Where(Function(c) jiraProjectKeys.Contains(c.key.ToString())).Select(Function(c) c.key).ToList()
+
+              If projectsFound IsNot Nothing AndAlso projectsFound.Count > 0 Then
+                projectClause = String.Format("AND+project+IN+({0})+", String.Join(",", projectsFound))
+              End If
+            End If
+          End If
+        End If
+
         Dim needToGetMore As Boolean = True
         Dim startAt As String = String.Empty
         Dim maxResults As Integer? = Nothing
 
         While needToGetMore
-          Dim URI As String = _baseURI + "/search?jql=" + recentClause + "order+by+updated+asc&fields=*all" + startAt
+          Dim URI As String = _baseURI + "/search?jql=" + recentClause + projectClause + "order+by+updated+asc&fields=*all" + startAt
           Dim batch As JObject = GetAPIJObject(URI, "GET", String.Empty)
           result.Add(batch)
 
@@ -169,7 +203,7 @@ Namespace TeamSupport
 
           Dim response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
           Dim responseReader As New StreamReader(response.GetResponseStream())
-          Return Jarray.Parse(responseReader.ReadToEnd)
+          Return JArray.Parse(responseReader.ReadToEnd)
         End Function
 
         Private Function MakeHTTPRequest(
@@ -745,7 +779,7 @@ Namespace TeamSupport
                   If fieldType IsNot Nothing Then
                     Dim fieldTypeString = fieldType.ToString()
                     If fieldTypeString.Length > 50 Then
-                      Select Case fieldTypeString.substring(50, fieldTypeString.Length - 50).ToLower()
+                      Select Case fieldTypeString.Substring(50, fieldTypeString.Length - 50).ToLower()
                         Case "select"
                           result = "{""value"":""" + fieldValue + """}"
                         Case "multiselect"
@@ -959,7 +993,7 @@ Namespace TeamSupport
             Dim updateAttachments As Boolean = False
             Dim crmLinkError As CRMLinkError = Nothing
 
-            For Each attachment As Attachment In attachments
+            For Each attachment As Data.Attachment In attachments
               If (Not File.Exists(attachment.Path)) Then
                 Log.Write("Attachment """ + attachment.FileName + """ was not sent as it was not found on server")
               Else
