@@ -356,9 +356,9 @@ function SaveTicket() {
           var statuses = top.Ts.Cache.getTicketStatuses();
           info.TicketStatusID = statuses[0].TicketStatusID;
         }
-        
+        debugger
         info.TicketSeverityID = ($('#ticket-severity').length) ? $('#ticket-severity').val() : '-1';//$('#ticket-severity').val(); 
-        info.UserID = ($('#ticket-assigned').length) ? $('#ticket-assigned').val() : '-1';//($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
+        info.UserID = ($('#ticket-assigned').length && $('#ticket-group').val() !== '') ? $('#ticket-assigned').val() : '-1';//($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
         info.GroupID = ($('#ticket-group').length && $('#ticket-group').val() !== '') ? $('#ticket-group').val() : '-1';//($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
         var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
         info.DueDate = _dueDate;
