@@ -1999,20 +1999,23 @@ namespace TeamSupport.ServiceLibrary
           ticketType = ticketTypes.FindByName(ticketTypeString);
           if (ticketType == null)
           {
-            ticketType = ticketTypes.AddNewTicketType();
+            TicketTypes newTicketTypes = new TicketTypes(_importUser);
+            ticketType = newTicketTypes.AddNewTicketType();
             ticketType.Name = ticketTypeString;
             ticketType.Description = ticketTypeString;
-            ticketType.Position = ticketTypes.GetMaxPosition(_organizationID) + 1;
+            ticketType.Position = newTicketTypes.GetMaxPosition(_organizationID) + 1;
             ticketType.OrganizationID = _organizationID;
             ticketType.CreatorID = creatorID;
             ticketType.ModifierID = -2;
             ticketType.DateCreated = now;
             ticketType.DateModified = now;
-            ticketTypes.Save();
-            ticketTypes.ValidatePositions(_organizationID);
+            newTicketTypes.Save();
+            newTicketTypes.ValidatePositions(_organizationID);
+            ticketTypes = new TicketTypes(_importUser);
+            ticketTypes.LoadAllPositions(_organizationID);
 
             TicketStatuses newTicketStatuses = new TicketStatuses(_importUser);
-            TicketStatus newTicketStatus = ticketStatuses.AddNewTicketStatus();
+            TicketStatus newTicketStatus = newTicketStatuses.AddNewTicketStatus();
             newTicketStatus.Name = "New";
             newTicketStatus.Description = "New";
             newTicketStatus.Position = 0;
@@ -2025,7 +2028,7 @@ namespace TeamSupport.ServiceLibrary
             newTicketStatus.ModifierID = -2;
             newTicketStatus.DateModified = now;
 
-            newTicketStatus = ticketStatuses.AddNewTicketStatus();
+            newTicketStatus = newTicketStatuses.AddNewTicketStatus();
             newTicketStatus.Name = "Closed";
             newTicketStatus.Description = "Closed";
             newTicketStatus.Position = 30;
@@ -2039,6 +2042,9 @@ namespace TeamSupport.ServiceLibrary
             newTicketStatus.DateModified = now;
             newTicketStatus.Collection.Save();
             newTicketStatus.Collection.ValidatePositions(_organizationID);
+
+            ticketStatuses = new TicketStatuses(_importUser);
+            ticketStatuses.LoadByOrganizationID(_organizationID);
           }
           ticket.TicketTypeID = ticketType.TicketTypeID;
         }
@@ -2058,10 +2064,11 @@ namespace TeamSupport.ServiceLibrary
           ticketStatus = ticketStatuses.FindByName(ticketStatusString, ticketType.TicketTypeID);
           if (ticketStatus == null)
           {
-            ticketStatus = ticketStatuses.AddNewTicketStatus();
-            ticketStatus.Name = ticketTypeString;
-            ticketStatus.Description = ticketTypeString;
-            ticketStatus.Position = ticketStatuses.GetMaxPosition(ticketType.TicketTypeID) + 1;
+            TicketStatuses newTicketStatuses = new TicketStatuses(_importUser);
+            ticketStatus = newTicketStatuses.AddNewTicketStatus();
+            ticketStatus.Name = ticketStatusString;
+            ticketStatus.Description = ticketStatusString;
+            ticketStatus.Position = newTicketStatuses.GetMaxPosition(ticketType.TicketTypeID) + 1;
             ticketStatus.OrganizationID = _organizationID;
             ticketStatus.TicketTypeID = ticketType.TicketTypeID;
             ticketStatus.IsClosed = false;
@@ -2070,8 +2077,11 @@ namespace TeamSupport.ServiceLibrary
             ticketStatus.DateCreated = now;
             ticketStatus.ModifierID = -2;
             ticketStatus.DateModified = now;
-            ticketStatuses.Save();
-            ticketStatuses.ValidatePositions(_organizationID);
+            newTicketStatuses.Save();
+            newTicketStatuses.ValidatePositions(_organizationID);
+
+            ticketStatuses = new TicketStatuses(_importUser);
+            ticketStatuses.LoadByOrganizationID(_organizationID);
           }
           ticket.TicketStatusID = ticketStatus.TicketStatusID;
         }
@@ -2091,17 +2101,21 @@ namespace TeamSupport.ServiceLibrary
           ticketSeverity = ticketSeverities.FindByName(ticketSeverityString);
           if (ticketSeverity == null)
           {
-            ticketSeverity = ticketSeverities.AddNewTicketSeverity();
+            TicketSeverities newTicketSeverities = new TicketSeverities(_importUser);
+            ticketSeverity = newTicketSeverities.AddNewTicketSeverity();
             ticketSeverity.Name = ticketSeverityString;
             ticketSeverity.Description = ticketSeverityString;
-            ticketSeverity.Position = ticketSeverities.GetMaxPosition(_organizationID) + 1;
+            ticketSeverity.Position = newTicketSeverities.GetMaxPosition(_organizationID) + 1;
             ticketSeverity.OrganizationID = _organizationID;
             ticketSeverity.CreatorID = creatorID;
             ticketSeverity.DateCreated = now;
             ticketSeverity.ModifierID = -2;
             ticketSeverity.DateModified = now;
-            ticketSeverities.Save();
-            ticketSeverities.ValidatePositions(_organizationID);
+            newTicketSeverities.Save();
+            newTicketSeverities.ValidatePositions(_organizationID);
+
+            ticketSeverities = new TicketSeverities(_importUser);
+            ticketSeverities.LoadByOrganizationID(_organizationID);
           }
           ticket.TicketSeverityID = ticketSeverity.TicketSeverityID;
         }
@@ -2122,7 +2136,8 @@ namespace TeamSupport.ServiceLibrary
           TeamSupport.Data.Group group = groups.FindByName(groupName);
           if (group == null)
           {
-            group = groups.AddNewGroup();
+            Groups newGroups = new Groups(_importUser);
+            group = newGroups.AddNewGroup();
             group.Name = groupName;
             group.Description = groupName;
             group.OrganizationID = _organizationID;
@@ -2130,7 +2145,10 @@ namespace TeamSupport.ServiceLibrary
             group.ModifierID = -2;
             group.DateCreated = now;
             group.DateModified = now;
-            groups.Save();
+            newGroups.Save();
+
+            groups = new Groups(_importUser);
+            groups.LoadByOrganizationID(_organizationID);
           }
           ticket.GroupID = group.GroupID;
         }
@@ -2144,15 +2162,18 @@ namespace TeamSupport.ServiceLibrary
           product = products.FindByName(productName);
           if (product == null)
           {
-            product = products.AddNewProduct();
-            product.Name = groupName;
-            product.Description = groupName;
+            Products newProducts = new Products(_importUser);
+            product = newProducts.AddNewProduct();
+            product.Name = productName;
+            product.Description = productName;
             product.OrganizationID = _organizationID;
             product.CreatorID = creatorID;
             product.ModifierID = -2;
             product.DateCreated = now;
             product.DateModified = now;
-            products.Save();
+            newProducts.Save();
+            products = new Products(_importUser);
+            products.LoadByOrganizationID(_organizationID);
           }
           ticket.ProductID = product.ProductID;
         }
@@ -2169,7 +2190,8 @@ namespace TeamSupport.ServiceLibrary
           reportedVersion = productVersions.FindByVersionNumber(reportedVersionName, (int)ticket.ProductID);
           if (reportedVersion == null)
           {
-            reportedVersion = productVersions.AddNewProductVersion();
+            ProductVersions newProductVersions = new ProductVersions(_importUser);
+            reportedVersion = newProductVersions.AddNewProductVersion();
             reportedVersion.VersionNumber = reportedVersionName;
             reportedVersion.Description = reportedVersionName;
             reportedVersion.ProductID = (int)ticket.ProductID;
@@ -2179,7 +2201,10 @@ namespace TeamSupport.ServiceLibrary
             reportedVersion.ModifierID = -2;
             reportedVersion.DateCreated = now;
             reportedVersion.DateModified = now;
-            productVersions.Save();
+            newProductVersions.Save();
+
+            productVersions = new ProductVersions(_importUser);
+            productVersions.LoadByParentOrganizationID(_organizationID);
           }
           ticket.ReportedVersionID = reportedVersion.ProductVersionID;
         }
@@ -2196,7 +2221,8 @@ namespace TeamSupport.ServiceLibrary
           resolvedVersion = productVersions.FindByVersionNumber(resolvedVersionName, (int)ticket.ProductID);
           if (resolvedVersion == null)
           {
-            resolvedVersion = productVersions.AddNewProductVersion();
+            ProductVersions newProductVersions = new ProductVersions(_importUser);
+            resolvedVersion = newProductVersions.AddNewProductVersion();
             resolvedVersion.VersionNumber = resolvedVersionName;
             resolvedVersion.Description = resolvedVersionName;
             resolvedVersion.ProductID = (int)ticket.ProductID;
@@ -2206,7 +2232,10 @@ namespace TeamSupport.ServiceLibrary
             resolvedVersion.ModifierID = -2;
             resolvedVersion.DateCreated = now;
             resolvedVersion.DateModified = now;
-            productVersions.Save();
+            newProductVersions.Save();
+
+            productVersions = new ProductVersions(_importUser);
+            productVersions.LoadByParentOrganizationID(_organizationID);
           }
           ticket.SolvedVersionID = resolvedVersion.ProductVersionID;
         }
@@ -2823,9 +2852,12 @@ namespace TeamSupport.ServiceLibrary
               break;
           }
           string key = assetSerialNumber + assetName + location;
-          if (!assetList.TryGetValue(key.ToUpper().Replace(" ", string.Empty), out assetID))
+          if (!string.IsNullOrEmpty(assetSerialNumber) || !string.IsNullOrEmpty(assetName))
           {
-            _importLog.Write("Asset '" + assetName + "' does not exists.");
+            if (!assetList.TryGetValue(key.ToUpper().Replace(" ", string.Empty), out assetID))
+            {
+              _importLog.Write("Asset '" + assetName + "' does not exists.");
+            }
           }
         }
 
@@ -2878,9 +2910,12 @@ namespace TeamSupport.ServiceLibrary
               break;
           }
           string key2 = assetSerialNumber2 + assetName2 + location2;
-          if (!assetList.TryGetValue(key2.ToUpper().Replace(" ", string.Empty), out assetID2))
+          if (!string.IsNullOrEmpty(assetSerialNumber2) || !string.IsNullOrEmpty(assetName2))
           {
-            _importLog.Write("Asset '" + assetName2 + "' does not exists.");
+            if (!assetList.TryGetValue(key2.ToUpper().Replace(" ", string.Empty), out assetID2))
+            {
+              _importLog.Write("Asset '" + assetName2 + "' does not exists.");
+            }
           }
         }
 
@@ -2932,9 +2967,12 @@ namespace TeamSupport.ServiceLibrary
               break;
           }
           string key3 = assetSerialNumber3 + assetName3 + location3;
-          if (!assetList.TryGetValue(key3.ToUpper().Replace(" ", string.Empty), out assetID3))
+          if (!string.IsNullOrEmpty(assetSerialNumber3) || !string.IsNullOrEmpty(assetName3))
           {
-            _importLog.Write("Asset '" + assetName3 + "' does not exists.");
+            if (!assetList.TryGetValue(key3.ToUpper().Replace(" ", string.Empty), out assetID3))
+            {
+              _importLog.Write("Asset '" + assetName3 + "' does not exists.");
+            }
           }
         }
 
