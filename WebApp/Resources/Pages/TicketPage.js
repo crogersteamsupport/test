@@ -530,7 +530,8 @@ function CreateNewActionLI() {
 
       var statusID = self.data("statusid");
       top.Ts.Services.Tickets.SetTicketStatus(_ticketID, statusID, function () {
-        SetupStatusField(statusID);
+        //SetupStatusField(statusID);
+        SetStatus(statusID);
         top.Ts.System.logAction('Ticket - Status Changed');
         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
       });
@@ -1254,8 +1255,8 @@ function SetupTicketPropertyEvents() {
     top.Ts.Services.TicketPage.SetTicketType(_ticketID, value, function (result) {
       if (result !== null) {
         _ticketTypeID = value;
-        SetupStatusField(result[0].TicketStatusID);
-
+        //SetupStatusField(result[0].TicketStatusID);
+        SetStatus(result[0].TicketStatusID);
         $('#ticket-status-label').toggleClass('ticket-closed', result[0].IsClosed);
 
         AppenCustomValues(result[1]);
@@ -2887,7 +2888,7 @@ var SetupStatusField = function (StatusId) {
             top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
               if (result !== null) {
                 _ticketCurrStatus = result.TicketStatusID;
-                SetStatus(value);
+                //SetStatus(value);
                 top.Ts.System.logAction('Ticket - Status Changed');
                 $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
                 window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
@@ -2917,8 +2918,6 @@ var SetupStatusField = function (StatusId) {
       },
     });
     var selectize = $("#ticket-status")[0].selectize;
-    selectize.clear(true);
-    selectize.clearOptions();
 
     for (var i = 0; i < statuses.length; i++) {
       selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
@@ -4361,7 +4360,7 @@ var SetKBCategory = function (KnowledgeBaseCategoryID) {
   var selectField = $('#ticket-KB-Category');
   if (selectField.length > 0) {
     var selectize = $('#ticket-KB-Category')[0].selectize;
-    selectize.addItem(KnowledgeBaseCategoryID, true);
+    selectize.addItem(KnowledgeBaseCategoryID, false);
   }
   else {
     $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
@@ -4372,7 +4371,7 @@ var SetCommunityCategory = function (ForumCategory) {
   var selectField = $('#ticket-Community');
   if (selectField.length > 0) {
     var selectize = $('#ticket-Community')[0].selectize;
-    selectize.addItem(ForumCategory, true);
+    selectize.addItem(ForumCategory, false);
   }
   else {
     $('#ticket-Community-RO').text((_ticketInfo.Ticket.CategoryName == null ? 'Unassigned' : _ticketInfo.Ticket.CategoryDisplayString));
@@ -4412,7 +4411,6 @@ var SetStatus = function (StatusID) {
     }
 
     selectize.addItem(StatusID, false);
-
   }
 };
 
