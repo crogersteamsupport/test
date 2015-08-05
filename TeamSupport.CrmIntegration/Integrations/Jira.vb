@@ -109,10 +109,25 @@ Namespace TeamSupport
         'Adding this due to ticket 24174, so only for the account HERE (869700) and HERE - Sandbox (794765) for the moment. If it works as expected we will do this for all accounts.
         Dim projectClause As String = String.Empty
         If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 Then
-          Log.Write("Ticket: 24174. Org HERE (869700, 794765) having trouble pulling all issues from Jira, we'll get only those for their jira project keys instead.")
+          Log.Write(String.Format("Ticket: 24174. Org HERE (869700, 794765) having trouble pulling all issues from Jira, we'll get only those for their jira project keys instead. {0},{1},{2}", CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password))
 
-          Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
-          Dim projects As IEnumerable(Of Project) = jiraClient.GetProjects()
+          Dim projects As IEnumerable(Of Project)
+
+          Try
+            Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
+            projects = jiraClient.GetProjects()
+          Catch ex As Exception
+            Log.Write(String.Format("Using JArray because: {0}{1}{0}{2}", Environment.NewLine, ex.Message, ex.InnerException))
+            Dim projectsList As List(Of Project) = New List(Of Project)
+            Dim projectsJArray As JArray = GetAPIJArray(_baseURI + "/project", "GET", String.Empty)
+
+            For item As Integer = 0 To projectsJArray.Count - 1
+              Dim project As Project = New Project With {.id = projectsJArray(item)("id"), .key = projectsJArray(item)("key").ToString(), .name = projectsJArray(item)("name").ToString()}
+              projectsList.Add(project)
+            Next
+
+            projects = projectsList.ToList()
+          End Try
 
           If CRMLinkRow.AlwaysUseDefaultProjectKey Then
             Dim defaultProjectFound As Boolean = projects.Where(Function(c) c.key = CRMLinkRow.DefaultProject).Any()
@@ -135,6 +150,7 @@ Namespace TeamSupport
               End If
             End If
           End If
+
         End If
 
         Dim needToGetMore As Boolean = True
