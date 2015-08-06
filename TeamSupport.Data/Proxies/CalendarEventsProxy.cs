@@ -24,6 +24,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime LastModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public bool AllDay { get; set; }
+    [DataMember] public DateTime? StartDateUTC { get; set; }
+    [DataMember] public DateTime? EndDateUTC { get; set; }
           
   }
   
@@ -44,6 +46,8 @@ namespace TeamSupport.Data
       result.StartDate = DateTime.SpecifyKind(this.StartDateUtc, DateTimeKind.Utc);
       result.LastModified = DateTime.SpecifyKind(this.LastModifiedUtc, DateTimeKind.Utc);
        
+      result.EndDateUTC = this.EndDateUTCUtc == null ? this.EndDateUTCUtc : DateTime.SpecifyKind((DateTime)this.EndDateUTCUtc, DateTimeKind.Utc); 
+      result.StartDateUTC = this.StartDateUTCUtc == null ? this.StartDateUTCUtc : DateTime.SpecifyKind((DateTime)this.StartDateUTCUtc, DateTimeKind.Utc); 
       result.EndDate = this.EndDateUtc == null ? this.EndDateUtc : DateTime.SpecifyKind((DateTime)this.EndDateUtc, DateTimeKind.Utc); 
        
       return result;

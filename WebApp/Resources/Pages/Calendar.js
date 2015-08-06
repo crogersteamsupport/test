@@ -132,6 +132,7 @@
                         var test = thestart.localeFormat();
                         var test2 = new Date(thestart);
                         var editable;
+                        
                         if (this.creatorID == top.Ts.System.User.UserID || top.Ts.System.User.IsSystemAdmin)
                             editable = true;
                         else

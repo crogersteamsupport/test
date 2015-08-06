@@ -24,6 +24,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("LastModified", "LastModified", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("AllDay", "AllDay", false, false, false);
+      _fieldMap.AddMap("StartDateUTC", "StartDateUTC", false, false, false);
+      _fieldMap.AddMap("EndDateUTC", "EndDateUTC", false, false, false);
             
     }
   }

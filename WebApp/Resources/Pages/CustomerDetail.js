@@ -1520,6 +1520,7 @@ $(document).ready(function () {
         $('#noteCustomerAlert').prop('checked', false);
         $('#btnNotesSave').text("Save Note");
         $('#noteForm').toggle();
+        top.Ts.System.logAction('Customer Detail - Cancel Note Edit / Add');
     });
 
     $("#btnNotesSave").click(function (e) {
