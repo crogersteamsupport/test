@@ -2054,6 +2054,7 @@ WHERE RowNum BETWEEN @From AND @To";
             adapter.Fill(table);
           }
           transaction.Commit();
+          table = DataUtils.DecodeDataTable(table);
         }
         catch (Exception ex)
         {

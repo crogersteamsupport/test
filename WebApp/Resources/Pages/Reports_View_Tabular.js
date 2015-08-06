@@ -161,11 +161,7 @@
                     column.formatter = ticketNumberFormatter;
                 } else if (low == 'companyname') {
                     column.formatter = companyFormatter;
-                } else if (repCol.DataType == "varchar") {
-                  column.formatter = stringFormatter;
-                } else if (repCol.DataType == "text") {
-                  column.formatter = stringFormatter;
-                }
+                } 
 
                 columns.push(column);
             }
