@@ -2144,6 +2144,11 @@ function SetupRemindersSection() {
       closeAfterSelect: true
     });
 
+    var selectizeControl = $reminderSelect[0].selectize;
+    var currUserObj = { id: top.Ts.System.User.UserID, label: userFullName };
+    selectizeControl.addOption(currUserObj);
+    selectizeControl.addItem(top.Ts.System.User.UserID);
+
     $('#ticket-reminder-save').click(function (e) {
       var selectizeControl = $reminderSelect[0].selectize;
       var date = top.Ts.Utils.getMsDate($('#ticket-reminder-date').val());
