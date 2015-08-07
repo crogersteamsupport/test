@@ -2113,16 +2113,6 @@ function (error) {
     });
   }
 
-  //var V2OrgID = top.Ts.System.User.OrganizationID;
-  //if (V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372) {
-  //  addToolbarButton('btnTicketV2', 'fa-fighter-jet', 'Switch to V2', function (e) {
-  //    e.preventDefault();
-  //    e.stopPropagation();
-  //    //top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
-  //    window.location = '/vcr/1_9_0/Pages/TicketPage.html?TicketNumber=' + _ticketNumber;
-  //  });
-  //}
-
   loadTicket(top.Ts.Utils.getQueryValue('TicketNumber', window));
 
   $('.ticket-new-customer-company')

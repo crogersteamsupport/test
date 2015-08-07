@@ -865,7 +865,7 @@ Ts.Pages.Main.prototype = {
               .addClass('ticketIframe')
               .appendTo(div)
                       //.attr('src', 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
-                      .attr('src', (top.Ts.System.User.IsClassicView) ? 'vcr/1_9_0/Pages/TicketPage.html?TicketNumber=' + ticketID : 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
+                      .attr('src', (top.Ts.System.User.IsClassicView) ? 'vcr/1_9_0/Pages/TicketV2.html?TicketNumber=' + ticketID : 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
                     } else {
                         div.show();
 
@@ -892,7 +892,7 @@ Ts.Pages.Main.prototype = {
               .attr('scrolling', 'no')
               .appendTo(div)
                       //.attr('src', 'vcr/1_9_0/Pages/NewTicket.html' + query);
-                      .attr('src', (top.Ts.System.User.IsClassicView) ? 'vcr/1_9_0/Pages/CreateTicketPage.html' + query : 'vcr/1_9_0/Pages/NewTicket.html' + query);
+                      .attr('src', (top.Ts.System.User.IsClassicView) ? 'vcr/1_9_0/Pages/NewTicketV2.html' + query : 'vcr/1_9_0/Pages/NewTicket.html' + query);
                         //.attr('src', 'frames/newticket.aspx' + query);
                     } else {
                         div.show();
