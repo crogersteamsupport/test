@@ -23,6 +23,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsRequired { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int RefType { get; set; }
+    [DataMember] public string IsCustom { get; set; }
           
   }
   
@@ -31,6 +32,7 @@ namespace TeamSupport.Data
     public SimpleImportFieldsViewItemProxy GetProxy()
     {
       SimpleImportFieldsViewItemProxy result = new SimpleImportFieldsViewItemProxy();
+      result.IsCustom = this.IsCustom;
       result.RefType = this.RefType;
       result.Description = this.Description;
       result.IsRequired = this.IsRequired;

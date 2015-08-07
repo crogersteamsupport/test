@@ -43,6 +43,12 @@ namespace TeamSupport.Data
     
 
     
+    public string IsCustom
+    {
+      get { return (string)Row["IsCustom"]; }
+      set { Row["IsCustom"] = CheckValue("IsCustom", value); }
+    }
+    
     public int RefType
     {
       get { return (int)Row["RefType"]; }
@@ -194,7 +200,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SimpleImportFieldsView] SET     [ImportFieldID] = @ImportFieldID,    [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description,    [RefType] = @RefType  WH);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SimpleImportFieldsView] SET     [ImportFieldID] = @ImportFieldID,    [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description,    [RefType] = @RefType,    [IsCustom] = @IsCustom  WH);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ImportFieldID", SqlDbType.Int, 4);
@@ -267,13 +273,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsCustom", SqlDbType.VarChar, 5);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SimpleImportFieldsView] (    [ImportFieldID],    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description],    [RefType]) VALUES ( @ImportFieldID, @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description, @RefType); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SimpleImportFieldsView] (    [ImportFieldID],    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description],    [RefType],    [IsCustom]) VALUES ( @ImportFieldID, @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description, @RefType, @IsCustom); SET @Identity = SCOPE_IDENTITY();";
 
+
+		tempParameter = insertCommand.Parameters.Add("IsCustom", SqlDbType.VarChar, 5);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)

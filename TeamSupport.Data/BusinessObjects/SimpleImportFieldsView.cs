@@ -13,6 +13,25 @@ namespace TeamSupport.Data
   
   public partial class SimpleImportFieldsView
   {
+    public void LoadByRefType(int refType)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+        @"
+          SELECT 
+            * 
+          FROM 
+            SimpleImportFieldsView
+          WHERE
+            RefType = @RefType
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@RefType", (int)refType);
+
+        Fill(command);
+      }
+    }
   }
   
 }

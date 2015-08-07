@@ -1295,12 +1295,12 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public ImportFieldsViewItemProxy[] LoadImportFields(int refType)
+    public SimpleImportFieldsViewItemProxy[] LoadImportFields(int refType)
     {
-      ImportFieldsView importFields = new ImportFieldsView(TSAuthentication.GetLoginUser());
+      SimpleImportFieldsView importFields = new SimpleImportFieldsView(TSAuthentication.GetLoginUser());
       importFields.LoadByRefType(refType);
 
-      return importFields.GetImportFieldsViewItemProxies();
+      return importFields.GetSimpleImportFieldsViewItemProxies();
     }
 
     [WebMethod]
@@ -1324,9 +1324,6 @@ namespace TSWebServices
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-      ImportFieldsView importFields = new ImportFieldsView(loginUser);
-      importFields.LoadByRefType(refType);
-
       Imports imports = new Imports(loginUser);
       Import import = imports.AddNewImport();
       import.RefType = (ReferenceType)refType;
@@ -1337,21 +1334,21 @@ namespace TSWebServices
       List<ImportFieldMap> fields = JsonConvert.DeserializeObject<List<ImportFieldMap>>(fieldsData);
       if (fields.Count > 0)
       {
+        SimpleImportFieldsView importFields = new SimpleImportFieldsView(loginUser);
+        importFields.LoadByRefType(refType);
+
         ImportMaps importMaps = new ImportMaps(loginUser);
         foreach (ImportFieldMap field in fields)
         {
           ImportMap importMap = importMaps.AddNewImportMap();
           importMap.ImportID = import.ImportID;
           importMap.SourceName = field.SourceName;
-          foreach (ImportFieldsViewItem importField in importFields)
+          foreach (SimpleImportFieldsViewItem importField in importFields)
           {
             if (importField.ImportFieldID == field.ImportFieldID)
             {
               importMap.FieldID = importField.ImportFieldID;
-              if (importField.IsCustom != null)
-              {
-                importMap.IsCustom = (bool)importField.IsCustom;
-              }
+              importMap.IsCustom = Convert.ToBoolean(importField.IsCustom);
               break;
             }
           }
@@ -1369,7 +1366,11 @@ namespace TSWebServices
       importFieldsView.LoadByRefType(refType);
 
       ImportPanels result = new ImportPanels();
-      result.ImportFields = importFieldsView.GetImportFieldsViewItemProxies();
+      ImportFields importFields = new ImportFields(loginUser);
+
+      SimpleImportFieldsView simpleImportFieldsView = new SimpleImportFieldsView(loginUser);
+      simpleImportFieldsView.LoadByRefType(refType);
+      result.ImportFields = simpleImportFieldsView.GetSimpleImportFieldsViewItemProxies();
 
       string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports), uploadedFileName);
       using (CsvReader csv = new CsvReader(new StreamReader(csvFile), true))
@@ -1437,7 +1438,7 @@ namespace TSWebServices
   public class ImportPanels
   {
     [DataMember]
-    public ImportFieldsViewItemProxy[] ImportFields { get; set; }
+    public SimpleImportFieldsViewItemProxy[] ImportFields { get; set; }
     [DataMember]
     public ImportFieldMap[] ImportFieldMap { get; set; }
   }
