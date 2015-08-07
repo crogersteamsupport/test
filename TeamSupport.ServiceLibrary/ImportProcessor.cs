@@ -167,6 +167,16 @@ namespace TeamSupport.ServiceLibrary
           case ReferenceType.CustomFieldPickList:
             ImportCustomFieldPickList(import);
             break;
+          case ReferenceType.Products:
+            ImportProducts(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportCustomFields(import.RefType);
+            break;
+          case ReferenceType.ProductVersions:
+            ImportProductVersions(import);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportCustomFields(import.RefType);
+            break;
           default:
             Logs.WriteEvent("ERROR: Unknown Reference Type");
             break;
@@ -821,6 +831,150 @@ namespace TeamSupport.ServiceLibrary
               if (!ticketList.TryGetValue(ticketNumber, out refID))
               {
                 errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as ticket# " + ticketNumber + " does not exists.";
+              }
+            }
+            break;
+          case ReferenceType.Products:
+            string productImportID = ReadString("ProductImportID");
+            if (productImportID != string.Empty)
+            {
+              Products products = new Products(_importUser);
+              products.LoadByImportID(productImportID, _organizationID);
+              if (products.Count > 1)
+              {
+                errorMessage = "More than one product matching the ProductImportID was found.";
+              }
+              else if (products.Count == 1)
+              {
+                refID = products[0].ProductID;
+              }
+              else
+              {
+                errorMessage = "No product matching the ProductImportID was found.";
+              }
+            }
+
+            if (refID == 0)
+            {
+              string productName = ReadString("Name");
+              if (!string.IsNullOrEmpty(productName))
+              {
+                Products products = new Products(_importUser);
+                products.LoadByProductName(_organizationID, productName);
+                if (products.Count > 1)
+                {
+                  errorMessage = "More than one product matching the ProductName was found.";
+                }
+                else if (products.Count == 1)
+                {
+                  refID = products[0].ProductID;
+                }
+                else
+                {
+                  errorMessage = "No product matching the ProductName was found.";
+                }
+              }
+              else
+              {
+                errorMessage = "No product found matching either ProductName or ProductImportID.";
+              }
+            }
+            break;
+          case ReferenceType.ProductVersions:
+            string name = ReadString("VersionNumber");
+            if (name == string.Empty)
+            {
+              errorMessage = "Product version custom fields skipped due to missing name";
+            }
+
+            int productID = 0;
+            productImportID = string.Empty;
+            productImportID = ReadString("ProductImportID");
+            if (productImportID != string.Empty)
+            {
+              Products products = new Products(_importUser);
+              products.LoadByImportID(productImportID, _organizationID);
+              if (products.Count > 1)
+              {
+                errorMessage = "More than one product matching the ProductImportID was found.";
+              }
+              else if (products.Count == 1)
+              {
+                productID = products[0].ProductID;
+              }
+              else
+              {
+                errorMessage = "No product matching the ProductImportID was found.";
+              }
+            }
+
+            if (productID == 0)
+            {
+              string productName = ReadString("Name");
+              if (!string.IsNullOrEmpty(productName))
+              {
+                Products products = new Products(_importUser);
+                products.LoadByProductName(_organizationID, productName);
+                if (products.Count > 1)
+                {
+                  errorMessage = "More than one product matching the ProductName was found.";
+                }
+                else if (products.Count == 1)
+                {
+                  productID = products[0].ProductID;
+                }
+              }
+            }
+
+            if (productID == 0)
+            {
+              productID = ReadInt("ProductID");
+              if (productID != 0)
+              {
+                Products products = new Products(_importUser);
+                products.LoadByProductID(productID);
+                if (products.Count != 1 || products[0].OrganizationID != _organizationID)
+                {
+                  errorMessage = "No product found with productID provided.";
+                }
+              }
+              else
+              {
+                errorMessage = "Product is required and is missing.";
+              }
+            }
+
+            ProductVersions existingProductVersion = new ProductVersions(_importUser);
+
+            string productVersionImportID = ReadString("ProductVersionImportID");
+            if (productVersionImportID != string.Empty)
+            {
+              existingProductVersion.LoadByImportID(productVersionImportID, _organizationID);
+              if (existingProductVersion.Count == 1)
+              {
+                refID = existingProductVersion[0].ProductVersionID;
+              }
+              else if (existingProductVersion.Count > 1)
+              {
+                errorMessage = "More than one product version matching the importID was found when pulling custom fields.";
+              }
+              else
+              {
+                errorMessage = "No product version matching the importID was found when pulling custom fields.";
+              }
+            }
+
+            if (refID == 0)
+            {
+              existingProductVersion = new ProductVersions(_importUser);
+              existingProductVersion.LoadByProductIDAndVersionNumber(productID, name);
+              if (existingProductVersion.Count > 0)
+              {
+                refID = existingProductVersion[0].ProductVersionID;
+              }
+              else
+              {
+                errorMessage = "Product version is required and is missing.";
               }
             }
             break;
@@ -3146,6 +3300,296 @@ namespace TeamSupport.ServiceLibrary
         }
 
       }
+    }
+
+    private void ImportProducts(Import import)
+    {
+      SortedList<string, int> userList = GetUserAndContactList();
+
+      Products products = new Products(_importUser);
+
+      int count = 0;
+      while (_csv.ReadNextRecord())
+      {
+        string name = ReadString("Name");
+        if (name == string.Empty)
+        {
+          _importLog.Write("Product skipped due to missing name");
+          continue;
+        }
+
+        Products existingProduct = new Products(_importUser);
+        Product product = null;
+        bool isUpdate = false;
+
+        string importID = ReadString("ProductImportID");
+        if (importID != string.Empty)
+        {
+          existingProduct.LoadByImportID(importID, _organizationID);
+          if (existingProduct.Count == 1)
+          {
+            product = existingProduct[0];
+            isUpdate = true;
+          }
+          else if (existingProduct.Count > 1)
+          {
+            _importLog.Write("More than one product matching the importID was found.");
+            continue;
+          }
+        }
+
+        if (product == null)
+        {
+          existingProduct = new Products(_importUser);
+          existingProduct.LoadByProductName(_organizationID, name);
+          if (existingProduct.Count > 0)
+          {
+            product = existingProduct[0];
+            isUpdate = true;
+          }
+        }
+
+        if (product == null)
+        {
+          product = products.AddNewProduct();
+        }
+
+        product.Name = name;
+        product.Description = ReadString("Description");
+        product.ImportID = importID;
+        DateTime? dateCreated = ReadDateNull("DateCreated");
+        if (dateCreated != null)
+        {
+          product.DateCreated = (DateTime)dateCreated;
+        }
+
+        int creatorID = -2;
+        if (Int32.TryParse(ReadString("CreatorID"), out creatorID))
+        {
+          if (!userList.ContainsValue(creatorID))
+          {
+            creatorID = -2;
+          }
+        }
+        product.CreatorID = creatorID;
+        product.ModifierID = -2;
+        product.OrganizationID = _organizationID;
+
+        if (isUpdate)
+        {
+          existingProduct.Save();
+          _importLog.Write("ProductID " + product.ProductID.ToString() + " was updated.");
+        }
+        else
+        {
+          _importLog.Write("Product " + product.Name + " was added to import set.");
+        }
+        count++;
+
+        if (count % BULK_LIMIT == 0)
+        {
+          products.BulkSave();
+          products = new Products(_importUser);
+          UpdateImportCount(import, count);
+          _importLog.Write("Import set with " + count.ToString() + " products inserted in database.");
+        }
+      }
+      products.BulkSave();
+      UpdateImportCount(import, count);
+      _importLog.Write("Import set with " + count.ToString() + " products inserted in database.");
+    }
+
+    private void ImportProductVersions(Import import)
+    {
+      SortedList<string, int> userList = GetUserAndContactList();
+
+      ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(_importUser);
+      productVersionStatuses.LoadByOrganizationID(_organizationID);
+
+      ProductVersions productVersions = new ProductVersions(_importUser);
+
+      int count = 0;
+      while (_csv.ReadNextRecord())
+      {
+        string name = ReadString("VersionNumber");
+        if (name == string.Empty)
+        {
+          _importLog.Write("Product version skipped due to missing name");
+          continue;
+        }
+
+        int productID = 0;
+        Product product = null;
+        string productImportID = ReadString("ProductImportID");
+        if (!string.IsNullOrEmpty(productImportID))
+        {
+          Products products = new Products(_importUser);
+          products.LoadByImportID(productImportID, _organizationID);
+          if (products.Count == 1)
+          {
+            product = products[0];
+            productID = product.ProductID;
+          }
+          else if (products.Count > 1)
+          {
+            _importLog.Write("More than one product found matching TicketImportID");
+            continue;
+          }
+        }
+
+        if (product == null)
+        {
+          string productName = ReadString("ProductName");
+          if (!string.IsNullOrEmpty(productName))
+          {
+            Products products = new Products(_importUser);
+            products.LoadByProductName(_organizationID, productName);
+            if (products.Count > 1)
+            {
+              _importLog.Write("More than one product matching the ProductName was found.");
+              continue;
+            }
+            else if (products.Count == 1)
+            {
+              product = products[0];
+              productID = product.ProductID;
+            }
+          }
+        }
+
+        if (productID == 0)
+        {
+          productID = ReadInt("ProductID");
+          if (productID != 0)
+          {
+            Products products = new Products(_importUser);
+            products.LoadByProductID(productID);
+            if (products.Count == 1 && products[0].OrganizationID == _organizationID)
+            {
+              product = products[0];
+            }
+            else 
+            {
+              _importLog.Write("No product found with productID provided.");
+              continue;
+            }
+          }
+          else
+          {
+            _importLog.Write("Product is required.");
+            continue;
+          }
+        }
+
+        ProductVersions existingProductVersion = new ProductVersions(_importUser);
+        ProductVersion productVersion = null;
+        bool isUpdate = false;
+
+        string importID = ReadString("ProductVersionImportID");
+        if (importID != string.Empty)
+        {
+          existingProductVersion.LoadByImportID(importID, _organizationID);
+          if (existingProductVersion.Count == 1)
+          {
+            productVersion = existingProductVersion[0];
+            isUpdate = true;
+          }
+          else if (existingProductVersion.Count > 1)
+          {
+            _importLog.Write("More than one product version matching the importID was found.");
+            continue;
+          }
+        }
+
+        if (productVersion == null)
+        {
+          existingProductVersion = new ProductVersions(_importUser);
+          existingProductVersion.LoadByProductIDAndVersionNumber(productID, name);
+          if (existingProductVersion.Count > 0)
+          {
+            productVersion = existingProductVersion[0];
+            isUpdate = true;
+          }
+        }
+
+        if (productVersion == null)
+        {
+          productVersion = productVersions.AddNewProductVersion();
+        }
+
+        productVersion.ProductID = productID;
+        productVersion.VersionNumber = name;
+        productVersion.Description = ReadString("Description");
+        productVersion.ImportID = importID;
+        productVersion.IsReleased = ReadBool("Released");
+
+        DateTime? releaseDate = ReadDateNull("ReleaseDate");
+        if (releaseDate != null)
+        {
+          productVersion.ReleaseDate = (DateTime)releaseDate;
+        }
+
+        DateTime? dateCreated = ReadDateNull("DateCreated");
+        if (dateCreated != null)
+        {
+          productVersion.DateCreated = (DateTime)dateCreated;
+        }
+
+        int creatorID = -2;
+        if (Int32.TryParse(ReadString("CreatorID"), out creatorID))
+        {
+          if (!userList.ContainsValue(creatorID))
+          {
+            creatorID = -2;
+          }
+        }
+        productVersion.CreatorID = creatorID;
+        productVersion.ModifierID = -2;
+
+        int productVersionStatusID = productVersionStatuses[0].ProductVersionStatusID;
+        string status = ReadString("Status");
+        if (!string.IsNullOrEmpty(status))
+        {
+          ProductVersionStatus productVersionStatus = productVersionStatuses.FindByName(status);
+          if(productVersionStatus == null)
+          {
+            ProductVersionStatuses newProductVersionStatuses = new ProductVersionStatuses(_importUser);
+            productVersionStatus = newProductVersionStatuses.AddNewProductVersionStatus();
+            productVersionStatus.Name = status;
+            productVersionStatus.Description = status;
+            productVersionStatus.OrganizationID = _organizationID;
+            productVersionStatus.Position = newProductVersionStatuses.GetMaxPosition(_organizationID) + 1;
+            productVersionStatus.CreatorID = creatorID;
+            productVersionStatus.ModifierID = -2;
+            newProductVersionStatuses.Save();
+            newProductVersionStatuses.ValidatePositions(_organizationID);
+          }
+          productVersionStatusID = productVersionStatus.ProductVersionStatusID;
+        }
+        productVersion.ProductVersionStatusID = productVersionStatusID;
+
+        if (isUpdate)
+        {
+          existingProductVersion.Save();
+          _importLog.Write("ProductVersionID " + productVersion.ProductVersionID.ToString() + " was updated.");
+        }
+        else
+        {
+          _importLog.Write("Product version " + productVersion.VersionNumber + " was added to import set.");
+        }
+        count++;
+
+        if (count % BULK_LIMIT == 0)
+        {
+          productVersions.BulkSave();
+          productVersions = new ProductVersions(_importUser);
+          UpdateImportCount(import, count);
+          _importLog.Write("Import set with " + count.ToString() + " product versions inserted in database.");
+        }
+      }
+      productVersions.BulkSave();
+      UpdateImportCount(import, count);
+      _importLog.Write("Import set with " + count.ToString() + " product versions inserted in database.");
     }
 
     private bool IsTicketRelated(Ticket ticket1, Ticket ticket2)

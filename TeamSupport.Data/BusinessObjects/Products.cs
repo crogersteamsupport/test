@@ -457,7 +457,19 @@ namespace TeamSupport.Data
             command.Parameters.AddWithValue("UserID", userID);
             Fill(command);
         }
-    }    
+    }
+
+      public void LoadByImportID(string importID, int organizationID)
+      {
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = "SELECT * FROM Products p WHERE p.ImportID = @ImportID AND p.OrganizationID = @OrganizationID";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@ImportID", importID);
+          command.Parameters.AddWithValue("@OrganizationID", organizationID);
+          Fill(command);
+        }
+      }
   }
 
   public class ProductSearch

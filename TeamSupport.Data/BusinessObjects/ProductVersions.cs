@@ -265,7 +265,26 @@ namespace TeamSupport.Data
       }
     }
 
-
+    public void LoadByImportID(string importID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+          SELECT 
+            * 
+          FROM 
+            ProductVersions pv 
+            JOIN Products p 
+              ON pv.ProductID = p.ProductID 
+          WHERE 
+            pv.ImportID = @ImportID 
+            AND p.OrganizationID = @OrganizationID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ImportID", importID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
   }
 
   public class ProductVersionsSearch

@@ -29,7 +29,7 @@ namespace TeamSupport.Data
             AND
             ( 
               ImportID IS NULL
-              OR ImportID = (SELECT TOP 1 ImportID FROM Imports WHERE OrganizationID = @OrganizationID ORDER BY ImportID DESC)
+              OR ImportID = (SELECT TOP 1 ImportID FROM Imports WHERE OrganizationID = @OrganizationID AND RefType = @RefType ORDER BY ImportID DESC)
             )
         ";
         command.CommandType = CommandType.Text;
