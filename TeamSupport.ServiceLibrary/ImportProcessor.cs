@@ -785,16 +785,54 @@ namespace TeamSupport.ServiceLibrary
             }
             break;
           case ReferenceType.Organizations:
-            string companyName = ReadString("CompanyName");
-            Organizations companiesMatchingName = new Organizations(_importUser);
-            companiesMatchingName.LoadByName(companyName, _organizationID);
-            if (companiesMatchingName.Count > 0)
+            int companyID = ReadInt("CompanyID");
+            if (companyID != 0)
             {
-              refID = companiesMatchingName[0].OrganizationID;
+              Organizations existingCompany = new Organizations(_importUser);
+              existingCompany.LoadByOrganizationID(companyID);
+              if (existingCompany.Count == 1 && existingCompany[0].ParentID == _organizationID)
+              {
+                refID = existingCompany[0].OrganizationID;
+              }
+              else
+              {
+                _importLog.Write("No company matching CompanyID was found for customfields.");
+                continue;
+              }
             }
-            else
+
+            string importID = ReadString("CompanyImportID");
+            if (refID == 0)
             {
-              errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as company " + companyName + " does not exists.";
+              if (importID != string.Empty)
+              {
+                Organizations existingCompany = new Organizations(_importUser);
+                existingCompany.LoadByImportID(importID, _organizationID);
+                if (existingCompany.Count == 1)
+                {
+                  refID = existingCompany[0].OrganizationID;
+                }
+                else if (existingCompany.Count > 1)
+                {
+                  _importLog.Write("More than one company matching the importID was found.");
+                  continue;
+                }
+              }
+            }
+
+            string companyName = ReadString("CompanyName");
+            if (refID == 0)
+            {
+              Organizations companiesMatchingName = new Organizations(_importUser);
+              companiesMatchingName.LoadByName(companyName, _organizationID);
+              if (companiesMatchingName.Count > 0)
+              {
+                refID = companiesMatchingName[0].OrganizationID;
+              }
+              else
+              {
+                errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as company " + companyName + " does not exists.";
+              }
             }
             break;
           case ReferenceType.Contacts:
@@ -809,7 +847,7 @@ namespace TeamSupport.ServiceLibrary
             }
             break;
           case ReferenceType.Tickets:
-            string importID = ReadString("TicketImportID");
+            importID = ReadString("TicketImportID");
             if (importID != string.Empty)
             {
               Tickets tickets = new Tickets(_importUser);
@@ -1061,19 +1099,38 @@ namespace TeamSupport.ServiceLibrary
         Organization company = null;
         bool isUpdate = false;
 
-        string importID = ReadString("CompanyImportID");
-        if (importID != string.Empty)
+        int companyID = ReadInt("CompanyID");
+        if (companyID != 0)
         {
-          existingCompany.LoadByImportID(importID, _organizationID);
-          if (existingCompany.Count == 1)
+          existingCompany.LoadByOrganizationID(companyID);
+          if (existingCompany.Count == 1 && existingCompany[0].ParentID == _organizationID)
           {
             company = existingCompany[0];
             isUpdate = true;
           }
-          else if (existingCompany.Count > 1)
+          else
           {
-            _importLog.Write("More than one company matching the importID was found.");
+            _importLog.Write("No company matching CompanyID was found");
             continue;
+          }
+        }
+
+        if (company == null)
+        {
+          string importID = ReadString("CompanyImportID");
+          if (importID != string.Empty)
+          {
+            existingCompany.LoadByImportID(importID, _organizationID);
+            if (existingCompany.Count == 1)
+            {
+              company = existingCompany[0];
+              isUpdate = true;
+            }
+            else if (existingCompany.Count > 1)
+            {
+              _importLog.Write("More than one company matching the importID was found.");
+              continue;
+            }
           }
         }
 
@@ -1503,38 +1560,76 @@ namespace TeamSupport.ServiceLibrary
         newAddress.CreatorID = creatorID;
         newAddress.ModifierID = -2;
 
-        string companyName = ReadString("CompanyName");
-        int orgID;
-        Organizations organizationsMatchingName = new Organizations(_importUser);
-        organizationsMatchingName.LoadByName(companyName, _organizationID);
-        if (organizationsMatchingName.Count == 0)
+        int orgID = 0;
+        int companyID = ReadInt("CompanyID");
+        if (companyID != 0)
         {
-          Organizations newCompanies = new Organizations(_importUser);
-          Organization newCompany = newCompanies.AddNewOrganization();
-          newCompany.Name = companyName;
-          newCompany.ParentID = _organizationID;
-          newCompany.IsActive = true;
-          newCompany.ExtraStorageUnits = 0;
-          newCompany.IsCustomerFree = false;
-          newCompany.PortalSeats = 0;
-          newCompany.PrimaryUserID = null;
-          newCompany.ProductType = ProductType.Express;
-          newCompany.UserSeats = 0;
-          newCompany.NeedsIndexing = true;
-          newCompany.SystemEmailID = Guid.NewGuid();
-          newCompany.WebServiceID = Guid.NewGuid();
-          if (dateCreated != null)
+          Organizations existingCompany = new Organizations(_importUser);
+          existingCompany.LoadByOrganizationID(companyID);
+          if (existingCompany.Count == 1 && existingCompany[0].ParentID == _organizationID)
           {
-            newCompany.DateCreated = (DateTime)dateCreated;
+            orgID = existingCompany[0].OrganizationID;
           }
-          newCompany.CreatorID = creatorID;
-          newCompany.ModifierID = -2;
-          newCompanies.Save();
-          orgID = newCompany.OrganizationID;
+          else
+          {
+            _importLog.Write("No company matching CompanyID was found for addresses.");
+            continue;
+          }
         }
-        else
+
+        if (orgID == 0)
         {
-          orgID = organizationsMatchingName[0].OrganizationID;
+          string importID = ReadString("CompanyImportID");
+          if (importID != string.Empty)
+          {
+            Organizations existingCompany = new Organizations(_importUser);
+            existingCompany.LoadByImportID(importID, _organizationID);
+            if (existingCompany.Count == 1)
+            {
+              orgID = existingCompany[0].OrganizationID;
+            }
+            else if (existingCompany.Count > 1)
+            {
+              _importLog.Write("More than one company matching the importID was found.");
+              continue;
+            }
+          }
+        }
+
+        string companyName = ReadString("CompanyName");
+        if (orgID == 0)
+        {
+          Organizations organizationsMatchingName = new Organizations(_importUser);
+          organizationsMatchingName.LoadByName(companyName, _organizationID);
+          if (organizationsMatchingName.Count == 0)
+          {
+            Organizations newCompanies = new Organizations(_importUser);
+            Organization newCompany = newCompanies.AddNewOrganization();
+            newCompany.Name = companyName;
+            newCompany.ParentID = _organizationID;
+            newCompany.IsActive = true;
+            newCompany.ExtraStorageUnits = 0;
+            newCompany.IsCustomerFree = false;
+            newCompany.PortalSeats = 0;
+            newCompany.PrimaryUserID = null;
+            newCompany.ProductType = ProductType.Express;
+            newCompany.UserSeats = 0;
+            newCompany.NeedsIndexing = true;
+            newCompany.SystemEmailID = Guid.NewGuid();
+            newCompany.WebServiceID = Guid.NewGuid();
+            if (dateCreated != null)
+            {
+              newCompany.DateCreated = (DateTime)dateCreated;
+            }
+            newCompany.CreatorID = creatorID;
+            newCompany.ModifierID = -2;
+            newCompanies.Save();
+            orgID = newCompany.OrganizationID;
+          }
+          else
+          {
+            orgID = organizationsMatchingName[0].OrganizationID;
+          }
         }
 
         switch (addressReferenceType)
@@ -1710,38 +1805,76 @@ namespace TeamSupport.ServiceLibrary
         newPhoneNumber2.ModifierID = -2;
         newPhoneNumber3.ModifierID = -2;
 
-        string companyName = ReadString("CompanyName");
-        int orgID;
-        Organizations organizationsMatchingName = new Organizations(_importUser);
-        organizationsMatchingName.LoadByName(companyName, _organizationID);
-        if (organizationsMatchingName.Count == 0)
+        int orgID = 0;
+        int companyID = ReadInt("CompanyID");
+        if (companyID != 0)
         {
-          Organizations newCompanies = new Organizations(_importUser);
-          Organization newCompany = newCompanies.AddNewOrganization();
-          newCompany.Name = companyName;
-          newCompany.ParentID = _organizationID;
-          newCompany.IsActive = true;
-          newCompany.ExtraStorageUnits = 0;
-          newCompany.IsCustomerFree = false;
-          newCompany.PortalSeats = 0;
-          newCompany.PrimaryUserID = null;
-          newCompany.ProductType = ProductType.Express;
-          newCompany.UserSeats = 0;
-          newCompany.NeedsIndexing = true;
-          newCompany.SystemEmailID = Guid.NewGuid();
-          newCompany.WebServiceID = Guid.NewGuid();
-          if (dateCreated != null)
+          Organizations existingCompany = new Organizations(_importUser);
+          existingCompany.LoadByOrganizationID(companyID);
+          if (existingCompany.Count == 1 && existingCompany[0].ParentID == _organizationID)
           {
-            newCompany.DateCreated = (DateTime)dateCreated;
+            orgID = existingCompany[0].OrganizationID;
           }
-          newCompany.CreatorID = creatorID;
-          newCompany.ModifierID = -2;
-          newCompanies.Save();
-          orgID = newCompany.OrganizationID;
+          else
+          {
+            _importLog.Write("No company matching CompanyID was found for phone numbers.");
+            continue;
+          }
         }
-        else
+
+        if (orgID == 0)
         {
-          orgID = organizationsMatchingName[0].OrganizationID;
+          string importID = ReadString("CompanyImportID");
+          if (importID != string.Empty)
+          {
+            Organizations existingCompany = new Organizations(_importUser);
+            existingCompany.LoadByImportID(importID, _organizationID);
+            if (existingCompany.Count == 1)
+            {
+              orgID = existingCompany[0].OrganizationID;
+            }
+            else if (existingCompany.Count > 1)
+            {
+              _importLog.Write("More than one company matching the importID was found.");
+              continue;
+            }
+          }
+        }
+
+        string companyName = ReadString("CompanyName");
+        if (orgID == 0)
+        {
+          Organizations organizationsMatchingName = new Organizations(_importUser);
+          organizationsMatchingName.LoadByName(companyName, _organizationID);
+          if (organizationsMatchingName.Count == 0)
+          {
+            Organizations newCompanies = new Organizations(_importUser);
+            Organization newCompany = newCompanies.AddNewOrganization();
+            newCompany.Name = companyName;
+            newCompany.ParentID = _organizationID;
+            newCompany.IsActive = true;
+            newCompany.ExtraStorageUnits = 0;
+            newCompany.IsCustomerFree = false;
+            newCompany.PortalSeats = 0;
+            newCompany.PrimaryUserID = null;
+            newCompany.ProductType = ProductType.Express;
+            newCompany.UserSeats = 0;
+            newCompany.NeedsIndexing = true;
+            newCompany.SystemEmailID = Guid.NewGuid();
+            newCompany.WebServiceID = Guid.NewGuid();
+            if (dateCreated != null)
+            {
+              newCompany.DateCreated = (DateTime)dateCreated;
+            }
+            newCompany.CreatorID = creatorID;
+            newCompany.ModifierID = -2;
+            newCompanies.Save();
+            orgID = newCompany.OrganizationID;
+          }
+          else
+          {
+            orgID = organizationsMatchingName[0].OrganizationID;
+          }
         }
 
         switch (phoneNumberReferenceType)
