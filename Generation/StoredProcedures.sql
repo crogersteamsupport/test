@@ -1,7 +1,7 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 
 (
 
@@ -18,25 +18,20 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom]
-  FROM [dbo].[ImportFieldsView]
+    [RefType]
+  FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
@@ -44,16 +39,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
   @IsRequired bit,
   @Description varchar(1000),
   @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFieldsView]
+  INSERT INTO [dbo].[SimpleImportFieldsView]
   (
     [ImportFieldID],
     [TableName],
@@ -64,12 +54,7 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom])
+    [RefType])
   VALUES (
     @ImportFieldID,
     @TableName,
@@ -80,41 +65,31 @@ AS
     @IsVisible,
     @IsRequired,
     @Description,
-    @RefType,
-    @ImportMapID,
-    @ImportID,
-    @SourceName,
-    @FieldID,
-    @IsCustom)
+    @RefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
   @IsVisible bit,
   @IsRequired bit,
   @Description varchar(1000),
-  @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit
+  @RefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFieldsView]
+  UPDATE [dbo].[SimpleImportFieldsView]
   SET
     [ImportFieldID] = @ImportFieldID,
     [TableName] = @TableName,
@@ -125,34 +100,29 @@ AS
     [IsVisible] = @IsVisible,
     [IsRequired] = @IsRequired,
     [Description] = @Description,
-    [RefType] = @RefType,
-    [ImportMapID] = @ImportMapID,
-    [ImportID] = @ImportID,
-    [SourceName] = @SourceName,
-    [FieldID] = @FieldID,
-    [IsCustom] = @IsCustom
+    [RefType] = @RefType
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 
 (
 
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFieldsView]
+  DELETE FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 
 (
 
@@ -169,25 +139,20 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom]
-  FROM [dbo].[ImportFieldsView]
+    [RefType]
+  FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
@@ -195,16 +160,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
   @IsRequired bit,
   @Description varchar(1000),
   @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFieldsView]
+  INSERT INTO [dbo].[SimpleImportFieldsView]
   (
     [ImportFieldID],
     [TableName],
@@ -215,12 +175,7 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom])
+    [RefType])
   VALUES (
     @ImportFieldID,
     @TableName,
@@ -231,41 +186,31 @@ AS
     @IsVisible,
     @IsRequired,
     @Description,
-    @RefType,
-    @ImportMapID,
-    @ImportID,
-    @SourceName,
-    @FieldID,
-    @IsCustom)
+    @RefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
   @IsVisible bit,
   @IsRequired bit,
   @Description varchar(1000),
-  @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit
+  @RefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFieldsView]
+  UPDATE [dbo].[SimpleImportFieldsView]
   SET
     [ImportFieldID] = @ImportFieldID,
     [TableName] = @TableName,
@@ -276,34 +221,29 @@ AS
     [IsVisible] = @IsVisible,
     [IsRequired] = @IsRequired,
     [Description] = @Description,
-    [RefType] = @RefType,
-    [ImportMapID] = @ImportMapID,
-    [ImportID] = @ImportID,
-    [SourceName] = @SourceName,
-    [FieldID] = @FieldID,
-    [IsCustom] = @IsCustom
+    [RefType] = @RefType
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 
 (
 
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFieldsView]
+  DELETE FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 
 (
 
@@ -320,25 +260,20 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom]
-  FROM [dbo].[ImportFieldsView]
+    [RefType]
+  FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
@@ -346,16 +281,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
   @IsRequired bit,
   @Description varchar(1000),
   @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFieldsView]
+  INSERT INTO [dbo].[SimpleImportFieldsView]
   (
     [ImportFieldID],
     [TableName],
@@ -366,12 +296,7 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom])
+    [RefType])
   VALUES (
     @ImportFieldID,
     @TableName,
@@ -382,41 +307,31 @@ AS
     @IsVisible,
     @IsRequired,
     @Description,
-    @RefType,
-    @ImportMapID,
-    @ImportID,
-    @SourceName,
-    @FieldID,
-    @IsCustom)
+    @RefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
   @IsVisible bit,
   @IsRequired bit,
   @Description varchar(1000),
-  @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit
+  @RefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFieldsView]
+  UPDATE [dbo].[SimpleImportFieldsView]
   SET
     [ImportFieldID] = @ImportFieldID,
     [TableName] = @TableName,
@@ -427,34 +342,29 @@ AS
     [IsVisible] = @IsVisible,
     [IsRequired] = @IsRequired,
     [Description] = @Description,
-    [RefType] = @RefType,
-    [ImportMapID] = @ImportMapID,
-    [ImportID] = @ImportID,
-    [SourceName] = @SourceName,
-    [FieldID] = @FieldID,
-    [IsCustom] = @IsCustom
+    [RefType] = @RefType
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 
 (
 
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFieldsView]
+  DELETE FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 
 (
 
@@ -471,25 +381,20 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom]
-  FROM [dbo].[ImportFieldsView]
+    [RefType]
+  FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
@@ -497,16 +402,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
   @IsRequired bit,
   @Description varchar(1000),
   @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFieldsView]
+  INSERT INTO [dbo].[SimpleImportFieldsView]
   (
     [ImportFieldID],
     [TableName],
@@ -517,12 +417,7 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom])
+    [RefType])
   VALUES (
     @ImportFieldID,
     @TableName,
@@ -533,41 +428,31 @@ AS
     @IsVisible,
     @IsRequired,
     @Description,
-    @RefType,
-    @ImportMapID,
-    @ImportID,
-    @SourceName,
-    @FieldID,
-    @IsCustom)
+    @RefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
   @IsVisible bit,
   @IsRequired bit,
   @Description varchar(1000),
-  @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit
+  @RefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFieldsView]
+  UPDATE [dbo].[SimpleImportFieldsView]
   SET
     [ImportFieldID] = @ImportFieldID,
     [TableName] = @TableName,
@@ -578,34 +463,29 @@ AS
     [IsVisible] = @IsVisible,
     [IsRequired] = @IsRequired,
     [Description] = @Description,
-    [RefType] = @RefType,
-    [ImportMapID] = @ImportMapID,
-    [ImportID] = @ImportID,
-    [SourceName] = @SourceName,
-    [FieldID] = @FieldID,
-    [IsCustom] = @IsCustom
+    [RefType] = @RefType
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 
 (
 
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFieldsView]
+  DELETE FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectSimpleImportFieldsViewItem
 
 (
 
@@ -622,25 +502,20 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom]
-  FROM [dbo].[ImportFieldsView]
+    [RefType]
+  FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
@@ -648,16 +523,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertImportFieldsViewItem
   @IsRequired bit,
   @Description varchar(1000),
   @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ImportFieldsView]
+  INSERT INTO [dbo].[SimpleImportFieldsView]
   (
     [ImportFieldID],
     [TableName],
@@ -668,12 +538,7 @@ AS
     [IsVisible],
     [IsRequired],
     [Description],
-    [RefType],
-    [ImportMapID],
-    [ImportID],
-    [SourceName],
-    [FieldID],
-    [IsCustom])
+    [RefType])
   VALUES (
     @ImportFieldID,
     @TableName,
@@ -684,41 +549,31 @@ AS
     @IsVisible,
     @IsRequired,
     @Description,
-    @RefType,
-    @ImportMapID,
-    @ImportID,
-    @SourceName,
-    @FieldID,
-    @IsCustom)
+    @RefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateSimpleImportFieldsViewItem
 
 (
   @ImportFieldID int,
   @TableName varchar(100),
-  @FieldName varchar(250),
+  @FieldName varchar(561),
   @Alias varchar(250),
   @DataType varchar(150),
   @Size int,
   @IsVisible bit,
   @IsRequired bit,
   @Description varchar(1000),
-  @RefType int,
-  @ImportMapID int,
-  @ImportID int,
-  @SourceName varchar(200),
-  @FieldID int,
-  @IsCustom bit
+  @RefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ImportFieldsView]
+  UPDATE [dbo].[SimpleImportFieldsView]
   SET
     [ImportFieldID] = @ImportFieldID,
     [TableName] = @TableName,
@@ -729,26 +584,21 @@ AS
     [IsVisible] = @IsVisible,
     [IsRequired] = @IsRequired,
     [Description] = @Description,
-    [RefType] = @RefType,
-    [ImportMapID] = @ImportMapID,
-    [ImportID] = @ImportID,
-    [SourceName] = @SourceName,
-    [FieldID] = @FieldID,
-    [IsCustom] = @IsCustom
+    [RefType] = @RefType
   WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSimpleImportFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImportFieldsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteSimpleImportFieldsViewItem
 
 (
 
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ImportFieldsView]
+  DELETE FROM [dbo].[SimpleImportFieldsView]
   WH)
 GO
 
