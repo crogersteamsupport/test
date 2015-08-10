@@ -1055,7 +1055,8 @@ namespace TeamSupport.ServiceLibrary
               }
               else
               {
-                CustomValue customValue = customValues.AddNewCustomValue();
+                CustomValues newCustomValues = new CustomValues(_importUser);
+                CustomValue customValue = newCustomValues.AddNewCustomValue();
                 customValue.RefID = refID;
                 customValue.Value = value;
                 customValue.CustomFieldID = field.ImportFieldID;
@@ -1065,21 +1066,29 @@ namespace TeamSupport.ServiceLibrary
                 }
                 customValue.CreatorID = creatorID;
                 customValue.ModifierID = -2;
-                _importLog.Write("Added custom value of field: " + field.FieldName + " to import set.");
-                count++;
-
-                if (count % BULK_LIMIT == 0)
+                try
                 {
-                  customValues.BulkSave();
-                  count = 0;
-                  customValues = new CustomValues(_importUser);
+                  newCustomValues.Save();
+                  _importLog.Write("Added custom value of field: " + field.FieldName + ".");
                 }
+                catch (Exception e)
+                {
+                  _importLog.Write("The following exception ocurred attemting to add new value for field: " + field.FieldName + " with value: " + customValue.Value + " for refID: " + refID.ToString());
+                }
+                //count++;
+
+                //if (count % BULK_LIMIT == 0)
+                //{
+                //  customValues.BulkSave();
+                //  count = 0;
+                //  customValues = new CustomValues(_importUser);
+                //}
               }
             }
           }
         }
       }
-      customValues.BulkSave();
+      //customValues.BulkSave();
     }
 
     private void ImportCompanies(Import import)
