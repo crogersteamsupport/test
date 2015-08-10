@@ -356,7 +356,6 @@ function SaveTicket() {
           var statuses = top.Ts.Cache.getTicketStatuses();
           info.TicketStatusID = statuses[0].TicketStatusID;
         }
-        debugger
         info.TicketSeverityID = ($('#ticket-severity').length) ? $('#ticket-severity').val() : '-1';//$('#ticket-severity').val(); 
         info.UserID = ($('#ticket-assigned').length && $('#ticket-group').val() !== '') ? $('#ticket-assigned').val() : '-1';//($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
         info.GroupID = ($('#ticket-group').length && $('#ticket-group').val() !== '') ? $('#ticket-group').val() : '-1';//($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
@@ -473,10 +472,12 @@ function SaveTicket() {
           }
         });
 
-        var chatID = top.Ts.Utils.getQueryValue('chatid', window)
-        if (chatID && chatID != null) {
-          info.ChatID = chatID;
-        }
+        //var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+        //if (chatID && chatID != null) {
+        //  top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
+        //    AddCustomers(result);
+        //  });
+        //}
         
         top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
           if (result == null) {
@@ -2152,7 +2153,6 @@ function AppendTicketTypeTemplate(TicketType) {
 
 function setInitialValue() {
   var menuID = top.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
-  debugger
   switch (menuID) {
     case 'mniusers':
       //top.Ts.Services.Settings.ReadUserSetting('SelectedUserID', -1, function (result) {
@@ -2160,7 +2160,6 @@ function setInitialValue() {
       //});
       break;
     case 'mniproducts':
-      //TODO: need version and resolved
       top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
         if (productID > -1) {
           var product = top.Ts.Cache.getProduct(productID);
@@ -2223,7 +2222,18 @@ function setInitialValue() {
   var chatID = top.Ts.Utils.getQueryValue('chatid', window)
   if (chatID && chatID != null) {
     top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
-      AddCustomers(result);
+      if (result.OrganizationID > -1) {
+        var org = new Object();
+        org.value = result.OrganizationID;
+        org.type = "o";
+        AddCustomers(org);
+      }
+      else if (result.UserID > -1) {
+        var user = new Object();
+        user.value = result.UserID;
+        user.type = "u";
+        AddCustomers(user);
+      }
     });
   }
 }
