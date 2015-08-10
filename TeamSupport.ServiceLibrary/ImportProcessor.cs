@@ -1034,11 +1034,12 @@ namespace TeamSupport.ServiceLibrary
         }
         DateTime? dateCreated = ReadDateNull("DateCreated");
 
-        ImportFieldsView fields = new ImportFieldsView(_importUser);
+        SimpleImportFieldsView fields = new SimpleImportFieldsView(_importUser);
         fields.LoadByRefType((int)refType);
-        foreach (ImportFieldsViewItem field in fields)
+        _importLog.Write("Processing custom fields for refID: " + refID.ToString());
+        foreach (SimpleImportFieldsViewItem field in fields)
         {
-          if (field.IsCustom != null && (bool)field.IsCustom)
+          if (Convert.ToBoolean(field.IsCustom))
           {
             string value = ReadString(field.FieldName);
             if (!string.IsNullOrEmpty(value.Trim()))
@@ -1050,6 +1051,7 @@ namespace TeamSupport.ServiceLibrary
                 existingCustomValue[0].Value = value;
                 existingCustomValue[0].ModifierID = -2;
                 existingCustomValue.Save();
+                _importLog.Write("Updated custom value of field: " + field.FieldName);
               }
               else
               {
@@ -1063,6 +1065,7 @@ namespace TeamSupport.ServiceLibrary
                 }
                 customValue.CreatorID = creatorID;
                 customValue.ModifierID = -2;
+                _importLog.Write("Added custom value of field: " + field.FieldName + " to import set.");
                 count++;
 
                 if (count % BULK_LIMIT == 0)

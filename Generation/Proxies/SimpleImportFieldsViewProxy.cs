@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     [DataMember] public string Description { get; set; }
     [DataMember] public int RefType { get; set; }
     [DataMember] public string IsCustom { get; set; }
+    [DataMember] public int? OrganizationID { get; set; }
           
   }
   
@@ -32,6 +33,7 @@ namespace TeamSupport.Data
     public SimpleImportFieldsViewItemProxy GetProxy()
     {
       SimpleImportFieldsViewItemProxy result = new SimpleImportFieldsViewItemProxy();
+      result.OrganizationID = this.OrganizationID;
       result.IsCustom = this.IsCustom;
       result.RefType = this.RefType;
       result.Description = this.Description;

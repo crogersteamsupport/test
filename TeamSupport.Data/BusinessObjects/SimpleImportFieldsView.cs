@@ -25,9 +25,11 @@ namespace TeamSupport.Data
             SimpleImportFieldsView
           WHERE
             RefType = @RefType
+            AND (IsCustom = 'false' OR OrganizationID = @OrganizationID)
         ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefType", (int)refType);
+        command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
 
         Fill(command);
       }
