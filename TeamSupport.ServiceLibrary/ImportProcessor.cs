@@ -1146,7 +1146,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (company == null)
+        if (company == null && _organizationID != 887356)
         {
           existingCompany = new Organizations(_importUser);
           existingCompany.LoadByName(name, _organizationID);
