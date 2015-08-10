@@ -472,12 +472,12 @@ function SaveTicket() {
           }
         });
 
-        //var chatID = top.Ts.Utils.getQueryValue('chatid', window)
-        //if (chatID && chatID != null) {
-        //  top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
-        //    AddCustomers(result);
-        //  });
-        //}
+        var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+        if (chatID && chatID != null) {
+          top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
+            //AddCustomers(result);
+          });
+        }
         
         top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
           if (result == null) {
