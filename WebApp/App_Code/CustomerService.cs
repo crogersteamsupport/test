@@ -1847,6 +1847,7 @@ namespace TSWebServices
             user.LastActivity = DateTime.UtcNow.AddHours(-1);
             user.IsPasswordExpired = true;
             user.ReceiveTicketNotifications = true;
+            user.NeedsIndexing = true;
 
             user.Email = info.Email;
             user.FirstName = info.FirstName;
