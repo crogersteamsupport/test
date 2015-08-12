@@ -68,7 +68,9 @@ namespace TeamSupport.Data
     ContactPhoneNumbers = 51,
     ContactTickets = 52,
     AssetTickets = 53,
-    TicketRelationships = 54
+    TicketRelationships = 54,
+    AgentRating = 55
+
   };
 
   public enum SlaViolationType
