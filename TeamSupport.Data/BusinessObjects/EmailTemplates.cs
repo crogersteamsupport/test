@@ -177,6 +177,11 @@ namespace TeamSupport.Data
               ExceptionLogs.LogException(BaseCollection.LoginUser, ex, "EmailTemplates");
               ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g"));
             }
+          else if (objectName == "Ticket" && column.ColumnName.ToString() == "HoursSpent")
+          {
+            string dateTimeValue = ConvertDecimalToDateTimeText(row[column].ToString());
+            ReplaceField(objectName, column.ColumnName, dateTimeValue);
+          }
           else
             ReplaceField(objectName, column.ColumnName, row[column].ToString());
         }
@@ -339,6 +344,42 @@ namespace TeamSupport.Data
       emails.LoadByTemplateAndProductFamily(organizationID, 18, -1);
       if (!emails.IsEmpty) template.Body = emails[0].Body;
       return template;
+    }
+
+    private static string ConvertDecimalToDateTimeText(string decimalTextValue)
+    {
+      string value = string.Empty;
+
+      try
+      {
+        double decimalValue = double.Parse(decimalTextValue);
+        int totalMinutes = (int)Math.Ceiling(decimalValue * 60);
+
+        if (totalMinutes > 59)
+        {
+          int hours = totalMinutes / 60;
+          int minutes = totalMinutes % 60;
+          string hourString = hours == 1 ? " Hour " : " Hours ";
+          string minuteString = minutes == 1 ? " Minute " : " Minutes ";
+          value = string.Format("{0}{1}", hours, hourString);
+
+          if (minutes > 0)
+          {
+            value = string.Format("{0}{1}{2}", value, minutes, minuteString);
+          }
+        }
+        else
+        {
+          string minuteString = totalMinutes == 1 ? " Minute " : " Minutes ";
+          value = string.Format("{0}{1}", totalMinutes, minuteString);
+        }
+      }
+      catch
+      {
+        value = decimalTextValue;
+      }
+
+      return value;
     }
 
   }
