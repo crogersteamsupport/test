@@ -9,8 +9,15 @@
         // contenteditable element that catches all pasted data 
 
         var listener = function () {
-            try{
+            try {
+                if (BrowserDetect.browser == "Chrome")
+                {
+                    pasteCatcher.style.visibility = "hidden";
+                    pasteCatcher.style.opacity = 0;
+                }
+                
                 pasteCatcher.focus();
+                
                 pasteCatcher.blur();
                 $('.ui-dialog').focus();
             } catch (e) { }
