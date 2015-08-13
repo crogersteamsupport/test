@@ -839,6 +839,7 @@ namespace TSWebServices
         private TimeLineItem GetActionTimelineItem(TeamSupport.Data.Action action)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), action.CreatorID);
             TimeLineItem item = new TimeLineItem();
             TicketTimeLineViewItemProxy itemProxy = new TicketTimeLineViewItemProxy
             {
@@ -850,7 +851,7 @@ namespace TSWebServices
                 DateCreated = action.DateCreated,
                 OrganizationID = TSAuthentication.OrganizationID,
                 CreatorID = action.CreatorID,
-                CreatorName = loginUser.GetUserFullName(),
+                CreatorName = user.DisplayName,
                 IsKnowledgeBase = action.IsKnowledgeBase,
                 IsVisibleOnPortal = action.IsVisibleOnPortal,
                 IsPinned = action.Pinned,

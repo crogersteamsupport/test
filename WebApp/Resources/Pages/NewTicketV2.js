@@ -293,6 +293,7 @@ function SetupTicketProperties() {
   SetupKBFields();
 
   //Community
+  debugger
   if (top.Ts.System.Organization.UseForums == false) {
     $('#ticket-Community').closest('.form-horizontal').remove();
   }
@@ -472,11 +473,16 @@ function SaveTicket() {
           }
         });
 
+        //var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+        //if (chatID && chatID != null) {
+        //  top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
+        //    AddCustomers(result);
+        //  });
+        //}
+
         var chatID = top.Ts.Utils.getQueryValue('chatid', window)
         if (chatID && chatID != null) {
-          top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
-            //AddCustomers(result);
-          });
+          info.ChatID = chatID;
         }
         
         top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
@@ -858,7 +864,7 @@ function SetupStatusField() {
 }
 
 function SetupKBFields() {
-  if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) {
+  if (canEdit) {
     var categories = top.Ts.Cache.getKnowledgeBaseCategories();
     for (var i = 0; i < categories.length; i++) {
       var cat = categories[i].Category;
@@ -879,7 +885,8 @@ function SetupKBFields() {
     }
   }
   else {
-    $('#ticket-KBInfo').remove();
+    $('#ticket-isKB').closest('.form-horizontal').remove();
+    $('#ticket-group-KBCat').parent().remove();
   }
 }
 

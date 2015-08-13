@@ -484,6 +484,7 @@ function CreateNewActionLI() {
       isFormValid(function (isValid) {
         if (isValid) {
           SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
+            debugger
             if (result) {
               _isCreatingAction = true;
               $('#action-new-editor').parent().fadeOut('normal', function () {
@@ -523,23 +524,32 @@ function CreateNewActionLI() {
     e.stopPropagation();
     var self = $(this);
     var _oldActionID = self.data('actionid');
-    SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
-      UploadAttachments(result);
-      $('#action-new-editor').val('').parent().fadeOut('normal');
-      tinymce.activeEditor.destroy();
+    isFormValid(function (isValid) {
+      if (isValid) {
+        SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
+          UploadAttachments(result);
+          $('#action-new-editor').val('').parent().fadeOut('normal');
+          tinymce.activeEditor.destroy();
 
-      var statusID = self.data("statusid");
-      top.Ts.Services.Tickets.SetTicketStatus(_ticketID, statusID, function () {
-        //SetupStatusField(statusID);
-        SetStatus(statusID);
-        top.Ts.System.logAction('Ticket - Status Changed');
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
-      });
+          var statusID = self.data("statusid");
+          top.Ts.Services.Tickets.SetTicketStatus(_ticketID, statusID, function () {
+            //SetupStatusField(statusID);
+            SetStatus(null);
+            //top.Ts.System.logAction('Ticket - Status Changed');
+            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
+          });
 
-      top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
-        result.Attachments = attachments;
-        CreateActionElement(result, false);
-      });
+          top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
+            result.Attachments = attachments;
+            CreateActionElement(result, false);
+          });
+        });
+      }
+      else {
+        self.prop('disabled', false);
+        alert("Please fill in the required fields before submitting this action.");
+        return;
+      }
     });
   });
 
@@ -2893,7 +2903,7 @@ var SetupStatusField = function (StatusId) {
             top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
               if (result !== null) {
                 _ticketCurrStatus = result.TicketStatusID;
-                //SetStatus(value);
+                SetStatus(null);
                 top.Ts.System.logAction('Ticket - Status Changed');
                 $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
                 window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
@@ -4415,7 +4425,7 @@ var SetStatus = function (StatusID) {
       selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
     }
 
-    selectize.addItem(StatusID, false);
+    if(StatusID !== null)  selectize.addItem(StatusID, false);
   }
 };
 

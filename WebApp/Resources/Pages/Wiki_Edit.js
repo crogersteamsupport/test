@@ -44,7 +44,7 @@ WikiPage = function () {
 };
 
 function BuildWikiView() {
-  var articleID = top.Ts.Utils.getQueryValue("ArticleID", window);
+  var articleID = top.Ts.Utils.getQueryValue("ArticleID", window);debugger
   if (articleID !== null) {
     if (articleID !== '-1') {
       GetWiki(articleID, function (wiki) {
@@ -131,7 +131,7 @@ function BuildWikiEditEvents() {
         var public = $("#Wiki-Edit-PublicView").is(':checked');
         var private = $("#Wiki-Edit-PrivateView").is(':checked');
         var portal = $("#Wiki-Edit-PortalView").is(':checked');
-        var parent = $('#Wiki-Edit-Parent').val();
+        var parentid = $('#Wiki-Edit-Parent').val();
         var wikiID;
 
         if (_isCreatingNewWiki) {
@@ -140,8 +140,8 @@ function BuildWikiEditEvents() {
         else {
           wikiID = _wikiID;
         }
-        if (wikiID.toString() !== parent) {
-          SaveWiki(wikiID, parent, body, title, public, private, portal, comment);
+        if (wikiID.toString() !== parentid) {
+          SaveWiki(wikiID, parentid, body, title, public, private, portal, comment);
         }
         else { alert('Please select a parent article other than the one you are editing.') };
       }
@@ -206,14 +206,15 @@ function GetWikiHistory(wikiID) {
     });
 };
 
-function SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, comment) {
-  top.Ts.Services.Wiki.SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, comment, function (wiki) {
+function SaveWiki(wikiID, parentid, wikiBody, wikiTitle, publicView, privateView, portalView, comment) {
+  top.Ts.Services.Wiki.SaveWiki(wikiID, parentid, wikiBody, wikiTitle, publicView, privateView, portalView, comment, function (wiki) {
     top.Ts.MainPage.openWiki(wiki.ArticleID);
     top.Ts.System.logAction('Wiki - Wiki Saved');
   });
 };
 
 function DeleteWiki(wikiID) {
+  debugger
   top.Ts.Services.Wiki.DeleteWiki(wikiID, function () {
     top.Ts.MainPage.openWiki(_wikiID)
     top.Ts.System.logAction('Wiki - Wiki Deleted');

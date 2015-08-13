@@ -307,14 +307,14 @@ namespace TSWebServices
         private void ReparentArticles(int parentID)
         {
           WikiArticles articles = WikiArticles.GetWikiSubArticles(TSAuthentication.GetLoginUser(), parentID);
-
-          foreach (WikiArticle article in articles)
+          if (articles != null)
           {
-            article.ParentID = null;
+            foreach (WikiArticle article in articles)
+            {
+              article.ParentID = null;
+            }
+            articles.Save();
           }
-
-          articles.Save();
-
         }
 
         #endregion

@@ -613,6 +613,7 @@
     #ticket-tag-Input::-webkit-input-placeholder
      {
      color: #428bca;
+     /*text-decoration: underline;*/
     }
 
     #ticket-properties-area .selectize-input input:-moz-placeholder,
@@ -625,6 +626,10 @@
     #ticket-tag-Input::-moz-placeholder
     {  /* Firefox 19+ */
          color: #428bca; 
+    }
+
+    #ticket-properties-area .selectize-input > input {
+      cursor:pointer;
     }
 
     .muted-placeholder::-webkit-input-placeholder,
