@@ -1498,54 +1498,17 @@ namespace TSWebServices
             {
                 CalEvent cal = new CalEvent();
                 cal.color = "green";
-
-                //start time block
-                if (c.StartDateUTC == null)
-                {
-                    //Convert old calendar events from the organizations timezone to the users
-                    DateTime startkind = DateTime.SpecifyKind(c.StartDate, DateTimeKind.Unspecified);
-                    DateTime convertedStart = TimeZoneInfo.ConvertTime(startkind, TimeZoneInfo.FindSystemTimeZoneById(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).TimeZoneID), TSAuthentication.GetLoginUser().TimeZoneInfo);
-
-                    DateTime endkind = DateTime.SpecifyKind((DateTime)c.EndDate, DateTimeKind.Unspecified);
-                    DateTime convertedEnd = TimeZoneInfo.ConvertTime(endkind, TimeZoneInfo.FindSystemTimeZoneById(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).TimeZoneID), TSAuthentication.GetLoginUser().TimeZoneInfo);
-                    
-                    if (c.AllDay)
-                        cal.start = (convertedStart).ToString("o").Substring(0, 10);
-                    else
-                        cal.start = (convertedStart).ToString("o");
-
-                    cal.end = c.EndDateUtc == null ? null : (convertedEnd).ToString("o");
-                    if (c.AllDay)
-                        cal.displayend = c.EndDateUtc == null ? null : (convertedEnd).AddDays(1).ToString("o");
-                    else
-                        cal.displayend = c.EndDateUtc == null ? null : (convertedEnd).ToString("o");
-                }
+               
+                //DateTime mytime = DateTime.SpecifyKind(c.StartDate, DateTimeKind.Utc);
+                if (c.AllDay)
+                    cal.start = ((DateTime)c.StartDateUtc).ToString("o").Substring(0, 10);
                 else
-                {
-                    DateTime utcStart = TimeZoneInfo.ConvertTimeFromUtc((DateTime)c.StartDateUTCUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
-                    
-
-                    if (c.AllDay)
-                        cal.start = (utcStart).ToString("o").Substring(0, 10);
-                    else
-                        cal.start = (utcStart).ToString("o");
-
-                    DateTime utcEnd = new DateTime();
-
-                    if (c.EndDateUTC != null)
-                    {
-                        utcEnd = TimeZoneInfo.ConvertTimeFromUtc((DateTime)c.EndDateUTCUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
-                    }
-
-                    cal.end = c.EndDateUTC == null ? null : (utcEnd).ToString("o");                    
-                    if (c.AllDay)
-                        cal.displayend = c.EndDateUTC == null ? null : (utcEnd).AddDays(1).ToString("o");
-                    else
-                        cal.displayend = c.EndDateUTC == null ? null : (utcEnd).ToString("o");
-                }
-
-
-
+                    cal.start = ((DateTime)c.StartDateUtc).ToString("o");
+                cal.end = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
+                if(c.AllDay)
+                    cal.displayend = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).AddDays(1).ToString("o");
+                else
+                    cal.displayend = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
                 cal.title = c.Title;
                 cal.type = "cal";
                 cal.id = c.CalendarID;
@@ -1675,25 +1638,18 @@ namespace TSWebServices
             {
                 CalendarEvent cal = CalendarEvents.GetCalendarEvent(TSAuthentication.GetLoginUser(), info.id);
                 if ((DateTime.TryParse(info.start, out dt)))
-                {
                     cal.StartDate = DateTime.Parse(info.start);
-                    cal.StartDateUTC = DateTime.Parse(info.start).ToUniversalTime();
-                }
                 else
                     return false;
 
                 if (DateTime.TryParse(info.end, out dt))
                 {
-                    if (info.allDay)
+                    if(info.allDay)
                     {
                         cal.EndDate = (DateTime.Parse(info.end)).AddHours(23).AddMinutes(59);
-                        cal.EndDateUTC = (DateTime.Parse(info.end)).ToUniversalTime().AddHours(23).AddMinutes(59);
                     }
                     else
-                    {
                         cal.EndDate = DateTime.Parse(info.end);
-                        cal.EndDateUTC = DateTime.Parse(info.end).ToUniversalTime();
-                    }
                 }
                 cal.Title = info.title;
                 cal.Description = info.description;
@@ -1832,12 +1788,8 @@ namespace TSWebServices
             else
             {
                 CalendarEvent cal = (new CalendarEvents(TSAuthentication.GetLoginUser()).AddNewCalendarEvent());
-
                 if ((DateTime.TryParse(info.start, out dt)))
-                {
                     cal.StartDate = DateTime.Parse(info.start);
-                    cal.StartDateUTC = DateTime.Parse(info.start).ToUniversalTime();
-                }
                 else
                     return false;
 
@@ -1846,15 +1798,10 @@ namespace TSWebServices
                     if (info.allDay)
                     {
                         cal.EndDate = (DateTime.Parse(info.end)).AddHours(23).AddMinutes(59);
-                        cal.EndDateUTC = (DateTime.Parse(info.end)).ToUniversalTime().AddHours(23).AddMinutes(59);
                     }
                     else
-                    {
                         cal.EndDate = DateTime.Parse(info.end);
-                        cal.EndDateUTC = DateTime.Parse(info.end).ToUniversalTime();
-                    }
                 }
-
                 cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
                 cal.Title = info.title;
                 cal.Description = info.description;
