@@ -458,6 +458,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         user.CanCreateCompany = true;
         user.CanEditCompany = true;
         user.CanEditContact = true;
+        user.IsClassicView = true;
         user.Collection.Save();
 
         

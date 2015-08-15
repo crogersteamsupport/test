@@ -267,6 +267,7 @@ public partial class Dialogs_User : BaseDialogPage
       user.IsPasswordExpired = true;
       user.ReceiveTicketNotifications = true;
       user.EnforceSingleSession = true;
+      user.IsClassicView = true;
     }
     else
     {
