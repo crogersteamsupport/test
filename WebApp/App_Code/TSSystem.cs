@@ -437,6 +437,12 @@ namespace TSWebServices
         update.Version = GetVersion() + "." + GetRevision();
         //update.IsIdle = user.DateToUtc(user.LastActivity).AddMinutes(20) < DateTime.UtcNow;
         update.MyUnreadTicketCount = Tickets.GetMyOpenUnreadTicketCount(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+
+        if (update.IsExpired == true)
+        {
+          HttpContext.Current.Response.Cookies[FormsAuthentication.FormsCookieName].Value = null;
+          FormsAuthentication.SignOut();
+        }
       }
       catch (Exception ex)
       {
