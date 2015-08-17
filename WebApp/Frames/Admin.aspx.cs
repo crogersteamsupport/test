@@ -28,6 +28,7 @@ public partial class Frames_Admin : BaseFramePage
       if (UserSession.LoginUser.OrganizationID == 1078
         || UserSession.LoginUser.OrganizationID == 13679
         || UserSession.LoginUser.OrganizationID == 362372
+        || UserSession.LoginUser.OrganizationID == 991835
         || UserSession.LoginUser.OrganizationID == 1088)
       {
         RadTab importTab = tsMain.FindTabByText("Import");
