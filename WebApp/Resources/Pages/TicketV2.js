@@ -997,7 +997,7 @@ function LoadTicketControls() {
           $($dropdown).prev().find('input').blur();
         },
         onChange: function (value) {
-          if (value == '-1') value = null;debugger
+          if (value == '-1') value = null;
           if (value !== ((_ticketCurrUser !== null) ? _ticketCurrUser.toString() : _ticketCurrUser)) {
             top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
               window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
