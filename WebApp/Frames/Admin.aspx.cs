@@ -24,6 +24,16 @@ public partial class Frames_Admin : BaseFramePage
       //tsMain.SelectedIndex = Settings.UserDB.ReadInt("SelectedAdminTabIndex", 0);
       //if (tsMain.SelectedTab == null) tsMain.SelectedIndex = 0;
       //frmAdmin.Attributes["src"] = tsMain.SelectedTab.Value;
+
+      if (UserSession.LoginUser.OrganizationID == 1078
+        || UserSession.LoginUser.OrganizationID == 13679
+        || UserSession.LoginUser.OrganizationID == 362372
+        || UserSession.LoginUser.OrganizationID == 1088)
+      {
+        RadTab importTab = tsMain.FindTabByText("Import");
+        importTab.Visible = true;
+      }
+
     }
   }
 }
