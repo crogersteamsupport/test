@@ -996,7 +996,7 @@ function LoadTicketControls() {
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
         },
-        onChange: function (value) {debugger
+        onChange: function (value) {
           if (value == '-1') value = null;
           if (value !== _ticketCurrUser.toString()) {
             top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
@@ -3143,10 +3143,10 @@ function CreateActionElement(val, ShouldAppend) {
 
   if (val.item.IsWC) {
     val.item.Message = val.item.Message.replace(/\n\r?/g, '<br />');
-    for(i=0; i < val.WaterCoolerReplies.length; i++)
+    for(wc=0; wc < val.WaterCoolerReplies.length; wc++)
     {
-      var wcmsgtext = val.WaterCoolerReplies[i].WaterCoolerReplyProxy.Message;
-      val.WaterCoolerReplies[i].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
+      var wcmsgtext = val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message;
+      val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
     }
   }
   var html = _compiledActionTemplate(val);
