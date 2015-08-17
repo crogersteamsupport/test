@@ -4,6 +4,7 @@ var _ticketID = null;
 var _ticketCreator = new Object();
 var _ticketSender = null;
 var _ticketCurrStatus = null;
+var _ticketCurrUser = null;
 
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
@@ -233,6 +234,8 @@ var loadTicket = function (ticketNumber, refresh) {
     _ticketCreator.Name = info.Ticket.CreatorName;
     _productFamilyID = info.Ticket.ProductFamilyID;
     _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
+    _ticketCurrStatus = _ticketInfo.Ticket.TicketStatusID;
+    _ticketCurrUser = _ticketInfo.Ticket.UserID;
 
     $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
     $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
@@ -484,7 +487,6 @@ function CreateNewActionLI() {
       isFormValid(function (isValid) {
         if (isValid) {
           SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
-            debugger
             if (result) {
               _isCreatingAction = true;
               $('#action-new-editor').parent().fadeOut('normal', function () {
@@ -534,7 +536,7 @@ function CreateNewActionLI() {
           var statusID = self.data("statusid");
           top.Ts.Services.Tickets.SetTicketStatus(_ticketID, statusID, function () {
             //SetupStatusField(statusID);
-            SetStatus(null);
+            SetStatus(statusID);
             //top.Ts.System.logAction('Ticket - Status Changed');
             window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
           });
@@ -878,8 +880,14 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     callback(null);
   });
 
+  top.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+    _ticketInfo = info;
+    setSLAInfo();
+  });
+
   top.Ts.System.logAction('Action Saved');
   window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
+
 }
 
 var confirmVisibleToCustomers = function () {
@@ -988,14 +996,16 @@ function LoadTicketControls() {
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
         },
-        onChange: function (value) {
+        onChange: function (value) {debugger
           if (value == '-1') value = null;
-          top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-          },
-          function (error) {
-            alert('There was an error setting the assigned user.');
-          });
+          if (value !== _ticketCurrUser.toString()) {
+            top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+            },
+            function (error) {
+              alert('There was an error setting the assigned user.');
+            });
+          }
           _ticketSender = new Object();
           _ticketSender.UserID = top.Ts.System.User.UserID;
           _ticketSender.Name = userFullName;
@@ -1023,7 +1033,10 @@ function LoadTicketControls() {
 
       for (var i = 0; i < users.length; i++) {
         selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
-        if (users[i].IsSelected) SetAssignedUser(users[i].ID);
+        if (users[i].IsSelected) {
+          _ticketCurrUser = users[i].ID;
+          SetAssignedUser(users[i].ID);
+        }
       }
 
     });
@@ -2774,6 +2787,11 @@ var SetupDueDateField = function (duedate) {
                       .appendTo(dateContainer);
   if (duedate !== null) {
     dateLink.text(duedate.localeFormat(top.Ts.Utils.getDateTimePattern()));
+
+    if(duedate < new Date())
+    {
+      dateLink.addClass('nonrequired-field-error-font');
+    }
   }
 
   dateLink.click(function (e) {
@@ -2786,7 +2804,7 @@ var SetupDueDateField = function (duedate) {
 
     var container1 = $('<div style="padding-right:0px;">')
         .addClass('col-xs-10')
-      .appendTo(container);
+        .appendTo(container);
 
     var theinput = $('<input type="text">')
       .addClass('form-control')
@@ -2820,12 +2838,10 @@ var SetupDueDateField = function (duedate) {
           duedate = value === '' ? null : top.Ts.Utils.getMsDate(value); //result;
 
           if (date != null && date < Date.now()) {
-            $('#ticket-DueDate').addClass('nonrequired-field-error-font');
-            $('#ticket-DueDate').parent().prev().addClass('nonrequired-field-error-font');
+            dateLink.addClass('nonrequired-field-error-font');
           }
           else {
-            $('#ticket-DueDate').removeClass('nonrequired-field-error-font');
-            $('#ticket-DueDate').parent().prev().removeClass('nonrequired-field-error-font');
+            dateLink.removeClass('nonrequired-field-error-font');
           }
           window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
         }, function () {
@@ -2838,55 +2854,6 @@ var SetupDueDateField = function (duedate) {
   });
 }
 
-var SetupDueDateField2 = function (duedate) {
-  var dateContainer = $('#ticket-duedate-container');
-  var dateLink = $('<a>')
-                      .attr('href', '#')
-                      //.text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                      .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
-                      .appendTo(dateContainer);
-  if (duedate !== null) {
-    dateLink.text(duedate.localeFormat(top.Ts.Utils.getDateTimePattern()));
-  }
-
-  dateLink.click(function (e) {
-    e.preventDefault();
-    dateLink.hide();
-    var input = $('<input type="text">')
-                    .addClass('form-control')
-                    .val(duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern()))
-                    .datetimepicker({
-                      showClear: true,
-                      sideBySide: true,
-                      autoclose: true
-                    })
-                    .appendTo(dateContainer)
-                    .focus();
-
-    input.change(function (e) {
-      var value = top.Ts.Utils.getMsDate(input.val());
-      top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
-        var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-        input.blur().remove();
-        dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
-        _dueDate = top.Ts.Utils.getMsDate(value); //result;
-
-        if (date != null && date < Date.now()) {
-          $('#ticket-DueDate').addClass('nonrequired-field-error-font');
-          $('#ticket-DueDate').parent().prev().addClass('nonrequired-field-error-font');
-        }
-        else {
-          $('#ticket-DueDate').removeClass('nonrequired-field-error-font');
-          $('#ticket-DueDate').parent().prev().removeClass('nonrequired-field-error-font');
-        }
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
-      }, function () {
-        alert("There was a problem saving your ticket property.");
-      });
-    })
-  });
-};
-
 var SetupStatusField = function (StatusId) {
   var statuses = top.Ts.Cache.getNextStatuses(StatusId);
   _ticketCurrStatus = StatusId;
@@ -2897,29 +2864,31 @@ var SetupStatusField = function (StatusId) {
       },
       closeAfterSelect: true,
       onChange: function (value) {
-        var status = top.Ts.Cache.getTicketStatus(value);
-        isFormValidToClose(status.IsClosed, function (isValid) {
-          if (isValid == true) {
-            top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
-              if (result !== null) {
-                _ticketCurrStatus = result.TicketStatusID;
-                SetStatus(null);
-                top.Ts.System.logAction('Ticket - Status Changed');
-                $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
-                window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
-              }
-            },
-            function (error) {
+        if (value !== _ticketCurrStatus.toString()) {
+          var status = top.Ts.Cache.getTicketStatus(value);
+          isFormValidToClose(status.IsClosed, function (isValid) {
+            if (isValid == true) {
+              top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
+                if (result !== null) {
+                  _ticketCurrStatus = result.TicketStatusID;
+                  //SetStatus(null);
+                  top.Ts.System.logAction('Ticket - Status Changed');
+                  $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
+                  window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
+                }
+              },
+              function (error) {
+                SetStatus(_ticketCurrStatus);
+                alert('There was an error setting your ticket status.');
+              });
+            }
+            else {
               SetStatus(_ticketCurrStatus);
-              alert('There was an error setting your ticket status.');
-            });
-          }
-          else {
-            SetStatus(_ticketCurrStatus);
-            alert("Please fill in the required fields before closing the ticket.");
-            return;
-          }
-        });
+              alert("Please fill in the required fields before closing the ticket.");
+              return;
+            }
+          });
+        }
       },
       render: {
         item: function (item, escape) {
@@ -3172,7 +3141,14 @@ function CreateActionElement(val, ShouldAppend) {
     _currDateSpan = val.item.DateCreated;
   }
 
-  if(val.item.IsWC) val.item.Message = val.item.Message.replace(/\n\r?/g, '<br />');
+  if (val.item.IsWC) {
+    val.item.Message = val.item.Message.replace(/\n\r?/g, '<br />');
+    for(i=0; i < val.WaterCoolerReplies.length; i++)
+    {
+      var wcmsgtext = val.WaterCoolerReplies[i].WaterCoolerReplyProxy.Message;
+      val.WaterCoolerReplies[i].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
+    }
+  }
   var html = _compiledActionTemplate(val);
   var actionElement = $(html);
   actionElement.find('a').attr('target', '_blank');
@@ -3633,10 +3609,9 @@ function CreateTimeLineDelegates() {
       if (commentinfo.Company.length > 0) top.Ts.System.logAction('Water Cooler - Company Inserted');
       if (commentinfo.User.length > 0) top.Ts.System.logAction('Water Cooler - User Inserted');
 
-      //var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
-      //TODO:  Getting strange error
       top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
         var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
+        Message.Message = Message.Message.replace(/\n\r?/g, '<br />');
         var html = _compiledWCReplyTemplate(Message);
         self.closest('li').find('.timeline-wc-responses').append(html);
         self.parent().hide();
@@ -4403,6 +4378,7 @@ var SetAssignedUser = function (ID) {
     var selectizeUserField = $('#ticket-assigned')[0].selectize;
     selectizeUserField.addItem(ID, false);
   }
+  _ticketCurrUser = ID;
 }
 
 var SetGroup = function (GroupID) {
@@ -4425,7 +4401,8 @@ var SetStatus = function (StatusID) {
       selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
     }
 
-    if(StatusID !== null)  selectize.addItem(StatusID, false);
+    if (StatusID !== null) selectize.addItem(StatusID, false);
+    _ticketCurrStatus = StatusID;
   }
 };
 

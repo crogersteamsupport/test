@@ -2278,7 +2278,7 @@ var appendCustomers = function (customers) {
 
 }
 
-var appendCustomer = function (customer) {
+var appendCustomer = function (customer) {debugger
   var itemClass = (customer.UserID ? 'ticket-customer-contact' : 'ticket-customer-company');
   var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ' + itemClass)

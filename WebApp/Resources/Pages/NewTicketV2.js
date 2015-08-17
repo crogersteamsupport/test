@@ -214,6 +214,7 @@ function AddTicketProperty(item) {
 function SetupTicketProperties() {
   //Assigned To
   var users = top.Ts.Cache.getUsers();
+  AppendSelect('#ticket-assigned', null, 'group', -1, 'Unassigned', false);
   for (var i = 0; i < users.length; i++) {
     AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].UserID, users[i].Name + ' - ' + users[i].InOfficeComment);
   }
@@ -230,6 +231,7 @@ function SetupTicketProperties() {
 
   //Group
   var groups = top.Ts.Cache.getGroups();
+  AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
   for (var i = 0; i < groups.length; i++) {
     AppendSelect('#ticket-group', groups[i], 'group', groups[i].GroupID, groups[i].Name);
   }
@@ -293,7 +295,6 @@ function SetupTicketProperties() {
   SetupKBFields();
 
   //Community
-  debugger
   if (top.Ts.System.Organization.UseForums == false) {
     $('#ticket-Community').closest('.form-horizontal').remove();
   }
@@ -358,7 +359,7 @@ function SaveTicket() {
           info.TicketStatusID = statuses[0].TicketStatusID;
         }
         info.TicketSeverityID = ($('#ticket-severity').length) ? $('#ticket-severity').val() : '-1';//$('#ticket-severity').val(); 
-        info.UserID = ($('#ticket-assigned').length && $('#ticket-group').val() !== '') ? $('#ticket-assigned').val() : '-1';//($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
+        info.UserID = ($('#ticket-assigned').length && $('#ticket-assigned').val() !== '') ? $('#ticket-assigned').val() : '-1';//($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
         info.GroupID = ($('#ticket-group').length && $('#ticket-group').val() !== '') ? $('#ticket-group').val() : '-1';//($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
         var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
         info.DueDate = _dueDate;
@@ -922,35 +923,64 @@ function SetupCommunityField() {
   }
 };
 
-function SetupDueDateField(duedate) {
+var SetupDueDateField = function (duedate) {
   var dateContainer = $('#ticket-duedate-container');
   var dateLink = $('<a>')
                       .attr('href', '#')
-                      //.text('')
+                      //.text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
                       .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
                       .appendTo(dateContainer);
+  if (duedate !== undefined ) {
+    dateLink.text(duedate.localeFormat(top.Ts.Utils.getDateTimePattern()));
+  }
 
   dateLink.click(function (e) {
     e.preventDefault();
-    $(this).hide();
-    var input = $('<input type="text">')
-                    .addClass('form-control')
-                    .val('')
-                    .datetimepicker({
-                      showClear: true,
-                      sideBySide: true
-                    })
-                    .appendTo(dateContainer)
-                    .focus();
+    e.stopPropagation();
+    var header = $(this).hide();
+    var container = $('<div>')
+          .addClass('row')
+          .insertAfter(header);
 
-    input.change(function (e) {
-      var value = top.Ts.Utils.getMsDate(input.val());
-      _dueDate = value;
-      input.blur().remove();
-      dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
-    })
+    var container1 = $('<div style="padding-right:0px;">')
+        .addClass('col-xs-10')
+      .appendTo(container);
+
+    var theinput = $('<input type="text">')
+      .addClass('form-control')
+      .val(duedate === undefined ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern()))
+      .datetimepicker({ pickTime: true })
+      .appendTo(container1)
+      .focus();
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-times')
+      .click(function (e) {
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
+
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+        var currDate = $(this).prev().find('input').val();
+        var value = '';
+        if (currDate !== '') {
+          value = top.Ts.Utils.getMsDate(currDate);
+        }
+        _dueDate = value;
+        duedate = value;
+              theinput.blur().remove();
+              dateLink.text((value === '' ? '' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
+
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
   });
-};
+}
 
 function AddTags(tag) {
   var tagDiv = $("#ticket-tags");
@@ -1006,6 +1036,7 @@ function SetupCustomerSection() {
       valueField: 'id',
       labelField: 'label',
       searchField: 'label',
+      delimiter: null,
       load: function (query, callback) {
         this.clearOptions();        // clear the data
         this.renderCache = {};      // clear the html template cache
@@ -1142,10 +1173,8 @@ function AddCustomers(customer) {
     }
 
     ReloadProductList();
+    SetDefaultSupportGroup(customerdata.OrganizationID);
   });
-  
-  if (customer.type == 'o') SetDefaultSupportGroup(customer.value);
-
 };
 
 function SetDefaultSupportGroup(customerID) {
@@ -2186,12 +2215,6 @@ function setInitialValue() {
     case 'mnicustomers':
       top.Ts.Services.Settings.ReadUserSetting('SelectedOrganizationID', -1, function (organizationID) {
         if (organizationID > -1) {
-          var org = new Object();
-          org.value = organizationID;
-          org.type = "o";
-          AddCustomers(org);
-        }
-        else {
           top.Ts.Services.Settings.ReadUserSetting('SelectedContactID', -1, function (contactID) {
             if (contactID > -1) {
               var org = new Object();
@@ -2199,7 +2222,13 @@ function setInitialValue() {
               org.type = "u";
               AddCustomers(org);
             }
-          });
+            else if (organizationID > -1) {
+              var org = new Object();
+              org.value = organizationID;
+              org.type = "o";
+              AddCustomers(org);
+            }
+          })
         }
       });
       break;
@@ -2229,17 +2258,17 @@ function setInitialValue() {
   var chatID = top.Ts.Utils.getQueryValue('chatid', window)
   if (chatID && chatID != null) {
     top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
-      if (result.OrganizationID > -1) {
-        var org = new Object();
-        org.value = result.OrganizationID;
-        org.type = "o";
-        AddCustomers(org);
-      }
-      else if (result.UserID > -1) {
+      if (result.UserID > -1) {
         var user = new Object();
         user.value = result.UserID;
         user.type = "u";
         AddCustomers(user);
+      }
+      else if (result.OrganizationID > -1) {
+        var org = new Object();
+        org.value = result.OrganizationID;
+        org.type = "o";
+        AddCustomers(org);
       }
     });
   }
