@@ -529,22 +529,32 @@ function CreateNewActionLI() {
     isFormValid(function (isValid) {
       if (isValid) {
         SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
-          UploadAttachments(result);
-          $('#action-new-editor').val('').parent().fadeOut('normal');
-          tinymce.activeEditor.destroy();
+          if (result) {
+            UploadAttachments(result);
+            $('#action-new-editor').val('').parent().fadeOut('normal');
+            tinymce.activeEditor.destroy();
 
-          var statusID = self.data("statusid");
-          top.Ts.Services.Tickets.SetTicketStatus(_ticketID, statusID, function () {
-            //SetupStatusField(statusID);
+            if ($('.upload-queue li').length > 0) {
+              UploadAttachments(result);
+            }
+            else {
+              _newAction = null;
+              if (_oldActionID === -1) {
+                _actionTotal = _actionTotal + 1;
+                var actionElement = CreateActionElement(result, false);
+                actionElement.find('.ticket-action-number').text(_actionTotal);
+              }
+              else {
+                UpdateActionElement(result, false);
+              }
+            }
+
+            var statusID = self.data("statusid");
             SetStatus(statusID);
-            //top.Ts.System.logAction('Ticket - Status Changed');
-            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
-          });
-
-          top.Ts.Services.TicketPage.GetActionAttachments(result.item.RefID, function (attachments) {
-            result.Attachments = attachments;
-            CreateActionElement(result, false);
-          });
+          }
+          else {
+            alert("There was a error creating your action.  Please try again.")
+          }
         });
       }
       else {
