@@ -33,7 +33,7 @@ var sessionId;
 var tokurl;
 var publisher;
 
-//var defaultTemplateText = "";
+var defaultTemplateText = "";
 
 
 var getCustomers = function (request, response) {
@@ -196,8 +196,9 @@ Selectize.define('no_results', function (options) {
 
 $(document).ready(function () {
   apiKey = "45228242";
-  LoadTicketPageOrder();
   SetupDescriptionEditor();
+  LoadTicketPageOrder();
+  
   SetupActionTimers();
 
   $('.page-loading').hide().next().show();
@@ -256,6 +257,7 @@ function SetupTicketProperties() {
     AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name);
   }
   
+  _lastTicketTypeID = types[0].TicketTypeID;
   if ($('#ticket-type').length) {
     $('#ticket-type').selectize({
       onDropdownClose: function ($dropdown) {
@@ -263,6 +265,7 @@ function SetupTicketProperties() {
       },
       closeAfterSelect: true
     });
+    AppendTicketTypeTemplate(_lastTicketTypeID);
   }
 
   $('#ticket-type').change(function (e) {
@@ -271,8 +274,6 @@ function SetupTicketProperties() {
     _lastTicketTypeID = $(this).val();
     AppendTicketTypeTemplate(_lastTicketTypeID);
   });
-
-  _lastTicketTypeID = types[0].TicketTypeID;
 
   //Status
   SetupStatusField();
@@ -658,6 +659,12 @@ function InsertCreateError(message) {
 function SetupDescriptionEditor() {
   initEditor($('#ticket-description'), true, function (ed) {
     //SetupActionTypeSelect();
+    //defaultTemplateText
+    //var currenttext = tinyMCE.activeEditor.getContent();
+    //tinyMCE.activeEditor.setContent(defaultTemplateText);
+
+    AppendTicketTypeTemplate(_lastTicketTypeID);
+
     SetupUploadQueue();
     $('#ticket-create').click(function (e) {
       e.preventDefault();
@@ -2210,8 +2217,10 @@ function AppendProductMatchingCustomFields() {
 function AppendTicketTypeTemplate(TicketType) {
   top.Ts.Services.Tickets.GetTicketTypeTemplateText(TicketType, function (result) {
     if (result != null && result != "" && result != "<br>") {
-      var currenttext = tinyMCE.activeEditor.getContent();
-      tinyMCE.activeEditor.setContent(currenttext + result);
+      if (tinyMCE.activeEditor) {
+        var currenttext = tinyMCE.activeEditor.getContent();
+        tinyMCE.activeEditor.setContent(currenttext + result);
+      }
     }
   });
 };
