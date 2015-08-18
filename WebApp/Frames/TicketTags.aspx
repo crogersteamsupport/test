@@ -402,7 +402,7 @@
           </div>
           <div id="header-filter">
             <span id="header-tags"></span>
-            <span id="tag-actions"><a href="#" id="tag-rename">Rename</a>&nbsp<a href="#" id="tag-delete">Delete</a>&nbsp<a href="#" id="tag-reload">Reload</a></span>
+            <span id="tag-actions"><a href="#" id="tag-rename">Rename</a>&nbsp<a href="#" id="tag-delete">Delete</a>&nbsp<a href="#" id="tag-reload">Clear</a></span>
             <span id="tag-rename-edit" class="ui-helper-hidden"><input type="text" class="text"  /> <a href="#" id="tag-rename-save">Save</a> | <a href="#" id="tag-rename-cancel">Cancel</a></span>
             &nbsp
           </div>
