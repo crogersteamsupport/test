@@ -847,19 +847,36 @@ namespace TeamSupport.ServiceLibrary
             }
             break;
           case ReferenceType.Tickets:
-            importID = ReadString("TicketImportID");
-            if (importID != string.Empty)
+            int ticketID = ReadInt("TicketID");
+            if (ticketID != 0)
             {
-              Tickets tickets = new Tickets(_importUser);
-              tickets.LoadByImportID(importID, _organizationID);
-              if (tickets.Count > 1)
+              if (ticketList.ContainsValue(ticketID))
               {
-                _importLog.Write("More than one ticket matching the TicketImportID was found.");
+                refID = ticketID;
+              }
+              else
+              {
+                _importLog.Write("No ticket matching TicketID: " + ticketID.ToString() + " was found processing custom fields.");
                 continue;
               }
-              else if (tickets.Count == 1)
+            }
+
+            if (refID == 0)
+            {
+              importID = ReadString("TicketImportID");
+              if (importID != string.Empty)
               {
-                refID = tickets[0].TicketID;
+                Tickets tickets = new Tickets(_importUser);
+                tickets.LoadByImportID(importID, _organizationID);
+                if (tickets.Count > 1)
+                {
+                  _importLog.Write("More than one ticket matching the TicketImportID was found.");
+                  continue;
+                }
+                else if (tickets.Count == 1)
+                {
+                  refID = tickets[0].TicketID;
+                }
               }
             }
 
@@ -2207,9 +2224,27 @@ namespace TeamSupport.ServiceLibrary
         Ticket ticket = null;
         bool isUpdate = false;
 
+        int ticketID = ReadInt("TicketID");
+        if (ticketID != 0)
+        {
+          existingTicket = new Tickets(_importUser);
+          existingTicket.LoadByTicketID(ticketID);
+          if (existingTicket.Count == 1 && existingTicket[0].OrganizationID == _organizationID)
+          {
+            ticket = existingTicket[0];
+            isUpdate = true;
+          }
+          else
+          {
+            _importLog.Write("No ticket matching TicketID: " + ticketID.ToString() + " was found.");
+            continue;
+          }
+        }
+
         string importID = ReadString("TicketImportID");
         if (importID != string.Empty)
         {
+          existingTicket = new Tickets(_importUser);
           existingTicket.LoadByImportID(importID, _organizationID);
           if (existingTicket.Count == 1)
           {
@@ -2625,14 +2660,29 @@ namespace TeamSupport.ServiceLibrary
       {
         Tickets ticket = new Tickets(_importUser);
 
-        string importID = ReadString("TicketImportID");
-        if (importID != string.Empty)
+        int ticketID = ReadInt("TicketID");
+        if (ticketID != 0)
         {
-          ticket.LoadByImportID(importID, _organizationID);
-          if (ticket.Count > 1)
+          ticket.LoadByTicketID(ticketID);
+          if (ticket.Count == 0 || ticket[0].OrganizationID != _organizationID)
           {
-            _importLog.Write("More than one ticket matching the TicketImportID was found.");
+            _importLog.Write("No ticket matching TicketID: " + ticketID.ToString() + " was found processing ticket companies.");
             continue;
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          string importID = ReadString("TicketImportID");
+          if (importID != string.Empty)
+          {
+            ticket = new Tickets(_importUser);
+            ticket.LoadByImportID(importID, _organizationID);
+            if (ticket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketImportID was found.");
+              continue;
+            }
           }
         }
 
@@ -2781,14 +2831,29 @@ namespace TeamSupport.ServiceLibrary
       {
         Tickets ticket = new Tickets(_importUser);
 
-        string importID = ReadString("TicketImportID");
-        if (importID != string.Empty)
+        int ticketID = ReadInt("TicketID");
+        if (ticketID != 0)
         {
-          ticket.LoadByImportID(importID, _organizationID);
-          if (ticket.Count > 1)
+          ticket.LoadByTicketID(ticketID);
+          if (ticket.Count == 0 || ticket[0].OrganizationID != _organizationID)
           {
-            _importLog.Write("More than one ticket matching the TicketImportID was found.");
+            _importLog.Write("No ticket matching TicketID: " + ticketID.ToString() + " was found processing ticket contacts.");
             continue;
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          string importID = ReadString("TicketImportID");
+          if (importID != string.Empty)
+          {
+            ticket = new Tickets(_importUser); 
+            ticket.LoadByImportID(importID, _organizationID);
+            if (ticket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketImportID was found.");
+              continue;
+            }
           }
         }
 
@@ -3083,14 +3148,29 @@ namespace TeamSupport.ServiceLibrary
       {
         Tickets ticket = new Tickets(_importUser);
 
-        string importID = ReadString("TicketImportID");
-        if (importID != string.Empty)
+        int ticketID = ReadInt("TicketID");
+        if (ticketID != 0)
         {
-          ticket.LoadByImportID(importID, _organizationID);
-          if (ticket.Count > 1)
+          ticket.LoadByTicketID(ticketID);
+          if (ticket.Count == 0 || ticket[0].OrganizationID != _organizationID)
           {
-            _importLog.Write("More than one ticket matching the TicketImportID was found.");
+            _importLog.Write("No ticket matching TicketID: " + ticketID.ToString() + " was found processing ticket assets.");
             continue;
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          string importID = ReadString("TicketImportID");
+          if (importID != string.Empty)
+          {
+            ticket = new Tickets(_importUser); 
+            ticket.LoadByImportID(importID, _organizationID);
+            if (ticket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketImportID was found.");
+              continue;
+            }
           }
         }
 
@@ -3296,14 +3376,29 @@ namespace TeamSupport.ServiceLibrary
       {
         Tickets ticket = new Tickets(_importUser);
 
-        string importID = ReadString("TicketImportID");
-        if (importID != string.Empty)
+        int ticketID = ReadInt("TicketID");
+        if (ticketID != 0)
         {
-          ticket.LoadByImportID(importID, _organizationID);
-          if (ticket.Count > 1)
+          ticket.LoadByTicketID(ticketID);
+          if (ticket.Count == 0 || ticket[0].OrganizationID != _organizationID)
           {
-            _importLog.Write("More than one ticket matching the TicketImportID was found.");
+            _importLog.Write("No ticket matching TicketID: " + ticketID.ToString() + " was found processing ticket relationships.");
             continue;
+          }
+        }
+
+        if (ticket.Count == 0)
+        {
+          string importID = ReadString("TicketImportID");
+          if (importID != string.Empty)
+          {
+            ticket = new Tickets(_importUser); 
+            ticket.LoadByImportID(importID, _organizationID);
+            if (ticket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the TicketImportID was found.");
+              continue;
+            }
           }
         }
 
@@ -3325,20 +3420,35 @@ namespace TeamSupport.ServiceLibrary
 
         if (ticket.Count == 0)
         {
-          _importLog.Write("No ticket matching either the TicketImportID or the TicketNumber was found.");
+          _importLog.Write("No ticket matching either the TicketID, TicketImportID or the TicketNumber was found.");
           continue;
         }
 
         Tickets associatedTicket = new Tickets(_importUser);
 
-        string associatedImportID = ReadString("AssociatedTicketImportID");
-        if (associatedImportID != string.Empty)
+        int associatedTicketID = ReadInt("AssociatedTicketID");
+        if (associatedTicketID != 0)
         {
-          associatedTicket.LoadByImportID(associatedImportID, _organizationID);
-          if (associatedTicket.Count > 1)
+          associatedTicket.LoadByTicketID(ticketID);
+          if (associatedTicket.Count == 0 || associatedTicket[0].OrganizationID != _organizationID)
           {
-            _importLog.Write("More than one ticket matching the AssociatedTicketImportID was found.");
+            _importLog.Write("No ticket matching AssociatedTicketID: " + associatedTicketID.ToString() + " was found processing ticket relationships.");
             continue;
+          }
+        }
+
+        if (associatedTicket.Count == 0)
+        {
+          string associatedImportID = ReadString("AssociatedTicketImportID");
+          if (associatedImportID != string.Empty)
+          {
+            associatedTicket = new Tickets(_importUser); 
+            associatedTicket.LoadByImportID(associatedImportID, _organizationID);
+            if (associatedTicket.Count > 1)
+            {
+              _importLog.Write("More than one ticket matching the AssociatedTicketImportID was found.");
+              continue;
+            }
           }
         }
 
