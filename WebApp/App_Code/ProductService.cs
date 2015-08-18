@@ -371,6 +371,7 @@ namespace TSWebServices
       productVersion.ProductID = info.ProductID;
       productVersion.ProductVersionStatusID = info.ProductVersionStatusID;
       productVersion.VersionNumber = info.VersionNumber;
+      if(info.ReleaseDate != null)
       productVersion.ReleaseDate = (DateTime)info.ReleaseDate;
       productVersion.IsReleased = info.IsReleased;
       productVersion.Description = info.Description;
