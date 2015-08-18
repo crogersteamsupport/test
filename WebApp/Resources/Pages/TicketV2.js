@@ -508,6 +508,7 @@ function CreateNewActionLI() {
               }
             }
             else {
+              self.prop('disabled', false);
               alert("There was a error creating your action.  Please try again.")
             }
           });
@@ -553,6 +554,7 @@ function CreateNewActionLI() {
             SetStatus(statusID);
           }
           else {
+            self.prop('disabled', false);
             alert("There was a error creating your action.  Please try again.")
           }
         });
@@ -854,9 +856,7 @@ function FlipNewActionBadge(isPrivate) {
 }
 
 function SaveAction(_oldActionID, isPrivate, callback) {
-
   var action = new top.TeamSupport.Data.ActionProxy();
-
   action.ActionID = _oldActionID;
   action.TicketID = _ticketID;
   action.SystemActionTypeID = 0;
@@ -866,6 +866,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   if (actionType !== null) {
     if (timeSpent < 1 && actionType.IsTimed == true && top.Ts.System.Organization.TimedActionsRequired == true) {
       $('#action-save-alert').text('Please enter the time you worked on this action.').show();
+      $('#action-new-save').prop('disabled', false);
       return false;
     }
     action.ActionTypeID = actionType.ActionTypeID;

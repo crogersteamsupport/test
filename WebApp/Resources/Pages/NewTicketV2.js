@@ -292,6 +292,10 @@ function SetupTicketProperties() {
     });
   }
 
+  if (top.Ts.System.Organization.SetNewActionsVisibleToCustomers == true) {
+    $('#ticket-visible').prop('checked', true);
+  }
+
   $('#ticket-properties-area').on('click', 'span.tagRemove', function (e) {
     var tag = $(this).parent()[0];
     tag.remove();
@@ -658,14 +662,10 @@ function InsertCreateError(message) {
 
 function SetupDescriptionEditor() {
   initEditor($('#ticket-description'), true, function (ed) {
-    //SetupActionTypeSelect();
-    //defaultTemplateText
-    //var currenttext = tinyMCE.activeEditor.getContent();
-    //tinyMCE.activeEditor.setContent(defaultTemplateText);
-
     AppendTicketTypeTemplate(_lastTicketTypeID);
 
     SetupUploadQueue();
+
     $('#ticket-create').click(function (e) {
       e.preventDefault();
       e.stopPropagation();
