@@ -127,12 +127,12 @@ namespace TeamSupport.ServiceLibrary
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportCustomFields(import.RefType);
             _csv = new CsvReader(new StreamReader(csvFile), true);
-            ImportAddresses(import, ReferenceType.Contacts);
+            ImportAddresses(import, ReferenceType.Users);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportPhoneNumbers(import, ReferenceType.Contacts);
             break;
           case ReferenceType.ContactAddresses:
-            ImportAddresses(import, ReferenceType.Contacts);
+            ImportAddresses(import, ReferenceType.Users);
             break;
           case ReferenceType.ContactPhoneNumbers:
             ImportPhoneNumbers(import, ReferenceType.Contacts);
@@ -1557,7 +1557,7 @@ namespace TeamSupport.ServiceLibrary
     {
       SortedList<string, int> userList = GetUserList();
       SortedList<string, int> contactList = null;
-      if (addressReferenceType == ReferenceType.Contacts)
+      if (addressReferenceType == ReferenceType.Users)
       {
         contactList = GetContactList();
       }
@@ -1666,7 +1666,7 @@ namespace TeamSupport.ServiceLibrary
           case ReferenceType.Organizations:
             newAddress.RefID = orgID;
             break;
-          case ReferenceType.Contacts:
+          case ReferenceType.Users:
             string contactEmail = ReadString("ContactEmail");
             int contactID;
             string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
@@ -2241,20 +2241,23 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        string importID = ReadString("TicketImportID");
-        if (importID != string.Empty)
+        if (ticket == null)
         {
-          existingTicket = new Tickets(_importUser);
-          existingTicket.LoadByImportID(importID, _organizationID);
-          if (existingTicket.Count == 1)
+          string importID = ReadString("TicketImportID");
+          if (importID != string.Empty)
           {
-            ticket = existingTicket[0];
-            isUpdate = true;
-          }
-          else if (existingTicket.Count > 1)
-          {
-            _importLog.Write("More than one action matching the importID was found.");
-            continue;
+            existingTicket = new Tickets(_importUser);
+            existingTicket.LoadByImportID(importID, _organizationID);
+            if (existingTicket.Count == 1)
+            {
+              ticket = existingTicket[0];
+              isUpdate = true;
+            }
+            else if (existingTicket.Count > 1)
+            {
+              _importLog.Write("More than one action matching the importID was found.");
+              continue;
+            }
           }
         }
 
