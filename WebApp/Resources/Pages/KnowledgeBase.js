@@ -194,8 +194,10 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
   if (tickets.CategoryID != null) {
     categoryID = tickets.CategoryID;
     if (inSubcategoryPage == null) {
-      if (tickets.Count > 0) {
-          onShowAllClickHandler = 'GetSubCategoryPage(' + tickets.CategoryID + ', \'' + tickets.CategoryName + '\', \'' + tickets.ParentCategoryName + '\'); return false;';
+        if (tickets.Count > 0) {
+            var catname = tickets.CategoryName.replace("'","\\'");
+            var parentname = tickets.ParentCategoryName.replace("'", "\\'");
+          onShowAllClickHandler = "GetSubCategoryPage(" + tickets.CategoryID + ", \'" + catname + "\', \'" + parentname + "\'); return false;";
         $('#catID-' + categoryID).append($('<li class="nav-header"><a href="#" class="ts-link" onclick="' + onShowAllClickHandler + '">' + tickets.CategoryName + ' (' + tickets.Count + ')</a></li>'));
       }
       else {

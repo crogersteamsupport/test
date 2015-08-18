@@ -1498,17 +1498,47 @@ namespace TSWebServices
             {
                 CalEvent cal = new CalEvent();
                 cal.color = "green";
-               
-                //DateTime mytime = DateTime.SpecifyKind(c.StartDate, DateTimeKind.Utc);
+
                 if (c.AllDay)
-                    cal.start = ((DateTime)c.StartDateUtc).ToString("o").Substring(0, 10);
+                {
+                    if(c.StartDateUTC != null)
+                        cal.start = DateTime.SpecifyKind((DateTime)c.StartDateUTCUtc, DateTimeKind.Utc).ToString("o").Substring(0, 10);
+                    else
+                        cal.start = ((DateTime)c.StartDateUtc).ToString("o").Substring(0, 10);
+                }
                 else
-                    cal.start = ((DateTime)c.StartDateUtc).ToString("o");
-                cal.end = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
-                if(c.AllDay)
-                    cal.displayend = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).AddDays(1).ToString("o");
+                {
+                    if (c.StartDateUTC != null)
+                        cal.start = DateTime.SpecifyKind((DateTime)c.StartDateUTCUtc, DateTimeKind.Utc).ToString("o");
+                    else
+                        cal.start = ((DateTime)c.StartDateUtc).ToString("o");
+                }
+
+
+                if (c.EndDateUTC != null)
+                    cal.end = DateTime.SpecifyKind((DateTime)c.EndDateUTCUtc, DateTimeKind.Utc).ToString("o");
                 else
-                    cal.displayend = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
+                    cal.end = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
+
+
+                if (c.AllDay)
+                {
+                    if(c.EndDateUTC != null)
+                    {
+                        TimeSpan ts = new TimeSpan(23, 59, 0);
+                        cal.displayend = (((DateTime)c.EndDateUTC).Date + ts).ToString("o");
+                    }
+                    else
+                        cal.displayend = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).AddDays(1).ToString("o");
+                }
+                else
+                {
+                    if (c.EndDateUTC != null)
+                        cal.displayend = DateTime.SpecifyKind((DateTime)c.EndDateUTCUtc, DateTimeKind.Utc).ToString("o");
+                    else
+                        cal.displayend = c.EndDateUtc == null ? null : ((DateTime)c.EndDateUtc).ToString("o");
+                }
+
                 cal.title = c.Title;
                 cal.type = "cal";
                 cal.id = c.CalendarID;
@@ -1634,22 +1664,36 @@ namespace TSWebServices
         {
             CalendarJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<CalendarJsonInfo>(data);
             DateTime dt;
+            DateTimeOffset dto;
             if (info.id != -1)
             {
                 CalendarEvent cal = CalendarEvents.GetCalendarEvent(TSAuthentication.GetLoginUser(), info.id);
+                DateTimeOffset.TryParse(info.start, null as IFormatProvider,
+                               DateTimeStyles.AdjustToUniversal,
+                               out dto);
                 if ((DateTime.TryParse(info.start, out dt)))
+                {
                     cal.StartDate = DateTime.Parse(info.start);
+                    cal.StartDateUTC = dto.DateTime;
+                }
                 else
                     return false;
 
                 if (DateTime.TryParse(info.end, out dt))
                 {
-                    if(info.allDay)
+                    DateTimeOffset.TryParse(info.end, null as IFormatProvider,
+                                   DateTimeStyles.AdjustToUniversal,
+                                   out dto);
+                    if (info.allDay)
                     {
                         cal.EndDate = (DateTime.Parse(info.end)).AddHours(23).AddMinutes(59);
+                        cal.EndDateUTC = dto.DateTime.AddHours(23).AddMinutes(59);
                     }
                     else
+                    {
                         cal.EndDate = DateTime.Parse(info.end);
+                        cal.EndDateUTC = dto.DateTime;
+                    }
                 }
                 cal.Title = info.title;
                 cal.Description = info.description;
@@ -1677,7 +1721,7 @@ namespace TSWebServices
                         item.Delete();
                         item.Collection.Save();
                     }
-                }
+                }   
                 //Delete product associations that no longer exist
                 foreach (CalendarRefItem item in calRef.Where(a => a.RefType == (int)CalendarAttachmentType.Product).ToArray())
                 {
@@ -1788,19 +1832,33 @@ namespace TSWebServices
             else
             {
                 CalendarEvent cal = (new CalendarEvents(TSAuthentication.GetLoginUser()).AddNewCalendarEvent());
+
                 if ((DateTime.TryParse(info.start, out dt)))
+                {
+                    DateTimeOffset.TryParse(info.start, null as IFormatProvider,
+                                   DateTimeStyles.AdjustToUniversal,
+                                   out dto);
                     cal.StartDate = DateTime.Parse(info.start);
+                    cal.StartDateUTC = dto.DateTime;
+                }
                 else
                     return false;
 
                 if (DateTime.TryParse(info.end, out dt))
                 {
+                    DateTimeOffset.TryParse(info.end, null as IFormatProvider,
+                                   DateTimeStyles.AdjustToUniversal,
+                                   out dto);
                     if (info.allDay)
                     {
                         cal.EndDate = (DateTime.Parse(info.end)).AddHours(23).AddMinutes(59);
+                        cal.EndDateUTC = dto.DateTime.AddHours(23).AddMinutes(59);
                     }
                     else
+                    {
                         cal.EndDate = DateTime.Parse(info.end);
+                        cal.EndDateUTC = dto.DateTime;
+                    }
                 }
                 cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
                 cal.Title = info.title;
@@ -1864,15 +1922,24 @@ namespace TSWebServices
                     break;
                 case "cal":
                     CalendarEvents events = new CalendarEvents(TSAuthentication.GetLoginUser());
+                    DateTimeOffset dto;
+                        //DateTimeOffset.TryParse(info.start, null as IFormatProvider,
+                        //       DateTimeStyles.AdjustToUniversal,
+                        //       out dto);
                     events.LoadByCalendarID(eventID);
                     events[0].StartDate = newTime;
-                    if(allDay)
+                    events[0].StartDateUTC = newTime.ToUniversalTime();
+                    if (allDay)
                     {
                         TimeSpan ts = new TimeSpan(23, 59, 0);
-                        events[0].EndDate = endTime.Date + ts;
+                        events[0].EndDate = endTime.Date.AddDays(-1) + ts;
+                        events[0].EndDateUTC = (endTime.Date.AddDays(-1) + ts).ToUniversalTime();
                     }
                     else
+                    {
                         events[0].EndDate = endTime;
+                        events[0].EndDateUTC = endTime.ToUniversalTime();
+                    }
                     events[0].Collection.Save();
                     break;
                 default:

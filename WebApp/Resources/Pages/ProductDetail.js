@@ -981,8 +981,8 @@ $(document).ready(function () {
           $('#fieldOrganizationProductID').val(organizationProductID);
           top.Ts.Services.Customers.LoadCustomProductFields(organizationProductID, function (custField) {
               for (var i = 0; i < custField.length; i++) {
-                  if (custField[i].FieldType == 2)
-                      $('#' + custField[i].CustomFieldID).attr('checked', custField[i].Value);
+                  if (custField[i].FieldType == 2 && custField[i].Value == "True")
+                      $('#' + custField[i].CustomFieldID).attr('checked', true);
                   //else if (custField[i].FieldType == 5)
                   //{
                   //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);

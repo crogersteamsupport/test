@@ -80,12 +80,14 @@
 <body>
 
   <script type="text/javascript" language="javascript">
-    var _ticketTypes = null;
-    function onShow() {
-      loadTags();
+      var _ticketTypes = null;
+      var loaded = false;
+      function onShow() {
+              loadTags();
     }
 
     function pageLoad() {
+
 
       $('#container-main').layout({
         resizeNestedLayout: true,
@@ -158,8 +160,7 @@
           top.Ts.System.logAction('Ticket Tags - Multiple Tag Mode');
 
         }
-
-        loadTickets();
+            loadTickets();
       });
 
       $('#tag-rename').click(function (e) {
@@ -167,6 +168,14 @@
         e.preventDefault();
         toggleRenameTag(true);
         $('#tag-rename-edit input').val($('.tag-link-selected').html()).focus().select();
+      });
+
+      $('#tag-reload').click(function (e) {
+
+          e.preventDefault();
+          loaded = false;
+          location.reload();
+          
       });
 
       $('#tag-rename-save').click(function (e) {
@@ -208,6 +217,7 @@
     function isSingleTagMode() { return $('#lnk-multiple-tags').html() != 'Select single tag'; }
 
     function loadTickets(pageIndex) {
+        loaded = true;
       toggleRenameTag(false);
       $('#tickets').hide();
       $('#tickets-loading').show();
@@ -362,6 +372,7 @@
           top.Ts.System.logAction('Ticket Tags - Tag Selected');
 
         });
+        if(!loaded)
         loadTickets();
       });
 
@@ -391,7 +402,7 @@
           </div>
           <div id="header-filter">
             <span id="header-tags"></span>
-            <span id="tag-actions"><a href="#" id="tag-rename">Rename</a>&nbsp<a href="#" id="tag-delete">Delete</a></span>
+            <span id="tag-actions"><a href="#" id="tag-rename">Rename</a>&nbsp<a href="#" id="tag-delete">Delete</a>&nbsp<a href="#" id="tag-reload">Reload</a></span>
             <span id="tag-rename-edit" class="ui-helper-hidden"><input type="text" class="text"  /> <a href="#" id="tag-rename-save">Save</a> | <a href="#" id="tag-rename-cancel">Cancel</a></span>
             &nbsp
           </div>

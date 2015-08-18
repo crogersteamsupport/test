@@ -159,7 +159,7 @@
             });
         },
         eventDrop: function (event, delta, revertFunc) {
-            top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), moment(event.end).utc().format(), event.type, event.allDay, function () {
+            top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.end.format(), event.type, event.allDay, function () {
                 $('#calendar').fullCalendar('refetchEvents');
             });
             

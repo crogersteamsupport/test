@@ -214,7 +214,7 @@ $(document).ready(function () {
       versionInfo.ProductID = $("#ddlProduct").val();
       versionInfo.ProductVersionStatusID = $("#ddlStatus").val();
       versionInfo.ReleaseDate = $("#inputExpectedRelease").val();
-      versionInfo.IsRelease = $("#cbReleased").prop('checked');
+      versionInfo.IsReleased = $("#cbReleased").prop('checked');
       versionInfo.Description = $("#inputDescription").val();
       versionInfo.JiraProjectKey = $("#inputProductVersionJiraProjectKey").val();
 
