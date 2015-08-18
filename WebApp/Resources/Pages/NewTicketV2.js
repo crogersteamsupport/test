@@ -23,6 +23,7 @@ var execGetAsset = null;
 var execGetUsers = null;
 var execGetRelated = null;
 var execSelectTicket = null;
+var execGetCompany = null;
 
 var session;
 var token;
@@ -58,6 +59,11 @@ var getUsers = function (request, response) {
 var getRelated = function (request, response) {
   if (execGetRelated) { execGetRelated._executor.abort(); }
   execGetRelated = top.Ts.Services.Tickets.SearchTickets(request, null, function (result) { response(result); });
+}
+
+var getCompany = function (request, response) {
+  if (execGetCompany) { execGetCompany._executor.abort(); }
+  execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request, function (result) { response(result); });
 }
 
 var selectTicket = function (request, response) {
@@ -1076,6 +1082,29 @@ function SetupCustomerSection() {
         $($dropdown).prev().find('input').blur();
       },
       closeAfterSelect: true
+    });
+
+    $('#customer-company-input').selectize({
+      valueField: 'label',
+      labelField: 'label',
+      searchField: 'label',
+      load: function (query, callback) {
+        this.clearOptions();        // clear the data
+        this.renderCache = {};      // clear the html template cache
+        getCompany(query, callback)
+      },
+      score: function (search) {
+        return function (option) {
+          return 1;
+        }
+      },
+      onDropdownClose: function ($dropdown) {
+        $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true,
+      plugins: {
+        'sticky_placeholder': {}
+      }
     });
   }
   $('#Customer-Create').click(function (e) {
