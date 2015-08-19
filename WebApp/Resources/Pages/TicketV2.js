@@ -436,6 +436,7 @@ function CreateNewActionLI() {
     SetupActionTypeSelect();
     FlipNewActionBadge(false);
     _isNewActionPrivate = false;
+    $('#action-new-KB').prop('checked', false);
     $('#action-save-alert').text('').hide();
   });
 
@@ -447,6 +448,7 @@ function CreateNewActionLI() {
     SetupActionTypeSelect();
     FlipNewActionBadge(true);
     _isNewActionPrivate = true;
+    $('#action-new-KB').prop('checked', false);
     $('#action-save-alert').text('').hide();
   });
 
@@ -3459,7 +3461,7 @@ function CreateTimeLineDelegates() {
     SetupActionEditor(editor, action);
     SetupActionTypeSelect();
 
-
+    $('#action-new-KB').prop('checked', action.IsKnowledgeBase);
 
     FlipNewActionBadge(!action.IsVisibleOnPortal);
     _isNewActionPrivate = !action.IsVisibleOnPortal;
