@@ -573,7 +573,7 @@ Ts.Pages.Main.prototype = {
             function callback(result) {
                 if (result != null) {
                     if (result.IsExpired == true) {
-                        window.location = '.';
+                        window.location = 'AnotherSession.aspx';
                     }
 
                     if (isDebug != result.IsDebug) {
