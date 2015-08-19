@@ -576,7 +576,7 @@ Ts.Pages.Main.prototype = {
                         window.location = 'AnotherSession.aspx';
                     }
                     
-                    if (result.RefreshID && result.RefreshID > -1 && result.RefreshID != refreshID)
+                    if (refreshID > -1 && result.RefreshID != refreshID)
                     {
                       window.location = '.';
                     }

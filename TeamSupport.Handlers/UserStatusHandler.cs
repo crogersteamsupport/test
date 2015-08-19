@@ -114,6 +114,7 @@ namespace TeamSupport.Handlers
           reader.Close();
         }
 
+        update.RefreshID = int.Parse(SystemSettings.ReadString(LoginUser.Anonymous, "RefreshID", "-1"));
         update.ExpireTime = TSAuthentication.Ticket.Expiration.ToShortTimeString();
         update.Version = GetVersion(context) + "." + GetRevision(context);
         update.MyUnreadTicketCount = Tickets.GetMyOpenUnreadTicketCount(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
