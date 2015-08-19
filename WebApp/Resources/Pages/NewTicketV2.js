@@ -1255,6 +1255,8 @@ function LoadProductList(products) {
     if (products == null) products = top.Ts.Cache.getProducts();
     var $productselect = $('#ticket-Product').selectize();
     var $productselectInput = $productselect[0].selectize;
+
+    var currProduct = $productselectInput.getValue();
     $productselectInput.clearOptions();
 
     for (var i = 0; i < products.length; i++) {
@@ -1263,6 +1265,10 @@ function LoadProductList(products) {
 
     SetupProductVersionsControl(null);
     SetProductVersionAndResolved(null, null);
+
+    if (currProduct) {
+      $productselectInput.setValue(currProduct);
+    }
   }
 }
 
@@ -1282,6 +1288,7 @@ function ReloadProductList() {
       }
       else {
         top.Ts.Services.Tickets.GetCustomerProductIDs(top.JSON.stringify(organizationIDs), function (productIDs) {
+          
           if (!productIDs || productIDs == null || productIDs.length < 1) {
             var products = top.Ts.Cache.getProducts();
             LoadProductList(products);
@@ -1297,10 +1304,10 @@ function ReloadProductList() {
         });
       }
     }
-    else {
-      var products = top.Ts.Cache.getProducts();
-      LoadProductList(products);
-    }
+    //else {
+    //  var products = top.Ts.Cache.getProducts();
+    //  LoadProductList(products);
+    //}
   });
 };
 
