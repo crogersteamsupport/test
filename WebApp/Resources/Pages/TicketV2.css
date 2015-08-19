@@ -657,9 +657,9 @@
     .ticket-group > label,
     .customFieldCategoryHeader
      {
-        color: #999999;
+        color: #808080;
         font-size: 12px;
-        font-weight: normal;
+        font-weight: 300;
         padding-left: 5px;
         padding-right: 5px;
     }
