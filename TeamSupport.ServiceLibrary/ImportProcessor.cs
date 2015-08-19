@@ -121,8 +121,8 @@ namespace TeamSupport.ServiceLibrary
             ImportPhoneNumbers(import, ReferenceType.Organizations);
             break;
           case ReferenceType.Contacts:
-            ImportCompanies(import);
-            _csv = new CsvReader(new StreamReader(csvFile), true);
+            //ImportCompanies(import);
+            //_csv = new CsvReader(new StreamReader(csvFile), true);
             ImportContacts(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportCustomFields(import.RefType);
@@ -1371,55 +1371,69 @@ namespace TeamSupport.ServiceLibrary
           user = users.AddNewUser();
         }
 
+        DateTime? dateCreated = ReadDateNull("DateCreated");
+        if (dateCreated != null)
+        {
+          user.DateCreated = (DateTime)dateCreated;
+        }
+        int creatorID = -2;
+        if (Int32.TryParse(ReadString("CreatorID"), out creatorID))
+        {
+          if (!userList.ContainsValue(creatorID))
+          {
+            creatorID = -2;
+          }
+        }
+
         Organizations companies = new Organizations(_importUser);
         Organization company = null;
 
-        string companyImportID = ReadString("CompanyImportID");
-        if (!string.IsNullOrEmpty(companyImportID))
+        int? companyID = ReadIntNull("CompanyID");
+        if (companyID != null)
         {
-          companies.LoadByImportID(companyImportID, _organizationID);
-          if (companies.Count == 1)
+          companies = new Organizations(_importUser);
+          companies.LoadByOrganizationID((int)companyID);
+          if (companies.Count == 1 && companies[0].ParentID == _organizationID)
           {
             company = companies[0];
-            user.OrganizationID = company.OrganizationID;
+            user.OrganizationID = companies[0].OrganizationID;
+          }
+          else if (companies[0].ParentID != _organizationID)
+          {
+            _importLog.Write("Invalid companyID provided.");
+            continue;
           }
           else if (companies.Count > 1)
           {
-            _importLog.Write("More than one company matching companyImportID found.");
+            _importLog.Write("More than one company matching companyID found.");
             continue;
           }
           else
           {
-            _importLog.Write("No company matching companyImportID found.");
+            _importLog.Write("No company matching companyID found.");
             continue;
           }
         }
 
         if (company == null)
         {
-          int? companyID = ReadIntNull("CompanyID");
-          if (companyID != null)
+          string companyImportID = ReadString("CompanyImportID");
+          if (!string.IsNullOrEmpty(companyImportID))
           {
-            companies = new Organizations(_importUser);
-            companies.LoadByOrganizationID((int)companyID);
-            if (companies.Count == 1 && companies[0].ParentID == _organizationID)
+            companies.LoadByImportID(companyImportID, _organizationID);
+            if (companies.Count == 1)
             {
               company = companies[0];
-              user.OrganizationID = companies[0].OrganizationID;
-            }
-            else if (companies[0].ParentID != _organizationID)
-            {
-              _importLog.Write("Invalid companyID provided.");
-              continue;
+              user.OrganizationID = company.OrganizationID;
             }
             else if (companies.Count > 1)
             {
-              _importLog.Write("More than one company matching companyID found.");
+              _importLog.Write("More than one company matching companyImportID found.");
               continue;
             }
             else
             {
-              _importLog.Write("No company matching companyID found.");
+              _importLog.Write("No company matching companyImportID found.");
               continue;
             }
           }
@@ -1444,8 +1458,30 @@ namespace TeamSupport.ServiceLibrary
             }
             else
             {
-              _importLog.Write("No company matching CompanyName found.");
-              continue;
+              Organizations newCompanies = new Organizations(_importUser);
+              Organization newCompany = newCompanies.AddNewOrganization();
+              newCompany.Name = companyName;
+              newCompany.ParentID = _organizationID;
+              newCompany.IsActive = true;
+              newCompany.ExtraStorageUnits = 0;
+              newCompany.IsCustomerFree = false;
+              newCompany.PortalSeats = 0;
+              newCompany.PrimaryUserID = null;
+              newCompany.ProductType = ProductType.Express;
+              newCompany.UserSeats = 0;
+              newCompany.NeedsIndexing = true;
+              newCompany.SystemEmailID = Guid.NewGuid();
+              newCompany.WebServiceID = Guid.NewGuid();
+              if (dateCreated != null)
+              {
+                newCompany.DateCreated = (DateTime)dateCreated;
+              }
+              newCompany.CreatorID = creatorID;
+              newCompany.ModifierID = -2;
+              newCompanies.Save();
+              company = newCompany;
+              user.OrganizationID = company.OrganizationID;
+              _importLog.Write("No company matching CompanyName found. Created company " + companyName);
             }
           }
         }
@@ -1486,19 +1522,6 @@ namespace TeamSupport.ServiceLibrary
         user.LastLogin = DateTime.UtcNow;
         user.NeedsIndexing = true;
         user.PrimaryGroupID = null;
-        DateTime? dateCreated = ReadDateNull("DateCreated");
-        if (dateCreated != null)
-        {
-          user.DateCreated = (DateTime)dateCreated;
-        }
-        int creatorID = -2;
-        if (Int32.TryParse(ReadString("CreatorID"), out creatorID))
-        {
-          if (!userList.ContainsValue(creatorID))
-          {
-            creatorID = -2;
-          }
-        }
         user.CreatorID = creatorID;
         user.ModifierID = -2;
 
