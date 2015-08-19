@@ -575,6 +575,11 @@ Ts.Pages.Main.prototype = {
                     if (result.IsExpired == true) {
                         window.location = 'AnotherSession.aspx';
                     }
+                    
+                    if (result.RefreshID && result.RefreshID > -1 && result.RefreshID != refreshID)
+                    {
+                      window.location = '.';
+                    }
 
                     if (isDebug != result.IsDebug) {
                         isDebug = result.IsDebug;

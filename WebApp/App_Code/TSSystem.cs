@@ -432,7 +432,7 @@ namespace TSWebServices
           reader.Close();
         }
 
-        //update.RefreshID = int.Parse(SystemSettings.ReadString(loginUser, "RefreshID", "-1"));
+        update.RefreshID = int.Parse(SystemSettings.ReadString(LoginUser.Anonymous, "RefreshID", "-1"));
         update.ExpireTime = TSAuthentication.Ticket.Expiration.ToShortTimeString();
         update.Version = GetVersion() + "." + GetRevision();
         //update.IsIdle = user.DateToUtc(user.LastActivity).AddMinutes(20) < DateTime.UtcNow;
