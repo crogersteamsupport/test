@@ -179,6 +179,8 @@ namespace TeamSupport.Data
                 }
                 result.Append(")");
               }
+
+				  result.Append(")");
             }
           }
         }

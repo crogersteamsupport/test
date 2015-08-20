@@ -60,8 +60,8 @@ namespace TeamSupport.Data
 
 			string sql = BuildLoadByParentOrganizationIdSql(limit, organizationParentId, orderBy, filters, command.Parameters);
 			sql = InjectCustomFields(sql, "UserID", ReferenceType.Contacts);
-            command.CommandType = CommandType.Text;
-            command.CommandText = sql;
+			command.CommandType = CommandType.Text;
+			command.CommandText = sql;
 			command.Parameters.AddWithValue("@OrganizationParentId", organizationParentId);
 			this.DeleteAll();
 
@@ -94,8 +94,15 @@ namespace TeamSupport.Data
 	{
 		StringBuilder result = new StringBuilder();
 
-		result.Append("SELECT " + limit + " * ");
+		result.Append("SELECT " + limit + " ContactsView.* ");
 		result.Append("FROM ContactsView ");
+
+		//check PhoneNumber filter by itself and also if it has a square bracket for the contains, lt, gt,... extra operators
+		if (filters.AllKeys.Where(p => p.ToLower() == "phonenumber").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("phonenumber[")).Any())
+		{
+			result.Append("LEFT JOIN PhoneNumbers ON ContactsView.UserID = PhoneNumbers.RefID ");
+		}
+    
 		result.Append("WHERE OrganizationParentID = @OrganizationParentId AND (MarkDeleted = 0) " + BuildWhereClausesFromFilters(organizationParentId, filters, ref filterParameters) + " ");
 		result.Append("ORDER BY " + orderBy);
 
@@ -178,7 +185,7 @@ namespace TeamSupport.Data
 					}
 					else
 					{
-						result.Append("OrganizationID IN (SELECT RefID FROM CustomValues WHERE CustomFieldID = ");
+						result.Append("UserID IN (SELECT RefID FROM CustomValues WHERE CustomFieldID = ");
 						result.Append(customField.CustomFieldID.ToString());
 						result.Append(" AND ");
 						if (filterValues.Count > 1) result.Append("(");
@@ -193,8 +200,11 @@ namespace TeamSupport.Data
 								result.Append("CustomValue " + filterOperator + " @" + filterFieldName + j.ToString());
 								filterParameters.AddWithValue("@" + filterFieldName + j.ToString(), filterValues[j]);
 							}
+
 							result.Append(")");
 						}
+
+						result.Append(")");
 					}
 				}
 			}
@@ -253,6 +263,11 @@ namespace TeamSupport.Data
 				customField = null;
 				fieldDataType = baseItem.Row.Table.Columns[field].DataType;
 			}
+		}
+		//PhoneNumber does not belong to the ContactsView so its type won't be found, however because it can be used as filter we'll set its type to String here
+		else if (fieldName.ToLower() == "phonenumber")
+		{
+			fieldDataType = typeof(string);
 		}
 		else
 		{

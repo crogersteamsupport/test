@@ -24,38 +24,40 @@ namespace TeamSupport.Api
 
     public static string GetItems(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null)
     {
-		ContactsView items = new ContactsView(command.LoginUser);
+		  ContactsView items = new ContactsView(command.LoginUser);
 
-		try
-		{
-			if (orderByDateCreated)
-			{
-				items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, "DateCreated DESC", limitNumber);
-			}
-			else
-			{
-				items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters);
-			}
-		}
-		catch (Exception ex)
-		{
-			//if something fails use the old method
-			items = new ContactsView(command.LoginUser);
+		  try
+		  {
+			  if (orderByDateCreated)
+			  {
+				  items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, "DateCreated DESC", limitNumber);
+			  }
+			  else
+			  {
+				  items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters);
+			  }
 
-			if (orderByDateCreated)
-			{
-				items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC", limitNumber);
-			}
-			else
-			{
-				items.LoadByParentOrganizationID(command.Organization.OrganizationID);
-			}
+        //SQL filtering was done already, there's no need for .NET filtering thus the empty collection for the last parameter
+        return items.GetXml("Contacts", "Contact", true, new System.Collections.Specialized.NameValueCollection());
+		  }
+		  catch (Exception ex)
+		  {
+			  //if something fails use the old method
+			  items = new ContactsView(command.LoginUser);
 
-		}
+			  if (orderByDateCreated)
+			  {
+				  items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC", limitNumber);
+			  }
+			  else
+			  {
+				  items.LoadByParentOrganizationID(command.Organization.OrganizationID);
+			  }
 
-		//The resuls have been filtered in SQL at this point, somewhere in the next method .NET filters the results again,
-		//I'll leave this as a safety net, the records .NET will 'filter' if nothing wrong happens with the SQL filtering will be minimum and should be quick
-		return items.GetXml("Contacts", "Contact", true, command.Filters);
+		  }
+
+		  //If we get to this point then something went wrong with the sql filtering and an exception was thrown and caught, .NET filtering will need to be done
+		  return items.GetXml("Contacts", "Contact", true, command.Filters);
     }
 
     public static string GetItems(RestCommand command, int organizationID, bool orderByDateCreated = false)

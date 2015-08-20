@@ -643,7 +643,7 @@ namespace TeamSupport.Data
             }
             else
             {
-              result.Append("OrganizationID IN (SELECT RefID FROM CustomValues WHERE CustomFieldID = ");
+              result.Append("TicketID IN (SELECT RefID FROM CustomValues WHERE CustomFieldID = ");
               result.Append(customField.CustomFieldID.ToString());
               result.Append(" AND ");
               if (filterValues.Count > 1) result.Append("(");
@@ -661,6 +661,8 @@ namespace TeamSupport.Data
 
                 result.Append(")");
               }
+
+				  result.Append(")");
             }
           }
         }
