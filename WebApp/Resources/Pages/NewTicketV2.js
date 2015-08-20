@@ -221,19 +221,39 @@ function AddTicketProperty(item) {
 function SetupTicketProperties() {
   //Assigned To
   var users = top.Ts.Cache.getUsers();
-  AppendSelect('#ticket-assigned', null, 'group', -1, 'Unassigned', false);
-  for (var i = 0; i < users.length; i++) {
-    AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].UserID, users[i].Name + ' - ' + users[i].InOfficeComment);
-  }
 
-  $('#ticket-assigned').val(top.Ts.System.User.UserID);
   if ($('#ticket-assigned').length) {
     $('#ticket-assigned').selectize({
+      dataAttr: 'assigned',
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
       },
-      closeAfterSelect: true
+      closeAfterSelect: true,
+      render: {
+        option: function (item, escape) {
+          var optionlabel = item.text;
+          if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
+
+          if (item.data.IsSender && item.data.IsCreator)
+            return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender and Creator)</div>';
+          else if (item.data.IsSender)
+            return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender)</div>';
+          else if (item.data.IsCreator)
+            return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Creator)</div>';
+          else
+            return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + '</div>';
+        }
+      },
     });
+
+    var selectize = $("#ticket-assigned")[0].selectize;
+    selectize.addOption({ value: -1, text: 'Unassigned', data: '' });
+
+    for (var i = 0; i < users.length; i++) {
+      selectize.addOption({ value: users[i].UserID, text: users[i].Name, data: users[i] });
+    }
+
+    selectize.setValue(top.Ts.System.User.UserID);
   }
 
   //Group

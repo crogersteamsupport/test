@@ -236,6 +236,7 @@ var loadTicket = function (ticketNumber, refresh) {
     _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
     _ticketCurrStatus = _ticketInfo.Ticket.TicketStatusID;
     _ticketCurrUser = _ticketInfo.Ticket.UserID;
+    _ticketGroupID = info.Ticket.GroupID;
 
     $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
     $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
@@ -274,6 +275,7 @@ var loadTicket = function (ticketNumber, refresh) {
     AddInventory(_ticketInfo.Assets);
     LoadTicketHistory();
     SetupJiraFieldValues();
+    LoadGroups();
 
     if (typeof refresh === "undefined") {
       window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
@@ -353,6 +355,7 @@ function SetupTicketProperties() {
     _ticketCreator.UserID = info.Ticket.CreatorID;
     _ticketCreator.Name = info.Ticket.CreatorName;
     _productFamilyID = info.Ticket.ProductFamilyID;
+    _ticketGroupID = info.Ticket.GroupID;
 
     top.Ts.System.logAction('View Ticket');
     top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
@@ -999,11 +1002,6 @@ function LoadTicketControls() {
 
   if ($('#ticket-assigned').length) {
     top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-      //AppendSelect('#ticket-assigned', null, 'group', -1, 'Unassigned', false);
-      //for (var i = 0; i < users.length; i++) {
-      //  AppendSelect('#ticket-assigned', users[i], 'assigned', users[i].ID, users[i].Name, users[i].IsSelected);
-      //}
-
       $('#ticket-assigned').selectize({
         dataAttr: 'assigned',
         onDropdownClose: function ($dropdown) {
@@ -1014,6 +1012,7 @@ function LoadTicketControls() {
           if (value !== ((_ticketCurrUser !== null) ? _ticketCurrUser.toString() : _ticketCurrUser)) {
             top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
               window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+              LoadGroups();
             },
             function (error) {
               alert('There was an error setting the assigned user.');
@@ -1261,28 +1260,21 @@ function SetupTicketPropertyEvents() {
   $('#ticket-group').change(function (e) {
     var self = $(this);
     var GroupID = self.val();
-    if (GroupID == '-1') GroupID = null;
-    top.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
-      if (result !== null) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
-        $('#ticket-group').focusout();
-        if (GroupID != null) {
-          top.Ts.Services.Users.GetGroupUsers(GroupID, function (result) {
-            _ticketGroupUsers = result;
-          });
+    if (GroupID == '-1') GroupID = null; 
+    if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
+      top.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
+        if (result !== null) {
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
         }
-        else {
-          _ticketGroupUsers = null;
+        _ticketGroupID = GroupID;
+        if (top.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
+          top.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, GroupID);
         }
-      }
-
-      if (top.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
-        top.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, GroupID);
-      }
-    },
-    function (error) {
-      alert('There was an error setting the group.');
-    });
+      },
+      function (error) {
+        alert('There was an error setting the group.');
+      });
+    }
   });
 
   $('#ticket-type').change(function (e) {
@@ -1781,6 +1773,23 @@ function LoadProductList(products) {
       $productselectInput.clear();
     }
   }
+}
+
+function LoadGroups() {
+    var selectField = $('#ticket-group');
+    if (selectField.length > 0) {
+      top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
+        var selectize = selectField[0].selectize;
+        selectize.clear(true);
+        selectize.clearOptions();
+        selectize.addOption({ value: -1, text: 'Unassigned', data: '' });
+
+        for (var i = 0; i < groups.length; i++) {
+          selectize.addOption({ value: groups[i].ID, text: groups[i].Name, data: groups[i] });
+          if (groups[i].IsSelected) selectize.addItem(groups[i].ID, false);
+        }
+      });
+    }
 }
 
 function SetupProductVersionsControl(product) {
@@ -4401,6 +4410,7 @@ var SetGroup = function (GroupID) {
     var selectize = $('#ticket-group')[0].selectize;
     selectize.addItem(GroupID, false);
   }
+  ticketGroupID = GroupID;
 }
 
 var SetStatus = function (StatusID) {
