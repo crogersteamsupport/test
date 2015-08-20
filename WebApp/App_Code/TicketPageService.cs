@@ -841,6 +841,14 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), action.CreatorID);
             TimeLineItem item = new TimeLineItem();
+
+          string displayName = "";
+
+          if(user != null) 
+            displayName = user.DisplayName;
+          else if (Enum.IsDefined(typeof(SystemUser), action.CreatorID)) 
+            displayName = ((SystemUser)action.CreatorID).ToString();
+
             TicketTimeLineViewItemProxy itemProxy = new TicketTimeLineViewItemProxy
             {
                 TicketID = action.TicketID,
@@ -851,7 +859,7 @@ namespace TSWebServices
                 DateCreated = action.DateCreated,
                 OrganizationID = TSAuthentication.OrganizationID,
                 CreatorID = action.CreatorID,
-                CreatorName = user.DisplayName,
+                CreatorName = displayName,
                 IsKnowledgeBase = action.IsKnowledgeBase,
                 IsVisibleOnPortal = action.IsVisibleOnPortal,
                 IsPinned = action.Pinned,
