@@ -94,11 +94,22 @@ namespace TeamSupport.Data
 	{
 		StringBuilder result = new StringBuilder();
 
-		result.Append("SELECT " + limit + " ContactsView.* ");
+		//check if it has the PhoneNumber filter by itself and also if it has a square bracket for the contains, lt, gt,... extra operators
+		bool hasPhoneNumberFilter = filters.AllKeys.Where(p => p.ToLower() == "phonenumber").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("phonenumber[")).Any();
+
+		//If phoneNumber filter is used then SELECT needs to be DISTINCT to avoid identity exceptions on the DataTable when a contact has multiple phonenumbers (one-to-many relationship between ContactsView and PhoneNumbers)
+		if (hasPhoneNumberFilter)
+		{
+			result.Append("SELECT DISTINCT " + limit + " ContactsView.* ");
+		}
+		else
+		{
+			result.Append("SELECT " + limit + " * ");
+		}
+		
 		result.Append("FROM ContactsView ");
 
-		//check PhoneNumber filter by itself and also if it has a square bracket for the contains, lt, gt,... extra operators
-		if (filters.AllKeys.Where(p => p.ToLower() == "phonenumber").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("phonenumber[")).Any())
+		if (hasPhoneNumberFilter)
 		{
 			result.Append("LEFT JOIN PhoneNumbers ON ContactsView.UserID = PhoneNumbers.RefID ");
 		}
