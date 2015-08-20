@@ -1110,7 +1110,8 @@ function SetupCustomerSection() {
       },
       closeAfterSelect: true,
       plugins: {
-        'sticky_placeholder': {}
+        'sticky_placeholder': {},
+        'no_results': {}
       }
     });
   }
