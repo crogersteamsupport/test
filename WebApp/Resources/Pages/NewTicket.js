@@ -949,7 +949,7 @@ $(document).ready(function () {
               icon: 'awesome fa fa-video-camera',
               onclick: function () {
 
-                  if (OT.checkSystemRequirements() == 1) {
+                  if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Explorer") {
                       var dynamicPub = $("#publisher");
                       $("#recordVideoContainer").show();
                       dynamicPub.show();
