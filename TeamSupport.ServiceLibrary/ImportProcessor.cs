@@ -141,8 +141,8 @@ namespace TeamSupport.ServiceLibrary
             ImportTickets(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportCustomFields(import.RefType);
-            _csv = new CsvReader(new StreamReader(csvFile), true);
-            ImportActions(import);
+            //_csv = new CsvReader(new StreamReader(csvFile), true);
+            //ImportActions(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportOrganizationTickets(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
@@ -296,12 +296,26 @@ namespace TeamSupport.ServiceLibrary
           }
         //}
 
+        string actionType = ReadString("Type");
+        if (action == null)
+        {
+          if (actionType.Trim().ToLower() == "description")
+          {
+            existingAction = new Actions(_importUser);
+            existingAction.LoadOldestTicketDescription(ticketID);
+            if (existingAction.Count == 1)
+            {
+              action = existingAction[0];
+              isUpdate = true;
+            }
+          }
+        }
+
         if (action == null)
         {
           action = actions.AddNewAction();
         }
 
-        string actionType = ReadString("Type");
         action.SystemActionTypeID = GetSystemActionTypeID(actionType);
         action.ActionTypeID = GetActionTypeID(actionTypes, actionType);
 
@@ -2236,9 +2250,6 @@ namespace TeamSupport.ServiceLibrary
 
       Tickets tickets = new Tickets(_importUser);
 
-      int maxTicketNumber = tickets.GetMaxTicketNumber(_organizationID);
-      if (maxTicketNumber < 0) maxTicketNumber++;
-
       int count = 0;
 
       while (_csv.ReadNextRecord())
@@ -2285,9 +2296,9 @@ namespace TeamSupport.ServiceLibrary
         }
 
         int? ticketNumber;
+        ticketNumber = ReadIntNull("TicketNumber");
         if (ticket == null)
         {
-          ticketNumber = ReadIntNull("TicketNumber");
           if (ticketNumber != null)
           {
             existingTicket = new Tickets(_importUser);
@@ -2296,7 +2307,7 @@ namespace TeamSupport.ServiceLibrary
             {
               ticket = existingTicket[0];
               isUpdate = true;
-              maxTicketNumber = Math.Max((int)ticketNumber, maxTicketNumber);
+              //maxTicketNumber = Math.Max((int)ticketNumber, maxTicketNumber);
             }
             else if (existingTicket.Count > 1)
             {
@@ -2304,22 +2315,33 @@ namespace TeamSupport.ServiceLibrary
               continue;
             }
           }
-          else
-          {
-            ticketNumber = maxTicketNumber + 1;
-            maxTicketNumber++;
-          }
+          //else
+          //{
+          //  ticketNumber = maxTicketNumber + 1;
+          //  maxTicketNumber++;
+          //}
         }
-        else
-        {
-          ticketNumber = ticket.TicketNumber;
-        }
+        //else
+        //{
+        //  ticketNumber = ticket.TicketNumber;
+        //}
 
         if (ticket == null)
         {
+          tickets = new Tickets(_importUser);
+          int maxTicketNumber = tickets.GetMaxTicketNumber(_organizationID);
+          if (maxTicketNumber < 0) maxTicketNumber++;
           ticket = tickets.AddNewTicket();
+          if (ticketNumber != null)
+          {
+            ticket.TicketNumber = (int)ticketNumber;
+          }
+          else
+          {
+            ticket.TicketNumber = maxTicketNumber;
+          }
         }
-        ticket.TicketNumber = (int)ticketNumber;
+        //ticket.TicketNumber = (int)ticketNumber;
 
         string name = ReadString("Name");
         if (string.IsNullOrEmpty(name))
@@ -2662,21 +2684,80 @@ namespace TeamSupport.ServiceLibrary
         if (isUpdate)
         {
           existingTicket.Save();
-          _importLog.Write("TicketID " + ticket.TicketID.ToString() + " was updated.");
+          _importLog.Write("Ticket: '" + ticket.Name + "' was updated.");
         }
+        else
+        {
+          tickets.Save();
+          _importLog.Write("Ticket: '" + ticket.Name + "' was created with TicketID: " + ticket.TicketID.ToString());
+        }
+        EmailPosts.DeleteImportEmails(_importUser);
         count++;
 
-        if (count % BULK_LIMIT == 0)
+        //if (count % BULK_LIMIT == 0)
+        //{
+        //  tickets.BulkSave();
+        //  tickets = new Tickets(_importUser);
+        //  UpdateImportCount(import, count);
+        //  EmailPosts.DeleteImportEmails(_importUser);
+        //}
+
+        if (isUpdate)
         {
-          tickets.BulkSave();
-          tickets = new Tickets(_importUser);
-          UpdateImportCount(import, count);
-          EmailPosts.DeleteImportEmails(_importUser);
+          Actions actions = new Actions(_importUser);
+          actions.LoadOldestTicketDescription(ticket.TicketID);
+          if (actions.Count == 1)
+          {
+            actions[0].Description = ReadString("Description");
+            if (creatorID != -2 || creatorID != 0)
+            {
+              User user = Users.GetUser(_importUser, creatorID);
+              if (user != null)
+              {
+                if (!string.IsNullOrWhiteSpace(user.Signature) && ticket.IsVisibleOnPortal)
+                {
+                  actions[0].Description = actions[0].Description + "<br/><br/>" + user.Signature;
+                }
+              }
+            }
+            actions.Save();
+          }
         }
+        else
+        {
+          Actions actions = new Actions(_importUser);
+          TeamSupport.Data.Action action = actions.AddNewAction();
+          action.ActionTypeID = null;
+          action.Name = "Description";
+          action.SystemActionTypeID = SystemActionType.Description;
+          action.ActionSource = ticket.TicketSource;
+          action.Description = ReadString("Description");
+
+          if (creatorID != -2 || creatorID != 0)
+          {
+            User user = Users.GetUser(_importUser, creatorID);
+            if (user != null)
+            {
+              if (!string.IsNullOrWhiteSpace(user.Signature) && ticket.IsVisibleOnPortal)
+              {
+                action.Description = action.Description + "<br/><br/>" + user.Signature;
+              }
+            }
+          }
+
+          action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
+          action.IsKnowledgeBase = ticket.IsKnowledgeBase;
+          action.TicketID = ticket.TicketID;
+          //action.TimeSpent = info.TimeSpent;
+          //action.DateStarted = info.DateStarted;
+          actions.Save();
+        }
+        EmailPosts.DeleteImportEmails(_importUser);
+
       }
-      tickets.BulkSave();
-      UpdateImportCount(import, count);
-      EmailPosts.DeleteImportEmails(_importUser);
+      //tickets.BulkSave();
+      //UpdateImportCount(import, count);
+      //EmailPosts.DeleteImportEmails(_importUser);
       _importLog.Write(count.ToString() + " tickets imported.");
     }
 

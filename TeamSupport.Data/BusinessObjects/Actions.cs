@@ -461,6 +461,17 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-  
+
+    public void LoadOldestTicketDescription(int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT TOP 1 * FROM Actions a WHERE a.TicketID = @TicketID AND a.SystemActionTypeID = 1 ORDER BY a.DateCreated";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        Fill(command);
+      }
+    }
+ 
   }
 }
