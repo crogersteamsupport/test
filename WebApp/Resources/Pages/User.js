@@ -1792,7 +1792,7 @@ UserPage = function () {
       top.Ts.Services.Users.GetUserSignature(userID, function (signature) {
         ed.setContent(signature);
       });
-      element.find('.userSignatureText').tinymce().focus();
+      //element.find('.userSignatureText').tinymce().focus();
     });
 
     element.find('.signature-cancel').click(function () {

@@ -38,7 +38,43 @@ $(document).ready(function () {
     LoadCustomProperties();
     LoadReminderUsers();
     UpdateRecentView();
-    GetUser()
+    GetUser();
+
+    top.Ts.Services.Customers.LoadUserAlert(userID, function (note) {
+        if (note != null) {
+            $('#modalAlertMessage').html(note.Description);
+            //$('#modalAlert').modal('show');
+            var buttons = {
+                "Close": function () {
+                    $(this).dialog("close");
+                },
+                "Snooze": function () {
+                    top.Ts.Services.Customers.SnoozeAlert(note.RefID, top.Ts.ReferenceTypes.Organizations);
+                    $(this).dialog("close");
+                }
+            }
+
+            if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                buttons["Dismiss"] = function () {
+                    top.Ts.Services.Customers.DismissAlert(note.RefID, top.Ts.ReferenceTypes.Organizations);
+                    $(this).dialog("close");
+                }
+            }
+            $("#dialog").dialog({
+                resizable: false,
+                width: 'auto',
+                height: 'auto',
+                create: function () {
+                    $(this).css('maxWidth', '800px');
+                },
+                modal: true,
+                buttons: buttons
+            });
+
+        }
+    });
+
+
     var isTSUser;
 
     $('body').layout({
@@ -434,6 +470,7 @@ $(document).ready(function () {
             alert('There was an error saving the customer active.');
         });
     });
+
     $('.userProperties').on('click', '#fieldPortalUser', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
@@ -455,6 +492,20 @@ $(document).ready(function () {
             alert('There was an error saving the customer portal user status.');
         });
     });
+
+    $('.userProperties').on('click', '#fieldPortalViewOnly', function (e) {
+        if (!$(this).hasClass('editable'))
+            return false;
+        top.Ts.Services.Customers.SetContactPortalViewOnly(userID, ($(this).text() !== 'Yes'), function (result) {
+            $('#fieldPortalViewOnly').text((result == 0 ? 'No' : 'Yes'));
+            top.Ts.System.logAction('Contact Detail - Edit Contact Portal View Only');
+        },
+        function (error) {
+            header.show();
+            alert('There was an error saving the customer portal view only status.');
+        });
+    });
+
     $('.userProperties').on('click', '#fieldDisableOrganizationTicketsViewonPortal', function (e) {
         if (!$(this).hasClass('editable'))
             return false;

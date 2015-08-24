@@ -1256,6 +1256,7 @@ namespace TSWebServices
             {
                 ChatUserSetting setting = ChatUserSettings.GetChatUserSetting(TSAuthentication.GetLoginUser(), u.UserID);
                 string chatsetting = "";
+                string officesetting = "";
 
                 Users tempUser = new Users(TSAuthentication.GetLoginUser());
                 int total = tempUser.GetUserTicketCount(u.UserID, false);
@@ -1266,7 +1267,13 @@ namespace TSWebServices
                     chatsetting = setting.IsAvailable  && u.IsChatUser ? "<i class='user-tooltip fa-comments-o fa color-red' title='Customer Chat Online'></i>" : "";
                 }
 
-                html.AppendFormat(@"<li>
+                if (u.InOffice)
+                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title={0}></span>", u.InOfficeComment);
+                else
+                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title={0}></span>", u.InOfficeComment);
+
+
+                    html.AppendFormat(@"<li>
                     <div class='row'>
                         <div class='col-xs-2 pl0'>
                             <div class='avatar'>
@@ -1275,18 +1282,19 @@ namespace TSWebServices
                         </div>
                         <div class='col-xs-10'>
                             <strong><a class='user' uid='{5}'>{1} ({7}){6}</a></strong>
-                            <div>{2}<div class='pull-right'>{3}{4}</div></div>
+                            <div>{2}<div class='pull-right'>{3}{4}{8}</div></div>
                         </div>
                     </div></li>",
-                                u.Avatar,
-                                u.FirstName + " " + u.LastName,
-                                u.Title,
-                                u.AppChatStatus == true ? chatsetting:"",
-                                (u.AppChatStatus == true && u.UserID != TSAuthentication.GetLoginUser().UserID) ? "<i class='user-tooltip fa-comment fa color-green user-chat' cid='"+u.UserID+"' title='Online to Chat'></i>":"",
-                                u.UserID,
-                                u.IsActive ? "":"<i>(Inactive)</i>",
-                                total
-                                );
+                                    u.Avatar,
+                                    u.FirstName + " " + u.LastName,
+                                    u.Title,
+                                    u.AppChatStatus == true ? chatsetting : "",
+                                    (u.AppChatStatus == true && u.UserID != TSAuthentication.GetLoginUser().UserID) ? "<i class='user-tooltip fa-comment fa color-green user-chat' cid='" + u.UserID + "' title='Online to Chat'></i>" : "",
+                                    u.UserID,
+                                    u.IsActive ? "" : "<i>(Inactive)</i>",
+                                    total,
+                                    officesetting
+                                    );
             }
 
             return html.ToString();

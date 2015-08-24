@@ -69,3 +69,17 @@
     font-weight:bold;
     margin-left: 15px;
 }
+
+.ts-icon-online-small {
+    background-position: -816px -16px;
+}
+.ts-icon {
+    background-image: url("../images/ts_icons_normal.png");
+    height: 16px;
+    width: 16px;
+    display: block;
+}
+
+.ts-icon-offline-small {
+    background-position: -832px -16px;
+}

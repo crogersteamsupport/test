@@ -331,6 +331,18 @@ namespace TSWebServices
 
             return result;
         }
+
+        [WebMethod]
+        public bool SetContactPortalViewOnly(int userID, bool value)
+        {
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            u.PortalViewOnly = value;
+            u.Collection.Save();
+            string description = String.Format("{0} set contact Portal View Only to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
+            return value;
+        }
+
         [WebMethod]
         public void SetCompanyPortalAccessUser(int userID)
         {
@@ -421,6 +433,7 @@ namespace TSWebServices
 
             html.AppendLine(CreateFormElement("Active", user.IsActive, "editable"));
             html.AppendLine(CreateFormElement("Portal User", user.IsPortalUser, "editable"));
+            html.AppendLine(CreateFormElement("Portal View Only", user.PortalViewOnly, "editable"));
             html.AppendLine(CreateFormElement("Prevent email from creating and updating tickets", user.BlockInboundEmail, "editable"));
             html.AppendLine(CreateFormElement("Prevent email from creating but allow updating tickets", user.BlockEmailFromCreatingOnly, "editable"));
             html.AppendLine(CreateFormElement("Disable Organization Tickets View on Portal", user.PortalLimitOrgTickets, "editable"));
@@ -1090,6 +1103,14 @@ namespace TSWebServices
             }
             return customers.ToArray();
         }
+
+        [WebMethod]
+        public NoteProxy LoadUserAlert(int userID)
+        {
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            return LoadAlert(u.OrganizationID, ReferenceType.Organizations);
+        }
+
 
         [WebMethod]
         public NoteProxy LoadAlert(int refID, ReferenceType refType)
