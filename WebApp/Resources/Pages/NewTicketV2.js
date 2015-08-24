@@ -1217,14 +1217,12 @@ function AddCustomers(customer) {
       var newelement = PrependTag(customerDiv, customerdata.UserID, label, customerdata, cssClasses);
     }
     else if (customerdata.Contact !== null) {
-      label = customerdata.Contact;
-      cssClasses = cssClasses + ' UserAnchor';
+      label = '<span class="UserAnchor" data-userid="' + customerdata.UserID + '" data-placement="left">' + customerdata.Contact + '</span>';
       var newelement = PrependTag(customerDiv, customerdata.UserID, label, customerdata, cssClasses);
       newelement.data('userid', customerdata.UserID).data('placement', 'left').data('ticketid', _ticketID);
     }
     else if (customerdata.Company !== null) {
-      label = customerdata.Company;
-      cssClasses = cssClasses + ' OrgAnchor';
+      label = '<span class="OrgAnchor" data-orgid="' + customerdata.OrganizationID + '" data-placement="left">' + customerdata.Company + '</span>';
       var newelement = PrependTag(customerDiv, customerdata.OrganizationID, label, customerdata, cssClasses);
       newelement.data('orgid', customerdata.OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
     }

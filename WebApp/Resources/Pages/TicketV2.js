@@ -1578,14 +1578,12 @@ function AddCustomers(customers) {
       var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
     }
     else if (customers[i].Contact !== null) {
-      label = customers[i].Contact;
-      cssClasses = cssClasses + ' UserAnchor';
+      label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left">' + customers[i].Contact + '</span>';
       var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
       newelement.data('userid', customers[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
     }
     else if (customers[i].Company !== null) {
-      label = customers[i].Company;
-      cssClasses = cssClasses + ' OrgAnchor';
+      label = '<span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
       var newelement = PrependTag(customerDiv, customers[i].OrganizationID, label, customers[i], cssClasses);
       newelement.data('orgid', customers[i].OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
     }
