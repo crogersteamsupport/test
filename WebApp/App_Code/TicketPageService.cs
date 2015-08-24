@@ -857,7 +857,7 @@ namespace TSWebServices
                 MessageType = action.ActionTypeName,
                 ActionTypeID = action.ActionTypeID,
                 Message = SanitizeMessage(action.Description, loginUser),
-                DateCreated = action.DateCreated,
+                DateCreated = DateTime.SpecifyKind(action.DateCreatedUtc, DateTimeKind.Utc),
                 OrganizationID = TSAuthentication.OrganizationID,
                 CreatorID = action.CreatorID,
                 CreatorName = displayName,
