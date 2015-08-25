@@ -23,6 +23,8 @@ namespace TeamSupport.Data
     [DataMember] public bool IsRequired { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int RefType { get; set; }
+    [DataMember] public bool Enabled { get; set; }
+    [DataMember] public int Position { get; set; }
           
   }
   
@@ -31,6 +33,8 @@ namespace TeamSupport.Data
     public ImportFieldProxy GetProxy()
     {
       ImportFieldProxy result = new ImportFieldProxy();
+      result.Position = this.Position;
+      result.Enabled = this.Enabled;
       result.RefType = this.RefType;
       result.Description = this.Description;
       result.IsRequired = this.IsRequired;
