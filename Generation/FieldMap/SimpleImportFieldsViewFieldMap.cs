@@ -23,6 +23,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsRequired", "IsRequired", false, false, false);
       _fieldMap.AddMap("Description", "Description", false, false, false);
       _fieldMap.AddMap("RefType", "RefType", false, false, false);
+      _fieldMap.AddMap("Position", "Position", false, false, false);
       _fieldMap.AddMap("IsCustom", "IsCustom", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
             
