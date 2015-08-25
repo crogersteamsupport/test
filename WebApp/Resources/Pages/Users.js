@@ -144,7 +144,7 @@ $(document).ready(function () {
 
 
     $('#userDelete').click(function () {
-        if (confirm("Are you sure you would like to PERMANENTLEY delete this user?")) {
+        if (confirm("Are you sure you would like to PERMANENTLY delete this user?")) {
             top.privateServices.DeleteUser(activeID, SearchDelete);
             top.Ts.System.logAction('Users - User Deleted');
         }
