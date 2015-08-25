@@ -2437,54 +2437,82 @@ var AddCustomFieldDate = function (field, parentContainer) {
   var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
-                      .attr('href', '#')
-                      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
-                      .addClass('control-label')
-                      .attr('style', 'padding-left: 5px;')
-                      .appendTo(dateContainer);
+                    .attr('href', '#')
+                    .addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor')
+                    .text((date === null ? '' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                    .appendTo(dateContainer);
 
   dateLink.click(function (e) {
     e.preventDefault();
-    $(this).hide();
-    var input = $('<input type="text">')
-                    .addClass('form-control')
-                    .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getDatePattern()))
-                    .datetimepicker({ pickTime: false })
-                    .appendTo(dateContainer)
-                    .focus();
+    e.stopPropagation();
+    var header = $(this).hide();
+    var container = $('<div>')
+          .addClass('row')
+          .insertAfter(header);
 
-    input.focusout(function (e) {
-      var value = top.Ts.Utils.getMsDate(input.val());
-      this.remove();
-      dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDatePattern()))).show();
+    var container1 = $('<div style="padding-right:0px;">')
+        .addClass('col-xs-10')
+        .appendTo(container);
 
-      if (field.IsRequired && (value === null || $.trim(value) === '')) {
-        groupContainer.addClass('hasError');
-      }
-      else {
-        groupContainer.removeClass('hasError');
-      }
-      if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-        groupContainer.addClass('hasCloseErrory');
-        alert("This field can not be cleared in a closed ticket");
-        return;
-      }
-      else {
-        groupContainer.removeClass('hasCloseErrory');
-      }
-      if (value === null || $.trim(value) === '') {
-        groupContainer.addClass('isEmpty');
-      }
-      else {
-        groupContainer.removeClass('isEmpty');
-      }
+    var theinput = $('<input type="text">')
+      .addClass('form-control')
+      .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getDatePattern()))
+      .datetimepicker({ pickTime: false })
+      .appendTo(container1)
+      .focus();
 
-      top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-      }, function () {
-        alert("There was a problem saving your ticket property.");
-      });
-    })
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-times')
+      .click(function (e) {
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
+
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+        var currDate = $(this).prev().find('input').val();
+        var value = null;
+        if (currDate !== '') {
+          value = top.Ts.Utils.getMsDate(currDate);
+        }
+
+        if (field.IsRequired && (value === null || $.trim(value) === '')) {
+          groupContainer.addClass('hasError');
+        }
+        else {
+          groupContainer.removeClass('hasError');
+        }
+        if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
+          groupContainer.addClass('hasCloseErrory');
+          alert("This field can not be cleared in a closed ticket");
+          return;
+        }
+        else {
+          groupContainer.removeClass('hasCloseErrory');
+        }
+        if (value === null || $.trim(value) === '') {
+          groupContainer.addClass('isEmpty');
+        }
+        else {
+          groupContainer.removeClass('isEmpty');
+        }
+
+        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+          var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+          dateLink.text((value === null ? '' : value.localeFormat(top.Ts.Utils.getDatePattern()))).show();
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+        }, function () {
+          alert("There was a problem saving your ticket property.");
+        });
+
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
   });
 
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -2499,6 +2527,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
   if (field.Value === null || $.trim(field.Value) === '') {
     groupContainer.addClass('isEmpty');
   }
+
 }
 
 var AddCustomFieldDateTime = function (field, parentContainer) {
@@ -2507,54 +2536,83 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
   var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
-                      .attr('href', '#')
-                      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                      .addClass('control-label')
-                      .attr('style', 'padding-left: 5px;')
-                      .appendTo(dateContainer);
+                    .attr('href', '#')
+                    .addClass('ticket-anchor ticket-nullable-link')
+                    .text((date === null ? '' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                    .appendTo(dateContainer);
 
   dateLink.click(function (e) {
     e.preventDefault();
-    $(this).hide();
-    var input = $('<input type="text">')
-                    .addClass('form-control')
-                    .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getDateTimePattern()))
-                    .datetimepicker()
-                    .appendTo(dateContainer)
-                    .focus();
+    e.stopPropagation();
+    var header = $(this).hide();
+    var container = $('<div>')
+          .addClass('row')
+          .insertAfter(header);
 
-    input.focusout(function (e) {
-      var value = top.Ts.Utils.getMsDate(input.val());
-      this.remove();
-      dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
+    var container1 = $('<div style="padding-right:0px;">')
+        .addClass('col-xs-10')
+        .appendTo(container);
 
-      if (field.IsRequired && (value === null || $.trim(value) === '')) {
-        groupContainer.addClass('hasError');
-      }
-      else {
-        groupContainer.removeClass('hasError');
-      }
-      if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-        groupContainer.addClass('hasCloseErrory');
-        alert("This field can not be cleared in a closed ticket");
-        return;
-      }
-      else {
-        groupContainer.removeClass('hasCloseErrory');
-      }
-      if (value === null || $.trim(value) === '') {
-        groupContainer.addClass('isEmpty');
-      }
-      else {
-        groupContainer.removeClass('isEmpty');
-      }
+    var theinput = $('<input type="text">')
+      .addClass('form-control')
+      .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getDateTimePattern()))
+      .datetimepicker({ pickTime: true })
+      .appendTo(container1)
+      .focus();
 
-      top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-      }, function () {
-        alert("There was a problem saving your ticket property.");
-      });
-    })
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-times')
+      .click(function (e) {
+        $(this).closest('div').remove();
+        header.show();
+        $('#customerEdit').removeClass("disabled");
+      })
+      .insertAfter(container1);
+
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+        var currDate = $(this).prev().find('input').val();
+        var value = null;
+        if (currDate !== '') {
+          value = top.Ts.Utils.getMsDate(currDate);
+        }
+
+        if (field.IsRequired && (value === null || $.trim(value) === '')) {
+          groupContainer.addClass('hasError');
+        }
+        else {
+          groupContainer.removeClass('hasError');
+        }
+        if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
+          groupContainer.addClass('hasCloseErrory');
+          alert("This field can not be cleared in a closed ticket");
+          return;
+        }
+        else {
+          groupContainer.removeClass('hasCloseErrory');
+        }
+        if (value === null || $.trim(value) === '') {
+          groupContainer.addClass('isEmpty');
+        }
+        else {
+          groupContainer.removeClass('isEmpty');
+        }
+
+        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+          var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+          dateLink.text((value === null ? '' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+        }, function () {
+          alert("There was a problem saving your ticket property.");
+        });
+
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
   });
 
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -2569,6 +2627,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
   if (field.Value === null || $.trim(field.Value) === '') {
     groupContainer.addClass('isEmpty');
   }
+
 }
 
 var AddCustomFieldTime = function (field, parentContainer) {
@@ -2577,54 +2636,83 @@ var AddCustomFieldTime = function (field, parentContainer) {
   var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
-                      .attr('href', '#')
-                      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
-                      .addClass('control-label')
-                      .attr('style', 'padding-left: 5px;')
-                      .appendTo(dateContainer);
+                    .attr('href', '#')
+                    .addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor')
+                    .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+                    .appendTo(dateContainer);
 
   dateLink.click(function (e) {
     e.preventDefault();
-    $(this).hide();
-    var input = $('<input type="text">')
-                    .addClass('form-control')
-                    .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getTimePattern()))
-                    .datetimepicker({ pickDate: false })
-                    .appendTo(dateContainer)
-                    .focus();
+    e.stopPropagation();
+    var header = $(this).hide();
+    var container = $('<div>')
+          .addClass('row')
+          .insertAfter(header);
 
-    input.focusout(function (e) {
-      var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
-      this.remove();
-      dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getTimePattern()))).show();
+    var container1 = $('<div style="padding-right:0px;">')
+        .addClass('col-xs-10')
+        .appendTo(container);
 
-      if (field.IsRequired && (value === null || $.trim(value) === '')) {
-        groupContainer.addClass('hasError');
-      }
-      else {
-        groupContainer.removeClass('hasError');
-      }
-      if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-        groupContainer.addClass('hasCloseErrory');
-        alert("This field can not be cleared in a closed ticket");
-        return;
-      }
-      else {
-        groupContainer.removeClass('hasCloseErrory');
-      }
-      if (value === null || $.trim(value) === '') {
-        groupContainer.addClass('isEmpty');
-      }
-      else {
-        groupContainer.removeClass('isEmpty');
-      }
+    var theinput = $('<input type="text">')
+      .addClass('form-control')
+      .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getTimePattern()))
+      .datetimepicker({ pickDate: false })
+      .appendTo(container1)
+      .focus();
 
-      top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-      }, function () {
-        alert("There was a problem saving your ticket property.");
-      });
-    })
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-times')
+      .click(function (e) {
+        $(this).closest('div').remove();
+        header.show();
+        $('#customerEdit').removeClass("disabled");
+      })
+      .insertAfter(container1);
+
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+        var currDate = $(this).prev().find('input').val();
+        var value = null;
+        if (currDate !== '') {
+          value = top.Ts.Utils.getMsDate("1/1/1900 " + currDate);
+        }
+
+        if (field.IsRequired && (value === null || $.trim(value) === '')) {
+          groupContainer.addClass('hasError');
+        }
+        else {
+          groupContainer.removeClass('hasError');
+        }
+        if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
+          groupContainer.addClass('hasCloseErrory');
+          alert("This field can not be cleared in a closed ticket");
+          return;
+        }
+        else {
+          groupContainer.removeClass('hasCloseErrory');
+        }
+        if (value === null || $.trim(value) === '') {
+          groupContainer.addClass('isEmpty');
+        }
+        else {
+          groupContainer.removeClass('isEmpty');
+        }
+
+        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+          var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+          dateLink.text((value === null ? '' : value.localeFormat(top.Ts.Utils.getTimePattern()))).show();
+          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+        }, function () {
+          alert("There was a problem saving your ticket property.");
+        });
+
+        $(this).closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
   });
 
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -2639,6 +2727,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
   if (field.Value === null || $.trim(field.Value) === '') {
     groupContainer.addClass('isEmpty');
   }
+
 }
 
 var AddCustomFieldBool = function (field, parentContainer) {
@@ -2803,7 +2892,6 @@ var SetupDueDateField = function (duedate) {
   var dateContainer = $('#ticket-duedate-container');
   var dateLink = $('<a>')
                       .attr('href', '#')
-                      //.text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())))
                       .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
                       .appendTo(dateContainer);
   if (duedate !== null) {
