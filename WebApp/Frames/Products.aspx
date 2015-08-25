@@ -279,7 +279,7 @@
         top.Ts.System.logAction('Products - Edit Product Dialog Opened');
       }
       else if (value == 'DeleteProduct') {
-        if (confirm('Are you sure you would like to PERMANENTLEY delete this product, along with the inventory?')) {
+        if (confirm('Are you sure you would like to PERMANENTLY delete this product, along with the inventory?')) {
           if (confirm('If you press OK then the product and inventory will be permanently deleted and THERE IS NO WAY TO REVERSE THIS!  Please hit CANCEL if you are at all unsure that you want to do this.')) {
           top.privateServices.DeleteProduct(GetProductNode(GetSelectedNode()).get_value(), RefreshTree);
           top.Ts.System.logAction('Products - Product Deleted');
@@ -296,7 +296,7 @@
 
         }
         else if (value == 'DeleteVersion') {
-        if (confirm('Are you sure you would like to PERMANENTLEY delete this version?')) {
+        if (confirm('Are you sure you would like to PERMANENTLY delete this version?')) {
           top.privateServices.DeleteVersion(GetVersionNode(GetSelectedNode()).get_value(), RefreshTree);
           top.Ts.System.logAction('Products - Version Deleted');
         }

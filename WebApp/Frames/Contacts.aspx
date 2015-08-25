@@ -147,7 +147,7 @@
           top.Ts.System.logAction('Organization Contacts - Edit Contact Dialog Opened');
         }
         else if (value == 'DeleteUser') {
-        radconfirm('Are you sure you would like to PERMANENTLEY delete this contact?', function (arg) {
+        radconfirm('Are you sure you would like to PERMANENTLY delete this contact?', function (arg) {
           if (arg) {
             top.privateServices.DeleteUser(GetSelectedUserID(), RefreshGrid);
             top.Ts.System.logAction('Organization Contacts - Contact Deleted');

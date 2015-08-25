@@ -199,7 +199,7 @@
           ShowDialog(top.GetUserDialog(GetOrganizationID(), GetSelectedUserID()));
         }
         else if (value == 'DeleteUser') {
-        radconfirm('Are you sure you would like to PERMANENTLEY delete this user?',
+        radconfirm('Are you sure you would like to PERMANENTLY delete this user?',
           function (arg) {
             if (arg) {
               top.privateServices.DeleteUser(GetSelectedUserID(), RefreshGrid);

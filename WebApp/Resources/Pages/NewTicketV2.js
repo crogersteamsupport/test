@@ -716,6 +716,7 @@ function SetupDescriptionEditor() {
     });
 
     $('#rcdtok').click(function (e) {
+        top.Ts.System.logAction('Ticket - Video Recording Start Clicked');
         top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
             $('#rcdtok').hide();
             $('#stoptok').show();
@@ -729,6 +730,7 @@ function SetupDescriptionEditor() {
     $('#stoptok').hide();
 
     $('#stoptok').click(function (e) {
+        top.Ts.System.logAction('Ticket - Video Recording Stop Clicked');
         $('#statusText').text("Processing...");
         top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
             $('#rcdtok').show();
@@ -743,6 +745,7 @@ function SetupDescriptionEditor() {
     $('#inserttok').hide();
 
     $('#inserttok').click(function (e) {
+        top.Ts.System.logAction('Ticket - Video Recording Insert Clicked');
         tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
         session.unpublish(publisher);
         $('#rcdtok').show();
@@ -755,6 +758,7 @@ function SetupDescriptionEditor() {
     $('#deletetok').hide();
 
     $('#canceltok').click(function (e) {
+        top.Ts.System.logAction('Ticket - Video Recording Cancel Clicked');
         if (recordingID) {
             $('#statusText').text("Cancelling Recording ...");
             top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {

@@ -186,7 +186,7 @@
           top.Ts.System.logAction('Groups - Edit Group Dialog Opened');
         }
         else if (value == 'DeleteGroup') {
-        radconfirm('Are you sure you would like to PERMANENTLEY delete this group?', function (arg) {
+        radconfirm('Are you sure you would like to PERMANENTLY delete this group?', function (arg) {
           if (arg) {
             top.privateServices.DeleteGroup(GetSelectedGroupID(), RefreshGrid);
             top.Ts.System.logAction('Groups - Group Deleted');

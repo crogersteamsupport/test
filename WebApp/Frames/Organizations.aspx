@@ -375,7 +375,7 @@
           ShowDialog(top.GetOrganizationDialog(getData(getSelectedItemID()).OrganizationID));
         }
         else if (value == 'DeleteOrganization') {
-        radconfirm('Are you sure you would like to PERMANENTLEY delete this organization?', function (arg) {
+        radconfirm('Are you sure you would like to PERMANENTLY delete this organization?', function (arg) {
           if (arg) {
             top.Ts.System.logAction('Organizations - Organization Deleted');
             top.privateServices.DeleteOrganization(getData(getSelectedItemID()).OrganizationID, updateGrid(false)); 

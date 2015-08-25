@@ -86,7 +86,7 @@ $(document).ready(function () {
     });
 
     $('#groupDelete').click(function () {
-        if (confirm("Are you sure you would like to PERMANENTLEY delete this group?")) {
+        if (confirm("Are you sure you would like to PERMANENTLY delete this group?")) {
             top.Ts.System.logAction('Groups - Group Deleted');
             top.privateServices.DeleteGroup(groupID, function () {
                 window.location = window.location;
