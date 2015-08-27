@@ -29,6 +29,12 @@ namespace TeamSupport.Data
     
 
     
+    public string FieldName
+    {
+      get { return Row["FieldName"] != DBNull.Value ? (string)Row["FieldName"] : null; }
+      set { Row["FieldName"] = CheckValue("FieldName", value); }
+    }
+    
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
@@ -73,6 +79,12 @@ namespace TeamSupport.Data
     
 
     
+    public int Position
+    {
+      get { return (int)Row["Position"]; }
+      set { Row["Position"] = CheckValue("Position", value); }
+    }
+    
     public int RefType
     {
       get { return (int)Row["RefType"]; }
@@ -107,12 +119,6 @@ namespace TeamSupport.Data
     {
       get { return (string)Row["Alias"]; }
       set { Row["Alias"] = CheckValue("Alias", value); }
-    }
-    
-    public string FieldName
-    {
-      get { return (string)Row["FieldName"]; }
-      set { Row["FieldName"] = CheckValue("FieldName", value); }
     }
     
     public string TableName
@@ -230,7 +236,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ImportFieldsView] SET     [ImportFieldID] = @ImportFieldID,    [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description,    [RefType] = @RefType,    [ImportMapID] = @ImportMapID,    [ImportID] = @ImportID,    [SourceName] = @SourceName,    [IsCustom] = @IsCustom,    [FileName] = @FileName,    [OrganizationID] = @OrganizationID  WH);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ImportFieldsView] SET     [ImportFieldID] = @ImportFieldID,    [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description,    [RefType] = @RefType,    [Position] = @Position,    [ImportMapID] = @ImportMapID,    [ImportID] = @ImportID,    [SourceName] = @SourceName,    [IsCustom] = @IsCustom,    [FileName] = @FileName,    [OrganizationID] = @OrganizationID  WH);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ImportFieldID", SqlDbType.Int, 4);
@@ -247,7 +253,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("FieldName", SqlDbType.VarChar, 250);
+		tempParameter = updateCommand.Parameters.Add("FieldName", SqlDbType.VarChar, 561);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -303,6 +309,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("Position", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("ImportMapID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -350,7 +363,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ImportFieldsView] (    [ImportFieldID],    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description],    [RefType],    [ImportMapID],    [ImportID],    [SourceName],    [IsCustom],    [FileName],    [OrganizationID]) VALUES ( @ImportFieldID, @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description, @RefType, @ImportMapID, @ImportID, @SourceName, @IsCustom, @FileName, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ImportFieldsView] (    [ImportFieldID],    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description],    [RefType],    [Position],    [ImportMapID],    [ImportID],    [SourceName],    [IsCustom],    [FileName],    [OrganizationID]) VALUES ( @ImportFieldID, @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description, @RefType, @Position, @ImportMapID, @ImportID, @SourceName, @IsCustom, @FileName, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -389,6 +402,13 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("ImportMapID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Position", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -444,7 +464,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("FieldName", SqlDbType.VarChar, 250);
+		tempParameter = insertCommand.Parameters.Add("FieldName", SqlDbType.VarChar, 561);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

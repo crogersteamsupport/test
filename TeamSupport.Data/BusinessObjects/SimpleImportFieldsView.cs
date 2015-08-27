@@ -26,6 +26,8 @@ namespace TeamSupport.Data
           WHERE
             RefType = @RefType
             AND (IsCustom = 'false' OR OrganizationID = @OrganizationID)
+          ORDER BY
+            Position
         ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefType", (int)refType);

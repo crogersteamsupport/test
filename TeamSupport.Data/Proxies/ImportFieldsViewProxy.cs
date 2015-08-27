@@ -23,6 +23,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsRequired { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int RefType { get; set; }
+    [DataMember] public int Position { get; set; }
     [DataMember] public int? ImportMapID { get; set; }
     [DataMember] public int? ImportID { get; set; }
     [DataMember] public string SourceName { get; set; }
@@ -43,6 +44,7 @@ namespace TeamSupport.Data
       result.SourceName = this.SourceName;
       result.ImportID = this.ImportID;
       result.ImportMapID = this.ImportMapID;
+      result.Position = this.Position;
       result.RefType = this.RefType;
       result.Description = this.Description;
       result.IsRequired = this.IsRequired;

@@ -42,6 +42,18 @@ namespace TeamSupport.Data
     
 
     
+    public int Position
+    {
+      get { return (int)Row["Position"]; }
+      set { Row["Position"] = CheckValue("Position", value); }
+    }
+    
+    public bool Enabled
+    {
+      get { return (bool)Row["Enabled"]; }
+      set { Row["Enabled"] = CheckValue("Enabled", value); }
+    }
+    
     public int RefType
     {
       get { return (int)Row["RefType"]; }
@@ -193,7 +205,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ImportFields] SET     [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description,    [RefType] = @RefType  WHERE ([ImportFieldID] = @ImportFieldID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ImportFields] SET     [TableName] = @TableName,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [IsRequired] = @IsRequired,    [Description] = @Description,    [RefType] = @RefType,    [Enabled] = @Enabled,    [Position] = @Position  WHERE ([ImportFieldID] = @ImportFieldID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ImportFieldID", SqlDbType.Int, 4);
@@ -266,13 +278,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("Enabled", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Position", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ImportFields] (    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description],    [RefType]) VALUES ( @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description, @RefType); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ImportFields] (    [TableName],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [IsRequired],    [Description],    [RefType],    [Enabled],    [Position]) VALUES ( @TableName, @FieldName, @Alias, @DataType, @Size, @IsVisible, @IsRequired, @Description, @RefType, @Enabled, @Position); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("Position", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Enabled", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -449,7 +489,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportFieldID], [TableName], [FieldName], [Alias], [DataType], [Size], [IsVisible], [IsRequired], [Description], [RefType] FROM [dbo].[ImportFields] WHERE ([ImportFieldID] = @ImportFieldID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportFieldID], [TableName], [FieldName], [Alias], [DataType], [Size], [IsVisible], [IsRequired], [Description], [RefType], [Enabled], [Position] FROM [dbo].[ImportFields] WHERE ([ImportFieldID] = @ImportFieldID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ImportFieldID", importFieldID);
         Fill(command);

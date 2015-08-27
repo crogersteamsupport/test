@@ -31,6 +31,8 @@ namespace TeamSupport.Data
               ImportID IS NULL
               OR ImportID = (SELECT TOP 1 ImportID FROM Imports WHERE OrganizationID = @OrganizationID AND RefType = @RefType ORDER BY ImportID DESC)
             )
+          ORDER BY
+            Position
         ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefType", (int)refType);
@@ -52,6 +54,8 @@ namespace TeamSupport.Data
             ImportFieldsView
           WHERE
             ImportID = @ImportID
+          ORDER BY
+            Position
         ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ImportID", importID);

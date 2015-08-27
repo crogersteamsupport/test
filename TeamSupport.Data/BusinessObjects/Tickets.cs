@@ -747,6 +747,18 @@ AND ts.IsClosed = 0";
         }
       }
       return null;
+    }
+
+    public Ticket FindByTicketNumber(int ticketNumber)
+    {
+      foreach (Ticket ticket in this)
+      {
+        if (ticket.TicketNumber == ticketNumber)
+        {
+          return ticket;
+        }
+      }
+      return null;
     }    
 
     public void LoadByUserID(int? userID, int ticketTypeID)
