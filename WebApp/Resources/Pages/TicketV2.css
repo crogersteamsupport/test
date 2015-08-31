@@ -242,7 +242,12 @@
 
     div.ticket-badge > div > a:hover,
     div.ticket-badge > div > a:focus { color: white; }
-    .UserAnchor { cursor:pointer; }
+    .UserAnchor {
+      cursor: pointer;
+      display: inline-block;
+      min-width: 50PX;
+      MIN-HEIGHT: 10PX;
+    }
 
     .timeline-header {
       height: 50px;
