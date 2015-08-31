@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Data", "TeamSupport.Data\TeamSupport.Data.csproj", "{1943AC11-1F2D-4B85-9F0F-4D67284814BE}"
 EndProject
@@ -58,6 +58,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TeamSupport.Signalr", "http
 		Release.AspNetCompiler.Debug = "False"
 		SlnRelativePath = "TeamSupport.Signalr\"
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Messaging", "TeamSupport.Messaging\TeamSupport.Messaging.csproj", "{CC262E84-5002-4E7F-B078-7278E93F0C04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
