@@ -124,6 +124,10 @@ var _startDate = new Date();
     Ts.Services.Customers.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Customers.set_defaultFailedCallback(defaultFailedCallback);
 
+    Ts.Services.Login = new TSWebServices.LoginService();
+    Ts.Services.Login.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Login.set_defaultFailedCallback(defaultFailedCallback);
+
     callback();
   }
 
