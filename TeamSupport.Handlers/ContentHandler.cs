@@ -66,7 +66,7 @@ namespace TeamSupport.Handlers
             case "chat": ProcessChat(context, segments[2], organizationID); break;
             case "reports": ProcessReport(context, int.Parse(segments[2]), (context.Request["Type"] == null ? "old" : context.Request["Type"])); break;
             case "ticketexport": ProcessTicketExport(context); break;
-            case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
+            case "attachments": ProcessAttachment(context, segments[2]); break;
             case "avatar": ProcessAvatar(context, segments.ToArray(), organizationID); break;
             case "useravatar": ProcessUserAvatar(context, segments.ToArray(), organizationID); break;
             case "initialavatar": ProcessInitialAvatar(context, segments.ToArray(), organizationID); break;
@@ -748,101 +748,210 @@ namespace TeamSupport.Handlers
       return newImage;
     }
 
-    private void ProcessAttachment(HttpContext context, int attachmentID)
+    private void ProcessAttachment(HttpContext context, string attachmentID)
     {
+      //http://127.0.0.1/tsdev/dc/attachments/7401
+      //https://app.teamsupport.com/dc/attachments/{AttachmentID}
+
       System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
       if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
-      //http://127.0.0.1/tsdev/dc/attachments/7401
-      //https://app.teamsupport.com/dc/attachments/{AttachmentID}
-      TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
-      Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
-      User user = null;
-      bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
+      int id;
+      if (int.TryParse(attachmentID, out id))
+      {
+        TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
+        Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
+        User user = null;
+        bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
 
 
-      if (isAuthenticated)
-      {
-        user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
-      }
-      else
-      {
-        try
+        if (isAuthenticated)
         {
-          FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
-          int userID = int.Parse(authTicket.UserData.Split('|')[0]);
-          user = Users.GetUser(attachment.Collection.LoginUser, userID);
-
-
-          if (attachment.RefType == ReferenceType.Actions)
+          user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
+        }
+        else
+        {
+          try
           {
-            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-            if (action.IsVisibleOnPortal)
+            //
+            FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
+            int userID = int.Parse(authTicket.UserData.Split('|')[0]);
+            user = Users.GetUser(attachment.Collection.LoginUser, userID);
+
+
+            if (attachment.RefType == ReferenceType.Actions)
             {
-              Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
-              if (ticket.IsVisibleOnPortal)
+              TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
+              if (action.IsVisibleOnPortal)
               {
-                Organizations organizations = new Organizations(attachment.Collection.LoginUser);
-                organizations.LoadByTicketID(ticket.TicketID);
-                isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
+                Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
+                if (ticket.IsVisibleOnPortal)
+                {
+                  Organizations organizations = new Organizations(attachment.Collection.LoginUser);
+                  organizations.LoadByTicketID(ticket.TicketID);
+                  isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
+                }
               }
             }
+
           }
-
+          catch (Exception)
+          {
+          }
         }
-        catch (Exception)
-        {
-        }
-      }
 
-      isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;        
-
-
-      if (!isAuthenticated)
-      {
-        context.Response.Write("Unauthorized");
-        context.Response.ContentType = "text/html";
-        return;
-      }
-
-      if (!File.Exists(attachment.Path))
-      {
-        context.Response.Write("Invalid attachment.");
-        context.Response.ContentType = "text/html";
-        return;
-      }
-
-      /*
-      AttachmentDownload download = (new AttachmentDownloads(attachment.Collection.LoginUser)).AddNewAttachmentDownload();
-      download.AttachmentID = attachment.AttachmentID;
-      download.UserID = user.UserID;
-      download.DateDownloaded = DateTime.UtcNow;
-      download.Collection.Save();
-       */
       
 
 
-      string openType = "inline";
-      string fileType = attachment.FileType;
+        if (!isAuthenticated)
+        {
+          context.Response.Write("Unauthorized");
+          context.Response.ContentType = "text/html";
+          return;
+        }
 
-      if (browser.Browser == "IE")
-      {
-        if (attachment.FileType.ToLower().IndexOf("audio") > -1)
+        if (!File.Exists(attachment.Path))
         {
-          openType = "attachment";
+          context.Response.Write("Invalid attachment.");
+          context.Response.ContentType = "text/html";
+          return;
         }
-        else if (attachment.FileType.ToLower().IndexOf("-zip") > -1 ||
-                 attachment.FileType.ToLower().IndexOf("/zip") > -1 ||
-                 attachment.FileType.ToLower().IndexOf("zip-") > -1)
+
+        /*
+        AttachmentDownload download = (new AttachmentDownloads(attachment.Collection.LoginUser)).AddNewAttachmentDownload();
+        download.AttachmentID = attachment.AttachmentID;
+        download.UserID = user.UserID;
+        download.DateDownloaded = DateTime.UtcNow;
+        download.Collection.Save();
+         */
+
+
+
+        string openType = "inline";
+        string fileType = attachment.FileType;
+
+        if (browser.Browser == "IE")
         {
-          fileType = "application/octet-stream";
+          if (attachment.FileType.ToLower().IndexOf("audio") > -1)
+          {
+            openType = "attachment";
+          }
+          else if (attachment.FileType.ToLower().IndexOf("-zip") > -1 ||
+                   attachment.FileType.ToLower().IndexOf("/zip") > -1 ||
+                   attachment.FileType.ToLower().IndexOf("zip-") > -1)
+          {
+            fileType = "application/octet-stream";
+          }
         }
-      }
+
+        context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + attachment.FileName + "\"");
+        context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
+        context.Response.ContentType = fileType;
+        context.Response.WriteFile(attachment.Path);
       
-      context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + attachment.FileName + "\"");
-      context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
-      context.Response.ContentType = fileType;
-      context.Response.WriteFile(attachment.Path);
+      
+      }
+
+      else 
+      {
+
+        TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous,  Guid.Parse(attachmentID));
+        Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
+
+
+        User user = null;
+        bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
+
+
+        if (isAuthenticated)
+        {
+          user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
+        }
+        else
+        {
+          try
+          {
+            //
+            FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
+            int userID = int.Parse(authTicket.UserData.Split('|')[0]);
+            user = Users.GetUser(attachment.Collection.LoginUser, userID);
+
+
+            if (attachment.RefType == ReferenceType.Actions)
+            {
+              TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
+              if (action.IsVisibleOnPortal)
+              {
+                Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
+                if (ticket.IsVisibleOnPortal)
+                {
+                  Organizations organizations = new Organizations(attachment.Collection.LoginUser);
+                  organizations.LoadByTicketID(ticket.TicketID);
+                  isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
+                }
+              }
+            }
+
+          }
+          catch (Exception)
+          {
+          }
+        }
+
+        isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;
+
+
+        if (!isAuthenticated)
+        {
+          context.Response.Write("Unauthorized");
+          context.Response.ContentType = "text/html";
+          return;
+        }
+
+        if (!File.Exists(attachment.Path))
+        {
+          context.Response.Write("Invalid attachment.");
+          context.Response.ContentType = "text/html";
+          return;
+        }
+
+        /*
+        AttachmentDownload download = (new AttachmentDownloads(attachment.Collection.LoginUser)).AddNewAttachmentDownload();
+        download.AttachmentID = attachment.AttachmentID;
+        download.UserID = user.UserID;
+        download.DateDownloaded = DateTime.UtcNow;
+        download.Collection.Save();
+         */
+
+
+
+        string openType = "inline";
+        string fileType = attachment.FileType;
+
+        if (browser.Browser == "IE")
+        {
+          if (attachment.FileType.ToLower().IndexOf("audio") > -1)
+          {
+            openType = "attachment";
+          }
+          else if (attachment.FileType.ToLower().IndexOf("-zip") > -1 ||
+                   attachment.FileType.ToLower().IndexOf("/zip") > -1 ||
+                   attachment.FileType.ToLower().IndexOf("zip-") > -1)
+          {
+            fileType = "application/octet-stream";
+          }
+        }
+
+        context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + attachment.FileName + "\"");
+        context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
+        context.Response.ContentType = fileType;
+        context.Response.WriteFile(attachment.Path);
+
+      }
+
+
+
+
     }
 
     private void ProcessImportLog(HttpContext context, int importID)

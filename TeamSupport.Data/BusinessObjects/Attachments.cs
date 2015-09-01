@@ -33,6 +33,28 @@ namespace TeamSupport.Data
   public partial class Attachments
   {
 
+    public void LoadByAttachmentGUID(Guid attachmentGUID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT a.* FROM Attachments a WHERE AttachmentGUID = @attachmentGUID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@attachmentGUID", attachmentGUID);
+        Fill(command);
+      }
+
+    }
+
+    public static Attachment GetAttachment(LoginUser loginUser, Guid attachmentGUID)
+    {
+      Attachments attachments = new Attachments(loginUser);
+      attachments.LoadByAttachmentGUID(attachmentGUID);
+      if (attachments.IsEmpty)
+        return null;
+      else
+        return attachments[0];
+    }
+
     public void LoadByActionID(int actionID, string orderBy = "")
     {
       LoadByReference(ReferenceType.Actions, actionID, orderBy);
