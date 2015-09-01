@@ -55,6 +55,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("PortalLimitOrgTickets", "DisableOrganizationTicketsViewOnPortal", true, true, true);
       _fieldMap.AddMap("ProductFamiliesRights", "ProductLinesRights", false, false, false);
       _fieldMap.AddMap("BlockEmailFromCreatingOnly", "BlockEmailFromCreatingOnly", false, false, false);
+      _fieldMap.AddMap("verificationPhoneNumber", "verificationPhoneNumber", false, false, false);
+      _fieldMap.AddMap("verificationCode", "verificationCode", false, false, false);
+      _fieldMap.AddMap("verificationCodeExpiration", "verificationCodeExpiration", false, false, false);
             
     }
   }

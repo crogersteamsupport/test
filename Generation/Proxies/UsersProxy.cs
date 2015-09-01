@@ -94,6 +94,9 @@ namespace TeamSupport.Data
     [DataMember] public int ProductFamiliesRights { get; set; }
     [DataMember] public bool? BlockEmailFromCreatingOnly { get; set; }
     [DataMember] public Guid CalGUID { get; set; }
+    [DataMember] public string verificationPhoneNumber { get; set; }
+    [DataMember] public string verificationCode { get; set; }
+    [DataMember] public DateTime? verificationCodeExpiration { get; set; }
           
   }
   
@@ -102,6 +105,8 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.verificationCode = this.verificationCode;
+      result.verificationPhoneNumber = this.verificationPhoneNumber;
       result.CalGUID = this.CalGUID;
       result.BlockEmailFromCreatingOnly = this.BlockEmailFromCreatingOnly;
       result.ProductFamiliesRights = this.ProductFamiliesRights;
@@ -183,6 +188,7 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
+      result.verificationCodeExpiration = this.verificationCodeExpirationUtc == null ? this.verificationCodeExpirationUtc : DateTime.SpecifyKind((DateTime)this.verificationCodeExpirationUtc, DateTimeKind.Utc); 
       result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc); 
       result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc); 
        

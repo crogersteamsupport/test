@@ -109,6 +109,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("HideDismissNonAdmins", "HideDismissNonAdmins", false, false, false);
       _fieldMap.AddMap("CustDistIndexTrend", "CustDistIndexTrend", false, false, false);
       _fieldMap.AddMap("UseProductFamilies", "UseProductFamilies", false, false, false);
+      _fieldMap.AddMap("IsCustomerInsightsActive", "IsCustomerInsightsActive", false, false, false);
+      _fieldMap.AddMap("TwoStepVerificationEnabled", "TwoStepVerificationEnabled", false, false, false);
             
     }
   }

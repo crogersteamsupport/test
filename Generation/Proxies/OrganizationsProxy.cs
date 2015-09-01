@@ -109,6 +109,8 @@ namespace TeamSupport.Data
     [DataMember] public bool HideDismissNonAdmins { get; set; }
     [DataMember] public int? CustDistIndexTrend { get; set; }
     [DataMember] public bool UseProductFamilies { get; set; }
+    [DataMember] public bool IsCustomerInsightsActive { get; set; }
+    [DataMember] public bool TwoStepVerificationEnabled { get; set; }
           
   }
   
@@ -117,6 +119,8 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.TwoStepVerificationEnabled = this.TwoStepVerificationEnabled;
+      result.IsCustomerInsightsActive = this.IsCustomerInsightsActive;
       result.UseProductFamilies = this.UseProductFamilies;
       result.CustDistIndexTrend = this.CustDistIndexTrend;
       result.HideDismissNonAdmins = this.HideDismissNonAdmins;
