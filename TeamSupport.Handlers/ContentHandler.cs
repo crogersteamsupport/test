@@ -800,7 +800,8 @@ namespace TeamSupport.Handlers
           }
         }
 
-      
+
+        isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;
 
 
         if (!isAuthenticated)
