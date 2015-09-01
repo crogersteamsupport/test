@@ -3621,7 +3621,7 @@ WHERE t.TicketID = @TicketID
             log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
             log.Collection.Save();
 
-            errLocation = string.Format("Error deleting losting ticket from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            errLocation = string.Format("Error deleting losing ticket from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
         }
         return errLocation;
     }
