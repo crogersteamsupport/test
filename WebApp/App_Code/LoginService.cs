@@ -25,8 +25,8 @@ namespace TSWebServices
 			//InitializeComponent(); 
 		}
 
-		[WebMethod(true)]
-		public static int SignIn(string email, string password, int? organizationId, bool verificationRequired)
+		[WebMethod]
+		public int SignIn(string email, string password, int? organizationId, bool verificationRequired)
 		{
 			LoginResult result = LoginResult.Fail;
 

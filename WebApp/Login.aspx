@@ -80,7 +80,7 @@
         return pattern.test(email);
       }
 
-      function getRememberMe() {debugger
+      function getRememberMe() {
         var cookie = Ts.Utils.getCookie('rememberme', 'sessionid');
         if (cookie != null && cookie.length > 0) {
           PageMethods.GetEmail(cookie, function (result) {
