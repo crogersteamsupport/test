@@ -86,7 +86,7 @@ namespace TeamSupport.Handlers
           {
             case "reports": ProcessReport(context, int.Parse(segments[1]), (context.Request["Type"] == null ? "old" : context.Request["Type"])); break;
             case "ticketexport": ProcessTicketExport(context); break;
-            case "attachments": ProcessAttachment(context, int.Parse(segments[1])); break;
+            case "attachments": ProcessAttachment(context, segments[1]); break;
             default: context.Response.End(); break;
           }
         }
