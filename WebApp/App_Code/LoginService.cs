@@ -146,8 +146,9 @@ namespace TSWebServices
 			return JsonConvert.SerializeObject(result);
 		}
 
-		[WebMethod(false)]
-		public static ComboBoxItem[] GetCompanies(string email)
+    [WebMethod]
+    [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+		public string GetCompanies(string email)
 		{
 			Organizations organizations = new Organizations(LoginUser.Anonymous);
 			organizations.LoadByEmail(email);
@@ -157,7 +158,7 @@ namespace TSWebServices
 				items.Add(new ComboBoxItem(organization.Name, organization.OrganizationID));
 			}
 
-			return items.ToArray();
+      return JsonConvert.SerializeObject(items);
 		}
 
 		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int? organizationId, ref User user, ref Organization organization)
