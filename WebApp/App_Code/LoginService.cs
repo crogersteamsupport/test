@@ -65,11 +65,9 @@ namespace TSWebServices
 
 					if (!string.IsNullOrEmpty(userVerificationPhoneNumber))
 					{
-						int verificationCode = GenerateRandomVerificationCode();
-						SMS smsVerification = new SMS();
-						smsVerification.Send(verificationCode.ToString(), userVerificationPhoneNumber);
+						int verificationCode = SendAndGetVerificationCode(userVerificationPhoneNumber);
 
-						if (smsVerification.IsSuccessful)
+						if (verificationCode > 0)
 						{
 							user.verificationCode = verificationCode.ToString();
 							user.verificationCodeExpiration = DateTime.Now.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
@@ -79,7 +77,7 @@ namespace TSWebServices
 						}
 						else
 						{
-							result.Error = "Verification Code failed to be sent.";
+							result.Error = "Verification Code failed to be generated or sent.";
 							result.Result = LoginResult.Fail;
 						}
 					}
@@ -106,48 +104,102 @@ namespace TSWebServices
 		{
 			SignInResult result = new SignInResult();
 			LoginUser loginUser = LoginUser.Anonymous;
-			Users users = new Users(loginUser);
-			users.LoadByUserID(userId);
-			result.UserId = userId;
 
-			if (users.Count > 0)
+			try
 			{
-				result.OrganizationId = users[0].OrganizationID;
+				Users users = new Users(loginUser);
+				users.LoadByUserID(userId);
+				result.UserId = userId;
 
-				string codeSent = users[0].verificationCode;
-
-				if (codeSent == codeEntered)
+				if (users.Count > 0)
 				{
-					if (users[0].verificationCodeExpirationUtc > DateTime.UtcNow)
+					result.OrganizationId = users[0].OrganizationID;
+
+					string codeSent = users[0].verificationCode;
+
+					if (codeSent == codeEntered)
 					{
-						result.Result = LoginResult.Success;
-						users[0].verificationCode = null;
-						users[0].verificationCodeExpiration = null;
-						users.Save();
+						if (users[0].verificationCodeExpirationUtc > DateTime.UtcNow)
+						{
+							users[0].verificationCode = null;
+							users[0].verificationCodeExpiration = null;
+							users.Save();
+							result.Result = LoginResult.Success;
+						}
+						else
+						{
+							result.Error = "Verification Code has expired.";
+							result.Result = LoginResult.Fail;
+						}
 					}
 					else
 					{
-						result.Error = "Verification Code has expired.";
+						result.Error = "Invalid Verification Code.";
 						result.Result = LoginResult.Fail;
 					}
 				}
 				else
 				{
-					result.Error = "Invalid Verification Code.";
+					result.Error = "User not found.";
 					result.Result = LoginResult.Fail;
 				}
 			}
-			else
+			catch (Exception ex)
 			{
-				result.Error = "User not found.";
+				result.Error = ex.Message;
 				result.Result = LoginResult.Fail;
 			}
 
 			return JsonConvert.SerializeObject(result);
 		}
 
-    [WebMethod]
-    [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+		[WebMethod]
+		public string SetupVerificationPhoneNumber(int userId, string phoneNumber)
+		{
+			SignInResult result = new SignInResult();
+			LoginUser loginUser = LoginUser.Anonymous;
+			result.UserId = userId;
+
+			try
+			{
+				Users users = new Users(loginUser);
+				users.LoadByUserID(userId);
+
+				if (users.Count > 0)
+				{
+					result.OrganizationId = users[0].OrganizationID;
+					users[0].verificationPhoneNumber = phoneNumber;
+					users.Save();
+
+					int verificationCode = SendAndGetVerificationCode(phoneNumber);
+
+					if (verificationCode > 0)
+					{
+						result.Result = LoginResult.Success;	
+					}
+					else
+					{
+						result.Error = "Verification Phone Number updated but the Verification Code failed to be generated or sent.";
+						result.Result = LoginResult.Fail;
+					}
+				}
+				else
+				{
+					result.Error = "User not found.";
+					result.Result = LoginResult.Fail;
+				}
+			}
+			catch (Exception ex)
+			{
+				result.Error = ex.Message;
+				result.Result = LoginResult.Fail;
+			}
+
+			return JsonConvert.SerializeObject(result);
+		}
+
+		[WebMethod]
+		[ScriptMethod(ResponseFormat = ResponseFormat.Json)]
 		public string GetCompanies(string email)
 		{
 			Organizations organizations = new Organizations(LoginUser.Anonymous);
@@ -158,7 +210,7 @@ namespace TSWebServices
 				items.Add(new ComboBoxItem(organization.Name, organization.OrganizationID));
 			}
 
-      return JsonConvert.SerializeObject(items);
+			return JsonConvert.SerializeObject(items);
 		}
 
 		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int? organizationId, ref User user, ref Organization organization)
@@ -261,6 +313,20 @@ namespace TSWebServices
 			bool isImpersonation = false;
 
 			return isImpersonation;
+		}
+
+		private static int SendAndGetVerificationCode(string userVerificationPhoneNumber)
+		{
+			int verificationCode = GenerateRandomVerificationCode();
+			SMS smsVerification = new SMS();
+			smsVerification.Send(verificationCode.ToString(), userVerificationPhoneNumber);
+
+			if (!smsVerification.IsSuccessful)
+			{
+				verificationCode = 0;
+			}
+
+			return verificationCode;
 		}
 
 		private static int GenerateRandomVerificationCode()
