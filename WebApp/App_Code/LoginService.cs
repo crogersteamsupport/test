@@ -356,7 +356,7 @@ namespace TSWebServices
 			}
 
 			LoginAttempts.AddAttempt(loginUser, userId, true, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, deviceID);
-
+			TSAuthentication.Authenticate(user, false, deviceID);
 			System.Web.HttpBrowserCapabilities browser = HttpContext.Current.Request.Browser;
 			ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Users, userId, "Logged in (" + browser.Browser + " " + browser.Version + ")");
 
