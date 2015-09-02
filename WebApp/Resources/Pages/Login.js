@@ -4,9 +4,8 @@ var returnURL = '/';
 
 $(document).ready(function () {
   returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
-
+  getRememberMe();
   $('#signIn').click(function (e) {
-    //attempt to sign the user in and process the return request
     e.preventDefault();
     var email = $('#inputEmail').val();
     var org = $('#orgSelect').val();
@@ -15,7 +14,7 @@ $(document).ready(function () {
 
     IssueAjaxRequest(loginService, "SignIn", signInData,
     function (result) {
-    switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
+      switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
         case 1:
           window.location = returnURL;
           break;
@@ -26,6 +25,7 @@ $(document).ready(function () {
           window.location = resourcesURL + 'LoginTwoStepSetup.html/?UserID=' + result.UserId;
           break;
         default:
+          $('#loginError').text(result.Error).show();
           break;
       }
     },
@@ -36,12 +36,6 @@ $(document).ready(function () {
 
   $('#inputEmail').change(function (e) {
     CheckEmailForOrgs($(this).val())
-  });
-
-  $('#forgotPW').click(function (e) {
-    //Route them to forgot PW form
-
-    //Populate orgSelect
   });
 
   $('#createAccount').click(function (e) {
@@ -73,6 +67,21 @@ function LoadCompanies(companies) {
     companySelect.show();
   }
   else companySelect.hide();
+};
+
+function getRememberMe() {
+  var cookie = Ts.Utils.getCookie('rememberme', 'sessionid');
+  if (cookie != null && cookie.length > 0) {
+    var RememberMeData = { userID: cookie };
+    IssueAjaxRequest(loginService, "GetEmail", RememberMeData,
+    function (result) {
+      $('#inputEmail').val(result);
+      $('#rememberMe').attr('checked', 'checked')
+    },
+    function (error) {
+
+    });
+  }
 }
 
 function IssueAjaxRequest(service, method, data, successCallback, errorCallback) {

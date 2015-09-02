@@ -29,7 +29,7 @@
       </select>
         <div id="remember" class="checkbox">
           <label>
-            <input type="checkbox" value="remember-me"> Remember me
+            <input id="rememberMe" type="checkbox" value="remember-me"> Remember me
           </label>
         </div>
         <button id="signIn" class="btn btn-lg btn-primary btn-block btn-signin">Sign in</button>
@@ -37,7 +37,8 @@
       <a id="forgotPW" href="ResetPassword.aspx?reason=forgot" class="forgot-password">
         Forgot your password?
       </a>
-      <footer><a id="createAccount">Create a free account</a></footer>
+      <div id="loginError" class="alert alert-error" style="display:none; margin-top:15px; margin-bottom: 0px;" role="alert"></div>
+      <footer><a href="SignUp.aspx">Create a free account</a></footer>
     </div>
   </div>
  </body>

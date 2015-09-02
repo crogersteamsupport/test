@@ -213,6 +213,13 @@ namespace TSWebServices
 			return JsonConvert.SerializeObject(items);
 		}
 
+    [WebMethod(true)]
+    public string GetEmail(int userID)
+    {
+      User user = Users.GetUser(LoginUser.Anonymous, userID);
+      return user.Email;
+    }
+
 		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int? organizationId, ref User user, ref Organization organization)
 		{
 			SignInResult validation = new SignInResult();
