@@ -74,17 +74,23 @@ namespace TSWebServices
 							user.Collection.Save();
 
 							result.Result = LoginResult.VerificationNeeded;
+              result.UserId = user.UserID;
+              result.OrganizationId = user.OrganizationID;
 						}
 						else
 						{
 							result.Error = "Verification Code failed to be generated or sent.";
 							result.Result = LoginResult.Fail;
+              result.UserId = user.UserID;
+              result.OrganizationId = user.OrganizationID;
 						}
 					}
 					else
 					{
 						result.Error = "Organization requires two step verification and user does not have a verification phone number setup.p";
 						result.Result = LoginResult.VerificationSetupNeeded;
+            result.UserId = user.UserID;
+            result.OrganizationId = user.OrganizationID;
 					}
 				}
 				else

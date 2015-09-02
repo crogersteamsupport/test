@@ -10,7 +10,7 @@ $(document).ready(function () {
     var email = $('#inputEmail').val();
     var org = $('#orgSelect').val();
     if (org == "") org = null;
-    var signInData = { email: email, password: $('#inputPassword').val(), organizationId: org, verificationRequired: false };
+    var signInData = { email: email, password: $('#inputPassword').val(), organizationId: org, verificationRequired: true };
 
     IssueAjaxRequest(loginService, "SignIn", signInData,
     function (result) {
@@ -19,10 +19,10 @@ $(document).ready(function () {
           window.location = returnURL;
           break;
         case 3:
-          window.location = resourcesURL + 'LoginTwoStep.html/?UserID=' + result.UserId;
+          window.location = resourcesURL + 'LoginTwoStep.html?UserID=' + result.UserId;
           break;
         case 4:
-          window.location = resourcesURL + 'LoginTwoStepSetup.html/?UserID=' + result.UserId;
+          window.location = resourcesURL + 'LoginTwoStepSetup.html?UserID=' + result.UserId;
           break;
         default:
           $('#loginError').text(result.Error).show();
