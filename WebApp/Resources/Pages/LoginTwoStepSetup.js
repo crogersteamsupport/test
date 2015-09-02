@@ -1,8 +1,13 @@
-﻿var loginService = '/Services/LoginService.asmx/';
-var resourcesURL = '/vcr/1_9_0/Pages/';
+﻿//Unknown = 0,
+//Success = 1,
+//Fail = 2,
+//VerificationNeeded = 3
+
+var loginService = '/Services/LoginService.asmx/';
 var returnURL = '/';
 
 $(document).ready(function () {
+  setInterval("window.location=window.location", 300000)
   returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
 
   $('#signIn').click(function (e) {
@@ -15,18 +20,10 @@ $(document).ready(function () {
 
     IssueAjaxRequest(loginService, "SignIn", signInData,
     function (result) {
-    switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
-        case 1:
-          window.location = returnURL;
-          break;
-        case 3:
-          window.location = resourcesURL + 'LoginTwoStep.html/?UserID=' + result.UserId;
-          break;
-        case 4:
-          window.location = resourcesURL + 'LoginTwoStepSetup.html/?UserID=' + result.UserId;
-          break;
-        default:
-          break;
+      //success
+      debugger
+      if (result.Result == 1) {
+        window.location = returnURL;
       }
     },
     function (error) {
@@ -74,6 +71,18 @@ function LoadCompanies(companies) {
   }
   else companySelect.hide();
 }
+
+//function getQueryValue(name, wnd) {
+//  if (!wnd) wnd = window;
+//  params = wnd.location.search.substring(1);
+//  name = name.toLowerCase();
+//  param = params.split("&");
+//  for (i = 0; i < param.length; i++) {
+//    value = param[i].split("=");
+//    if (value[0].toLowerCase() == name) { return unescape(value[1]); }
+//  }
+//  return null;
+//};
 
 function IssueAjaxRequest(service, method, data, successCallback, errorCallback) {
   $.ajax({
