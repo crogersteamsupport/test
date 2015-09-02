@@ -21,8 +21,8 @@ namespace TSWebServices
 	[WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
 	public class LoginService : System.Web.Services.WebService
 	{
-		private const int MAXLOGINATTEMPTS = 10; //vv
-		private const int MINUTESTOEXPIREVERIFICATIONCODE = 10; //vv
+		private const int MAXLOGINATTEMPTS = 10;
+		private const int MINUTESTOEXPIREVERIFICATIONCODE = 5;
 		private static bool _skipVerification = false;
 
 		public LoginService()
@@ -102,30 +102,48 @@ namespace TSWebServices
 		}
 
 		[WebMethod]
-		public int CodeVerification(int userId, string codeEntered)
+		public string CodeVerification(int userId, string codeEntered)
 		{
-			LoginResult result = LoginResult.Unknown;
+			SignInResult result = new SignInResult();
 			LoginUser loginUser = LoginUser.Anonymous;
 			Users users = new Users(loginUser);
 			users.LoadByUserID(userId);
+			result.UserId = userId;
 
-			string codeSent = users[0].verificationCode;
-
-			if (codeSent == codeEntered)
+			if (users.Count > 0)
 			{
-				result = LoginResult.Success;
+				result.OrganizationId = users[0].OrganizationID;
+
+				string codeSent = users[0].verificationCode;
+
+				if (codeSent == codeEntered)
+				{
+					if (users[0].verificationCodeExpirationUtc > DateTime.UtcNow)
+					{
+						result.Result = LoginResult.Success;
+						users[0].verificationCode = null;
+						users[0].verificationCodeExpiration = null;
+						users.Save();
+					}
+					else
+					{
+						result.Error = "Verification Code has expired.";
+						result.Result = LoginResult.Fail;
+					}
+				}
+				else
+				{
+					result.Error = "Invalid Verification Code.";
+					result.Result = LoginResult.Fail;
+				}
 			}
 			else
 			{
-				result = LoginResult.Fail;
+				result.Error = "User not found.";
+				result.Result = LoginResult.Fail;
 			}
 
-			/*
-			1) If code is correct: success
-			2) if incorrect: return error
-			 */
-
-			return (int)result;
+			return JsonConvert.SerializeObject(result);
 		}
 
 		[WebMethod(false)]
