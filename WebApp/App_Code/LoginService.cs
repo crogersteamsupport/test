@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Web;
 using System.Web.Security;
 using System.Web.Services;
@@ -10,6 +12,7 @@ using System.Web.Script.Services;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using TeamSupport.Messaging;
+using Newtonsoft.Json;
 
 namespace TSWebServices
 {
@@ -18,6 +21,10 @@ namespace TSWebServices
 	[WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
 	public class LoginService : System.Web.Services.WebService
 	{
+		private const int MAXLOGINATTEMPTS = 10; //vv
+		private const int MINUTESTOEXPIREVERIFICATIONCODE = 10; //vv
+		private static bool _skipVerification = false;
+
 		public LoginService()
 		{
 
@@ -26,41 +33,38 @@ namespace TSWebServices
 		}
 
 		[WebMethod]
-		public int SignIn(string email, string password, int? organizationId, bool verificationRequired)
+		[ScriptMethod(ResponseFormat=ResponseFormat.Json)]
+		public string SignIn(string email, string password, int? organizationId, bool verificationRequired)
 		{
-			LoginResult result = LoginResult.Fail;
+			SignInResult result = new SignInResult();
+			LoginUser	loginUser	= LoginUser.Anonymous;
+			User			user			= null;
+			Organization organization = null;
 
-			if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+			if (password == "sl")
 			{
-				LoginUser loginUser = LoginUser.Anonymous;
-				Users users = new Users(loginUser);
-				User user = null;
-
-				users.LoadByEmail(1, email);
-
-				if (users.Count == 1)
+				try
 				{
-					user = users[0];
+					password = HttpContext.Current.Request.Cookies["sl"]["b"];
 				}
-				else
+				catch (Exception)
 				{
-					foreach (User u in users)
-					{
-						if (u.OrganizationID == organizationId)
-						{
-							user = u;
-							break;
-						}
-					}
+					//vv error reading password from cookie
+					password = string.Empty;
 				}
+			}
 
-				if (user != null && IsValid(loginUser, user, password))
+			_skipVerification = false;
+			result = IsValid(loginUser, email, password, organizationId, ref user, ref organization);
+
+			if (result.Result == LoginResult.Success)
+			{
+				if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification)
 				{
-					bool orgNeedsTwoStepVerification = Organizations.GetOrganization(loginUser, user.OrganizationID).TwoStepVerificationEnabled;
+					string userVerificationPhoneNumber	= user.verificationPhoneNumber;
 
-					if (orgNeedsTwoStepVerification && verificationRequired)
+					if (!string.IsNullOrEmpty(userVerificationPhoneNumber))
 					{
-						string userVerificationPhoneNumber = user.verificationPhoneNumber;
 						int verificationCode = GenerateRandomVerificationCode();
 						SMS smsVerification = new SMS();
 						smsVerification.Send(verificationCode.ToString(), userVerificationPhoneNumber);
@@ -68,33 +72,33 @@ namespace TSWebServices
 						if (smsVerification.IsSuccessful)
 						{
 							user.verificationCode = verificationCode.ToString();
-							user.verificationCodeExpiration = DateTime.Now.AddDays(10); //vv How long before it expires??
+							user.verificationCodeExpiration = DateTime.Now.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
 							user.Collection.Save();
-							
-							result = LoginResult.VerificationNeeded;
+
+							result.Result = LoginResult.VerificationNeeded;
 						}
 						else
 						{
-							result = LoginResult.Fail;
+							result.Error = "Verification Code failed to be sent.";
+							result.Result = LoginResult.Fail;
 						}
-						
 					}
 					else
 					{
-						result = LoginResult.Success;
+						result.Error = "Organization requires two step verification and user does not have a verification phone number setup.p";
+						result.Result = LoginResult.VerificationSetupNeeded;
 					}
+				}
+				else
+				{
+					string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
+
+					result.UserId = user.UserID;
+					result.OrganizationId = user.OrganizationID;
 				}
 			}
 
-			/*
-			1) Check email + password combination
-				1.1) If correct: check if org has two step verification enabled
-					a) If two step AND verificationRequired then get user's verification phonenumber, generate code and send SMS
-					b) if not twostep OR (two step AND not verificationRequired) then success
-			   1.2) If wrong: return error
-			 */
-
-			return (int)result;
+			return JsonConvert.SerializeObject(result);
 		}
 
 		[WebMethod]
@@ -138,41 +142,106 @@ namespace TSWebServices
 			return items.ToArray();
 		}
 
-		private static bool IsValid(LoginUser loginUser, User user, string password)
+		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int? organizationId, ref User user, ref Organization organization)
 		{
-			bool isValid = true;
-			Organization organization = Organizations.GetOrganization(loginUser, user.OrganizationID);
-			string invalidMsg = "Invalid email or password for " + organization.Name + ".";
+			SignInResult validation = new SignInResult();
 
-			//vv bool isNewSignUp = DateTime.UtcNow.Subtract(organization.DateCreatedUtc).TotalMinutes < 10;
-			//vv if (organization.ParentID != 1 && organization.OrganizationID != 1) return invalidMsg;
-			isValid = !(organization.ParentID != 1 && organization.OrganizationID != 1);
-
-			//vv if (user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !IsPasswordBackdoor(password, organization.OrganizationID) && !isNewSignUp)
-			if (user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password)
+			if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
 			{
-				//Attempts???????
-				//int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 15);
-				//if (attempts > 20) return "Your account is temporarily locked, because of too many login attempts.<br/>Try again in 15 minutes.";
-				//return invalidMsg;
+				Users users = new Users(loginUser);
+
+				users.LoadByEmail(1, email);
+
+				if (users.Count == 1)
+				{
+					user = users[0];
+				}
+				else
+				{
+					foreach (User u in users)
+					{
+						if (u.OrganizationID == organizationId)
+						{
+							user = u;
+							break;
+						}
+					}
+				}
+
+				if (user != null)
+				{
+					organization = Organizations.GetOrganization(loginUser, user.OrganizationID);
+
+					if (IsSupportImpersonation(password))
+					{
+						_skipVerification = false;
+						validation.Result = LoginResult.Success;
+						validation.Error = string.Empty;
+						//vv Log this information!
+					}
+					else
+					{
+						//vv bool isNewSignUp = DateTime.UtcNow.Subtract(organization.DateCreatedUtc).TotalMinutes < 10;
+						//vv if (organization.ParentID != 1 && organization.OrganizationID != 1) return invalidMsg;
+
+						//vv if (user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !IsPasswordBackdoor(password, organization.OrganizationID) && !isNewSignUp)
+						if ((organization.ParentID == 1 && organization.OrganizationID != 1) && user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password)
+						{
+							validation.Error = "Invalid email or password.";
+							int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 15);
+
+							if (attempts > MAXLOGINATTEMPTS)
+							{
+								validation.Error = "Your account is temporarily locked, because of too many login attempts.<br/>Try again in 15 minutes.";
+							}
+						}
+
+						if (!organization.IsActive)
+						{
+							if (string.IsNullOrEmpty(organization.InActiveReason))
+								validation.Error = "Your account is no longer active.  Please contact TeamSupport.com.";
+							else
+								validation.Error = "Your company account is no longer active.<br />" + organization.InActiveReason;
+						}
+
+						if (!user.IsActive)
+						{
+							validation.Error = "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
+						}
+					}
+				}
+				else
+				{
+					validation.Error = "Invalid email or password.";
+				}
+			}
+			else
+			{
+				validation.Error = "Invalid email or password.";
 			}
 
-			if (!organization.IsActive)
+			if (!string.IsNullOrEmpty(validation.Error))
 			{
-				//if (string.IsNullOrEmpty(organization.InActiveReason))
-				//	return "Your account is no longer active.  Please contact TeamSupport.com.";
-				//else
-				//	return "Your company account is no longer active.<br />" + organization.InActiveReason;
-				isValid = false;
+				validation.Result = LoginResult.Fail;
+				LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, GetDeviceID());
+			}
+			else
+			{
+				validation.Result = LoginResult.Success;
 			}
 
-			if (!user.IsActive)
-			{
-				//return "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
-				isValid = false;
-			}
+			return validation;
+		}
 
-			return isValid;
+		/// <summary>
+		/// Check if password entered is a code to impersonate other account's user.
+		/// </summary>
+		/// <returns>true/false</returns>
+		private static bool IsSupportImpersonation(string password)
+		{
+			bool isImpersonation = false;
+
+			return isImpersonation;
 		}
 
 		private static int GenerateRandomVerificationCode()
@@ -186,12 +255,131 @@ namespace TSWebServices
 			return FormsAuthentication.HashPasswordForStoringInConfigFile(password.Trim(), "MD5");
 		}
 
-		private enum LoginResult : int
+		private static string AuthenticateUser(int userId, int organizationId, bool storeInfo)
+		{
+			string result = string.Empty;
+			LoginUser loginUser = new LoginUser(UserSession.ConnectionString, userId, organizationId, null);
+			User user = Users.GetUser(loginUser, userId);
+			string deviceID = GetDeviceID();
+
+			if (deviceID == "")
+			{
+				deviceID = Guid.NewGuid().ToString();
+				HttpCookie deviceCookie = new HttpCookie("di", deviceID);
+				deviceCookie.Expires = DateTime.Now.AddYears(14);
+				HttpContext.Current.Response.Cookies.Add(deviceCookie);
+			}
+
+			LoginAttempts.AddAttempt(loginUser, userId, true, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, deviceID);
+
+			System.Web.HttpBrowserCapabilities browser = HttpContext.Current.Request.Browser;
+			ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Users, userId, "Logged in (" + browser.Browser + " " + browser.Version + ")");
+
+			ConfirmBaseData(loginUser);
+
+			if (storeInfo)
+			{
+				HttpContext.Current.Response.Cookies["sl"]["a"] = user.UserID.ToString();
+				HttpContext.Current.Response.Cookies["sl"]["b"] = user.CryptedPassword;
+				HttpContext.Current.Response.Cookies["sl"].Expires = DateTime.UtcNow.AddYears(14);
+			}
+			else
+			{
+				HttpContext.Current.Response.Cookies["sl"].Value = "";
+			}
+
+			if (user.IsPasswordExpired)
+				result = "ChangePassword.aspx?reason=expired";
+			else
+			{
+				string rawQueryString = null;
+
+				try
+				{
+					rawQueryString = HttpContext.Current.Request.UrlReferrer.Query;
+				}
+				catch (Exception)
+				{
+					//vv
+				}
+
+				if (!string.IsNullOrEmpty(rawQueryString))
+				{
+					string urlRedirect = GetQueryStringValue(rawQueryString, "ReturnUrl");
+
+					if (!string.IsNullOrEmpty(urlRedirect) && urlRedirect.Trim().Length > 0)
+						result = urlRedirect;
+					else
+						result = ".";
+				}
+				else
+				{
+					result = ".";
+				}
+			}
+
+			return result;
+		}
+
+		private static string GetDeviceID()
+		{
+			if (HttpContext.Current.Request.Cookies["di"] != null && HttpContext.Current.Request.Cookies["di"].Value != "")
+			{
+				return HttpContext.Current.Request.Cookies["di"].Value.Trim();
+			}
+			else
+			{
+				return "";
+			}
+		}
+
+		private static string GetQueryStringValue(string queryStr, string key)
+		{
+			string returnValue = null;
+			NameValueCollection queryStrPairs = HttpUtility.ParseQueryString(queryStr);
+
+			if (queryStrPairs != null && queryStrPairs.AllKeys.Contains(key))
+			{
+				returnValue = queryStrPairs[key];
+			}
+
+			return returnValue;
+		}
+
+		private static void ConfirmBaseData(LoginUser loginUser)
+		{
+			Organization organization = (Organization)Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+			TicketTypes types = new TicketTypes(loginUser);
+			types.LoadAllPositions(loginUser.OrganizationID);
+
+			if (types.IsEmpty)
+			{
+				Organizations.CreateStandardData(loginUser, organization, true, true);
+			}
+		}
+
+		public class SignInResult
+		{
+			public int UserId { get; set; }
+			public int OrganizationId { get; set; }
+			public LoginResult Result { get; set; }
+			public string ResultValue
+			{
+				get
+				{
+					return Result.ToString();
+				}
+			}
+			public string Error { get; set; }
+		}
+
+		public enum LoginResult : int
 		{
 			Unknown = 0,
 			Success = 1,
 			Fail = 2,
-			VerificationNeeded = 3
+			VerificationNeeded = 3,
+			VerificationSetupNeeded = 4
 		}
 
 		[Serializable]
