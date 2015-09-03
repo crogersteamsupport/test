@@ -1293,7 +1293,7 @@ Ts.Pages.Main.prototype = {
             if (isOpen == "True") self.MainLayout.open('east');
 
         });
-
+      /*
         this.WndScreenR = $('<iframe>', {
             id: 'wndScreenR',
             name: 'wndScreenR',
@@ -1303,7 +1303,7 @@ Ts.Pages.Main.prototype = {
             frameborder: '0',
             scrolling: 'no'
         }).appendTo('body')[0];
-
+*/
 
 
     }, // end init

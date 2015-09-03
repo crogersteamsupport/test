@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
     
 
 namespace TeamSupport.Data
@@ -35,14 +34,12 @@ namespace TeamSupport.Data
     public NoteProxy GetProxy()
     {
       NoteProxy result = new NoteProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
+     // var sanitizer = new HtmlSanitizer();
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Title = sanitizer.Sanitize(this.Title);
+     // result.Description = sanitizer.Sanitize(this.Description);
+      //result.Title = sanitizer.Sanitize(this.Title);
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.NoteID = this.NoteID;

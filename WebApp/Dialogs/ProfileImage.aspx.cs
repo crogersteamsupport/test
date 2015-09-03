@@ -70,10 +70,11 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 
         //String path = HttpContext.Current.Request.PhysicalApplicationPath + "images\\tempupload\\";
         string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
+      string fileName = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
 
         if (Upload.HasFile)
         {
-            Session["WorkingImage"] = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
+            Session["WorkingImage"] = fileName;
             String FileExtension = Path.GetExtension(Session["WorkingImage"].ToString()).ToLower();
             String[] allowedExtensions = { ".png", ".jpeg", ".jpg" };
             for (int i = 0; i < allowedExtensions.Length; i++)
@@ -89,7 +90,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         {
             try
             {
-                Upload.PostedFile.SaveAs(Server.MapPath("~/Images/") + Session["WorkingImage"]);
+                Upload.PostedFile.SaveAs(Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), fileName));
                 FileSaved = true;
             }
             catch (Exception ex)
