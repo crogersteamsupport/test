@@ -10,7 +10,7 @@ $(document).ready(function () {
       var userData = { userId: userId, phoneNumber: phoneNumb };
       IssueAjaxRequest(loginService, "SetupVerificationPhoneNumber", userData,
       function (result) {
-        window.location = '/';
+        window.location = '/LoginTwoStep.html?UserID=' + userId;
       },
       function (error) {
         $('#pageError').text('There was a issue updating your profile.  Please try again.').show();
