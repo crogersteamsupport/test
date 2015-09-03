@@ -3,10 +3,10 @@
   <meta charset="utf-8">
   <title>TeamSupport - Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="../Css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
   <link href="LoginTwoStepSetup.css" rel="stylesheet" type="text/css" />
   <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="../Js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
   <script src="LoginTwoStepSetup.js" type="text/javascript"></script>
   <script src="../Js/Ts/ts.utils.js"></script>
 </head>
@@ -26,6 +26,9 @@
           <input type="tel" id="twoStepNumber" class="form-control" placeholder="Cell Number" required autofocus>
         </div>
         <button id="update" class="btn btn-lg btn-primary btn-block btn-signin">Verify</button>
+        <div class="alert alert-info" role="alert">
+          Please enter a valid country code followed by the cell phone number you wish to use for validation.
+        </div>
       </form>
       <div id="pageError" class="alert alert-error" style="display:none; margin-top:15px; margin-bottom: 0px;" role="alert"></div>
     </div>

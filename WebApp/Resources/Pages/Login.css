@@ -17,11 +17,8 @@ header {
 }
 
 footer {
-    position: relative;
-    top: 40px;
-    width: 430px;
-    margin-left: -40px;
-    line-height: 29px;
+    margin-top:20px;
+    line-height: 25px;
     text-align: center;
     cursor: pointer;
     border-top: 1px solid rgba(117, 117, 117, 0.15);
@@ -33,7 +30,7 @@ footer {
 
 .card-container.card {
     max-width: 350px;
-    padding: 40px 40px;
+    padding: 40px 40px 0px 40px;
 }
 
 .btn {
