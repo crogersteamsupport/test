@@ -34,7 +34,7 @@ namespace TSWebServices
 
 		[WebMethod]
 		[ScriptMethod(ResponseFormat=ResponseFormat.Json)]
-		public string SignIn(string email, string password, int? organizationId, bool verificationRequired)
+		public string SignIn(string email, string password, int organizationId, bool verificationRequired)
 		{
 			SignInResult result = new SignInResult();
 			LoginUser	loginUser	= LoginUser.Anonymous;
@@ -241,79 +241,68 @@ namespace TSWebServices
 			return user.Email;
 		 }
 
-		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int? organizationId, ref User user, ref Organization organization)
+		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int organizationId, ref User user, ref Organization organization)
 		{
 			SignInResult validation = new SignInResult();
+			organization = Organizations.GetOrganization(loginUser, organizationId);
+			bool isNewSignUp = DateTime.UtcNow.Subtract(organization.DateCreatedUtc).TotalMinutes < 10;
 
-			if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+			Users users = new Users(loginUser);
+			users.LoadByEmail(1, email);
+
+			if (users.Count == 1)
 			{
-				Users users = new Users(loginUser);
-
-				users.LoadByEmail(1, email);
-
-				if (users.Count == 1)
+				user = users[0];
+			}
+			else
+			{
+				foreach (User u in users)
 				{
-					user = users[0];
+					if (u.OrganizationID == organizationId)
+					{
+						user = u;
+						break;
+					}
+				}
+			}
+
+			if (user != null)
+			{
+				validation.UserId = user.UserID;
+				validation.OrganizationId = user.OrganizationID;
+
+				if (IsSupportImpersonation(password))
+				{
+					_skipVerification = true;
+					validation.Result = LoginResult.Success;
+					validation.Error = string.Empty;
+					//vv Log this information!
 				}
 				else
 				{
-					foreach (User u in users)
+					if ((organization.ParentID == 1 && organization.OrganizationID != 1) && user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !isNewSignUp)
 					{
-						if (u.OrganizationID == organizationId)
+						validation.Error = "Invalid email or password.";
+						int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 15);
+
+						if (attempts > MAXLOGINATTEMPTS)
 						{
-							user = u;
-							break;
+							validation.Error = "Your account is temporarily locked, because of too many login attempts.<br/>Try again in 15 minutes.";
 						}
 					}
-				}
 
-				if (user != null)
-				{
-					organization = Organizations.GetOrganization(loginUser, user.OrganizationID);
-					validation.UserId = user.UserID;
-					validation.OrganizationId = user.OrganizationID;
-
-					if (IsSupportImpersonation(password))
+					if (!organization.IsActive)
 					{
-						_skipVerification = true;
-						validation.Result = LoginResult.Success;
-						validation.Error = string.Empty;
-						//vv Log this information!
+						if (string.IsNullOrEmpty(organization.InActiveReason))
+							validation.Error = "Your account is no longer active.  Please contact TeamSupport.com.";
+						else
+							validation.Error = "Your company account is no longer active.<br />" + organization.InActiveReason;
 					}
-					else
+
+					if (!user.IsActive)
 					{
-						//vv bool isNewSignUp = DateTime.UtcNow.Subtract(organization.DateCreatedUtc).TotalMinutes < 10;
-						//vv if (organization.ParentID != 1 && organization.OrganizationID != 1) return invalidMsg;
-
-						//vv if (user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !IsPasswordBackdoor(password, organization.OrganizationID) && !isNewSignUp)
-						if ((organization.ParentID == 1 && organization.OrganizationID != 1) && user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password)
-						{
-							validation.Error = "Invalid email or password.";
-							int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 15);
-
-							if (attempts > MAXLOGINATTEMPTS)
-							{
-								validation.Error = "Your account is temporarily locked, because of too many login attempts.<br/>Try again in 15 minutes.";
-							}
-						}
-
-						if (!organization.IsActive)
-						{
-							if (string.IsNullOrEmpty(organization.InActiveReason))
-								validation.Error = "Your account is no longer active.  Please contact TeamSupport.com.";
-							else
-								validation.Error = "Your company account is no longer active.<br />" + organization.InActiveReason;
-						}
-
-						if (!user.IsActive)
-						{
-							validation.Error = "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
-						}
+						validation.Error = "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
 					}
-				}
-				else
-				{
-					validation.Error = "Invalid email or password.";
 				}
 			}
 			else
