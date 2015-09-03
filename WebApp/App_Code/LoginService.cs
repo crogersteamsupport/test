@@ -349,7 +349,7 @@ namespace TSWebServices
 		{
 			int verificationCode = GenerateRandomVerificationCode();
 			SMS smsVerification = new SMS();
-			smsVerification.Send(verificationCode.ToString(), userVerificationPhoneNumber);
+			smsVerification.Send(string.Format("Your verification code is {0}", verificationCode.ToString()), userVerificationPhoneNumber);
 
 			if (!smsVerification.IsSuccessful)
 			{

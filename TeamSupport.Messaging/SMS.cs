@@ -19,9 +19,9 @@ namespace TeamSupport.Messaging
 
 		public SMS()
 		{
-			_teamSupportTwilioNumber = "+1 (832) 937-5252";
-			_accountSid			= "AC874c46a3a0d428e3450e3f97d55298c3";
-			_authToken			= "8a98f7977ac1e7a27d70f09603c221e8";
+			_teamSupportTwilioNumber = "+1 (972) 590-6172";
+			_accountSid			= "AC13390b4e34ee2d45d92df179bd82eeae";
+			_authToken			= "9c1b44818538851f2ec9241dce08183e";
 			_messageId			= string.Empty;
 			_isSuccessful		= false;
 			_hasBeenValidated = false;
