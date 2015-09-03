@@ -1,5 +1,6 @@
 ﻿var loginService = '/Services/LoginService.asmx/';
 var returnURL = '/';
+var resourcesURL = '/vcr/1_9_0/Pages/';
 
 $(document).ready(function () {
   $('#update').click(function (e) {
@@ -10,7 +11,7 @@ $(document).ready(function () {
       var userData = { userId: userId, phoneNumber: phoneNumb };
       IssueAjaxRequest(loginService, "SetupVerificationPhoneNumber", userData,
       function (result) {
-        window.location = '/LoginTwoStep.html?UserID=' + userId;
+        window.location = resourcesURL + 'LoginTwoStep.html?UserID=' + userId;
       },
       function (error) {
         $('#pageError').text('There was a issue updating your profile.  Please try again.').show();
