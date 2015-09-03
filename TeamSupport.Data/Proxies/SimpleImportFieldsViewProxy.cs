@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -34,18 +35,21 @@ namespace TeamSupport.Data
     public SimpleImportFieldsViewItemProxy GetProxy()
     {
       SimpleImportFieldsViewItemProxy result = new SimpleImportFieldsViewItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
       result.OrganizationID = this.OrganizationID;
       result.IsCustom = this.IsCustom;
       result.Position = this.Position;
       result.RefType = this.RefType;
-      result.Description = this.Description;
+      result.Description = sanitizer.Sanitize(this.Description);
       result.IsRequired = this.IsRequired;
       result.IsVisible = this.IsVisible;
       result.Size = this.Size;
       result.DataType = this.DataType;
       result.Alias = this.Alias;
-      result.FieldName = this.FieldName;
-      result.TableName = this.TableName;
+      result.FieldName = sanitizer.Sanitize(this.FieldName);
+      result.TableName = sanitizer.Sanitize(this.TableName);
       result.ImportFieldID = this.ImportFieldID;
        
        

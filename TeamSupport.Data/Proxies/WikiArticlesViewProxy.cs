@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -41,6 +42,9 @@ namespace TeamSupport.Data
     public WikiArticlesViewItemProxy GetProxy()
     {
       WikiArticlesViewItemProxy result = new WikiArticlesViewItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
       result.Organization = this.Organization;
       result.Modifier = this.Modifier;
       result.Creator = this.Creator;
@@ -54,8 +58,8 @@ namespace TeamSupport.Data
       result.PublicEdit = this.PublicEdit;
       result.PublicView = this.PublicView;
       result.Version = this.Version;
-      result.Body = this.Body;
-      result.ArticleName = this.ArticleName;
+      result.Body = sanitizer.Sanitize(this.Body);
+      result.ArticleName = sanitizer.Sanitize(this.ArticleName);
       result.OrganizationID = this.OrganizationID;
       result.ParentID = this.ParentID;
       result.ArticleID = this.ArticleID;

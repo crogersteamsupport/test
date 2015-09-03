@@ -6,6 +6,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using Ganss.XSS;
+
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
@@ -30,10 +32,14 @@ namespace TeamSupport.Data
     public WatercoolerMsgItemProxy GetProxy()
     {
       WatercoolerMsgItemProxy result = new WatercoolerMsgItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.NeedsIndexing = this.NeedsIndexing;
       result.IsDeleted = this.IsDeleted;
       result.MessageParent = this.MessageParent;
-      result.Message = MakeLink(this.Message);
+      result.Message = sanitizer.Sanitize(MakeLink(this.Message));
       result.OrganizationID = this.OrganizationID;
       result.UserID = this.UserID;
       result.MessageID = this.MessageID;

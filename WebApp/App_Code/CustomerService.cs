@@ -14,6 +14,7 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
 using System.Globalization;
+using Ganss.XSS;
 
 namespace TSWebServices
 {
@@ -471,9 +472,11 @@ namespace TSWebServices
                 }
             }
 
-
-            contact[0] = contactInfo.ToString();
-            contact[1] = html.ToString();
+            var sanitizer = new HtmlSanitizer();
+            sanitizer.AllowedAttributes.Add("class");
+            sanitizer.AllowedAttributes.Add("id");
+            contact[0] = sanitizer.Sanitize(contactInfo.ToString());
+            contact[1] = sanitizer.Sanitize(html.ToString());
             
             return contact;
 
@@ -682,7 +685,11 @@ namespace TSWebServices
               builder.Append(CreateRecentlyViewed(item));
             }
             builder.Append("</ul>");
-            return builder.ToString();
+            var sanitizer = new HtmlSanitizer();
+            sanitizer.AllowedAttributes.Add("class");
+            sanitizer.AllowedAttributes.Add("data-organizationid");
+            
+            return sanitizer.Sanitize(builder.ToString());
         }
 
         [WebMethod]
@@ -1032,7 +1039,6 @@ namespace TSWebServices
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
             notes.LoadByReferenceType(refType, refID);
-
             return notes.GetNoteProxies();
         }
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -29,8 +30,12 @@ namespace TeamSupport.Data
     public WaterCoolerItemProxy GetProxy()
     {
       WaterCoolerItemProxy result = new WaterCoolerItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.MessageType = this.MessageType;
-      result.Message = this.Message;
+      result.Message = sanitizer.Sanitize(this.Message);
       result.ReplyTo = this.ReplyTo;
       result.GroupFor = this.GroupFor;
       result.OrganizationID = this.OrganizationID;

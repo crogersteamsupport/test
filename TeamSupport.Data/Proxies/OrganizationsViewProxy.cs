@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -48,6 +49,10 @@ namespace TeamSupport.Data
     public OrganizationsViewItemProxy GetProxy()
     {
       OrganizationsViewItemProxy result = new OrganizationsViewItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.NeedsIndexing = this.NeedsIndexing;
       result.SupportHoursRemaining = this.SupportHoursRemaining;
       result.SupportHoursUsed = this.SupportHoursUsed;
@@ -68,9 +73,9 @@ namespace TeamSupport.Data
       result.PrimaryUserID = this.PrimaryUserID;
       result.InActiveReason = this.InActiveReason;
       result.IsActive = this.IsActive;
-      result.Website = this.Website;
-      result.Description = this.Description;
-      result.Name = this.Name;
+      result.Website = sanitizer.Sanitize(this.Website);
+      result.Description = sanitizer.Sanitize(this.Description);
+      result.Name = sanitizer.Sanitize(this.Name);
       result.OrganizationID = this.OrganizationID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);

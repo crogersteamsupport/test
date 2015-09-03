@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -83,11 +84,15 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.ProductFamilyID = this.ProductFamilyID;
       result.SalesForceID = this.SalesForceID;
       result.KnowledgeBaseCategoryName = this.KnowledgeBaseCategoryName;
       result.KnowledgeBaseCategoryID = this.KnowledgeBaseCategoryID;
-      result.CategoryName = this.CategoryName;
+      result.CategoryName = sanitizer.Sanitize(this.CategoryName);
       result.ForumCategory = this.ForumCategory;
       result.TicketSource = this.TicketSource;
       result.Customers = this.Customers;
@@ -107,7 +112,7 @@ namespace TeamSupport.Data
       result.CreatorID = this.CreatorID;
       result.ModifierID = this.ModifierID;
       result.ParentID = this.ParentID;
-      result.Name = this.Name;
+      result.Name = sanitizer.Sanitize(this.Name);
       result.OrganizationID = this.OrganizationID;
       result.TicketSeverityID = this.TicketSeverityID;
       result.TicketTypeID = this.TicketTypeID;
@@ -126,11 +131,11 @@ namespace TeamSupport.Data
       result.StatusPosition = this.StatusPosition;
       result.Status = this.Status;
       result.UserName = this.UserName;
-      result.TicketTypeName = this.TicketTypeName;
-      result.GroupName = this.GroupName;
+      result.TicketTypeName = sanitizer.Sanitize(this.TicketTypeName);
+      result.GroupName = sanitizer.Sanitize(this.GroupName);
       result.SolvedVersion = this.SolvedVersion;
       result.ReportedVersion = this.ReportedVersion;
-      result.ProductName = this.ProductName;
+      result.ProductName = sanitizer.Sanitize(this.ProductName);
       result.TicketID = this.TicketID;
 
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);

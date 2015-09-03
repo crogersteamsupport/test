@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -35,14 +36,17 @@ namespace TeamSupport.Data
     public PhoneNumbersViewItemProxy GetProxy()
     {
       PhoneNumbersViewItemProxy result = new PhoneNumbersViewItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
       result.ModifierName = this.ModifierName;
       result.CreatorName = this.CreatorName;
       result.PhoneType = this.PhoneType;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.OtherTypeName = this.OtherTypeName;
-      result.Extension = this.Extension;
-      result.PhoneNumber = this.PhoneNumber;
+      result.OtherTypeName = sanitizer.Sanitize(this.OtherTypeName);
+      result.Extension = sanitizer.Sanitize(this.Extension);
+      result.PhoneNumber = sanitizer.Sanitize(this.PhoneNumber);
       result.RefType = this.RefType;
       result.RefID = this.RefID;
       result.PhoneTypeID = this.PhoneTypeID;

@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using System.Globalization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -109,6 +110,10 @@ namespace TeamSupport.Data
     {
 
       UserProxy result = new UserProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.verificationCode = this.verificationCode;
       result.verificationPhoneNumber = this.verificationPhoneNumber;
       result.CalGUID = this.CalGUID;
@@ -164,11 +169,11 @@ namespace TeamSupport.Data
       result.MarkDeleted = this.MarkDeleted;
       result.IsActive = this.IsActive;
       result.CryptedPassword = this.CryptedPassword;
-      result.Title = this.Title;
-      result.LastName = this.LastName;
-      result.MiddleName = this.MiddleName;
-      result.FirstName = this.FirstName;
-      result.Email = this.Email;
+      result.Title = sanitizer.Sanitize(this.Title);
+      result.LastName = sanitizer.Sanitize(this.LastName);
+      result.MiddleName = sanitizer.Sanitize(this.MiddleName);
+      result.FirstName = sanitizer.Sanitize(this.FirstName);
+      result.Email = sanitizer.Sanitize(this.Email);
       result.UserID = this.UserID;
        
       result.LastLogin = DateTime.SpecifyKind(this.LastLoginUtc, DateTimeKind.Utc);

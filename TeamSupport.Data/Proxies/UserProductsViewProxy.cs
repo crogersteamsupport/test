@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -41,6 +42,9 @@ namespace TeamSupport.Data
     public UserProductsViewItemProxy GetProxy()
     {
       UserProductsViewItemProxy result = new UserProductsViewItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;
@@ -49,7 +53,7 @@ namespace TeamSupport.Data
       result.UserName = this.UserName;
       result.UserID = this.UserID;
       result.UserProductID = this.UserProductID;
-      result.Description = this.Description;
+      result.Description = sanitizer.Sanitize(this.Description);
       result.IsReleased = this.IsReleased;
       result.ProductVersionStatusID = this.ProductVersionStatusID;
       result.VersionNumber = this.VersionNumber;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -31,11 +32,15 @@ namespace TeamSupport.Data
     public ReminderProxy GetProxy()
     {
       ReminderProxy result = new ReminderProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.CreatorID = this.CreatorID;
       result.HasEmailSent = this.HasEmailSent;
       result.IsDismissed = this.IsDismissed;
       result.UserID = this.UserID;
-      result.Description = this.Description;
+      result.Description = sanitizer.Sanitize(this.Description);
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.ReminderID = this.ReminderID;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -103,6 +104,10 @@ namespace TeamSupport.Data
     public ReportTicketsViewItemProxy GetProxy()
     {
       ReportTicketsViewItemProxy result = new ReportTicketsViewItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.HourOfDayCreated = this.HourOfDayCreated;
       result.DayOfWeekCreated = this.DayOfWeekCreated;
       result.MinutesToInitialResponse = this.MinutesToInitialResponse;
@@ -114,12 +119,12 @@ namespace TeamSupport.Data
       result.SyncWithJira = this.SyncWithJira;
       result.JiraID = this.JiraID;
       result.SalesForceID = this.SalesForceID;
-      result.KnowledgeBaseParentCategoryName = this.KnowledgeBaseParentCategoryName;
-      result.KnowledgeBaseCategoryName = this.KnowledgeBaseCategoryName;
+      result.KnowledgeBaseParentCategoryName = sanitizer.Sanitize(this.KnowledgeBaseParentCategoryName);
+      result.KnowledgeBaseCategoryName = sanitizer.Sanitize(this.KnowledgeBaseCategoryName);
       result.KnowledgeBaseCategoryID = this.KnowledgeBaseCategoryID;
       result.ModifierEmail = this.ModifierEmail;
       result.CreatorEmail = this.CreatorEmail;
-      result.CategoryName = this.CategoryName;
+      result.CategoryName = sanitizer.Sanitize(this.CategoryName);
       result.ForumCategory = this.ForumCategory;
       result.TicketSource = this.TicketSource;
       result.NeedsIndexing = this.NeedsIndexing;
@@ -146,7 +151,7 @@ namespace TeamSupport.Data
       result.CreatorID = this.CreatorID;
       result.ModifierID = this.ModifierID;
       result.ParentID = this.ParentID;
-      result.Name = this.Name;
+      result.Name = sanitizer.Sanitize(this.Name);
       result.OrganizationID = this.OrganizationID;
       result.TicketSeverityID = this.TicketSeverityID;
       result.TicketTypeID = this.TicketTypeID;
@@ -164,12 +169,12 @@ namespace TeamSupport.Data
       result.SeverityPosition = this.SeverityPosition;
       result.StatusPosition = this.StatusPosition;
       result.Status = this.Status;
-      result.UserName = this.UserName;
-      result.TicketTypeName = this.TicketTypeName;
-      result.GroupName = this.GroupName;
+      result.UserName = sanitizer.Sanitize(this.UserName);
+      result.TicketTypeName = sanitizer.Sanitize(this.TicketTypeName);
+      result.GroupName = sanitizer.Sanitize(this.GroupName);
       result.SolvedVersion = this.SolvedVersion;
       result.ReportedVersion = this.ReportedVersion;
-      result.ProductName = this.ProductName;
+      result.ProductName = sanitizer.Sanitize(this.ProductName);
       result.TicketID = this.TicketID;
        
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);

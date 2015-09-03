@@ -5,6 +5,9 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization;
+using Ganss.XSS;
+
 
 namespace TeamSupport.Data
 {
@@ -26,8 +29,12 @@ namespace TeamSupport.Data
     public TagProxy GetProxy()
     {
       TagProxy result = new TagProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.CreatorID = this.CreatorID;
-      result.Value = this.Value;
+      result.Value = sanitizer.Sanitize(this.Value);
       result.OrganizationID = this.OrganizationID;
       result.TagID = this.TagID;
        

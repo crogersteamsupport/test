@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -51,6 +52,9 @@ namespace TeamSupport.Data
     public UsersViewItemProxy GetProxy()
     {
       UsersViewItemProxy result = new UsersViewItemProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
       result.IsChatUser = this.IsChatUser;
       result.CryptedPassword = this.CryptedPassword;
       result.IsOnline = this.IsOnline;
@@ -68,12 +72,12 @@ namespace TeamSupport.Data
       result.IsSystemAdmin = this.IsSystemAdmin;
       result.MarkDeleted = this.MarkDeleted;
       result.IsActive = this.IsActive;
-      result.Title = this.Title;
-      result.LastName = this.LastName;
-      result.MiddleName = this.MiddleName;
+      result.Title = sanitizer.Sanitize(this.Title);
+      result.LastName = sanitizer.Sanitize(this.LastName);
+      result.MiddleName = sanitizer.Sanitize(this.MiddleName);
       result.UserID = this.UserID;
-      result.FirstName = this.FirstName;
-      result.Email = this.Email;
+      result.FirstName = sanitizer.Sanitize(this.FirstName);
+      result.Email = sanitizer.Sanitize(this.Email);
        
       result.LastLogin = DateTime.SpecifyKind(this.LastLoginUtc, DateTimeKind.Utc);
       result.LastActivity = DateTime.SpecifyKind(this.LastActivityUtc, DateTimeKind.Utc);

@@ -5,6 +5,8 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
+
 
 namespace TeamSupport.Data
 {
@@ -42,6 +44,10 @@ namespace TeamSupport.Data
     public ReportProxy GetProxy()
     {
       ReportProxy result = new ReportProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       result.EditorID = this.EditorID;
       result.ReportDefType = this.ReportDefType;
       result.ReportDef = this.ReportDef;
@@ -56,8 +62,8 @@ namespace TeamSupport.Data
       result.CustomRefType = ReferenceType.None;
       result.CustomFieldKeyName = this.CustomFieldKeyName;
       result.Query = this.Query;
-      result.Description = this.Description;
-      result.Name = this.Name;
+      result.Description = sanitizer.Sanitize(this.Description);
+      result.Name = sanitizer.Sanitize(this.Name);
       result.OrganizationID = this.OrganizationID;
       result.ReportID = this.ReportID;
        

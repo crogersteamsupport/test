@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -35,12 +36,15 @@ namespace TeamSupport.Data
     public AttachmentProxy GetProxy()
     {
       AttachmentProxy result = new AttachmentProxy();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
       result.SentToJira = this.SentToJira;
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.Description = this.Description;
+      result.Description = sanitizer.Sanitize(this.Description);
       result.Path = this.Path;
       result.FileSize = this.FileSize;
       result.FileType = this.FileType;
