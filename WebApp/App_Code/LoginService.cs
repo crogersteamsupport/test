@@ -65,40 +65,51 @@ namespace TSWebServices
 
 					if (!string.IsNullOrEmpty(userVerificationPhoneNumber))
 					{
-						int verificationCode = SendAndGetVerificationCode(userVerificationPhoneNumber);
+						int verificationCode = 0;
+						bool isNewVerificationCode = false;
+
+						if(!string.IsNullOrEmpty(user.verificationCode) && user.verificationCodeExpirationUtc > DateTime.UtcNow)
+						{
+							bool isNumeric = int.TryParse(user.verificationCode, out verificationCode);
+
+							if (!isNumeric)
+							{
+								verificationCode = SendAndGetVerificationCode(userVerificationPhoneNumber);
+								isNewVerificationCode = true;
+							}
+						}
+						else
+						{
+							verificationCode = SendAndGetVerificationCode(userVerificationPhoneNumber);
+							isNewVerificationCode = true;
+						}
 
 						if (verificationCode > 0)
 						{
-							user.verificationCode = verificationCode.ToString();
-							user.verificationCodeExpiration = DateTime.Now.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
-							user.Collection.Save();
+							if (isNewVerificationCode)
+							{
+								user.verificationCode = verificationCode.ToString();
+								user.verificationCodeExpiration = DateTime.UtcNow.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
+								user.Collection.Save();
+							}
 
 							result.Result = LoginResult.VerificationNeeded;
-              result.UserId = user.UserID;
-              result.OrganizationId = user.OrganizationID;
 						}
 						else
 						{
 							result.Error = "Verification Code failed to be generated or sent.";
 							result.Result = LoginResult.Fail;
-              result.UserId = user.UserID;
-              result.OrganizationId = user.OrganizationID;
 						}
 					}
 					else
 					{
-						result.Error = "Organization requires two step verification and user does not have a verification phone number setup.p";
+						result.Error = "Organization requires two step verification and user does not have a verification phone number setup.";
 						result.Result = LoginResult.VerificationSetupNeeded;
-            result.UserId = user.UserID;
-            result.OrganizationId = user.OrganizationID;
 					}
 				}
 				else
 				{
 					string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
-
-					result.UserId = user.UserID;
-					result.OrganizationId = user.OrganizationID;
 				}
 			}
 
@@ -131,6 +142,7 @@ namespace TSWebServices
 							users[0].verificationCodeExpiration = null;
 							users.Save();
 							result.Result = LoginResult.Success;
+							string authenticateResult = AuthenticateUser(users[0].UserID, users[0].OrganizationID, true);
 						}
 						else
 						{
@@ -181,7 +193,10 @@ namespace TSWebServices
 
 					if (verificationCode > 0)
 					{
-						result.Result = LoginResult.Success;	
+						users[0].verificationCode = verificationCode.ToString();
+						users[0].verificationCodeExpiration = DateTime.UtcNow.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
+						users.Save();
+						result.Result = LoginResult.Success;
 					}
 					else
 					{
@@ -219,12 +234,12 @@ namespace TSWebServices
 			return JsonConvert.SerializeObject(items);
 		}
 
-    [WebMethod(true)]
-    public string GetEmail(int userID)
-    {
-      User user = Users.GetUser(LoginUser.Anonymous, userID);
-      return user.Email;
-    }
+		 [WebMethod(true)]
+		 public string GetEmail(int userID)
+		 {
+			User user = Users.GetUser(LoginUser.Anonymous, userID);
+			return user.Email;
+		 }
 
 		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int? organizationId, ref User user, ref Organization organization)
 		{
@@ -255,10 +270,12 @@ namespace TSWebServices
 				if (user != null)
 				{
 					organization = Organizations.GetOrganization(loginUser, user.OrganizationID);
+					validation.UserId = user.UserID;
+					validation.OrganizationId = user.OrganizationID;
 
 					if (IsSupportImpersonation(password))
 					{
-						_skipVerification = false;
+						_skipVerification = true;
 						validation.Result = LoginResult.Success;
 						validation.Error = string.Empty;
 						//vv Log this information!

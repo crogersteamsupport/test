@@ -1240,7 +1240,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("verificationCode", SqlDbType.VarChar, 8);
+		tempParameter = updateCommand.Parameters.Add("verificationCode", SqlDbType.VarChar, 9);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1269,7 +1269,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("verificationCode", SqlDbType.VarChar, 8);
+		tempParameter = insertCommand.Parameters.Add("verificationCode", SqlDbType.VarChar, 9);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
