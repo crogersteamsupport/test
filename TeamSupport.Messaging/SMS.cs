@@ -19,9 +19,10 @@ namespace TeamSupport.Messaging
 
 		public SMS()
 		{
-			_teamSupportTwilioNumber = "+1 (972) 590-6172";
-			_accountSid			= "AC13390b4e34ee2d45d92df179bd82eeae";
-			_authToken			= "9c1b44818538851f2ec9241dce08183e";
+			_accountSid = System.Web.Configuration.WebConfigurationManager.AppSettings["TwilioAccountSid"];
+			_authToken = System.Web.Configuration.WebConfigurationManager.AppSettings["TwilioAuthToken"];
+			_teamSupportTwilioNumber = System.Web.Configuration.WebConfigurationManager.AppSettings["TwilioNumber"];
+
 			_messageId			= string.Empty;
 			_isSuccessful		= false;
 			_hasBeenValidated = false;
