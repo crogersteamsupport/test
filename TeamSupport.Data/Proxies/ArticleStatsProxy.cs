@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -26,9 +27,13 @@ namespace TeamSupport.Data
   {
     public ArticleStatProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       ArticleStatProxy result = new ArticleStatProxy();
       result.UserID = this.UserID;
-      result.ViewIP = this.ViewIP;
+      result.ViewIP = sanitizer.Sanitize(this.ViewIP);
       result.ArticleID = this.ArticleID;
       result.OrganizationID = this.OrganizationID;
       result.ArticleViewID = this.ArticleViewID;

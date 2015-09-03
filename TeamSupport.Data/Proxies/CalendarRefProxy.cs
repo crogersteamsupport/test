@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -23,6 +24,10 @@ namespace TeamSupport.Data
   {
     public CalendarRefItemProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       CalendarRefItemProxy result = new CalendarRefItemProxy();
       result.RefType = this.RefType;
       result.RefID = this.RefID;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -55,20 +56,24 @@ namespace TeamSupport.Data
   {
     public ContactsViewItemProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       ContactsViewItemProxy result = new ContactsViewItemProxy();
-      result.LinkedIn = this.LinkedIn;
+      result.LinkedIn = sanitizer.Sanitize(this.LinkedIn);
       result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;
       result.OrganizationActive = this.OrganizationActive;
       result.NeedsIndexing = this.NeedsIndexing;
-      result.SalesForceID = this.SalesForceID;
-      result.CryptedPassword = this.CryptedPassword;
+      result.SalesForceID = sanitizer.Sanitize(this.SalesForceID);
+      result.CryptedPassword = sanitizer.Sanitize(this.CryptedPassword);
       result.OrganizationParentID = this.OrganizationParentID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.LastVersion = this.LastVersion;
-      result.Organization = this.Organization;
+      result.LastVersion = sanitizer.Sanitize(this.LastVersion);
+      result.Organization = sanitizer.Sanitize(this.Organization);
       result.OrganizationID = this.OrganizationID;
-      result.InOfficeComment = this.InOfficeComment;
+      result.InOfficeComment = sanitizer.Sanitize(this.InOfficeComment);
       result.InOffice = this.InOffice;
       result.PrimaryGroupID = this.PrimaryGroupID;
       result.IsPortalUser = this.IsPortalUser;
@@ -77,12 +82,12 @@ namespace TeamSupport.Data
       result.IsSystemAdmin = this.IsSystemAdmin;
       result.MarkDeleted = this.MarkDeleted;
       result.IsActive = this.IsActive;
-      result.Title = this.Title;
-      result.LastName = this.LastName;
-      result.MiddleName = this.MiddleName;
+      result.Title = sanitizer.Sanitize(this.Title);
+      result.LastName = sanitizer.Sanitize(this.LastName);
+      result.MiddleName = sanitizer.Sanitize(this.MiddleName);
       result.UserID = this.UserID;
-      result.FirstName = this.FirstName;
-      result.Email = this.Email;
+      result.FirstName = sanitizer.Sanitize(this.FirstName);
+      result.Email = sanitizer.Sanitize(this.Email);
        
       result.LastLogin = DateTime.SpecifyKind(this.LastLoginUtc, DateTimeKind.Utc);
       result.LastActivity = DateTime.SpecifyKind(this.LastActivityUtc, DateTimeKind.Utc);

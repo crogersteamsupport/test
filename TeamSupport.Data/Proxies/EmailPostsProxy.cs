@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -38,20 +39,24 @@ namespace TeamSupport.Data
   {
     public EmailPostProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       EmailPostProxy result = new EmailPostProxy();
-      result.Text3 = this.Text3;
-      result.Text2 = this.Text2;
-      result.Text1 = this.Text1;
-      result.Param10 = this.Param10;
-      result.Param9 = this.Param9;
-      result.Param8 = this.Param8;
-      result.Param7 = this.Param7;
-      result.Param6 = this.Param6;
-      result.Param5 = this.Param5;
-      result.Param4 = this.Param4;
-      result.Param3 = this.Param3;
-      result.Param2 = this.Param2;
-      result.Param1 = this.Param1;
+      result.Text3 = sanitizer.Sanitize(this.Text3);
+      result.Text2 = sanitizer.Sanitize(this.Text2);
+      result.Text1 = sanitizer.Sanitize(this.Text1);
+      result.Param10 = sanitizer.Sanitize(this.Param10);
+      result.Param9 = sanitizer.Sanitize(this.Param9);
+      result.Param8 = sanitizer.Sanitize(this.Param8);
+      result.Param7 = sanitizer.Sanitize(this.Param7);
+      result.Param6 = sanitizer.Sanitize(this.Param6);
+      result.Param5 = sanitizer.Sanitize(this.Param5);
+      result.Param4 = sanitizer.Sanitize(this.Param4);
+      result.Param3 = sanitizer.Sanitize(this.Param3);
+      result.Param2 = sanitizer.Sanitize(this.Param2);
+      result.Param1 = sanitizer.Sanitize(this.Param1);
       result.CreatorID = this.CreatorID;
       result.HoldTime = this.HoldTime;
       result.EmailPostType = this.EmailPostType;

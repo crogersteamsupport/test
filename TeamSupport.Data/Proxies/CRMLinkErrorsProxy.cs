@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -32,15 +33,19 @@ namespace TeamSupport.Data
   {
     public CRMLinkErrorProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       CRMLinkErrorProxy result = new CRMLinkErrorProxy();
-      result.OperationType = this.OperationType;
-      result.Exception = this.Exception;
-      result.ObjectData = this.ObjectData;
-      result.ObjectFieldName = this.ObjectFieldName;
-      result.ObjectID = this.ObjectID;
-      result.ObjectType = this.ObjectType;
-      result.Orientation = this.Orientation;
-      result.CRMType = this.CRMType;
+      result.OperationType = sanitizer.Sanitize(this.OperationType);
+      result.Exception = sanitizer.Sanitize(this.Exception);
+      result.ObjectData = sanitizer.Sanitize(this.ObjectData);
+      result.ObjectFieldName = sanitizer.Sanitize(this.ObjectFieldName);
+      result.ObjectID = sanitizer.Sanitize(this.ObjectID);
+      result.ObjectType = sanitizer.Sanitize(this.ObjectType);
+      result.Orientation = sanitizer.Sanitize(this.Orientation);
+      result.CRMType = sanitizer.Sanitize(this.CRMType);
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkErrorID = this.CRMLinkErrorID;
        

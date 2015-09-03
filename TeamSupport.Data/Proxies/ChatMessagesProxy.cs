@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -27,10 +28,14 @@ namespace TeamSupport.Data
   {
     public ChatMessageProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       ChatMessageProxy result = new ChatMessageProxy();
       result.PosterType = this.PosterType;
       result.PosterID = this.PosterID;
-      result.Message = this.Message;
+      result.Message = sanitizer.Sanitize(this.Message);
       result.IsNotification = this.IsNotification;
       result.ChatID = this.ChatID;
       result.ChatMessageID = this.ChatMessageID;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -31,16 +32,20 @@ namespace TeamSupport.Data
   {
     public EmailActionProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       EmailActionProxy result = new EmailActionProxy();
       result.OrganizationID = this.OrganizationID;
       result.TicketID = this.TicketID;
-      result.Status = this.Status;
+      result.Status = sanitizer.Sanitize(this.Status);
       result.ActionAdded = this.ActionAdded;
-      result.OrganizationGUID = this.OrganizationGUID;
-      result.EMailBody = this.EMailBody;
-      result.EMailSubject = this.EMailSubject;
-      result.EMailTo = this.EMailTo;
-      result.EMailFrom = this.EMailFrom;
+      result.OrganizationGUID = sanitizer.Sanitize(this.OrganizationGUID);
+      result.EMailBody = sanitizer.Sanitize(this.EMailBody);
+      result.EMailSubject = sanitizer.Sanitize(this.EMailSubject);
+      result.EMailTo = sanitizer.Sanitize(this.EMailTo);
+      result.EMailFrom = sanitizer.Sanitize(this.EMailFrom);
       result.EMailActionID = this.EMailActionID;
        
        

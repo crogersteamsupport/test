@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -33,13 +34,17 @@ namespace TeamSupport.Data
   {
     public CalendarEventProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       CalendarEventProxy result = new CalendarEventProxy();
       result.AllDay = this.AllDay;
       result.CreatorID = this.CreatorID;
       result.RepeatFrequency = this.RepeatFrequency;
       result.Repeat = this.Repeat;
-      result.Description = this.Description;
-      result.Title = this.Title;
+      result.Description = sanitizer.Sanitize(this.Description);
+      result.Title = sanitizer.Sanitize(this.Title);
       result.OrganizationID = this.OrganizationID;
       result.CalendarID = this.CalendarID;
        

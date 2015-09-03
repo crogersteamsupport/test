@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -34,16 +35,20 @@ namespace TeamSupport.Data
   {
     public ImportProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       ImportProxy result = new ImportProxy();
       result.CreatorID = this.CreatorID;
       result.IsRunning = this.IsRunning;
       result.IsDone = this.IsDone;
       result.AuxID = this.AuxID;
       result.RefType = this.RefType;
-      result.RefTypeString = this.RefType.ToString();
+      result.RefTypeString = sanitizer.Sanitize(this.RefType.ToString());
       result.ImportGUID = this.ImportGUID;
       result.OrganizationID = this.OrganizationID;
-      result.FileName = this.FileName;
+      result.FileName = sanitizer.Sanitize(this.FileName);
       result.ImportID = this.ImportID;
       result.CompletedRows = this.CompletedRows;
       result.TotalRows = this.TotalRows;

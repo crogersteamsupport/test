@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -48,11 +49,15 @@ namespace TeamSupport.Data
   {
     public InvoiceProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       InvoiceProxy result = new InvoiceProxy();
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.PaymentFailedReason = this.PaymentFailedReason;
-      result.PaymentMethod = this.PaymentMethod;
+      result.PaymentFailedReason = sanitizer.Sanitize(this.PaymentFailedReason);
+      result.PaymentMethod = sanitizer.Sanitize(this.PaymentMethod);
       result.IsPaymentFailed = this.IsPaymentFailed;
       result.IsPaid = this.IsPaid;
       result.TotalAmount = this.TotalAmount;

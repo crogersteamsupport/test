@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -31,14 +32,18 @@ namespace TeamSupport.Data
   {
     public LoginAttemptProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       LoginAttemptProxy result = new LoginAttemptProxy();
-      result.UserAgent = this.UserAgent;
-      result.Platform = this.Platform;
+      result.UserAgent = sanitizer.Sanitize(this.UserAgent);
+      result.Platform = sanitizer.Sanitize(this.Platform);
       result.CookiesEnabled = this.CookiesEnabled;
-      result.MajorVersion = this.MajorVersion;
-      result.Version = this.Version;
-      result.Browser = this.Browser;
-      result.IPAddress = this.IPAddress;
+      result.MajorVersion = sanitizer.Sanitize(this.MajorVersion);
+      result.Version = sanitizer.Sanitize(this.Version);
+      result.Browser = sanitizer.Sanitize(this.Browser);
+      result.IPAddress = sanitizer.Sanitize(this.IPAddress);
       result.Successful = this.Successful;
       result.UserID = this.UserID;
       result.LoginAttemptID = this.LoginAttemptID;

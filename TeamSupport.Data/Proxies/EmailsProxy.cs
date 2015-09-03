@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -40,22 +41,26 @@ namespace TeamSupport.Data
   {
     public EmailProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       EmailProxy result = new EmailProxy();
       result.EmailPostID = this.EmailPostID;
-      result.LastFailedReason = this.LastFailedReason;
+      result.LastFailedReason = sanitizer.Sanitize(this.LastFailedReason);
       result.Attempts = this.Attempts;
       result.IsHtml = this.IsHtml;
       result.IsWaiting = this.IsWaiting;
       result.IsSuccess = this.IsSuccess;
       result.Size = this.Size;
-      result.Attachments = this.Attachments;
-      result.Body = this.Body;
-      result.Subject = this.Subject;
-      result.BCCAddress = this.BCCAddress;
-      result.CCAddress = this.CCAddress;
-      result.ToAddress = this.ToAddress;
-      result.FromAddress = this.FromAddress;
-      result.Description = this.Description;
+      result.Attachments = sanitizer.Sanitize(this.Attachments);
+      result.Body = sanitizer.Sanitize(this.Body);
+      result.Subject = sanitizer.Sanitize(this.Subject);
+      result.BCCAddress = sanitizer.Sanitize(this.BCCAddress);
+      result.CCAddress = sanitizer.Sanitize(this.CCAddress);
+      result.ToAddress = sanitizer.Sanitize(this.ToAddress);
+      result.FromAddress = sanitizer.Sanitize(this.FromAddress);
+      result.Description = sanitizer.Sanitize(this.Description);
       result.OrganizationID = this.OrganizationID;
       result.EmailID = this.EmailID;
        

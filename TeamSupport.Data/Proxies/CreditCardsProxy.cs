@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -32,14 +33,18 @@ namespace TeamSupport.Data
   {
     public CreditCardProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       CreditCardProxy result = new CreditCardProxy();
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.NameOnCard = this.NameOnCard;
-      result.SecurityCode = this.SecurityCode;
+      result.NameOnCard = sanitizer.Sanitize(this.NameOnCard);
+      result.SecurityCode = sanitizer.Sanitize(this.SecurityCode);
       result.CardNumber = this.CardNumber;
       result.CreditCardType = this.CreditCardType;
-      result.DisplayNumber = this.DisplayNumber;
+      result.DisplayNumber = sanitizer.Sanitize(this.DisplayNumber);
       result.OrganizationID = this.OrganizationID;
       result.CreditCardID = this.CreditCardID;
        

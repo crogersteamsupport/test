@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -25,10 +26,14 @@ namespace TeamSupport.Data
   {
     public ImportMapProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       ImportMapProxy result = new ImportMapProxy();
       result.IsCustom = this.IsCustom;
       result.FieldID = this.FieldID;
-      result.SourceName = this.SourceName;
+      result.SourceName = sanitizer.Sanitize(this.SourceName);
       result.ImportID = this.ImportID;
       result.ImportMapID = this.ImportMapID;
        

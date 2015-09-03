@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -28,12 +29,16 @@ namespace TeamSupport.Data
   {
     public ApiLogProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       ApiLogProxy result = new ApiLogProxy();
-      result.RequestBody = this.RequestBody;
+      result.RequestBody = sanitizer.Sanitize(this.RequestBody);
       result.StatusCode = this.StatusCode;
-      result.Verb = this.Verb;
-      result.Url = this.Url;
-      result.IPAddress = this.IPAddress;
+      result.Verb = sanitizer.Sanitize(this.Verb);
+      result.Url = sanitizer.Sanitize(this.Url);
+      result.IPAddress = sanitizer.Sanitize(this.IPAddress);
       result.OrganizationID = this.OrganizationID;
       result.ApiLogID = this.ApiLogID;
        

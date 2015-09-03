@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -39,22 +40,26 @@ namespace TeamSupport.Data
   {
     public ActionProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       ActionProxy result = new ActionProxy();
       result.Pinned = this.Pinned;
-      result.SalesForceID = this.SalesForceID;
+      result.SalesForceID = sanitizer.Sanitize(this.SalesForceID);
       result.TicketID = this.TicketID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.ImportID = this.ImportID;
+      result.ImportID = sanitizer.Sanitize(this.ImportID);
       result.IsKnowledgeBase = this.IsKnowledgeBase;
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;
       result.TimeSpent = this.TimeSpent;
-      result.Description = this.Description;
-      result.Name = this.Name;
+      result.Description = sanitizer.Sanitize(this.Description);
+      result.Name = sanitizer.Sanitize(this.Name);
       result.SystemActionTypeID = this.SystemActionTypeID;
       result.ActionTypeID = this.ActionTypeID;
       result.ActionID = this.ActionID;
-      result.DisplayName = this.DisplayName;
+      result.DisplayName = sanitizer.Sanitize(this.DisplayName);
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);

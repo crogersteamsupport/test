@@ -47,11 +47,11 @@ namespace TeamSupport.Data
   {
     public CustomValueProxy GetProxy()
     {
-      CustomValueProxy result = new CustomValueProxy();
       var sanitizer = new HtmlSanitizer();
       sanitizer.AllowedAttributes.Add("class");
       sanitizer.AllowedAttributes.Add("id");
 
+      CustomValueProxy result = new CustomValueProxy();
       result.ModifierID = Row["ModifierID"] == DBNull.Value ? -1 : this.ModifierID;
       result.CreatorID = Row["CreatorID"] == DBNull.Value ? -1 : this.CreatorID;
       result.RefID = Row["RefID"] == DBNull.Value ? null : (int?)this.RefID;
@@ -61,9 +61,9 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(Row["DateCreated"] == DBNull.Value ? DateTime.MinValue : this.DateCreated, DateTimeKind.Local);
       result.DateModified = DateTime.SpecifyKind(Row["DateModified"] == DBNull.Value ? DateTime.MinValue : this.DateModified, DateTimeKind.Local);
        
-      result.FieldName = this.FieldName;
-      result.ApiFieldName = this.ApiFieldName;
-      result.ListValues = this.ListValues;
+      result.FieldName = sanitizer.Sanitize(this.FieldName);
+      result.ApiFieldName = sanitizer.Sanitize(this.ApiFieldName);
+      result.ListValues = sanitizer.Sanitize(this.ListValues);
       result.FieldType = this.FieldType;
       result.Name = sanitizer.Sanitize(this.Name);
       result.Description = sanitizer.Sanitize(this.Description);
@@ -75,7 +75,7 @@ namespace TeamSupport.Data
       result.IsRequired = this.IsRequired;
       result.OrganizationID = this.OrganizationID;
       result.IsRequiredToClose = this.IsRequiredToClose;
-      result.Mask = this.Mask;
+      result.Mask = sanitizer.Sanitize(this.Mask);
       result.CustomFieldCategoryID = this.CustomFieldCategoryID;
 
       if (this.FieldType == CustomFieldType.DateTime || this.FieldType == CustomFieldType.Date || this.FieldType == CustomFieldType.Time)

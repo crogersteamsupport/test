@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -42,22 +43,26 @@ namespace TeamSupport.Data
   {
     public AssetAssignmentsViewItemProxy GetProxy()
     {
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+
       AssetAssignmentsViewItemProxy result = new AssetAssignmentsViewItemProxy();
       result.ShippedFromRefType = this.ShippedFromRefType;
-      result.ModifierName = this.ModifierName;
+      result.ModifierName = sanitizer.Sanitize(this.ModifierName);
       result.ModifierID = this.ModifierID;
       result.RefType = this.RefType;
-      result.ActorName = this.ActorName;
+      result.ActorName = sanitizer.Sanitize(this.ActorName);
       result.Actor = this.Actor;
-      result.Comments = this.Comments;
-      result.ReferenceNum = this.ReferenceNum;
-      result.ShippingMethod = this.ShippingMethod;
-      result.TrackingNumber = this.TrackingNumber;
-      result.NameAssignedTo = this.NameAssignedTo;
+      result.Comments = sanitizer.Sanitize(this.Comments);
+      result.ReferenceNum = sanitizer.Sanitize(this.ReferenceNum);
+      result.ShippingMethod = sanitizer.Sanitize(this.ShippingMethod);
+      result.TrackingNumber = sanitizer.Sanitize(this.TrackingNumber);
+      result.NameAssignedTo = sanitizer.Sanitize(this.NameAssignedTo);
       result.ShippedTo = this.ShippedTo;
-      result.NameAssignedFrom = this.NameAssignedFrom;
+      result.NameAssignedFrom = sanitizer.Sanitize(this.NameAssignedFrom);
       result.ShippedFrom = this.ShippedFrom;
-      result.ActionDescription = this.ActionDescription;
+      result.ActionDescription = sanitizer.Sanitize(this.ActionDescription);
       result.OrganizationID = this.OrganizationID;
       result.AssetID = this.AssetID;
       result.HistoryID = this.HistoryID;

@@ -35,23 +35,24 @@ namespace TeamSupport.Data
   {
     public AttachmentProxy GetProxy()
     {
-      AttachmentProxy result = new AttachmentProxy();
       var sanitizer = new HtmlSanitizer();
       sanitizer.AllowedAttributes.Add("class");
       sanitizer.AllowedAttributes.Add("id");
+
+      AttachmentProxy result = new AttachmentProxy();
       result.SentToJira = this.SentToJira;
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.Description = sanitizer.Sanitize(this.Description);
-      result.Path = this.Path;
+      result.Path = sanitizer.Sanitize(this.Path);
       result.FileSize = this.FileSize;
-      result.FileType = this.FileType;
-      result.FileName = this.FileName;
+      result.FileType = sanitizer.Sanitize(this.FileType);
+      result.FileName = sanitizer.Sanitize(this.FileName);
       result.OrganizationID = this.OrganizationID;
       result.AttachmentID = this.AttachmentID;
-      result.CreatorName = this.CreatorName;
+      result.CreatorName = sanitizer.Sanitize(this.CreatorName);
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
