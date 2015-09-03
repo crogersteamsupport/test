@@ -3,11 +3,11 @@
   <meta charset="utf-8">
   <title>TeamSupport - Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="vcr/1_9_0/Css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Login.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Pages/Login.css" rel="stylesheet" type="text/css" />
   <script src="vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="vcr/1_9_0/Js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Pages/Login.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/Ts/ts.utils.js"></script>
 </head>
@@ -38,7 +38,16 @@
         Forgot your password?
       </a>
       <div id="loginError" class="alert alert-error" style="display:none; margin-top:15px; margin-bottom: 0px;" role="alert"></div>
-      <footer><a href="SignUp.aspx">Create a free account</a></footer>
+      <footer class="container" style="margin-left: -40px; width: 350px;">
+        <div class="row">
+          <div class="col-xs-6" style="border-right: 1px solid rgba(117, 117, 117, 0.15);">
+            <a href="SignUp.aspx">Create a free account</a>
+          </div>
+          <div class="col-xs-6">
+            <a href="http://m.teamsupport.com">Mobile Site</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
  </body>
