@@ -172,6 +172,51 @@ namespace TSWebServices
 		}
 
 		[WebMethod]
+		public string RegenerateCodeVerification(int userId)
+		{
+			SignInResult result = new SignInResult();
+			LoginUser loginUser = LoginUser.Anonymous;
+
+			try
+			{
+				Users users = new Users(loginUser);
+				users.LoadByUserID(userId);
+				result.UserId = userId;
+
+				if (users.Count > 0)
+				{
+					result.OrganizationId = users[0].OrganizationID;
+					int verificationCode = SendAndGetVerificationCode(users[0].verificationPhoneNumber);
+
+					if (verificationCode > 0)
+					{
+						users[0].verificationCode = verificationCode.ToString();
+						users[0].verificationCodeExpiration = DateTime.UtcNow.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
+						users.Save();
+						result.Result = LoginResult.Success;
+					}
+					else
+					{
+						result.Error = "Verification Code failed to be generated or sent.";
+						result.Result = LoginResult.Fail;
+					}
+				}
+				else
+				{
+					result.Error = "User not found.";
+					result.Result = LoginResult.Fail;
+				}
+			}
+			catch (Exception ex)
+			{
+				result.Error = ex.Message;
+				result.Result = LoginResult.Fail;
+			}
+
+			return JsonConvert.SerializeObject(result);
+		}
+
+		[WebMethod]
 		public string SetupVerificationPhoneNumber(int userId, string phoneNumber)
 		{
 			SignInResult result = new SignInResult();
@@ -341,7 +386,7 @@ namespace TSWebServices
 		{
 			int verificationCode = GenerateRandomVerificationCode();
 			SMS smsVerification = new SMS();
-			smsVerification.Send(string.Format("Your verification code is {0}", verificationCode.ToString()), userVerificationPhoneNumber);
+			smsVerification.Send(string.Format("Your TeamSupport verification code is: {0}", verificationCode.ToString()), userVerificationPhoneNumber);
 
 			if (!smsVerification.IsSuccessful)
 			{
