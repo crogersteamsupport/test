@@ -18,7 +18,6 @@ $(document).ready(function () {
     e.preventDefault();
     //var phoneNumb = $('#twoStepNumber').val();
     var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
-    alert(phoneNumb)
     var userId = top.Ts.Utils.getQueryValue("UserID", window);
     if (phoneNumb) {
       var userData = { userId: userId, phoneNumber: phoneNumb };
