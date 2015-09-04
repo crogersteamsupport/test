@@ -94,7 +94,7 @@
     function insertSearchResults(items, searchProducts, searchProductVersions) {
         $('.searchresults').empty();
 
-        if (items.length < 1) {
+        if (items == null || items.length < 1) {
             $('.results-loading').hide();
             $('.results-done').hide();
             $('.results-empty').show();

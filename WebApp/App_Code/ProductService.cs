@@ -14,6 +14,7 @@ using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Globalization;
+using Ganss.XSS;
 
 namespace TSWebServices
 {
@@ -249,7 +250,10 @@ namespace TSWebServices
         builder.Append(CreateRecentlyViewed(item));
       }
       builder.Append("</ul>");
-      return builder.ToString();
+      var sanitizer = new HtmlSanitizer();
+      sanitizer.AllowedAttributes.Add("class");
+      sanitizer.AllowedAttributes.Add("id");
+      return sanitizer.Sanitize(builder.ToString());
     }
 
     public string CreateRecentlyViewed(RecentlyViewedItem recent)

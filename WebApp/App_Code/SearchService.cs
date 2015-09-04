@@ -13,6 +13,7 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using Ganss.XSS;
 
 namespace TSWebServices
 {
@@ -307,14 +308,18 @@ namespace TSWebServices
 
           resultItem.ScorePercent = (int)row["relevance"];
 
+          var sanitizer = new HtmlSanitizer();
+          sanitizer.AllowedAttributes.Add("class");
+          sanitizer.AllowedAttributes.Add("id");
+
           switch ((ReferenceType)row["source"])
           {
             case ReferenceType.Tickets:
               resultItem.ID = (int)row["TicketID"];
-              resultItem.DisplayName = string.Format("{0}: {1}", row["TicketNumber"].ToString(), row["Name"].ToString());
+              resultItem.DisplayName = sanitizer.Sanitize(string.Format("{0}: {1}", row["TicketNumber"].ToString(), row["Name"].ToString()));
               resultItem.Number = (int)row["TicketNumber"];
-              resultItem.Status = row["Status"].ToString();
-              resultItem.Severity = row["Severity"].ToString();
+              resultItem.Status = sanitize.Sanitizer(row["Status"].ToString());
+              resultItem.Severity = sanitize.Sanitizer(row["Severity"].ToString());
 
               if ((bool)row["IsKnowledgeBase"])
               {
@@ -328,25 +333,25 @@ namespace TSWebServices
               break;
             case ReferenceType.Wikis:
               resultItem.ID = (int)row["ArticleID"];
-              resultItem.DisplayName = row["ArticleName"].ToString();
-              resultItem.Creator = row["Creator"].ToString();
-              resultItem.Modifier = row["Modifier"].ToString();
+              resultItem.DisplayName = sanitizer.Sanitize(row["ArticleName"].ToString());
+              resultItem.Creator = sanitizer.Sanitize(row["Creator"].ToString());
+              resultItem.Modifier = sanitizer.Sanitize(row["Modifier"].ToString());
               resultItem.TypeID = 3;
 
               break;
             case ReferenceType.Notes:
               resultItem.ID = (int)row["NoteID"];
               resultItem.CustomerID = (int)row["RefID"];
-              resultItem.Creator = row["CreatorName"].ToString();
+              resultItem.Creator = sanitizer.Sanitize(row["CreatorName"].ToString());
               resultItem.DateModified = row["DateModified"].ToString();
               switch ((ReferenceType)row["NoteRefType"])
               {
                 case ReferenceType.Organizations:
-                  resultItem.DisplayName = string.Format("{0}'s note: {1}",  row["OrganizationName"].ToString(), row["Title"].ToString());
+                  resultItem.DisplayName = sanitizer.Sanitize(string.Format("{0}'s note: {1}",  row["OrganizationName"].ToString(), row["Title"].ToString()));
                   resultItem.TypeID = 4;
                   break;
                 case ReferenceType.Users:
-                  resultItem.DisplayName = string.Format("{0}'s note: {1}", row["ContactName"].ToString(), row["Title"].ToString());
+                  resultItem.DisplayName = sanitizer.Sanitize(string.Format("{0}'s note: {1}", row["ContactName"].ToString(), row["Title"].ToString()));
                   resultItem.TypeID = 7;
                   break;
               }
@@ -355,8 +360,8 @@ namespace TSWebServices
             case ReferenceType.ProductVersions:
               resultItem.ID = (int)row["ProductVersionID"];
               resultItem.ProductID = (int)row["ProductID"];
-              resultItem.DisplayName = string.Format("{0}'s version {1}", row["ProductName"].ToString(), row["VersionNumber"].ToString());
-              resultItem.Status = row["VersionStatus"].ToString();
+              resultItem.DisplayName = sanitizer.Sanitize(string.Format("{0}'s version {1}", row["ProductName"].ToString(), row["VersionNumber"].ToString()));
+              resultItem.Status = sanitizer.Sanitize(row["VersionStatus"].ToString());
               resultItem.DateModified = row["ProductVersionDateModified"].ToString();
               resultItem.TypeID = 5;
 
@@ -364,12 +369,12 @@ namespace TSWebServices
             case ReferenceType.WaterCooler:
               int messageParent = (int)row["MessageParent"];
               resultItem.ID = messageParent == -1 ? (int)row["MessageID"] : messageParent;
-              resultItem.DisplayName = row["Message"].ToString();
+              resultItem.DisplayName = sanitizer.Sanitize(row["Message"].ToString());
               if (resultItem.DisplayName.Length > 100)
               {
                 resultItem.DisplayName = resultItem.DisplayName.Substring(0, 100) + "...";
               }
-              resultItem.Creator = row["UserName"].ToString();
+              resultItem.Creator = sanitizer.Sanitize(row["UserName"].ToString());
               resultItem.DateModified = row["WaterCoolerLastModified"].ToString();
               resultItem.TypeID = 6;
               //resultItem.RefType = row["RefType"] is System.DBNull ? -1 : (int?)row["RefType"];
