@@ -266,7 +266,9 @@ namespace TSWebServices
 				}
 			}
 
-			if (user != null)
+			int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 15);
+
+			if (user != null && attempts <= MAXLOGINATTEMPTS)
 			{
 				validation.UserId = user.UserID;
 				validation.OrganizationId = user.OrganizationID;
@@ -280,15 +282,11 @@ namespace TSWebServices
 				}
 				else
 				{
+					
+					
 					if ((organization.ParentID == 1 && organization.OrganizationID != 1) && user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !isNewSignUp)
 					{
 						validation.Error = "Invalid email or password.";
-						int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 15);
-
-						if (attempts > MAXLOGINATTEMPTS)
-						{
-							validation.Error = "Your account is temporarily locked, because of too many login attempts.<br/>Try again in 15 minutes.";
-						}
 					}
 
 					if (!organization.IsActive)
@@ -303,11 +301,16 @@ namespace TSWebServices
 					{
 						validation.Error = "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
 					}
+					
 				}
+			}
+			else if (user == null)
+			{
+				validation.Error = "Invalid email or password.";
 			}
 			else
 			{
-				validation.Error = "Invalid email or password.";
+				validation.Error = string.Format("Your account is temporarily locked, because of too many login attempts.{0}Try again in 15 minutes.", Environment.NewLine);
 			}
 
 			if (!string.IsNullOrEmpty(validation.Error))
