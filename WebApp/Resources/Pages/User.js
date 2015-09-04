@@ -318,6 +318,7 @@ UserPage = function () {
       });
 
       $('#userTwoFactorCell').click(function (e) {
+        e.preventDefault();
         var header = $(this).parent().hide();
         $('#twoStepInputDiv').show();
         $('.intl-tel-input').css("float", "left");
@@ -325,6 +326,7 @@ UserPage = function () {
 
       $('#twoStepSave')
       .click(function (e) {
+        e.preventDefault();
          $(this).parent().show().find('img').show();
          var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
         top.Ts.Services.Login.SetupVerificationPhoneNumber(userID, phoneNumb, false, function (result) {
@@ -338,6 +340,7 @@ UserPage = function () {
 
       $('#twoStepCancel')
       .click(function (e) {
+        e.preventDefault();
         $('#twoStepInputDiv').hide();
         $('#userTwoFactorCell').parent().show();
       });
