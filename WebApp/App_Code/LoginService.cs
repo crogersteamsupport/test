@@ -217,7 +217,7 @@ namespace TSWebServices
 		}
 
 		[WebMethod]
-		public string SetupVerificationPhoneNumber(int userId, string phoneNumber)
+		public string SetupVerificationPhoneNumber(int userId, string phoneNumber, bool sendMessage)
 		{
 			SignInResult result = new SignInResult();
 			LoginUser loginUser = LoginUser.Anonymous;
@@ -234,19 +234,22 @@ namespace TSWebServices
 					users[0].verificationPhoneNumber = phoneNumber;
 					users.Save();
 
-					int verificationCode = SendAndGetVerificationCode(phoneNumber);
+					if (sendMessage)
+					{
+						int verificationCode = SendAndGetVerificationCode(phoneNumber);
 
-					if (verificationCode > 0)
-					{
-						users[0].verificationCode = verificationCode.ToString();
-						users[0].verificationCodeExpiration = DateTime.UtcNow.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
-						users.Save();
-						result.Result = LoginResult.Success;
-					}
-					else
-					{
-						result.Error = "Verification Phone Number updated but the Verification Code failed to be generated or sent.";
-						result.Result = LoginResult.Fail;
+						if (verificationCode > 0)
+						{
+							users[0].verificationCode = verificationCode.ToString();
+							users[0].verificationCodeExpiration = DateTime.UtcNow.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
+							users.Save();
+							result.Result = LoginResult.Success;
+						}
+						else
+						{
+							result.Error = "Verification Phone Number updated but the Verification Code failed to be generated or sent.";
+							result.Result = LoginResult.Fail;
+						}
 					}
 				}
 				else
