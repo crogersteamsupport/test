@@ -17,24 +17,32 @@ header {
 }
 
 footer {
-    position: relative;
-    top: 40px;
-    width: 430px;
-    margin-left: -40px;
-    line-height: 29px;
+    margin-top:20px;
+    line-height: 25px;
     text-align: center;
     cursor: pointer;
     border-top: 1px solid rgba(117, 117, 117, 0.15);
+    margin-left: -40px !important;
+    width: 400px  !important;
 }
-
 .headerDiv {
   text-align:center;
 }
 
-.card-container.card {
-    max-width: 350px;
-    padding: 40px 40px 5px 40px;
+.pageTitle {
+      font-size: 2rem;
+    line-height: 2.5rem;
+    letter-spacing: -1px;
+    font-weight: 700;
+    text-align: center;
+    color: #555459;
 }
+
+.card-container.card {
+    max-width: 330px;
+    padding: 10px 40px 5px 40px;
+}
+
 
 .btn {
     font-weight: 700;

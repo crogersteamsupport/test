@@ -18,14 +18,13 @@
   </header>
   <div class="container-fluid">
     <div class="card card-container">
-      <img id="profile-img" class="profile-img-card" src="../Images/blank_avatar.png" />
-      <p id="profile-name" class="profile-name-card"></p>
+      <h3 class="pageTitle">Sign in to Teamsupport.com</h3>
       <form class="form-signin">
         <div class="form-group">
-          <label for="exampleInputEmail1">Verification Code</label>
           <input type="number" id="inputVerificationCode" class="form-control" placeholder="Verification Code" autocomplete="off" min="00000000" maxlength="8" required autofocus>
         </div>
         <button id="verify" class="btn btn-lg btn-primary btn-block btn-signin">Verify</button>
+        <button id="resendCode" class="btn btn-link">Resend Verification Code</button>
       </form>
       <div id="pageError" class="alert alert-error" style="display:none; margin-top:15px; margin-bottom: 0px;" role="alert"></div>
     </div>

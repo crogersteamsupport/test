@@ -3,7 +3,6 @@ var returnURL = '/';
 
 $(document).ready(function () {
   $('#verify').click(function (e) {
-    debugger
     e.preventDefault();
     var code = $('#inputVerificationCode').val();
     var userId = top.Ts.Utils.getQueryValue("UserID", window);
@@ -11,7 +10,6 @@ $(document).ready(function () {
       var userData = { userId: userId, codeEntered: code };
       IssueAjaxRequest(loginService, "CodeVerification", userData,
       function (result) {
-        debugger
         switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
           case 1:
             window.location = '/';
@@ -29,6 +27,19 @@ $(document).ready(function () {
       $('#pageError').text('Please enter a valid verification code.').show();
     }
   });
+
+  $('#resendCode').click(function (e) {
+    e.preventDefault();
+    var userId = top.Ts.Utils.getQueryValue("UserID", window);
+    var userData = { userId: userId };
+    IssueAjaxRequest(loginService, "RegenerateCodeVerification", userData,
+    function (result) {
+
+    },
+    function (error) {
+      $('#pageError').text('There was a issue resending your verification code.  Please try again.').show();
+    });
+  })
 });
 
 function IssueAjaxRequest(service, method, data, successCallback, errorCallback) {
