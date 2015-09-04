@@ -318,8 +318,8 @@ namespace TSWebServices
               resultItem.ID = (int)row["TicketID"];
               resultItem.DisplayName = sanitizer.Sanitize(string.Format("{0}: {1}", row["TicketNumber"].ToString(), row["Name"].ToString()));
               resultItem.Number = (int)row["TicketNumber"];
-              resultItem.Status = sanitize.Sanitizer(row["Status"].ToString());
-              resultItem.Severity = sanitize.Sanitizer(row["Severity"].ToString());
+              resultItem.Status = sanitizer.Sanitize(row["Status"].ToString());
+              resultItem.Severity = sanitizer.Sanitize(row["Severity"].ToString());
 
               if ((bool)row["IsKnowledgeBase"])
               {
