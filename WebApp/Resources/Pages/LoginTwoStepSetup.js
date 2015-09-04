@@ -16,11 +16,10 @@ $(document).ready(function () {
 
   $('#update').click(function (e) {
     e.preventDefault();
-    //var phoneNumb = $('#twoStepNumber').val();
     var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
     var userId = top.Ts.Utils.getQueryValue("UserID", window);
     if (phoneNumb) {
-      var userData = { userId: userId, phoneNumber: phoneNumb };
+      var userData = { userId: userId, phoneNumber: phoneNumb, sendMessage: true };
       IssueAjaxRequest(loginService, "SetupVerificationPhoneNumber", userData,
       function (result) {
         window.location = resourcesURL + 'LoginTwoStep.html?UserID=' + userId;

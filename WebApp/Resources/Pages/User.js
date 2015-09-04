@@ -302,7 +302,7 @@ UserPage = function () {
       $('#userRightsAllTicketCustomers').removeClass('ui-state-default ts-link').addClass('disabledlink');
     }
 
-    if (top.Ts.System.User.UserID == userID)
+    if (canEdit)
     {
       $('#twoFactorDiv').show();
 
@@ -327,8 +327,8 @@ UserPage = function () {
       .click(function (e) {
          $(this).parent().show().find('img').show();
          var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
-         $('#twoStepInputDiv').hide();
-         top.Ts.Services.Login.SetupVerificationPhoneNumber(top.Ts.System.User.UserID, phoneNumb, function (result) {
+        top.Ts.Services.Login.SetupVerificationPhoneNumber(userID, phoneNumb, false, function (result) {
+           $('#twoStepInputDiv').hide();
            $('#userTwoFactorCell').text(phoneNumb).parent().show();
          },
         function (error) {
@@ -338,8 +338,8 @@ UserPage = function () {
 
       $('#twoStepCancel')
       .click(function (e) {
-        $(this).closest('div').remove();
-        header.show();
+        $('#twoStepInputDiv').hide();
+        $('#userTwoFactorCell').parent().show();
       });
     }
     else $('#twoFactorDiv').remove();
