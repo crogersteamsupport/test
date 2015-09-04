@@ -302,6 +302,48 @@ UserPage = function () {
       $('#userRightsAllTicketCustomers').removeClass('ui-state-default ts-link').addClass('disabledlink');
     }
 
+    if (top.Ts.System.User.UserID == userID)
+    {
+      $('#twoFactorDiv').show();
+
+      $("#mobile-number").intlTelInput({
+        defaultCountry: "auto",
+        geoIpLookup: function (callback) {
+          $.get('http://ipinfo.io', function () { }, "jsonp").always(function (resp) {
+            var countryCode = (resp && resp.country) ? resp.country : "";
+            callback(countryCode);
+          });
+        },
+        utilsScript: "../../Resources/js/utils.js" // just for formatting/placeholders etc
+      });
+
+      $('#userTwoFactorCell').click(function (e) {
+        var header = $(this).parent().hide();
+        $('#twoStepInputDiv').show();
+        $('.intl-tel-input').css("float", "left");
+      });
+
+      $('#twoStepSave')
+      .click(function (e) {
+         $(this).parent().show().find('img').show();
+         var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
+         $('#twoStepInputDiv').hide();
+         top.Ts.Services.Login.SetupVerificationPhoneNumber(top.Ts.System.User.UserID, phoneNumb, function (result) {
+           $('#userTwoFactorCell').text(phoneNumb).parent().show();
+         },
+        function (error) {
+          alert('There was an error updating your record.  Please try again.');
+        });
+      });
+
+      $('#twoStepCancel')
+      .click(function (e) {
+        $(this).closest('div').remove();
+        header.show();
+      });
+    }
+    else $('#twoFactorDiv').remove();
+
 
     $('.user-address-add').click(function (e) {
       e.preventDefault();

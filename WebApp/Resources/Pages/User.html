@@ -10,7 +10,7 @@
   <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
   <!--[if IE 7]><link href="vcr/1_7_9/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_7_9/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="User.css" rel="stylesheet" type="text/css" />
-
+  <link href="../Css/intlTelInput.css" rel="stylesheet" type="text/css" />
   <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
   <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
@@ -24,6 +24,7 @@
   <script src="../Js/jquery.maskedinput.min.js" type="text/javascript"></script>
 
   <script src="User.js" type="text/javascript"></script>
+  <script src="../Js/intlTelInput.min.js" type="text/javascript"></script>
 
   <title></title>
 
@@ -134,6 +135,18 @@
                     
                 </div>
 
+              <div id="twoFactorDiv" style="display:none;">
+                <div class="line"></div>
+                <div class="user-name-value">
+                  <span class="property">Two Factor Authentication:</span>
+                  <span class="value"><a id="userTwoFactorCell" class="ui-state-default ts-link" href="#">+ Cell Phone</a></span>
+                  <div id="twoStepInputDiv" style="display:none;">
+                    <input type="tel" id="mobile-number" />
+                    <span id="twoStepSave" class="ts-icon ts-icon-save" style="margin-left: 5px;"></span>
+                    <span id="twoStepCancel" class="ts-icon ts-icon-cancel" style="margin-left: 5px;"></span>
+                   </div>
+                </div>
+              </div>
                 
 
                 
