@@ -182,6 +182,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     }
 
     cbIsCustomerInsightsActive.Checked = organization.IsCustomerInsightsActive;
+	 cbTwoStepVerification.Checked = organization.TwoStepVerificationEnabled;
 
     if (string.IsNullOrEmpty(organization.TimeZoneID))
       cmbTimeZones.SelectedValue = "Central Standard Time";
@@ -271,6 +272,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     organization.UseProductFamilies = cbUseProductFamilies.Checked;
 
     organization.IsCustomerInsightsActive = cbIsCustomerInsightsActive.Checked;
+	 organization.TwoStepVerificationEnabled = cbTwoStepVerification.Checked;
 
     try
     {

@@ -176,6 +176,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Use Product Lines:", organization.UseProductFamilies.ToString() });
 
     table.Rows.Add(new string[] { "Customer Insights:", organization.IsCustomerInsightsActive.ToString() });
+	 table.Rows.Add(new string[] { "Two Step Verification:", organization.TwoStepVerificationEnabled.ToString() });
     
     rptProperties.DataSource = table;
     rptProperties.DataBind();

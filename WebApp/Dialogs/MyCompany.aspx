@@ -135,6 +135,7 @@
         </tr>
         <tr>
             <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbIsCustomerInsightsActive" runat="server" Text="Customer Insights"/></td>
+			   <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbTwoStepVerification" runat="server" Text="Two Step Verification"/></td>
         </tr>
         <tr>
           <td>Business Day Start:</td>
