@@ -2588,7 +2588,7 @@ The following steps will refresh your browser<br><br> \
 
   $('#inserttok').click(function (e) {
       top.Ts.System.logAction('New Ticket - Video Recording Insert Clicked');
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
       $('#rcdtok').show();
       $('#stoptok').hide();
       $('#inserttok').hide();
