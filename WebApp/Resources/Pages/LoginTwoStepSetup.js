@@ -3,9 +3,22 @@ var returnURL = '/';
 var resourcesURL = '/vcr/1_9_0/Pages/';
 
 $(document).ready(function () {
+  $("#mobile-number").intlTelInput({
+    defaultCountry: "auto",
+    geoIpLookup: function (callback) {
+      $.get('http://ipinfo.io', function () { }, "jsonp").always(function (resp) {
+        var countryCode = (resp && resp.country) ? resp.country : "";
+        callback(countryCode);
+      });
+    },
+    utilsScript: "../../Resources/js/utils.js" // just for formatting/placeholders etc
+  });
+
   $('#update').click(function (e) {
     e.preventDefault();
-    var phoneNumb = $('#twoStepNumber').val();
+    //var phoneNumb = $('#twoStepNumber').val();
+    var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
+    alert(phoneNumb)
     var userId = top.Ts.Utils.getQueryValue("UserID", window);
     if (phoneNumb) {
       var userData = { userId: userId, phoneNumber: phoneNumb };
