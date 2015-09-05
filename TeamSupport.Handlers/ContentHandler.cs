@@ -755,7 +755,7 @@ namespace TeamSupport.Handlers
 
       System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
       if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-
+      // the following is a big hack to get it out fast.... Please do not consider robust code.
       int id;
       if (int.TryParse(attachmentID, out id))
       {
@@ -773,7 +773,6 @@ namespace TeamSupport.Handlers
         {
           try
           {
-            //
             FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
             int userID = int.Parse(authTicket.UserData.Split('|')[0]);
             user = Users.GetUser(attachment.Collection.LoginUser, userID);
@@ -782,15 +781,20 @@ namespace TeamSupport.Handlers
             if (attachment.RefType == ReferenceType.Actions)
             {
               TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
+              Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
               if (action.IsVisibleOnPortal)
               {
-                Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
                 if (ticket.IsVisibleOnPortal)
                 {
                   Organizations organizations = new Organizations(attachment.Collection.LoginUser);
                   organizations.LoadByTicketID(ticket.TicketID);
                   isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
                 }
+              }
+
+              if (!isAuthenticated)
+              {
+                isAuthenticated = ticket.IsKnowledgeBase && ticket.IsVisibleOnPortal && action.IsKnowledgeBase && action.IsVisibleOnPortal;              
               }
             }
 
@@ -799,10 +803,6 @@ namespace TeamSupport.Handlers
           {
           }
         }
-
-
-        isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;
-
 
         if (!isAuthenticated)
         {
@@ -817,16 +817,6 @@ namespace TeamSupport.Handlers
           context.Response.ContentType = "text/html";
           return;
         }
-
-        /*
-        AttachmentDownload download = (new AttachmentDownloads(attachment.Collection.LoginUser)).AddNewAttachmentDownload();
-        download.AttachmentID = attachment.AttachmentID;
-        download.UserID = user.UserID;
-        download.DateDownloaded = DateTime.UtcNow;
-        download.Collection.Save();
-         */
-
-
 
         string openType = "inline";
         string fileType = attachment.FileType;
@@ -855,54 +845,16 @@ namespace TeamSupport.Handlers
 
       else 
       {
+        SqlCommand command = new SqlCommand();
+        command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
+        command.Parameters.AddWithValue("@AttachmentGUID", Guid.Parse(attachmentID));
 
-        TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous,  Guid.Parse(attachmentID));
+        id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
+
+        TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous,  id);
         Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
 
-
-        User user = null;
-        bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
-
-
-        if (isAuthenticated)
-        {
-          user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
-        }
-        else
-        {
-          try
-          {
-            //
-            FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
-            int userID = int.Parse(authTicket.UserData.Split('|')[0]);
-            user = Users.GetUser(attachment.Collection.LoginUser, userID);
-
-
-            if (attachment.RefType == ReferenceType.Actions)
-            {
-              TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-              if (action.IsVisibleOnPortal)
-              {
-                Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
-                if (ticket.IsVisibleOnPortal)
-                {
-                  Organizations organizations = new Organizations(attachment.Collection.LoginUser);
-                  organizations.LoadByTicketID(ticket.TicketID);
-                  isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
-                }
-              }
-            }
-
-          }
-          catch (Exception)
-          {
-          }
-        }
-
-        isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;
-
-
-        if (!isAuthenticated)
+        if (!organization.AllowUnsecureAttachmentViewing)
         {
           context.Response.Write("Unauthorized");
           context.Response.ContentType = "text/html";
@@ -915,16 +867,6 @@ namespace TeamSupport.Handlers
           context.Response.ContentType = "text/html";
           return;
         }
-
-        /*
-        AttachmentDownload download = (new AttachmentDownloads(attachment.Collection.LoginUser)).AddNewAttachmentDownload();
-        download.AttachmentID = attachment.AttachmentID;
-        download.UserID = user.UserID;
-        download.DateDownloaded = DateTime.UtcNow;
-        download.Collection.Save();
-         */
-
-
 
         string openType = "inline";
         string fileType = attachment.FileType;
