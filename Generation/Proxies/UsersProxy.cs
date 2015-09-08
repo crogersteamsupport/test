@@ -98,7 +98,6 @@ namespace TeamSupport.Data
     [DataMember] public string verificationCode { get; set; }
     [DataMember] public DateTime? verificationCodeExpiration { get; set; }
     [DataMember] public DateTime? PasswordCreatedUtc { get; set; }
-    [DataMember] public int DaysBeforeExpire { get; set; }
           
   }
   
@@ -107,7 +106,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
-      result.DaysBeforeExpire = this.DaysBeforeExpire;
+
       result.verificationCode = this.verificationCode;
       result.verificationPhoneNumber = this.verificationPhoneNumber;
       result.CalGUID = this.CalGUID;

@@ -111,6 +111,7 @@ namespace TeamSupport.Data
     [DataMember] public bool UseProductFamilies { get; set; }
     [DataMember] public bool IsCustomerInsightsActive { get; set; }
     [DataMember] public bool TwoStepVerificationEnabled { get; set; }
+	[DataMember] public int DaysBeforePasswordExpire { get; set; }
           
   }
   
@@ -123,6 +124,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("class");
       sanitizer.AllowedAttributes.Add("id");
 
+	  result.DaysBeforePasswordExpire = this.DaysBeforePasswordExpire;
       result.TwoStepVerificationEnabled = this.TwoStepVerificationEnabled;
       result.IsCustomerInsightsActive = this.IsCustomerInsightsActive;
       result.UseProductFamilies = this.UseProductFamilies;

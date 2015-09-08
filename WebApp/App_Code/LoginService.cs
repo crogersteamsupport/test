@@ -348,7 +348,7 @@ namespace TSWebServices
 						validation.Error = "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
 					}
 
-					if (user.IsPasswordExpired || (user.DaysBeforeExpire > 0 && user.PasswordCreatedUtc != null && user.PasswordCreatedUtc.HasValue && DateTime.UtcNow > user.PasswordCreatedUtc.Value.AddDays(user.DaysBeforeExpire)))
+					if (user.IsPasswordExpired || (organization.DaysBeforePasswordExpire > 0 && user.PasswordCreatedUtc != null && user.PasswordCreatedUtc.HasValue && DateTime.UtcNow > user.PasswordCreatedUtc.Value.AddDays(organization.DaysBeforePasswordExpire)))
 					{
 						validation.Error = "Your password has expired.";
 					}					
