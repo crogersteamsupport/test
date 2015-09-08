@@ -71,8 +71,9 @@
           <td class="inputColTD">
             <telerik:RadTextBox ID="textDomains" runat="server" Width="200px"></telerik:RadTextBox>
           </td>
-          <td class="labelColTD" colspan="2">
-            <%--<asp:CheckBox ID="cbTimeRequired" runat="server" Text="Require Time Spent on Timed Actions"/>--%>
+         <td>Days before Passwords Expire:</td>
+          <td>
+            <telerik:RadNumericTextBox ID="textPWExpire" runat="server" Width="200px"></telerik:RadNumericTextBox>
           </td>
         </tr>
         <tr>
