@@ -64,7 +64,11 @@ function LoadCompanies(companies) {
     for (var i = 0; i < companies.length; i++) {
       $('<option>').attr('value', companies[i].ID).text(companies[i].Label).appendTo(companySelect);
     }
-    companySelect.show();
+
+    if (companies.length > 1) {
+    	companySelect.show();
+    }
+    else companySelect.hide();
   }
   else companySelect.hide();
 };
