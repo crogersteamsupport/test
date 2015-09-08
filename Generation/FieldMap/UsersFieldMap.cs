@@ -98,6 +98,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("verificationPhoneNumber", "verificationPhoneNumber", false, false, false);
       _fieldMap.AddMap("verificationCode", "verificationCode", false, false, false);
       _fieldMap.AddMap("verificationCodeExpiration", "verificationCodeExpiration", false, false, false);
+      _fieldMap.AddMap("PasswordCreatedUtc", "PasswordCreatedUtc", false, false, false);
+      _fieldMap.AddMap("DaysBeforeExpire", "DaysBeforeExpire", false, false, false);
             
     }
   }

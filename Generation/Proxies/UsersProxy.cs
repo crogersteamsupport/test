@@ -97,6 +97,8 @@ namespace TeamSupport.Data
     [DataMember] public string verificationPhoneNumber { get; set; }
     [DataMember] public string verificationCode { get; set; }
     [DataMember] public DateTime? verificationCodeExpiration { get; set; }
+    [DataMember] public DateTime? PasswordCreatedUtc { get; set; }
+    [DataMember] public int DaysBeforeExpire { get; set; }
           
   }
   
@@ -105,6 +107,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.DaysBeforeExpire = this.DaysBeforeExpire;
       result.verificationCode = this.verificationCode;
       result.verificationPhoneNumber = this.verificationPhoneNumber;
       result.CalGUID = this.CalGUID;
@@ -188,6 +191,7 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
+      result.PasswordCreatedUtc = this.PasswordCreatedUtcUtc == null ? this.PasswordCreatedUtcUtc : DateTime.SpecifyKind((DateTime)this.PasswordCreatedUtcUtc, DateTimeKind.Utc); 
       result.verificationCodeExpiration = this.verificationCodeExpirationUtc == null ? this.verificationCodeExpirationUtc : DateTime.SpecifyKind((DateTime)this.verificationCodeExpirationUtc, DateTimeKind.Utc); 
       result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc); 
       result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc); 

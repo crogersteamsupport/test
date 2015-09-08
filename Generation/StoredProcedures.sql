@@ -93,7 +93,9 @@ AS
     [PortalViewOnly],
     [verificationPhoneNumber],
     [verificationCode],
-    [verificationCodeExpiration]
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [DaysBeforeExpire]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -188,6 +190,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @verificationPhoneNumber varchar(50),
   @verificationCode varchar(9),
   @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @DaysBeforeExpire int,
   @Identity int OUT
 )
 AS
@@ -277,7 +281,9 @@ AS
     [PortalViewOnly],
     [verificationPhoneNumber],
     [verificationCode],
-    [verificationCodeExpiration])
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [DaysBeforeExpire])
   VALUES (
     @Email,
     @FirstName,
@@ -362,7 +368,9 @@ AS
     @PortalViewOnly,
     @verificationPhoneNumber,
     @verificationCode,
-    @verificationCodeExpiration)
+    @verificationCodeExpiration,
+    @PasswordCreatedUtc,
+    @DaysBeforeExpire)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -455,7 +463,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @PortalViewOnly bit,
   @verificationPhoneNumber varchar(50),
   @verificationCode varchar(9),
-  @verificationCodeExpiration datetime
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @DaysBeforeExpire int
 )
 AS
   SET NOCOUNT OFF;
@@ -542,7 +552,9 @@ AS
     [PortalViewOnly] = @PortalViewOnly,
     [verificationPhoneNumber] = @verificationPhoneNumber,
     [verificationCode] = @verificationCode,
-    [verificationCodeExpiration] = @verificationCodeExpiration
+    [verificationCodeExpiration] = @verificationCodeExpiration,
+    [PasswordCreatedUtc] = @PasswordCreatedUtc,
+    [DaysBeforeExpire] = @DaysBeforeExpire
   WHERE ([UserID] = @UserID)
 GO
 
@@ -656,7 +668,9 @@ AS
     [PortalViewOnly],
     [verificationPhoneNumber],
     [verificationCode],
-    [verificationCodeExpiration]
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [DaysBeforeExpire]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -751,6 +765,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @verificationPhoneNumber varchar(50),
   @verificationCode varchar(9),
   @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @DaysBeforeExpire int,
   @Identity int OUT
 )
 AS
@@ -840,7 +856,9 @@ AS
     [PortalViewOnly],
     [verificationPhoneNumber],
     [verificationCode],
-    [verificationCodeExpiration])
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [DaysBeforeExpire])
   VALUES (
     @Email,
     @FirstName,
@@ -925,7 +943,9 @@ AS
     @PortalViewOnly,
     @verificationPhoneNumber,
     @verificationCode,
-    @verificationCodeExpiration)
+    @verificationCodeExpiration,
+    @PasswordCreatedUtc,
+    @DaysBeforeExpire)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1018,7 +1038,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @PortalViewOnly bit,
   @verificationPhoneNumber varchar(50),
   @verificationCode varchar(9),
-  @verificationCodeExpiration datetime
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @DaysBeforeExpire int
 )
 AS
   SET NOCOUNT OFF;
@@ -1105,7 +1127,9 @@ AS
     [PortalViewOnly] = @PortalViewOnly,
     [verificationPhoneNumber] = @verificationPhoneNumber,
     [verificationCode] = @verificationCode,
-    [verificationCodeExpiration] = @verificationCodeExpiration
+    [verificationCodeExpiration] = @verificationCodeExpiration,
+    [PasswordCreatedUtc] = @PasswordCreatedUtc,
+    [DaysBeforeExpire] = @DaysBeforeExpire
   WHERE ([UserID] = @UserID)
 GO
 
@@ -1219,7 +1243,9 @@ AS
     [PortalViewOnly],
     [verificationPhoneNumber],
     [verificationCode],
-    [verificationCodeExpiration]
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [DaysBeforeExpire]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -1314,6 +1340,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @verificationPhoneNumber varchar(50),
   @verificationCode varchar(9),
   @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @DaysBeforeExpire int,
   @Identity int OUT
 )
 AS
@@ -1403,7 +1431,9 @@ AS
     [PortalViewOnly],
     [verificationPhoneNumber],
     [verificationCode],
-    [verificationCodeExpiration])
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [DaysBeforeExpire])
   VALUES (
     @Email,
     @FirstName,
@@ -1488,7 +1518,9 @@ AS
     @PortalViewOnly,
     @verificationPhoneNumber,
     @verificationCode,
-    @verificationCodeExpiration)
+    @verificationCodeExpiration,
+    @PasswordCreatedUtc,
+    @DaysBeforeExpire)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1581,7 +1613,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @PortalViewOnly bit,
   @verificationPhoneNumber varchar(50),
   @verificationCode varchar(9),
-  @verificationCodeExpiration datetime
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @DaysBeforeExpire int
 )
 AS
   SET NOCOUNT OFF;
@@ -1668,7 +1702,9 @@ AS
     [PortalViewOnly] = @PortalViewOnly,
     [verificationPhoneNumber] = @verificationPhoneNumber,
     [verificationCode] = @verificationCode,
-    [verificationCodeExpiration] = @verificationCodeExpiration
+    [verificationCodeExpiration] = @verificationCodeExpiration,
+    [PasswordCreatedUtc] = @PasswordCreatedUtc,
+    [DaysBeforeExpire] = @DaysBeforeExpire
   WHERE ([UserID] = @UserID)
 GO
 
