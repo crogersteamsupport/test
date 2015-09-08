@@ -4,13 +4,7 @@ var resourcesURL = '/vcr/1_9_0/Pages/';
 
 $(document).ready(function () {
   $("#mobile-number").intlTelInput({
-    defaultCountry: "auto",
-    geoIpLookup: function (callback) {
-      $.get('http://ipinfo.io', function () { }, "jsonp").always(function (resp) {
-        var countryCode = (resp && resp.country) ? resp.country : "";
-        callback(countryCode);
-      });
-    },
+    defaultCountry: "US",
     utilsScript: "../../Resources/js/utils.js" // just for formatting/placeholders etc
   });
 
