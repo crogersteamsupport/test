@@ -330,8 +330,6 @@ namespace TSWebServices
 				}
 				else
 				{
-					
-					
 					if ((organization.ParentID == 1 && organization.OrganizationID != 1) && user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !isNewSignUp)
 					{
 						validation.Error = "Invalid email or password.";
@@ -349,7 +347,11 @@ namespace TSWebServices
 					{
 						validation.Error = "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
 					}
-					
+
+					if (user.IsPasswordExpired)
+					{
+						validation.Error = "Your password has expired.";
+					}					
 				}
 			}
 			else if (user == null)
