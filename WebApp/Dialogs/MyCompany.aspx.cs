@@ -183,7 +183,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     cbIsCustomerInsightsActive.Checked = organization.IsCustomerInsightsActive;
 	 cbTwoStepVerification.Checked = organization.TwoStepVerificationEnabled;
-	 //textPWExpire.Value = organization.DaysBeforeExpire;
+	 textPWExpire.Value = organization.DaysBeforePasswordExpire;
 
     if (string.IsNullOrEmpty(organization.TimeZoneID))
       cmbTimeZones.SelectedValue = "Central Standard Time";
@@ -274,7 +274,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     organization.IsCustomerInsightsActive = cbIsCustomerInsightsActive.Checked;
 	 organization.TwoStepVerificationEnabled = cbTwoStepVerification.Checked;
-	 //organization.DaysBeforeExpire = textPWExpire.Value;
+	 organization.DaysBeforePasswordExpire = (int)textPWExpire.Value;
 
     try
     {

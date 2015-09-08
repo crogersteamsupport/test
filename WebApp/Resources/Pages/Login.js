@@ -13,7 +13,7 @@ $(document).ready(function () {
     var signInData = { email: email, password: $('#inputPassword').val(), organizationId: org, verificationRequired: true };
 
     IssueAjaxRequest(loginService, "SignIn", signInData,
-    function (result) {
+    function (result) {debugger
       switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
         case 1:
           window.location = returnURL;

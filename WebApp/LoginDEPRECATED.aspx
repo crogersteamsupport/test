@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/StandardForm.master" AutoEventWireup="false" EnableViewState="false"
-  CodeFile="Login.aspx.cs" Inherits="Login" Title="TeamSupport - Login" %>
+  CodeFile="LoginDEPRECATED.aspx.cs" Inherits="Login" Title="TeamSupport - Login" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 

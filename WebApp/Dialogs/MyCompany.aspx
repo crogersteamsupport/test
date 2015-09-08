@@ -71,9 +71,9 @@
           <td class="inputColTD">
             <telerik:RadTextBox ID="textDomains" runat="server" Width="200px"></telerik:RadTextBox>
           </td>
-         <td>Days before Passwords Expire:</td>
+         <td>Passwords Expiration (days):</td>
           <td>
-            <telerik:RadNumericTextBox ID="textPWExpire" runat="server" Width="200px"></telerik:RadNumericTextBox>
+            <telerik:RadNumericTextBox ID="textPWExpire" runat="server" Width="197px" DataType="System.Int32" MinValue="0"><NumberFormat DecimalDigits="0" /></telerik:RadNumericTextBox>
           </td>
         </tr>
         <tr>
