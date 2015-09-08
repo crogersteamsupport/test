@@ -19,6 +19,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Ticket2ID", "Ticket2ID", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
+      _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
             
     }
   }

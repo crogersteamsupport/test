@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public int HistoryID
@@ -145,7 +151,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetAssignments] SET     [HistoryID] = @HistoryID  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetAssignments] SET     [HistoryID] = @HistoryID,    [ImportFileID] = @ImportFileID  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AssetAssignmentsID", SqlDbType.Int, 4);
@@ -162,13 +168,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetAssignments] (    [HistoryID]) VALUES ( @HistoryID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetAssignments] (    [HistoryID],    [ImportFileID]) VALUES ( @HistoryID, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("HistoryID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -289,7 +309,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [AssetAssignmentsID], [HistoryID] FROM [dbo].[AssetAssignments] WHERE ([AssetAssignmentsID] = @AssetAssignmentsID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AssetAssignmentsID], [HistoryID], [ImportFileID] FROM [dbo].[AssetAssignments] WHERE ([AssetAssignmentsID] = @AssetAssignmentsID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AssetAssignmentsID", assetAssignmentsID);
         Fill(command);

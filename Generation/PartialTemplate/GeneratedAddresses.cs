@@ -82,6 +82,12 @@ namespace TeamSupport.Data
       set { Row["Comment"] = CheckValue("Comment", value); }
     }
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public int ModifierID
@@ -102,9 +108,9 @@ namespace TeamSupport.Data
       set { Row["Description"] = CheckValue("Description", value); }
     }
     
-    public ReferenceType RefType
+    public int RefType
     {
-      get { return (ReferenceType)Row["RefType"]; }
+      get { return (int)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
@@ -239,7 +245,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Addresses] SET     [RefID] = @RefID,    [RefType] = @RefType,    [Description] = @Description,    [Addr1] = @Addr1,    [Addr2] = @Addr2,    [Addr3] = @Addr3,    [City] = @City,    [State] = @State,    [Zip] = @Zip,    [Country] = @Country,    [Comment] = @Comment,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([AddressID] = @AddressID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Addresses] SET     [RefID] = @RefID,    [RefType] = @RefType,    [Description] = @Description,    [Addr1] = @Addr1,    [Addr2] = @Addr2,    [Addr3] = @Addr3,    [City] = @City,    [State] = @State,    [Zip] = @Zip,    [Country] = @Country,    [Comment] = @Comment,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ImportFileID] = @ImportFileID  WHERE ([AddressID] = @AddressID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AddressID", SqlDbType.Int, 4);
@@ -340,13 +346,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Addresses] (    [RefID],    [RefType],    [Description],    [Addr1],    [Addr2],    [Addr3],    [City],    [State],    [Zip],    [Country],    [Comment],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @RefID, @RefType, @Description, @Addr1, @Addr2, @Addr3, @City, @State, @Zip, @Country, @Comment, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Addresses] (    [RefID],    [RefType],    [Description],    [Addr1],    [Addr2],    [Addr3],    [City],    [State],    [Zip],    [Country],    [Comment],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ImportFileID]) VALUES ( @RefID, @RefType, @Description, @Addr1, @Addr2, @Addr3, @City, @State, @Zip, @Country, @Comment, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -565,7 +585,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [AddressID], [RefID], [RefType], [Description], [Addr1], [Addr2], [Addr3], [City], [State], [Zip], [Country], [Comment], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[Addresses] WHERE ([AddressID] = @AddressID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AddressID], [RefID], [RefType], [Description], [Addr1], [Addr2], [Addr3], [City], [State], [Zip], [Country], [Comment], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ImportFileID] FROM [dbo].[Addresses] WHERE ([AddressID] = @AddressID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AddressID", addressID);
         Fill(command);

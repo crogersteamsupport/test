@@ -70,6 +70,12 @@ namespace TeamSupport.Data
       set { Row["JiraID"] = CheckValue("JiraID", value); }
     }
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public bool IsClean
@@ -290,7 +296,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Actions] SET     [ActionTypeID] = @ActionTypeID,    [SystemActionTypeID] = @SystemActionTypeID,    [Name] = @Name,    [TimeSpent] = @TimeSpent,    [DateStarted] = @DateStarted,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [TicketID] = @TicketID,    [ActionSource] = @ActionSource,    [DateModifiedBySalesForceSync] = @DateModifiedBySalesForceSync,    [SalesForceID] = @SalesForceID,    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,    [JiraID] = @JiraID,    [Pinned] = @Pinned,    [Description] = @Description,    [IsClean] = @IsClean  WHERE ([ActionID] = @ActionID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Actions] SET     [ActionTypeID] = @ActionTypeID,    [SystemActionTypeID] = @SystemActionTypeID,    [Name] = @Name,    [TimeSpent] = @TimeSpent,    [DateStarted] = @DateStarted,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [TicketID] = @TicketID,    [ActionSource] = @ActionSource,    [DateModifiedBySalesForceSync] = @DateModifiedBySalesForceSync,    [SalesForceID] = @SalesForceID,    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,    [JiraID] = @JiraID,    [Pinned] = @Pinned,    [Description] = @Description,    [IsClean] = @IsClean,    [ImportFileID] = @ImportFileID  WHERE ([ActionID] = @ActionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ActionID", SqlDbType.Int, 4);
@@ -433,13 +439,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Actions] (    [ActionTypeID],    [SystemActionTypeID],    [Name],    [TimeSpent],    [DateStarted],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [TicketID],    [ActionSource],    [DateModifiedBySalesForceSync],    [SalesForceID],    [DateModifiedByJiraSync],    [JiraID],    [Pinned],    [Description],    [IsClean]) VALUES ( @ActionTypeID, @SystemActionTypeID, @Name, @TimeSpent, @DateStarted, @IsVisibleOnPortal, @IsKnowledgeBase, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @TicketID, @ActionSource, @DateModifiedBySalesForceSync, @SalesForceID, @DateModifiedByJiraSync, @JiraID, @Pinned, @Description, @IsClean); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Actions] (    [ActionTypeID],    [SystemActionTypeID],    [Name],    [TimeSpent],    [DateStarted],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [TicketID],    [ActionSource],    [DateModifiedBySalesForceSync],    [SalesForceID],    [DateModifiedByJiraSync],    [JiraID],    [Pinned],    [Description],    [IsClean],    [ImportFileID]) VALUES ( @ActionTypeID, @SystemActionTypeID, @Name, @TimeSpent, @DateStarted, @IsVisibleOnPortal, @IsKnowledgeBase, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @TicketID, @ActionSource, @DateModifiedBySalesForceSync, @SalesForceID, @DateModifiedByJiraSync, @JiraID, @Pinned, @Description, @IsClean, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("IsClean", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -700,7 +720,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID], [ActionSource], [DateModifiedBySalesForceSync], [SalesForceID], [DateModifiedByJiraSync], [JiraID], [Pinned], [Description], [IsClean] FROM [dbo].[Actions] WHERE ([ActionID] = @ActionID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID], [ActionSource], [DateModifiedBySalesForceSync], [SalesForceID], [DateModifiedByJiraSync], [JiraID], [Pinned], [Description], [IsClean], [ImportFileID] FROM [dbo].[Actions] WHERE ([ActionID] = @ActionID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ActionID", actionID);
         Fill(command);

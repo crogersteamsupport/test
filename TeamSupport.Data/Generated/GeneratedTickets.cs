@@ -148,6 +148,12 @@ namespace TeamSupport.Data
       set { Row["EmailReplyToAddress"] = CheckValue("EmailReplyToAddress", value); }
     }
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public int ModifierID
@@ -473,7 +479,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Tickets] SET     [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ParentID] = @ParentID,    [TicketNumber] = @TicketNumber,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [ImportID] = @ImportID,    [LastViolationTime] = @LastViolationTime,    [LastWarningTime] = @LastWarningTime,    [TicketSource] = @TicketSource,    [PortalEmail] = @PortalEmail,    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,    [SlaViolationLastAction] = @SlaViolationLastAction,    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,    [SlaWarningLastAction] = @SlaWarningLastAction,    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,    [NeedsIndexing] = @NeedsIndexing,    [DocID] = @DocID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [DueDate] = @DueDate,    [KnowledgeBaseCategoryID] = @KnowledgeBaseCategoryID,    [DateModifiedBySalesForceSync] = @DateModifiedBySalesForceSync,    [SalesForceID] = @SalesForceID,    [JiraStatus] = @JiraStatus,    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,    [SyncWithJira] = @SyncWithJira,    [JiraID] = @JiraID,    [JiraKey] = @JiraKey,    [JiraLinkURL] = @JiraLinkURL,    [EmailReplyToAddress] = @EmailReplyToAddress  WHERE ([TicketID] = @TicketID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Tickets] SET     [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ParentID] = @ParentID,    [TicketNumber] = @TicketNumber,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [ImportID] = @ImportID,    [LastViolationTime] = @LastViolationTime,    [LastWarningTime] = @LastWarningTime,    [TicketSource] = @TicketSource,    [PortalEmail] = @PortalEmail,    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,    [SlaViolationLastAction] = @SlaViolationLastAction,    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,    [SlaWarningLastAction] = @SlaWarningLastAction,    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,    [NeedsIndexing] = @NeedsIndexing,    [DocID] = @DocID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [DueDate] = @DueDate,    [KnowledgeBaseCategoryID] = @KnowledgeBaseCategoryID,    [DateModifiedBySalesForceSync] = @DateModifiedBySalesForceSync,    [SalesForceID] = @SalesForceID,    [JiraStatus] = @JiraStatus,    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,    [SyncWithJira] = @SyncWithJira,    [JiraID] = @JiraID,    [JiraKey] = @JiraKey,    [JiraLinkURL] = @JiraLinkURL,    [EmailReplyToAddress] = @EmailReplyToAddress,    [ImportFileID] = @ImportFileID  WHERE ([TicketID] = @TicketID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
@@ -777,13 +783,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Tickets] (    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [Name],    [ParentID],    [TicketNumber],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [DateClosed],    [CloserID],    [ImportID],    [LastViolationTime],    [LastWarningTime],    [TicketSource],    [PortalEmail],    [SlaViolationTimeClosed],    [SlaViolationLastAction],    [SlaViolationInitialResponse],    [SlaWarningTimeClosed],    [SlaWarningLastAction],    [SlaWarningInitialResponse],    [NeedsIndexing],    [DocID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [DueDate],    [KnowledgeBaseCategoryID],    [DateModifiedBySalesForceSync],    [SalesForceID],    [JiraStatus],    [DateModifiedByJiraSync],    [SyncWithJira],    [JiraID],    [JiraKey],    [JiraLinkURL],    [EmailReplyToAddress]) VALUES ( @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @Name, @ParentID, @TicketNumber, @IsVisibleOnPortal, @IsKnowledgeBase, @DateClosed, @CloserID, @ImportID, @LastViolationTime, @LastWarningTime, @TicketSource, @PortalEmail, @SlaViolationTimeClosed, @SlaViolationLastAction, @SlaViolationInitialResponse, @SlaWarningTimeClosed, @SlaWarningLastAction, @SlaWarningInitialResponse, @NeedsIndexing, @DocID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @DueDate, @KnowledgeBaseCategoryID, @DateModifiedBySalesForceSync, @SalesForceID, @JiraStatus, @DateModifiedByJiraSync, @SyncWithJira, @JiraID, @JiraKey, @JiraLinkURL, @EmailReplyToAddress); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Tickets] (    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [Name],    [ParentID],    [TicketNumber],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [DateClosed],    [CloserID],    [ImportID],    [LastViolationTime],    [LastWarningTime],    [TicketSource],    [PortalEmail],    [SlaViolationTimeClosed],    [SlaViolationLastAction],    [SlaViolationInitialResponse],    [SlaWarningTimeClosed],    [SlaWarningLastAction],    [SlaWarningInitialResponse],    [NeedsIndexing],    [DocID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [DueDate],    [KnowledgeBaseCategoryID],    [DateModifiedBySalesForceSync],    [SalesForceID],    [JiraStatus],    [DateModifiedByJiraSync],    [SyncWithJira],    [JiraID],    [JiraKey],    [JiraLinkURL],    [EmailReplyToAddress],    [ImportFileID]) VALUES ( @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @Name, @ParentID, @TicketNumber, @IsVisibleOnPortal, @IsKnowledgeBase, @DateClosed, @CloserID, @ImportID, @LastViolationTime, @LastWarningTime, @TicketSource, @PortalEmail, @SlaViolationTimeClosed, @SlaViolationLastAction, @SlaViolationInitialResponse, @SlaWarningTimeClosed, @SlaWarningLastAction, @SlaWarningInitialResponse, @NeedsIndexing, @DocID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @DueDate, @KnowledgeBaseCategoryID, @DateModifiedBySalesForceSync, @SalesForceID, @JiraStatus, @DateModifiedByJiraSync, @SyncWithJira, @JiraID, @JiraKey, @JiraLinkURL, @EmailReplyToAddress, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("EmailReplyToAddress", SqlDbType.VarChar, 500);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -1205,7 +1225,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [Name], [ParentID], [TicketNumber], [IsVisibleOnPortal], [IsKnowledgeBase], [DateClosed], [CloserID], [ImportID], [LastViolationTime], [LastWarningTime], [TicketSource], [PortalEmail], [SlaViolationTimeClosed], [SlaViolationLastAction], [SlaViolationInitialResponse], [SlaWarningTimeClosed], [SlaWarningLastAction], [SlaWarningInitialResponse], [NeedsIndexing], [DocID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [DueDate], [KnowledgeBaseCategoryID], [DateModifiedBySalesForceSync], [SalesForceID], [JiraStatus], [DateModifiedByJiraSync], [SyncWithJira], [JiraID], [JiraKey], [JiraLinkURL], [EmailReplyToAddress] FROM [dbo].[Tickets] WHERE ([TicketID] = @TicketID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [Name], [ParentID], [TicketNumber], [IsVisibleOnPortal], [IsKnowledgeBase], [DateClosed], [CloserID], [ImportID], [LastViolationTime], [LastWarningTime], [TicketSource], [PortalEmail], [SlaViolationTimeClosed], [SlaViolationLastAction], [SlaViolationInitialResponse], [SlaWarningTimeClosed], [SlaWarningLastAction], [SlaWarningInitialResponse], [NeedsIndexing], [DocID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [DueDate], [KnowledgeBaseCategoryID], [DateModifiedBySalesForceSync], [SalesForceID], [JiraStatus], [DateModifiedByJiraSync], [SyncWithJira], [JiraID], [JiraKey], [JiraLinkURL], [EmailReplyToAddress], [ImportFileID] FROM [dbo].[Tickets] WHERE ([TicketID] = @TicketID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketID", ticketID);
         Fill(command);

@@ -46,6 +46,12 @@ namespace TeamSupport.Data
       set { Row["ImportID"] = CheckValue("ImportID", value); }
     }
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public int ModifierID
@@ -214,7 +220,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationProducts] SET     [OrganizationID] = @OrganizationID,    [ProductID] = @ProductID,    [ProductVersionID] = @ProductVersionID,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [SupportExpiration] = @SupportExpiration,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([OrganizationProductID] = @OrganizationProductID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationProducts] SET     [OrganizationID] = @OrganizationID,    [ProductID] = @ProductID,    [ProductVersionID] = @ProductVersionID,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [SupportExpiration] = @SupportExpiration,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ImportFileID] = @ImportFileID  WHERE ([OrganizationProductID] = @OrganizationProductID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationProductID", SqlDbType.Int, 4);
@@ -280,13 +286,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationProducts] (    [OrganizationID],    [ProductID],    [ProductVersionID],    [IsVisibleOnPortal],    [SupportExpiration],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @ProductID, @ProductVersionID, @IsVisibleOnPortal, @SupportExpiration, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationProducts] (    [OrganizationID],    [ProductID],    [ProductVersionID],    [IsVisibleOnPortal],    [SupportExpiration],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ImportFileID]) VALUES ( @OrganizationID, @ProductID, @ProductVersionID, @IsVisibleOnPortal, @SupportExpiration, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -470,7 +490,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationProductID], [OrganizationID], [ProductID], [ProductVersionID], [IsVisibleOnPortal], [SupportExpiration], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[OrganizationProducts] WHERE ([OrganizationProductID] = @OrganizationProductID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationProductID], [OrganizationID], [ProductID], [ProductVersionID], [IsVisibleOnPortal], [SupportExpiration], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ImportFileID] FROM [dbo].[OrganizationProducts] WHERE ([OrganizationProductID] = @OrganizationProductID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationProductID", organizationProductID);
         Fill(command);

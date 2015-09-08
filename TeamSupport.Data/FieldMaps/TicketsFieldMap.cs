@@ -45,6 +45,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
       _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
       _fieldMap.AddMap("DueDate", "DueDate", true, true, true);
+      _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
             
     }
   }

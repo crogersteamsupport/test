@@ -33,6 +33,7 @@ namespace TeamSupport.Data
     [DataMember] public string SalesForceID { get; set; }          
     [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
     [DataMember] public bool Pinned { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -45,6 +46,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       ActionProxy result = new ActionProxy();
+      result.ImportFileID = this.ImportFileID;
       result.Pinned = this.Pinned;
       result.SalesForceID = sanitizer.Sanitize(this.SalesForceID);
       result.TicketID = this.TicketID;

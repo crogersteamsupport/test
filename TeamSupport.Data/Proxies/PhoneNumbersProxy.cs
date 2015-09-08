@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public string PhoneTypeName { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -38,6 +39,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("class");
       sanitizer.AllowedAttributes.Add("id");
 
+      result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.OtherTypeName = sanitizer.Sanitize(this.OtherTypeName);

@@ -25,6 +25,7 @@ namespace TeamSupport.Data
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
     [DataMember] public string JiraProjectKey { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -33,6 +34,7 @@ namespace TeamSupport.Data
     public ProductProxy GetProxy()
     {
       ProductProxy result = new ProductProxy();
+      result.ImportFileID = this.ImportFileID;
       result.JiraProjectKey = this.JiraProjectKey;
       result.ProductFamilyID = this.ProductFamilyID;
       result.NeedsIndexing = this.NeedsIndexing;

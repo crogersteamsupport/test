@@ -16,14 +16,15 @@ namespace TeamSupport.Data
     [DataMember] public int PhoneID { get; set; }
     [DataMember] public int? PhoneTypeID { get; set; }
     [DataMember] public int RefID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
-    [DataMember] public string Number { get; set; }
+    [DataMember] public int RefType { get; set; }
+    [DataMember] public string PhoneNumber { get; set; }
     [DataMember] public string Extension { get; set; }
     [DataMember] public string OtherTypeName { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -32,11 +33,12 @@ namespace TeamSupport.Data
     public PhoneNumberProxy GetProxy()
     {
       PhoneNumberProxy result = new PhoneNumberProxy();
+      result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.OtherTypeName = this.OtherTypeName;
       result.Extension = this.Extension;
-      result.Number = this.Number;
+      result.PhoneNumber = this.PhoneNumber;
       result.RefType = this.RefType;
       result.RefID = this.RefID;
       result.PhoneTypeID = this.PhoneTypeID;

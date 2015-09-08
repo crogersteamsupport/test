@@ -19,6 +19,7 @@ namespace TeamSupport.Data
     [DataMember] public int Ticket2ID { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
     public TicketRelationshipProxy GetProxy()
     {
       TicketRelationshipProxy result = new TicketRelationshipProxy();
+      result.ImportFileID = this.ImportFileID;
       result.CreatorID = this.CreatorID;
       result.Ticket2ID = this.Ticket2ID;
       result.Ticket1ID = this.Ticket1ID;

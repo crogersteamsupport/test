@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -32,6 +33,7 @@ namespace TeamSupport.Data
     public OrganizationProductProxy GetProxy()
     {
       OrganizationProductProxy result = new OrganizationProductProxy();
+      result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.ImportID = this.ImportID;

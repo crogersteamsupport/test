@@ -31,6 +31,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? DateModified { get; set; }
     [DataMember] public int? ModifierID { get; set; }
     [DataMember] public int? ShippedFromRefType { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -43,6 +44,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       AssetHistoryItemProxy result = new AssetHistoryItemProxy();
+      result.ImportFileID = this.ImportFileID;
       result.ShippedFromRefType = this.ShippedFromRefType;
       result.ModifierID = this.ModifierID;
       result.RefType = this.RefType;

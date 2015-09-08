@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public ActionProxy() {}
     [DataMember] public int ActionID { get; set; }
     [DataMember] public int? ActionTypeID { get; set; }
-    [DataMember] public SystemActionType SystemActionTypeID { get; set; }
+    [DataMember] public int SystemActionTypeID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public int? TimeSpent { get; set; }
     [DataMember] public DateTime? DateStarted { get; set; }
@@ -35,6 +35,7 @@ namespace TeamSupport.Data
     [DataMember] public bool Pinned { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public bool IsClean { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -43,6 +44,7 @@ namespace TeamSupport.Data
     public ActionProxy GetProxy()
     {
       ActionProxy result = new ActionProxy();
+      result.ImportFileID = this.ImportFileID;
       result.IsClean = this.IsClean;
       result.Description = this.Description;
       result.Pinned = this.Pinned;

@@ -15,6 +15,7 @@ namespace TeamSupport.Data
     public AssetAssignmentProxy() {}
     [DataMember] public int AssetAssignmentsID { get; set; }
     [DataMember] public int HistoryID { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -23,6 +24,7 @@ namespace TeamSupport.Data
     public AssetAssignmentProxy GetProxy()
     {
       AssetAssignmentProxy result = new AssetAssignmentProxy();
+      result.ImportFileID = this.ImportFileID;
       result.HistoryID = this.HistoryID;
       result.AssetAssignmentsID = this.AssetAssignmentsID;
        

@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public int CreatorID
@@ -174,7 +180,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketRelationships] SET     [OrganizationID] = @OrganizationID,    [Ticket1ID] = @Ticket1ID,    [Ticket2ID] = @Ticket2ID  WHERE ([TicketRelationshipID] = @TicketRelationshipID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketRelationships] SET     [OrganizationID] = @OrganizationID,    [Ticket1ID] = @Ticket1ID,    [Ticket2ID] = @Ticket2ID,    [ImportFileID] = @ImportFileID  WHERE ([TicketRelationshipID] = @TicketRelationshipID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketRelationshipID", SqlDbType.Int, 4);
@@ -205,13 +211,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketRelationships] (    [OrganizationID],    [Ticket1ID],    [Ticket2ID],    [CreatorID],    [DateCreated]) VALUES ( @OrganizationID, @Ticket1ID, @Ticket2ID, @CreatorID, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketRelationships] (    [OrganizationID],    [Ticket1ID],    [Ticket2ID],    [CreatorID],    [DateCreated],    [ImportFileID]) VALUES ( @OrganizationID, @Ticket1ID, @Ticket2ID, @CreatorID, @DateCreated, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -360,7 +380,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketRelationshipID], [OrganizationID], [Ticket1ID], [Ticket2ID], [CreatorID], [DateCreated] FROM [dbo].[TicketRelationships] WHERE ([TicketRelationshipID] = @TicketRelationshipID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketRelationshipID], [OrganizationID], [Ticket1ID], [Ticket2ID], [CreatorID], [DateCreated], [ImportFileID] FROM [dbo].[TicketRelationships] WHERE ([TicketRelationshipID] = @TicketRelationshipID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketRelationshipID", ticketRelationshipID);
         Fill(command);

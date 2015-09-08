@@ -8,11 +8,11 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class CustomValue : BaseItem
+  public partial class CustomValu : BaseItem
   {
     private CustomValues _customValues;
     
-    public CustomValue(DataRow row, CustomValues customValues): base(row, customValues)
+    public CustomValu(DataRow row, CustomValues customValues): base(row, customValues)
     {
       _customValues = customValues;
     }
@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public int ModifierID
@@ -48,7 +54,7 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
-    public string Value
+    public string CustomValue
     {
       get { return (string)Row["CustomValue"]; }
       set { Row["CustomValue"] = CheckValue("CustomValue", value); }
@@ -103,7 +109,7 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class CustomValues : BaseCollection, IEnumerable<CustomValue>
+  public partial class CustomValues : BaseCollection, IEnumerable<CustomValu>
   {
     public CustomValues(LoginUser loginUser): base (loginUser)
     {
@@ -123,9 +129,9 @@ namespace TeamSupport.Data
 
 
 
-    public CustomValue this[int index]
+    public CustomValu this[int index]
     {
-      get { return new CustomValue(Table.Rows[index], this); }
+      get { return new CustomValu(Table.Rows[index], this); }
     }
     
 
@@ -133,10 +139,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(CustomValue customValue);
-    partial void AfterRowInsert(CustomValue customValue);
-    partial void BeforeRowEdit(CustomValue customValue);
-    partial void AfterRowEdit(CustomValue customValue);
+    partial void BeforeRowInsert(CustomValu customValu);
+    partial void AfterRowInsert(CustomValu customValu);
+    partial void BeforeRowEdit(CustomValu customValu);
+    partial void AfterRowEdit(CustomValu customValu);
     partial void BeforeRowDelete(int customValueID);
     partial void AfterRowDelete(int customValueID);    
 
@@ -147,11 +153,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public CustomValueProxy[] GetCustomValueProxies()
+    public CustomValuProxy[] GetCustomValuProxies()
     {
-      List<CustomValueProxy> list = new List<CustomValueProxy>();
+      List<CustomValuProxy> list = new List<CustomValuProxy>();
 
-      foreach (CustomValue item in this)
+      foreach (CustomValu item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -191,7 +197,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomValues] SET     [CustomFieldID] = @CustomFieldID,    [RefID] = @RefID,    [CustomValue] = @CustomValue,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([CustomValueID] = @CustomValueID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomValues] SET     [CustomFieldID] = @CustomFieldID,    [RefID] = @RefID,    [CustomValue] = @CustomValue,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ImportFileID] = @ImportFileID  WHERE ([CustomValueID] = @CustomValueID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomValueID", SqlDbType.Int, 4);
@@ -236,13 +242,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomValues] (    [CustomFieldID],    [RefID],    [CustomValue],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @CustomFieldID, @RefID, @CustomValue, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomValues] (    [CustomFieldID],    [RefID],    [CustomValue],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ImportFileID]) VALUES ( @CustomFieldID, @RefID, @CustomValue, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -304,17 +324,17 @@ namespace TeamSupport.Data
 
 		try
 		{
-		  foreach (CustomValue customValue in this)
+		  foreach (CustomValu customValu in this)
 		  {
-			if (customValue.Row.RowState == DataRowState.Added)
+			if (customValu.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(customValue);
+			  BeforeRowInsert(customValu);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = customValue.Row[parameter.ParameterName];
+				  parameter.Value = customValu.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -325,26 +345,26 @@ namespace TeamSupport.Data
 			  Table.Columns["CustomValueID"].AutoIncrement = false;
 			  Table.Columns["CustomValueID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				customValue.Row["CustomValueID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(customValue);
+				customValu.Row["CustomValueID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(customValu);
 			}
-			else if (customValue.Row.RowState == DataRowState.Modified)
+			else if (customValu.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(customValue);
+			  BeforeRowEdit(customValu);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = customValue.Row[parameter.ParameterName];
+				parameter.Value = customValu.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(customValue);
+			  AfterRowEdit(customValu);
 			}
-			else if (customValue.Row.RowState == DataRowState.Deleted)
+			else if (customValu.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)customValue.Row["CustomValueID", DataRowVersion.Original];
+			  int id = (int)customValu.Row["CustomValueID", DataRowVersion.Original];
 			  deleteCommand.Parameters["CustomValueID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -365,10 +385,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (CustomValue customValue in this)
+      foreach (CustomValu customValu in this)
       {
-        if (customValue.Row.Table.Columns.Contains("CreatorID") && (int)customValue.Row["CreatorID"] == 0) customValue.Row["CreatorID"] = LoginUser.UserID;
-        if (customValue.Row.Table.Columns.Contains("ModifierID")) customValue.Row["ModifierID"] = LoginUser.UserID;
+        if (customValu.Row.Table.Columns.Contains("CreatorID") && (int)customValu.Row["CreatorID"] == 0) customValu.Row["CreatorID"] = LoginUser.UserID;
+        if (customValu.Row.Table.Columns.Contains("ModifierID")) customValu.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -381,38 +401,38 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public CustomValue FindByCustomValueID(int customValueID)
+    public CustomValu FindByCustomValueID(int customValueID)
     {
-      foreach (CustomValue customValue in this)
+      foreach (CustomValu customValu in this)
       {
-        if (customValue.CustomValueID == customValueID)
+        if (customValu.CustomValueID == customValueID)
         {
-          return customValue;
+          return customValu;
         }
       }
       return null;
     }
 
-    public virtual CustomValue AddNewCustomValue()
+    public virtual CustomValu AddNewCustomValu()
     {
       if (Table.Columns.Count < 1) LoadColumns("CustomValues");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new CustomValue(row, this);
+      return new CustomValu(row, this);
     }
     
     public virtual void LoadByCustomValueID(int customValueID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomValueID], [CustomFieldID], [RefID], [CustomValue], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[CustomValues] WHERE ([CustomValueID] = @CustomValueID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomValueID], [CustomFieldID], [RefID], [CustomValue], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ImportFileID] FROM [dbo].[CustomValues] WHERE ([CustomValueID] = @CustomValueID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomValueID", customValueID);
         Fill(command);
       }
     }
     
-    public static CustomValue GetCustomValue(LoginUser loginUser, int customValueID)
+    public static CustomValu GetCustomValu(LoginUser loginUser, int customValueID)
     {
       CustomValues customValues = new CustomValues(loginUser);
       customValues.LoadByCustomValueID(customValueID);
@@ -427,13 +447,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<CustomValue> Members
+    #region IEnumerable<CustomValu> Members
 
-    public IEnumerator<CustomValue> GetEnumerator()
+    public IEnumerator<CustomValu> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new CustomValue(row, this);
+        yield return new CustomValu(row, this);
       }
     }
 

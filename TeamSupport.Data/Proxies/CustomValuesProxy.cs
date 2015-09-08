@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
 
     /* Custom Fields Info */
     [DataMember] public string FieldName { get; set; }
@@ -52,6 +53,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       CustomValueProxy result = new CustomValueProxy();
+      result.ImportFileID = this.ImportFileID;
       result.ModifierID = Row["ModifierID"] == DBNull.Value ? -1 : this.ModifierID;
       result.CreatorID = Row["CreatorID"] == DBNull.Value ? -1 : this.CreatorID;
       result.RefID = Row["RefID"] == DBNull.Value ? null : (int?)this.RefID;

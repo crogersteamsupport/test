@@ -106,6 +106,12 @@ namespace TeamSupport.Data
       set { Row["ProductVersionID"] = CheckValue("ProductVersionID", value); }
     }
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public bool NeedsIndexing
@@ -256,7 +262,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Assets] SET     [OrganizationID] = @OrganizationID,    [SerialNumber] = @SerialNumber,    [Name] = @Name,    [Location] = @Location,    [Notes] = @Notes,    [ProductID] = @ProductID,    [WarrantyExpiration] = @WarrantyExpiration,    [AssignedTo] = @AssignedTo,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [SubPartOf] = @SubPartOf,    [Status] = @Status,    [ImportID] = @ImportID,    [ProductVersionID] = @ProductVersionID,    [NeedsIndexing] = @NeedsIndexing  WHERE ([AssetID] = @AssetID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Assets] SET     [OrganizationID] = @OrganizationID,    [SerialNumber] = @SerialNumber,    [Name] = @Name,    [Location] = @Location,    [Notes] = @Notes,    [ProductID] = @ProductID,    [WarrantyExpiration] = @WarrantyExpiration,    [AssignedTo] = @AssignedTo,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [SubPartOf] = @SubPartOf,    [Status] = @Status,    [ImportID] = @ImportID,    [ProductVersionID] = @ProductVersionID,    [NeedsIndexing] = @NeedsIndexing,    [ImportFileID] = @ImportFileID  WHERE ([AssetID] = @AssetID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AssetID", SqlDbType.Int, 4);
@@ -371,13 +377,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Assets] (    [OrganizationID],    [SerialNumber],    [Name],    [Location],    [Notes],    [ProductID],    [WarrantyExpiration],    [AssignedTo],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [SubPartOf],    [Status],    [ImportID],    [ProductVersionID],    [NeedsIndexing]) VALUES ( @OrganizationID, @SerialNumber, @Name, @Location, @Notes, @ProductID, @WarrantyExpiration, @AssignedTo, @DateCreated, @DateModified, @CreatorID, @ModifierID, @SubPartOf, @Status, @ImportID, @ProductVersionID, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Assets] (    [OrganizationID],    [SerialNumber],    [Name],    [Location],    [Notes],    [ProductID],    [WarrantyExpiration],    [AssignedTo],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [SubPartOf],    [Status],    [ImportID],    [ProductVersionID],    [NeedsIndexing],    [ImportFileID]) VALUES ( @OrganizationID, @SerialNumber, @Name, @Location, @Notes, @ProductID, @WarrantyExpiration, @AssignedTo, @DateCreated, @DateModified, @CreatorID, @ModifierID, @SubPartOf, @Status, @ImportID, @ProductVersionID, @NeedsIndexing, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -610,7 +630,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [AssetID], [OrganizationID], [SerialNumber], [Name], [Location], [Notes], [ProductID], [WarrantyExpiration], [AssignedTo], [DateCreated], [DateModified], [CreatorID], [ModifierID], [SubPartOf], [Status], [ImportID], [ProductVersionID], [NeedsIndexing] FROM [dbo].[Assets] WHERE ([AssetID] = @AssetID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AssetID], [OrganizationID], [SerialNumber], [Name], [Location], [Notes], [ProductID], [WarrantyExpiration], [AssignedTo], [DateCreated], [DateModified], [CreatorID], [ModifierID], [SubPartOf], [Status], [ImportID], [ProductVersionID], [NeedsIndexing], [ImportFileID] FROM [dbo].[Assets] WHERE ([AssetID] = @AssetID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AssetID", assetID);
         Fill(command);

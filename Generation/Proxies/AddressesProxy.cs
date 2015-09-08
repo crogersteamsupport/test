@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public AddressProxy() {}
     [DataMember] public int AddressID { get; set; }
     [DataMember] public int RefID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public string Addr1 { get; set; }
     [DataMember] public string Addr2 { get; set; }
@@ -29,6 +29,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -37,6 +38,7 @@ namespace TeamSupport.Data
     public AddressProxy GetProxy()
     {
       AddressProxy result = new AddressProxy();
+      result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.Comment = this.Comment;

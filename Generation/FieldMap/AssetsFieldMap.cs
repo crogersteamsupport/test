@@ -31,6 +31,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ImportID", "ImportID", false, false, false);
       _fieldMap.AddMap("ProductVersionID", "ProductVersionID", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
+      _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
             
     }
   }

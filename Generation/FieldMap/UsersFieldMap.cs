@@ -99,6 +99,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("verificationCode", "verificationCode", false, false, false);
       _fieldMap.AddMap("verificationCodeExpiration", "verificationCodeExpiration", false, false, false);
       _fieldMap.AddMap("PasswordCreatedUtc", "PasswordCreatedUtc", false, false, false);
+      _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
             
     }
   }

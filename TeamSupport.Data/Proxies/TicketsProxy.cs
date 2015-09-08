@@ -51,6 +51,7 @@ namespace TeamSupport.Data
     [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
     [DataMember] public string SalesForceID { get; set; }
     [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -63,6 +64,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("class");
       sanitizer.AllowedAttributes.Add("id");
 
+      result.ImportFileID = this.ImportFileID;
       result.SalesForceID = this.SalesForceID;
       result.KnowledgeBaseCategoryID = this.KnowledgeBaseCategoryID;
       result.ModifierID = this.ModifierID;

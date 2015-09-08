@@ -111,6 +111,7 @@ namespace TeamSupport.Data
     [DataMember] public bool UseProductFamilies { get; set; }
     [DataMember] public bool IsCustomerInsightsActive { get; set; }
     [DataMember] public bool TwoStepVerificationEnabled { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
 	[DataMember] public int DaysBeforePasswordExpire { get; set; }
           
   }
@@ -121,6 +122,7 @@ namespace TeamSupport.Data
     {
       OrganizationProxy result = new OrganizationProxy();
 	  result.DaysBeforePasswordExpire = this.DaysBeforePasswordExpire;
+      result.ImportFileID = this.ImportFileID;
       result.TwoStepVerificationEnabled = this.TwoStepVerificationEnabled;
       result.IsCustomerInsightsActive = this.IsCustomerInsightsActive;
       result.UseProductFamilies = this.UseProductFamilies;

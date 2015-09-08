@@ -35,6 +35,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Pinned", "Pinned", false, false, false);
       _fieldMap.AddMap("Description", "Description", false, false, false);
       _fieldMap.AddMap("IsClean", "IsClean", false, false, false);
+      _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
             
     }
   }

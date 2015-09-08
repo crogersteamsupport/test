@@ -31,6 +31,7 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public string MapLink { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -43,6 +44,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       AddressProxy result = new AddressProxy();
+      result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
 

@@ -98,6 +98,7 @@ namespace TeamSupport.Data
     [DataMember] public string verificationCode { get; set; }
     [DataMember] public DateTime? verificationCodeExpiration { get; set; }
     [DataMember] public DateTime? PasswordCreatedUtc { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -106,6 +107,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.ImportFileID = this.ImportFileID;
 
       result.verificationCode = this.verificationCode;
       result.verificationPhoneNumber = this.verificationPhoneNumber;
