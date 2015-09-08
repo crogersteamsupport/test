@@ -14,7 +14,7 @@ $(document).ready(function () {
 
     IssueAjaxRequest(loginService, "SignIn", signInData,
     function (result) {debugger
-      switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
+      switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4, ExipredPassword = 5
         case 1:
           window.location = returnURL;
           break;
@@ -24,6 +24,9 @@ $(document).ready(function () {
         case 4:
           window.location = resourcesURL + 'LoginTwoStepSetup.html?UserID=' + result.UserId;
           break;
+      	case 5:
+      		window.location = 'ChangePassword.aspx?reason=expired';
+      		break;
         default:
           $('#loginError').text(result.Error).show();
           break;
