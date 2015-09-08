@@ -112,6 +112,10 @@ namespace TSWebServices
 					string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
 				}
 			}
+			else if (result.Result == LoginResult.PasswordExpired)
+			{
+				string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
+			}
 
 			return JsonConvert.SerializeObject(result);
 		}
