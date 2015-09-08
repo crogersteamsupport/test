@@ -389,7 +389,7 @@ namespace TSWebServices
 		{
 			int verificationCode = GenerateRandomVerificationCode();
 			SMS smsVerification = new SMS();
-			smsVerification.Send(string.Format("Your TeamSupport verification code is: {0}", verificationCode.ToString()), userVerificationPhoneNumber);
+			smsVerification.Send(string.Format("Your TeamSupport verification code is: {0}", verificationCode.ToString("### ## ###")), userVerificationPhoneNumber);
 
 			if (!smsVerification.IsSuccessful)
 			{
