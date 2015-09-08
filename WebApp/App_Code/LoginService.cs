@@ -315,6 +315,7 @@ namespace TSWebServices
 			}
 
 			int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 15);
+			validation.LoginFailedAttempts = attempts;
 
 			if (user != null && attempts <= MAXLOGINATTEMPTS)
 			{
@@ -333,24 +334,33 @@ namespace TSWebServices
 					if ((organization.ParentID == 1 && organization.OrganizationID != 1) && user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !isNewSignUp)
 					{
 						validation.Error = "Invalid email or password.";
+						validation.Result = LoginResult.Fail;
 					}
 
 					if (!organization.IsActive)
 					{
 						if (string.IsNullOrEmpty(organization.InActiveReason))
+						{
 							validation.Error = "Your account is no longer active.  Please contact TeamSupport.com.";
+							validation.Result = LoginResult.Fail;
+						}
 						else
+						{
 							validation.Error = "Your company account is no longer active.<br />" + organization.InActiveReason;
+							validation.Result = LoginResult.Fail;
+						}
 					}
 
 					if (!user.IsActive)
 					{
 						validation.Error = "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
+						validation.Result = LoginResult.Fail;
 					}
 
 					if (user.IsPasswordExpired || (organization.DaysBeforePasswordExpire > 0 && user.PasswordCreatedUtc != null && user.PasswordCreatedUtc.HasValue && DateTime.UtcNow > user.PasswordCreatedUtc.Value.AddDays(organization.DaysBeforePasswordExpire)))
 					{
 						validation.Error = "Your password has expired.";
+						validation.Result = LoginResult.PasswordExpired;
 					}					
 				}
 			}
@@ -363,9 +373,8 @@ namespace TSWebServices
 				validation.Error = string.Format("Your account is temporarily locked, because of too many login attempts.{0}Try again in 15 minutes.", Environment.NewLine);
 			}
 
-			if (!string.IsNullOrEmpty(validation.Error))
+			if (validation.Result != LoginResult.Success && validation.Result != LoginResult.Unknown && !string.IsNullOrEmpty(validation.Error))
 			{
-				validation.Result = LoginResult.Fail;
 				LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, GetDeviceID());
 			}
 			else
@@ -528,6 +537,7 @@ namespace TSWebServices
 				}
 			}
 			public string Error { get; set; }
+			public int LoginFailedAttempts { get; set; }
 		}
 
 		public enum LoginResult : int
@@ -536,7 +546,8 @@ namespace TSWebServices
 			Success = 1,
 			Fail = 2,
 			VerificationNeeded = 3,
-			VerificationSetupNeeded = 4
+			VerificationSetupNeeded = 4,
+			PasswordExpired = 5
 		}
 
 		[Serializable]
