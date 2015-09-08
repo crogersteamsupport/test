@@ -361,7 +361,7 @@ namespace TSWebServices
 						validation.Result = LoginResult.Fail;
 					}
 
-					if (user.IsPasswordExpired || (organization.DaysBeforePasswordExpire > 0 && user.PasswordCreatedUtc != null && user.PasswordCreatedUtc.HasValue && DateTime.UtcNow > user.PasswordCreatedUtc.Value.AddDays(organization.DaysBeforePasswordExpire)))
+					if (validation.Result != LoginResult.Fail && user.IsPasswordExpired || (organization.DaysBeforePasswordExpire > 0 && user.PasswordCreatedUtc != null && user.PasswordCreatedUtc.HasValue && DateTime.UtcNow > user.PasswordCreatedUtc.Value.AddDays(organization.DaysBeforePasswordExpire)))
 					{
 						validation.Error = "Your password has expired.";
 						validation.Result = LoginResult.PasswordExpired;
