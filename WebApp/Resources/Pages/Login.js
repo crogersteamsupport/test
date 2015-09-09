@@ -28,7 +28,11 @@ $(document).ready(function () {
       		window.location = 'ChangePassword.aspx?reason=expired';
       		break;
         default:
-          $('#loginError').text(result.Error).show();
+        	$('#loginError').text(result.Error).show();
+        	if (result.LoginFailedAttempts > 0 && result.LoginFailedAttempts <= 10) {
+        		$('#numbAttempts').text(result.LoginFailedAttempts).parent().show();
+        	}
+        	else $('#numbAttempts').parent().hide();
           break;
       }
     },

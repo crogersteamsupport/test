@@ -402,7 +402,7 @@ namespace TSWebServices
 			}
 			else
 			{
-				validation.Error = string.Format("Your account is temporarily locked, because of too many login attempts.{0}Try again in 15 minutes.", Environment.NewLine);
+				validation.Error = string.Format("Your account is temporarily locked, because of too many login attempts.{0}Try again in 15 minutes or use the forgot password link above to reset your password. ", Environment.NewLine);
 				validation.Result = LoginResult.Fail;
 			}
 
