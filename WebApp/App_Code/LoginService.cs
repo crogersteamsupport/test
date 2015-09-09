@@ -355,9 +355,9 @@ namespace TSWebServices
 			 if (result.Count < 1)
 			 {
 				 
-				 if (TSAuthentication.GetLoginUser() != null) 
+				 if (TSAuthentication.Ticket != null) 
 				 {
-					 User user = Users.GetUser(LoginUser.Anonymous, TSAuthentication.UserID);
+					 User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 					 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(pw1, "MD5");
 					 user.IsPasswordExpired = false;
 					 user.PasswordCreatedUtc = DateTime.UtcNow;
