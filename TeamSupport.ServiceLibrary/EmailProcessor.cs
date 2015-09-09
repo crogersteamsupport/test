@@ -1167,9 +1167,19 @@ namespace TeamSupport.ServiceLibrary
 	 public void ProcessTooManyAttempts(int userID)
 	 {
 		 User user = Users.GetUser(LoginUser, userID);
+		 Users users = new Users(LoginUser);
+
+		 users.LoadByOrganizationID(user.OrganizationID, true);
 
 		 MailMessage message = EmailTemplates.GetTooManyAttempts(LoginUser, user.GetUserView());
 		 message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
+
+		 foreach (User admin in users)
+		 {
+			 if (admin.IsSystemAdmin) message.To.Add(GetMailAddress(admin.Email, admin.FirstLastName));
+		 }
+
+
 		 message.From = GetMailAddress("support@teamsupport.com", "TeamSupport.com");
 		 AddMessage(user.OrganizationID, "Too Many Login Attempts [" + user.FirstLastName + "]", message);
 	 }

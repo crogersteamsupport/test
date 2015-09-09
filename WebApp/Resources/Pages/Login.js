@@ -125,7 +125,7 @@ function IssueAjaxRequest(service, method, data, successCallback, errorCallback)
       //alert(jsonResult.UserId + ' ' + jsonResult.OrganizationId + ' ' + jsonResult.Error + ' ' + jsonResult.Result + ' ' + jsonResult.ResultValue);
     },
     error: function (error, errorStatus, errorThrown) {
-      errorCallback(error);
+      if (errorCallback) errorCallback(error);
     }
   });
 }
