@@ -5,7 +5,7 @@ var returnURL = '/';
 $(document).ready(function () {
 	returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
 	supportToken = top.Ts.Utils.getQueryValue("SupportToken", window);
-	if (supportToken != '')
+	if (supportToken && supportToken != '')
 	{
 		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result)
 		{
