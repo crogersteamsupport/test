@@ -47,7 +47,10 @@ namespace TeamSupport.Data
       else
       {
         forumParent.LoadByCategoryID(forumCategories[0].ParentID);
-        return forumParent[0].CategoryName + " -> " + forumCategories[0].CategoryName;
+			if (!forumParent.IsEmpty)
+				return forumParent[0].CategoryName + " -> " + forumCategories[0].CategoryName;
+			else
+				return forumCategories[0].CategoryName;
       }
 
     }
