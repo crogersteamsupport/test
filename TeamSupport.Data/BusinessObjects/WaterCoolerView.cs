@@ -82,6 +82,20 @@ namespace TeamSupport.Data
           }
       }
 
+		public void LoadMoreThreadsNoCountFilter(int pageID, int itemID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "WCLoadMoreThreadsNoCountFilter";
+				command.CommandType = CommandType.StoredProcedure;
+				command.Parameters.AddWithValue("UserID", LoginUser.UserID);
+				command.Parameters.AddWithValue("OrgID", LoginUser.OrganizationID);
+				command.Parameters.AddWithValue("PageID", pageID);
+				command.Parameters.AddWithValue("AttID", itemID);
+				Fill(command);
+			}
+		}
+
       public int GetTicketWaterCoolerCount(int ticketID)
       {
           Object returnValue;

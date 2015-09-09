@@ -199,35 +199,41 @@ namespace TSWebServices
                     TimeLineItem wcItem = new TimeLineItem();
                     wcItem.item = viewItem.GetProxy();
 
-                    WatercoolerMsg replies = new WatercoolerMsg(loginUser);
-                    replies.LoadReplies(viewItem.RefID);
+                    WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
+						  wc.LoadMoreThreadsNoCountFilter(0, (int)viewItem.TicketNumber);
 
-                    WatercoolerLikes likes = new WatercoolerLikes(loginUser);
-                    likes.LoadByMessageID(viewItem.RefID);
-
-                    wcItem.Likes = likes.Count();
-
-                    wcItem.DidLike = (likes.Where(l => l.UserID == loginUser.UserID).Count() > 0);
-
-                    List<WaterCoolerReply> wcReplies = new List<WaterCoolerReply>();
-
-                    foreach (WatercoolerMsgItem reply in replies)
+                    if(wc.Any(d=>d.MessageID == viewItem.RefID))
                     {
-                        WaterCoolerReply replyItem = new WaterCoolerReply();
-                        replyItem.WaterCoolerReplyProxy = reply.GetProxy();
+                      WatercoolerMsg replies = new WatercoolerMsg(loginUser);
+                      replies.LoadReplies(viewItem.RefID);
+                    
+                      WatercoolerLikes likes = new WatercoolerLikes(loginUser);
+                      likes.LoadByMessageID(viewItem.RefID);
 
-                        WatercoolerLikes replyLikes = new WatercoolerLikes(loginUser);
-                        replyLikes.LoadByMessageID(reply.MessageID);
+                      wcItem.Likes = likes.Count();
 
-                        replyItem.Likes = replyLikes.Count();
+                      wcItem.DidLike = (likes.Where(l => l.UserID == loginUser.UserID).Count() > 0);
 
-                        replyItem.DidLike = (replyLikes.Where(rl => rl.UserID == loginUser.UserID).Count() > 0);
+                      List<WaterCoolerReply> wcReplies = new List<WaterCoolerReply>();
 
-                        wcReplies.Add(replyItem);
+                      foreach (WatercoolerMsgItem reply in replies)
+                      {
+                          WaterCoolerReply replyItem = new WaterCoolerReply();
+                          replyItem.WaterCoolerReplyProxy = reply.GetProxy();
+
+                          WatercoolerLikes replyLikes = new WatercoolerLikes(loginUser);
+                          replyLikes.LoadByMessageID(reply.MessageID);
+
+                          replyItem.Likes = replyLikes.Count();
+
+                          replyItem.DidLike = (replyLikes.Where(rl => rl.UserID == loginUser.UserID).Count() > 0);
+
+                          wcReplies.Add(replyItem);
+                      }
+
+                      wcItem.WaterCoolerReplies = wcReplies.ToArray();
+                      timeLineItems.Add(wcItem);
                     }
-
-                    wcItem.WaterCoolerReplies = wcReplies.ToArray();
-                    timeLineItems.Add(wcItem);
                 }
             }
             return timeLineItems.ToArray();
