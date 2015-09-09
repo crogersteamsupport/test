@@ -379,7 +379,7 @@ UserPage = function () {
 
       }
       else {
-        window.open("../../../ChangePassword.aspx", "ChangePW");
+      	window.open("/vcr/1_9_0/pages/LoginNewPassword.html?UserID="+_user.UserID, "ChangePW");
       }
     });
 

@@ -354,18 +354,32 @@ namespace TSWebServices
 
 			 if (result.Count < 1)
 			 {
-				 User user = Users.GetUser(LoginUser.Anonymous, userID);
-				 if (user.CryptedPassword ==  token || user.CryptedPassword == FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))
+				 
+				 if (TSAuthentication.GetLoginUser() != null) 
 				 {
+					 User user = Users.GetUser(LoginUser.Anonymous, TSAuthentication.UserID);
 					 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(pw1, "MD5");
 					 user.IsPasswordExpired = false;
 					 user.PasswordCreatedUtc = DateTime.UtcNow;
 					 user.Collection.Save();
 					 EmailPosts.SendChangedTSPassword(LoginUser.Anonymous, user.UserID);
 				 }
-				 else
+				 else 
 				 {
-					 result.Add("There was an issue saving your password.  Please try resetting your password again.");
+					 User user = Users.GetUser(LoginUser.Anonymous, userID);
+					 if (user.CryptedPassword == token || user.CryptedPassword == FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))
+					 {
+						 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(pw1, "MD5");
+						 user.IsPasswordExpired = false;
+						 user.PasswordCreatedUtc = DateTime.UtcNow;
+						 user.Collection.Save();
+						 EmailPosts.SendChangedTSPassword(LoginUser.Anonymous, user.UserID);
+					 }
+					 else
+					 {
+						 result.Add("There was an issue saving your password.  Please try resetting your password again.");
+					 }
+					 
 				 }
 			 }
 
