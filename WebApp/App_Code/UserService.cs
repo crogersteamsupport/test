@@ -1178,6 +1178,19 @@ namespace TSWebServices
           return user.GetProxy();
         }
 
+		[WebMethod]
+		public string AdminGetUserLogin(int userID)
+		{
+			if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
+			User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+			BackdoorLogins logins = new BackdoorLogins(TSAuthentication.GetLoginUser());
+			BackdoorLogin login = logins.AddNewBackdoorLogin();
+			login.UserID = TSAuthentication.GetLoginUser().UserID;
+			login.ContactID = userID;
+			logins.Save();
+			return login.Token.ToString();
+		}
+
         [WebMethod]
         public void SetSingleSessionEnforcement(int userID, bool value)
         {

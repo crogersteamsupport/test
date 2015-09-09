@@ -3,7 +3,17 @@ var resourcesURL = '/vcr/1_9_0/Pages/';
 var returnURL = '/';
 
 $(document).ready(function () {
-  returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
+	returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
+	supportToken = top.Ts.Utils.getQueryValue("SupportToken", window);
+	if (supportToken != '')
+	{
+		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result)
+		{
+			window.location = '/.';
+		});
+
+		return;
+	}
   getRememberMe();
   $('#signIn').click(function (e) {
     e.preventDefault();

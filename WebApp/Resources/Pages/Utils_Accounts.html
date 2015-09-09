@@ -135,6 +135,18 @@
             });
             if (user.EnforceSingleSession == true) checkSession.prop('checked', true);
             row.append($('<td>').append(checkSession));
+            var div = $('<div>');
+            var link = $("<a>").attr("href", "#").addClass("getlink").text("Get Login").click(function (e) {
+            	e.preventDefault();
+
+            	top.Ts.Services.Users.AdminGetUserLogin(user.UserID, function (token) {
+            		link.parent().empty().text("https://app.teamsupport.com/Login.html?SupportToken=" + token);
+            	});
+            	
+
+            });
+            div.append(link);
+            row.append(div);
 
             row.data('o', user);
 
@@ -319,6 +331,7 @@
                     <th>Last Login</th>
                     <th>Is Active</th>
                     <th>Single Session Enforced</th>
+  						<th>Get Login Link</th>
                   </tr>
                 </thead>
                 <tbody>

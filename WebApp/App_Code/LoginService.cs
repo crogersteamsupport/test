@@ -126,6 +126,23 @@ namespace TSWebServices
 		}
 
 		[WebMethod]
+		public string SupportSignIn(string token)
+		{
+			BackdoorLogins logins = new BackdoorLogins(LoginUser.Anonymous);
+			logins.LoadByToken(token);
+
+			if (logins.Count > 0 && logins[0].DateIssuedUtc.AddMinutes(10) > DateTime.UtcNow)
+			{
+				User user = Users.GetUser(LoginUser.Anonymous, logins[0].ContactID);
+				AuthenticateUser(user.UserID, user.OrganizationID, true, true);
+			}
+			return "";
+			
+		
+		}
+
+
+		[WebMethod]
 		public string CodeVerification(int userId, string codeEntered)
 		{
 			SignInResult result = new SignInResult();
@@ -337,7 +354,7 @@ namespace TSWebServices
 			 if (result.Count < 1)
 			 {
 				 User user = Users.GetUser(LoginUser.Anonymous, userID);
-				 if (user.CryptedPassword == FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))
+				 if (user.CryptedPassword ==  token || user.CryptedPassword == FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))
 				 {
 					 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(pw1, "MD5");
 					 user.IsPasswordExpired = false;
@@ -490,7 +507,7 @@ namespace TSWebServices
 			return FormsAuthentication.HashPasswordForStoringInConfigFile(password.Trim(), "MD5");
 		}
 
-		private static string AuthenticateUser(int userId, int organizationId, bool storeInfo)
+		private static string AuthenticateUser(int userId, int organizationId, bool storeInfo, bool isBackDoor = false)
 		{
 			string result = string.Empty;
 			LoginUser loginUser = new LoginUser(UserSession.ConnectionString, userId, organizationId, null);
@@ -506,7 +523,7 @@ namespace TSWebServices
 			}
 
 			LoginAttempts.AddAttempt(loginUser, userId, true, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, deviceID);
-			TSAuthentication.Authenticate(user, false, deviceID);
+			TSAuthentication.Authenticate(user, isBackDoor, deviceID);
 			System.Web.HttpBrowserCapabilities browser = HttpContext.Current.Request.Browser;
 			ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Users, userId, "Logged in (" + browser.Browser + " " + browser.Version + ")");
 
@@ -524,7 +541,7 @@ namespace TSWebServices
 			}
 
 			if (user.IsPasswordExpired)
-				result = "ChangePassword.aspx?reason=expired";
+				result = string.Format("vcr/1/LoginNewPassword.html?UserID={0}&Token={1}", user.UserID, user.CryptedPassword);
 			else
 			{
 				string rawQueryString = null;
