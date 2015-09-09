@@ -398,10 +398,12 @@ namespace TSWebServices
 			else if (user == null)
 			{
 				validation.Error = "Invalid email or password.";
+				validation.Result = LoginResult.Fail;
 			}
 			else
 			{
 				validation.Error = string.Format("Your account is temporarily locked, because of too many login attempts.{0}Try again in 15 minutes.", Environment.NewLine);
+				validation.Result = LoginResult.Fail;
 			}
 
 			if (validation.Result != LoginResult.Success && validation.Result != LoginResult.Unknown && !string.IsNullOrEmpty(validation.Error))
