@@ -59,6 +59,11 @@ namespace TSWebServices
 
 			if (result.Result == LoginResult.Success)
 			{
+
+				UserDevices devices = new UserDevices(loginUser);
+				devices.LoadByUserIDAndDeviceID(user.UserID, GetDeviceID());
+				_skipVerification = !devices.IsEmpty && devices[0].IsActivated;
+
 				if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification)
 				{
 					string userVerificationPhoneNumber	= user.verificationPhoneNumber;
@@ -145,6 +150,28 @@ namespace TSWebServices
 							users[0].verificationCode = null;
 							users[0].verificationCodeExpiration = null;
 							users.Save();
+
+							UserDevices devices = new UserDevices(loginUser);
+							devices.LoadByUserIDAndDeviceID(users[0].UserID, GetDeviceID());
+							if (devices.IsEmpty)
+							{
+								devices = new UserDevices(loginUser);
+								UserDevice device = devices.AddNewUserDevice();
+								device.DateActivated = DateTime.UtcNow;
+								device.IsActivated = true;
+								device.DeviceID = GetDeviceID();
+								device.UserID = users[0].UserID;
+								devices.Save();
+
+								// email new device
+							}
+							else
+							{
+								devices[0].DateActivated = DateTime.UtcNow;
+								devices[0].IsActivated = true;
+								devices.Save();
+							}
+
 							result.Result = LoginResult.Success;
 							string authenticateResult = AuthenticateUser(users[0].UserID, users[0].OrganizationID, true);
 						}

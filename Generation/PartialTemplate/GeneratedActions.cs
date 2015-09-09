@@ -70,12 +70,6 @@ namespace TeamSupport.Data
       set { Row["JiraID"] = CheckValue("JiraID", value); }
     }
     
-    public string Description
-    {
-      get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckValue("Description", value); }
-    }
-    
     public int? ImportFileID
     {
       get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
@@ -88,6 +82,12 @@ namespace TeamSupport.Data
     {
       get { return (bool)Row["IsClean"]; }
       set { Row["IsClean"] = CheckValue("IsClean", value); }
+    }
+    
+    public string Description
+    {
+      get { return (string)Row["Description"]; }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public bool Pinned
@@ -132,9 +132,9 @@ namespace TeamSupport.Data
       set { Row["Name"] = CheckValue("Name", value); }
     }
     
-    public int SystemActionTypeID
+    public SystemActionType SystemActionTypeID
     {
-      get { return (int)Row["SystemActionTypeID"]; }
+      get { return (SystemActionType)Row["SystemActionTypeID"]; }
       set { Row["SystemActionTypeID"] = CheckValue("SystemActionTypeID", value); }
     }
     

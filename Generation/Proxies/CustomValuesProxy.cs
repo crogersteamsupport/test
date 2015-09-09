@@ -31,6 +31,7 @@ namespace TeamSupport.Data
     {
       CustomValuProxy result = new CustomValuProxy();
       result.ImportFileID = this.ImportFileID;
+      result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.CustomValue = this.CustomValue;

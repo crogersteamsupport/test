@@ -141,7 +141,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChartHandler.cs" />
-    <Compile Include="ContentHandler.cs" />
+    <Compile Include="ContentHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="UserStatusHandler.cs" />
     <Compile Include="SignUpHandler.cs" />
     <Compile Include="ChatStatusHandler.cs" />

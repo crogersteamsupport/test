@@ -58,6 +58,8 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableSaExpiration { get; set; }
     [DataMember] public bool DisplaySettings { get; set; }
     [DataMember] public bool DisplayLogout { get; set; }
+    [DataMember] public bool RestrictProductVersion { get; set; }
+    [DataMember] public bool EnableVideoRecording { get; set; }
           
   }
   
@@ -66,6 +68,8 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.EnableVideoRecording = this.EnableVideoRecording;
+      result.RestrictProductVersion = this.RestrictProductVersion;
       result.DisplayLogout = this.DisplayLogout;
       result.DisplaySettings = this.DisplaySettings;
       result.EnableSaExpiration = this.EnableSaExpiration;

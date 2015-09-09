@@ -58,6 +58,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableSaExpiration", "EnableSaExpiration", false, false, false);
       _fieldMap.AddMap("DisplaySettings", "DisplaySettings", false, false, false);
       _fieldMap.AddMap("DisplayLogout", "DisplayLogout", false, false, false);
+      _fieldMap.AddMap("RestrictProductVersion", "RestrictProductVersion", false, false, false);
+      _fieldMap.AddMap("EnableVideoRecording", "EnableVideoRecording", false, false, false);
             
     }
   }

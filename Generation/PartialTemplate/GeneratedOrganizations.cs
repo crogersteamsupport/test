@@ -214,13 +214,13 @@ namespace TeamSupport.Data
       set { Row["CustDistIndexTrend"] = CheckValue("CustDistIndexTrend", value); }
     }
     
-
-    
     public int? ImportFileID
     {
       get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
       set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
     }
+    
+
     
     public int DaysBeforePasswordExpire
     {
@@ -1465,14 +1465,14 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Organizations] (    [Name],    [Description],    [Website],    [WhereHeard],    [PromoCode],    [IsCustomerFree],    [UserSeats],    [PortalSeats],    [ChatSeats],    [ExtraStorageUnits],    [ImportID],    [IsActive],    [IsApiActive],    [IsApiEnabled],    [IsInventoryEnabled],    [TimeZoneID],    [InActiveReason],    [HasPortalAccess],    [IsAdvancedPortal],    [IsBasicPortal],    [PrimaryUserID],    [DefaultPortalGroupID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [ProductType],    [ParentID],    [WebServiceID],    [SystemEmailID],    [ChatID],    [PortalGuid],    [CRMLinkID],    [SAExpirationDate],    [APIRequestLimit],    [DateCreated],    [DateModified],    [RequireNewKeyword],    [RequireKnownUserForNewEmail],    [EmailDelimiter],    [OrganizationReplyToAddress],    [CompanyDomains],    [AdminOnlyCustomers],    [AdminOnlyReports],    [ShowWiki],    [DefaultWikiArticleID],    [SlaLevelID],    [InternalSlaLevelID],    [BusinessDays],    [BusinessDayStart],    [BusinessDayEnd],    [UseEuropeDate],    [CultureName],    [TimedActionsRequired],    [MatchEmailSubject],    [CreatorID],    [ModifierID],    [PrimaryInterest],    [PotentialSeats],    [EvalProcess],    [AddAdditionalContacts],    [ChangeStatusIfClosed],    [IsPublicArticles],    [UseForums],    [SetNewActionsVisibleToCustomers],    [SupportHoursMonth],    [ProductRequired],    [ProductVersionRequired],    [AllowUnsecureAttachmentViewing],    [ForceBCCEmailsPrivate],    [UnknownCompanyID],    [IsRebuildingIndex],    [LastIndexRebuilt],    [IsIndexLocked],    [NeedsIndexing],    [NeedCustForTicketMatch],    [TotalTicketsCreated],    [TicketsOpen],    [CreatedLast30],    [AvgTimeOpen],    [AvgTimeToClose],    [CustDisIndex],    [SlaInitRespAnyAction],    [FontFamily],    [FontSize],    [ShowGroupMembersFirstInTicketAssignmentList],    [UpdateTicketChildrenGroupWithParent],    [ReplyToAlternateEmailAddresses],    [ForceUseOfReplyTo],    [AgentRating],    [AddEmailViaTS],    [SignUpToken],    [IsValidated],    [DateLastIndexed],    [HideDismissNonAdmins],    [CustDistIndexTrend],    [UseProductFamilies],    [IsCustomerInsightsActive],    [TwoStepVerificationEnabled],    [ImportFileID],    [DaysBeforePasswordExpire]) VALUES ( @Name, @Description, @Website, @WhereHeard, @PromoCode, @IsCustomerFree, @UserSeats, @PortalSeats, @ChatSeats, @ExtraStorageUnits, @ImportID, @IsActive, @IsApiActive, @IsApiEnabled, @IsInventoryEnabled, @TimeZoneID, @InActiveReason, @HasPortalAccess, @IsAdvancedPortal, @IsBasicPortal, @PrimaryUserID, @DefaultPortalGroupID, @DefaultSupportGroupID, @DefaultSupportUserID, @ProductType, @ParentID, @WebServiceID, @SystemEmailID, @ChatID, @PortalGuid, @CRMLinkID, @SAExpirationDate, @APIRequestLimit, @DateCreated, @DateModified, @RequireNewKeyword, @RequireKnownUserForNewEmail, @EmailDelimiter, @OrganizationReplyToAddress, @CompanyDomains, @AdminOnlyCustomers, @AdminOnlyReports, @ShowWiki, @DefaultWikiArticleID, @SlaLevelID, @InternalSlaLevelID, @BusinessDays, @BusinessDayStart, @BusinessDayEnd, @UseEuropeDate, @CultureName, @TimedActionsRequired, @MatchEmailSubject, @CreatorID, @ModifierID, @PrimaryInterest, @PotentialSeats, @EvalProcess, @AddAdditionalContacts, @ChangeStatusIfClosed, @IsPublicArticles, @UseForums, @SetNewActionsVisibleToCustomers, @SupportHoursMonth, @ProductRequired, @ProductVersionRequired, @AllowUnsecureAttachmentViewing, @ForceBCCEmailsPrivate, @UnknownCompanyID, @IsRebuildingIndex, @LastIndexRebuilt, @IsIndexLocked, @NeedsIndexing, @NeedCustForTicketMatch, @TotalTicketsCreated, @TicketsOpen, @CreatedLast30, @AvgTimeOpen, @AvgTimeToClose, @CustDisIndex, @SlaInitRespAnyAction, @FontFamily, @FontSize, @ShowGroupMembersFirstInTicketAssignmentList, @UpdateTicketChildrenGroupWithParent, @ReplyToAlternateEmailAddresses, @ForceUseOfReplyTo, @AgentRating, @AddEmailViaTS, @SignUpToken, @IsValidated, @DateLastIndexed, @HideDismissNonAdmins, @CustDistIndexTrend, @UseProductFamilies, @IsCustomerInsightsActive, @TwoStepVerificationEnabled, @ImportFileID, @DaysBeforePasswordExpire); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		tempParameter = insertCommand.Parameters.Add("DaysBeforePasswordExpire", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("DaysBeforePasswordExpire", SqlDbType.Int, 4);
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;

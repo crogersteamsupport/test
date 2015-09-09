@@ -182,6 +182,7 @@
     <Compile Include="BusinessObjects\AssetsView.cs" />
     <Compile Include="BusinessObjects\AttachmentDownloads.cs" />
     <Compile Include="BusinessObjects\Attachments.cs" />
+    <Compile Include="BusinessObjects\BackdoorLogins.cs" />
     <Compile Include="BusinessObjects\BillingInfo.cs" />
     <Compile Include="BusinessObjects\CalendarEvents.cs" />
     <Compile Include="BusinessObjects\CalendarRef.cs" />
@@ -263,6 +264,7 @@
     <Compile Include="BusinessObjects\TokStorage.cs" />
     <Compile Include="BusinessObjects\Translate.cs" />
     <Compile Include="BusinessObjects\UserAssignmentHistory.cs" />
+    <Compile Include="BusinessObjects\UserDevices.cs" />
     <Compile Include="BusinessObjects\UserNoteSettings.cs" />
     <Compile Include="BusinessObjects\UserProducts.cs" />
     <Compile Include="BusinessObjects\UserProductsView.cs" />
@@ -298,6 +300,7 @@
     <Compile Include="FieldMaps\AssetsFieldMap.cs" />
     <Compile Include="FieldMaps\AssetsViewFieldMap.cs" />
     <Compile Include="FieldMaps\AttachmentDownloadsFieldMap.cs" />
+    <Compile Include="FieldMaps\BackdoorLoginsFieldMap.cs" />
     <Compile Include="FieldMaps\CalendarEventsFieldMap.cs" />
     <Compile Include="FieldMaps\CalendarRefFieldMap.cs" />
     <Compile Include="FieldMaps\CDI_SettingsFieldMap.cs" />
@@ -362,6 +365,7 @@
     <Compile Include="FieldMaps\TokStorageFieldMap.cs" />
     <Compile Include="FieldMaps\TranslateFieldMap.cs" />
     <Compile Include="FieldMaps\UserAssignmentHistoryFieldMap.cs" />
+    <Compile Include="FieldMaps\UserDevicesFieldMap.cs" />
     <Compile Include="FieldMaps\UserNoteSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\UserProductsFieldMap.cs" />
     <Compile Include="FieldMaps\UserProductsViewFieldMap.cs" />
@@ -383,6 +387,7 @@
     <Compile Include="Generated\GeneratedAssets.cs" />
     <Compile Include="Generated\GeneratedAssetsView.cs" />
     <Compile Include="Generated\GeneratedAttachmentDownloads.cs" />
+    <Compile Include="Generated\GeneratedBackdoorLogins.cs" />
     <Compile Include="Generated\GeneratedCalendarEvents.cs" />
     <Compile Include="Generated\GeneratedCalendarRef.cs" />
     <Compile Include="Generated\GeneratedCDI_Settings.cs" />
@@ -651,6 +656,7 @@
     <Compile Include="Generated\GeneratedTranslate.cs" />
     <Compile Include="Generated\GeneratedTSEMailIgnoreList.cs" />
     <Compile Include="Generated\GeneratedUserAssignmentHistory.cs" />
+    <Compile Include="Generated\GeneratedUserDevices.cs" />
     <Compile Include="Generated\GeneratedUserNoteSettings.cs" />
     <Compile Include="Generated\GeneratedUserProducts.cs" />
     <Compile Include="Generated\GeneratedUserProductsView.cs" />
@@ -666,6 +672,7 @@
     <Compile Include="Generated\GeneratedWikiArticles.cs" />
     <Compile Include="Generated\GeneratedWikiArticlesView.cs" />
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
+    <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
     <Compile Include="Proxies\CalendarRefProxy.cs" />
     <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
@@ -821,6 +828,7 @@
     <Compile Include="Proxies\TicketTypesProxy.cs" />
     <Compile Include="Proxies\TranslateProxy.cs" />
     <Compile Include="Proxies\TSEMailIgnoreListProxy.cs" />
+    <Compile Include="Proxies\UserDevicesProxy.cs" />
     <Compile Include="Proxies\UserNoteSettingsProxy.cs" />
     <Compile Include="Proxies\UserProductsProxy.cs" />
     <Compile Include="Proxies\UserProductsViewProxy.cs" />

@@ -94,7 +94,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ProductFamiliesRights", "ProductFamiliesRights", false, false, false);
       _fieldMap.AddMap("BlockEmailFromCreatingOnly", "BlockEmailFromCreatingOnly", false, false, false);
       _fieldMap.AddMap("CalGUID", "CalGUID", false, false, false);
-
+      _fieldMap.AddMap("PortalViewOnly", "PortalViewOnly", false, false, false);
       _fieldMap.AddMap("verificationPhoneNumber", "verificationPhoneNumber", false, false, false);
       _fieldMap.AddMap("verificationCode", "verificationCode", false, false, false);
       _fieldMap.AddMap("verificationCodeExpiration", "verificationCodeExpiration", false, false, false);

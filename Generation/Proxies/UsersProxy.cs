@@ -94,6 +94,7 @@ namespace TeamSupport.Data
     [DataMember] public int ProductFamiliesRights { get; set; }
     [DataMember] public bool? BlockEmailFromCreatingOnly { get; set; }
     [DataMember] public Guid CalGUID { get; set; }
+    [DataMember] public bool PortalViewOnly { get; set; }
     [DataMember] public string verificationPhoneNumber { get; set; }
     [DataMember] public string verificationCode { get; set; }
     [DataMember] public DateTime? verificationCodeExpiration { get; set; }
@@ -108,9 +109,9 @@ namespace TeamSupport.Data
     {
       UserProxy result = new UserProxy();
       result.ImportFileID = this.ImportFileID;
-
       result.verificationCode = this.verificationCode;
       result.verificationPhoneNumber = this.verificationPhoneNumber;
+      result.PortalViewOnly = this.PortalViewOnly;
       result.CalGUID = this.CalGUID;
       result.BlockEmailFromCreatingOnly = this.BlockEmailFromCreatingOnly;
       result.ProductFamiliesRights = this.ProductFamiliesRights;

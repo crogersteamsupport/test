@@ -27,6 +27,7 @@ namespace TeamSupport.Data
     [DataMember] public ReferenceType RefType { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public bool SentToJira { get; set; }
+    [DataMember] public Guid AttachmentGUID { get; set; }
           
   }
   
@@ -35,6 +36,7 @@ namespace TeamSupport.Data
     public AttachmentProxy GetProxy()
     {
       AttachmentProxy result = new AttachmentProxy();
+      result.AttachmentGUID = this.AttachmentGUID;
       result.SentToJira = this.SentToJira;
       result.RefID = this.RefID;
       result.RefType = this.RefType;
