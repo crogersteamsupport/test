@@ -17,7 +17,7 @@
     </div>
   </header>
   <div class="container-fluid">
-    <div class="card card-container">
+    <div class="card card-container" style="padding-bottom:5px;">
       <h3 class="pageTitle">Enter your Verification Code</h3>
       <form class="form-signin">
         <div class="form-group">
@@ -26,6 +26,7 @@
         <button id="verify" class="btn btn-lg btn-primary btn-block btn-signin">Verify</button>
         <button id="resendCode" class="btn btn-link">Resend Verification Code</button>
       </form>
+	 	<div id="codeResent" class="alert alert-info" style="display:none; margin-top:15px; margin-bottom: 10px;" role="alert">Verification Code resent. <br /></div>
       <div id="pageError" class="alert alert-error" style="display:none; margin-top:15px; margin-bottom: 0px;" role="alert"></div>
     </div>
   </div>

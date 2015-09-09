@@ -34,7 +34,7 @@ $(document).ready(function () {
     var userData = { userId: userId };
     IssueAjaxRequest(loginService, "RegenerateCodeVerification", userData,
     function (result) {
-
+    	$('#codeResent').show();
     },
     function (error) {
       $('#pageError').text('There was a issue resending your verification code.  Please try again.').show();
