@@ -36,7 +36,6 @@ $(document).ready(function () {
           break;
 			case 5:
 				window.location = resourcesURL + result.RedirectURL;
-				//window.location = resourcesURL + 'LoginNewPassword.html?UserID=' + result.UserId;
       		break;
         default:
         	$('#loginError').text(result.Error).show();

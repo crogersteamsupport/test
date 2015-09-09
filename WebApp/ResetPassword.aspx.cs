@@ -62,7 +62,7 @@ public partial class ResetPassword : System.Web.UI.Page
   {
     string[] result = new string[2];
     result[0] = null;
-    result[1] = "Message.aspx?ReturnUrl=Login.aspx&Message=password_reset";
+    result[1] = "Message.aspx?ReturnUrl=Login.html&Message=password_reset";
     email = email.Trim();
     LoginUser ananLoginUser = new LoginUser(UserSession.ConnectionString, -1, -1, null);
 
