@@ -127,6 +127,7 @@ namespace TSWebServices
 		}
 
 		[WebMethod]
+		[ScriptMethod(ResponseFormat = ResponseFormat.Json)]
 		public string SupportSignIn(string token)
 		{
 			BackdoorLogins logins = new BackdoorLogins(LoginUser.Anonymous);
@@ -137,7 +138,7 @@ namespace TSWebServices
 				User user = Users.GetUser(LoginUser.Anonymous, logins[0].ContactID);
 				AuthenticateUser(user.UserID, user.OrganizationID, true, true);
 			}
-			return "";
+			return JsonConvert.SerializeObject("");
 			
 		
 		}
@@ -537,25 +538,28 @@ namespace TSWebServices
 				HttpContext.Current.Response.Cookies.Add(deviceCookie);
 			}
 
-			LoginAttempts.AddAttempt(loginUser, userId, true, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, deviceID);
 			TSAuthentication.Authenticate(user, isBackDoor, deviceID);
-			System.Web.HttpBrowserCapabilities browser = HttpContext.Current.Request.Browser;
-			ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Users, userId, "Logged in (" + browser.Browser + " " + browser.Version + ")");
-
-			ConfirmBaseData(loginUser);
-
-			if (storeInfo)
+			if (!isBackDoor)
 			{
-				HttpContext.Current.Response.Cookies["sl"]["a"] = user.UserID.ToString();
-				HttpContext.Current.Response.Cookies["sl"]["b"] = user.CryptedPassword;
-				HttpContext.Current.Response.Cookies["sl"].Expires = DateTime.UtcNow.AddYears(14);
-			}
-			else
-			{
-				HttpContext.Current.Response.Cookies["sl"].Value = "";
+				LoginAttempts.AddAttempt(loginUser, userId, true, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, deviceID);
+				System.Web.HttpBrowserCapabilities browser = HttpContext.Current.Request.Browser;
+				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Users, userId, "Logged in (" + browser.Browser + " " + browser.Version + ")");
+
+				ConfirmBaseData(loginUser);
+
+				if (storeInfo)
+				{
+					HttpContext.Current.Response.Cookies["sl"]["a"] = user.UserID.ToString();
+					HttpContext.Current.Response.Cookies["sl"]["b"] = user.CryptedPassword;
+					HttpContext.Current.Response.Cookies["sl"].Expires = DateTime.UtcNow.AddYears(14);
+				}
+				else
+				{
+					HttpContext.Current.Response.Cookies["sl"].Value = "";
+				}
 			}
 
-			if (user.IsPasswordExpired)
+			if (user.IsPasswordExpired && !isBackDoor)
 				result = string.Format("vcr/1/LoginNewPassword.html?UserID={0}&Token={1}", user.UserID, user.CryptedPassword);
 			else
 			{

@@ -7,11 +7,7 @@ $(document).ready(function () {
 	supportToken = top.Ts.Utils.getQueryValue("SupportToken", window);
 	if (supportToken && supportToken != '')
 	{
-		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result)
-		{
-			window.location = '/.';
-		});
-
+		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result) { window.location = '/'; }, function () { });
 		return;
 	}
   getRememberMe();
