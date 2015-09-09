@@ -24,8 +24,9 @@ $(document).ready(function () {
         case 4:
           window.location = resourcesURL + 'LoginTwoStepSetup.html?UserID=' + result.UserId;
           break;
-      	case 5:
-      		window.location = 'ChangePassword.aspx?reason=expired';
+			case 5:
+				window.location = 'ChangePassword.aspx?reason=expired';
+				//window.location = resourcesURL + 'LoginNewPassword.html?UserID=' + result.UserId;
       		break;
         default:
         	$('#loginError').text(result.Error).show();
