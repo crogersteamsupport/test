@@ -128,6 +128,8 @@ namespace TeamSupport.Data
     ChangedPortalPassword = 8, //PARAMS: UserID
     InternalSignupNotification = 9, //PARAMS: UserID
     TicketSendEmail = 11, //PARAMS: UserID, TicketID, Addresses
+	 NewDevice = 12,
+	 TooManyAttempts = 13
   }
   
   public enum ProductType

@@ -163,7 +163,8 @@ namespace TSWebServices
 								device.UserID = users[0].UserID;
 								devices.Save();
 
-								// email new device
+								EmailPosts.SendNewDevice(loginUser, users[0].UserID);
+								
 							}
 							else
 							{
@@ -320,6 +321,40 @@ namespace TSWebServices
 			return user.Email;
 		 }
 
+
+		 [WebMethod]
+		 public string[] SavePassword(int userID, string token, string pw1, string pw2)
+		 {
+			 List<string> result = new List<string>();
+
+			 if (pw1 != pw2) result.Add("Passwords do not match.");
+			 if (!pw1.Any(char.IsUpper)) result.Add("At least one uppercase letter is required.");
+			 if (!pw1.Any(char.IsLower)) result.Add("At least one lowercase letter is required.");
+			 if (!pw1.Any(char.IsDigit)) result.Add("At least one number is required.");
+			 if (pw1.Length < 8) result.Add("Use at least 8 characters.");
+			 if (pw1.Length > 20) result.Add("Use less than 20 characters.");
+
+			 if (result.Count < 1)
+			 {
+				 User user = Users.GetUser(LoginUser.Anonymous, userID);
+				 if (user.CryptedPassword == FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))
+				 {
+					 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(pw1, "MD5");
+					 user.IsPasswordExpired = false;
+					 user.PasswordCreatedUtc = DateTime.UtcNow;
+					 user.Collection.Save();
+					 EmailPosts.SendChangedTSPassword(LoginUser.Anonymous, user.UserID);
+				 }
+				 else
+				 {
+					 result.Add("There was an issue saving your password.  Please try resetting your password again.");
+				 }
+			 }
+
+			 return result.ToArray();
+		 
+		 }
+
 		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int organizationId, ref User user, ref Organization organization)
 		{
 			SignInResult validation = new SignInResult();
@@ -366,6 +401,7 @@ namespace TSWebServices
 					{
 						validation.Error = "Invalid email or password.";
 						validation.Result = LoginResult.Fail;
+						EmailPosts.SendTooManyAttempts(loginUser, user.UserID);
 					}
 
 					if (!organization.IsActive)
@@ -556,6 +592,8 @@ namespace TSWebServices
 				Organizations.CreateStandardData(loginUser, organization, true, true);
 			}
 		}
+
+		
 
 		public class SignInResult
 		{

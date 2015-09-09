@@ -250,6 +250,13 @@ namespace TeamSupport.ServiceLibrary
         case EmailPostType.InternalSignupNotification:
           ProcessSignUpNotification(GetIntParam(emailPost.Param1));
           break;
+		  case EmailPostType.NewDevice:
+			 ProcessNewDevice(GetIntParam(emailPost.Param1));
+			 break;
+		  case EmailPostType.TooManyAttempts:
+			 ProcessTooManyAttempts(GetIntParam(emailPost.Param1));
+			 break;
+
         default:
           break;
       }
@@ -1146,6 +1153,26 @@ namespace TeamSupport.ServiceLibrary
       AddMessage(organization.OrganizationID, "Welcome New Portal User [" + user.FirstLastName + "]", message);
     }
 
+
+	 public void ProcessNewDevice(int userID)
+	 {
+		 User user = Users.GetUser(LoginUser, userID);
+
+		 MailMessage message = EmailTemplates.GetNewDeviceEmail(LoginUser, user.GetUserView());
+		 message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
+		 message.From = GetMailAddress("support@teamsupport.com", "TeamSupport.com");
+		 AddMessage(user.OrganizationID, "New Device Login [" + user.FirstLastName + "]", message);
+	 }
+
+	 public void ProcessTooManyAttempts(int userID)
+	 {
+		 User user = Users.GetUser(LoginUser, userID);
+
+		 MailMessage message = EmailTemplates.GetTooManyAttempts(LoginUser, user.GetUserView());
+		 message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
+		 message.From = GetMailAddress("support@teamsupport.com", "TeamSupport.com");
+		 AddMessage(user.OrganizationID, "Too Many Login Attempts [" + user.FirstLastName + "]", message);
+	 }
     public void ProcessResetTSPassword(int userID, string password)
     {
       User user = Users.GetUser(LoginUser, userID);

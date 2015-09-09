@@ -690,7 +690,21 @@ namespace TeamSupport.Data
       return template.GetMessage();
     }
 
-    public static MailMessage GetResetPasswordPortal(LoginUser loginUser, UsersViewItem portalUser, string password)
+	 public static MailMessage GetNewDeviceEmail(LoginUser loginUser, UsersViewItem user)
+	 {
+		 EmailTemplate template = GetTemplate(loginUser, user.OrganizationID, 30, -1);
+		 template.ReplaceCommonParameters().ReplaceFields("User", user);
+		 return template.GetMessage();
+	 }
+
+	 public static MailMessage GetTooManyAttempts(LoginUser loginUser, UsersViewItem user)
+	 {
+		 EmailTemplate template = GetTemplate(loginUser, user.OrganizationID, 31, -1);
+		 template.ReplaceCommonParameters().ReplaceFields("User", user);
+		 return template.GetMessage();
+	 }
+
+	 public static MailMessage GetResetPasswordPortal(LoginUser loginUser, UsersViewItem portalUser, string password)
     {
       EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(portalUser), 13, -1);
       template.ReplaceCommonParameters().ReplaceFields("PortalUser", portalUser).ReplaceParameter("Password", password);
