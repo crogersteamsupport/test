@@ -120,6 +120,7 @@ namespace TSWebServices
 			else if (result.Result == LoginResult.PasswordExpired)
 			{
 				string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
+				result.RedirectURL = string.Format("LoginNewPassword.html?UserID={0}&Token={1}", user.UserID, user.CryptedPassword);
 			}
 
 			return JsonConvert.SerializeObject(result);
@@ -455,7 +456,7 @@ namespace TSWebServices
 			}
 			else
 			{
-				validation.Error = string.Format("Your account is temporarily locked, because of too many login attempts.{0}Try again in 15 minutes or use the forgot password link above to reset your password. ", Environment.NewLine);
+				validation.Error = string.Format("Your account is temporarily locked, because of too many failed login attempts.{0}Try again in 15 minutes or use the forgot password link above to reset your password. ", Environment.NewLine);
 				validation.Result = LoginResult.Fail;
 			}
 
@@ -616,6 +617,7 @@ namespace TSWebServices
 		{
 			public int UserId { get; set; }
 			public int OrganizationId { get; set; }
+			public string RedirectURL { get; set; }
 			public LoginResult Result { get; set; }
 			public string ResultValue
 			{

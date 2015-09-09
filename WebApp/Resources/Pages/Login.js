@@ -35,7 +35,7 @@ $(document).ready(function () {
           window.location = resourcesURL + 'LoginTwoStepSetup.html?UserID=' + result.UserId;
           break;
 			case 5:
-				window.location = 'ChangePassword.aspx?reason=expired';
+				window.location = resourcesURL + result.RedirectURL;
 				//window.location = resourcesURL + 'LoginNewPassword.html?UserID=' + result.UserId;
       		break;
         default:
