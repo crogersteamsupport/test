@@ -503,7 +503,7 @@ namespace TeamSupport.Data
 
           ReportTable table = tables.FindByReportTableID(tableField.ReportTableID);
           string fieldName = table.TableName + "." + tableField.FieldName;
-          if (tableField.DataType.Trim().ToLower() == "text")
+			 if (tableField.DataType.Trim().ToLower() == "text" || tableField.DataType.Trim().ToLower() == "varchar")
             fieldName = "dbo.StripHTML(" + fieldName + ")";
           if (tableField.DataType.Trim().ToLower() == "datetime")
           {
