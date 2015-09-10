@@ -320,7 +320,7 @@ namespace TSWebServices
       [WebMethod]
       public void AdminUpdateQuery(int reportID, string query)
       {
-        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
+			if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 1839999) return;
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         report.Query = query;
         report.Collection.Save();
