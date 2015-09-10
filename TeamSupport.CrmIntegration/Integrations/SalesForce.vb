@@ -104,264 +104,292 @@ Namespace TeamSupport
                         Dim TypeString As String = ""
                         AccountTypeString = String.Empty
                         SiteAccountTypeString = String.Empty
-                        Dim MatchArray As String() = Array.ConvertAll(TagsToMatch.Split(","), Function(p As String) p.Trim())
-                        If MatchArray.Contains(String.Empty) Then
-                            Log.Write("Missing Account Type to Link To TeamSupport (TypeFieldMatch).")
-                            SyncError = True
-                        Else
-                            For z As Integer = 0 To MatchArray.Length - 1
-                                If z > 0 Then
-                                    TypeString = TypeString + " or "
-                                    AccountTypeString = AccountTypeString + " or "
-                                    SiteAccountTypeString = SiteAccountTypeString + " or "
-                                End If
 
-                                Dim tagToMatch As String = MatchArray(z)
-                                If tagToMatch.ToLower() = "none" Then
-                                    tagToMatch = String.Empty
-                                ElseIf tagToMatch.ToLower() = "all" Then
-                                  TypeString = "all"
-                                  AccountTypeString = "all"
-                                  SiteAccountTypeString = "all"
-                                  Exit For
-                                End If
+								TagsToMatch = TagsToMatch.Trim()
 
-                                TypeString = TypeString + " type = '" + tagToMatch + "'"
-                                AccountTypeString = AccountTypeString + " Account.Type = '" + tagToMatch + "'"
-                                SiteAccountTypeString = SiteAccountTypeString + " Account__r.Type = '" + tagToMatch + "'"
-                            Next
+								'Sanitize the "Account Type to Link to TeamSupport" entry
+								Try
+									'Remove duplicated consecutive commas
+									While (TagsToMatch.IndexOf(",,") > 0)
+										TagsToMatch = TagsToMatch.Replace(",,", ",")
+									End While
 
-                            Log.Write("TypeString = " + TypeString)
+									'Check and remove if there is a comma by itsef at the beginning end of the string
+									If Not String.IsNullOrEmpty(TagsToMatch) AndAlso TagsToMatch.Substring(0, 1) = "," Then
+										TagsToMatch = TagsToMatch.Substring(1, TagsToMatch.Length - 1)
+									End If
 
-                            Dim SFQuery As String
-                            Dim HasAddress As Boolean = True
-                            Dim hasFax As Boolean = False
-                            Dim queriedShippingAddress As Boolean = False
+									If Not String.IsNullOrEmpty(TagsToMatch) AndAlso TagsToMatch.Substring(TagsToMatch.Length - 1) = "," Then
+										TagsToMatch = TagsToMatch.Substring(0, TagsToMatch.Length - 1)
+									End If
+								Catch ex As Exception
+									Log.Write(String.Format("Error when attempting to sanitize: {0}{1}{2}", TagsToMatch.ToString(), Environment.NewLine, ex.Message))
+									TagsToMatch = CRMLinkRow.TypeFieldMatch
+									TagsToMatch = TagsToMatch.Trim()
+									Log.Write(String.Format("Using original entry trimmed: {0}", TagsToMatch.ToString()))
+								End Try
+								
+								If String.IsNullOrEmpty(TagsToMatch) Then
+									 Log.Write("Missing Account Type to Link To TeamSupport (TypeFieldMatch).")
+									 SyncError = True
+								Else
+									Dim MatchArray As String() = Array.ConvertAll(TagsToMatch.Split(","), Function(p As String) p.Trim())
 
-                            Dim BindingRanOK As Boolean
-                            Try
-                                'These try catch blocks are implemented because some companies do not have all the fields been queried.
-                                'I am adding trying with and without Fax by not knowing if it is included or not in all companies.
-                                Try
-                                    '1st attempt: with Shipping address and fax.
-                                    SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")")
-                                    Log.Write("SF Query String = " + SFQuery)
+									 For z As Integer = 0 To MatchArray.Length - 1
+										If Not String.IsNullOrEmpty(MatchArray(z)) Then
+										  If z > 0 Then
+												TypeString = TypeString + " or "
+												AccountTypeString = AccountTypeString + " or "
+												SiteAccountTypeString = SiteAccountTypeString + " or "
+										  End If
 
-                                    queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                    Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
-                                    BindingRanOK = True
-                                    hasFax = True
-                                    queriedShippingAddress = True
-                                Catch ex As Exception
-                                    Try
-                                        '2nd attempt: with Shipping address and without fax.
-                                        SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")")
-                                        Log.Write("SF Query String = " + SFQuery)
+										  Dim tagToMatch As String = MatchArray(z)
+										  If tagToMatch.ToLower() = "none" Then
+												tagToMatch = String.Empty
+										  ElseIf tagToMatch.ToLower() = "all" Then
+											 TypeString = "all"
+											 AccountTypeString = "all"
+											 SiteAccountTypeString = "all"
+											 Exit For
+										  End If
 
-                                        queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                        Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
-                                        BindingRanOK = True
-                                        hasFax = False
-                                        queriedShippingAddress = True
-                                    Catch ex1 As Exception
-                                        Try
-                                            '3rd attempt: With Billing address and fax
-                                            Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
-                                            SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")") ' and " + TypeString
-                                            Log.Write("SF Query String = " + SFQuery)
+										  TypeString = TypeString + " type = '" + tagToMatch + "'"
+										  AccountTypeString = AccountTypeString + " Account.Type = '" + tagToMatch + "'"
+										  SiteAccountTypeString = SiteAccountTypeString + " Account__r.Type = '" + tagToMatch + "'"
+										End If
+									 Next
 
-                                            queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                            Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
-                                            BindingRanOK = True
-                                            hasFax = True
-                                        Catch ex2 As Exception
-                                            Try
-                                                '4th attempt: With Billing address and without fax
-                                                Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
-                                                SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")") ' and " + TypeString
-                                                Log.Write("SF Query String = " + SFQuery)
+									 Log.Write("TypeString = " + TypeString)
 
-                                                queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                                Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
-                                                BindingRanOK = True
-                                                hasFax = False
-                                            Catch ex3 As Exception
-                                                Try
-                                                    '5th attempt: Without address and with Fax
-                                                    Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
-                                                    SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")") ' and " + TypeString
-                                                    Log.Write("SF Query String = " + SFQuery)
+									 Dim SFQuery As String
+									 Dim HasAddress As Boolean = True
+									 Dim hasFax As Boolean = False
+									 Dim queriedShippingAddress As Boolean = False
 
-                                                    queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                                    Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
-                                                    HasAddress = False 'Set this to false so we can set local variables correctly
-                                                    BindingRanOK = True
-                                                    hasFax = True
-                                                Catch ex4 As Exception
-                                                    Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
-                                                    SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")") ' and " + TypeString
-                                                    Log.Write("SF Query String = " + SFQuery)
+									 Dim BindingRanOK As Boolean
+									 Try
+										  'These try catch blocks are implemented because some companies do not have all the fields been queried.
+										  'I am adding trying with and without Fax by not knowing if it is included or not in all companies.
+										  Try
+												'1st attempt: with Shipping address and fax.
+												SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")")
+												Log.Write("SF Query String = " + SFQuery)
 
-                                                    queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                                    Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
-                                                    HasAddress = False 'Set this to false so we can set local variables correctly
-                                                    BindingRanOK = True
-                                                    hasFax = False
-                                                End Try
-                                            End Try
-                                        End Try
-                                    End Try
-                                End Try
-                            Catch ex As Exception
-                                'OK, we have a major error binding the query.
-                                BindingRanOK = False
-                                Log.Write("Error when attempting to bind the Query: " + ex.Message)
-                                SyncError = True
-                            End Try
+												queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
+												Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+												BindingRanOK = True
+												hasFax = True
+												queriedShippingAddress = True
+										  Catch ex As Exception
+												Try
+													 '2nd attempt: with Shipping address and without fax.
+													 SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")")
+													 Log.Write("SF Query String = " + SFQuery)
 
+													 queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
+													 Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+													 BindingRanOK = True
+													 hasFax = False
+													 queriedShippingAddress = True
+												Catch ex1 As Exception
+													 Try
+														  '3rd attempt: With Billing address and fax
+														  Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
+														  SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")") ' and " + TypeString
+														  Log.Write("SF Query String = " + SFQuery)
 
-                            If (BindingRanOK) And (numberOfCompaniesInQueriesResults > 0) Then
-                                Dim synchedOrganizations As New CRMLinkSynchedOrganizations(Me.User)
-                                synchedOrganizations.LoadByCRMLinkTableID(CRMLinkRow.CRMLinkID)
-                                'We now have a list of all accounts that have been modified in the last 3 hours and that match our account types. Let's update.
+														  queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
+														  Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+														  BindingRanOK = True
+														  hasFax = True
+													 Catch ex2 As Exception
+														  Try
+																'4th attempt: With Billing address and without fax
+																Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
+																SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")") ' and " + TypeString
+																Log.Write("SF Query String = " + SFQuery)
 
-                                Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                                crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "company")
-                                Dim crmLinkError As CRMLinkError = Nothing
+																queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
+																Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+																BindingRanOK = True
+																hasFax = False
+														  Catch ex3 As Exception
+																Try
+																	 '5th attempt: Without address and with Fax
+																	 Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
+																	 SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")") ' and " + TypeString
+																	 Log.Write("SF Query String = " + SFQuery)
 
-                                For Each qr As QueryResult In queriesResults 
+																	 queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
+																	 Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+																	 HasAddress = False 'Set this to false so we can set local variables correctly
+																	 BindingRanOK = True
+																	 hasFax = True
+																Catch ex4 As Exception
+																	 Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
+																	 SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")") ' and " + TypeString
+																	 Log.Write("SF Query String = " + SFQuery)
 
-                                    Log.Write("Begining For Each Loop to get companies.  qr.records.length = " + qr.records.Length.ToString)
-                                    Log.Write("Updating company information, qr.size = " + qr.size.ToString)
-
-
-                                    For i As Integer = 0 To qr.records.Length - 1
-                                        If Not synchedOrganizations.CheckIfExists(qr.records(i).Any(0).InnerText) Then
-                                            Dim thisCompany As New CompanyData()
-                                            Log.Write("In for loop iteration " + i.ToString)
-                                            Dim LastModifiedDateTime As DateTime
-
-                                            Dim records As sObject() = qr.records
-                                            Dim contact As sObject = records(i)
-
-                                            With thisCompany
-                                                .AccountID = records(i).Any(0).InnerText
-                                                .AccountName = records(i).Any(1).InnerText
-
-                                                If HasAddress Then
-                                                    If records(i).Any(3).InnerText = String.Empty AndAlso queriedShippingAddress Then
-                                                        Dim billingAddressWithFax As Boolean = False
-                                                        Dim billingAddress As sObject() = GetBillingAddress(.AccountID, billingAddressWithFax)
-                                                        If billingAddress IsNot Nothing Then
-                                                            .Street   = billingAddress(0).Any(0).InnerText
-                                                            .City     = billingAddress(0).Any(1).InnerText
-                                                            .State    = billingAddress(0).Any(2).InnerText
-                                                            .Zip      = billingAddress(0).Any(3).InnerText
-                                                            .Country  = billingAddress(0).Any(4).InnerText
-                                                            .Phone    = billingAddress(0).Any(5).InnerText
-                                                            If billingAddressWithFax Then
-                                                                .Fax  = billingAddress(0).Any(6).InnerText
-                                                            End If
-                                                        End If
-                                                    Else
-                                                        .Street   = records(i).Any(3).InnerText
-                                                        .City     = records(i).Any(4).InnerText
-                                                        .State    = records(i).Any(5).InnerText
-                                                        .Zip      = records(i).Any(6).InnerText
-                                                        .Country  = records(i).Any(7).InnerText
-                                                        .Phone    = records(i).Any(8).InnerText
-                                                        If hasFax Then
-                                                            .Fax  = records(i).Any(11).InnerText
-                                                        End If
-                                                    End If
-                                                    LastModifiedDateTime = Date.Parse(records(i).Any(9).InnerText)
-                                                Else
-                                                    .Phone = records(i).Any(3).InnerText
-                                                    If hasFax Then
-                                                        .Fax = records(i).Any(6).InnerText
-                                                    End If
-                                                    LastModifiedDateTime = Date.Parse(records(i).Any(4).InnerText)
-
-                                                End If
-                                            End With
-
-                                            Log.Write("Company " & thisCompany.AccountName & " last modified on " & LastModifiedDateTime.ToString())
-
-                                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(thisCompany.AccountID, string.Empty)
-                                            Try
-                                              UpdateOrgInfo(thisCompany, ParentOrgID)
-                                              Log.Write("Completed AddOrUpdateAccountInformation for company " + thisCompany.AccountName)
-                                              If crmLinkError IsNot Nothing then
-                                                crmLinkError.Delete()
-                                                crmLinkErrors.Save()
-                                              End If
-                                            Catch ex As Exception
-                                              If crmLinkError Is Nothing then
-                                                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                                                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                                                crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                                                crmLinkError.CRMType        = CRMLinkRow.CRMType
-                                                crmLinkError.Orientation    = "in"
-                                                crmLinkError.ObjectType     = "company"
-                                                crmLinkError.ObjectID       = thisCompany.AccountID
-                                                crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
-                                                crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                                                crmLinkError.OperationType  = "unknown"
-                                                newCrmLinkError.Save()
-                                              Else
-                                                crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
-                                                crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-                                              End If                                              
-                                            End Try
-
-                                            'Let's force an update of contact information for this company
-                                            'This is not redundant with line 344 see ticket 18202
-                                            GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, thisCompany.AccountID, True)
-
-                                            Log.Write("Completed force update contact info for " + thisCompany.AccountName)
-
-                                            LogSynchedOrganization(CRMLinkRow.CRMLinkID, thisCompany.AccountID, Me.User)
-                                        Else
-                                            Log.Write("Company (iteration " + i.ToString() + ") " + qr.records(i).Any(1).InnerText + " skipped because it was synched in previous run.")
-                                        End If
-                                    Next
-                                Next
-                                
-                                'check for existence of custom fields to sync
-                                GetCustomFields("Account", TypeString, LastUpdateSFFormat, crmLinkErrors)
-                                crmLinkErrors.Save()
-                                Log.Write("All done updating company information.")
-
-                            Else
-                                Log.Write("**No matching record found!!")
-                            End If
-
-                            If BindingRanOK Then
-                                'Breaking this out separately since they were not running if there were no companies that had changed.
-
-                                'We updated all of the ACCOUNT information above
-                                'Now let's update all of the contact information
-                                GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, "0", False)
+																	 queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
+																	 Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+																	 HasAddress = False 'Set this to false so we can set local variables correctly
+																	 BindingRanOK = True
+																	 hasFax = False
+																End Try
+														  End Try
+													 End Try
+												End Try
+										  End Try
+									 Catch ex As Exception
+										  'OK, we have a major error binding the query.
+										  BindingRanOK = False
+										  Log.Write("Error when attempting to bind the Query: " + ex.Message)
+										  SyncError = True
+									 End Try
 
 
-                                'Code for Axceler to update their product and license information
-                                If ParentOrgID = 305383 Then
-                                    GetProductAndLicenseInfo(LastUpdateSFFormat)
+									 If (BindingRanOK) And (numberOfCompaniesInQueriesResults > 0) Then
+										  Dim synchedOrganizations As New CRMLinkSynchedOrganizations(Me.User)
+										  synchedOrganizations.LoadByCRMLinkTableID(CRMLinkRow.CRMLinkID)
+										  'We now have a list of all accounts that have been modified in the last 3 hours and that match our account types. Let's update.
 
-                                End If
-                                'Code for GridPoint to update Sites and push SalesOrders
-                                'GridPoint, Inc OrganizationID    = 420794
-                                'GridPoint-Sandbox OrganizationID = 614460
-                                'gridpointtest OrganizationID     = 614521
-                                If ParentOrgID = 420794 OrElse ParentOrgID = 614460 OrElse ParentOrgID = 614521 Then
-                                  Dim customFields As New CustomFields(User)
-                                  customFields.LoadByReferenceType(CRMLinkRow.OrganizationID, ReferenceType.Organizations)
+										  Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+										  crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "company")
+										  Dim crmLinkError As CRMLinkError = Nothing
 
-                                  GetGridPointSites(LastUpdateSFFormat, customFields)
-                                  PushGridPointSalesOrders(customFields)
-                                End If
-                            End If
-                        End If
+										  For Each qr As QueryResult In queriesResults
+
+												Log.Write("Begining For Each Loop to get companies.  qr.records.length = " + qr.records.Length.ToString)
+												Log.Write("Updating company information, qr.size = " + qr.size.ToString)
+
+
+												For i As Integer = 0 To qr.records.Length - 1
+													 If Not synchedOrganizations.CheckIfExists(qr.records(i).Any(0).InnerText) Then
+														  Dim thisCompany As New CompanyData()
+														  Log.Write("In for loop iteration " + i.ToString)
+														  Dim LastModifiedDateTime As DateTime
+
+														  Dim records As sObject() = qr.records
+														  Dim contact As sObject = records(i)
+
+														  With thisCompany
+																.AccountID = records(i).Any(0).InnerText
+																.AccountName = records(i).Any(1).InnerText
+
+																If HasAddress Then
+																	 If records(i).Any(3).InnerText = String.Empty AndAlso queriedShippingAddress Then
+																		  Dim billingAddressWithFax As Boolean = False
+																		  Dim billingAddress As sObject() = GetBillingAddress(.AccountID, billingAddressWithFax)
+																		  If billingAddress IsNot Nothing Then
+																				.Street = billingAddress(0).Any(0).InnerText
+																				.City = billingAddress(0).Any(1).InnerText
+																				.State = billingAddress(0).Any(2).InnerText
+																				.Zip = billingAddress(0).Any(3).InnerText
+																				.Country = billingAddress(0).Any(4).InnerText
+																				.Phone = billingAddress(0).Any(5).InnerText
+																				If billingAddressWithFax Then
+																					 .Fax = billingAddress(0).Any(6).InnerText
+																				End If
+																		  End If
+																	 Else
+																		  .Street = records(i).Any(3).InnerText
+																		  .City = records(i).Any(4).InnerText
+																		  .State = records(i).Any(5).InnerText
+																		  .Zip = records(i).Any(6).InnerText
+																		  .Country = records(i).Any(7).InnerText
+																		  .Phone = records(i).Any(8).InnerText
+																		  If hasFax Then
+																				.Fax = records(i).Any(11).InnerText
+																		  End If
+																	 End If
+																	 LastModifiedDateTime = Date.Parse(records(i).Any(9).InnerText)
+																Else
+																	 .Phone = records(i).Any(3).InnerText
+																	 If hasFax Then
+																		  .Fax = records(i).Any(6).InnerText
+																	 End If
+																	 LastModifiedDateTime = Date.Parse(records(i).Any(4).InnerText)
+
+																End If
+														  End With
+
+														  Log.Write("Company " & thisCompany.AccountName & " last modified on " & LastModifiedDateTime.ToString())
+
+														  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(thisCompany.AccountID, String.Empty)
+														  Try
+															 UpdateOrgInfo(thisCompany, ParentOrgID)
+															 Log.Write("Completed AddOrUpdateAccountInformation for company " + thisCompany.AccountName)
+															 If crmLinkError IsNot Nothing Then
+																crmLinkError.Delete()
+																crmLinkErrors.Save()
+															 End If
+														  Catch ex As Exception
+															 If crmLinkError Is Nothing Then
+																Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+																crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+																crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+																crmLinkError.CRMType = CRMLinkRow.CRMType
+																crmLinkError.Orientation = "in"
+																crmLinkError.ObjectType = "company"
+																crmLinkError.ObjectID = thisCompany.AccountID
+																crmLinkError.ObjectData = JsonConvert.SerializeObject(thisCompany)
+																crmLinkError.Exception = ex.ToString() + ex.StackTrace
+																crmLinkError.OperationType = "unknown"
+																newCrmLinkError.Save()
+															 Else
+																crmLinkError.ObjectData = JsonConvert.SerializeObject(thisCompany)
+																crmLinkError.Exception = ex.ToString() + ex.StackTrace
+															 End If
+														  End Try
+
+														  'Let's force an update of contact information for this company
+														  'This is not redundant with line 344 see ticket 18202
+														  GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, thisCompany.AccountID, True)
+
+														  Log.Write("Completed force update contact info for " + thisCompany.AccountName)
+
+														  LogSynchedOrganization(CRMLinkRow.CRMLinkID, thisCompany.AccountID, Me.User)
+													 Else
+														  Log.Write("Company (iteration " + i.ToString() + ") " + qr.records(i).Any(1).InnerText + " skipped because it was synched in previous run.")
+													 End If
+												Next
+										  Next
+
+										  'check for existence of custom fields to sync
+										  GetCustomFields("Account", TypeString, LastUpdateSFFormat, crmLinkErrors)
+										  crmLinkErrors.Save()
+										  Log.Write("All done updating company information.")
+
+									 Else
+										  Log.Write("**No matching record found!!")
+									 End If
+
+									 If BindingRanOK Then
+										  'Breaking this out separately since they were not running if there were no companies that had changed.
+
+										  'We updated all of the ACCOUNT information above
+										  'Now let's update all of the contact information
+										  GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, "0", False)
+
+
+										  'Code for Axceler to update their product and license information
+										  If ParentOrgID = 305383 Then
+												GetProductAndLicenseInfo(LastUpdateSFFormat)
+
+										  End If
+										  'Code for GridPoint to update Sites and push SalesOrders
+										  'GridPoint, Inc OrganizationID    = 420794
+										  'GridPoint-Sandbox OrganizationID = 614460
+										  'gridpointtest OrganizationID     = 614521
+										  If ParentOrgID = 420794 OrElse ParentOrgID = 614460 OrElse ParentOrgID = 614521 Then
+											 Dim customFields As New CustomFields(User)
+											 customFields.LoadByReferenceType(CRMLinkRow.OrganizationID, ReferenceType.Organizations)
+
+											 GetGridPointSites(LastUpdateSFFormat, customFields)
+											 PushGridPointSalesOrders(customFields)
+										  End If
+									 End If
+								End If
                     Catch ex As Exception
                         ErrorCode = IntegrationError.Unknown
                         Log.Write("**Error:  " + ex.Message)
@@ -980,7 +1008,7 @@ Namespace TeamSupport
                                                         If tableColumnName = thisMapping.TSFieldName Then
                                                           thisAccount.Row(thisMapping.TSFieldName) = TranslateFieldValue(value, thisAccount.Row(thisMapping.TSFieldName).GetType().Name)
                                                         Else
-                                                          Dim columnValue As Integer = GetTableColumnValue(value, thisMapping.TSFieldName, thisAccount.OrganizationID)
+                                                          Dim columnValue As Integer = GetTableColumnValue(value, thisMapping.TSFieldName, thisAccount.OrganizationID, thisAccount.ParentID)
                                                           If columnValue <> 0 Then
                                                             thisAccount.Row(tableColumnName) = columnValue
                                                           End If
@@ -1210,6 +1238,10 @@ Namespace TeamSupport
                         tableColumnName = "primaryuserid"
                     Case "slaname"
                         tableColumnName = "slalevelid"
+						Case "defaultsupportgroup"
+							tableColumnName = "defaultsupportgroupid"
+						Case "defaultsupportuser"
+							tableColumnName = "defaultsupportuserid"
                     Case Else
                         tableColumnName = viewColumnName
                 End Select
@@ -1217,22 +1249,34 @@ Namespace TeamSupport
                 Return tableColumnName
             End Function
 
-            Private Function GetTableColumnValue(ByRef viewValue As String, ByRef viewColumnName As String, ByVal organizationID As Integer) As String
+			Private Function GetTableColumnValue(ByRef viewValue As String, ByRef viewColumnName As String, ByVal organizationID As Integer, ByVal organizationParentId As Integer) As String
                 Dim tableColumnValue As String
 
                 Select Case viewColumnName.ToLower()
-                    Case "primarycontact"
-                        Dim primaryContact As Users = New Users(User)
-                        primaryContact.LoadByFirstAndLastName(viewValue, organizationID)
-                        If primaryContact.Count > 0 Then
-                          tableColumnValue = primaryContact(0).UserID.ToString()
-                        End If
-                    Case "slaname"
-                        Dim serviceLevelAgreement As SlaLevels = New SlaLevels(User)
-                        serviceLevelAgreement.LoadByName(CRMLinkRow.OrganizationID, viewValue)
-                        If serviceLevelAgreement.Count > 0 Then
-                          tableColumnValue = serviceLevelAgreement(0).SlaLevelID.ToString()
-                        End If
+							Case "primarycontact"
+								Dim primaryContact As Users = New Users(User)
+								primaryContact.LoadByFirstAndLastName(viewValue, organizationID)
+								If primaryContact.Count > 0 Then
+									tableColumnValue = primaryContact(0).UserID.ToString()
+								End If
+							Case "slaname"
+								Dim serviceLevelAgreement As SlaLevels = New SlaLevels(User)
+								serviceLevelAgreement.LoadByName(CRMLinkRow.OrganizationID, viewValue)
+								If serviceLevelAgreement.Count > 0 Then
+									tableColumnValue = serviceLevelAgreement(0).SlaLevelID.ToString()
+								End If
+							Case "defaultsupportgroup"
+								Dim groups As Groups = New Groups(User)
+								groups.LoadByGroupName(organizationParentId, viewValue)
+								If (groups.Count > 0) Then
+									tableColumnValue = groups(0).GroupID.ToString()
+								End If
+							Case "defaultsupportuser"
+								Dim userObject As Users = New Users(User)
+								userObject.LoadByFirstAndLastName(viewValue, organizationParentId)
+								If userObject.Count > 0 Then
+									tableColumnValue = userObject(0).UserID.ToString()
+								End If
                     Case Else
                         tableColumnValue = viewColumnName
                 End Select
