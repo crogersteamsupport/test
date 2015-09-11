@@ -1455,6 +1455,7 @@ namespace TeamSupport.ServiceLibrary
         else
         {
           _importLog.Write(messagePrefix + "Skipped. ContactImportID is required.");
+			 continue;
         }
 
         string email = ReadString("ContactEmail", string.Empty);
