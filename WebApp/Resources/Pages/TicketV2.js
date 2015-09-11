@@ -3784,7 +3784,10 @@ function CreateTicketToolbarDomEvents() {
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Request Update');
     top.Ts.Services.TicketPage.RequestUpdate(_ticketID, function (actionInfo) {
-      CreateActionElement(actionInfo, false);
+    	_actionTotal = _actionTotal + 1;
+    	var actionElement = CreateActionElement(actionInfo, false);
+    	actionElement.find('.ticket-action-number').text(_actionTotal);
+
       alert('An update has been requested for this ticket.');
     }, function () {
       alert('There was an error requesting an update for this ticket.');
