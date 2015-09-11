@@ -366,37 +366,29 @@ namespace TSWebServices
 			DELETE at
 			--SELECT *  
 			FROM AssetTickets at
-			INNER JOIN Tickets t
-			  ON at.TicketID = t.TicketID
 			WHERE
-			t.ImportFileID = @ImportFileID
+			at.ImportFileID = @ImportFileID
 
 			-- 3 UserTickets
 			DELETE ut
 			--SELECT *  
 			FROM UserTickets ut
-			INNER JOIN Tickets t
-			  ON ut.TicketID = t.TicketID
 			WHERE
-			t.ImportFileID = @ImportFileID
+			ut.ImportFileID = @ImportFileID
 
 			-- 4 OrganizationTickets
 			DELETE ot
 			--SELECT *  
 			FROM OrganizationTickets ot
-			INNER JOIN Tickets t
-			  ON ot.TicketID = t.TicketID
 			WHERE
-			t.ImportFileID = @ImportFileID
+			ot.ImportFileID = @ImportFileID
 
 			-- 5 Actions
 			DELETE a
 			--SELECT *  
 			FROM Actions a
-			INNER JOIN Tickets t
-			  ON a.TicketID = t.TicketID
 			WHERE
-			t.ImportFileID = @ImportFileID
+			a.ImportFileID = @ImportFileID
 
 			-- 6 Tickets
 			DELETE 
@@ -407,10 +399,8 @@ namespace TSWebServices
 			DELETE aa
 			--SELECT *  
 			FROM AssetAssignments aa
-			INNER JOIN AssetHistory ah
-			  ON aa.HistoryID = ah.HistoryID
 			WHERE
-			ah.ImportFileID = @ImportFileID
+			aa.ImportFileID = @ImportFileID
 
 			-- 8 AssetHistory
 			DELETE 
@@ -426,10 +416,8 @@ namespace TSWebServices
 			DELETE pv
 			--SELECT *  
 			FROM ProductVersions pv
-			INNER JOIN Products p
-			  ON pv.ProductID = p.ProductID
 			WHERE
-			p.ImportFileID = @ImportFileID
+			pv.ImportFileID = @ImportFileID
 
 			-- 11 Products
 			DELETE 
@@ -450,41 +438,24 @@ namespace TSWebServices
 			WHERE
 			pn.ImportFileID = @ImportFileID
 
-			-- 14 Company Addresses
-			DELETE ca
-			--SELECT *  
-			FROM Addresses ca
-			INNER JOIN Organizations o
-			  ON RefType = 9
-			  AND ca.RefID = o.ImportFileID
-			WHERE
-			o.ParentID = @ImportFileID
-
-			-- 15 Contact Addresses
+			-- 14 & 15 Company and Contact Addresses
 			DELETE cta
 			--SELECT *  
 			FROM Addresses cta
-			INNER JOIN Users u
-			  ON RefType = 22
-			  AND cta.RefID = u.UserID
-			INNER JOIN Organizations o
-			  ON u.ImportFileID = o.ImportFileID
 			WHERE
-			o.ParentID = @ImportFileID
+			cta.ImportFileID = @ImportFileID
 
 			-- 16 Contacts
 			DELETE c
 			--SELECT *  
 			FROM Users c
-			INNER JOIN Organizations o
-			  ON c.ImportFileID = o.ImportFileID
 			WHERE
-			o.ParentID = @ImportFileID
+			c.ImportFileID = @ImportFileID
 
 			-- 17 Companies
 			DELETE 
 			--SELECT * FROM 
-			Organizations WHERE ParentID = @ImportFileID
+			Organizations WHERE ImportFileID = @ImportFileID
 
 			-- Imports
 			UPDATE Imports
