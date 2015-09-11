@@ -1255,7 +1255,8 @@ namespace TeamSupport.ServiceLibrary
           else
           {
             _importLog.Write(messagePrefix + "Skipped. CompanyImportID is required.");
-          }
+				continue;
+			 }
         //}
 
         //if (company == null && _organizationID != 887356)
@@ -4509,8 +4510,15 @@ namespace TeamSupport.ServiceLibrary
     private bool ReadBool(string field, string existingValue)
     {
       string value = GetMappedValue(field, existingValue);
-      value = value.ToLower();
-      return value.IndexOf('t') > -1 || value.IndexOf('y') > -1 || value.IndexOf('1') > -1;
+		if (value != null)
+		{
+			value = value.ToLower();
+			return value.IndexOf('t') > -1 || value.IndexOf('y') > -1 || value.IndexOf('1') > -1;
+		}
+		else
+		{
+			return false;
+		}
     }
 
     private int ReadInt(string field, int defaultValue = 0)
@@ -4534,7 +4542,15 @@ namespace TeamSupport.ServiceLibrary
 
     private string ReadString(string field, string existingValue)
     {
-      return GetMappedValue(field, existingValue).Trim();
+      string value = GetMappedValue(field, existingValue);
+		if (value != null)
+		{
+			return value.Trim();
+		}
+		else
+		{
+			return value;		
+		}
     }
 
     private SystemActionType GetSystemActionTypeID(string name)
