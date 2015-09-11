@@ -103,12 +103,12 @@ namespace TeamSupport.ServiceLibrary
           case ReferenceType.Assets:
             ImportAssets(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
-            ImportCustomFields(import.RefType);
+            ImportCustomFields(import.RefType, import.ImportID);
             break;
           case ReferenceType.Organizations:
             ImportCompanies(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
-            ImportCustomFields(import.RefType);
+            ImportCustomFields(import.RefType, import.ImportID);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportAddresses(import, ReferenceType.Organizations);
             _csv = new CsvReader(new StreamReader(csvFile), true);
@@ -125,7 +125,7 @@ namespace TeamSupport.ServiceLibrary
             //_csv = new CsvReader(new StreamReader(csvFile), true);
             ImportContacts(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
-            ImportCustomFields(import.RefType);
+            ImportCustomFields(import.RefType, import.ImportID);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportAddresses(import, ReferenceType.Users);
             _csv = new CsvReader(new StreamReader(csvFile), true);
@@ -140,7 +140,7 @@ namespace TeamSupport.ServiceLibrary
           case ReferenceType.Tickets:
             ImportTickets(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
-            ImportCustomFields(import.RefType);
+            ImportCustomFields(import.RefType, import.ImportID);
             //_csv = new CsvReader(new StreamReader(csvFile), true);
             //ImportActions(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
@@ -170,12 +170,12 @@ namespace TeamSupport.ServiceLibrary
           case ReferenceType.Products:
             ImportProducts(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
-            ImportCustomFields(import.RefType);
+            ImportCustomFields(import.RefType, import.ImportID);
             break;
           case ReferenceType.ProductVersions:
             ImportProductVersions(import);
             _csv = new CsvReader(new StreamReader(csvFile), true);
-            ImportCustomFields(import.RefType);
+            ImportCustomFields(import.RefType, import.ImportID);
             break;
           default:
             Logs.WriteEvent("ERROR: Unknown Reference Type");
@@ -374,6 +374,7 @@ namespace TeamSupport.ServiceLibrary
         action.TimeSpent = ReadIntNull("TimeSpent", action.TimeSpent.ToString());
 
         action.Pinned = ReadBool("IsPinned", action.Pinned.ToString());
+		  action.ImportFileID = import.ImportID;
 
         _importLog.Write(messagePrefix + "Action added to bulk insert.");
         count++;
@@ -635,6 +636,7 @@ namespace TeamSupport.ServiceLibrary
                   assetHistoryItem.RefType = (int)ReferenceType.Contacts;
                   assetHistoryItem.DateModified = now;
                   assetHistoryItem.ModifierID = -2;
+						assetHistoryItem.ImportFileID = import.ImportID;
 
                   assetHistory.Save();
 
@@ -642,6 +644,7 @@ namespace TeamSupport.ServiceLibrary
                   AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
 
                   assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+						assetAssignment.ImportFileID = import.ImportID;
 
                   assetAssignments.Save();
 
@@ -695,6 +698,7 @@ namespace TeamSupport.ServiceLibrary
                 assetHistoryItem.RefType = (int)ReferenceType.Organizations;
                 assetHistoryItem.DateModified = now;
                 assetHistoryItem.ModifierID = -2;
+					 assetHistoryItem.ImportFileID = import.ImportID;
 
                 assetHistory.Save();
 
@@ -763,6 +767,7 @@ namespace TeamSupport.ServiceLibrary
                 assetHistoryItem.RefType = (int)ReferenceType.Contacts;
                 assetHistoryItem.DateModified = now;
                 assetHistoryItem.ModifierID = -2;
+					 assetHistoryItem.ImportFileID = import.ImportID;
 
                 assetHistory.Save();
 
@@ -810,7 +815,7 @@ namespace TeamSupport.ServiceLibrary
       _importLog.Write(count.ToString() + " assets imported.");
     }
 
-    private void ImportCustomFields(ReferenceType refType)
+    private void ImportCustomFields(ReferenceType refType, int importFileID)
     {
       SortedList<string, int> assetList = null;
       SortedList<string, int> contactList = null;
@@ -1164,6 +1169,8 @@ namespace TeamSupport.ServiceLibrary
                 }
                 customValue.CreatorID = creatorID;
                 customValue.ModifierID = -2;
+					 customValue.ImportFileID = importFileID;
+
                 try
                 {
                   newCustomValues.Save();
@@ -1369,6 +1376,7 @@ namespace TeamSupport.ServiceLibrary
         }
         company.CreatorID = creatorID;
         company.ModifierID = -2;
+		  company.ImportFileID = import.ImportID;
 
         //if (isUpdate)
         //{
@@ -1573,6 +1581,8 @@ namespace TeamSupport.ServiceLibrary
               }
               newCompany.CreatorID = creatorID;
               newCompany.ModifierID = -2;
+				  newCompany.ImportFileID = import.ImportID;
+
               newCompanies.Save();
               company = newCompany;
               user.OrganizationID = company.OrganizationID;
@@ -1619,6 +1629,7 @@ namespace TeamSupport.ServiceLibrary
         user.PrimaryGroupID = null;
         user.CreatorID = creatorID;
         user.ModifierID = -2;
+		  user.ImportFileID = import.ImportID;
 
         //if (isUpdate)
         //{
@@ -1711,6 +1722,7 @@ namespace TeamSupport.ServiceLibrary
         }
         newAddress.CreatorID = creatorID;
         newAddress.ModifierID = -2;
+		  newAddress.ImportFileID = import.ImportID;
 
         int orgID = 0;
         string companyName = string.Empty;
@@ -1780,6 +1792,8 @@ namespace TeamSupport.ServiceLibrary
               }
               newCompany.CreatorID = creatorID;
               newCompany.ModifierID = -2;
+				  newCompany.ImportFileID = import.ImportID;
+
               newCompanies.Save();
               orgID = newCompany.OrganizationID;
             }
@@ -1862,6 +1876,8 @@ namespace TeamSupport.ServiceLibrary
                 }
                 newContact.CreatorID = creatorID;
                 newContact.ModifierID = -2;
+					 newContact.ImportFileID = import.ImportID;
+
                 newContacts.Save();
                 contactID = newContact.UserID;
                 contactList.Add(searchTerm, contactID);
@@ -1924,6 +1940,8 @@ namespace TeamSupport.ServiceLibrary
           address.Zip = newAddress.Zip;
           address.Country = newAddress.Country;
           address.Comment = newAddress.Comment;
+			 address.ImportFileID = import.ImportID;
+
           _importLog.Write(messagePrefix + "Address added to bulk insert.");
         //}
         //else
@@ -2067,6 +2085,8 @@ namespace TeamSupport.ServiceLibrary
                 newCompany.DateCreated = (DateTime)dateCreated;
               }
               newCompany.CreatorID = creatorID;
+				  newCompany.ImportFileID = import.ImportID;
+
               newCompany.ModifierID = -2;
               newCompanies.Save();
               orgID = newCompany.OrganizationID;
@@ -2152,6 +2172,8 @@ namespace TeamSupport.ServiceLibrary
                 }
                 newContact.CreatorID = creatorID;
                 newContact.ModifierID = -2;
+					 newContact.ImportFileID = import.ImportID;
+
                 newContacts.Save();
                 contactID = newContact.UserID;
                 contactList.Add(searchTerm, contactID);
@@ -2291,6 +2313,8 @@ namespace TeamSupport.ServiceLibrary
           phoneNumber.Number = newPhoneNumber.Number;
           phoneNumber.Extension = newPhoneNumber.Extension;
           phoneNumber.PhoneTypeID = newPhoneNumber.PhoneTypeID;
+			 phoneNumber.ImportFileID = import.ImportID;
+
           _importLog.Write(messagePrefix + "Phone Number added to bulk insert.");
         }
         //else
@@ -2325,6 +2349,8 @@ namespace TeamSupport.ServiceLibrary
             phoneNumber.Number = newPhoneNumber2.Number;
             phoneNumber.Extension = newPhoneNumber2.Extension;
             phoneNumber.PhoneTypeID = newPhoneNumber2.PhoneTypeID;
+				phoneNumber.ImportFileID = import.ImportID;
+
             _importLog.Write(messagePrefix + "Phone Number 2 was added to bulk insert.");
           }
           //else
@@ -2360,6 +2386,8 @@ namespace TeamSupport.ServiceLibrary
             phoneNumber.Number = newPhoneNumber3.Number;
             phoneNumber.Extension = newPhoneNumber3.Extension;
             phoneNumber.PhoneTypeID = newPhoneNumber3.PhoneTypeID;
+				phoneNumber.ImportFileID = import.ImportID;
+
             _importLog.Write(messagePrefix + "Phone Number 3 was added to bulk insert.");
           }
           //else
@@ -2759,6 +2787,8 @@ namespace TeamSupport.ServiceLibrary
             product.ModifierID = -2;
             product.DateCreated = now;
             product.DateModified = now;
+				product.ImportFileID = import.ImportID;
+
             newProducts.Save();
             products = new Products(_importUser);
             products.LoadByOrganizationID(_organizationID);
@@ -2818,6 +2848,8 @@ namespace TeamSupport.ServiceLibrary
             reportedVersion.ModifierID = -2;
             reportedVersion.DateCreated = now;
             reportedVersion.DateModified = now;
+				reportedVersion.ImportFileID = import.ImportID;
+
             newProductVersions.Save();
 
             productVersions = new ProductVersions(_importUser);
@@ -2878,6 +2910,7 @@ namespace TeamSupport.ServiceLibrary
             resolvedVersion.ModifierID = -2;
             resolvedVersion.DateCreated = now;
             resolvedVersion.DateModified = now;
+				resolvedVersion.ImportFileID = import.ImportID;
             newProductVersions.Save();
 
             productVersions = new ProductVersions(_importUser);
@@ -2944,6 +2977,7 @@ namespace TeamSupport.ServiceLibrary
         ticket.CreatorID = creatorID;
         ticket.DateModified = now;
         ticket.ModifierID = -2;
+		  ticket.ImportFileID = import.ImportID;
 
         //if (isUpdate)
         //{
@@ -3012,6 +3046,7 @@ namespace TeamSupport.ServiceLibrary
           action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
           action.IsKnowledgeBase = ticket.IsKnowledgeBase;
           action.TicketID = ticket.TicketID;
+			 action.ImportFileID = import.ImportID;
           //action.TimeSpent = info.TimeSpent;
           //action.DateStarted = info.DateStarted;
           actions.Save();
@@ -3146,7 +3181,7 @@ namespace TeamSupport.ServiceLibrary
         }
         else
         {
-          newTickets.AddOrganization(companyID, ticketID);
+          newTickets.AddOrganization(companyID, ticketID, import.ImportID);
           _importLog.Write(messagePrefix + "CompanyID " + companyID.ToString() + " was added to TicketID " + ticketID.ToString() + ".");
         }
 
@@ -3232,7 +3267,7 @@ namespace TeamSupport.ServiceLibrary
         }
         else
         {
-          newTickets.AddOrganization(company2[0].OrganizationID, ticketID);
+          newTickets.AddOrganization(company2[0].OrganizationID, ticketID, import.ImportID);
           _importLog.Write(messagePrefix + "Company " + company2[0].Name + " was added to ticketID " + ticketID.ToString() + ".");
         }
 
@@ -3270,7 +3305,7 @@ namespace TeamSupport.ServiceLibrary
         }
         else
         {
-          newTickets.AddOrganization(company3[0].OrganizationID, ticketID);
+          newTickets.AddOrganization(company3[0].OrganizationID, ticketID, import.ImportID);
           _importLog.Write(messagePrefix + "Company " + company3[0].Name + " was added to ticketID " + ticketID.ToString() + ".");
         }
       }   
@@ -3441,7 +3476,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else
           {
-            ticket.AddContact(contact[0].UserID, ticket[0].TicketID);
+            ticket.AddContact(contact[0].UserID, ticket[0].TicketID, import.ImportID);
             _importLog.Write(messagePrefix + "Contact " + contact[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
           }
         }
@@ -3528,7 +3563,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else
           {
-            ticket.AddContact(contact2[0].UserID, ticket[0].TicketID);
+            ticket.AddContact(contact2[0].UserID, ticket[0].TicketID, import.ImportID);
             _importLog.Write(messagePrefix + "Contact " + contact2[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
           }
         }
@@ -3614,7 +3649,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else
           {
-            ticket.AddContact(contact3[0].UserID, ticket[0].TicketID);
+            ticket.AddContact(contact3[0].UserID, ticket[0].TicketID, import.ImportID);
             _importLog.Write(messagePrefix + "Contact " + contact3[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
           }
         }
@@ -3747,7 +3782,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else
           {
-            ticket.AddAsset(assetID, ticket[0].TicketID);
+            ticket.AddAsset(assetID, ticket[0].TicketID, import.ImportID);
             _importLog.Write(messagePrefix + "Asset '" + assetName + "' was added to ticket #" + ticket[0].TicketNumber.ToString() + ".");
           }
         }
@@ -3805,7 +3840,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else
           {
-            ticket.AddAsset(assetID2, ticket[0].TicketID);
+            ticket.AddAsset(assetID2, ticket[0].TicketID, import.ImportID);
             _importLog.Write(messagePrefix + "Asset '" + assetName2 + "' was added to ticket #" + ticket[0].TicketNumber.ToString() + ".");
           }
         }
@@ -3862,7 +3897,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else
           {
-            ticket.AddAsset(assetID3, ticket[0].TicketID);
+            ticket.AddAsset(assetID3, ticket[0].TicketID, import.ImportID);
             _importLog.Write(messagePrefix + "Asset '" + assetName3 + "' was added to ticket #" + ticket[0].TicketNumber.ToString() + ".");
           }
         }
@@ -3997,6 +4032,7 @@ namespace TeamSupport.ServiceLibrary
           item.OrganizationID = _organizationID;
           item.Ticket1ID = ticket[0].TicketID;
           item.Ticket2ID = associatedTicket[0].TicketID;
+			 item.ImportFileID = import.ImportID;
           item.Collection.Save();
         }
         else if (parent) // parent
@@ -4139,6 +4175,7 @@ namespace TeamSupport.ServiceLibrary
         product.CreatorID = creatorID;
         product.ModifierID = -2;
         product.OrganizationID = _organizationID;
+		  product.ImportFileID = import.ImportID;
 
         //if (isUpdate)
         //{
@@ -4324,6 +4361,7 @@ namespace TeamSupport.ServiceLibrary
         }
         productVersion.CreatorID = creatorID;
         productVersion.ModifierID = -2;
+		  productVersion.ImportFileID = import.ImportID;
 
         int productVersionStatusID = productVersionStatuses[0].ProductVersionStatusID;
         string status = ReadString("Status", string.Empty);

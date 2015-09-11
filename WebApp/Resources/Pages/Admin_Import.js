@@ -33,7 +33,14 @@ ImportPage = function () {
       } else {
         for (var i = 0; i < imports.length; i++) {
           var logFileName = imports[i].ImportID + '.txt';
-          var logFileLink = '<a href="../../../dc/1/importlog/' + imports[i].ImportID + '">' + logFileName + '</a>';
+          if (imports[i].IsRolledBack)
+          {
+          	logFileName = imports[i].ImportID + '-rolledback.txt'
+          }
+          var logFileLink = '<a href="../../../dc/1/importlog/' + imports[i].ImportID + '" title="Log File">' + logFileName + '</a>';
+          if (!imports[i].IsRolledBack) {
+          	logFileLink += "<a href='' id='" + imports[i].ImportID + "' class='rollback' title='Rollback'><span class='fa fa-undo'></span></a>";
+          }
 
           var dateStarted = null;
           if (imports[i].DateStarted == null) {
@@ -126,6 +133,21 @@ ImportPage = function () {
     $('#csvColumnsPanel').addClass('hidden');
     $('#importButtons').addClass('hidden');
     LoadFields($('#import-type').val());
+  });
+
+  $("#tblImports").on("click", '.rollback', function (e) {
+  	e.preventDefault();
+  	var proceedWithRollback = prompt('Rollback will delete all the records created by this import. It is an irreversible action. If you want to proceed type "yes" and click the OK button.', 'No');
+  	if (proceedWithRollback.trim().toLowerCase() == 'yes') {
+  		top.Ts.System.logAction('Import - Rollback');
+  		top.Ts.Services.Admin.RollbackImport($(this).attr('id'), function () {
+  			location.reload();
+  		});
+  	}
+  	else
+  	{
+  		alert('Rollback action cancelled. No changes have been made.');
+  	}
   });
 
   $('#import-type').change(function () {

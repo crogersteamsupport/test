@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int CompletedRows { get; set; }
     [DataMember] public int TotalRows { get; set; }
+    [DataMember] public bool IsRolledBack { get; set; }
           
   }
   
@@ -40,6 +41,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       ImportProxy result = new ImportProxy();
+      result.IsRolledBack = this.IsRolledBack;
       result.CreatorID = this.CreatorID;
       result.IsRunning = this.IsRunning;
       result.IsDone = this.IsDone;

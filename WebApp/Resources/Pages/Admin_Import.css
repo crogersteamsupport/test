@@ -61,3 +61,9 @@
 .ticket-input-container {
     padding-left:0px;
 }
+
+.rollback {
+	margin-left:10px;
+	font-size:0.8em;
+	color: #607D8B;
+}

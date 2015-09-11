@@ -352,6 +352,156 @@ namespace TSWebServices
 
       return result;
     }
+
+	 [WebMethod]
+	 public void RollbackImport(int importFileID)
+	 {
+		string query = @"
+			-- 1 TicketRelationships
+			DELETE 
+			--SELECT * FROM 
+			TicketRelationships WHERE ImportFileID = @ImportFileID
+
+			-- 2 AssetTickets
+			DELETE at
+			--SELECT *  
+			FROM AssetTickets at
+			INNER JOIN Tickets t
+			  ON at.TicketID = t.TicketID
+			WHERE
+			t.ImportFileID = @ImportFileID
+
+			-- 3 UserTickets
+			DELETE ut
+			--SELECT *  
+			FROM UserTickets ut
+			INNER JOIN Tickets t
+			  ON ut.TicketID = t.TicketID
+			WHERE
+			t.ImportFileID = @ImportFileID
+
+			-- 4 OrganizationTickets
+			DELETE ot
+			--SELECT *  
+			FROM OrganizationTickets ot
+			INNER JOIN Tickets t
+			  ON ot.TicketID = t.TicketID
+			WHERE
+			t.ImportFileID = @ImportFileID
+
+			-- 5 Actions
+			DELETE a
+			--SELECT *  
+			FROM Actions a
+			INNER JOIN Tickets t
+			  ON a.TicketID = t.TicketID
+			WHERE
+			t.ImportFileID = @ImportFileID
+
+			-- 6 Tickets
+			DELETE 
+			--SELECT * FROM 
+			Tickets WHERE ImportFileID = @ImportFileID
+
+			-- 7 AssetAssignments
+			DELETE aa
+			--SELECT *  
+			FROM AssetAssignments aa
+			INNER JOIN AssetHistory ah
+			  ON aa.HistoryID = ah.HistoryID
+			WHERE
+			ah.ImportFileID = @ImportFileID
+
+			-- 8 AssetHistory
+			DELETE 
+			--SELECT * FROM
+			AssetHistory WHERE ImportFileID = @ImportFileID
+
+			-- 9 Assets
+			DELETE 
+			--SELECT *  FROM
+			Assets WHERE ImportFileID = @ImportFileID
+
+			-- 10 ProductVersions
+			DELETE pv
+			--SELECT *  
+			FROM ProductVersions pv
+			INNER JOIN Products p
+			  ON pv.ProductID = p.ProductID
+			WHERE
+			p.ImportFileID = @ImportFileID
+
+			-- 11 Products
+			DELETE 
+			--SELECT *  FROM
+			Products WHERE ImportFileID = @ImportFileID
+
+			-- 12 CustomValues
+			DELETE cv
+			--SELECT *  
+			FROM CustomValues cv
+			WHERE
+			cv.ImportFileID = @ImportFileID
+
+			-- 13 PhoneNumbers
+			DELETE pn
+			--SELECT *  
+			FROM PhoneNumbers pn
+			WHERE
+			pn.ImportFileID = @ImportFileID
+
+			-- 14 Company Addresses
+			DELETE ca
+			--SELECT *  
+			FROM Addresses ca
+			INNER JOIN Organizations o
+			  ON RefType = 9
+			  AND ca.RefID = o.ImportFileID
+			WHERE
+			o.ParentID = @ImportFileID
+
+			-- 15 Contact Addresses
+			DELETE cta
+			--SELECT *  
+			FROM Addresses cta
+			INNER JOIN Users u
+			  ON RefType = 22
+			  AND cta.RefID = u.UserID
+			INNER JOIN Organizations o
+			  ON u.ImportFileID = o.ImportFileID
+			WHERE
+			o.ParentID = @ImportFileID
+
+			-- 16 Contacts
+			DELETE c
+			--SELECT *  
+			FROM Users c
+			INNER JOIN Organizations o
+			  ON c.ImportFileID = o.ImportFileID
+			WHERE
+			o.ParentID = @ImportFileID
+
+			-- 17 Companies
+			DELETE 
+			--SELECT * FROM 
+			Organizations WHERE ParentID = @ImportFileID
+
+			-- Imports
+			UPDATE Imports
+			SET IsRolledBack = 1
+			WHERE ImportID = @ImportFileID
+		";
+		using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+      {
+			connection.Open();
+			SqlCommand command = connection.CreateCommand();
+			command.Connection = connection;
+			command.CommandType = CommandType.Text;
+			command.CommandText = query;
+			command.Parameters.AddWithValue("@ImportFileID", importFileID);
+			command.ExecuteNonQuery();
+		}
+	 }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]

@@ -876,6 +876,32 @@ AND ts.IsClosed = 0";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Organizations, organizationID, description);
     }
 
+	 public void AddOrganization(int organizationID, int ticketID, int importFieldID)
+	 {
+		 if (GetAssociatedOrganizationCount(LoginUser, organizationID, ticketID) > 0) return;
+
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = "INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID, ImportFieldID) VALUES (@TicketID, @OrganizationID, @DateCreated, @CreatorID, @DateModified, @ModifierID, @ImportFieldID)";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@OrganizationID", organizationID);
+			 command.Parameters.AddWithValue("@TicketID", ticketID);
+			 command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+			 command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
+			 command.Parameters.AddWithValue("@DateModified", DateTime.UtcNow);
+			 command.Parameters.AddWithValue("@ModifierID", LoginUser.UserID);
+			 command.Parameters.AddWithValue("@ImportFieldID", importFieldID);
+			 ExecuteNonQuery(command, "OrganizationTickets");
+		 }
+
+
+		 Organization org = (Organization)Organizations.GetOrganization(LoginUser, organizationID);
+		 Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
+		 string description = "Added '" + org.Name + "' to the customer list for " + GetTicketLink(ticket);
+		 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+		 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Organizations, organizationID, description);
+	 }
+
     public static int GetAssetCount(LoginUser loginUser, int assetID, int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -913,6 +939,30 @@ AND ts.IsClosed = 0";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Assets, assetID, description);
     }
+
+	 public void AddAsset(int assetID, int ticketID, int importFieldID)
+	 {
+		 Asset asset = Assets.GetAsset(LoginUser, assetID);
+		 Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
+		 if (asset.OrganizationID != ticket.OrganizationID) return;
+		 if (GetAssetCount(LoginUser, assetID, ticketID) > 0) return;
+
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = "INSERT INTO AssetTickets (TicketID, AssetID, DateCreated, CreatorID, ImportFieldID) VALUES (@TicketID, @AssetID, @DateCreated, @CreatorID, @ImportFieldID)";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@AssetID", assetID);
+			 command.Parameters.AddWithValue("@TicketID", ticketID);
+			 command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+			 command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
+			 command.Parameters.AddWithValue("@ImportFieldID", importFieldID);
+			 ExecuteNonQuery(command, "AssetTickets");
+		 }
+
+		 string description = "Added '" + asset.Name + "' to the asset list for " + GetTicketLink(ticket);
+		 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+		 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Assets, assetID, description);
+	 }
 
 
     public void RemoveAsset(int assetID, int ticketID)
@@ -993,6 +1043,37 @@ AND ts.IsClosed = 0";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
     }
+
+	 public void AddContact(int userID, int ticketID, int importFieldID)
+	 {
+		 try
+		 {
+
+			 using (SqlCommand command = new SqlCommand())
+			 {
+				 command.CommandText = "INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID, ImportFieldID) VALUES (@TicketID, @UserID, @DateCreated, @CreatorID, @ImportFieldID)";
+				 command.CommandType = CommandType.Text;
+				 command.Parameters.AddWithValue("@UserID", userID);
+				 command.Parameters.AddWithValue("@TicketID", ticketID);
+				 command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+				 command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
+				 command.Parameters.AddWithValue("@ImportFieldID", LoginUser.UserID);
+				 ExecuteNonQuery(command, "UserTickets");
+			 }
+		 }
+		 catch (Exception)
+		 {
+		 }
+
+
+		 UsersViewItem user = UsersView.GetUsersViewItem(LoginUser, userID);
+
+		 AddOrganization(user.OrganizationID, ticketID, importFieldID);
+		 Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
+		 string description = "Added '" + user.FirstName + " " + user.LastName + "' to the contact list for " + GetTicketLink(ticket);
+		 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+		 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+	 }
 
     public void SetUserAsSentToSalesForce(int userID, int ticketID)
     {

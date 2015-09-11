@@ -23,6 +23,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsRunning", "IsRunning", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
+      _fieldMap.AddMap("IsRolledBack", "IsRolledBack", false, false, false);
             
     }
   }
