@@ -255,9 +255,32 @@ ImportPage = function () {
           var csvColumnName = $(this).closest('.field-panel').children('.panel-heading').children('h3').text();
           var selectedOptionText = $(this).find(":selected").text();
           var selectedImportFieldID = $(this).find(":selected").val();
-          if (selectedOptionText != "Skipped" && selectedOptionText != csvColumnName)
+          if (selectedOptionText != csvColumnName)
           {
-            var alreadyExists = false;
+          	// custommapping is done by setting a different source name to the existing fields.
+          	// skipped is not a field so it can not be implemented as the other fields.
+          	// in this case we need to see if the panel name matches one of the existing fields.
+          	// if it does then we need to use that field and update the csvColumnName with skipped
+          	// if it does not exists it will skip any way.
+				// is selected 'skipped'
+          	if (selectedImportFieldID == -1)
+          	{
+					// find the import field by matching the csvColumnName with the list of fields
+          		for (i = 0; i < panels.ImportFields.length; i++) {
+          			if (panels.ImportFields[i].FieldName.trim().toLowerCase() == csvColumnName.trim().toLowerCase())
+          			{
+          				selectedImportFieldID = panels.ImportFields[i].ImportFieldID;
+          			}
+          		}
+
+
+					// if found we map the field against the skipped value.
+          		if (selectedImportFieldID != -1)
+          		{
+          			csvColumnName = "Skipped"
+          		}
+          	}
+          	var alreadyExists = false;
             for (i = 0; i < _fieldMaps.length; i++) {
               if (_fieldMaps[i].ImportFieldID == selectedImportFieldID)
               {
