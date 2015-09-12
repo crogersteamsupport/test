@@ -549,6 +549,7 @@ namespace TeamSupport.ServiceLibrary
         asset.SubPartOf = null;
         //asset.Status = this is a deprecated field
         asset.ImportID = importID;
+		  asset.ImportFileID = import.ImportID;
 
         ProductVersion productVersion = null;
         int productVersionID = ReadInt("ProductVersionID");
@@ -706,6 +707,7 @@ namespace TeamSupport.ServiceLibrary
                 AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
 
                 assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+					 assetAssignment.ImportFileID = import.ImportID;
 
                 assetAssignments.Save();
 
@@ -775,6 +777,7 @@ namespace TeamSupport.ServiceLibrary
                 AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
 
                 assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+					 assetAssignment.ImportFileID = import.ImportID;
 
                 assetAssignments.Save();
 
@@ -2537,7 +2540,7 @@ namespace TeamSupport.ServiceLibrary
         //{
           tickets = new Tickets(_importUser);
           int maxTicketNumber = tickets.GetMaxTicketNumber(_organizationID);
-          if (maxTicketNumber < 0) maxTicketNumber++;
+			 //if (maxTicketNumber < 0) maxTicketNumber++;
           ticket = tickets.AddNewTicket();
           if (ticketNumber != null)
           {
@@ -2545,6 +2548,7 @@ namespace TeamSupport.ServiceLibrary
           }
           else
           {
+				maxTicketNumber++;
             ticket.TicketNumber = maxTicketNumber;
           }
         //}
@@ -3087,7 +3091,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (ticketID != 0)
+        if (ticketID == 0)
         {
           string importID = ReadString("TicketImportID", string.Empty);
           if (importID != string.Empty)
@@ -3105,7 +3109,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (ticketID != 0)
+        if (ticketID == 0)
         {
           int? ticketNumber;
           ticketNumber = ReadIntNull("TicketNumber", string.Empty);
@@ -3124,7 +3128,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (ticketID != 0)
+        if (ticketID == 0)
         {
           _importLog.Write(messagePrefix + "Skipped. No ticket matching either the TicketID, TicketImportID or the TicketNumber was found.");
           continue;
@@ -3141,7 +3145,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (companyID != 0)
+        if (companyID == 0)
         {
           string companyImportID = ReadString("CompanyImportID", string.Empty);
           if (companyImportID != string.Empty)
@@ -3159,7 +3163,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (companyID != 0)
+        if (companyID == 0)
         {
           string companyName = ReadString("CompanyName", string.Empty);
           if (companyName != string.Empty)
@@ -3177,7 +3181,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (companyID != 0)
+        if (companyID == 0)
         {
           _importLog.Write(messagePrefix + "No company matching either the CompanyID, the CompanyImportID or the CompanyName was found.");
         }
@@ -3185,54 +3189,6 @@ namespace TeamSupport.ServiceLibrary
         {
           newTickets.AddOrganization(companyID, ticketID, import.ImportID);
           _importLog.Write(messagePrefix + "CompanyID " + companyID.ToString() + " was added to TicketID " + ticketID.ToString() + ".");
-        }
-
-
-        companyID = ReadInt("CompanyID");
-        if (companyID != 0)
-        {
-          Organization company = companies.FindByOrganizationID(companyID);
-          if (company == null)
-          {
-            _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyID " + companyID.ToString() + " was found.");
-            continue;
-          }
-        }
-
-        if (companyID != 0)
-        {
-          string companyImportID = ReadString("CompanyImportID", string.Empty);
-          if (companyImportID != string.Empty)
-          {
-            Organization company = companies.FindByImportID(companyImportID);
-            if (company == null)
-            {
-              _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyImportID " + companyImportID + " was found.");
-              continue;
-            }
-            else
-            {
-              companyID = company.OrganizationID;
-            }
-          }
-        }
-
-        if (companyID != 0)
-        {
-          string companyName = ReadString("CompanyName", string.Empty);
-          if (companyName != string.Empty)
-          {
-            Organization company = companies.FindByName(companyName);
-            if (company == null)
-            {
-              _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyName " + companyName + " was found.");
-              continue;
-            }
-            else
-            {
-              companyID = company.OrganizationID;
-            }
-          }
         }
 
         Organizations company2 = new Organizations(_importUser);

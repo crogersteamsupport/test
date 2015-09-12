@@ -876,13 +876,13 @@ AND ts.IsClosed = 0";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Organizations, organizationID, description);
     }
 
-	 public void AddOrganization(int organizationID, int ticketID, int importFieldID)
+	 public void AddOrganization(int organizationID, int ticketID, int importFileID)
 	 {
 		 if (GetAssociatedOrganizationCount(LoginUser, organizationID, ticketID) > 0) return;
 
 		 using (SqlCommand command = new SqlCommand())
 		 {
-			 command.CommandText = "INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID, ImportFieldID) VALUES (@TicketID, @OrganizationID, @DateCreated, @CreatorID, @DateModified, @ModifierID, @ImportFieldID)";
+			 command.CommandText = "INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID, ImportFileID) VALUES (@TicketID, @OrganizationID, @DateCreated, @CreatorID, @DateModified, @ModifierID, @ImportFileID)";
 			 command.CommandType = CommandType.Text;
 			 command.Parameters.AddWithValue("@OrganizationID", organizationID);
 			 command.Parameters.AddWithValue("@TicketID", ticketID);
@@ -890,7 +890,7 @@ AND ts.IsClosed = 0";
 			 command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
 			 command.Parameters.AddWithValue("@DateModified", DateTime.UtcNow);
 			 command.Parameters.AddWithValue("@ModifierID", LoginUser.UserID);
-			 command.Parameters.AddWithValue("@ImportFieldID", importFieldID);
+			 command.Parameters.AddWithValue("@ImportFileID", importFileID);
 			 ExecuteNonQuery(command, "OrganizationTickets");
 		 }
 
@@ -940,7 +940,7 @@ AND ts.IsClosed = 0";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Assets, assetID, description);
     }
 
-	 public void AddAsset(int assetID, int ticketID, int importFieldID)
+	 public void AddAsset(int assetID, int ticketID, int importFileID)
 	 {
 		 Asset asset = Assets.GetAsset(LoginUser, assetID);
 		 Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
@@ -949,13 +949,13 @@ AND ts.IsClosed = 0";
 
 		 using (SqlCommand command = new SqlCommand())
 		 {
-			 command.CommandText = "INSERT INTO AssetTickets (TicketID, AssetID, DateCreated, CreatorID, ImportFieldID) VALUES (@TicketID, @AssetID, @DateCreated, @CreatorID, @ImportFieldID)";
+			 command.CommandText = "INSERT INTO AssetTickets (TicketID, AssetID, DateCreated, CreatorID, ImportFileID) VALUES (@TicketID, @AssetID, @DateCreated, @CreatorID, @ImportFileID)";
 			 command.CommandType = CommandType.Text;
 			 command.Parameters.AddWithValue("@AssetID", assetID);
 			 command.Parameters.AddWithValue("@TicketID", ticketID);
 			 command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
 			 command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
-			 command.Parameters.AddWithValue("@ImportFieldID", importFieldID);
+			 command.Parameters.AddWithValue("@ImportFileID", importFileID);
 			 ExecuteNonQuery(command, "AssetTickets");
 		 }
 
@@ -1044,20 +1044,20 @@ AND ts.IsClosed = 0";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
     }
 
-	 public void AddContact(int userID, int ticketID, int importFieldID)
+	 public void AddContact(int userID, int ticketID, int importFileID)
 	 {
 		 try
 		 {
 
 			 using (SqlCommand command = new SqlCommand())
 			 {
-				 command.CommandText = "INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID, ImportFieldID) VALUES (@TicketID, @UserID, @DateCreated, @CreatorID, @ImportFieldID)";
+				 command.CommandText = "INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID, ImportFileID) VALUES (@TicketID, @UserID, @DateCreated, @CreatorID, @ImportFileID)";
 				 command.CommandType = CommandType.Text;
 				 command.Parameters.AddWithValue("@UserID", userID);
 				 command.Parameters.AddWithValue("@TicketID", ticketID);
 				 command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
 				 command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
-				 command.Parameters.AddWithValue("@ImportFieldID", LoginUser.UserID);
+				 command.Parameters.AddWithValue("@ImportFileID", LoginUser.UserID);
 				 ExecuteNonQuery(command, "UserTickets");
 			 }
 		 }
@@ -1068,7 +1068,7 @@ AND ts.IsClosed = 0";
 
 		 UsersViewItem user = UsersView.GetUsersViewItem(LoginUser, userID);
 
-		 AddOrganization(user.OrganizationID, ticketID, importFieldID);
+		 AddOrganization(user.OrganizationID, ticketID, importFileID);
 		 Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
 		 string description = "Added '" + user.FirstName + " " + user.LastName + "' to the contact list for " + GetTicketLink(ticket);
 		 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
