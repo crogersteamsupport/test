@@ -1057,7 +1057,7 @@ AND ts.IsClosed = 0";
 				 command.Parameters.AddWithValue("@TicketID", ticketID);
 				 command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
 				 command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
-				 command.Parameters.AddWithValue("@ImportFileID", LoginUser.UserID);
+				 command.Parameters.AddWithValue("@ImportFileID", importFileID);
 				 ExecuteNonQuery(command, "UserTickets");
 			 }
 		 }
