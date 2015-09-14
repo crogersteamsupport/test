@@ -48,7 +48,7 @@ namespace TSWebServices
             if (info.Ticket.Name.ToLower() == "<no subject>")
                 info.Ticket.Name = "";
 
-            if (info.Ticket.CategoryName != null)
+            if (info.Ticket.CategoryName != null && info.Ticket.ForumCategory != null)
                 info.Ticket.CategoryDisplayString = ForumCategories.GetCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.ForumCategory);
             if (info.Ticket.KnowledgeBaseCategoryName != null)
                 info.Ticket.KnowledgeBaseCategoryDisplayString = KnowledgeBaseCategories.GetKnowledgeBaseCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.KnowledgeBaseCategoryID);
