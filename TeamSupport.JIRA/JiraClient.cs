@@ -23,7 +23,7 @@ namespace TeamSupport.JIRA
             this.username = username;
             this.password = password;
             deserializer = new JsonDeserializer();
-            client = new RestClient { BaseUrl = baseUrl + (baseUrl.EndsWith("/") ? "" : "/") + "rest/api/2/" };
+            client = new RestClient { BaseUrl = new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/") + "rest/api/2/") };
         }
 
         private RestRequest CreateRequest(Method method, String path)
