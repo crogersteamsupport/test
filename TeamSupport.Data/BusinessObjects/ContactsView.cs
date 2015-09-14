@@ -134,18 +134,32 @@ namespace TeamSupport.Data
 
 		foreach (string key in filters)
 		{
-			var value = filters[key];
-
 			if (!string.IsNullOrEmpty(key))
 			{
 				filterFieldName = new StringBuilder();
 				filterOperator	= new StringBuilder();
 				filterValues	= new List<string>();
+				string filterFieldNameParameter = string.Empty;
 
 				filterFieldName = GetFilterFieldName(key, filters.GetValues(key), customFields, ref filterOperator, ref filterValues, ref customField);
+				filterFieldNameParameter = filterFieldName.ToString();
 
 				if (filterFieldName.Length > 0)
 				{
+					bool isPhoneNumberFilter = filterFieldName.ToString().ToLower().Equals("phonenumber");
+
+					if (isPhoneNumberFilter)
+					{
+						string phoneNumberFilter = string.Format("dbo.StripNonNumericCharacters({0})", filterFieldName.ToString());
+						filterFieldName.Clear();
+						filterFieldName.Append(phoneNumberFilter);
+
+						for (int i = 0; i < filterValues.Count; i++)
+						{
+							filterValues[i] = new string(filterValues[i].Where(char.IsDigit).ToArray());
+						}
+					}
+
 					result.Append(" AND ");
 
 					if (customField == null)
@@ -164,8 +178,8 @@ namespace TeamSupport.Data
 						}
 						else
 						{
-							result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName);
-							filterParameters.AddWithValue("@" + filterFieldName, filterValues[0]);
+							result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldNameParameter);
+							filterParameters.AddWithValue("@" + filterFieldNameParameter, filterValues[0]);
 						}
 						
 
@@ -186,8 +200,8 @@ namespace TeamSupport.Data
 								}
 								else
 								{
-									result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName + j.ToString());
-									filterParameters.AddWithValue("@" + filterFieldName + j.ToString(), filterValues[j]);
+									result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldNameParameter + j.ToString());
+									filterParameters.AddWithValue("@" + filterFieldNameParameter + j.ToString(), filterValues[j]);
 								}
 							}
 
@@ -200,16 +214,16 @@ namespace TeamSupport.Data
 						result.Append(customField.CustomFieldID.ToString());
 						result.Append(" AND ");
 						if (filterValues.Count > 1) result.Append("(");
-						result.Append("CustomValue " + filterOperator + " @" + filterFieldName);
-						filterParameters.AddWithValue("@" + filterFieldName, filterValues[0]);
+						result.Append("CustomValue " + filterOperator + " @" + filterFieldNameParameter);
+						filterParameters.AddWithValue("@" + filterFieldNameParameter, filterValues[0]);
 
 						if (filterValues.Count > 1)
 						{
 							for (int j = 1; j < filterValues.Count; j++)
 							{
 								result.Append(" OR ");
-								result.Append("CustomValue " + filterOperator + " @" + filterFieldName + j.ToString());
-								filterParameters.AddWithValue("@" + filterFieldName + j.ToString(), filterValues[j]);
+								result.Append("CustomValue " + filterOperator + " @" + filterFieldNameParameter + j.ToString());
+								filterParameters.AddWithValue("@" + filterFieldNameParameter + j.ToString(), filterValues[j]);
 							}
 
 							result.Append(")");
