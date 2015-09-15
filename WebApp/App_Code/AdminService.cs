@@ -357,105 +357,166 @@ namespace TSWebServices
 	 public void RollbackImport(int importFileID)
 	 {
 		string query = @"
+			DECLARE @OrganizationID int
+	
+			SELECT
+				@OrganizationID = OrganizationID
+			FROM
+				Imports
+			WHERE
+				ImportID = @ImportFileID
+
 			-- 1 TicketRelationships
 			DELETE 
-			--SELECT * FROM 
-			TicketRelationships WHERE ImportFileID = @ImportFileID
+				TicketRelationships 
+			WHERE 
+				OrganizationID = @OrganizationID
+				AND ImportFileID = @ImportFileID
 
 			-- 2 AssetTickets
 			DELETE at
-			--SELECT *  
 			FROM AssetTickets at
+			JOIN Tickets t
+				ON at.TicketID = t.TicketID
 			WHERE
-			at.ImportFileID = @ImportFileID
+			t.OrganizationID = @OrganizationID
+			AND at.ImportFileID = @ImportFileID
 
 			-- 3 UserTickets
 			DELETE ut
-			--SELECT *  
 			FROM UserTickets ut
+			JOIN Tickets t
+				ON ut.TicketID = t.TicketID
 			WHERE
-			ut.ImportFileID = @ImportFileID
+			t.OrganizationID = @OrganizationID
+			AND ut.ImportFileID = @ImportFileID
 
 			-- 4 OrganizationTickets
 			DELETE ot
-			--SELECT *  
 			FROM OrganizationTickets ot
+			JOIN Organizations o
+				ON ot.OrganizationID = o.OrganizationID
 			WHERE
-			ot.ImportFileID = @ImportFileID
+			o.ParentID = @OrganizationID
+			AND ot.ImportFileID = @ImportFileID
 
 			-- 5 Actions
 			DELETE a
-			--SELECT *  
 			FROM Actions a
+			JOIN Tickets t
+				ON a.TicketID = t.TicketID
 			WHERE
-			a.ImportFileID = @ImportFileID
+			t.OrganizationID = @OrganizationID
+			AND a.ImportFileID = @ImportFileID
 
 			-- 6 Tickets
 			DELETE 
-			--SELECT * FROM 
-			Tickets WHERE ImportFileID = @ImportFileID
+			Tickets WHERE 
+			OrganizationID = @OrganizationID
+			AND ImportFileID = @ImportFileID
 
 			-- 7 AssetAssignments
 			DELETE aa
-			--SELECT *  
 			FROM AssetAssignments aa
+			JOIN AssetHistory ah
+			ON aa.HistoryID = ah.HistoryID
 			WHERE
-			aa.ImportFileID = @ImportFileID
+			ah.OrganizationID = @OrganizationID
+			AND aa.ImportFileID = @ImportFileID
 
 			-- 8 AssetHistory
 			DELETE 
-			--SELECT * FROM
-			AssetHistory WHERE ImportFileID = @ImportFileID
+			AssetHistory 
+			WHERE 
+			OrganizationID = @OrganizationID
+			AND ImportFileID = @ImportFileID
 
 			-- 9 Assets
 			DELETE 
-			--SELECT *  FROM
-			Assets WHERE ImportFileID = @ImportFileID
+			Assets 
+			WHERE 
+			OrganizationID = @OrganizationID
+			AND ImportFileID = @ImportFileID
 
 			-- 10 ProductVersions
 			DELETE pv
-			--SELECT *  
-			FROM ProductVersions pv
+			FROM 
+				ProductVersions pv
+				JOIN Products p
+					ON pv.ProductID = p.ProductID
 			WHERE
-			pv.ImportFileID = @ImportFileID
+			p.OrganizationID = @OrganizationID
+			AND pv.ImportFileID = @ImportFileID
 
 			-- 11 Products
 			DELETE 
-			--SELECT *  FROM
-			Products WHERE ImportFileID = @ImportFileID
+			Products 
+			WHERE 
+			OrganizationID = @OrganizationID
+			AND ImportFileID = @ImportFileID
 
 			-- 12 CustomValues
 			DELETE cv
-			--SELECT *  
 			FROM CustomValues cv
+			JOIN CustomFields cf
+				ON cv.CustomFieldID = cf.CustomFieldID
 			WHERE
-			cv.ImportFileID = @ImportFileID
+			cf.OrganizationID = @OrganizationID
+			AND cv.ImportFileID = @ImportFileID
 
 			-- 13 PhoneNumbers
 			DELETE pn
-			--SELECT *  
 			FROM PhoneNumbers pn
+			LEFT JOIN Users u
+				ON pn.RefType = 22
+				AND pn.RefID = u.UserID
+			LEFT JOIN Organizations uo
+				ON pn.RefType = 22
+				AND u.OrganizationID = uo.OrganizationID
+			LEFT JOIN Organizations o
+				ON pn.RefType = 9
+				AND pn.RefID = o.OrganizationID
 			WHERE
-			pn.ImportFileID = @ImportFileID
+			(
+				(pn.RefType = 9 AND o.ParentID = @OrganizationID)
+				OR (pn.RefType = 22 AND uo.ParentID = @OrganizationID)
+			)
+			AND pn.ImportFileID = @ImportFileID
 
 			-- 14 & 15 Company and Contact Addresses
 			DELETE cta
-			--SELECT *  
 			FROM Addresses cta
+			LEFT JOIN Users u
+				ON cta.RefType = 22
+				AND cta.RefID = u.UserID
+			LEFT JOIN Organizations uo
+				ON cta.RefType = 22
+				AND u.OrganizationID = uo.OrganizationID
+			LEFT JOIN Organizations o
+				ON cta.RefType = 9
+				AND cta.RefID = o.OrganizationID
 			WHERE
-			cta.ImportFileID = @ImportFileID
+			(
+				(cta.RefType = 9 AND o.ParentID = @OrganizationID)
+				OR (cta.RefType = 22 AND uo.ParentID = @OrganizationID)
+			)
+			AND cta.ImportFileID = @ImportFileID
 
 			-- 16 Contacts
 			DELETE c
-			--SELECT *  
 			FROM Users c
+			JOIN Organizations o
+				ON c.OrganizationID = o.OrganizationID
 			WHERE
-			c.ImportFileID = @ImportFileID
+			o.ParentID = @OrganizationID
+			AND c.ImportFileID = @ImportFileID
 
 			-- 17 Companies
 			DELETE 
-			--SELECT * FROM 
-			Organizations WHERE ImportFileID = @ImportFileID
+			Organizations 
+			WHERE 
+			ParentID = @OrganizationID
+			AND ImportFileID = @ImportFileID
 
 			-- Imports
 			UPDATE Imports
@@ -464,13 +525,20 @@ namespace TSWebServices
 		";
 		using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
       {
-			connection.Open();
-			SqlCommand command = connection.CreateCommand();
-			command.Connection = connection;
-			command.CommandType = CommandType.Text;
-			command.CommandText = query;
-			command.Parameters.AddWithValue("@ImportFileID", importFileID);
-			command.ExecuteNonQuery();
+			try
+			{
+				connection.Open();
+				SqlCommand command = connection.CreateCommand();
+				command.Connection = connection;
+				command.CommandType = CommandType.Text;
+				command.CommandText = query;
+				command.Parameters.AddWithValue("@ImportFileID", importFileID);
+				command.ExecuteNonQuery();
+			}
+			catch (Exception e)
+			{
+				ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), e, "AdminService.RollbackImport");
+			}
 		}
 	 }
   }
