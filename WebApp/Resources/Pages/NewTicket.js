@@ -949,7 +949,7 @@ $(document).ready(function () {
               icon: 'awesome fa fa-video-camera',
               onclick: function () {
                   top.Ts.System.logAction('New Ticket - Video Recording Button Clicked');
-                  if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Explorer") {
+                  if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                       var dynamicPub = $("#publisher");
                       $("#recordVideoContainer").show();
                       dynamicPub.show();
