@@ -483,51 +483,51 @@ function CreateNewActionLI() {
   });
 
   $('#action-new-save').click(function (e) {
-    if ($("#recorder").length == 0) {
-      e.preventDefault();
-      e.stopPropagation();
-      var self = $(this);
-      self.prop('disabled', true);
-      _oldActionID = self.data('actionid');
-      isFormValid(function (isValid) {
-        if (isValid) {
-          SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
-            if (result) {
-              _isCreatingAction = true;
-              $('#action-new-editor').parent().fadeOut('normal', function () {
-                tinymce.activeEditor.destroy();
-              });
-              if ($('.upload-queue li').length > 0) {
-                UploadAttachments(result);
-              }
-              else {
-                _newAction = null;
-                if (_oldActionID === -1) {
-                  _actionTotal = _actionTotal + 1;
-                  var actionElement = CreateActionElement(result, false);
-                  actionElement.find('.ticket-action-number').text(_actionTotal);
-                }
-                else {
-                  UpdateActionElement(result, false);
-                }
-              }
-            }
-            else {
-              self.prop('disabled', false);
-              alert("There was a error creating your action.  Please try again.")
-            }
-          });
-        }
-        else {
-          self.prop('disabled', false);
-          alert("Please fill in the required fields before submitting this action.");
-          return;
-        }
-      });
-    }
+  	if ($("#recorder").length == 0) {
+  		e.preventDefault();
+  		e.stopPropagation();
+  		DisableCreateBtns();
+  		var self = $(this);
+  		_oldActionID = self.data('actionid');
+  		isFormValid(function (isValid) {
+  			if (isValid) {
+  				SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
+  					if (result) {
+  						_isCreatingAction = true;
+  						$('#action-new-editor').parent().fadeOut('normal', function () {
+  							tinymce.activeEditor.destroy();
+  						});
+  						if ($('.upload-queue li').length > 0) {
+  							UploadAttachments(result);
+  						}
+  						else {
+  							_newAction = null;
+  							if (_oldActionID === -1) {
+  								_actionTotal = _actionTotal + 1;
+  								var actionElement = CreateActionElement(result, false);
+  								actionElement.find('.ticket-action-number').text(_actionTotal);
+  							}
+  							else {
+  								UpdateActionElement(result, false);
+  							}
+  						}
+  					}
+  					else {
+  						alert("There was a error creating your action.  Please try again.")
+  					}
+  				});
+  			}
+  			else {
+  				alert("Please fill in the required fields before submitting this action.");
+  				return;
+  			}
+  		});
+  	}
+  	EnableCreateBtns();
   });
 
-  $('#action-timeline').on('click', '.action-create-option', function (e) {
+  $('#action-timeline').on('click', '.action-create-option', function (e) {	
+  	DisableCreateBtns();
     e.preventDefault();
     e.stopPropagation();
     var self = $(this);
@@ -557,15 +557,16 @@ function CreateNewActionLI() {
 
             var statusID = self.data("statusid");
             SetStatus(statusID);
+            EnableCreateBtns();
           }
           else {
-            self.prop('disabled', false);
+          	EnableCreateBtns();
             alert("There was a error creating your action.  Please try again.")
           }
         });
       }
       else {
-        self.prop('disabled', false);
+      	EnableCreateBtns();
         alert("Please fill in the required fields before submitting this action.");
         return;
       }
@@ -604,6 +605,19 @@ function CreateNewActionLI() {
     });
   });
 };
+
+function DisableCreateBtns() {
+	if ($('#action-new-save-element').hasClass('open')) {
+		$('#action-new-save-element').dropdown('toggle');
+	}
+	$('#action-new-save').prop('disabled', true);
+	$('#action-new-save-element').prop('disabled', true);
+}
+
+function EnableCreateBtns() {
+	$('#action-new-save').prop('disabled', false);
+	$('#action-new-save-element').prop('disabled', false);
+}
 
 function SetupActionEditor(elem, action) {
   $('button.wc-textarea-send').prop('disabled', false);
