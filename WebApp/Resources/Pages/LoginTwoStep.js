@@ -10,6 +10,7 @@ $(document).ready(function () {
       var userData = { userId: userId, codeEntered: code };
       IssueAjaxRequest(loginService, "CodeVerification", userData,
       function (result) {
+      	debugger
         switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
           case 1:
             window.location = '/';

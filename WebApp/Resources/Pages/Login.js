@@ -19,7 +19,7 @@ $(document).ready(function () {
     var signInData = { email: email, password: $('#inputPassword').val(), organizationId: org, verificationRequired: true };
 
     IssueAjaxRequest(loginService, "SignIn", signInData,
-    function (result) {debugger
+    function (result) {
       switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4, ExipredPassword = 5
         case 1:
           window.location = returnURL;
@@ -108,6 +108,7 @@ function IssueAjaxRequest(service, method, data, successCallback, errorCallback)
     data: JSON.stringify(data),
     contentType: "application/json; charset=utf-8",
     dataType: "json",
+	 cache: false,
     dataFilter: function (data) {
       var jsonResult = eval('(' + data + ')');
       if (jsonResult.hasOwnProperty('d'))
