@@ -184,11 +184,11 @@ WHERE EmailPostID IN (
     }
 	 public static void SendNewDevice(LoginUser loginUser, int userID)
 	 {
-		 PostEmail(loginUser, EmailPostType.ChangedTSPassword, -1, userID.ToString(), null, null, null, null, null, null, null);
+		 PostEmail(loginUser, EmailPostType.NewDevice, -1, userID.ToString(), null, null, null, null, null, null, null);
 	 }
 	 public static void SendTooManyAttempts(LoginUser loginUser, int userID)
 	 {
-		 PostEmail(loginUser, EmailPostType.ChangedTSPassword, -1, userID.ToString(), null, null, null, null, null, null, null);
+		 PostEmail(loginUser, EmailPostType.TooManyAttempts, -1, userID.ToString(), null, null, null, null, null, null, null);
 	 }
 	 public static void SendChangedPortalPassword(LoginUser loginUser, int userID)
     {

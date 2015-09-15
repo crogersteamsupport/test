@@ -355,33 +355,36 @@ namespace TSWebServices
 
 			 if (result.Count < 1)
 			 {
-				 
+				 User user = null;
+
+
 				 if (TSAuthentication.Ticket != null) 
 				 {
-					 User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+					 user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+				 }
+				 else  
+				 {
+					 user = Users.GetUser(LoginUser.Anonymous, userID);
+					 if (user.CryptedPassword != token && user.CryptedPassword != FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))					 
+					 {
+						 user = null;
+					 }
+				 }
+
+				 if (user != null)
+				 {
 					 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(pw1, "MD5");
 					 user.IsPasswordExpired = false;
 					 user.PasswordCreatedUtc = DateTime.UtcNow;
 					 user.Collection.Save();
 					 EmailPosts.SendChangedTSPassword(LoginUser.Anonymous, user.UserID);
 				 }
-				 else 
+				 else
 				 {
-					 User user = Users.GetUser(LoginUser.Anonymous, userID);
-					 if (user.CryptedPassword == token || user.CryptedPassword == FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))
-					 {
-						 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(pw1, "MD5");
-						 user.IsPasswordExpired = false;
-						 user.PasswordCreatedUtc = DateTime.UtcNow;
-						 user.Collection.Save();
-						 EmailPosts.SendChangedTSPassword(LoginUser.Anonymous, user.UserID);
-					 }
-					 else
-					 {
-						 result.Add("There was an issue saving your password.  Please try resetting your password again.");
-					 }
-					 
+					 result.Add("There was an issue saving your password.  Please try resetting your password again.");
 				 }
+
+
 			 }
 
 			 return result.ToArray();
@@ -434,7 +437,6 @@ namespace TSWebServices
 					{
 						validation.Error = "Invalid email or password.";
 						validation.Result = LoginResult.Fail;
-						EmailPosts.SendTooManyAttempts(loginUser, user.UserID);
 					}
 
 					if (!organization.IsActive)
@@ -473,6 +475,8 @@ namespace TSWebServices
 			{
 				validation.Error = string.Format("Your account is temporarily locked, because of too many failed login attempts.{0}Try again in 15 minutes or use the forgot password link above to reset your password. ", Environment.NewLine);
 				validation.Result = LoginResult.Fail;
+				if (attempts == MAXLOGINATTEMPTS + 1) EmailPosts.SendTooManyAttempts(loginUser, user.UserID);
+
 			}
 
 			if (validation.Result != LoginResult.Success && validation.Result != LoginResult.Unknown && !string.IsNullOrEmpty(validation.Error))
