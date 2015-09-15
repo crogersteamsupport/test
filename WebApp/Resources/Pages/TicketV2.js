@@ -3305,8 +3305,10 @@ function UpdateActionElement(val) {
 
 function CreateHandleBarHelpers() {
   Handlebars.registerHelper('UserImageTag', function () {
-    if (this.item.CreatorID !== -1) return '<img class="user-avatar pull-left" src="../../../dc/' + this.item.OrganizationID + '/useravatar/' + this.item.CreatorID + '/48" />';
-    return '';
+  	if (this.item.CreatorID > 0) {
+  		return '<img class="user-avatar pull-left" src="../../../dc/' + this.item.OrganizationID + '/avatar/' + this.item.CreatorID + '/48" />';
+  	}
+  	else return "";
   });
 
   Handlebars.registerHelper('FormatDateTime', function (Date) {
