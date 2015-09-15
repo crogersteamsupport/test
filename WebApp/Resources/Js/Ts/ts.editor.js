@@ -156,7 +156,7 @@
                     icon: 'awesome fa fa-video-camera',
                     onclick: function () {
                         top.Ts.System.logAction('Ticket - Video Recording Button Clicked');
-                        if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Explorer") {
+                        if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                             var dynamicPub = element.parent().find("#publisher");
                             element.parent().find("#recordVideoContainer").show();
                             dynamicPub.show();
