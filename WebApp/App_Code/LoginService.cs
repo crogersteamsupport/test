@@ -161,6 +161,8 @@ namespace TSWebServices
 					result.OrganizationId = users[0].OrganizationID;
 
 					string codeSent = users[0].verificationCode;
+					codeEntered = codeEntered.Trim();
+					codeEntered = codeEntered.Replace(" ", string.Empty);
 
 					if (codeSent == codeEntered)
 					{
