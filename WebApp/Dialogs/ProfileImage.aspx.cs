@@ -70,8 +70,8 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 
         //String path = HttpContext.Current.Request.PhysicalApplicationPath + "images\\tempupload\\";
         string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
-      string fileName = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
-
+        string fileName = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
+		  string testpath = "";
         if (Upload.HasFile)
         {
             Session["WorkingImage"] = fileName;
@@ -90,6 +90,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         {
             try
             {
+				    testpath = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), fileName);
                 Upload.PostedFile.SaveAs(Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), fileName));
                 FileSaved = true;
             }
@@ -110,8 +111,8 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         {
             //pnlUpload.Visible = false;
             //pnlCrop.Visible = true;
-            //imgCrop.ImageUrl = "../images/tempupload/" + Session["WorkingImage"].ToString() + ".ashx?height=300";
-            imgCrop.ImageUrl = "../Images/" +  Session["WorkingImage"].ToString() + ".ashx?height=300";
+			  imgCrop.ImageUrl = "file:///" + testpath.Replace('\\','/') + ".ashx?height=300";
+            //imgCrop.ImageUrl = "../Images/" +  Session["WorkingImage"].ToString() + ".ashx?height=300";
             croppanel.Visible = true;
         }
     }
