@@ -25,7 +25,7 @@ $(document).ready(function () {
         	window.location = returnURL;
           break;
         case 3:
-          window.location = resourcesURL + 'LoginTwoStep.html?UserID=' + result.UserId;
+          window.location = '/LoginTwoStep.aspx?UserID=' + result.UserId;
           break;
         case 4:
           window.location = resourcesURL + 'LoginTwoStepSetup.html?UserID=' + result.UserId;
