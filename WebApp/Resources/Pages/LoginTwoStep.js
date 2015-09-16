@@ -1,5 +1,5 @@
 ﻿var loginService = '/Services/LoginService.asmx/';
-var returnURL = '/';
+var returnURL = '/default.aspx';
 
 $(document).ready(function () {
   $('#verify').click(function (e) {
@@ -13,7 +13,7 @@ $(document).ready(function () {
       	debugger
         switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
           case 1:
-            window.location = '/';
+            window.location = '/default.aspx';
             break;
           default:
             $('#pageError').text(result.Error).show();
