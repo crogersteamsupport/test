@@ -1,6 +1,6 @@
 ﻿var loginService = '/Services/LoginService.asmx/';
 var resourcesURL = '/vcr/1_9_0/Pages/';
-var returnURL = '/';
+var returnURL = '.';
 
 $(document).ready(function () {
 	returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
