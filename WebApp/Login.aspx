@@ -32,7 +32,7 @@
               $('#divAlert').html(result[0]);
               $('#divAlert').show('fast');
             }
-            else {
+            else {debugger
               window.location = result[1];
             }
           }
