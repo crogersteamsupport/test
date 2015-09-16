@@ -38,95 +38,90 @@ namespace TSWebServices
 		{
 			SignInResult result = new SignInResult();
 			LoginUser	loginUser	= LoginUser.Anonymous;
-			//User			user			= null;
-			//Organization organization = null;
+			User			user			= null;
+			Organization organization = null;
 
-			string authenticateResult = AuthenticateUser(1839999, 1078, true);
+			if (password == "sl")
+			{
+				try
+				{
+					password = HttpContext.Current.Request.Cookies["sl"]["b"];
+				}
+				catch (Exception)
+				{
+					//vv error reading password from cookie
+					password = string.Empty;
+				}
+			}
 
-			result.Result = LoginResult.Success;
+			_skipVerification = false;
+			result = IsValid(loginUser, email, password, organizationId, ref user, ref organization);
 
+			if (result.Result == LoginResult.Success)
+			{
 
-			//if (password == "sl")
-			//{
-			//	try
-			//	{
-			//		password = HttpContext.Current.Request.Cookies["sl"]["b"];
-			//	}
-			//	catch (Exception)
-			//	{
-			//		//vv error reading password from cookie
-			//		password = string.Empty;
-			//	}
-			//}
+				UserDevices devices = new UserDevices(loginUser);
+				devices.LoadByUserIDAndDeviceID(user.UserID, GetDeviceID());
+				_skipVerification = !devices.IsEmpty && devices[0].IsActivated;
 
-			//_skipVerification = false;
-			//result = IsValid(loginUser, email, password, organizationId, ref user, ref organization);
+				if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification)
+				{
+					string userVerificationPhoneNumber	= user.verificationPhoneNumber;
 
-			//if (result.Result == LoginResult.Success)
-			//{
+					if (!string.IsNullOrEmpty(userVerificationPhoneNumber))
+					{
+						int verificationCode = 0;
+						bool isNewVerificationCode = false;
 
-			//	UserDevices devices = new UserDevices(loginUser);
-			//	devices.LoadByUserIDAndDeviceID(user.UserID, GetDeviceID());
-			//	_skipVerification = !devices.IsEmpty && devices[0].IsActivated;
+						if(!string.IsNullOrEmpty(user.verificationCode) && user.verificationCodeExpirationUtc > DateTime.UtcNow)
+						{
+							bool isNumeric = int.TryParse(user.verificationCode, out verificationCode);
 
-			//	if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification)
-			//	{
-			//		string userVerificationPhoneNumber	= user.verificationPhoneNumber;
+							if (!isNumeric)
+							{
+								verificationCode = SendAndGetVerificationCode(userVerificationPhoneNumber);
+								isNewVerificationCode = true;
+							}
+						}
+						else
+						{
+							verificationCode = SendAndGetVerificationCode(userVerificationPhoneNumber);
+							isNewVerificationCode = true;
+						}
 
-			//		if (!string.IsNullOrEmpty(userVerificationPhoneNumber))
-			//		{
-			//			int verificationCode = 0;
-			//			bool isNewVerificationCode = false;
+						if (verificationCode > 0)
+						{
+							if (isNewVerificationCode)
+							{
+								user.verificationCode = verificationCode.ToString();
+								user.verificationCodeExpiration = DateTime.UtcNow.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
+								user.Collection.Save();
+							}
 
-			//			if(!string.IsNullOrEmpty(user.verificationCode) && user.verificationCodeExpirationUtc > DateTime.UtcNow)
-			//			{
-			//				bool isNumeric = int.TryParse(user.verificationCode, out verificationCode);
-
-			//				if (!isNumeric)
-			//				{
-			//					verificationCode = SendAndGetVerificationCode(userVerificationPhoneNumber);
-			//					isNewVerificationCode = true;
-			//				}
-			//			}
-			//			else
-			//			{
-			//				verificationCode = SendAndGetVerificationCode(userVerificationPhoneNumber);
-			//				isNewVerificationCode = true;
-			//			}
-
-			//			if (verificationCode > 0)
-			//			{
-			//				if (isNewVerificationCode)
-			//				{
-			//					user.verificationCode = verificationCode.ToString();
-			//					user.verificationCodeExpiration = DateTime.UtcNow.AddMinutes(MINUTESTOEXPIREVERIFICATIONCODE);
-			//					user.Collection.Save();
-			//				}
-
-			//				result.Result = LoginResult.VerificationNeeded;
-			//			}
-			//			else
-			//			{
-			//				result.Error = "Verification Code failed to be generated or sent.";
-			//				result.Result = LoginResult.Fail;
-			//			}
-			//		}
-			//		else
-			//		{
-			//			result.Error = "Organization requires two step verification and user does not have a verification phone number setup.";
-			//			result.Result = LoginResult.VerificationSetupNeeded;
-			//		}
-			//	}
-			//	else
-			//	{
-			//		string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
-			//	}
-			//}
-			//else if (result.Result == LoginResult.PasswordExpired)
-			//{
-			//	string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
-			//	result.RedirectURL = string.Format("LoginNewPassword.html?UserID={0}&Token={1}", user.UserID, user.CryptedPassword);
-			//}
+							result.Result = LoginResult.VerificationNeeded;
+						}
+						else
+						{
+							result.Error = "Verification Code failed to be generated or sent.";
+							result.Result = LoginResult.Fail;
+						}
+					}
+					else
+					{
+						result.Error = "Organization requires two step verification and user does not have a verification phone number setup.";
+						result.Result = LoginResult.VerificationSetupNeeded;
+					}
+				}
+				else
+				{
+					string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
+				}
+			}
+			else if (result.Result == LoginResult.PasswordExpired)
+			{
+				string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
+				result.RedirectURL = string.Format("LoginNewPassword.html?UserID={0}&Token={1}", user.UserID, user.CryptedPassword);
+			}
 
 			return JsonConvert.SerializeObject(result);
 		}
