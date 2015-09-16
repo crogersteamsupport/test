@@ -15,9 +15,9 @@ $(document).ready(function () {
     e.preventDefault();
     var email = $('#inputEmail').val();
     var org = $('#orgSelect').val();
-    if (org == "") org = null;
-    var signInData = { email: email, password: $('#inputPassword').val(), organizationId: org, verificationRequired: true };
-
+    if (org == "") org = -1;
+    var signInData = { email: email, password: $('#inputPassword').val(), organizationId: -1, verificationRequired: true };
+	 debugger
     IssueAjaxRequest(loginService, "SignIn", signInData,
     function (result) {
       switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4, ExipredPassword = 5
