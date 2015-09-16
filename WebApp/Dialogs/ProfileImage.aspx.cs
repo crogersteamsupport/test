@@ -22,7 +22,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 {
     private int _userID = -1;
     private int _organizationID = -1;
-
+	 private static string uploadedFileName ="";
     protected override void OnInit(EventArgs e)
     {
         base.OnInit(e);
@@ -71,6 +71,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         //String path = HttpContext.Current.Request.PhysicalApplicationPath + "images\\tempupload\\";
         string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
         string fileName = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
+		  uploadedFileName = fileName;
 		  string testpath = "";
         if (Upload.HasFile)
         {
@@ -111,7 +112,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         {
             //pnlUpload.Visible = false;
             //pnlCrop.Visible = true;
-			  imgCrop.ImageUrl = "file:///" + testpath.Replace('\\','/') + ".ashx?height=300";
+			  imgCrop.ImageUrl = "dc/"+UserSession.LoginUser.OrganizationID+"/images/temp/"+ fileName +"?height=300";
             //imgCrop.ImageUrl = "../Images/" +  Session["WorkingImage"].ToString() + ".ashx?height=300";
             croppanel.Visible = true;
         }
@@ -134,14 +135,16 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 
     public override bool Save()
     {
-        String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
+        String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
         string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
         RemoveCachedImages(UserSession.LoginUser.OrganizationID, _userID);
 
         if (img1.Value != "")
         {
             img1.Value = img1.Value.Replace(".ashx", "");
-            ImageBuilder.Current.Build(temppath + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value), path + '\\' + _userID + "avatar.jpg", new ResizeSettings(img1.Value));
+				string source = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), uploadedFileName);//temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
+				string dest = path + '\\' + _userID + "avatar.jpg";
+            ImageBuilder.Current.Build(source, dest , new ResizeSettings(img1.Value));
 
             Attachments attachments = new Attachments(UserSession.LoginUser);
             ////string directory = TSUtils.GetAttachmentPath("Actions", actionID);
@@ -149,7 +152,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
             Attachments att = new Attachments(TSAuthentication.GetLoginUser());
             att.LoadByReference(ReferenceType.UserPhoto, _userID);
 
-            File.Delete(temppath + Session["WorkingImage"].ToString());
+				File.Delete(temppath + '\\' + uploadedFileName);
 
             if (att.Count > 0)
             {
