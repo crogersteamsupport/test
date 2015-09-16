@@ -7,7 +7,7 @@ $(document).ready(function () {
 	supportToken = top.Ts.Utils.getQueryValue("SupportToken", window);
 	if (supportToken && supportToken != '')
 	{
-		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result) { window.location = '/'; }, function () { });
+		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result) { window.location = '/Default.aspx'; }, function () { });
 		return;
 	}
   getRememberMe();
@@ -22,7 +22,7 @@ $(document).ready(function () {
     function (result) {debugger
       switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4, ExipredPassword = 5
         case 1:
-          window.location = returnURL;
+        	window.location = returnURL;
           break;
         case 3:
           window.location = resourcesURL + 'LoginTwoStep.html?UserID=' + result.UserId;
