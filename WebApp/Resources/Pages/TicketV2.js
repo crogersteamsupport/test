@@ -3306,7 +3306,7 @@ function UpdateActionElement(val) {
 function CreateHandleBarHelpers() {
   Handlebars.registerHelper('UserImageTag', function () {
   	if (this.item.CreatorID > 0) {
-  		return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/avatar/' + this.item.CreatorID + '/48" />';
+  		return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/48" />';
   	}
   	else return "";
   });
