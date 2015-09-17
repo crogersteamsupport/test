@@ -40,7 +40,7 @@ namespace TeamSupport.ServiceLibrary
           //logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
           _importLog = new ImportLog(path, imports[0].ImportID);
           _importLog.Write("Importing importID: " + imports[0].ImportID.ToString());
-			 _importLog.Write("Revision 3740");
+			 _importLog.Write("Revision 3779");
 
           ProcessImport(imports[0]);
         }
