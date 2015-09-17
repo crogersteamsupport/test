@@ -18,7 +18,7 @@ function onShow() {
 function DialogClosed(sender, args) {
   sender.remove_close(DialogClosed);
 	//window.location = window.location;
-  $('#userPhoto').attr("src", $('#userPhoto').attr("src") + "/x");
+  $('#userPhoto').attr("src", $('#userPhoto').attr("src") + "/" + (new Date().getTime()).toString());
 
 
 }

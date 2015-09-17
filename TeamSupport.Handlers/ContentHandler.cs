@@ -1168,8 +1168,6 @@ namespace TeamSupport.Handlers
 
 		private void WriteImage(HttpContext context, string fileName)
 		{
-
-
 			DateTime lastWriteDate = File.GetLastWriteTimeUtc(fileName);
 			try
 			{
