@@ -29,7 +29,7 @@
       <h3 class="pageTitle">Enter your Verification Code</h3>
       <form class="form-signin">
         <div class="form-group">
-          <input id="inputVerificationCode" class="form-control" placeholder="Verification Code" autocomplete="off" min="00000000" maxlength="10" required autofocus>
+          <input id="inputVerificationCode" class="form-control" placeholder="Verification Code" autocomplete="off" min="10000000" maxlength="10" required autofocus>
         </div>
         <button id="verify" class="btn btn-lg btn-primary btn-block btn-signin">Verify</button>
         <button id="resendCode" class="btn btn-link">Resend Verification Code</button>

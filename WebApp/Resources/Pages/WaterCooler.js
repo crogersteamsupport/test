@@ -1108,7 +1108,7 @@ function createThread(thread) {
 
         var avaimg = $('<img>')
             .addClass('topicavatarlrg')
-				.attr("src", "/dc/" + thread.Message.OrganizationID + "/UserAvatar/" + thread.Message.UserID + "/48")
+				.attr("src", "/dc/" + thread.Message.OrganizationID + "/UserAvatar/" + thread.Message.UserID + "/40")
 				.appendTo(ta);
 
         //top.Ts.Services.Users.GetUserPhoto(thread.Message.UserID, function (att) {
@@ -1366,7 +1366,7 @@ function createReply(thread) {
 
         var avaimg = $('<img>')
             .addClass('topicavatarsm')
-				.attr("src", "/dc/" + thread.OrganizationID + "/UserAvatar/" + thread.UserID + "/48")
+				.attr("src", "/dc/" + thread.OrganizationID + "/UserAvatar/" + thread.UserID + "/40")
             .appendTo(avaspn);
 
         //top.Ts.Services.Users.GetUserPhoto(thread.UserID, function (att) {
