@@ -317,7 +317,8 @@ function SetupTicketProperties() {
   }
 
   $('#ticket-properties-area').on('click', 'span.tagRemove', function (e) {
-    var tag = $(this).parent()[0];
+  debugger
+    var tag = $(this).parent();
     tag.remove();
     if ($(tag).hasClass("OrgAnchor")) ReloadProductList();
   });
