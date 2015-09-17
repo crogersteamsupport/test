@@ -1108,11 +1108,12 @@ function createThread(thread) {
 
         var avaimg = $('<img>')
             .addClass('topicavatarlrg')
-            .appendTo(ta);
+				.attr("src", "/dc/" + thread.Message.OrganizationID + "/UserAvatar/" + thread.Message.UserID + "/48")
+				.appendTo(ta);
 
-        top.Ts.Services.Users.GetUserPhoto(thread.Message.UserID, function (att) {
-            avaimg.attr("src", att);
-        });
+        //top.Ts.Services.Users.GetUserPhoto(thread.Message.UserID, function (att) {
+        //    avaimg.attr("src", att);
+        //});
 
         var tpic = $('<div>')
             .addClass('tpic')
@@ -1365,11 +1366,12 @@ function createReply(thread) {
 
         var avaimg = $('<img>')
             .addClass('topicavatarsm')
+				.attr("src", "/dc/" + thread.OrganizationID + "/UserAvatar/" + thread.UserID + "/48")
             .appendTo(avaspn);
 
-        top.Ts.Services.Users.GetUserPhoto(thread.UserID, function (att) {
-            avaimg.attr("src", att);
-        });
+        //top.Ts.Services.Users.GetUserPhoto(thread.UserID, function (att) {
+        //    avaimg.attr("src", att);
+        //});
 
         var tprpy = $('<div>')
         .addClass('topicrpy')
