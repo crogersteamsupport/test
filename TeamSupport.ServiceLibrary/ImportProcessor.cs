@@ -9,6 +9,7 @@ using System.Net.Mail;
 using LumenWorks.Framework.IO.Csv;
 using System.Data;
 using System.Text.RegularExpressions;
+using System.Web.Security;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -178,7 +179,21 @@ namespace TeamSupport.ServiceLibrary
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportCustomFields(import.RefType, import.ImportID);
             break;
-          default:
+			 case ReferenceType.Users:
+				ImportUsers(import);
+				_csv = new CsvReader(new StreamReader(csvFile), true);
+				ImportCustomFields(import.RefType, import.ImportID);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportAddresses(import, ReferenceType.Users, true);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportPhoneNumbers(import, ReferenceType.Users);
+				break;
+			 case ReferenceType.OrganizationProducts:
+				ImportOrganizationProducts(import);
+				_csv = new CsvReader(new StreamReader(csvFile), true);
+				ImportCustomFields(import.RefType, import.ImportID);
+				break;
+			 default:
             Logs.WriteEvent("ERROR: Unknown Reference Type");
             break;
         }
@@ -825,7 +840,11 @@ namespace TeamSupport.ServiceLibrary
       SortedList<string, int> contactList = null;
       SortedList<string, int> ticketList = null;
 
-      switch (refType)
+		Organizations companies = new Organizations(_importUser);
+		Products allProducts = new Products(_importUser);
+		ProductVersions productVersions = new ProductVersions(_importUser);
+		
+		switch (refType)
       {
         case ReferenceType.Assets:
           assetList = GetAssetList();
@@ -836,7 +855,12 @@ namespace TeamSupport.ServiceLibrary
         case ReferenceType.Tickets:
           ticketList = GetTicketList();
           break;
-      }
+		  case ReferenceType.OrganizationProducts:
+			 companies.LoadByParentID(_organizationID, false);
+			 allProducts.LoadByOrganizationID(_organizationID);
+			 productVersions.LoadByParentOrganizationID(_organizationID);
+			 break;
+		}
 
       SortedList<string, int> userList = GetUserAndContactList();
       CustomValues customValues = new CustomValues(_importUser);
@@ -849,7 +873,33 @@ namespace TeamSupport.ServiceLibrary
         string errorMessage = string.Empty;
         switch (refType)
         {
-          case ReferenceType.Assets:
+			  case ReferenceType.Users:
+				  string userImportID = ReadString("UserImportID", string.Empty);
+				  if (userImportID != string.Empty)
+				  {
+					  Users existingUser = new Users(_importUser);
+					  existingUser.LoadByImportID(userImportID, _organizationID);
+					  if (existingUser.Count == 1)
+					  {
+						  refID = existingUser[0].UserID;
+					  }
+					  else if (existingUser.Count > 1)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. More than one user matching UserImportID " + userImportID.ToString() + " was found for customfields.");
+						  continue;
+					  }
+					  else
+					  {
+						 _importLog.Write(messagePrefix + "Skipped. No user matching UserImportID " + userImportID.ToString() + " was found for customfields.");
+						 continue;
+					  }
+				  }
+				  else
+				  {
+					  errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as UserImportID was not provided.";
+				  }
+				  break;
+			  case ReferenceType.Assets:
             string assetName = ReadString("Name", string.Empty);
             string assetSerialNumber = ReadString("SerialNumber", string.Empty);
             string location = ReadString("Location", string.Empty);
@@ -1123,7 +1173,184 @@ namespace TeamSupport.ServiceLibrary
               }
             }
             break;
-        }
+			 case ReferenceType.OrganizationProducts:
+				 int organizationProductCompanyID = ReadInt("CompanyID");
+				 if (organizationProductCompanyID != 0)
+				 {
+					 Organization company = companies.FindByOrganizationID(organizationProductCompanyID);
+					 if (company == null)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyID " + organizationProductCompanyID.ToString() + " was found.");
+						 continue;
+					 }
+				 }
+
+				 if (organizationProductCompanyID == 0)
+				 {
+					string companyImportID = ReadString("CompanyImportID", string.Empty);
+					if (companyImportID != string.Empty)
+					{
+						Organizations company = new Organizations(_importUser);
+						company.LoadByImportID(companyImportID, _organizationID);
+						if (company.Count == 1)
+						{
+							organizationProductCompanyID = company[0].OrganizationID;
+						}
+						else if (company.Count > 1)
+						{
+							_importLog.Write(messagePrefix + "Skipped. More than one company matching the CompanyImportID " + companyImportID + " was found in custom fields.");
+							continue;
+						}
+						else
+						{
+							_importLog.Write(messagePrefix + "Skipped. No company matching the CompanyImportID " + companyImportID + " was found in custom fields.");
+							continue;
+						}
+					}
+				}
+
+				 if (organizationProductCompanyID == 0)
+				{
+					string organizationProductCompanyName = ReadString("CompanyName", string.Empty);
+					if (organizationProductCompanyName != string.Empty)
+					{
+						Organization company = companies.FindByName(organizationProductCompanyName);
+						if (company == null)
+						{
+							_importLog.Write(messagePrefix + "Skipped. No company matching the CompanyName " + organizationProductCompanyName + " was found in customfields.");
+							continue;
+						}
+						else
+						{
+							organizationProductCompanyID = company.OrganizationID;
+						}
+					}
+				}
+
+				 if (organizationProductCompanyID == 0)
+				{
+					_importLog.Write(messagePrefix + "Skipped. No company matching either the CompanyID, the CompanyImportID or the CompanyName was found in customfields.");
+					continue;
+				}
+
+				 int organizationProductProductID = ReadInt("ProductID");
+				 if (organizationProductProductID != 0)
+				{
+					Product product = allProducts.FindByProductID(organizationProductProductID);
+					if (product == null)
+					{
+						_importLog.Write(messagePrefix + "Skipped. No product matching ProductID: " + organizationProductProductID.ToString() + " was found in custom fields.");
+						continue;
+					}
+				}
+
+				 if (organizationProductProductID == 0)
+				{
+					string organizationProductProductImportID = ReadString("ProductImportID", string.Empty);
+					if (organizationProductProductImportID != string.Empty)
+					{
+						Product product = allProducts.FindByImportID(organizationProductProductImportID);
+						if (product == null)
+						{
+							_importLog.Write(messagePrefix + "Skipped. No product matching the ProductImportID " + organizationProductProductImportID + " was found.");
+							continue;
+						}
+						else
+						{
+							organizationProductProductID = product.ProductID;
+						}
+					}
+				}
+
+				if (organizationProductProductID == 0)
+				{
+					string productName = ReadString("ProductName", string.Empty);
+					if (productName != string.Empty)
+					{
+						Product product = allProducts.FindByName(productName);
+						if (product == null)
+						{
+							_importLog.Write(messagePrefix + "Skipped. No product matching ProductName " + productName + " was found.");
+							continue;
+						}
+						else
+						{
+							organizationProductProductID = product.ProductID;
+						}
+					}
+				}
+
+				if (organizationProductProductID == 0)
+				{
+					_importLog.Write(messagePrefix + "Skipped. No product matching either the ProductID, ProductImportID or the ProductName was found.");
+					continue;
+				}
+
+				int productVersionID = ReadInt("ProductVersionID");
+				if (productVersionID != 0)
+				{
+					ProductVersion productVersion = productVersions.FindByProductVersionID(productVersionID);
+					if (productVersion == null)
+					{
+						_importLog.Write(messagePrefix + ". No product version matching ProductVersionID: " + productVersionID.ToString() + " was found.");
+					}
+				}
+
+				if (productVersionID == 0)
+				{
+					string organizationProductProductVersionImportID = ReadString("ProductVersionImportID", string.Empty);
+					if (organizationProductProductVersionImportID != string.Empty)
+					{
+						ProductVersion productVersion = productVersions.FindByImportID(organizationProductProductVersionImportID);
+						if (productVersion == null)
+						{
+							_importLog.Write(messagePrefix + ". No product version matching the ProductVersionImportID " + organizationProductProductVersionImportID + " was found.");
+						}
+						else
+						{
+							productVersionID = productVersion.ProductVersionID;
+						}
+					}
+				}
+
+				if (productVersionID == 0)
+				{
+					string productVersionNumber = ReadString("ProductVersionNumber", string.Empty);
+					if (productVersionNumber != string.Empty)
+					{
+						ProductVersion productVersion = productVersions.FindByVersionNumber(productVersionNumber, organizationProductProductID);
+						if (productVersion == null)
+						{
+							_importLog.Write(messagePrefix + ". No product version matching ProductVersionNumber " + productVersionNumber + " was found.");
+						}
+						else
+						{
+							productVersionID = productVersion.ProductVersionID;
+						}
+					}
+				}
+
+				OrganizationProducts organizationProduct = new OrganizationProducts(_importUser);
+				if (productVersionID == 0)
+				{
+					organizationProduct.LoadByOrganizationAndProductID(organizationProductCompanyID, organizationProductProductID);
+				}
+				else
+				{
+					organizationProduct.LoadByOrganizationProductIDAndVersionID(organizationProductCompanyID, organizationProductProductID, productVersionID);
+				}
+
+				if (organizationProduct.Count == 1)
+				{
+					refID = organizationProduct[0].OrganizationProductID;
+				}
+				else
+				{
+					_importLog.Write(messagePrefix + "Skipped. No organization product found for companyID " + organizationProductCompanyID.ToString() + ", productID " + organizationProductProductID.ToString() + " and productVersionID " + productVersionID.ToString() + " was found.");
+					continue;
+				}
+				break;
+		  }
 
         if (errorMessage != string.Empty)
         {
@@ -1689,7 +1916,7 @@ namespace TeamSupport.ServiceLibrary
       _importLog.Write(count.ToString() + " contacts imported.");
     }
 
-    private void ImportAddresses(Import import, ReferenceType addressReferenceType)
+    private void ImportAddresses(Import import, ReferenceType addressReferenceType, bool isUser = false)
     {
       SortedList<string, int> userList = GetUserList();
       SortedList<string, int> contactList = null;
@@ -1821,80 +2048,111 @@ namespace TeamSupport.ServiceLibrary
             newAddress.RefID = orgID;
             break;
           case ReferenceType.Users:
-            int contactID = ReadInt("ContactID");
-            if (contactID != 0)
-            {
-              if (!contactList.ContainsValue(contactID))
-              {
-                _importLog.Write(messagePrefix + "Skipped. No contact matching ContactID " + contactID.ToString() + " was found for addresses.");
-                continue;
-              }
-            }
+				if (!isUser)
+				{
+					int contactID = ReadInt("ContactID");
+					if (contactID != 0)
+					{
+					  if (!contactList.ContainsValue(contactID))
+					  {
+						 _importLog.Write(messagePrefix + "Skipped. No contact matching ContactID " + contactID.ToString() + " was found for addresses.");
+						 continue;
+					  }
+					}
 
-            if (contactID == 0)
-            {
-              string contactImportID = ReadString("ContactImportID", string.Empty);
-              if (contactImportID != string.Empty)
-              {
-                Users existingContact = new Users(_importUser);
-                existingContact.LoadByImportID(contactImportID, _organizationID);
-                if (existingContact.Count == 1)
-                {
-                  contactID = existingContact[0].UserID;
-                }
-                else if (existingContact.Count > 1)
-                {
-                  _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactImportID " + contactImportID+ " was found.");
-                  continue;
-                }
-              }
-            }
+					if (contactID == 0)
+					{
+					  string contactImportID = ReadString("ContactImportID", string.Empty);
+					  if (contactImportID != string.Empty)
+					  {
+						 Users existingContact = new Users(_importUser);
+						 existingContact.LoadByImportID(contactImportID, orgID);
+						 if (existingContact.Count == 1)
+						 {
+							contactID = existingContact[0].UserID;
+						 }
+						 else if (existingContact.Count > 1)
+						 {
+							_importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactImportID " + contactImportID+ " was found.");
+							continue;
+						 }
+					  }
+					}
 
-            string contactEmail = ReadString("ContactEmail", string.Empty);
-            string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
-            if (contactID == 0 && !contactList.TryGetValue(searchTerm.ToUpper(), out contactID))
-            {
-              string firstName = ReadString("FirstName", string.Empty);
-              string lastName = ReadString("LastName", string.Empty);
-              if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
-              {
-                Users newContacts = new Users(_importUser);
-                User newContact = newContacts.AddNewUser();
-                newContact.FirstName = firstName;
-                newContact.LastName = lastName;
-                newContact.Email = contactEmail;
-                newContact.OrganizationID = orgID;
-                newContact.ActivatedOn = now;
-                newContact.CryptedPassword = "";
-                newContact.DeactivatedOn = null;
-                newContact.InOffice = false;
-                newContact.InOfficeComment = "";
-                newContact.IsFinanceAdmin = false;
-                newContact.IsPasswordExpired = true;
-                newContact.IsSystemAdmin = false;
-                newContact.LastActivity = now;
-                newContact.LastLogin = now;
-                newContact.NeedsIndexing = true;
-                newContact.PrimaryGroupID = null;
-                if (dateCreated != null)
-                {
-                  newContact.DateCreated = (DateTime)dateCreated;
-                }
-                newContact.CreatorID = creatorID;
-                newContact.ModifierID = -2;
-					 newContact.ImportFileID = import.ImportID;
+					string contactEmail = ReadString("ContactEmail", string.Empty);
+					string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
+					if (contactID == 0 && !contactList.TryGetValue(searchTerm.ToUpper(), out contactID))
+					{
+					  string firstName = ReadString("FirstName", string.Empty);
+					  string lastName = ReadString("LastName", string.Empty);
+					  if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
+					  {
+						 Users newContacts = new Users(_importUser);
+						 User newContact = newContacts.AddNewUser();
+						 newContact.FirstName = firstName;
+						 newContact.LastName = lastName;
+						 newContact.Email = contactEmail;
+						 newContact.OrganizationID = orgID;
+						 newContact.ActivatedOn = now;
+						 newContact.CryptedPassword = "";
+						 newContact.DeactivatedOn = null;
+						 newContact.InOffice = false;
+						 newContact.InOfficeComment = "";
+						 newContact.IsFinanceAdmin = false;
+						 newContact.IsPasswordExpired = true;
+						 newContact.IsSystemAdmin = false;
+						 newContact.LastActivity = now;
+						 newContact.LastLogin = now;
+						 newContact.NeedsIndexing = true;
+						 newContact.PrimaryGroupID = null;
+						 if (dateCreated != null)
+						 {
+							newContact.DateCreated = (DateTime)dateCreated;
+						 }
+						 newContact.CreatorID = creatorID;
+						 newContact.ModifierID = -2;
+						 newContact.ImportFileID = import.ImportID;
 
-                newContacts.Save();
-                contactID = newContact.UserID;
-                contactList.Add(searchTerm, contactID);
-              }
-              else
-              {
-                _importLog.Write(messagePrefix + "Skipped. Address could not be added as contact does not exists and either first or last name are missing.");
-                continue;
-              }
-            }
-            newAddress.RefID = contactID;
+						 newContacts.Save();
+						 contactID = newContact.UserID;
+						 contactList.Add(searchTerm, contactID);
+					  }
+					  else
+					  {
+						 _importLog.Write(messagePrefix + "Skipped. Address could not be added as contact does not exists and either first or last name are missing.");
+						 continue;
+					  }
+					}
+					newAddress.RefID = contactID;
+				}
+				else
+				{
+					string userImportID = ReadString("UserImportID", string.Empty);
+					if (userImportID != string.Empty)
+					{
+						Users existingUser = new Users(_importUser);
+						existingUser.LoadByImportID(userImportID, _organizationID);
+						if (existingUser.Count == 1)
+						{
+							newAddress.RefID = existingUser[0].UserID;
+						}
+						else if (existingUser.Count > 1)
+						{
+							_importLog.Write(messagePrefix + "Skipped. More than one user matching the UserImportID " + userImportID + " was found.");
+							continue;
+						}
+						else
+						{
+							_importLog.Write(messagePrefix + "Skipped. No user matching the UserImportID " + userImportID + " was found.");
+							continue;
+						}
+					}
+					else
+					{
+						_importLog.Write(messagePrefix + "Skipped. UserImportID was missing.");
+						continue;
+					}
+				}
             break;
         }
 
@@ -1973,7 +2231,7 @@ namespace TeamSupport.ServiceLibrary
     {
       SortedList<string, int> userList = GetUserList();
       SortedList<string, int> contactList = null;
-      if (phoneNumberReferenceType == ReferenceType.Contacts)
+		if (phoneNumberReferenceType == ReferenceType.Contacts)
       {
         contactList = GetContactList();
       }
@@ -2116,8 +2374,8 @@ namespace TeamSupport.ServiceLibrary
             newPhoneNumber2.RefID = orgID;
             newPhoneNumber3.RefID = orgID;
             break;
-          case ReferenceType.Contacts:
-            int contactID = ReadInt("ContactID");
+			 case ReferenceType.Contacts:
+				int contactID = ReadInt("ContactID");
             if (contactID != 0)
             {
               if (!contactList.ContainsValue(contactID))
@@ -2194,7 +2452,64 @@ namespace TeamSupport.ServiceLibrary
             newPhoneNumber2.RefID = contactID;
             newPhoneNumber3.RefID = contactID;
             break;
-        }
+			 case ReferenceType.Users:
+				int userID = ReadInt("UserID");
+				if (userID != 0)
+				{
+					if (!userList.ContainsValue(userID))
+					{
+						_importLog.Write(messagePrefix + "Skipped. No user matching UserID " + userID.ToString() + " was found for phone numbers.");
+						continue;
+					}
+				}
+
+				if (userID == 0)
+				{
+					string userImportID = ReadString("UserImportID", string.Empty);
+					if (userImportID != string.Empty)
+					{
+						Users existingUser = new Users(_importUser);
+						existingUser.LoadByImportID(userImportID, _organizationID);
+						if (existingUser.Count == 1)
+						{
+							userID = existingUser[0].UserID;
+						}
+						else if (existingUser.Count > 1)
+						{
+							_importLog.Write(messagePrefix + "Skipped. More than one user matching the userID " + userID + " was found for phone numbers.");
+							continue;
+						}
+					}
+				}
+
+				if (userID == 0)
+				{
+					string userEmail = ReadString("UserEmail", string.Empty);
+					if (userEmail != string.Empty)
+					{
+						Users existingUser = new Users(_importUser);
+						existingUser.LoadByEmail(userEmail, _organizationID);
+						if (existingUser.Count == 1)
+						{
+							userID = existingUser[0].UserID;
+						}
+						else if (existingUser.Count > 1)
+						{
+							_importLog.Write(messagePrefix + "Skipped. More than one user matching the userEmail " + userEmail + " was found for phone numbers.");
+							continue;
+						}
+						else 
+						{
+							_importLog.Write(messagePrefix + "Skipped. No user matching the userEmail " + userEmail + " was found for phone numbers.");
+							continue;
+						}
+					}
+				}
+				newPhoneNumber.RefID = userID;
+				newPhoneNumber2.RefID = userID;
+				newPhoneNumber3.RefID = userID;
+				break;
+		  }
 
         string phoneTypeName = ReadString("PhoneType", string.Empty);
         string phoneTypeName2 = ReadString("PhoneType2", string.Empty);
@@ -4368,7 +4683,386 @@ namespace TeamSupport.ServiceLibrary
       _importLog.Write("Import set with " + count.ToString() + " product versions inserted in database.");
     }
 
-    private bool IsTicketRelated(Ticket ticket1, Ticket ticket2)
+	 private void ImportUsers(Import import)
+	 {
+		 SortedList<string, int> userList = GetUserList();
+
+		 Users users = new Users(_importUser);
+
+		 int count = 0;
+		 while (_csv.ReadNextRecord())
+		 {
+			 long rowNumber = _csv.CurrentRecordIndex + 1;
+			 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
+
+			 string firstName = ReadString("FirstName", string.Empty);
+			 if (string.IsNullOrEmpty(firstName))
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. User skipped due to missing first name");
+				 continue;
+			 }
+
+			 string lastName = ReadString("LastName", string.Empty);
+			 if (string.IsNullOrEmpty(lastName))
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. User skipped due to missing last name");
+				 continue;
+			 }
+
+			 //Users existingUser = new Users(_importUser);
+			 User user = null;
+			 //bool isUpdate = false;
+			 //int oldOrganizationID = 0;
+
+			 string importID = ReadString("UserImportID", string.Empty);
+			 if (importID != string.Empty)
+			 {
+				 //existingUser.LoadByImportID(importID, _organizationID);
+				 //if (existingUser.Count == 1)
+				 //{
+				 //  user = existingUser[0];
+				 //  oldOrganizationID = user.OrganizationID;
+				 //  isUpdate = true;
+				 //}
+				 //else if (existingUser.Count > 1)
+				 //{
+				 //  _importLog.Write(messagePrefix + "Skipped. More than one user matching importID was found");
+				 //  continue;
+				 //}
+			 }
+			 else
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. UserImportID is required.");
+				 continue;
+			 }
+
+			 string email = ReadString("UserEmail", string.Empty);
+			 if (email != string.Empty)
+			 {
+			 //  existingUser = new Users(_importUser);
+			 //  existingUser.LoadByEmail(_organizationID, email);
+			 //  if (existingUser.Count > 0)
+			 //  {
+			 //    user = existingUser[0];
+			 //    oldOrganizationID = user.OrganizationID;
+			 //    isUpdate = true;
+			 //  }
+			 }
+			 else
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. UserEmail is required.");
+				 continue;
+			 }
+
+
+			 //if (user == null)
+			 //{
+			 user = users.AddNewUser();
+			 //}
+
+			 DateTime? dateCreated = ReadDateNull("DateCreated", user.DateCreated.ToString());
+			 if (dateCreated != null)
+			 {
+				 user.DateCreated = (DateTime)dateCreated;
+			 }
+			 int creatorID = -2;
+			 if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
+			 {
+				 if (!userList.ContainsValue(creatorID))
+				 {
+					 creatorID = -2;
+				 }
+			 }
+			 
+			 user.OrganizationID = _organizationID;
+			 user.ImportID = importID;
+			 user.FirstName = firstName;
+			 user.MiddleName = ReadString("MiddleName", user.MiddleName);
+			 user.LastName = lastName;
+			 user.Title = ReadString("Title", user.Title);
+			 user.Email = email;
+
+			 string isActive = ReadString("IsActive", string.Empty);
+			 if (!string.IsNullOrEmpty(isActive))
+			 {
+				 user.IsActive = ReadBool("IsActive", user.IsActive.ToString());
+			 }
+			 else
+			 {
+				 user.IsActive = true;
+			 }
+
+			 //string isFinanceAdmin = ReadString("IsFinanceAdmin", string.Empty);
+			 //if (!string.IsNullOrEmpty(isFinanceAdmin))
+			 //{
+			 //	user.IsFinanceAdmin = ReadBool("IsFinanceAdmin", user.IsFinanceAdmin.ToString());
+			 //}
+			 //else
+			 //{
+			 //	user.IsFinanceAdmin = false;
+			 //}
+
+			 string isSystemAdmin = ReadString("IsSystemAdmin", string.Empty);
+			 if (!string.IsNullOrEmpty(isSystemAdmin))
+			 {
+				 user.IsSystemAdmin = ReadBool("IsSystemAdmin", user.IsSystemAdmin.ToString());
+			 }
+			 else
+			 {
+				 user.IsSystemAdmin = false;
+			 }
+
+			 user.ActivatedOn = DateTime.UtcNow;
+			 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(ReadString("Password", DataUtils.GenerateRandomPassword()).Trim(), "MD5");
+			 user.DeactivatedOn = null;
+			 user.InOffice = false;
+			 user.InOfficeComment = "";
+			 user.IsPasswordExpired = true;
+			 user.IsPortalUser = true;
+			 user.LastActivity = DateTime.UtcNow;
+			 user.LastLogin = DateTime.UtcNow;
+			 user.NeedsIndexing = true;
+			 user.PrimaryGroupID = null;
+			 user.SubscribeToNewTickets = false;
+			 user.ReceiveTicketNotifications = true;
+			 user.EnforceSingleSession = true;
+			 user.CreatorID = creatorID;
+			 user.ModifierID = -2;
+			 user.ImportFileID = import.ImportID;
+
+			 _importLog.Write(messagePrefix + "User " + importID + " added to bulk insert.");
+			 count++;
+
+			 if (count % BULK_LIMIT == 0)
+			 {
+				 users.BulkSave();
+				 users = new Users(_importUser);
+				 UpdateImportCount(import, count);
+			 }
+		 }
+		 users.BulkSave();
+		 UpdateImportCount(import, count);
+		 _importLog.Write(count.ToString() + " users imported.");
+	 }
+
+	 private void ImportOrganizationProducts(Import import)
+	 {
+		 Organizations companies = new Organizations(_importUser);
+		 companies.LoadByParentID(_organizationID, false);
+
+		 Products products = new Products(_importUser);
+		 products.LoadByOrganizationID(_organizationID);
+
+		 ProductVersions productVersions = new ProductVersions(_importUser);
+		 productVersions.LoadByParentOrganizationID(_organizationID);
+
+		 SortedList<string, int> userList = GetUserAndContactList();
+
+		 OrganizationProducts organizationProducts = new OrganizationProducts(_importUser);
+		 int count = 0;
+		 while (_csv.ReadNextRecord())
+		 {
+			 long rowNumber = _csv.CurrentRecordIndex + 1;
+			 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
+
+			 int companyID = ReadInt("CompanyID");
+			 if (companyID != 0)
+			 {
+				 Organization company = companies.FindByOrganizationID(companyID);
+				 if (company == null)
+				 {
+					 _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyID " + companyID.ToString() + " was found.");
+					 continue;
+				 }
+			 }
+
+			 if (companyID == 0)
+			 {
+				 string companyImportID = ReadString("CompanyImportID", string.Empty);
+				 if (companyImportID != string.Empty)
+				 {
+					 Organization company = companies.FindByImportID(companyImportID);
+					 if (company == null)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyImportID " + companyImportID + " was found.");
+						 continue;
+					 }
+					 else
+					 {
+						 companyID = company.OrganizationID;
+					 }
+				 }
+			 }
+
+			 if (companyID == 0)
+			 {
+				 string companyName = ReadString("CompanyName", string.Empty);
+				 if (companyName != string.Empty)
+				 {
+					 Organization company = companies.FindByName(companyName);
+					 if (company == null)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyName " + companyName + " was found.");
+						 continue;
+					 }
+					 else
+					 {
+						 companyID = company.OrganizationID;
+					 }
+				 }
+			 }
+
+			 if (companyID == 0)
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. No company matching either the CompanyID, the CompanyImportID or the CompanyName was found.");
+				 continue;
+			 }
+
+			 int productID = ReadInt("ProductID");
+			 if (productID != 0)
+			 {
+				 Product product = products.FindByProductID(productID);
+				 if (product == null)
+				 {
+					 _importLog.Write(messagePrefix + "Skipped. No product matching ProductID: " + productID.ToString() + " was found.");
+					 continue;
+				 }
+			 }
+
+			 if (productID == 0)
+			 {
+				 string productImportID = ReadString("ProductImportID", string.Empty);
+				 if (productImportID != string.Empty)
+				 {
+					 Product product = products.FindByImportID(productImportID);
+					 if (product == null)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No product matching the ProductImportID " + productImportID + " was found.");
+						 continue;
+					 }
+					 else
+					 {
+						 productID = product.ProductID;
+					 }
+				 }
+			 }
+
+			 if (productID == 0)
+			 {
+				 string productName = ReadString("ProductName", string.Empty);
+				 if (productName != string.Empty)
+				 {
+					 Product product = products.FindByName(productName);
+					 if (product == null)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No product matching ProductName " + productName + " was found.");
+						 continue;
+					 }
+					 else
+					 {
+						 productID = product.ProductID;
+					 }
+				 }
+			 }
+
+			 if (productID == 0)
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. No product matching either the ProductID, ProductImportID or the ProductName was found.");
+				 continue;
+			 }
+
+			 int productVersionID = ReadInt("ProductVersionID");
+			 if (productVersionID != 0)
+			 {
+				 ProductVersion productVersion = productVersions.FindByProductVersionID(productVersionID);
+				 if (productVersion == null)
+				 {
+					 _importLog.Write(messagePrefix + ". No product version matching ProductVersionID: " + productVersionID.ToString() + " was found.");
+				 }
+			 }
+
+			 if (productVersionID == 0)
+			 {
+				 string productVersionImportID = ReadString("ProductVersionImportID", string.Empty);
+				 if (productVersionImportID != string.Empty)
+				 {
+					 ProductVersion productVersion = productVersions.FindByImportID(productVersionImportID);
+					 if (productVersion == null)
+					 {
+						 _importLog.Write(messagePrefix + ". No product version matching the ProductVersionImportID " + productVersionImportID + " was found.");
+					 }
+					 else
+					 {
+						 productVersionID = productVersion.ProductVersionID;
+					 }
+				 }
+			 }
+
+			 if (productVersionID == 0)
+			 {
+				 string productVersionNumber = ReadString("ProductVersionNumber", string.Empty);
+				 if (productVersionNumber != string.Empty)
+				 {
+					 ProductVersion productVersion = productVersions.FindByVersionNumber(productVersionNumber, productID);
+					 if (productVersion == null)
+					 {
+						 _importLog.Write(messagePrefix + ". No product version matching ProductVersionNumber " + productVersionNumber + " was found.");
+					 }
+					 else
+					 {
+						 productVersionID = productVersion.ProductVersionID;
+					 }
+				 }
+			 }
+
+			 OrganizationProduct organizationProduct = organizationProducts.AddNewOrganizationProduct();
+			 organizationProduct.OrganizationID = companyID;
+			 organizationProduct.ProductID = productID;
+			 if (productVersionID == 0)
+			 {
+				organizationProduct.ProductVersionID = productVersionID;
+			 }
+
+			 DateTime? supportExpiration = ReadDateNull("SupportExpiration", organizationProduct.SupportExpiration.ToString());
+			 if (supportExpiration != null)
+			 {
+				 organizationProduct.SupportExpiration = (DateTime)supportExpiration;
+			 }
+
+			 DateTime? dateCreated = ReadDateNull("DateCreated", organizationProduct.DateCreated.ToString());
+			 if (dateCreated != null)
+			 {
+				 organizationProduct.DateCreated = (DateTime)dateCreated;
+			 }
+			 int creatorID = -2;
+			 if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
+			 {
+				 if (!userList.ContainsValue(creatorID))
+				 {
+					 creatorID = -2;
+				 }
+			 }
+			 organizationProduct.CreatorID = creatorID;
+			 organizationProduct.ModifierID = -2;
+			 organizationProduct.ImportFileID = import.ImportID;
+
+			 _importLog.Write(messagePrefix + "Organization " + companyID.ToString() + " - Product " + productID.ToString() + " added to bulk insert.");
+			 count++;
+
+			 if (count % BULK_LIMIT == 0)
+			 {
+				 organizationProducts.BulkSave();
+				 organizationProducts = new OrganizationProducts(_importUser);
+				 UpdateImportCount(import, count);
+			 }
+		 }
+		 organizationProducts.BulkSave();
+		 UpdateImportCount(import, count);
+		 _importLog.Write(count.ToString() + " organization products imported.");
+
+	 }
+
+	 private bool IsTicketRelated(Ticket ticket1, Ticket ticket2)
     {
       if (ticket1.ParentID != null && ticket1.ParentID == ticket2.TicketID) return true;
       if (ticket2.ParentID != null && ticket2.ParentID == ticket1.TicketID) return true;

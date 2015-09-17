@@ -112,6 +112,20 @@ namespace TeamSupport.Data
         }
     }
 
+	 public void LoadByOrganizationProductIDAndVersionID(int orgId, int productID, int versionID)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = "select * from OrganizationProducts where Organizationid = @ClientOrgID and productid=@ProductID AND ProductVersionID = @ProductVersionID";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@ClientOrgID", orgId);
+			 command.Parameters.AddWithValue("@ProductID", productID);
+			 command.Parameters.AddWithValue("@ProductVersionID", versionID);
+			 Fill(command);
+		 }
+	 }
+
+
     public void LoadByContactProductAndVersionID(int contactID, int productID, int? productVersionID)
     {
         using (SqlCommand command = new SqlCommand())

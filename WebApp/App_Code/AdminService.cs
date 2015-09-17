@@ -498,7 +498,7 @@ namespace TSWebServices
 			WHERE
 			(
 				(cta.RefType = 9 AND o.ParentID = @OrganizationID)
-				OR (cta.RefType = 22 AND uo.ParentID = @OrganizationID)
+				OR (cta.RefType = 22 AND (uo.ParentID = @OrganizationID OR uo.OrganizationID = @OrganizationID))
 			)
 			AND cta.ImportFileID = @ImportFileID
 
@@ -517,6 +517,22 @@ namespace TSWebServices
 			WHERE 
 			ParentID = @OrganizationID
 			AND ImportFileID = @ImportFileID
+
+			-- 18 Users
+			DELETE c
+			FROM Users c
+			WHERE
+			c.OrganizationID = @OrganizationID
+			AND c.ImportFileID = @ImportFileID
+
+			-- 19 OrganizationProducts
+			DELETE op
+			FROM OrganizationProducts op
+			JOIN Organizations o
+				ON op.OrganizationID = o.OrganizationID
+			WHERE
+			o.ParentID = @OrganizationID
+			AND op.ImportFileID = @ImportFileID
 
 			-- Imports
 			UPDATE Imports
