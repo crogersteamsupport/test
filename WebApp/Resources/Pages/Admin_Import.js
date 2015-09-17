@@ -238,16 +238,24 @@ ImportPage = function () {
 
         var fieldListClone = fieldList.clone();
 
-        if (panels.ImportFieldMap[i].ImportFieldID != 0) {
-          fieldListClone.val(panels.ImportFieldMap[i].ImportFieldID);
-          var field = new Object();
-          field.ImportFieldID = panels.ImportFieldMap[i].ImportFieldID;
-          field.SourceName = panels.ImportFieldMap[i].SourceName;
-          _fieldMaps.push(field);
-        }
-        else {
+        //This routine persists previous mapping in new import so the user do not have to map all fields all over again.
+		  //The problem is that is not deleting old mappings and is breaking custom mapping.
+		  //For example: Csv column DateCreated gets mapped against companyname by mistake
+		  //the companyname field gets the sourcename DateCreated
+		  //Then DateCreated is mapped correctly against DateCreated
+		  //the datecreated field gets the sourcename datecreated
+		  //nevertheless, the old company field remains with the date created sourcename as the user has not changed that field.
+		  //Till I figure out a way to prevent this from happening we cannot persist old mappings.
+        //if (panels.ImportFieldMap[i].ImportFieldID != 0) {
+        //  fieldListClone.val(panels.ImportFieldMap[i].ImportFieldID);
+        //  var field = new Object();
+        //  field.ImportFieldID = panels.ImportFieldMap[i].ImportFieldID;
+        //  field.SourceName = panels.ImportFieldMap[i].SourceName;
+        //  _fieldMaps.push(field);
+        //}
+        //else {
           fieldListClone.find('option').filter(function () { return $(this).text() == panels.ImportFieldMap[i].SourceName; }).attr("selected", "selected");
-        }
+        //}
         fieldListClone.appendTo(panelForm);
         panelTitle.data("MappedFieldName", fieldListClone.find(":selected").text());
 
@@ -255,8 +263,9 @@ ImportPage = function () {
           var csvColumnName = $(this).closest('.field-panel').children('.panel-heading').children('h3').text();
           var selectedOptionText = $(this).find(":selected").text();
           var selectedImportFieldID = $(this).find(":selected").val();
-          if (selectedOptionText != csvColumnName)
-          {
+			 // Setting the mapping only when the names do not match avoids overriding incorrect old mapping.
+          //if (selectedOptionText != csvColumnName)
+          //{
           	// custommapping is done by setting a different source name to the existing fields.
           	// skipped is not a field so it can not be implemented as the other fields.
           	// in this case we need to see if the panel name matches one of the existing fields.
@@ -296,7 +305,7 @@ ImportPage = function () {
               field.SourceName = csvColumnName;
               _fieldMaps.push(field);
             }
-          }
+          //}
           panelTitle.data("MappedFieldName", $(this).find(":selected").text());
         });
 
