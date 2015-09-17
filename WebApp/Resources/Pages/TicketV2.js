@@ -604,6 +604,8 @@ function CreateNewActionLI() {
       elem.parent().fadeIn('normal');
     });
   });
+
+  $('#new-action-avatar').attr("src", $('#new-action-avatar').attr("src") + "/" + (new Date().getTime()).toString());
 };
 
 function DisableCreateBtns() {
