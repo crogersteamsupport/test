@@ -392,7 +392,7 @@ namespace TeamSupport.Handlers
 			string initial = "A";
 
 			if (!string.IsNullOrWhiteSpace(user.FirstName)) initial = user.FirstName.Substring(0, 1).ToUpper();
-			else if (!string.IsNullOrWhiteSpace(user.LastName)) initial = user.LastName.Substring(0, 1).ToUpper();
+		   if (!string.IsNullOrWhiteSpace(user.LastName)) initial = initial + user.LastName.Substring(0, 1).ToUpper();
 
 			using (Image initialImage = MakeInitialSquare(initial, GetInitialColor(initial), size))
 			{
@@ -635,7 +635,7 @@ namespace TeamSupport.Handlers
 
 							int fontSize = 8;
 							Font font = null;
-							double maxSize = size * 0.7;
+							double maxSize = size * 0.65;
 							while (true)
 							{
 								font = new Font(fontFamily, fontSize);
@@ -1168,6 +1168,8 @@ namespace TeamSupport.Handlers
 
 		private void WriteImage(HttpContext context, string fileName)
 		{
+
+
 			DateTime lastWriteDate = File.GetLastWriteTimeUtc(fileName);
 			try
 			{

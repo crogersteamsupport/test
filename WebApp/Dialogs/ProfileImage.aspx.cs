@@ -121,7 +121,6 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
     private void RemoveCachedImages(int organizationID, int userID)
     {
       string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationID.ToString());
-      cachePath = Path.Combine(cachePath, "Avatars\\" + organizationID.ToString());
       if (Directory.Exists(cachePath))
       {
         string pattern = userID.ToString() + "-*.*";

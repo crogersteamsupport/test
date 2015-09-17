@@ -112,21 +112,12 @@ namespace TSWebServices
         public string GetUserPhoto(int userID)
         {
             string path;
-            //return Attachments.GetAttachmentPath(TSAuthentication.GetLoginUser(), ReferenceType.UserPhoto, userID);
-
             if (userID == -99)
                 userID = TSAuthentication.GetLoginUser().UserID;
 
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            Attachments att = new Attachments(TSAuthentication.GetLoginUser());
-            att.LoadByReference(ReferenceType.UserPhoto, userID);
 
-            if (att.Count > 0)
-            {
-                path = String.Format("/dc/{0}/avatar/{1}", user.OrganizationID, att[0].AttachmentID);
-            }
-            else
-                path = "../images/blank_avatar.png";
+				path = String.Format("/dc/{0}/UserAvatar/{1}/73", user.OrganizationID, userID); 
             return path;
         }
 
