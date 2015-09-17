@@ -10,7 +10,6 @@ $(document).ready(function () {
       var userData = { userId: userId, codeEntered: code };
       IssueAjaxRequest(loginService, "CodeVerification", userData,
       function (result) {
-      	debugger
         switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4
           case 1:
             window.location = '/default.aspx';
@@ -27,6 +26,10 @@ $(document).ready(function () {
     else {
       $('#pageError').text('Please enter a valid verification code.').show();
     }
+  });
+
+  $("#inputVerificationCode").bind("keyup change", function () {
+  	$(this).val(function (i, v) { return v.replace(/ /g, ""); });
   });
 
   $('#resendCode').click(function (e) {
