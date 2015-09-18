@@ -837,9 +837,10 @@ namespace TeamSupport.ServiceLibrary
     private void ImportCustomFields(ReferenceType refType, int importFileID)
     {
       SortedList<string, int> assetList = null;
-      SortedList<string, int> contactList = null;
+		//SortedList<string, int> contactList = null;
       SortedList<string, int> ticketList = null;
 
+		Users contacts = new Users(_importUser);
 		Organizations companies = new Organizations(_importUser);
 		Products allProducts = new Products(_importUser);
 		ProductVersions productVersions = new ProductVersions(_importUser);
@@ -850,7 +851,8 @@ namespace TeamSupport.ServiceLibrary
           assetList = GetAssetList();
           break;
         case ReferenceType.Contacts:
-          contactList = GetContactList();
+			 //contactList = GetContactList();
+			 contacts.LoadContacts(_organizationID, false);
           break;
         case ReferenceType.Tickets:
           ticketList = GetTicketList();
@@ -976,15 +978,37 @@ namespace TeamSupport.ServiceLibrary
             }
             break;
           case ReferenceType.Contacts:
-            companyName = string.Empty;
-            companyName = ReadString("CompanyName", string.Empty);
-            string contactEmail = ReadString("ContactEmail", string.Empty);
-            key = string.Empty;
-            key = contactEmail + "(" + companyName + ")";
-            if (!contactList.TryGetValue(key.ToUpper().Replace(" ", string.Empty), out refID))
-            {
-              errorMessage = "Custom fields in row index " + _csv.CurrentRecordIndex + "could not be imported as contact " + key + " does not exists.";
-            }
+				string contactImportID = ReadString("ContactImportID", string.Empty);
+				if (contactImportID != string.Empty)
+				{
+					//existingUser.LoadByImportID(importID, _organizationID);
+					//if (existingUser.Count == 1)
+					//{
+					//  user = existingUser[0];
+					//  oldOrganizationID = user.OrganizationID;
+					//  isUpdate = true;
+					//}
+					//else if (existingUser.Count > 1)
+					//{
+					//  _importLog.Write(messagePrefix + "Skipped. More than one user matching importID was found");
+					//  continue;
+					//}
+					User existingContact = contacts.FindByImportID(contactImportID);
+					if (existingContact != null)
+					{
+						refID = existingContact.UserID;
+					}
+					else
+					{
+						_importLog.Write(messagePrefix + "Skipped. No contact found matching contactImportID in custom fields.");
+						continue;
+					}
+				}
+				else
+				{
+					_importLog.Write(messagePrefix + "Skipped. ContactImportID is required in custom fields.");
+					continue;
+				}
             break;
           case ReferenceType.Tickets:
             int ticketID = ReadInt("TicketID");
