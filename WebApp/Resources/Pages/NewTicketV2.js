@@ -1842,7 +1842,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
-                      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                      .text((date === null ? 'unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
                       .addClass('control-label')
                       .attr('style', 'padding-left: 5px;')
                       .appendTo(dateContainer);
@@ -1906,7 +1906,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
-                      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                      .text((date === null ? 'unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
                       .addClass('control-label')
                       .attr('style', 'padding-left: 5px;')
                       .appendTo(dateContainer);
@@ -1970,7 +1970,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
-                      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+                      .text((date === null ? 'unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
                       .addClass('control-label')
                       .attr('style', 'padding-left: 5px;')
                       .appendTo(dateContainer);

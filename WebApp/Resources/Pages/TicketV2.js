@@ -2455,7 +2455,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
   var dateLink = $('<a>')
                     .attr('href', '#')
                     .addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor')
-                    .text((date === null ? '' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                    .text((date === null ? 'unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
                     .appendTo(dateContainer);
 
   dateLink.click(function (e) {
@@ -2554,7 +2554,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
   var dateLink = $('<a>')
                     .attr('href', '#')
                     .addClass('ticket-anchor ticket-nullable-link')
-                    .text((date === null ? '' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                    .text((date === null ? 'unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
                     .appendTo(dateContainer);
 
   dateLink.click(function (e) {
