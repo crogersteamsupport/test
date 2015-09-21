@@ -79,7 +79,7 @@ namespace DataRecovery
 
 		private void SaveOrg(int orgID, string result)
 		{
-			SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), "UPDATE OrgMoveEvent SET Result = '"+result+"', HasExecuted = 1");
+			SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), "UPDATE OrgMoveEvent SET Result = '"+result+"', HasExecuted = 1 WHERE OrgID = " + orgID.ToString());
 		}
 
 		private void RecoverProducts(int orgID)
