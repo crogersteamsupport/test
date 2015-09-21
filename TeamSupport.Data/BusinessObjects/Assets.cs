@@ -55,6 +55,17 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByOrganizationIDCreatedAfterRestore(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Assets WHERE OrganizationID = @OrganizationID WHERE DateCreated > '2015-09-17 05:55:21.897' ORDER BY Name";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
     public void LoadByTicketID(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -91,6 +102,19 @@ namespace TeamSupport.Data
             (asset.SerialNumber != null && asset.SerialNumber.ToLower().Trim() == importID) || 
             (asset.Name != null && asset.Name.ToLower().Trim() == importID)
            )
+        {
+          return asset;
+        }
+      }
+      return null;
+    }
+
+    public Asset FindByName(string name)
+    {
+      name = name.ToLower().Trim();
+      foreach (Asset asset in this)
+      {
+        if (asset.Name != null && asset.Name.ToLower().Trim() == name)
         {
           return asset;
         }
