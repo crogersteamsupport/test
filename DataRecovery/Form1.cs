@@ -62,7 +62,7 @@ namespace DataRecovery
           RecoverCompanies(orgID);
           //RecoverContacts(orgID);
           RecoverProducts(orgID);
-          RecoverAssets(orgID);
+         // RecoverAssets(orgID);
           RecoverActionsFromOldTickets(orgID);
           RecoverTickets(orgID);
 
@@ -124,7 +124,6 @@ namespace DataRecovery
 
     private void RecoverCompanies(int orgID)
     {
-      // check corrupt db for different products,if so craete the new products, but do not use ID's
       Organizations badCompanies = new Organizations(GetCorrupteLoginUser());
       badCompanies.LoadByParentID(orgID, false);
 
@@ -137,53 +136,9 @@ namespace DataRecovery
         if (goodCompany == null)
         {
           goodCompany = (new Organizations(GetGoodLoginUser())).AddNewOrganization();
-          goodCompany.Name              = badCompany.Name;
-          goodCompany.Description       = badCompany.Description;
-          goodCompany.Website           = badCompany.Website;
-          goodCompany.CompanyDomains    = badCompany.CompanyDomains;
-          goodCompany.SAExpirationDate  = badCompany.SAExpirationDate;
-          goodCompany.SlaLevelID        = badCompany.SlaLevelID;
-          goodCompany.DateCreated       = badCompany.DateCreated;
-          goodCompany.SupportHoursMonth = badCompany.SupportHoursMonth;
-          goodCompany.IsActive          = badCompany.IsActive;
-          goodCompany.HasPortalAccess   = badCompany.HasPortalAccess;
-          goodCompany.IsApiEnabled      = badCompany.IsApiEnabled;
-          goodCompany.IsApiActive       = badCompany.IsApiActive;
-          goodCompany.InActiveReason    = badCompany.InActiveReason;
-
-          goodCompany.ExtraStorageUnits = badCompany.ExtraStorageUnits;
-          goodCompany.IsCustomerFree    = badCompany.IsCustomerFree;
-          goodCompany.PortalSeats       = badCompany.PortalSeats;
-          goodCompany.ProductType       = badCompany.ProductType;
-          goodCompany.UserSeats         = badCompany.UserSeats;
-          goodCompany.NeedsIndexing     = badCompany.NeedsIndexing;
-          goodCompany.SystemEmailID     = badCompany.SystemEmailID;
-          goodCompany.WebServiceID      = badCompany.WebServiceID;
-          {
-            User defaultSupportUser = _users.FindByUserID((int)badCompany.DefaultSupportUserID);
-            if (defaultSupportUser != null)
-            {
-              goodCompany.DefaultSupportUserID = defaultSupportUser.UserID;
-            }
-          }
-          if (badCompany.CreatorID > 0)
-          {
-            User creator = _users.FindByUserID(badCompany.CreatorID);
-            if (creator != null)
-            {
-              goodCompany.CreatorID = creator.UserID;
-            }
-            else
-            {
-              goodCompany.CreatorID = -1;
-            }
-          }
-          else
-          {
-            goodCompany.CreatorID = badCompany.CreatorID;
-          }
-          goodCompany.ParentID = orgID;
+          goodCompany.CopyRowData(badCompany);
           goodCompany.ImportID = _importID;
+          goodCompany.ParentID = orgID;
           goodCompany.Collection.Save();
         }
       }
@@ -268,74 +223,59 @@ namespace DataRecovery
       foreach (Asset badAsset in badAssets)
       {
         Asset goodAsset = goodAssets.FindByName(badAsset.Name);
-        if (goodAsset == null)
+        try
         {
-          goodAsset = (new Assets(GetGoodLoginUser())).AddNewAsset();
-          goodAsset.Name          = badAsset.Name;
-          goodAsset.SerialNumber  = badAsset.SerialNumber;
-          goodAsset.Location      = badAsset.Location;
-          goodAsset.Notes         = badAsset.Notes;
-          goodAsset.ProductID     = badAsset.ProductID;
-          goodAsset.ProductVersionID = badAsset.ProductVersionID;
-          goodAsset.WarrantyExpiration = badAsset.WarrantyExpiration;
-          goodAsset.DateCreated = badAsset.DateCreated;
-          if (badAsset.CreatorID > 0)
+          if (goodAsset == null)
           {
-            User creator = _users.FindByUserID((int)badAsset.CreatorID);
-            if (creator != null)
+            goodAsset = (new Assets(GetGoodLoginUser())).AddNewAsset();
+            goodAsset.CopyRowData(badAsset);
+            goodAsset.OrganizationID = orgID;
+            goodAsset.ImportID = _importID;
+            goodAsset.Collection.Save();
+            if (goodAsset.Location == "1")
             {
-              goodAsset.CreatorID = creator.UserID;
-            }
-            else
-            {
-              goodAsset.CreatorID = -1;
-            }
-          }
-          else
-          {
-            goodAsset.CreatorID = badAsset.CreatorID;
-          }
-          goodAsset.OrganizationID = orgID;
-          goodAsset.ImportID = _importID;
-          goodAsset.Collection.Save();
-          if (goodAsset.Location == "1")
-          {
-            AssetAssignmentsView assetAssignments = new AssetAssignmentsView(GetCorrupteLoginUser());
-            assetAssignments.LoadByAssetID(badAsset.AssetID);
-            foreach (AssetAssignmentsViewItem assetAssignment in assetAssignments)
-            {
-              AssetHistory assetHistory = new AssetHistory(GetGoodLoginUser());
-              AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+              AssetAssignmentsView assetAssignments = new AssetAssignmentsView(GetCorrupteLoginUser());
+              assetAssignments.LoadByAssetID(badAsset.AssetID);
+              foreach (AssetAssignmentsViewItem assetAssignment in assetAssignments)
+              {
+                AssetHistory assetHistory = new AssetHistory(GetGoodLoginUser());
+                AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
 
-              DateTime now = DateTime.UtcNow;
+                DateTime now = DateTime.UtcNow;
 
-              assetHistoryItem.AssetID            = goodAsset.AssetID;
-              assetHistoryItem.OrganizationID     = orgID;
-              assetHistoryItem.ActionTime         = assetAssignment.ActionTime;
-              assetHistoryItem.ActionDescription  = assetAssignment.ActionDescription;
-              assetHistoryItem.ShippedFrom        = assetAssignment.ShippedFrom;
-              assetHistoryItem.ShippedFromRefType = assetAssignment.ShippedFromRefType;
-              assetHistoryItem.ShippedTo          = assetAssignment.ShippedTo;
-              assetHistoryItem.TrackingNumber     = assetAssignment.TrackingNumber;
-              assetHistoryItem.ShippingMethod     = assetAssignment.ShippingMethod;
-              assetHistoryItem.ReferenceNum       = assetAssignment.ReferenceNum;
-              assetHistoryItem.Comments           = assetAssignment.Comments;
+                assetHistoryItem.AssetID = goodAsset.AssetID;
+                assetHistoryItem.OrganizationID = orgID;
+                assetHistoryItem.ActionTime = assetAssignment.ActionTime;
+                assetHistoryItem.ActionDescription = assetAssignment.ActionDescription;
+                assetHistoryItem.ShippedFrom = assetAssignment.ShippedFrom;
+                assetHistoryItem.ShippedFromRefType = assetAssignment.ShippedFromRefType;
+                assetHistoryItem.ShippedTo = assetAssignment.ShippedTo;
+                assetHistoryItem.TrackingNumber = assetAssignment.TrackingNumber;
+                assetHistoryItem.ShippingMethod = assetAssignment.ShippingMethod;
+                assetHistoryItem.ReferenceNum = assetAssignment.ReferenceNum;
+                assetHistoryItem.Comments = assetAssignment.Comments;
 
-              assetHistoryItem.DateCreated        = assetAssignment.DateCreated;
-              assetHistoryItem.Actor              = assetAssignment.Actor;
-              assetHistoryItem.RefType            = assetAssignment.RefType;
-              assetHistoryItem.DateModified       = now;
+                assetHistoryItem.DateCreated = assetAssignment.DateCreated;
+                assetHistoryItem.Actor = assetAssignment.Actor;
+                assetHistoryItem.RefType = assetAssignment.RefType;
+                assetHistoryItem.DateModified = now;
 
-              assetHistory.Save();
+                assetHistory.Save();
 
-              AssetAssignments goodAssetAssignments = new AssetAssignments(GetGoodLoginUser());
-              AssetAssignment goodAssetAssignment = goodAssetAssignments.AddNewAssetAssignment();
+                AssetAssignments goodAssetAssignments = new AssetAssignments(GetGoodLoginUser());
+                AssetAssignment goodAssetAssignment = goodAssetAssignments.AddNewAssetAssignment();
 
-              goodAssetAssignment.HistoryID = assetHistoryItem.HistoryID;
+                goodAssetAssignment.HistoryID = assetHistoryItem.HistoryID;
 
-              goodAssetAssignments.Save();
+                goodAssetAssignments.Save();
+              }
             }
           }
+
+        }
+        catch (Exception)
+        {
+          
         }
       }
     }
@@ -383,6 +323,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         goodTicket.ParentID = null;
         goodTicket.ImportID = _importID;
         goodTicket.ModifierID = -5;
+        goodTicket.TicketNumber = 0;
         goodTicket.Collection.Save();
 
         Actions badActions = new Actions(GetCorrupteLoginUser());
@@ -421,9 +362,13 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
 
       foreach (CustomValue badCustomValue in badCustomValues)
       {
+        if (badCustomValue == null) continue;
         CustomValue goodCustomValue = CustomValues.GetValue(GetGoodLoginUser(), goodTicketID, badCustomValue.ApiFieldName);
-        goodCustomValue.Value = badCustomValue.Value;
-        goodCustomValue.Collection.Save();
+        if (goodCustomValue != null)
+        {
+          goodCustomValue.Value = badCustomValue.Value;
+          goodCustomValue.Collection.Save();
+        }
       }
     }
   }
