@@ -54,6 +54,10 @@ namespace DataRecovery
 				_importID = orgID.ToString() + "-" + new Guid();
 				_logs = new Logs(orgID.ToString() + " - Org.txt");
 				RecoverProducts(orgID);
+        RecoverCompanies(orgID);
+        RecoverContacts(orgID);
+        RecoverAssets(orgID);
+
 				SaveOrg(orgID, "Success");
 			}
 		}
@@ -87,5 +91,20 @@ namespace DataRecovery
 			  }
 		  }
 		}
-	}
+
+    private void RecoverCompanies(int orgID)
+    { 
+    
+    }
+
+    private void RecoverContacts(int orgID)
+    {
+
+    }
+    private void RecoverAssets(int orgID)
+    {
+
+    }
+    
+  }
 }
