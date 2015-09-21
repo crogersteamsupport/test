@@ -97,6 +97,10 @@ namespace DataRecovery
             {
               goodProduct.CreatorID = creator.UserID;
             }
+            else
+            {
+              goodProduct.CreatorID = -1;
+            }
           }
           else
           {
