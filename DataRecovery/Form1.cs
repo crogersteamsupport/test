@@ -29,12 +29,12 @@ namespace DataRecovery
 
 		private LoginUser GetCorrupteLoginUser()
 		{ 
-		   return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -1, -1, null);
+		   return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
 		}
 
 		private LoginUser GetGoodLoginUser()
 		{
-			return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupportTest;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -1, -1, null);
+			return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupportTest;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
 		}
 
 
