@@ -411,6 +411,18 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
       }
     }
-    
+
+    private void RecoverTicketCustomValues(int orgID, int badTicketID, int goodTicketID)
+    {
+      CustomValues badCustomValues = new CustomValues(GetCorrupteLoginUser());
+      badCustomValues.LoadByReferenceTypeModifiedAfterRecovery(orgID, ReferenceType.Tickets, badTicketID);
+
+      foreach (CustomValue badCustomValue in badCustomValues)
+      {
+        CustomValue goodCustomValue = CustomValues.GetValue(GetGoodLoginUser(), goodTicketID, badCustomValue.ApiFieldName);
+        goodCustomValue.Value = badCustomValue.Value;
+        goodCustomValue.Collection.Save();
+      }
+    }
   }
 }
