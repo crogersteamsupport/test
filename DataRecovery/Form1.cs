@@ -53,10 +53,22 @@ namespace DataRecovery
 				if (orgID < 0) return;
 				_importID = orgID.ToString() + "-" + new Guid();
 				_logs = new Logs(orgID.ToString() + " - Org.txt");
-				RecoverProducts(orgID);
         RecoverCompanies(orgID);
         RecoverContacts(orgID);
+        RecoverProducts(orgID);
+        //RecoverProductVersions(orgID);
         RecoverAssets(orgID);
+        //RecoverTicketTypes(orgID);
+        //RecoverTicketStatuses(orgID);
+        //RecoverTicketSeverities(orgID);
+        //RecoverTickets(orgID);
+        //RecoverActions(orgID);
+        //RecoverTicketCustomFields(orgID);
+        //RecoverTicketCustomValues(orgID);
+        //RecoverTicketRelationships(orgID);
+        //RecoverAssetTickets(orgID);
+        //RecoverContactTickets(orgID);
+        //RecoverOrganizationTickets(orgID);
 
 				SaveOrg(orgID, "Success");
 			}
