@@ -642,7 +642,7 @@ namespace TeamSupport.Data
       }
     }
 
-    protected virtual void Fill(SqlCommand command, string tableNames)
+    public virtual void Fill(SqlCommand command, string tableNames)
     {
       FixCommandParameters(command);
 

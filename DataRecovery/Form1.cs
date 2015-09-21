@@ -52,19 +52,28 @@ namespace DataRecovery
 			while (orgID > -1)
 			{ 
 				if (orgID < 0) return;
-				_importID = orgID.ToString() + "-" + new Guid();
-				_logs = new Logs(orgID.ToString() + " - Org.txt");
-        _users = new Users(GetGoodLoginUser());
-        _users.LoadByOrganizationID(orgID, false);
-        RecoverCompanies(orgID);
-        //RecoverContacts(orgID);
-        RecoverProducts(orgID);
-        RecoverAssets(orgID);
-        RecoverActionsFromOldTickets(orgID);
-        RecoverTickets(orgID);
 
-				SaveOrg(orgID, "Success");
-        SqlExecutor.ExecuteNonQuery(GetGoodLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID="+ orgID.ToString());
+        try
+        {
+          _importID = orgID.ToString() + "-" + new Guid();
+          _logs = new Logs(orgID.ToString() + " - Org.txt");
+          _users = new Users(GetGoodLoginUser());
+          _users.LoadByOrganizationID(orgID, false);
+          RecoverCompanies(orgID);
+          //RecoverContacts(orgID);
+          RecoverProducts(orgID);
+          RecoverAssets(orgID);
+          RecoverActionsFromOldTickets(orgID);
+          RecoverTickets(orgID);
+
+          SaveOrg(orgID, "Success");
+          SqlExecutor.ExecuteNonQuery(GetGoodLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
+        }
+        catch (Exception  ex)
+        {
+          SaveOrg(orgID, "Failure: " + ex.Message);
+          ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
+        }
 		  }
 		}
 
@@ -333,21 +342,74 @@ namespace DataRecovery
 
     private void RecoverActionsFromOldTickets(int orgID)
     {
+      Actions badActions = new Actions(GetCorrupteLoginUser());
+      SqlCommand command = new SqlCommand();
+      command.CommandText = @"SELECT a.*, t.TicketNumber, t.OrganizationID FROM Actions a
+LEFT JOIN Tickets t ON t.TicketID = a.TicketID
+WHERE (t.OrganizationID = @OrganizationID) 
+AND a.DateCreated > '2015-09-17 05:56:00'
+AND t.DateCreated < '2015-09-17 05:56:00'";
+      
+      command.CommandType = CommandType.Text;
+      command.Parameters.AddWithValue("@OrganizationID", orgID);
+      badActions.Fill(command, "");
 
-      //Reocover Actiosn --recover actions that had previosly existing tickets.
+      foreach (TeamSupport.Data.Action badAction in badActions)
+      {
+        TeamSupport.Data.Action goodAction = new Actions(GetGoodLoginUser()).AddNewAction();
+        goodAction.CopyRowData(badAction);
+        goodAction.TicketID = badAction.TicketID;
+        goodAction.ModifierID = -5;
+        goodAction.Collection.Save();
+
+      }
+
     }
 
     private void RecoverTickets(int orgID)
     {
+      Tickets badTickets = new Tickets(GetCorrupteLoginUser());
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "SELECT * FROM Tickets WHERE (OrganizationID = @OrganizationID) AND DateCreated > '2015-09-17 05:56:00'";
+      command.CommandType = CommandType.Text;
+      command.Parameters.AddWithValue("@OrganizationID", orgID);
+      badTickets.Fill(command, "");
 
-      //RecoverActions(orgID);
-      //RecoverTicketCustomValues(orgID);
-      //RecoverTicketRelationships(orgID);
-      //RecoverAssetTickets(orgID);
-      //RecoverContactTickets(orgID);
-      //RecoverOrganizationTickets(orgID);
-    
-    
+
+      foreach (Ticket badTicket in badTickets)
+      {
+        Ticket goodTicket = (new Tickets(GetGoodLoginUser())).AddNewTicket();
+        goodTicket.CopyRowData(badTicket);
+        goodTicket.ParentID = null;
+        goodTicket.ImportID = _importID;
+        goodTicket.ModifierID = -5;
+        goodTicket.Collection.Save();
+
+        Actions badActions = new Actions(GetCorrupteLoginUser());
+        badActions.LoadByTicketID(badTicket.TicketID);
+
+        foreach (TeamSupport.Data.Action badAction in badActions)
+        {
+          TeamSupport.Data.Action goodAction = new Actions(GetGoodLoginUser()).AddNewAction();
+          goodAction.CopyRowData(badAction);
+          goodAction.TicketID = goodTicket.TicketID;
+          goodAction.ModifierID = -5;
+          goodAction.Collection.Save();
+
+        }
+
+
+        Organizations orgs = new Organizations(GetGoodLoginUser());
+        orgs.LoadBTicketID(badTicket.TicketID);
+
+        foreach (Organization org in orgs)
+        {
+          if (org.ParentID == orgID)
+          {
+            goodTicket.Collection.AddOrganization(org.OrganizationID, goodTicket.TicketID);
+          }
+        }
+      }
     }
     
   }
