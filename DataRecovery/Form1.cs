@@ -64,7 +64,8 @@ namespace DataRecovery
         RecoverTickets(orgID);
 
 				SaveOrg(orgID, "Success");
-			}
+        SqlExecutor.ExecuteNonQuery(GetGoodLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID="+ orgID.ToString());
+		  }
 		}
 
 		private void SaveOrg(int orgID, string result)
