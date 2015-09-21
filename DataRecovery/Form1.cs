@@ -409,6 +409,8 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
             goodTicket.Collection.AddOrganization(org.OrganizationID, goodTicket.TicketID);
           }
         }
+
+        RecoverTicketCustomValues(orgID, badTicket.TicketID, goodTicket.TicketID);
       }
     }
 
