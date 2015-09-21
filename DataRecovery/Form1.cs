@@ -18,6 +18,7 @@ namespace DataRecovery
 
 		private Logs _logs;
 		private string _importID;
+    private Users _users;
 
 		public Form1()
 		{
@@ -53,6 +54,8 @@ namespace DataRecovery
 				if (orgID < 0) return;
 				_importID = orgID.ToString() + "-" + new Guid();
 				_logs = new Logs(orgID.ToString() + " - Org.txt");
+        _users = new Users(GetGoodLoginUser());
+        _users.LoadByOrganizationID(orgID, false);
         RecoverCompanies(orgID);
         RecoverContacts(orgID);
         RecoverProducts(orgID);
@@ -86,7 +89,18 @@ namespace DataRecovery
 			    goodProduct = (new Products(GetGoodLoginUser())).AddNewProduct();
 				 goodProduct.Name = badProduct.Name;
 				 goodProduct.DateCreated = badProduct.DateCreated;
-				 goodProduct.CreatorID = badProduct.CreatorID;
+          if (badProduct.CreatorID > 0)
+          {
+            User creator = _users.FindByUserID(badProduct.CreatorID);
+            if (creator != null)
+            {
+              goodProduct.CreatorID = creator.UserID;
+            }
+          }
+          else
+          {
+            goodProduct.CreatorID = badProduct.CreatorID;
+          }
 				 goodProduct.OrganizationID = orgID;
 				 goodProduct.ImportID = _importID;
          goodProduct.Collection.Save();
