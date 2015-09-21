@@ -57,18 +57,8 @@ namespace DataRecovery
         RecoverContacts(orgID);
         RecoverProducts(orgID);
         RecoverAssets(orgID);
-
-
-        //Reocover Actiosn --recover actions that had previosly existing tickets.
-
-        //RecoverTickets(orgID);
-          // the following are handled in the ticket move
-                  //RecoverActions(orgID);
-                  //RecoverTicketCustomValues(orgID);
-                  //RecoverTicketRelationships(orgID);
-                  //RecoverAssetTickets(orgID);
-                  //RecoverContactTickets(orgID);
-                  //RecoverOrganizationTickets(orgID);
+        RecoverActionsFromOldTickets(orgID);
+        RecoverTickets(orgID);
 
 				SaveOrg(orgID, "Success");
 			}
@@ -113,9 +103,29 @@ namespace DataRecovery
     {
 
     }
+
     private void RecoverAssets(int orgID)
     {
 
+    }
+
+    private void RecoverActionsFromOldTickets(int orgID)
+    {
+
+      //Reocover Actiosn --recover actions that had previosly existing tickets.
+    }
+
+    private void RecoverTickets(int orgID)
+    {
+
+      //RecoverActions(orgID);
+      //RecoverTicketCustomValues(orgID);
+      //RecoverTicketRelationships(orgID);
+      //RecoverAssetTickets(orgID);
+      //RecoverContactTickets(orgID);
+      //RecoverOrganizationTickets(orgID);
+    
+    
     }
     
   }
