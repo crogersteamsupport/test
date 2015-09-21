@@ -17,7 +17,7 @@ namespace DataRecovery
 	{
 
 		private Logs _logs;
-
+		private string _importID;
 
 		public Form1()
 		{
@@ -51,6 +51,7 @@ namespace DataRecovery
 			while (orgID > -1)
 			{ 
 				if (orgID < 0) return;
+				_importID = orgID.ToString() + "-" + new Guid();
 				_logs = new Logs(orgID.ToString() + " - Org.txt");
 				RecoverProducts(orgID);
 				SaveOrg(orgID, "Success");
@@ -65,11 +66,26 @@ namespace DataRecovery
 		private void RecoverProducts(int orgID)
 		{ 
 		// check corrupt db for different products,if so craete the new products, but do not use ID's
-		
-		
-		
-		
-		
+		  Products badProducts = new Products(GetCorrupteLoginUser());
+		  badProducts.LoadByOrganizationID(orgID);
+
+		  Products goodProducts = new Products(GetGoodLoginUser());
+		  goodProducts.LoadByOrganizationID(orgID);
+
+		  foreach (Product badProduct in badProducts)
+		  {
+			  Product goodProduct = goodProducts.FindByName(badProduct.Name);
+			  if (goodProduct == null)
+			  { 
+			    goodProduct = (new Products(GetGoodLoginUser())).AddNewProduct();
+				 goodProduct.Name = badProduct.Name;
+				 goodProduct.DateCreated = badProduct.DateCreated;
+				 goodProduct.CreatorID = badProduct.CreatorID;
+				 goodProduct.OrganizationID = orgID;
+				 goodProduct.ImportID = _importID;
+         goodProduct.Collection.Save();
+			  }
+		  }
 		}
 	}
 }
