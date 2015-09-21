@@ -56,19 +56,19 @@ namespace DataRecovery
         RecoverCompanies(orgID);
         RecoverContacts(orgID);
         RecoverProducts(orgID);
-        //RecoverProductVersions(orgID);
         RecoverAssets(orgID);
-        //RecoverTicketTypes(orgID);
-        //RecoverTicketStatuses(orgID);
-        //RecoverTicketSeverities(orgID);
+
+
+        //Reocover Actiosn --recover actions that had previosly existing tickets.
+
         //RecoverTickets(orgID);
-        //RecoverActions(orgID);
-        //RecoverTicketCustomFields(orgID);
-        //RecoverTicketCustomValues(orgID);
-        //RecoverTicketRelationships(orgID);
-        //RecoverAssetTickets(orgID);
-        //RecoverContactTickets(orgID);
-        //RecoverOrganizationTickets(orgID);
+          // the following are handled in the ticket move
+                  //RecoverActions(orgID);
+                  //RecoverTicketCustomValues(orgID);
+                  //RecoverTicketRelationships(orgID);
+                  //RecoverAssetTickets(orgID);
+                  //RecoverContactTickets(orgID);
+                  //RecoverOrganizationTickets(orgID);
 
 				SaveOrg(orgID, "Success");
 			}
