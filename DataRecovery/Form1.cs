@@ -108,7 +108,7 @@ namespace DataRecovery
             }
             else
             {
-              goodProduct.CreatorID = -1;
+              goodProduct.CreatorID = -5;
             }
           }
           else
@@ -299,8 +299,47 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         TeamSupport.Data.Action goodAction = new Actions(GetGoodLoginUser()).AddNewAction();
         goodAction.CopyRowData(badAction);
         goodAction.TicketID = badAction.TicketID;
-        goodAction.ModifierID = -5;
+        if (badAction.CreatorID > 0)
+        {
+          User creator = _users.FindByUserID(badAction.CreatorID);
+          if (creator != null)
+          {
+            goodAction.CreatorID = creator.UserID;
+          }
+          else
+          {
+            goodAction.CreatorID = -5;
+          }
+        }
+        else
+        {
+          goodAction.CreatorID = badAction.CreatorID;
+        }
+
+        if (badAction.ModifierID > 0)
+        {
+          User modifier = _users.FindByUserID(badAction.ModifierID);
+          if (modifier != null)
+          {
+            goodAction.ModifierID = modifier.UserID;
+          }
+          else
+          {
+            goodAction.ModifierID = -5;
+          }
+        }
+        else
+        {
+          goodAction.ModifierID = badAction.ModifierID;
+        }
+        goodAction.ImportID = _importID;
         goodAction.Collection.Save();
+
+        Ticket ticket = Tickets.GetTicket(GetGoodLoginUser(), goodAction.TicketID);
+        ticket.ImportID = _importID;
+        ticket.Collection.Save();
+
+        EmailPosts.DeleteImportEmails(GetGoodLoginUser());
 
       }
 
@@ -310,7 +349,16 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
     {
       Tickets badTickets = new Tickets(GetCorrupteLoginUser());
       SqlCommand command = new SqlCommand();
-      command.CommandText = "SELECT * FROM Tickets WHERE (OrganizationID = @OrganizationID) AND DateCreated > '2015-09-17 05:56:00'";
+      command.CommandText = @"
+        SELECT 
+          * 
+        FROM 
+          Tickets 
+        WHERE 
+          OrganizationID = @OrganizationID
+          AND DateCreated > '2015-09-17 05:56:00'
+          AND TicketSource != 'EMail'
+      ";
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@OrganizationID", orgID);
       badTickets.Fill(command, "");
@@ -322,9 +370,42 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         goodTicket.CopyRowData(badTicket);
         goodTicket.ParentID = null;
         goodTicket.ImportID = _importID;
-        goodTicket.ModifierID = -5;
+        if (badTicket.CreatorID > 0)
+        {
+          User creator = _users.FindByUserID(badTicket.CreatorID);
+          if (creator != null)
+          {
+            goodTicket.CreatorID = creator.UserID;
+          }
+          else
+          {
+            goodTicket.CreatorID = -5;
+          }
+        }
+        else
+        {
+          goodTicket.CreatorID = badTicket.CreatorID;
+        }
+
+        if (badTicket.ModifierID > 0)
+        {
+          User modifier = _users.FindByUserID(badTicket.ModifierID);
+          if (modifier != null)
+          {
+            goodTicket.ModifierID = modifier.UserID;
+          }
+          else
+          {
+            goodTicket.ModifierID = -5;
+          }
+        }
+        else
+        {
+          goodTicket.ModifierID = badTicket.ModifierID;
+        }
         goodTicket.TicketNumber = 0;
         goodTicket.Collection.Save();
+        EmailPosts.DeleteImportEmails(GetGoodLoginUser());
 
         Actions badActions = new Actions(GetCorrupteLoginUser());
         badActions.LoadByTicketID(badTicket.TicketID);
@@ -334,8 +415,42 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           TeamSupport.Data.Action goodAction = new Actions(GetGoodLoginUser()).AddNewAction();
           goodAction.CopyRowData(badAction);
           goodAction.TicketID = goodTicket.TicketID;
-          goodAction.ModifierID = -5;
+          goodAction.ImportID = _importID;
+          if (badAction.CreatorID > 0)
+          {
+            User creator = _users.FindByUserID(badAction.CreatorID);
+            if (creator != null)
+            {
+              goodAction.CreatorID = creator.UserID;
+            }
+            else
+            {
+              goodAction.CreatorID = -5;
+            }
+          }
+          else
+          {
+            goodAction.CreatorID = badAction.CreatorID;
+          }
+
+          if (badAction.ModifierID > 0)
+          {
+            User modifier = _users.FindByUserID(badAction.ModifierID);
+            if (modifier != null)
+            {
+              goodAction.ModifierID = modifier.UserID;
+            }
+            else
+            {
+              goodAction.ModifierID = -5;
+            }
+          }
+          else
+          {
+            goodAction.ModifierID = badAction.ModifierID;
+          }
           goodAction.Collection.Save();
+          EmailPosts.DeleteImportEmails(GetGoodLoginUser());
 
         }
 
@@ -348,10 +463,14 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           if (org.ParentID == orgID)
           {
             goodTicket.Collection.AddOrganization(org.OrganizationID, goodTicket.TicketID);
+            EmailPosts.DeleteImportEmails(GetGoodLoginUser());
+
           }
         }
 
         RecoverTicketCustomValues(orgID, badTicket.TicketID, goodTicket.TicketID);
+        EmailPosts.DeleteImportEmails(GetGoodLoginUser());
+
       }
     }
 
