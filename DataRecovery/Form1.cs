@@ -114,8 +114,70 @@ namespace DataRecovery
 		}
 
     private void RecoverCompanies(int orgID)
-    { 
-    
+    {
+      // check corrupt db for different products,if so craete the new products, but do not use ID's
+      Organizations badCompanies = new Organizations(GetCorrupteLoginUser());
+      badCompanies.LoadByParentID(orgID, false);
+
+      Organizations goodCompanies = new Organizations(GetGoodLoginUser());
+      goodCompanies.LoadByParentID(orgID, false);
+
+      foreach (Organization badCompany in badCompanies)
+      {
+        Organization goodCompany = goodCompanies.FindByName(badCompany.Name);
+        if (goodCompany == null)
+        {
+          goodCompany = (new Organizations(GetGoodLoginUser())).AddNewOrganization();
+          goodCompany.Name              = badCompany.Name;
+          goodCompany.Description       = badCompany.Description;
+          goodCompany.Website           = badCompany.Website;
+          goodCompany.CompanyDomains    = badCompany.CompanyDomains;
+          goodCompany.SAExpirationDate  = badCompany.SAExpirationDate;
+          goodCompany.SlaLevelID        = badCompany.SlaLevelID;
+          goodCompany.DateCreated       = badCompany.DateCreated;
+          goodCompany.SupportHoursMonth = badCompany.SupportHoursMonth;
+          goodCompany.IsActive          = badCompany.IsActive;
+          goodCompany.HasPortalAccess   = badCompany.HasPortalAccess;
+          goodCompany.IsApiEnabled      = badCompany.IsApiEnabled;
+          goodCompany.IsApiActive       = badCompany.IsApiActive;
+          goodCompany.InActiveReason    = badCompany.InActiveReason;
+
+          goodCompany.ExtraStorageUnits = badCompany.ExtraStorageUnits;
+          goodCompany.IsCustomerFree    = badCompany.IsCustomerFree;
+          goodCompany.PortalSeats       = badCompany.PortalSeats;
+          goodCompany.ProductType       = badCompany.ProductType;
+          goodCompany.UserSeats         = badCompany.UserSeats;
+          goodCompany.NeedsIndexing     = badCompany.NeedsIndexing;
+          goodCompany.SystemEmailID     = badCompany.SystemEmailID;
+          goodCompany.WebServiceID      = badCompany.WebServiceID;
+          {
+            User defaultSupportUser = _users.FindByUserID((int)badCompany.DefaultSupportUserID);
+            if (defaultSupportUser != null)
+            {
+              goodCompany.DefaultSupportUserID = defaultSupportUser.UserID;
+            }
+          }
+          if (badCompany.CreatorID > 0)
+          {
+            User creator = _users.FindByUserID(badCompany.CreatorID);
+            if (creator != null)
+            {
+              goodCompany.CreatorID = creator.UserID;
+            }
+            else
+            {
+              goodCompany.CreatorID = -1;
+            }
+          }
+          else
+          {
+            goodCompany.CreatorID = badCompany.CreatorID;
+          }
+          goodCompany.ParentID = orgID;
+          goodCompany.ImportID = _importID;
+          goodCompany.Collection.Save();
+        }
+      }
     }
 
     private void RecoverContacts(int orgID)
