@@ -40,8 +40,17 @@ namespace DataRecovery
 
 		private int GetNextOrg()
 		{
-		  return SqlExecutor.ExecuteInt(GetCorrupteLoginUser(), "select top 1 OrganizationID from OrgMoveEvent where HasExecuted = 0 order by DateCreated");
-      }
+		  return SqlExecutor.ExecuteInt(GetCorrupteLoginUser(), @"
+        SELECT
+          TOP 1 OrganizationID 
+        FROM
+          OrgMoveEvent
+        WHERE
+          HasExecuted = 0 
+        ORDER BY
+          Priority
+      ");
+    }
 
 
 
@@ -68,13 +77,15 @@ namespace DataRecovery
 
           SaveOrg(orgID, "Success");
           SqlExecutor.ExecuteNonQuery(GetGoodLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
-          orgID = GetNextOrg();
-
         }
         catch (Exception  ex)
         {
           SaveOrg(orgID, "Failure: " + ex.Message);
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
+        }
+        finally
+        {
+          orgID = GetNextOrg();
         }
 		  }
 		}
