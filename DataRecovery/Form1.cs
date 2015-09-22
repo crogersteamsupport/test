@@ -365,6 +365,8 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
       command.Parameters.AddWithValue("@OrganizationID", orgID);
       badTickets.Fill(command, "");
 
+      Organizations existingCompanies = new Organizations(GetGoodLoginUser());
+      existingCompanies.LoadByOrganizationID(orgID);
 
       foreach (Ticket badTicket in badTickets)
       {
@@ -457,14 +459,15 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
 
 
-        Organizations orgs = new Organizations(GetGoodLoginUser());
+        Organizations orgs = new Organizations(GetCorrupteLoginUser());
         orgs.LoadBTicketID(badTicket.TicketID);
 
         foreach (Organization org in orgs)
         {
-          if (org.ParentID == orgID)
+          Organization goodCompany = existingCompanies.FindByName(org.Name);
+          if (org.ParentID == orgID && goodCompany != null)
           {
-            goodTicket.Collection.AddOrganization(org.OrganizationID, goodTicket.TicketID);
+            goodTicket.Collection.AddOrganization(goodCompany.OrganizationID, goodTicket.TicketID);
             EmailPosts.DeleteImportEmails(GetGoodLoginUser());
 
           }
