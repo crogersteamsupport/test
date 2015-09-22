@@ -366,7 +366,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
       badTickets.Fill(command, "");
 
       Organizations existingCompanies = new Organizations(GetGoodLoginUser());
-      existingCompanies.LoadByOrganizationID(orgID);
+      existingCompanies.LoadByParentID(orgID, false);
 
       foreach (Ticket badTicket in badTickets)
       {
