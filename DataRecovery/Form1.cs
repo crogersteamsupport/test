@@ -55,7 +55,7 @@ namespace DataRecovery
 
         try
         {
-          _importID = orgID.ToString() + "-" + new Guid();
+          _importID = orgID.ToString() + "-" + Guid.NewGuid().ToString();
           _logs = new Logs(orgID.ToString() + " - Org.txt");
           _users = new Users(GetGoodLoginUser());
           _users.LoadByOrganizationID(orgID, false);
@@ -68,6 +68,8 @@ namespace DataRecovery
 
           SaveOrg(orgID, "Success");
           SqlExecutor.ExecuteNonQuery(GetGoodLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
+          orgID = GetNextOrg();
+
         }
         catch (Exception  ex)
         {
