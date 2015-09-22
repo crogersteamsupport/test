@@ -113,7 +113,7 @@ namespace DataRecovery
 			  { 
 			    goodProduct = (new Products(GetGoodLoginUser())).AddNewProduct();
 				 goodProduct.Name = badProduct.Name;
-				 goodProduct.DateCreated = badProduct.DateCreated;
+				 goodProduct.DateCreated = badProduct.DateCreatedUtc;
           if (badProduct.CreatorID > 0)
           {
             User creator = _users.FindByUserID(badProduct.CreatorID);
@@ -160,8 +160,8 @@ namespace DataRecovery
           {
             goodCompany = (new Organizations(GetGoodLoginUser())).AddNewOrganization();
             goodCompany.CopyRowData(badCompany);
-            goodCompany.DateCreated = badCompany.DateCreated;
-            goodCompany.DateModified = badCompany.DateModified;
+            goodCompany.DateCreated = badCompany.DateCreatedUtc;
+            goodCompany.DateModified = badCompany.DateModifiedUtc;
             goodCompany.ImportID = _importID;
             goodCompany.ParentID = orgID;
             goodCompany.Collection.Save();
@@ -260,8 +260,8 @@ namespace DataRecovery
           {
             goodAsset = (new Assets(GetGoodLoginUser())).AddNewAsset();
             goodAsset.CopyRowData(badAsset);
-            goodAsset.DateCreated = badAsset.DateCreated;
-            goodAsset.DateModified = badAsset.DateModified;
+            goodAsset.DateCreated = badAsset.DateCreatedUtc;
+            goodAsset.DateModified = badAsset.DateModifiedUtc;
             goodAsset.OrganizationID = orgID;
             goodAsset.ImportID = _importID;
             goodAsset.Collection.Save();
@@ -288,7 +288,7 @@ namespace DataRecovery
                 assetHistoryItem.ReferenceNum = assetAssignment.ReferenceNum;
                 assetHistoryItem.Comments = assetAssignment.Comments;
 
-                assetHistoryItem.DateCreated = assetAssignment.DateCreated;
+                assetHistoryItem.DateCreated = assetAssignment.DateCreatedUtc;
                 assetHistoryItem.Actor = assetAssignment.Actor;
                 assetHistoryItem.RefType = assetAssignment.RefType;
                 assetHistoryItem.DateModified = now;
@@ -334,8 +334,8 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         {
           TeamSupport.Data.Action goodAction = new Actions(GetGoodLoginUser()).AddNewAction();
           goodAction.CopyRowData(badAction);
-          goodAction.DateCreated = badAction.DateCreated;
-          goodAction.DateModified = badAction.DateModified;
+          goodAction.DateCreated = badAction.DateCreatedUtc;
+          goodAction.DateModified = badAction.DateModifiedUtc;
           goodAction.TicketID = badAction.TicketID;
           if (badAction.CreatorID > 0)
           {
@@ -416,8 +416,8 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         {
           Ticket goodTicket = (new Tickets(GetGoodLoginUser())).AddNewTicket();
           goodTicket.CopyRowData(badTicket);
-          goodTicket.DateCreated = badTicket.DateCreated;
-          goodTicket.DateModified = badTicket.DateModified;
+          goodTicket.DateCreated = badTicket.DateCreatedUtc;
+          goodTicket.DateModified = badTicket.DateModifiedUtc;
           goodTicket.ParentID = null;
           goodTicket.ImportID = _importID;
           if (badTicket.CreatorID > 0)
@@ -464,8 +464,8 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           {
             TeamSupport.Data.Action goodAction = new Actions(GetGoodLoginUser()).AddNewAction();
             goodAction.CopyRowData(badAction);
-            goodAction.DateCreated = badAction.DateCreated;
-            goodAction.DateModified = badAction.DateModified;
+            goodAction.DateCreated = badAction.DateCreatedUtc;
+            goodAction.DateModified = badAction.DateCreatedUtc;
             goodAction.TicketID = goodTicket.TicketID;
             goodAction.ImportID = _importID;
             if (badAction.CreatorID > 0)
