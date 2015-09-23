@@ -37,6 +37,7 @@ namespace DataRecovery
     private Logs _logs;
     private string _importID;
     private Users _users;
+    private bool _exceptionOcurred;
 
     public Form1()
     {
@@ -93,9 +94,43 @@ namespace DataRecovery
 
     private void RollBack(int orgID, LoginUser loginUser)
     {
-      // leo's rollback code
+      SqlCommand command = new SqlCommand();
+      command.CommandText = @"
+        SELECT
+          ImportID
+        FROM
+          OrgMoveEvent
+        WHERE
+          OrganizationID = @OrgID";
+      command.Parameters.AddWithValue("OrgID", orgID);
 
-      SaveOrgResults(orgID, "RolledBack", false);
+      _importID = SqlExecutor.ExecuteScalar(loginUser, command).ToString();
+      if (!string.IsNullOrEmpty(_importID))
+      {
+        SqlCommand rollbackCommand = new SqlCommand();
+        rollbackCommand.CommandText = @"
+          DELETE Organizations WHERE ImportID = @importID
+          DELETE Products WHERE ImportID = @importID
+
+          DELETE
+	          a
+          FROM
+	          Actions a
+	          JOIN Tickets t
+		          ON a.TicketID = t.TicketID
+          WHERE
+	          t.DateCreated < '2015-09-17 05:56:00'
+	          AND a.ImportID = @importID
+
+          DELETE 
+	          Tickets 
+          WHERE 
+	          DateCreated > '2015-09-17 05:56:00'
+	          AND ImportID = @importID";
+        rollbackCommand.Parameters.AddWithValue("importID", _importID);
+        SqlExecutor.ExecuteNonQuery(loginUser, rollbackCommand);
+        SaveOrgResults(orgID, "RolledBack", _importID, false);
+      }
     }
 
     private void ImportOrg(int orgID, LoginUser loginUser)
@@ -106,6 +141,7 @@ namespace DataRecovery
         _logs = new Logs(orgID.ToString() + " - Org.txt");
         _users = new Users(loginUser);
         _users.LoadByOrganizationID(orgID, false);
+        _exceptionOcurred = false;
         if (cbCompanies.Checked) RecoverCompanies(orgID);
         //RecoverContacts(orgID);
         if (cbProducts.Checked) RecoverProducts(orgID);
@@ -113,25 +149,41 @@ namespace DataRecovery
         if (cbOldActions.Checked) RecoverActionsFromOldTickets(orgID);
         if (cbTickets.Checked) RecoverTickets(orgID);
 
-        SaveOrgResults(orgID, "Success");
+        if (_exceptionOcurred)
+        {
+          SaveOrgResults(orgID, "Finished with exceptions", _importID);
+        }
+        else
+        {
+          SaveOrgResults(orgID, "Success", _importID);
+        }
         SqlExecutor.ExecuteNonQuery(GetReviewLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
       }
       catch (Exception ex)
       {
-        SaveOrgResults(orgID, "Failure: " + ex.Message);
+        SaveOrgResults(orgID, "Failure: " + ex.Message, _importID);
         ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
       }
 
 
     }
 
-    private void SaveOrgResults(int orgID, string result, bool hasExectued = true)
+    private void SaveOrgResults(int orgID, string result, string importID, bool hasExectued = true)
     {
       SqlCommand command = new SqlCommand();
-      command.CommandText = "UPDATE OrgMoveEvent SET Result = @Result, HasExecuted = @HasExecuted WHERE OrganizationID = @OrganizationID";
+      command.CommandText = @"
+      UPDATE
+        OrgMoveEvent
+      SET
+        Result = @Result
+        , HasExecuted = @HasExecuted 
+        , ImportID = @ImportID 
+      WHERE
+        OrganizationID = @OrganizationID";
       command.Parameters.AddWithValue("Result", result);
       command.Parameters.AddWithValue("HasExecuted", hasExectued);
       command.Parameters.AddWithValue("OrganizationID", orgID);
+      command.Parameters.AddWithValue("ImportID", importID);
       SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), command);
     }
 
@@ -177,7 +229,7 @@ namespace DataRecovery
         }
         catch (Exception ex)
         {
-          SaveOrgResults(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
@@ -209,7 +261,7 @@ namespace DataRecovery
         }
         catch (Exception ex)
         {
-          SaveOrgResults(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
@@ -421,7 +473,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
         catch (Exception ex)
         {
-          SaveOrgResults(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
 
@@ -567,7 +619,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
         catch (Exception ex)
         {
-          SaveOrgResults(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
 
@@ -593,7 +645,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
         catch (Exception ex)
         {
-          SaveOrgResults(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
