@@ -38,6 +38,8 @@ namespace DataRecovery
     private string _importID;
     private Users _users;
     private bool _exceptionOcurred;
+    private Products _products;
+    private ProductVersions _productVersions;
 
     public Form1()
     {
@@ -141,13 +143,18 @@ namespace DataRecovery
         _logs = new Logs(orgID.ToString() + " - Org.txt");
         _users = new Users(loginUser);
         _users.LoadByOrganizationID(orgID, false);
+        _products = new Products(loginUser);
+        _products.LoadByOrganizationID(orgID);
+        _productVersions = new ProductVersions(loginUser);
+        _productVersions.LoadByParentOrganizationID(orgID);
+
         _exceptionOcurred = false;
-        if (cbCompanies.Checked) RecoverCompanies(orgID);
+        if (cbCompanies.Checked) RecoverCompanies(orgID, loginUser);
         //RecoverContacts(orgID);
-        if (cbProducts.Checked) RecoverProducts(orgID);
+        if (cbProducts.Checked) RecoverProducts(orgID, loginUser);
         // RecoverAssets(orgID);
-        if (cbOldActions.Checked) RecoverActionsFromOldTickets(orgID);
-        if (cbTickets.Checked) RecoverTickets(orgID);
+        if (cbOldActions.Checked) RecoverActionsFromOldTickets(orgID, loginUser);
+        if (cbTickets.Checked) RecoverTickets(orgID, loginUser);
 
         if (_exceptionOcurred)
         {
@@ -157,7 +164,7 @@ namespace DataRecovery
         {
           SaveOrgResults(orgID, "Success", _importID);
         }
-        SqlExecutor.ExecuteNonQuery(GetReviewLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
+        SqlExecutor.ExecuteNonQuery(loginUser, "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
       }
       catch (Exception ex)
       {
@@ -187,13 +194,13 @@ namespace DataRecovery
       SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), command);
     }
 
-    private void RecoverProducts(int orgID)
+    private void RecoverProducts(int orgID, LoginUser loginUser)
     {
       // check corrupt db for different products,if so craete the new products, but do not use ID's
       Products badProducts = new Products(GetCorrupteLoginUser());
       badProducts.LoadByOrganizationID(orgID);
 
-      Products goodProducts = new Products(GetReviewLoginUser());
+      Products goodProducts = new Products(loginUser);
       goodProducts.LoadByOrganizationID(orgID);
 
       foreach (Product badProduct in badProducts)
@@ -203,7 +210,7 @@ namespace DataRecovery
           Product goodProduct = goodProducts.FindByName(badProduct.Name);
           if (goodProduct == null)
           {
-            goodProduct = (new Products(GetReviewLoginUser())).AddNewProduct();
+            goodProduct = (new Products(loginUser)).AddNewProduct();
             goodProduct.Name = badProduct.Name;
             goodProduct.DateCreated = badProduct.DateCreatedUtc;
             if (badProduct.CreatorID > 0)
@@ -235,12 +242,12 @@ namespace DataRecovery
       }
     }
 
-    private void RecoverCompanies(int orgID)
+    private void RecoverCompanies(int orgID, LoginUser loginUser)
     {
       Organizations badCompanies = new Organizations(GetCorrupteLoginUser());
       badCompanies.LoadByParentID(orgID, false);
 
-      Organizations goodCompanies = new Organizations(GetReviewLoginUser());
+      Organizations goodCompanies = new Organizations(loginUser);
       goodCompanies.LoadByParentID(orgID, false);
 
       foreach (Organization badCompany in badCompanies)
@@ -250,7 +257,7 @@ namespace DataRecovery
           Organization goodCompany = goodCompanies.FindByName(badCompany.Name);
           if (goodCompany == null)
           {
-            goodCompany = (new Organizations(GetReviewLoginUser())).AddNewOrganization();
+            goodCompany = (new Organizations(loginUser)).AddNewOrganization();
             goodCompany.CopyRowData(badCompany);
             goodCompany.DateCreated = badCompany.DateCreatedUtc;
             goodCompany.DateModified = badCompany.DateModifiedUtc;
@@ -406,7 +413,7 @@ namespace DataRecovery
       }
     }
     */
-    private void RecoverActionsFromOldTickets(int orgID)
+    private void RecoverActionsFromOldTickets(int orgID, LoginUser loginUser)
     {
       Actions badActions = new Actions(GetCorrupteLoginUser());
       SqlCommand command = new SqlCommand();
@@ -424,7 +431,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
       {
         try
         {
-          TeamSupport.Data.Action goodAction = new Actions(GetReviewLoginUser()).AddNewAction();
+          TeamSupport.Data.Action goodAction = new Actions(loginUser).AddNewAction();
           goodAction.CopyRowData(badAction);
           goodAction.DateCreated = badAction.DateCreatedUtc;
           goodAction.DateModified = badAction.DateModifiedUtc;
@@ -465,11 +472,11 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           goodAction.ImportID = _importID;
           goodAction.Collection.Save();
 
-          Ticket ticket = Tickets.GetTicket(GetReviewLoginUser(), goodAction.TicketID);
+          Ticket ticket = Tickets.GetTicket(loginUser, goodAction.TicketID);
           ticket.ImportID = _importID;
           ticket.Collection.Save();
 
-          EmailPosts.DeleteImportEmails(GetReviewLoginUser());
+          EmailPosts.DeleteImportEmails(loginUser);
         }
         catch (Exception ex)
         {
@@ -481,7 +488,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
 
     }
 
-    private void RecoverTickets(int orgID)
+    private void RecoverTickets(int orgID, LoginUser loginUser)
     {
       Tickets badTickets = new Tickets(GetCorrupteLoginUser());
       SqlCommand command = new SqlCommand();
@@ -500,15 +507,48 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
       command.Parameters.AddWithValue("@OrganizationID", orgID);
       badTickets.Fill(command, "");
 
-      Organizations existingCompanies = new Organizations(GetReviewLoginUser());
+      Organizations existingCompanies = new Organizations(loginUser);
       existingCompanies.LoadByParentID(orgID, false);
 
       foreach (Ticket badTicket in badTickets)
       {
         try
         {
-          Ticket goodTicket = (new Tickets(GetReviewLoginUser())).AddNewTicket();
+          Ticket goodTicket = (new Tickets(loginUser)).AddNewTicket();
           goodTicket.CopyRowData(badTicket);
+          if (badTicket.ProductID != null)
+          {
+            Product product = _products.FindByProductID((int)badTicket.ProductID);
+            if (product == null)
+            {
+              Products badProduct = new Products(GetCorrupteLoginUser());
+              badProduct.LoadByProductID((int)badTicket.ProductID);
+              if (badProduct.Count > 0 && !string.IsNullOrEmpty(badProduct[0].Name))
+              {
+                product = _products.FindByName(badProduct[0].Name);
+                if (product != null)
+                {
+                  goodTicket.ProductID = product.ProductID;
+                }
+              }
+            }
+          }
+          if (badTicket.ReportedVersionID != null)
+          {
+            ProductVersion productVersion = _productVersions.FindByProductVersionID((int)badTicket.ReportedVersionID);
+            if (productVersion == null)
+            {
+              goodTicket.ReportedVersionID = null;
+            }
+          }
+          if (badTicket.SolvedVersionID != null)
+          {
+            ProductVersion productVersion = _productVersions.FindByProductVersionID((int)badTicket.SolvedVersionID);
+            if (productVersion == null)
+            {
+              goodTicket.SolvedVersionID = null;
+            }
+          }
           goodTicket.DateCreated = badTicket.DateCreatedUtc;
           goodTicket.DateModified = badTicket.DateModifiedUtc;
           goodTicket.ParentID = null;
@@ -548,14 +588,14 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           }
           goodTicket.TicketNumber = 0;
           goodTicket.Collection.Save();
-          EmailPosts.DeleteImportEmails(GetReviewLoginUser());
+          EmailPosts.DeleteImportEmails(loginUser);
 
           Actions badActions = new Actions(GetCorrupteLoginUser());
           badActions.LoadByTicketID(badTicket.TicketID);
 
           foreach (TeamSupport.Data.Action badAction in badActions)
           {
-            TeamSupport.Data.Action goodAction = new Actions(GetReviewLoginUser()).AddNewAction();
+            TeamSupport.Data.Action goodAction = new Actions(loginUser).AddNewAction();
             goodAction.CopyRowData(badAction);
             goodAction.DateCreated = badAction.DateCreatedUtc;
             goodAction.DateModified = badAction.DateCreatedUtc;
@@ -595,7 +635,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               goodAction.ModifierID = badAction.ModifierID;
             }
             goodAction.Collection.Save();
-            EmailPosts.DeleteImportEmails(GetReviewLoginUser());
+            EmailPosts.DeleteImportEmails(loginUser);
 
           }
 
@@ -609,13 +649,13 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
             if (org.ParentID == orgID && goodCompany != null)
             {
               goodTicket.Collection.AddOrganization(goodCompany.OrganizationID, goodTicket.TicketID);
-              EmailPosts.DeleteImportEmails(GetReviewLoginUser());
+              EmailPosts.DeleteImportEmails(loginUser);
 
             }
           }
 
           RecoverTicketCustomValues(orgID, badTicket.TicketID, goodTicket.TicketID);
-          EmailPosts.DeleteImportEmails(GetReviewLoginUser());
+          EmailPosts.DeleteImportEmails(loginUser);
         }
         catch (Exception ex)
         {
