@@ -13,8 +13,8 @@ using System.Data.SqlClient;
 
 namespace DataRecovery
 {
-	public partial class Form1 : Form
-	{
+  public partial class Form1 : Form
+  {
 
     public class OrgComboItem
     {
@@ -38,20 +38,20 @@ namespace DataRecovery
         get { return _name; }
         set { _name = value; }
       }
-    
+
     }
 
 
-		private Logs _logs;
-		private string _importID;
+    private Logs _logs;
+    private string _importID;
     private Users _users;
 
-		public Form1()
-		{
-			InitializeComponent();
+    public Form1()
+    {
+      InitializeComponent();
       LoadOrgCombo();
-			
-		}
+
+    }
 
     private void LoadOrgCombo()
     {
@@ -59,34 +59,34 @@ namespace DataRecovery
       SqlCommand command = new SqlCommand();
       command.CommandText = @"
         SELECT OrganizationID, Name FROM Organizations WHERE ParentID=1 AND IsActive=1 ORDER BY Name";
-      DataTable table =  SqlExecutor.ExecuteQuery(GetCorrupteLoginUser(), command);
+      DataTable table = SqlExecutor.ExecuteQuery(GetCorrupteLoginUser(), command);
       cmbOrg.BeginUpdate();
       foreach (DataRow row in table.Rows)
       {
         cmbOrg.Items.Add(new OrgComboItem((int)row[0], row[1].ToString()));
       }
-    cmbOrg.EndUpdate();
-    
+      cmbOrg.EndUpdate();
+
     }
 
-		private LoginUser GetCorrupteLoginUser()
-		{ 
-		   return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
-		}
+    private LoginUser GetCorrupteLoginUser()
+    {
+      return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
+    }
 
-		private LoginUser GetReviewLoginUser()
-		{
-			return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupportTest;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
-		}
+    private LoginUser GetReviewLoginUser()
+    {
+      return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupportTest;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
+    }
 
     private LoginUser GetPRODUCTIONLoginUser()
     {
       return new LoginUser("Data Source=10.42.42.101; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
     }
 
-		private int GetNextOrg()
-		{
-		  return SqlExecutor.ExecuteInt(GetCorrupteLoginUser(), @"
+    private int GetNextOrg()
+    {
+      return SqlExecutor.ExecuteInt(GetCorrupteLoginUser(), @"
         SELECT
           TOP 1 OrganizationID 
         FROM
@@ -129,58 +129,58 @@ namespace DataRecovery
         ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
       }
 
-    
+
     }
 
-		private void SaveOrgResults(int orgID, string result, bool hasExectued = true)
-		{
+    private void SaveOrgResults(int orgID, string result, bool hasExectued = true)
+    {
       SqlCommand command = new SqlCommand();
       command.CommandText = "UPDATE OrgMoveEvent SET Result = @Result, HasExecuted = @HasExecuted WHERE OrganizationID = @OrganizationID";
       command.Parameters.AddWithValue("Result", result);
       command.Parameters.AddWithValue("HasExecuted", hasExectued);
       command.Parameters.AddWithValue("OrganizationID", orgID);
-			SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), command);
-		}
+      SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), command);
+    }
 
-		private void RecoverProducts(int orgID)
-		{ 
-		// check corrupt db for different products,if so craete the new products, but do not use ID's
-		  Products badProducts = new Products(GetCorrupteLoginUser());
-		  badProducts.LoadByOrganizationID(orgID);
+    private void RecoverProducts(int orgID)
+    {
+      // check corrupt db for different products,if so craete the new products, but do not use ID's
+      Products badProducts = new Products(GetCorrupteLoginUser());
+      badProducts.LoadByOrganizationID(orgID);
 
-		  Products goodProducts = new Products(GetReviewLoginUser());
-		  goodProducts.LoadByOrganizationID(orgID);
+      Products goodProducts = new Products(GetReviewLoginUser());
+      goodProducts.LoadByOrganizationID(orgID);
 
-		  foreach (Product badProduct in badProducts)
-		  {
-			  try
+      foreach (Product badProduct in badProducts)
+      {
+        try
         {
-        Product goodProduct = goodProducts.FindByName(badProduct.Name);
-			  if (goodProduct == null)
-			  { 
-			    goodProduct = (new Products(GetReviewLoginUser())).AddNewProduct();
-				 goodProduct.Name = badProduct.Name;
-				 goodProduct.DateCreated = badProduct.DateCreatedUtc;
-          if (badProduct.CreatorID > 0)
+          Product goodProduct = goodProducts.FindByName(badProduct.Name);
+          if (goodProduct == null)
           {
-            User creator = _users.FindByUserID(badProduct.CreatorID);
-            if (creator != null)
+            goodProduct = (new Products(GetReviewLoginUser())).AddNewProduct();
+            goodProduct.Name = badProduct.Name;
+            goodProduct.DateCreated = badProduct.DateCreatedUtc;
+            if (badProduct.CreatorID > 0)
             {
-              goodProduct.CreatorID = creator.UserID;
+              User creator = _users.FindByUserID(badProduct.CreatorID);
+              if (creator != null)
+              {
+                goodProduct.CreatorID = creator.UserID;
+              }
+              else
+              {
+                goodProduct.CreatorID = -5;
+              }
             }
             else
             {
-              goodProduct.CreatorID = -5;
+              goodProduct.CreatorID = badProduct.CreatorID;
             }
+            goodProduct.OrganizationID = orgID;
+            goodProduct.ImportID = _importID;
+            goodProduct.Collection.Save();
           }
-          else
-          {
-            goodProduct.CreatorID = badProduct.CreatorID;
-          }
-				 goodProduct.OrganizationID = orgID;
-				 goodProduct.ImportID = _importID;
-         goodProduct.Collection.Save();
-			  }
         }
         catch (Exception ex)
         {
@@ -188,7 +188,7 @@ namespace DataRecovery
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
-		}
+    }
 
     private void RecoverCompanies(int orgID)
     {
@@ -370,7 +370,7 @@ LEFT JOIN Tickets t ON t.TicketID = a.TicketID
 WHERE (t.OrganizationID = @OrganizationID) 
 AND a.DateCreated > '2015-09-17 05:56:00'
 AND t.DateCreated < '2015-09-17 05:56:00'";
-      
+
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@OrganizationID", orgID);
       badActions.Fill(command, "");
@@ -646,22 +646,30 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
 
     private void btnImportOrgToReview_Click(object sender, EventArgs e)
     {
-      ImportOrg((cmbOrg.SelectedValue as OrgComboItem).OrganizationID, GetReviewLoginUser());
+      ImportOrg((cmbOrg.SelectedItem as OrgComboItem).OrganizationID, GetReviewLoginUser());
     }
 
     private void btnRollbackOrgFromReview_Click(object sender, EventArgs e)
     {
-      RollBack((cmbOrg.SelectedValue as OrgComboItem).OrganizationID, GetReviewLoginUser());
+      RollBack((cmbOrg.SelectedItem as OrgComboItem).OrganizationID, GetReviewLoginUser());
     }
 
     private void btnImportOrgToProduction_Click(object sender, EventArgs e)
     {
+      OrgComboItem orgitem = (cmbOrg.SelectedItem as OrgComboItem);
 
+      string msg = string.Format("THIS WILL UPDATE '{0}:{1}' ON PRODUCTION.  Would you like to continue?", orgitem.Name, orgitem.OrganizationID.ToString());
+      if (MessageBox.Show(msg, "Confrim", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.No) return;
+      ImportOrg(orgitem.OrganizationID, GetPRODUCTIONLoginUser());
     }
 
     private void btnRollBackOrgFromProduction_Click(object sender, EventArgs e)
     {
+      OrgComboItem orgitem = (cmbOrg.SelectedItem as OrgComboItem);
 
+      string msg = string.Format("THIS WILL ROLLBACK '{0}:{1}' ON PRODUCTION.  Would you like to continue?", orgitem.Name, orgitem.OrganizationID.ToString());
+      if (MessageBox.Show(msg, "Confrim", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.No) return;
+      RollBack(orgitem.OrganizationID, GetPRODUCTIONLoginUser());
     }
 
 
