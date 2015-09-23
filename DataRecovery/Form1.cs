@@ -19,6 +19,7 @@ namespace DataRecovery
 		private Logs _logs;
 		private string _importID;
     private Users _users;
+    private bool _exceptionOcurred;
 
 		public Form1()
 		{
@@ -68,6 +69,7 @@ namespace DataRecovery
           _logs = new Logs(orgID.ToString() + " - Org.txt");
           _users = new Users(GetGoodLoginUser());
           _users.LoadByOrganizationID(orgID, false);
+          _exceptionOcurred = false;
           RecoverCompanies(orgID);
           //RecoverContacts(orgID);
           RecoverProducts(orgID);
@@ -75,12 +77,19 @@ namespace DataRecovery
           RecoverActionsFromOldTickets(orgID);
           RecoverTickets(orgID);
 
-          SaveOrg(orgID, "Success");
+          if (_exceptionOcurred)
+          {
+            SaveOrg(orgID, "Finished with exceptions", _importID);
+          }
+          else
+          {
+            SaveOrg(orgID, "Success", _importID);
+          }
           SqlExecutor.ExecuteNonQuery(GetGoodLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
         }
         catch (Exception  ex)
         {
-          SaveOrg(orgID, "Failure: " + ex.Message);
+          SaveOrg(orgID, "Failure: " + ex.Message, _importID);
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
         finally
@@ -90,9 +99,17 @@ namespace DataRecovery
 		  }
 		}
 
-		private void SaveOrg(int orgID, string result)
+		private void SaveOrg(int orgID, string result, string importID)
 		{
-			SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), "UPDATE OrgMoveEvent SET Result = '"+result+"', HasExecuted = 1 WHERE OrganizationID = " + orgID.ToString());
+			SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), @"
+      UPDATE
+        OrgMoveEvent
+      SET
+        Result = '"+result+@"'
+        , HasExecuted = 1 
+        , ImportID = '" + importID + @"'
+      WHERE
+        OrganizationID = " + orgID.ToString());
 		}
 
 		private void RecoverProducts(int orgID)
@@ -137,7 +154,7 @@ namespace DataRecovery
         }
         catch (Exception ex)
         {
-          SaveOrg(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
@@ -169,7 +186,7 @@ namespace DataRecovery
         }
         catch (Exception ex)
         {
-          SaveOrg(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
@@ -308,7 +325,7 @@ namespace DataRecovery
         }
         catch (Exception ex)
         {
-          SaveOrg(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
@@ -381,7 +398,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
         catch (Exception ex)
         {
-          SaveOrg(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
 
@@ -527,7 +544,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
         catch (Exception ex)
         {
-          SaveOrg(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
 
@@ -553,7 +570,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
         catch (Exception ex)
         {
-          SaveOrg(orgID, "Failure: " + ex.Message);
+          _exceptionOcurred = true;
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
