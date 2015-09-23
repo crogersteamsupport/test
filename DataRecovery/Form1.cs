@@ -16,28 +16,73 @@ namespace DataRecovery
 	public partial class Form1 : Form
 	{
 
+    public class OrgComboItem
+    {
+      public OrgComboItem(int orgID, string name)
+      {
+        this._name = name;
+        this._organizationID = orgID;
+      }
+
+      private int _organizationID;
+
+      public int OrganizationID
+      {
+        get { return _organizationID; }
+        set { _organizationID = value; }
+      }
+      private string _name;
+
+      public string Name
+      {
+        get { return _name; }
+        set { _name = value; }
+      }
+    
+    }
+
+
 		private Logs _logs;
 		private string _importID;
     private Users _users;
-    private bool _exceptionOcurred;
 
 		public Form1()
 		{
 			InitializeComponent();
-
+      LoadOrgCombo();
 			
 		}
+
+    private void LoadOrgCombo()
+    {
+
+      SqlCommand command = new SqlCommand();
+      command.CommandText = @"
+        SELECT OrganizationID, Name FROM Organizations WHERE ParentID=1 AND IsActive=1 ORDER BY Name";
+      DataTable table =  SqlExecutor.ExecuteQuery(GetCorrupteLoginUser(), command);
+      cmbOrg.BeginUpdate();
+      foreach (DataRow row in table.Rows)
+      {
+        cmbOrg.Items.Add(new OrgComboItem((int)row[0], row[1].ToString()));
+      }
+    cmbOrg.EndUpdate();
+    
+    }
 
 		private LoginUser GetCorrupteLoginUser()
 		{ 
 		   return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
 		}
 
-		private LoginUser GetGoodLoginUser()
+		private LoginUser GetReviewLoginUser()
 		{
 			return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupportTest;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
 		}
 
+    private LoginUser GetPRODUCTIONLoginUser()
+    {
+      return new LoginUser("Data Source=10.42.42.101; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
+    }
 
 		private int GetNextOrg()
 		{
@@ -53,63 +98,48 @@ namespace DataRecovery
       ");
     }
 
+    private void RollBack(int orgID, LoginUser loginUser)
+    {
+      // leo's rollback code
 
+      SaveOrgResults(orgID, "RolledBack", false);
+    }
 
-		private void button1_Click(object sender, EventArgs e)
+    private void ImportOrg(int orgID, LoginUser loginUser)
+    {
+      try
+      {
+        _importID = orgID.ToString() + "-" + Guid.NewGuid().ToString();
+        _logs = new Logs(orgID.ToString() + " - Org.txt");
+        _users = new Users(loginUser);
+        _users.LoadByOrganizationID(orgID, false);
+        if (cbCompanies.Checked) RecoverCompanies(orgID);
+        //RecoverContacts(orgID);
+        if (cbProducts.Checked) RecoverProducts(orgID);
+        // RecoverAssets(orgID);
+        if (cbOldActions.Checked) RecoverActionsFromOldTickets(orgID);
+        if (cbTickets.Checked) RecoverTickets(orgID);
+
+        SaveOrgResults(orgID, "Success");
+        SqlExecutor.ExecuteNonQuery(GetReviewLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
+      }
+      catch (Exception ex)
+      {
+        SaveOrgResults(orgID, "Failure: " + ex.Message);
+        ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
+      }
+
+    
+    }
+
+		private void SaveOrgResults(int orgID, string result, bool hasExectued = true)
 		{
-		   int orgID = GetNextOrg();
-
-			while (orgID > -1)
-			{ 
-				if (orgID < 0) return;
-
-        try
-        {
-          _importID = orgID.ToString() + "-" + Guid.NewGuid().ToString();
-          _logs = new Logs(orgID.ToString() + " - Org.txt");
-          _users = new Users(GetGoodLoginUser());
-          _users.LoadByOrganizationID(orgID, false);
-          _exceptionOcurred = false;
-          RecoverCompanies(orgID);
-          //RecoverContacts(orgID);
-          RecoverProducts(orgID);
-         // RecoverAssets(orgID);
-          RecoverActionsFromOldTickets(orgID);
-          RecoverTickets(orgID);
-
-          if (_exceptionOcurred)
-          {
-            SaveOrg(orgID, "Finished with exceptions", _importID);
-          }
-          else
-          {
-            SaveOrg(orgID, "Success", _importID);
-          }
-          SqlExecutor.ExecuteNonQuery(GetGoodLoginUser(), "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
-        }
-        catch (Exception  ex)
-        {
-          SaveOrg(orgID, "Failure: " + ex.Message, _importID);
-          ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
-        }
-        finally
-        {
-          orgID = GetNextOrg();
-        }
-		  }
-		}
-
-		private void SaveOrg(int orgID, string result, string importID)
-		{
-			SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), @"
-      UPDATE
-        OrgMoveEvent
-      SET
-        Result = '"+result+@"'
-        , HasExecuted = 1 
-        , ImportID = '" + importID + @"'
-      WHERE
-        OrganizationID = " + orgID.ToString());
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "UPDATE OrgMoveEvent SET Result = @Result, HasExecuted = @HasExecuted WHERE OrganizationID = @OrganizationID";
+      command.Parameters.AddWithValue("Result", result);
+      command.Parameters.AddWithValue("HasExecuted", hasExectued);
+      command.Parameters.AddWithValue("OrganizationID", orgID);
+			SqlExecutor.ExecuteNonQuery(GetCorrupteLoginUser(), command);
 		}
 
 		private void RecoverProducts(int orgID)
@@ -118,7 +148,7 @@ namespace DataRecovery
 		  Products badProducts = new Products(GetCorrupteLoginUser());
 		  badProducts.LoadByOrganizationID(orgID);
 
-		  Products goodProducts = new Products(GetGoodLoginUser());
+		  Products goodProducts = new Products(GetReviewLoginUser());
 		  goodProducts.LoadByOrganizationID(orgID);
 
 		  foreach (Product badProduct in badProducts)
@@ -128,7 +158,7 @@ namespace DataRecovery
         Product goodProduct = goodProducts.FindByName(badProduct.Name);
 			  if (goodProduct == null)
 			  { 
-			    goodProduct = (new Products(GetGoodLoginUser())).AddNewProduct();
+			    goodProduct = (new Products(GetReviewLoginUser())).AddNewProduct();
 				 goodProduct.Name = badProduct.Name;
 				 goodProduct.DateCreated = badProduct.DateCreatedUtc;
           if (badProduct.CreatorID > 0)
@@ -154,7 +184,7 @@ namespace DataRecovery
         }
         catch (Exception ex)
         {
-          _exceptionOcurred = true;
+          SaveOrgResults(orgID, "Failure: " + ex.Message);
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
@@ -165,7 +195,7 @@ namespace DataRecovery
       Organizations badCompanies = new Organizations(GetCorrupteLoginUser());
       badCompanies.LoadByParentID(orgID, false);
 
-      Organizations goodCompanies = new Organizations(GetGoodLoginUser());
+      Organizations goodCompanies = new Organizations(GetReviewLoginUser());
       goodCompanies.LoadByParentID(orgID, false);
 
       foreach (Organization badCompany in badCompanies)
@@ -175,7 +205,7 @@ namespace DataRecovery
           Organization goodCompany = goodCompanies.FindByName(badCompany.Name);
           if (goodCompany == null)
           {
-            goodCompany = (new Organizations(GetGoodLoginUser())).AddNewOrganization();
+            goodCompany = (new Organizations(GetReviewLoginUser())).AddNewOrganization();
             goodCompany.CopyRowData(badCompany);
             goodCompany.DateCreated = badCompany.DateCreatedUtc;
             goodCompany.DateModified = badCompany.DateModifiedUtc;
@@ -186,7 +216,7 @@ namespace DataRecovery
         }
         catch (Exception ex)
         {
-          _exceptionOcurred = true;
+          SaveOrgResults(orgID, "Failure: " + ex.Message);
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
@@ -198,7 +228,7 @@ namespace DataRecovery
     //  Users badContacts = new Users(GetCorrupteLoginUser());
     //  badContacts.LoadContacts(orgID, false);
 
-    //  Users goodContacts = new Users(GetGoodLoginUser());
+    //  Users goodContacts = new Users(GetReviewLoginUser());
     //  goodContacts.LoadContacts(orgID, false);
 
     //  foreach (User badContact in badContacts)
@@ -206,7 +236,7 @@ namespace DataRecovery
     //    User goodContact = goodContacts.FindBy(badCompany.Name);
     //    if (goodCompany == null)
     //    {
-    //      goodCompany = (new Organizations(GetGoodLoginUser())).AddNewOrganization();
+    //      goodCompany = (new Organizations(GetReviewLoginUser())).AddNewOrganization();
     //      goodCompany.Name = badCompany.Name;
     //      goodCompany.Description = badCompany.Description;
     //      goodCompany.Website = badCompany.Website;
@@ -258,14 +288,14 @@ namespace DataRecovery
     //    }
     //  }
     //}
-
+    /*
     private void RecoverAssets(int orgID)
     {
       // check corrupt db for different products,if so craete the new products, but do not use ID's
       Assets badAssets = new Assets(GetCorrupteLoginUser());
       badAssets.LoadByOrganizationIDCreatedAfterRestore(orgID);
 
-      Assets goodAssets = new Assets(GetGoodLoginUser());
+      Assets goodAssets = new Assets(GetReviewLoginUser());
       goodAssets.LoadByOrganizationID(orgID);
 
       foreach (Asset badAsset in badAssets)
@@ -275,7 +305,7 @@ namespace DataRecovery
         {
           if (goodAsset == null)
           {
-            goodAsset = (new Assets(GetGoodLoginUser())).AddNewAsset();
+            goodAsset = (new Assets(GetReviewLoginUser())).AddNewAsset();
             goodAsset.CopyRowData(badAsset);
             goodAsset.DateCreated = badAsset.DateCreatedUtc;
             goodAsset.DateModified = badAsset.DateModifiedUtc;
@@ -288,7 +318,7 @@ namespace DataRecovery
               assetAssignments.LoadByAssetID(badAsset.AssetID);
               foreach (AssetAssignmentsViewItem assetAssignment in assetAssignments)
               {
-                AssetHistory assetHistory = new AssetHistory(GetGoodLoginUser());
+                AssetHistory assetHistory = new AssetHistory(GetReviewLoginUser());
                 AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
 
                 DateTime now = DateTime.UtcNow;
@@ -312,7 +342,7 @@ namespace DataRecovery
 
                 assetHistory.Save();
 
-                AssetAssignments goodAssetAssignments = new AssetAssignments(GetGoodLoginUser());
+                AssetAssignments goodAssetAssignments = new AssetAssignments(GetReviewLoginUser());
                 AssetAssignment goodAssetAssignment = goodAssetAssignments.AddNewAssetAssignment();
 
                 goodAssetAssignment.HistoryID = assetHistoryItem.HistoryID;
@@ -325,12 +355,12 @@ namespace DataRecovery
         }
         catch (Exception ex)
         {
-          _exceptionOcurred = true;
+          SaveOrgResults(orgID, "Failure: " + ex.Message);
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
     }
-
+    */
     private void RecoverActionsFromOldTickets(int orgID)
     {
       Actions badActions = new Actions(GetCorrupteLoginUser());
@@ -349,7 +379,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
       {
         try
         {
-          TeamSupport.Data.Action goodAction = new Actions(GetGoodLoginUser()).AddNewAction();
+          TeamSupport.Data.Action goodAction = new Actions(GetReviewLoginUser()).AddNewAction();
           goodAction.CopyRowData(badAction);
           goodAction.DateCreated = badAction.DateCreatedUtc;
           goodAction.DateModified = badAction.DateModifiedUtc;
@@ -390,15 +420,15 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           goodAction.ImportID = _importID;
           goodAction.Collection.Save();
 
-          Ticket ticket = Tickets.GetTicket(GetGoodLoginUser(), goodAction.TicketID);
+          Ticket ticket = Tickets.GetTicket(GetReviewLoginUser(), goodAction.TicketID);
           ticket.ImportID = _importID;
           ticket.Collection.Save();
 
-          EmailPosts.DeleteImportEmails(GetGoodLoginUser());
+          EmailPosts.DeleteImportEmails(GetReviewLoginUser());
         }
         catch (Exception ex)
         {
-          _exceptionOcurred = true;
+          SaveOrgResults(orgID, "Failure: " + ex.Message);
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
 
@@ -425,14 +455,14 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
       command.Parameters.AddWithValue("@OrganizationID", orgID);
       badTickets.Fill(command, "");
 
-      Organizations existingCompanies = new Organizations(GetGoodLoginUser());
+      Organizations existingCompanies = new Organizations(GetReviewLoginUser());
       existingCompanies.LoadByParentID(orgID, false);
 
       foreach (Ticket badTicket in badTickets)
       {
         try
         {
-          Ticket goodTicket = (new Tickets(GetGoodLoginUser())).AddNewTicket();
+          Ticket goodTicket = (new Tickets(GetReviewLoginUser())).AddNewTicket();
           goodTicket.CopyRowData(badTicket);
           goodTicket.DateCreated = badTicket.DateCreatedUtc;
           goodTicket.DateModified = badTicket.DateModifiedUtc;
@@ -473,14 +503,14 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           }
           goodTicket.TicketNumber = 0;
           goodTicket.Collection.Save();
-          EmailPosts.DeleteImportEmails(GetGoodLoginUser());
+          EmailPosts.DeleteImportEmails(GetReviewLoginUser());
 
           Actions badActions = new Actions(GetCorrupteLoginUser());
           badActions.LoadByTicketID(badTicket.TicketID);
 
           foreach (TeamSupport.Data.Action badAction in badActions)
           {
-            TeamSupport.Data.Action goodAction = new Actions(GetGoodLoginUser()).AddNewAction();
+            TeamSupport.Data.Action goodAction = new Actions(GetReviewLoginUser()).AddNewAction();
             goodAction.CopyRowData(badAction);
             goodAction.DateCreated = badAction.DateCreatedUtc;
             goodAction.DateModified = badAction.DateCreatedUtc;
@@ -520,7 +550,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               goodAction.ModifierID = badAction.ModifierID;
             }
             goodAction.Collection.Save();
-            EmailPosts.DeleteImportEmails(GetGoodLoginUser());
+            EmailPosts.DeleteImportEmails(GetReviewLoginUser());
 
           }
 
@@ -534,17 +564,17 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
             if (org.ParentID == orgID && goodCompany != null)
             {
               goodTicket.Collection.AddOrganization(goodCompany.OrganizationID, goodTicket.TicketID);
-              EmailPosts.DeleteImportEmails(GetGoodLoginUser());
+              EmailPosts.DeleteImportEmails(GetReviewLoginUser());
 
             }
           }
 
           RecoverTicketCustomValues(orgID, badTicket.TicketID, goodTicket.TicketID);
-          EmailPosts.DeleteImportEmails(GetGoodLoginUser());
+          EmailPosts.DeleteImportEmails(GetReviewLoginUser());
         }
         catch (Exception ex)
         {
-          _exceptionOcurred = true;
+          SaveOrgResults(orgID, "Failure: " + ex.Message);
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
 
@@ -561,7 +591,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         try
         {
           if (badCustomValue == null) continue;
-          CustomValue goodCustomValue = CustomValues.GetValue(GetGoodLoginUser(), goodTicketID, badCustomValue.ApiFieldName);
+          CustomValue goodCustomValue = CustomValues.GetValue(GetReviewLoginUser(), goodTicketID, badCustomValue.ApiFieldName);
           if (goodCustomValue != null)
           {
             goodCustomValue.Value = badCustomValue.Value;
@@ -570,10 +600,71 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
         }
         catch (Exception ex)
         {
-          _exceptionOcurred = true;
+          SaveOrgResults(orgID, "Failure: " + ex.Message);
           ExceptionLogs.LogException(GetCorrupteLoginUser(), ex, "recover");
         }
       }
     }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+      int orgID = GetNextOrg();
+
+      while (orgID > -1)
+      {
+        if (orgID < 0) return;
+        try
+        {
+          ImportOrg(orgID, GetReviewLoginUser());
+        }
+        finally
+        {
+          orgID = GetNextOrg();
+        }
+
+      }
+    }
+
+    private void btnRollBackAll_Click(object sender, EventArgs e)
+    {
+      int orgID = GetNextOrg();
+
+      while (orgID > -1)
+      {
+        if (orgID < 0) return;
+        try
+        {
+          RollBack(orgID, GetReviewLoginUser());
+        }
+        finally
+        {
+          orgID = GetNextOrg();
+        }
+
+      }
+    }
+
+    private void btnImportOrgToReview_Click(object sender, EventArgs e)
+    {
+      ImportOrg((cmbOrg.SelectedValue as OrgComboItem).OrganizationID, GetReviewLoginUser());
+    }
+
+    private void btnRollbackOrgFromReview_Click(object sender, EventArgs e)
+    {
+      RollBack((cmbOrg.SelectedValue as OrgComboItem).OrganizationID, GetReviewLoginUser());
+    }
+
+    private void btnImportOrgToProduction_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void btnRollBackOrgFromProduction_Click(object sender, EventArgs e)
+    {
+
+    }
+
+
+
   }
 }
