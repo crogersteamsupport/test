@@ -16,29 +16,21 @@ namespace DataRecovery
   public partial class Form1 : Form
   {
 
-    public class OrgComboItem
+    public class ComboboxItem
     {
-      public OrgComboItem(int orgID, string name)
+      public ComboboxItem(object value, string text)
       {
-        this._name = name;
-        this._organizationID = orgID;
+        this.Text = text;
+        this.Value = value;
       }
 
-      private int _organizationID;
+      public string Text { get; set; }
+      public object Value { get; set; }
 
-      public int OrganizationID
+      public override string ToString()
       {
-        get { return _organizationID; }
-        set { _organizationID = value; }
+        return Text;
       }
-      private string _name;
-
-      public string Name
-      {
-        get { return _name; }
-        set { _name = value; }
-      }
-
     }
 
 
@@ -63,7 +55,8 @@ namespace DataRecovery
       cmbOrg.BeginUpdate();
       foreach (DataRow row in table.Rows)
       {
-        cmbOrg.Items.Add(new OrgComboItem((int)row[0], row[1].ToString()));
+        string text = string.Format("{0} ({1})", (string)row[1], ((int)row[0]).ToString());
+        cmbOrg.Items.Add(new ComboboxItem((int)row[0], text));
       }
       cmbOrg.EndUpdate();
 
@@ -646,30 +639,30 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
 
     private void btnImportOrgToReview_Click(object sender, EventArgs e)
     {
-      ImportOrg((cmbOrg.SelectedItem as OrgComboItem).OrganizationID, GetReviewLoginUser());
+      ImportOrg((int)cmbOrg.SelectedValue, GetReviewLoginUser());
     }
 
     private void btnRollbackOrgFromReview_Click(object sender, EventArgs e)
     {
-      RollBack((cmbOrg.SelectedItem as OrgComboItem).OrganizationID, GetReviewLoginUser());
+      RollBack((int)cmbOrg.SelectedValue, GetReviewLoginUser());
     }
 
     private void btnImportOrgToProduction_Click(object sender, EventArgs e)
     {
-      OrgComboItem orgitem = (cmbOrg.SelectedItem as OrgComboItem);
+      ComboboxItem orgitem = cmbOrg.SelectedItem as ComboboxItem;
 
-      string msg = string.Format("THIS WILL UPDATE '{0}:{1}' ON PRODUCTION.  Would you like to continue?", orgitem.Name, orgitem.OrganizationID.ToString());
+      string msg = string.Format("THIS WILL UPDATE '{0}:{1}' ON PRODUCTION.  Would you like to continue?", orgitem.Text, ((int)orgitem.Value).ToString());
       if (MessageBox.Show(msg, "Confrim", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.No) return;
-      ImportOrg(orgitem.OrganizationID, GetPRODUCTIONLoginUser());
+      ImportOrg((int)orgitem.Value, GetPRODUCTIONLoginUser());
     }
 
     private void btnRollBackOrgFromProduction_Click(object sender, EventArgs e)
     {
-      OrgComboItem orgitem = (cmbOrg.SelectedItem as OrgComboItem);
+      ComboboxItem orgitem = cmbOrg.SelectedItem as ComboboxItem;
 
-      string msg = string.Format("THIS WILL ROLLBACK '{0}:{1}' ON PRODUCTION.  Would you like to continue?", orgitem.Name, orgitem.OrganizationID.ToString());
+      string msg = string.Format("THIS WILL ROLLBACK '{0}:{1}' ON PRODUCTION.  Would you like to continue?", orgitem.Text, ((int)orgitem.Value).ToString());
       if (MessageBox.Show(msg, "Confrim", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.No) return;
-      RollBack(orgitem.OrganizationID, GetPRODUCTIONLoginUser());
+      RollBack((int)orgitem.Value, GetPRODUCTIONLoginUser());
     }
 
 
