@@ -562,7 +562,14 @@ namespace TeamSupport.Data
         command.CommandText = "SELECT * FROM TicketsView WHERE (TicketTypeID = @TicketTypeID) " + BuildWhereClausesFromFilters(organizationId, filters, ref filterParameters) + " ORDER BY TicketNumber";
         command.CommandText = InjectCustomFields(command.CommandText, "TicketID", ReferenceType.Tickets, ticketTypeID);
         command.CommandType = CommandType.Text;
+
+        bool hasTickeTypeIdParameter = filters.AllKeys.Where(p => p.ToLower() == "tickettypeid").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("tickettypeid[")).Any();
+
+        if (!hasTickeTypeIdParameter)
+        {
         command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+        }
+        
         this.DeleteAll();
         Fill(command);
       }

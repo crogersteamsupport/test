@@ -78,7 +78,6 @@ namespace TeamSupport.Data
       result.Active = this.Active;
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
-      result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;
        
       result.LastProcessed = DateTime.SpecifyKind(this.LastProcessedUtc, DateTimeKind.Utc);
        
