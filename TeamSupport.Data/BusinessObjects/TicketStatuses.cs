@@ -220,6 +220,18 @@ namespace TeamSupport.Data
       return null;
     }
 
+    public TicketStatus FindTopOne(int ticketTypeID)
+    {
+      foreach (TicketStatus ticketStatus in this)
+      {
+        if (ticketStatus.TicketTypeID == ticketTypeID)
+        {
+          return ticketStatus;
+        }
+      }
+      return null;
+    }
+
     public void MovePositionUp(int ticketStatusID)
     {
       ValidatePositions(TicketStatuses.GetTicketStatus(LoginUser, ticketStatusID).TicketTypeID);
