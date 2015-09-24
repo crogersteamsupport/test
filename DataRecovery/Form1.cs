@@ -44,6 +44,8 @@ namespace DataRecovery
     private ProductVersions _goodProductVersions;
     private Groups _badGroups;
     private Groups _goodGroups;
+    private Users _badUsers;
+    private Users _goodUsers;
 
     public Form1()
     {
@@ -151,16 +153,20 @@ namespace DataRecovery
         _badProducts        = new Products(GetCorrupteLoginUser());
         _badProductVersions = new ProductVersions(GetCorrupteLoginUser());
         _badGroups          = new Groups(GetCorrupteLoginUser());
+        _badUsers           = new Users(GetCorrupteLoginUser());
         _badProducts.LoadByOrganizationID(orgID);
         _badProductVersions.LoadByParentOrganizationID(orgID);
         _badGroups.LoadByOrganizationID(orgID);
+        _badUsers.LoadByOrganizationID(orgID, false);
 
         _goodProducts         = new Products(loginUser);
         _goodProductVersions  = new ProductVersions(loginUser);
         _goodGroups           = new Groups(loginUser);
+        _goodUsers           = new Users(loginUser);
         _goodProducts.LoadByOrganizationID(orgID);
         _goodProductVersions.LoadByParentOrganizationID(orgID);
         _goodGroups.LoadByOrganizationID(orgID);
+        _goodUsers.LoadByOrganizationID(orgID, false);
 
         _exceptionOcurred = false;
         if (cbCompanies.Checked) RecoverCompanies(orgID, loginUser);
@@ -595,6 +601,23 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               else
               {
                 goodTicket.GroupID = null;
+              }
+            }
+          }
+          if (badTicket.UserID != null)
+          {
+            User goodUser = _goodUsers.FindByUserID((int)badTicket.UserID);
+            if (goodUser == null)
+            {
+              User badUser = _badUsers.FindByUserID((int)badTicket.UserID);
+              goodUser = _goodUsers.FindByEmail(badUser.Email);
+              if (goodUser != null)
+              {
+                goodTicket.UserID = goodUser.UserID;
+              }
+              else
+              {
+                goodTicket.UserID = null;
               }
             }
           }
