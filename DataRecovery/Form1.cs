@@ -146,7 +146,7 @@ namespace DataRecovery
         _importID = orgID.ToString() + "-" + Guid.NewGuid().ToString();
         _logs = new Logs(orgID.ToString() + " - Org.txt");
         _users = new Users(loginUser);
-        _users.LoadByOrganizationID(orgID, false);
+        _users.LoadContactsAndUsers(orgID, false);
 
         _badProducts        = new Products(GetCorrupteLoginUser());
         _badProductVersions = new ProductVersions(GetCorrupteLoginUser());
