@@ -547,7 +547,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           OrganizationID = @OrganizationID
           AND DateCreated > '2015-09-17 05:56:00'
           AND TicketSource != 'EMail'
-          AND IgnoreMe = 0'
+          AND IgnoreMe = 0
       ";
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@OrganizationID", orgID);
