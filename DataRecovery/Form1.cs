@@ -42,6 +42,8 @@ namespace DataRecovery
     private ProductVersions _badProductVersions;
     private Products _goodProducts;
     private ProductVersions _goodProductVersions;
+    private Groups _badGroups;
+    private Groups _goodGroups;
 
     public Form1()
     {
@@ -145,14 +147,20 @@ namespace DataRecovery
         _logs = new Logs(orgID.ToString() + " - Org.txt");
         _users = new Users(loginUser);
         _users.LoadByOrganizationID(orgID, false);
-        _badProducts = new Products(GetCorrupteLoginUser());
-        _badProducts.LoadByOrganizationID(orgID);
+
+        _badProducts        = new Products(GetCorrupteLoginUser());
         _badProductVersions = new ProductVersions(GetCorrupteLoginUser());
+        _badGroups          = new Groups(GetCorrupteLoginUser());
+        _badProducts.LoadByOrganizationID(orgID);
         _badProductVersions.LoadByParentOrganizationID(orgID);
-        _goodProducts = new Products(loginUser);
+        _badGroups.LoadByOrganizationID(orgID);
+
+        _goodProducts         = new Products(loginUser);
+        _goodProductVersions  = new ProductVersions(loginUser);
+        _goodGroups           = new Groups(loginUser);
         _goodProducts.LoadByOrganizationID(orgID);
-        _goodProductVersions = new ProductVersions(loginUser);
         _goodProductVersions.LoadByParentOrganizationID(orgID);
+        _goodGroups.LoadByOrganizationID(orgID);
 
         _exceptionOcurred = false;
         if (cbCompanies.Checked) RecoverCompanies(orgID, loginUser);
@@ -538,10 +546,6 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
                 goodTicket.ProductID = null;
               }
             }
-            else
-            {
-              goodTicket.ProductID = goodProduct.ProductID;
-            }
           }
           if (goodTicket.ProductID != null && badTicket.ReportedVersionID != null)
           {
@@ -558,10 +562,6 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               {
                 goodTicket.ReportedVersionID = null;
               }
-            }
-            else
-            {
-              goodTicket.ReportedVersionID = goodProductVersion.ProductVersionID;
             }
           }
           if (goodTicket.ProductID != null && badTicket.SolvedVersionID != null)
@@ -580,9 +580,22 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
                 goodTicket.SolvedVersionID = null;
               }
             }
-            else
+          }
+          if (badTicket.GroupID != null)
+          {
+            Group goodGroup = _goodGroups.FindByGroupID((int)badTicket.GroupID);
+            if (goodGroup == null)
             {
-              goodTicket.SolvedVersionID = goodProductVersion.ProductVersionID;
+              Group badGroup = _badGroups.FindByGroupID((int)badTicket.GroupID);
+              goodGroup = _goodGroups.FindByName(badGroup.Name);
+              if (goodGroup != null)
+              {
+                goodTicket.GroupID = goodGroup.GroupID;
+              }
+              else
+              {
+                goodTicket.GroupID = null;
+              }
             }
           }
           goodTicket.DateCreated = badTicket.DateCreatedUtc;
