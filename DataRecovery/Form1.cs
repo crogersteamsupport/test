@@ -928,12 +928,12 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
 
     private void btnImportOrgToReview_Click(object sender, EventArgs e)
     {
-      ImportOrg((int)cmbOrg.SelectedValue, GetReviewLoginUser());
+      ImportOrg(GetSelectedOrgID(), GetReviewLoginUser());
     }
 
     private void btnRollbackOrgFromReview_Click(object sender, EventArgs e)
     {
-      RollBack((int)cmbOrg.SelectedValue, GetReviewLoginUser());
+      RollBack(GetSelectedOrgID(), GetReviewLoginUser());
     }
 
     private void btnImportOrgToProduction_Click(object sender, EventArgs e)
@@ -954,7 +954,12 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
       RollBack((int)orgitem.Value, GetPRODUCTIONLoginUser());
     }
 
-
+    private int GetSelectedOrgID()
+    {
+      return (int)(cmbOrg.SelectedItem as ComboboxItem).Value;
+    
+    
+    }
 
   }
 }
