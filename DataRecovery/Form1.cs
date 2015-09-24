@@ -36,7 +36,7 @@ namespace DataRecovery
 
     private Logs _logs;
     private string _importID;
-    private Users _users;
+    private Users _usersAndContacts;
     private bool _exceptionOcurred;
     private Products _badProducts;
     private ProductVersions _badProductVersions;
@@ -145,8 +145,8 @@ namespace DataRecovery
       {
         _importID = orgID.ToString() + "-" + Guid.NewGuid().ToString();
         _logs = new Logs(orgID.ToString() + " - Org.txt");
-        _users = new Users(loginUser);
-        _users.LoadContactsAndUsers(orgID, false);
+        _usersAndContacts = new Users(loginUser);
+        _usersAndContacts.LoadContactsAndUsers(orgID, false);
 
         _badProducts        = new Products(GetCorrupteLoginUser());
         _badProductVersions = new ProductVersions(GetCorrupteLoginUser());
@@ -229,7 +229,7 @@ namespace DataRecovery
             goodProduct.DateCreated = badProduct.DateCreatedUtc;
             if (badProduct.CreatorID > 0)
             {
-              User creator = _users.FindByUserID(badProduct.CreatorID);
+              User creator = _usersAndContacts.FindByUserID(badProduct.CreatorID);
               if (creator != null)
               {
                 goodProduct.CreatorID = creator.UserID;
@@ -326,7 +326,7 @@ namespace DataRecovery
     //      goodCompany.SystemEmailID = badCompany.SystemEmailID;
     //      goodCompany.WebServiceID = badCompany.WebServiceID;
     //      {
-    //        User defaultSupportUser = _users.FindByUserID((int)badCompany.DefaultSupportUserID);
+    //        User defaultSupportUser = _usersAndContacts.FindByUserID((int)badCompany.DefaultSupportUserID);
     //        if (defaultSupportUser != null)
     //        {
     //          goodCompany.DefaultSupportUserID = defaultSupportUser.UserID;
@@ -334,7 +334,7 @@ namespace DataRecovery
     //      }
     //      if (badCompany.CreatorID > 0)
     //      {
-    //        User creator = _users.FindByUserID(badCompany.CreatorID);
+    //        User creator = _usersAndContacts.FindByUserID(badCompany.CreatorID);
     //        if (creator != null)
     //        {
     //          goodCompany.CreatorID = creator.UserID;
@@ -452,7 +452,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           goodAction.TicketID = badAction.TicketID;
           if (badAction.CreatorID > 0)
           {
-            User creator = _users.FindByUserID(badAction.CreatorID);
+            User creator = _usersAndContacts.FindByUserID(badAction.CreatorID);
             if (creator != null)
             {
               goodAction.CreatorID = creator.UserID;
@@ -469,7 +469,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
 
           if (badAction.ModifierID > 0)
           {
-            User modifier = _users.FindByUserID(badAction.ModifierID);
+            User modifier = _usersAndContacts.FindByUserID(badAction.ModifierID);
             if (modifier != null)
             {
               goodAction.ModifierID = modifier.UserID;
@@ -604,7 +604,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           goodTicket.ImportID = _importID;
           if (badTicket.CreatorID > 0)
           {
-            User creator = _users.FindByUserID(badTicket.CreatorID);
+            User creator = _usersAndContacts.FindByUserID(badTicket.CreatorID);
             if (creator != null)
             {
               goodTicket.CreatorID = creator.UserID;
@@ -621,7 +621,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
 
           if (badTicket.ModifierID > 0)
           {
-            User modifier = _users.FindByUserID(badTicket.ModifierID);
+            User modifier = _usersAndContacts.FindByUserID(badTicket.ModifierID);
             if (modifier != null)
             {
               goodTicket.ModifierID = modifier.UserID;
@@ -652,7 +652,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
             goodAction.ImportID = _importID;
             if (badAction.CreatorID > 0)
             {
-              User creator = _users.FindByUserID(badAction.CreatorID);
+              User creator = _usersAndContacts.FindByUserID(badAction.CreatorID);
               if (creator != null)
               {
                 goodAction.CreatorID = creator.UserID;
@@ -669,7 +669,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
 
             if (badAction.ModifierID > 0)
             {
-              User modifier = _users.FindByUserID(badAction.ModifierID);
+              User modifier = _usersAndContacts.FindByUserID(badAction.ModifierID);
               if (modifier != null)
               {
                 goodAction.ModifierID = modifier.UserID;
