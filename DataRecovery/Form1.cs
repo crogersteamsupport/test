@@ -46,6 +46,8 @@ namespace DataRecovery
     private Groups _goodGroups;
     private Users _badUsers;
     private Users _goodUsers;
+    private TicketTypes _badTicketTypes;
+    private TicketTypes _goodTicketTypes;
 
     public Form1()
     {
@@ -154,19 +156,24 @@ namespace DataRecovery
         _badProductVersions = new ProductVersions(GetCorrupteLoginUser());
         _badGroups          = new Groups(GetCorrupteLoginUser());
         _badUsers           = new Users(GetCorrupteLoginUser());
+        _badTicketTypes     = new TicketTypes(GetCorrupteLoginUser());
         _badProducts.LoadByOrganizationID(orgID);
         _badProductVersions.LoadByParentOrganizationID(orgID);
         _badGroups.LoadByOrganizationID(orgID);
         _badUsers.LoadByOrganizationID(orgID, false);
+        _badTicketTypes.LoadByOrganizationID(orgID);
 
         _goodProducts         = new Products(loginUser);
         _goodProductVersions  = new ProductVersions(loginUser);
         _goodGroups           = new Groups(loginUser);
-        _goodUsers           = new Users(loginUser);
+        _goodUsers            = new Users(loginUser);
+        _goodTicketTypes      = new TicketTypes(loginUser);
         _goodProducts.LoadByOrganizationID(orgID);
         _goodProductVersions.LoadByParentOrganizationID(orgID);
         _goodGroups.LoadByOrganizationID(orgID);
         _goodUsers.LoadByOrganizationID(orgID, false);
+        _goodTicketTypes.LoadByOrganizationID(orgID);
+
 
         _exceptionOcurred = false;
         if (cbCompanies.Checked) RecoverCompanies(orgID, loginUser);
@@ -619,6 +626,20 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               {
                 goodTicket.UserID = null;
               }
+            }
+          }
+          TicketType goodTicketType = _goodTicketTypes.FindByTicketTypeID(badTicket.TicketTypeID);
+          if (goodTicketType == null)
+          {
+            TicketType badTicketType = _badTicketTypes.FindByTicketTypeID(badTicket.TicketTypeID);
+            goodTicketType = _goodTicketTypes.FindByName(badTicketType.Name);
+            if (goodTicketType != null)
+            {
+              goodTicket.TicketTypeID = goodTicketType.TicketTypeID;
+            }
+            else
+            {
+              goodTicket.UserID = _goodTicketTypes[0].TicketTypeID;
             }
           }
           goodTicket.DateCreated = badTicket.DateCreatedUtc;
