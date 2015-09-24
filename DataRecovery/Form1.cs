@@ -48,6 +48,10 @@ namespace DataRecovery
     private Users _goodUsers;
     private TicketTypes _badTicketTypes;
     private TicketTypes _goodTicketTypes;
+    private TicketSeverities _badTicketSeverities;
+    private TicketSeverities _goodTicketSeverities;
+    private KnowledgeBaseCategories _goodTicketKBCategories;
+    private KnowledgeBaseCategories _badTicketKBCategories;
 
     public Form1()
     {
@@ -157,22 +161,31 @@ namespace DataRecovery
         _badGroups          = new Groups(GetCorrupteLoginUser());
         _badUsers           = new Users(GetCorrupteLoginUser());
         _badTicketTypes     = new TicketTypes(GetCorrupteLoginUser());
+        _badTicketSeverities = new TicketSeverities(GetCorrupteLoginUser());
+        _badTicketKBCategories = new KnowledgeBaseCategories(GetCorrupteLoginUser());
         _badProducts.LoadByOrganizationID(orgID);
         _badProductVersions.LoadByParentOrganizationID(orgID);
         _badGroups.LoadByOrganizationID(orgID);
         _badUsers.LoadByOrganizationID(orgID, false);
         _badTicketTypes.LoadByOrganizationID(orgID);
+        _badTicketSeverities.LoadByOrganizationID(orgID);
+        _badTicketKBCategories.LoadCategories(orgID);
 
         _goodProducts         = new Products(loginUser);
         _goodProductVersions  = new ProductVersions(loginUser);
         _goodGroups           = new Groups(loginUser);
         _goodUsers            = new Users(loginUser);
         _goodTicketTypes      = new TicketTypes(loginUser);
+        _goodTicketSeverities = new TicketSeverities(loginUser);
+        _goodTicketKBCategories = new KnowledgeBaseCategories(loginUser);
+
         _goodProducts.LoadByOrganizationID(orgID);
         _goodProductVersions.LoadByParentOrganizationID(orgID);
         _goodGroups.LoadByOrganizationID(orgID);
         _goodUsers.LoadByOrganizationID(orgID, false);
         _goodTicketTypes.LoadByOrganizationID(orgID);
+        _goodTicketSeverities.LoadByOrganizationID(orgID);
+        _goodTicketKBCategories.LoadCategories(orgID);
 
 
         _exceptionOcurred = false;
@@ -541,8 +554,10 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
       {
         try
         {
+          //Copy Ticket
           Ticket goodTicket = (new Tickets(loginUser)).AddNewTicket();
           goodTicket.CopyRowData(badTicket);
+          //Product
           if (badTicket.ProductID != null)
           {
             Product goodProduct = _goodProducts.FindByProductID((int)badTicket.ProductID);
@@ -560,6 +575,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               }
             }
           }
+          //Version
           if (goodTicket.ProductID != null && badTicket.ReportedVersionID != null)
           {
             ProductVersion goodProductVersion = _goodProductVersions.FindByProductVersionID((int)badTicket.ReportedVersionID);
@@ -577,6 +593,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               }
             }
           }
+          //Solved Version
           if (goodTicket.ProductID != null && badTicket.SolvedVersionID != null)
           {
             ProductVersion goodProductVersion = _goodProductVersions.FindByProductVersionID((int)badTicket.SolvedVersionID);
@@ -594,6 +611,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               }
             }
           }
+          //Group
           if (badTicket.GroupID != null)
           {
             Group goodGroup = _goodGroups.FindByGroupID((int)badTicket.GroupID);
@@ -611,6 +629,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               }
             }
           }
+          //Assigned User
           if (badTicket.UserID != null)
           {
             User goodUser = _goodUsers.FindByUserID((int)badTicket.UserID);
@@ -628,6 +647,7 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
               }
             }
           }
+          //Type
           TicketType goodTicketType = _goodTicketTypes.FindByTicketTypeID(badTicket.TicketTypeID);
           if (goodTicketType == null)
           {
@@ -639,9 +659,90 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
             }
             else
             {
-              goodTicket.UserID = _goodTicketTypes[0].TicketTypeID;
+              goodTicket.TicketTypeID = _goodTicketTypes[0].TicketTypeID;
             }
           }
+
+          //Status
+           TicketStatuses _goodTicketStatuses = new TicketStatuses(loginUser);
+          _goodTicketStatuses.LoadAvailableTicketStatuses(goodTicket.TicketTypeID, null);
+
+          TicketStatus goodTicketStatus = _goodTicketStatuses.FindByTicketStatusID(badTicket.TicketStatusID);
+
+          if(goodTicketStatus == null)
+          {
+            TicketStatuses _badTicketStatuses = new TicketStatuses(GetCorrupteLoginUser());
+            _badTicketStatuses.LoadAvailableTicketStatuses(badTicket.TicketTypeID, null);
+
+            TicketStatus badTicketStatus = _badTicketStatuses.FindByTicketStatusID(badTicket.TicketStatusID);
+            goodTicketStatus = _goodTicketStatuses.FindByName(badTicketStatus.Name, goodTicket.TicketTypeID);
+
+            if(goodTicketStatus != null)
+            {
+              goodTicket.TicketStatusID = goodTicketStatus.TicketStatusID;
+            }
+            else
+            {
+              goodTicket.TicketStatusID = _goodTicketStatuses[0].TicketStatusID;
+            }
+          }
+
+          //Severity
+          TicketSeverity goodTicketSeverity = _goodTicketSeverities.FindByTicketSeverityID(badTicket.TicketSeverityID);
+          if(goodTicketSeverity == null)
+          {
+            TicketSeverity badTicketSeverity = _badTicketSeverities.FindByTicketSeverityID(badTicket.TicketSeverityID);
+            goodTicketSeverity = _goodTicketSeverities.FindByName(badTicketSeverity.Name);
+            if (goodTicketSeverity != null)
+            {
+              goodTicket.TicketSeverityID = goodTicketSeverity.TicketSeverityID;
+            }
+            else
+            {
+              goodTicket.TicketSeverityID = _goodTicketSeverities[0].TicketSeverityID;
+            }
+          }
+
+          //Knowledgebase Cat
+          if (badTicket.KnowledgeBaseCategoryID != null)
+          {
+            KnowledgeBaseCategory goodKBCategory = _goodTicketKBCategories.FindByCategoryID((int)badTicket.KnowledgeBaseCategoryID);
+            if (goodKBCategory == null)
+            {
+              KnowledgeBaseCategory badKBCategory = _badTicketKBCategories.FindByCategoryID((int)badTicket.KnowledgeBaseCategoryID);
+              goodKBCategory = _goodTicketKBCategories.FindByName(badKBCategory.CategoryName);
+              if (goodKBCategory != null)
+              {
+                goodTicket.KnowledgeBaseCategoryID = goodKBCategory.CategoryID;
+              }
+              else
+              {
+                goodTicket.KnowledgeBaseCategoryID = null;
+              }
+            }
+          }
+
+          //Closing User
+          if (badTicket.CloserID != null)
+          {
+            User goodUser = _goodUsers.FindByUserID((int)badTicket.CloserID);
+            if (goodUser == null)
+            {
+              User badUser = _badUsers.FindByUserID((int)badTicket.CloserID);
+              goodUser = _goodUsers.FindByEmail(badUser.Email);
+              if (goodUser != null)
+              {
+                goodTicket.CloserID = goodUser.UserID;
+              }
+              else
+              {
+                goodTicket.CloserID = null;
+              }
+            }
+          }
+
+
+          //Reset ticket dates
           goodTicket.DateCreated = badTicket.DateCreatedUtc;
           goodTicket.DateModified = badTicket.DateModifiedUtc;
           goodTicket.ParentID = null;
