@@ -1296,10 +1296,10 @@ function SetupTicketPropertyEvents() {
   $('#ticket-type').change(function (e) {
     var self = $(this);
     var value = self.val();
+    EnableField('ticket-status', false);
     top.Ts.Services.TicketPage.SetTicketType(_ticketID, value, function (result) {
       if (result !== null) {
         _ticketTypeID = value;
-        //SetupStatusField(result[0].TicketStatusID);
         SetStatus(result[0].TicketStatusID);
         $('#ticket-status-label').toggleClass('ticket-closed', result[0].IsClosed);
 
@@ -1715,19 +1715,20 @@ function SetupProductSection() {
           var name = result.label;
           _productFamilyID = result.data;
           var product = top.Ts.Cache.getProduct(self.val());
+
+          top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
+          	if (IsRequired && (name == null || name == ''))
+          		$('#ticket-Product').closest('.form-group').addClass('hasError');
+          	else
+          		$('#ticket-Product').closest('.form-group').removeClass('hasError');
+          });
+
           SetupProductVersionsControl(product);
           SetProductVersionAndResolved(null, null);
         }
 
         top.Ts.Services.Tickets.GetParentValues(_ticketID, function (fields) {
           AppenCustomValues(fields);
-        });
-
-        top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
-          if (IsRequired && (name == null || name == ''))
-            $('#ticket-Product').closest('.form-group').addClass('hasError');
-          else
-            $('#ticket-Product').closest('.form-group').removeClass('hasError');
         });
       },
       function (error) {
@@ -4535,7 +4536,17 @@ var SetStatus = function (StatusID) {
     if (StatusID !== null) selectize.addItem(StatusID, false);
     _ticketCurrStatus = StatusID;
   }
+  EnableField('ticket-status', true);
 };
+
+var EnableField = function (fieldToDisable, enableField) {
+    var $select = $('#' + fieldToDisable).selectize();
+    var selectize = $select[0].selectize;
+    if (enableField) {
+        selectize.enable();
+    }
+    else selectize.disable();
+}
 
 var SetType = function (TypeID) {
   var selectField = $('#ticket-type');

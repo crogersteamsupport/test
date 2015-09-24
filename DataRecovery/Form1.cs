@@ -722,6 +722,9 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
             }
           }
 
+          //Parent Ticket (NOTE from MT:  we decided as a team to null out this field to ensure no bad relationships can happen since we don't know the ticketID is a preserved field for every ticket.
+          goodTicket.ParentID = null;
+
           //Closing User
           if (badTicket.CloserID != null)
           {
