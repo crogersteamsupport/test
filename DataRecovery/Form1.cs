@@ -48,6 +48,8 @@ namespace DataRecovery
     private Users _goodUsers;
     private TicketTypes _badTicketTypes;
     private TicketTypes _goodTicketTypes;
+    private TicketStatuses _badTicketStatuses;
+    private TicketStatuses _goodTicketStatuses;
     private TicketSeverities _badTicketSeverities;
     private TicketSeverities _goodTicketSeverities;
     private KnowledgeBaseCategories _goodTicketKBCategories;
@@ -161,6 +163,7 @@ namespace DataRecovery
         _badGroups          = new Groups(GetCorrupteLoginUser());
         _badUsers           = new Users(GetCorrupteLoginUser());
         _badTicketTypes     = new TicketTypes(GetCorrupteLoginUser());
+        _badTicketStatuses  = new TicketStatuses(GetCorrupteLoginUser());
         _badTicketSeverities = new TicketSeverities(GetCorrupteLoginUser());
         _badTicketKBCategories = new KnowledgeBaseCategories(GetCorrupteLoginUser());
         _badProducts.LoadByOrganizationID(orgID);
@@ -168,6 +171,7 @@ namespace DataRecovery
         _badGroups.LoadByOrganizationID(orgID);
         _badUsers.LoadByOrganizationID(orgID, false);
         _badTicketTypes.LoadByOrganizationID(orgID);
+        _badTicketStatuses.LoadByOrganizationID(orgID);
         _badTicketSeverities.LoadByOrganizationID(orgID);
         _badTicketKBCategories.LoadCategories(orgID);
 
@@ -176,6 +180,7 @@ namespace DataRecovery
         _goodGroups           = new Groups(loginUser);
         _goodUsers            = new Users(loginUser);
         _goodTicketTypes      = new TicketTypes(loginUser);
+        _goodTicketStatuses   = new TicketStatuses(loginUser);
         _goodTicketSeverities = new TicketSeverities(loginUser);
         _goodTicketKBCategories = new KnowledgeBaseCategories(loginUser);
 
@@ -184,6 +189,7 @@ namespace DataRecovery
         _goodGroups.LoadByOrganizationID(orgID);
         _goodUsers.LoadByOrganizationID(orgID, false);
         _goodTicketTypes.LoadByOrganizationID(orgID);
+        _goodTicketStatuses.LoadByOrganizationID(orgID);
         _goodTicketSeverities.LoadByOrganizationID(orgID);
         _goodTicketKBCategories.LoadCategories(orgID);
 
@@ -664,28 +670,22 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           }
 
           //Status
-           TicketStatuses _goodTicketStatuses = new TicketStatuses(loginUser);
-          _goodTicketStatuses.LoadAvailableTicketStatuses(goodTicket.TicketTypeID, null);
-
           TicketStatus goodTicketStatus = _goodTicketStatuses.FindByTicketStatusID(badTicket.TicketStatusID);
-
-          if(goodTicketStatus == null)
+          if (goodTicketStatus == null)
           {
-            TicketStatuses _badTicketStatuses = new TicketStatuses(GetCorrupteLoginUser());
-            _badTicketStatuses.LoadAvailableTicketStatuses(badTicket.TicketTypeID, null);
-
             TicketStatus badTicketStatus = _badTicketStatuses.FindByTicketStatusID(badTicket.TicketStatusID);
             goodTicketStatus = _goodTicketStatuses.FindByName(badTicketStatus.Name, goodTicket.TicketTypeID);
-
-            if(goodTicketStatus != null)
+            if (goodTicketStatus != null)
             {
               goodTicket.TicketStatusID = goodTicketStatus.TicketStatusID;
             }
             else
             {
-              goodTicket.TicketStatusID = _goodTicketStatuses[0].TicketStatusID;
+              goodTicketStatus = _goodTicketStatuses.FindTopOne(goodTicket.TicketTypeID);
+              goodTicket.TicketStatusID = goodTicketStatus.TicketStatusID;
             }
           }
+
 
           //Severity
           TicketSeverity goodTicketSeverity = _goodTicketSeverities.FindByTicketSeverityID(badTicket.TicketSeverityID);
