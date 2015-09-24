@@ -38,8 +38,10 @@ namespace DataRecovery
     private string _importID;
     private Users _users;
     private bool _exceptionOcurred;
-    private Products _products;
-    private ProductVersions _productVersions;
+    private Products _badProducts;
+    private ProductVersions _badProductVersions;
+    private Products _goodProducts;
+    private ProductVersions _goodProductVersions;
 
     public Form1()
     {
@@ -143,10 +145,14 @@ namespace DataRecovery
         _logs = new Logs(orgID.ToString() + " - Org.txt");
         _users = new Users(loginUser);
         _users.LoadByOrganizationID(orgID, false);
-        _products = new Products(loginUser);
-        _products.LoadByOrganizationID(orgID);
-        _productVersions = new ProductVersions(loginUser);
-        _productVersions.LoadByParentOrganizationID(orgID);
+        _badProducts = new Products(GetCorrupteLoginUser());
+        _badProducts.LoadByOrganizationID(orgID);
+        _badProductVersions = new ProductVersions(GetCorrupteLoginUser());
+        _badProductVersions.LoadByParentOrganizationID(orgID);
+        _goodProducts = new Products(loginUser);
+        _goodProducts.LoadByOrganizationID(orgID);
+        _goodProductVersions = new ProductVersions(loginUser);
+        _goodProductVersions.LoadByParentOrganizationID(orgID);
 
         _exceptionOcurred = false;
         if (cbCompanies.Checked) RecoverCompanies(orgID, loginUser);
@@ -518,35 +524,65 @@ AND t.DateCreated < '2015-09-17 05:56:00'";
           goodTicket.CopyRowData(badTicket);
           if (badTicket.ProductID != null)
           {
-            Product product = _products.FindByProductID((int)badTicket.ProductID);
-            if (product == null)
+            Product goodProduct = _goodProducts.FindByProductID((int)badTicket.ProductID);
+            if (goodProduct == null)
             {
-              Products badProduct = new Products(GetCorrupteLoginUser());
-              badProduct.LoadByProductID((int)badTicket.ProductID);
-              if (badProduct.Count > 0 && !string.IsNullOrEmpty(badProduct[0].Name))
+              Product badProduct = _badProducts.FindByProductID((int)badTicket.ProductID);
+              goodProduct = _goodProducts.FindByName(badProduct.Name); 
+              if (goodProduct != null)
               {
-                product = _products.FindByName(badProduct[0].Name);
-                if (product != null)
-                {
-                  goodTicket.ProductID = product.ProductID;
-                }
+                goodTicket.ProductID = goodProduct.ProductID;
+              }
+              else
+              {
+                goodTicket.ProductID = null;
               }
             }
-          }
-          if (badTicket.ReportedVersionID != null)
-          {
-            ProductVersion productVersion = _productVersions.FindByProductVersionID((int)badTicket.ReportedVersionID);
-            if (productVersion == null)
+            else
             {
-              goodTicket.ReportedVersionID = null;
+              goodTicket.ProductID = goodProduct.ProductID;
             }
           }
-          if (badTicket.SolvedVersionID != null)
+          if (goodTicket.ProductID != null && badTicket.ReportedVersionID != null)
           {
-            ProductVersion productVersion = _productVersions.FindByProductVersionID((int)badTicket.SolvedVersionID);
-            if (productVersion == null)
+            ProductVersion goodProductVersion = _goodProductVersions.FindByProductVersionID((int)badTicket.ReportedVersionID);
+            if (goodProductVersion == null)
             {
-              goodTicket.SolvedVersionID = null;
+              ProductVersion badProductVersion = _badProductVersions.FindByProductVersionID((int)badTicket.ReportedVersionID);
+              goodProductVersion = _goodProductVersions.FindByVersionNumber(badProductVersion.VersionNumber, (int)goodTicket.ProductID);
+              if (goodProductVersion != null)
+              {
+                goodTicket.ReportedVersionID = goodProductVersion.ProductVersionID;
+              }
+              else
+              {
+                goodTicket.ReportedVersionID = null;
+              }
+            }
+            else
+            {
+              goodTicket.ReportedVersionID = goodProductVersion.ProductVersionID;
+            }
+          }
+          if (goodTicket.ProductID != null && badTicket.SolvedVersionID != null)
+          {
+            ProductVersion goodProductVersion = _goodProductVersions.FindByProductVersionID((int)badTicket.SolvedVersionID);
+            if (goodProductVersion == null)
+            {
+              ProductVersion badProductVersion = _badProductVersions.FindByProductVersionID((int)badTicket.SolvedVersionID);
+              goodProductVersion = _goodProductVersions.FindByVersionNumber(badProductVersion.VersionNumber, (int)goodTicket.ProductID);
+              if (goodProductVersion != null)
+              {
+                goodTicket.SolvedVersionID = goodProductVersion.ProductVersionID;
+              }
+              else
+              {
+                goodTicket.SolvedVersionID = null;
+              }
+            }
+            else
+            {
+              goodTicket.SolvedVersionID = goodProductVersion.ProductVersionID;
             }
           }
           goodTicket.DateCreated = badTicket.DateCreatedUtc;
