@@ -63,6 +63,7 @@
       // 
       // cmbOrg
       // 
+      this.cmbOrg.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.cmbOrg.FormattingEnabled = true;
       this.cmbOrg.Location = new System.Drawing.Point(12, 70);
       this.cmbOrg.Name = "cmbOrg";
