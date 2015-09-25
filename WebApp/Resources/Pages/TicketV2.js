@@ -572,6 +572,8 @@ function CreateNewActionLI() {
         return;
       }
     });
+
+    $(this).parent().dropdown('toggle');
   });
 
   $('#action-timeline').on('click', '.remove-attachment', function (e) {
@@ -1736,6 +1738,8 @@ function SetupProductSection() {
       function (error) {
         alert('There was an error setting the product.');
       });
+
+      $('.ProductAnchor').popover('hide');
     });
 
     $('#ticket-Versions').change(function (e) {
