@@ -392,9 +392,10 @@ function SetupTicketProperties() {
     $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
     $('.ticket-source').css('backgroundImage', "url('../" + top.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
     //get total number of actions so we can use it to number each action
-    GetActionCount();
-    //create timeline now that we have a ticketID
-    FetchTimeLineItems(0);
+    GetActionCount(function () {
+        //create timeline now that we have a ticketID and a count
+        FetchTimeLineItems(0);
+    });
 
     //action timers
     SetupActionTimers();
@@ -996,10 +997,11 @@ function LoadTicketNotes(note) {
   }
 };
 
-function GetActionCount() {
+function GetActionCount(callback) {
   top.Ts.Services.TicketPage.GetActionCount(_ticketID, function (total) {
     _actionTotal = total;
     _workingActionNumer = total;
+    callback();
   });
 };
 
