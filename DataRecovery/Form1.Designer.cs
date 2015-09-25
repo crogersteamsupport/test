@@ -43,6 +43,7 @@
       // 
       // btnImportAll
       // 
+      this.btnImportAll.Enabled = false;
       this.btnImportAll.Location = new System.Drawing.Point(12, 12);
       this.btnImportAll.Name = "btnImportAll";
       this.btnImportAll.Size = new System.Drawing.Size(147, 23);
@@ -144,6 +145,7 @@
       // 
       // btnRollBackAll
       // 
+      this.btnRollBackAll.Enabled = false;
       this.btnRollBackAll.Location = new System.Drawing.Point(12, 41);
       this.btnRollBackAll.Name = "btnRollBackAll";
       this.btnRollBackAll.Size = new System.Drawing.Size(147, 23);

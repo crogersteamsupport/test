@@ -81,17 +81,17 @@ namespace DataRecovery
 
     private LoginUser GetCorrupteLoginUser()
     {
-      return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
+      return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=5000", -5, -1, null);
     }
 
     private LoginUser GetReviewLoginUser()
     {
-      return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupportTest2;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
+      return new LoginUser("Data Source=10.42.42.105; Initial Catalog=TeamSupportTest2;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=5000", -5, -1, null);
     }
 
     private LoginUser GetPRODUCTIONLoginUser()
     {
-      return new LoginUser("Data Source=10.42.42.101; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500", -5, -1, null);
+      return new LoginUser("Data Source=10.42.42.101; Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=5000", -5, -1, null);
     }
 
     private int GetNextOrg()
@@ -108,7 +108,7 @@ namespace DataRecovery
       ");
     }
 
-    private void RollBack(int orgID, LoginUser loginUser)
+    private string GetImportID(int orgID)
     {
       SqlCommand command = new SqlCommand();
       command.CommandText = @"
@@ -120,37 +120,45 @@ namespace DataRecovery
           OrganizationID = @OrgID";
       command.Parameters.AddWithValue("OrgID", orgID);
 
-      _importID = SqlExecutor.ExecuteScalar(loginUser, command).ToString();
+      return SqlExecutor.ExecuteScalar(GetCorrupteLoginUser(), command).ToString();
+
+    
+    }
+    
+    private void RollBack(int orgID, LoginUser loginUser)
+    {
+      _importID = GetImportID(orgID);
       if (!string.IsNullOrEmpty(_importID))
       {
-        SqlCommand rollbackCommand = new SqlCommand();
-        rollbackCommand.CommandText = @"
-          DELETE Organizations WHERE ImportID = @importID
-          DELETE Products WHERE ImportID = @importID
 
-          DELETE
-	          a
-          FROM
-	          Actions a
-	          JOIN Tickets t
-		          ON a.TicketID = t.TicketID
-          WHERE
-	          t.DateCreated < '2015-09-17 05:56:00'
-	          AND a.ImportID = @importID
+        if (cbCompanies.Checked) ExecuteRollback("DELETE Organizations WHERE ImportID = @importID AND ParentID=@orgID", loginUser, orgID);
+        if (cbProducts.Checked) ExecuteRollback("DELETE Products WHERE ImportID = @importID AND OrganizationID=@orgID", loginUser, orgID);
+        if (cbOldActions.Checked) ExecuteRollback("DELETE FROM Actions WHERE ImportID = @importID AND TicketID IN (SELECT TicketID FROM Tickets WHERE OrganizationID=@orgID)", loginUser, orgID);
+        if (cbTickets.Checked) ExecuteRollback("DELETE Tickets WHERE ImportID = @importID AND OrganizationID=@orgID", loginUser, orgID);
+        SaveOrgResults(orgID, "RolledBack", "", false);
 
-          DELETE 
-	          Tickets 
-          WHERE 
-	          DateCreated > '2015-09-17 05:56:00'
-	          AND ImportID = @importID";
-        rollbackCommand.Parameters.AddWithValue("importID", _importID);
-        SqlExecutor.ExecuteNonQuery(loginUser, rollbackCommand);
-        SaveOrgResults(orgID, "RolledBack", _importID, false);
+        MessageBox.Show("Rollback Complete");
       }
+    }
+
+    private void ExecuteRollback(string commandText, LoginUser loginUser, int orgID)
+    {
+      SqlCommand rollbackCommand = new SqlCommand(commandText);
+      rollbackCommand.CommandTimeout = 5000;
+      rollbackCommand.Parameters.AddWithValue("importID", _importID);
+      rollbackCommand.Parameters.AddWithValue("orgID", orgID);
+      SqlExecutor.ExecuteNonQuery(loginUser, rollbackCommand);
     }
 
     private void ImportOrg(int orgID, LoginUser loginUser)
     {
+      string existingImportID = GetImportID(orgID);
+      if (!string.IsNullOrWhiteSpace(existingImportID))
+      {
+        MessageBox.Show("This company has already been imported");
+        return;
+      }
+      
       try
       {
         _importID = orgID.ToString() + "-" + Guid.NewGuid().ToString();
@@ -211,6 +219,7 @@ namespace DataRecovery
           SaveOrgResults(orgID, "Success", _importID);
         }
         SqlExecutor.ExecuteNonQuery(loginUser, "update organizations set LastIndexRebuilt='1/1/2000' where OrganizationID=" + orgID.ToString());
+        MessageBox.Show("Import Complete");
       }
       catch (Exception ex)
       {
