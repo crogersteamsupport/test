@@ -1713,7 +1713,7 @@ function SetupProductSection() {
     });
 
     $('#ticket-Product').change(function (e) {
-      var self = $(this);
+        var self = $(this);
       top.Ts.Services.Tickets.SetProduct(_ticketID, self.val(), function (result) {
         if (result !== null) {
           var name = result.label;
@@ -1738,8 +1738,7 @@ function SetupProductSection() {
       function (error) {
         alert('There was an error setting the product.');
       });
-
-      $('.ProductAnchor').popover('hide');
+      $(".popover").remove();
     });
 
     $('#ticket-Versions').change(function (e) {
