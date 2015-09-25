@@ -1789,27 +1789,36 @@ AND a.OrganizationID = @OrganizationID
       
       foreach (DataRow row in table.Rows)
       {
-        string mask = row["FileName"].ToString().Trim();
-        if (mask == "*.*")
+        try
         {
-          string path = Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim());
-          if (!Directory.Exists(path))
-          {
-            _log.AppendError(row, "Attachment skipped due to directory does not exist.");
-            continue;
-          }
 
-          string[] files = Directory.GetFiles(path);
-          foreach (string file in files)
+          string mask = row["FileName"].ToString().Trim();
+          if (mask == "*.*")
           {
-            ImportAttachment(row, file, attachments, actions, tickets, customers);
+            string path = Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim());
+            if (!Directory.Exists(path))
+            {
+              _log.AppendError(row, "Attachment skipped due to directory does not exist.");
+              continue;
+            }
+
+            string[] files = Directory.GetFiles(path);
+            foreach (string file in files)
+            {
+              ImportAttachment(row, file, attachments, actions, tickets, customers);
+            }
+          }
+          else
+          {
+            string sourceFile = Path.Combine(Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim()), mask);
+            ImportAttachment(row, sourceFile, attachments, actions, tickets, customers);
           }
         }
-        else
+        catch (Exception ex)
         {
-          string sourceFile = Path.Combine(Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim()), mask);
-          ImportAttachment(row, sourceFile, attachments, actions, tickets, customers);
+          _log.AppendError(row,"Attachment Skipped: " +  ex.Message + ": " + ex.StackTrace);
         }
+
       }
 
       if (_IsBulk == true) attachments.BulkSave(); else attachments.Save();
