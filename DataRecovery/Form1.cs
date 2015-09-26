@@ -135,11 +135,28 @@ namespace DataRecovery
         if (cbProducts.Checked) ExecuteRollback("DELETE Products WHERE ImportID = @importID AND OrganizationID=@orgID", loginUser, orgID);
         if (cbOldActions.Checked)
         {
-          ExecuteRollback("DELETE FROM Actions WHERE ImportID = @importID AND TicketID IN (SELECT TicketID FROM Tickets WHERE OrganizationID=@orgID AND DateCreated < '2015-09-17 05:56:00')", loginUser, orgID);
-          ExecuteRollback("UPDATE Tickets SET ImportID = '' WHERE  OrganizationID=@orgID AND DateCreated < '2015-09-17 05:56:00' AND ImportID like @importID", loginUser, orgID);
+          ExecuteRollback(@"
+            DELETE FROM Actions 
+            WHERE ImportID = @importID 
+            AND TicketID IN (
+              SELECT TicketID 
+              FROM Tickets 
+              WHERE 
+                OrganizationID=@orgID 
+                AND ImportID = @importID 
+                AND DateCreated < '2015-09-17 05:56:00')", loginUser, orgID);
+          ExecuteRollback(@"
+            UPDATE 
+              Tickets 
+            SET 
+              ImportID = '' 
+            WHERE
+              OrganizationID=@orgID 
+              AND DateCreated < '2015-09-17 05:56:00' 
+              AND ImportID like @importID", loginUser, orgID);
         }
         if (cbTickets.Checked) ExecuteRollback("DELETE Tickets WHERE ImportID = @importID AND OrganizationID=@orgID AND DateCreated > '2015-09-17 05:56:00'", loginUser, orgID);
-        SaveOrgResults(orgID, "RolledBack", "", false);
+        SaveOrgResults(orgID, "RolledBack", _importID, false);
 
         MessageBox.Show("Rollback Complete");
       }
