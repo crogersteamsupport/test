@@ -1730,11 +1730,13 @@ namespace TSWebServices
                 {
                   phoneResults.AppendFormat("<p class='list-group-item-text'><span class=\"text-muted\">{0}</span>: <a href=\"tel:{1}\" target=\"_blank\">{1}</a> {2}</p>", p.PhoneTypeName, p.Number, string.IsNullOrWhiteSpace(p.Extension) ? "" : "Ext:" + p.Extension);
                 }
+                
+                var ts = DateTime.UtcNow - new DateTime(1970,1,1,0,0,0,DateTimeKind.Utc);
 
                 htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <div class='row'>
                             <div class='col-xs-1'>
-                            <img class='user-avatar' src='/dc/{10}/UserAvatar/{7}/40/1443123575070'>
+                            <img class='user-avatar' src='/dc/{10}/UserAvatar/{7}/40/{11}'>
                             </div>
                             <div class='col-xs-11'>
                             <span class='pull-right {0}'>{1}</span><a href='#' id='{7}' class='contactlink'><h4 class='list-group-item-heading'>{2}</h4></a>
@@ -1754,7 +1756,7 @@ namespace TSWebServices
                             </div>
                             </div>"
 
-                    , u.IsActive ? "user-active" : "user-inactive", u.IsActive ? "Active" : "Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:" + u.Email + "'>" + u.Email + "</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1), phoneResults, u.UserID, u.IsPortalUser == true ? "<p class='list-group-item-text'><span class=\"text-muted\">Has Portal Access</span>" : "", u.Title != "" ? u.Title : "", u.OrganizationID);
+                    , u.IsActive ? "user-active" : "user-inactive", u.IsActive ? "Active" : "Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:" + u.Email + "'>" + u.Email + "</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1), phoneResults, u.UserID, u.IsPortalUser == true ? "<p class='list-group-item-text'><span class=\"text-muted\">Has Portal Access</span>" : "", u.Title != "" ? u.Title : "", u.OrganizationID, (Int64)ts.TotalMilliseconds);
 
                 phoneResults.Clear();
             }
