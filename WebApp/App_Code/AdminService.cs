@@ -354,9 +354,10 @@ namespace TSWebServices
     }
 
 	 [WebMethod]
-	 public void RollbackImport(int importFileID)
+	 public void RollbackImport(int importFileID, ReferenceType refType)
 	 {
-		string query = @"
+		StringBuilder query = new StringBuilder();
+		query.Append(@"
 			DECLARE @OrganizationID int
 	
 			SELECT
@@ -365,180 +366,101 @@ namespace TSWebServices
 				Imports
 			WHERE
 				ImportID = @ImportFileID
+		");
 
-			-- 1 TicketRelationships
-			DELETE 
-				TicketRelationships 
+		switch (refType)
+		{
+			case ReferenceType.Actions:
+				query.Append(GetRollbackActionsQuery());
+				break;
+			case ReferenceType.Assets:
+				query.Append(GetRollbackAssetTicketsQuery());
+				query.Append(GetRollbackCustomValuesQuery());
+				query.Append(GetRollbackAssetsQuery());
+				break;
+			case ReferenceType.Organizations:
+				query.Append(GetRollbackCustomValuesQuery());
+				query.Append(GetRollbackAddressesAndPhoneNumbersQuery());
+				query.Append(GetRollbackCompaniesQuery());
+				break;
+			case ReferenceType.CompanyAddresses:
+				query.Append(GetRollbackAddressesAndPhoneNumbersQuery());
+				query.Append(GetRollbackContactsQuery());
+				query.Append(GetRollbackCompaniesQuery());
+				break;
+			case ReferenceType.CompanyPhoneNumbers:
+				query.Append(GetRollbackAddressesAndPhoneNumbersQuery());
+				query.Append(GetRollbackContactsQuery());
+				query.Append(GetRollbackCompaniesQuery());
+				break;
+			case ReferenceType.Contacts:
+				query.Append(GetRollbackCustomValuesQuery());
+				query.Append(GetRollbackAddressesAndPhoneNumbersQuery());
+				query.Append(GetRollbackContactsQuery());
+				query.Append(GetRollbackCompaniesQuery());
+				break;
+			case ReferenceType.ContactAddresses:
+				query.Append(GetRollbackContactsQuery());
+				query.Append(GetRollbackCompaniesQuery());
+				break;
+			case ReferenceType.ContactPhoneNumbers:
+				query.Append(GetRollbackContactsQuery());
+				query.Append(GetRollbackCompaniesQuery());
+				break;
+			case ReferenceType.Tickets:
+				query.Append(GetRollbackCustomValuesQuery());
+				query.Append(GetRollbackProductsQuery());
+				query.Append(GetRollbackProductVersionsQuery());
+				query.Append(GetRollbackTicketRelationshipsQuery());
+				query.Append(GetRollbackAssetTicketsQuery());
+				query.Append(GetRollbackContactTicketsQuery());
+				query.Append(GetRollbackOrganizationTicketsQuery());
+				query.Append(GetRollbackActionsQuery());
+				query.Append(GetRollbackTicketsQuery());
+				break;
+			case ReferenceType.OrganizationTickets:
+				query.Append(GetRollbackOrganizationTicketsQuery());
+				break;
+			case ReferenceType.ContactTickets:
+				query.Append(GetRollbackContactTicketsQuery());
+				break;
+			case ReferenceType.AssetTickets:
+				query.Append(GetRollbackAssetTicketsQuery());
+				break;
+			case ReferenceType.TicketRelationships:
+				query.Append(GetRollbackTicketRelationshipsQuery());
+				break;
+			//case ReferenceType.CustomFieldPickList:
+			//  ImportCustomFieldPickList(import);
+			//  break;
+			case ReferenceType.Products:
+				query.Append(GetRollbackCustomValuesQuery());
+				query.Append(GetRollbackProductsQuery());
+				break;
+			case ReferenceType.ProductVersions:
+				query.Append(GetRollbackCustomValuesQuery());
+				query.Append(GetRollbackProductVersionsQuery());
+				break;
+			case ReferenceType.Users:
+				query.Append(GetRollbackCustomValuesQuery());
+				query.Append(GetRollbackAddressesAndPhoneNumbersQuery());
+				query.Append(GetRollbackUsersQuery());
+				break;
+			case ReferenceType.OrganizationProducts:
+				query.Append(GetRollbackCustomValuesQuery());
+				query.Append(GetRollbackOrganizationProductsQuery());
+				break;
+		}
+
+		query.Append(@"
+			UPDATE 
+				Imports
+			SET 
+				IsRolledBack = 1
 			WHERE 
-				OrganizationID = @OrganizationID
-				AND ImportFileID = @ImportFileID
+				ImportID = @ImportFileID		
+		");
 
-			-- 2 AssetTickets
-			DELETE at
-			FROM AssetTickets at
-			JOIN Tickets t
-				ON at.TicketID = t.TicketID
-			WHERE
-			t.OrganizationID = @OrganizationID
-			AND at.ImportFileID = @ImportFileID
-
-			-- 3 UserTickets
-			DELETE ut
-			FROM UserTickets ut
-			JOIN Tickets t
-				ON ut.TicketID = t.TicketID
-			WHERE
-			t.OrganizationID = @OrganizationID
-			AND ut.ImportFileID = @ImportFileID
-
-			-- 4 OrganizationTickets
-			DELETE ot
-			FROM OrganizationTickets ot
-			JOIN Organizations o
-				ON ot.OrganizationID = o.OrganizationID
-			WHERE
-			o.ParentID = @OrganizationID
-			AND ot.ImportFileID = @ImportFileID
-
-			-- 5 Actions
-			DELETE a
-			FROM Actions a
-			JOIN Tickets t
-				ON a.TicketID = t.TicketID
-			WHERE
-			t.OrganizationID = @OrganizationID
-			AND a.ImportFileID = @ImportFileID
-
-			-- 6 Tickets
-			DELETE 
-			Tickets WHERE 
-			OrganizationID = @OrganizationID
-			AND ImportFileID = @ImportFileID
-
-			-- 7 AssetAssignments
-			DELETE aa
-			FROM AssetAssignments aa
-			JOIN AssetHistory ah
-			ON aa.HistoryID = ah.HistoryID
-			WHERE
-			ah.OrganizationID = @OrganizationID
-			AND aa.ImportFileID = @ImportFileID
-
-			-- 8 AssetHistory
-			DELETE 
-			AssetHistory 
-			WHERE 
-			OrganizationID = @OrganizationID
-			AND ImportFileID = @ImportFileID
-
-			-- 9 Assets
-			DELETE 
-			Assets 
-			WHERE 
-			OrganizationID = @OrganizationID
-			AND ImportFileID = @ImportFileID
-
-			-- 10 ProductVersions
-			DELETE pv
-			FROM 
-				ProductVersions pv
-				JOIN Products p
-					ON pv.ProductID = p.ProductID
-			WHERE
-			p.OrganizationID = @OrganizationID
-			AND pv.ImportFileID = @ImportFileID
-
-			-- 11 Products
-			DELETE 
-			Products 
-			WHERE 
-			OrganizationID = @OrganizationID
-			AND ImportFileID = @ImportFileID
-
-			-- 12 CustomValues
-			DELETE cv
-			FROM CustomValues cv
-			JOIN CustomFields cf
-				ON cv.CustomFieldID = cf.CustomFieldID
-			WHERE
-			cf.OrganizationID = @OrganizationID
-			AND cv.ImportFileID = @ImportFileID
-
-			-- 13 PhoneNumbers
-			DELETE pn
-			FROM PhoneNumbers pn
-			LEFT JOIN Users u
-				ON pn.RefType = 22
-				AND pn.RefID = u.UserID
-			LEFT JOIN Organizations uo
-				ON pn.RefType = 22
-				AND u.OrganizationID = uo.OrganizationID
-			LEFT JOIN Organizations o
-				ON pn.RefType = 9
-				AND pn.RefID = o.OrganizationID
-			WHERE
-			(
-				(pn.RefType = 9 AND o.ParentID = @OrganizationID)
-				OR (pn.RefType = 22 AND uo.ParentID = @OrganizationID)
-			)
-			AND pn.ImportFileID = @ImportFileID
-
-			-- 14 & 15 Company and Contact Addresses
-			DELETE cta
-			FROM Addresses cta
-			LEFT JOIN Users u
-				ON cta.RefType = 22
-				AND cta.RefID = u.UserID
-			LEFT JOIN Organizations uo
-				ON cta.RefType = 22
-				AND u.OrganizationID = uo.OrganizationID
-			LEFT JOIN Organizations o
-				ON cta.RefType = 9
-				AND cta.RefID = o.OrganizationID
-			WHERE
-			(
-				(cta.RefType = 9 AND o.ParentID = @OrganizationID)
-				OR (cta.RefType = 22 AND (uo.ParentID = @OrganizationID OR uo.OrganizationID = @OrganizationID))
-			)
-			AND cta.ImportFileID = @ImportFileID
-
-			-- 16 Contacts
-			DELETE c
-			FROM Users c
-			JOIN Organizations o
-				ON c.OrganizationID = o.OrganizationID
-			WHERE
-			o.ParentID = @OrganizationID
-			AND c.ImportFileID = @ImportFileID
-
-			-- 17 Companies
-			DELETE 
-			Organizations 
-			WHERE 
-			ParentID = @OrganizationID
-			AND ImportFileID = @ImportFileID
-
-			-- 18 Users
-			DELETE c
-			FROM Users c
-			WHERE
-			c.OrganizationID = @OrganizationID
-			AND c.ImportFileID = @ImportFileID
-
-			-- 19 OrganizationProducts
-			DELETE op
-			FROM OrganizationProducts op
-			JOIN Organizations o
-				ON op.OrganizationID = o.OrganizationID
-			WHERE
-			o.ParentID = @OrganizationID
-			AND op.ImportFileID = @ImportFileID
-
-			-- Imports
-			UPDATE Imports
-			SET IsRolledBack = 1
-			WHERE ImportID = @ImportFileID
-		";
 		using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
       {
 			try
@@ -547,7 +469,7 @@ namespace TSWebServices
 				SqlCommand command = connection.CreateCommand();
 				command.Connection = connection;
 				command.CommandType = CommandType.Text;
-				command.CommandText = query;
+				command.CommandText = query.ToString();
 				command.Parameters.AddWithValue("@ImportFileID", importFileID);
 				command.ExecuteNonQuery();
 			}
@@ -557,6 +479,259 @@ namespace TSWebServices
 			}
 		}
 	 }
+
+	 private string GetRollbackActionsQuery()
+	 {
+		 return @"
+			DELETE
+				a
+			FROM 
+				Actions a
+				JOIN Tickets t
+					ON a.TicketID = t.TicketID
+			WHERE
+				t.OrganizationID = @OrganizationID
+				AND a.ImportFileID = @ImportFileID
+		";
+	 }
+
+	 private string GetRollbackAssetsQuery()
+	 {
+		 return @"
+			DELETE
+				aa
+			FROM
+				AssetAssignments aa
+				JOIN AssetHistory ah
+					ON aa.HistoryID = ah.HistoryID
+			WHERE
+				ah.OrganizationID = @OrganizationID
+				AND aa.ImportFileID = @ImportFileID
+
+			DELETE 
+				AssetHistory 
+			WHERE 
+				OrganizationID = @OrganizationID
+				AND ImportFileID = @ImportFileID
+
+			DELETE 
+				Assets 
+			WHERE 
+				OrganizationID = @OrganizationID
+				AND ImportFileID = @ImportFileID
+		";
+	 }
+
+	 private string GetRollbackAssetTicketsQuery()
+	 {
+		 return @"
+			DELETE
+				at
+			FROM
+				AssetTickets at
+				JOIN Tickets t
+					ON at.TicketID = t.TicketID
+			WHERE
+				t.OrganizationID = @OrganizationID
+				AND at.ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackCustomValuesQuery()
+	 {
+		 return @"
+			DELETE
+				cv
+			FROM
+				CustomValues cv
+				JOIN CustomFields cf
+					ON cv.CustomFieldID = cf.CustomFieldID
+			WHERE
+				cf.OrganizationID = @OrganizationID
+				AND cv.ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackAddressesAndPhoneNumbersQuery()
+	 {
+		 return @"
+			DELETE
+				a
+			FROM
+				Addresses a
+				LEFT JOIN Users u
+					ON a.RefType = 22
+					AND a.RefID = u.UserID
+				LEFT JOIN Organizations uo
+					ON a.RefType = 22
+					AND u.OrganizationID = uo.OrganizationID
+				LEFT JOIN Organizations o
+					ON a.RefType = 9
+					AND a.RefID = o.OrganizationID
+			WHERE
+				(
+					(a.RefType = 9 AND o.ParentID = @OrganizationID)
+					OR (a.RefType = 22 AND (uo.ParentID = @OrganizationID OR uo.OrganizationID = @OrganizationID))
+				)
+				AND a.ImportFileID = @ImportFileID
+
+			DELETE
+				pn
+			FROM
+				PhoneNumbers pn
+				LEFT JOIN Users c
+					ON pn.RefType = 32
+					AND pn.RefID = c.UserID
+				LEFT JOIN Organizations co
+					ON pn.RefType = 32
+					AND c.OrganizationID = co.OrganizationID
+				LEFT JOIN Organizations o
+					ON pn.RefType = 9
+					AND pn.RefID = o.OrganizationID
+				LEFT JOIN Users u
+					ON pn.RefType = 22
+					AND pn.RefID = u.UserID
+			WHERE
+				(
+					(pn.RefType = 9 AND o.ParentID = @OrganizationID)
+					OR (pn.RefType = 32 AND co.ParentID = @OrganizationID)
+					OR (pn.RefType = 22 AND u.OrganizationID = @OrganizationID)
+				)
+				AND pn.ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackCompaniesQuery()
+	 {
+		 return @"
+			DELETE 
+				Organizations 
+			WHERE 
+				ParentID = @OrganizationID
+				AND ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackContactsQuery()
+	 {
+		 return @"
+			DELETE
+				c
+			FROM 
+				Users c
+				JOIN Organizations o
+					ON c.OrganizationID = o.OrganizationID
+			WHERE
+				o.ParentID = @OrganizationID
+				AND c.ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackProductsQuery()
+	 {
+		 return @"
+			DELETE 
+				Products 
+			WHERE 
+				OrganizationID = @OrganizationID
+				AND ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackProductVersionsQuery()
+	 {
+		 return @"
+			DELETE
+				pv
+			FROM 
+				ProductVersions pv
+				JOIN Products p
+					ON pv.ProductID = p.ProductID
+			WHERE
+				p.OrganizationID = @OrganizationID
+				AND pv.ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackTicketRelationshipsQuery()
+	 {
+		 return @"
+			DELETE 
+				TicketRelationships 
+			WHERE 
+				OrganizationID = @OrganizationID
+				AND ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackContactTicketsQuery()
+	 {
+		 return @"
+			DELETE
+				ut
+			FROM
+				UserTickets ut
+				JOIN Tickets t
+					ON ut.TicketID = t.TicketID
+			WHERE
+				t.OrganizationID = @OrganizationID
+				AND ut.ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackOrganizationTicketsQuery()
+	 {
+		 return @"
+			DELETE
+				ot
+			FROM 
+				OrganizationTickets ot
+				JOIN Organizations o
+					ON ot.OrganizationID = o.OrganizationID
+			WHERE
+				o.ParentID = @OrganizationID
+				AND ot.ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackTicketsQuery()
+	 {
+		 return @"
+			DELETE 
+				Tickets
+			WHERE 
+				OrganizationID = @OrganizationID
+				AND ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackUsersQuery()
+	 {
+		 return @"
+			DELETE
+				u
+			FROM
+				Users u
+			WHERE
+				u.OrganizationID = @OrganizationID
+				AND u.ImportFileID = @ImportFileID
+		 ";
+	 }
+
+	 private string GetRollbackOrganizationProductsQuery()
+	 {
+		 return @"
+			DELETE
+				op
+			FROM
+				OrganizationProducts op
+				JOIN Organizations o
+					ON op.OrganizationID = o.OrganizationID
+			WHERE
+				o.ParentID = @OrganizationID
+				AND op.ImportFileID = @ImportFileID
+		 ";
+	 }	 
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]

@@ -39,7 +39,7 @@ ImportPage = function () {
           }
           var logFileLink = '<a href="../../../dc/1/importlog/' + imports[i].ImportID + '" title="Log File">' + logFileName + '</a>';
           if (!imports[i].IsRolledBack) {
-          	logFileLink += "<a href='' id='" + imports[i].ImportID + "' class='rollback' title='Rollback'><span class='fa fa-undo'></span></a>";
+          	logFileLink += "<a href='' id='" + imports[i].ImportID + "' data-refType='" + imports[i].RefType + "' class='rollback' title='Rollback'><span class='fa fa-undo'></span></a>";
           }
 
           var dateStarted = null;
@@ -140,7 +140,7 @@ ImportPage = function () {
   	var proceedWithRollback = prompt('Rollback will delete all the records created by this import. It is an irreversible action. If you want to proceed type "yes" and click the OK button.', 'No');
   	if (proceedWithRollback.trim().toLowerCase() == 'yes') {
   		top.Ts.System.logAction('Import - Rollback');
-  		top.Ts.Services.Admin.RollbackImport($(this).attr('id'), function () {
+  		top.Ts.Services.Admin.RollbackImport($(this).attr('id'), $(this).attr('data-refType'), function () {
   			location.reload();
   		});
   	}
