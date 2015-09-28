@@ -244,6 +244,13 @@ function SetupTicketProperties() {
             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + '</div>';
         }
       },
+      onChange: function (value) {
+          top.Ts.Services.Users.GetUserGroups(value, function (groups) {
+              if (groups !== null && groups.length == 1) {
+                  SetGroup(groups[0].GroupID);
+              }
+          });
+      },
     });
 
     var selectize = $("#ticket-assigned")[0].selectize;
