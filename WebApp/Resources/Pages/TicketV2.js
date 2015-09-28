@@ -629,6 +629,7 @@ function SetupActionEditor(elem, action) {
   $('#action-new-save').prop('disabled', false);
   $('#newcomment').prop('disabled', false);
   $('.watercooler-new-area').hide();
+  //$('#action-new-date-started').val(top.Ts.Utils.getMsDate(action.DateCreated));
   top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
   initEditor(elem, true, function (ed) {
     $("#action-new-type").val($("#action-new-type option:first").val());
@@ -1841,9 +1842,10 @@ function SetupProductVersionsControl(product) {
       resolvedInput.destroy();
     }
   }
-
+  $('#ticket-Versions').empty();
   if (product !== null && product.Versions.length > 0) {
-    var versions = product.Versions;
+  	var versions = product.Versions;
+  	
     for (var i = 0; i < versions.length; i++) {
       AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
       AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);

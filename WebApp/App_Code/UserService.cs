@@ -1271,7 +1271,7 @@ namespace TSWebServices
                     chatsetting = setting.IsAvailable  && u.IsChatUser ? "<i class='user-tooltip fa-comments-o fa color-red' title='Customer Chat Online'></i>" : "";
                 }
 
-                if (u.InOffice)
+                if (!u.InOffice)
                     officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title={0}></span>", u.InOfficeComment);
                 else
                     officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title={0}></span>", u.InOfficeComment);

@@ -248,7 +248,7 @@ $(document).ready(function () {
 
     $('#fieldWebsite').click(function (e) {
         if ($(this).hasClass('link')) {
-            if ($('#fieldWebsite').text().toLowerCase().lastIndexOf('http://', 0) === 0)
+          if ($('#fieldWebsite').text().toLowerCase().lastIndexOf('http://', 0) === 0 || $('#fieldWebsite').text().toLowerCase().lastIndexOf('https://', 0) === 0)
                 window.open($('#fieldWebsite').text(), '_blank');
             else
                 window.open('http://' + $('#fieldWebsite').text(), '_blank');
