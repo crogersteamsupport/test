@@ -42,6 +42,7 @@ Dashboard.prototype = {
                               if (report != null) {
                                   var item = $('.template-box .item').clone().appendTo(container).data('report', report);
                                   item.find('.report-title a').text(report.Name);
+                                  item.find('.countbubble').attr('id', report.ReportID);
                                   if (dashboard.Rows == 2) {
                                       item.addClass('ht2');
                                   }
@@ -267,7 +268,6 @@ Dashboard.prototype = {
                 report.grid.init();
             }
         }
-
     },
 
     refreshAll: function () {
@@ -281,6 +281,7 @@ Dashboard.prototype = {
 
 
 Grid = function (element, report) {
+    
     this.report = report;
     this.element = $(element);
     if (!this.report.Def) { this.report.Def = JSON.parse(this.report.ReportDef); }
@@ -310,7 +311,6 @@ Grid = function (element, report) {
         return req;
 
     }
-
 }
 
 Grid.prototype = {
@@ -528,6 +528,8 @@ Grid.prototype = {
                 self.grid.updateRowCount();
                 self.grid.render();
 
+                $('.countbubble#'+ self.report.ReportID).text('(' + self.datamodel.data.length + ')');
+                $('.countbubble').show();
 
                 hideLoadingIndicator();
             });
