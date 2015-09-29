@@ -491,12 +491,14 @@ $(document).ready(function () {
 //        $('#fieldDesc').tinymce().setContent(desc);
 //        $('#fieldDesc').tinymce().focus();
         $('#fieldDesc').html(desc);
+        $('#descriptionContent').hide();
         $('#descriptionForm').show();
       });
 
       $('#btnDescriptionCancel').click(function (e) {
         e.preventDefault();
         $('#descriptionForm').hide();
+        $('#descriptionContent').show();
         header.show();
         $('#productEdit').removeClass("disabled");
       });
@@ -513,7 +515,9 @@ $(document).ready(function () {
             alert('There was an error saving the product description.');
             $('#productEdit').removeClass("disabled");
         });
+
         $('#descriptionForm').hide();
+        $('#descriptionContent').show();
         header.show();
       })
       $('#productEdit').addClass("disabled");
