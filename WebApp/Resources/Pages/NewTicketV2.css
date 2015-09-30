@@ -590,18 +590,21 @@
     #ticket-tag-Input::-webkit-input-placeholder
      {
      color: #428bca;
+     opacity: 1;
     }
 
     #ticket-properties-area .selectize-input input:-moz-placeholder,
      #ticket-tag-Input:-moz-placeholder
     { /* Firefox 18- */
          color: #428bca; 
+         opacity: 1;
     }
 
     #ticket-properties-area .selectize-input input::-moz-placeholder,
     #ticket-tag-Input::-moz-placeholder
     {  /* Firefox 19+ */
          color: #428bca; 
+         opacity: 1;
     }
 
     .muted-placeholder::-webkit-input-placeholder,
