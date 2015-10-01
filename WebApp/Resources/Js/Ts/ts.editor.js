@@ -92,13 +92,13 @@
                 });
 
                 ed.addButton('insertPasteImage', {
-                    title: 'Insert Pasted Image',
+                  title: 'Insert Image from Clipboard',
                     //image: '../images/nav/16/imagepaste.png',
                     icon: 'awesome fa fa-paste',
                     onclick: function () {
 
-                        if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
-                            alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
+                      if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer' || (BrowserDetect.browser == 'Mozilla' && BrowserDetect.version < 20)) {
+                            alert("Sorry, this feature is not supported by your browser");
                         }
                         else {
                             top.Ts.MainPage.pasteImage(null, function (result) {
