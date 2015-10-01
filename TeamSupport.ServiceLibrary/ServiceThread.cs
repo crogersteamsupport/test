@@ -229,8 +229,15 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
-        _logs.WriteException(ex);
-        _logs.WriteEvent(string.Format("{0}: TeamSupport.ServiceLibrary.ServiceThread.Process(). Attention, the service exited the processing loop due to a exception. Check previous log entries.", ServiceName));
+        try
+        {
+          _logs.WriteException(ex);
+          _logs.WriteEvent(string.Format("{0}: TeamSupport.ServiceLibrary.ServiceThread.Process(). Attention, the service exited the processing loop due to a exception. Check previous log entries.", ServiceName));
+        }
+        catch (Exception)
+        {
+
+        }
       }
     }
 
