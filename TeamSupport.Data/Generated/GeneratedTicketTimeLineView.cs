@@ -123,9 +123,18 @@ namespace TeamSupport.Data
     
 
     /* DateTime */
-    
-    
-    
+
+
+    public DateTime? DateStarted
+    {
+      get { return Row["DateStarted"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateStarted"]) : null; }
+      set { Row["DateStarted"] = CheckValue("DateStarted", value); }
+    }
+
+    public DateTime? DateStartedUtc
+    {
+      get { return Row["DateStarted"] != DBNull.Value ? (DateTime?)Row["DateStarted"] : null; }
+    }
 
     
 

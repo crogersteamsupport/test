@@ -21,6 +21,7 @@ namespace TeamSupport.Data
     [DataMember] public int? ActionTypeID { get; set; }
     [DataMember] public string Message { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public DateTime? DateStarted { get; set; }
     [DataMember] public int? OrganizationID { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public string CreatorName { get; set; }
@@ -54,7 +55,8 @@ namespace TeamSupport.Data
       result.TimeSpent = this.TimeSpent;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
-       
+      result.DateStarted = this.DateStartedUtc == null ? this.DateStartedUtc : DateTime.SpecifyKind((DateTime)this.DateStartedUtc, DateTimeKind.Utc); 
+
        
       return result;
     }	

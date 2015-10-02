@@ -307,7 +307,7 @@ function SetupTicketPage() {
     SetupTicketProperties();
   });
 
-  top.Ts.Services.Customers.GetDateFormat(true, function (format) {
+  top.Ts.Services.Customers.GetDateFormat(false, function (format) {
     dateFormat = format.replace("yyyy", "yy");
     if (dateFormat.length < 8) {
       var dateArr = dateFormat.split('/');
@@ -818,7 +818,7 @@ function SetupActionEditor(elem, action) {
 };
 
 function SetupActionTimers() {
-  $('#action-new-date-started').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
+  $('#action-new-date-started').datetimepicker({ useCurrent: true, format: dateFormat + ' hh:mm A', defaultDate: new Date() });
 
   $('.spinner .btn:first-of-type').click(function () {
     var spinner = $(this).parent().prev();
@@ -3381,7 +3381,10 @@ function CreateHandleBarHelpers() {
     if (hours > 0) timeSpentString = hours + ((hours > 1) ? " hours " : " hour ");
     if (mins > 0) timeSpentString += mins + ((mins > 1) ? " minutes " : " minute ");
     if (timeSpentString == "") return ""
-    else return " - " + timeSpentString
+    else {
+      var time = this.item.DateStarted.localeFormat(top.Ts.Utils.getDateTimePattern())
+      return timeSpentString + " - " + time
+    }
 
     return timeSpentString;
   });
