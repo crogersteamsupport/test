@@ -459,6 +459,7 @@ function CreateNewActionLI() {
   $('#action-add-wc').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
+    $('#newcomment').prop('disabled', false);
     $('#inputDescription').val("");
     $('#associationQueue').find('.upload-queue').empty();
     $('#associationQueue').find('.ticket-queue').empty();
@@ -514,17 +515,19 @@ function CreateNewActionLI() {
   						}
   					}
   					else {
-  						alert("There was a error creating your action.  Please try again.")
+  					    alert("There was a error creating your action.  Please try again.");
+  					    EnableCreateBtns();
   					}
   				});
   			}
   			else {
-  				alert("Please fill in the required fields before submitting this action.");
+  			    alert("Please fill in the required fields before submitting this action.");
+  			    EnableCreateBtns();
   				return;
   			}
   		});
   	}
-  	EnableCreateBtns();
+      //EnableCreateBtns();
   });
 
   $('#action-timeline').on('click', '.action-create-option', function (e) {	
@@ -626,8 +629,8 @@ function EnableCreateBtns() {
 
 function SetupActionEditor(elem, action) {
   $('button.wc-textarea-send').prop('disabled', false);
-  $('#action-new-save').prop('disabled', false);
   $('#newcomment').prop('disabled', false);
+  EnableCreateBtns();
   $('.watercooler-new-area').hide();
   //$('#action-new-date-started').val(top.Ts.Utils.getMsDate(action.DateCreated));
   top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
