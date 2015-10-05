@@ -3136,7 +3136,7 @@ WHERE t.TicketID = @TicketID
         customer.OrganizationID = contact.OrganizationID;
         customer.Contact = contact.FirstName + " " + contact.LastName;
         customer.UserID = contact.UserID;
-        if (!(bool)contact.OrganizationActive || contact.OrganizationSAExpirationDateUtc < DateTime.UtcNow)
+        if (!(bool)contact.IsActive || !(bool)contact.OrganizationActive || contact.OrganizationSAExpirationDateUtc < DateTime.UtcNow)
         {
           customer.Flag = true;
         }

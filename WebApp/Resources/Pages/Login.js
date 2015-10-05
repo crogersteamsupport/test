@@ -93,7 +93,7 @@ function getRememberMe() {
     IssueAjaxRequest(loginService, "GetEmail", RememberMeData,
     function (result) {
       $('#inputEmail').val(result);
-      $('#rememberMe').attr('checked', 'checked')
+      $('#remember').attr('checked', 'checked')
     },
     function (error) {
 
