@@ -632,6 +632,19 @@ function SetupActionEditor(elem, action) {
   $('#newcomment').prop('disabled', false);
   EnableCreateBtns();
   $('.watercooler-new-area').hide();
+  if (action)
+  {
+    //top.Ts.Utils.getMsDate(action.DateStarted)
+    $('#action-new-date-started').val(moment(action.DateStarted).format(dateFormat + ' hh:mm A'));
+  }
+  else
+  {
+    if ($('#action-new-date-started').data("DateTimePicker"))
+      $('#action-new-date-started').data("DateTimePicker").destroy();
+
+    $('#action-new-date-started').datetimepicker({ useCurrent: true, format: dateFormat + ' hh:mm A', defaultDate: new Date() });
+
+  }
   //$('#action-new-date-started').val(top.Ts.Utils.getMsDate(action.DateCreated));
   top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
   initEditor(elem, true, function (ed) {
@@ -821,7 +834,7 @@ function SetupActionEditor(elem, action) {
 };
 
 function SetupActionTimers() {
-  $('#action-new-date-started').datetimepicker({ useCurrent: true, format: dateFormat + ' hh:mm A', defaultDate: new Date() });
+  //$('#action-new-date-started').datetimepicker({ useCurrent: true, format: dateFormat + ' hh:mm A', defaultDate: new Date() });
 
   $('.spinner .btn:first-of-type').click(function () {
     var spinner = $(this).parent().prev();
