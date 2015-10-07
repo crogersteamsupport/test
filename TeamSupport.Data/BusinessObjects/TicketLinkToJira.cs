@@ -44,7 +44,7 @@ namespace TeamSupport.Data
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
         command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
-
+        command.CommandTimeout = 60;
         Fill(command);
       }
     }
