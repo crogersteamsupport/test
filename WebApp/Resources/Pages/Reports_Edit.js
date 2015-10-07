@@ -384,45 +384,41 @@ $(document).ready(function () {
             _fields = null;
             $('.report-fields-available ul').empty();
             top.Ts.Services.Reports.GetFields(subID, function (fields) {
-                var tableName = "";
-                var optGroup = null;
-                var optGroupx = null;
-                var optGroupy = null;
-                var max = Math.floor(fields.length / 3);
-                var rem = fields.length % 3;
-                var iteration = 1;
-                var cnt = rem > 0 ? -1 : 0;
-                var list = $('.report-fields-available  ul.report-fields-1');
-                for (var i = 0; i < fields.length; i++) {
-                    if (cnt > max - 1) {
-                        iteration++;
-                        cnt = rem == iteration ? -1 : 0;
-                        list = $('.report-fields-available  ul.report-fields-' + iteration);
-                    }
-                    cnt++;
+                var primaryFields = jQuery.grep(fields, function (elem) {
+                    return (elem.IsPrimary == true && elem.IsCustom == false);
+                });
+                var primaryFieldsCF = jQuery.grep(fields, function (elem) {
+                    return (elem.IsPrimary == true && elem.IsCustom == true);
+                });
 
+                var secondaryFields = jQuery.grep(fields, function (elem) {
+                    return (elem.IsPrimary == false && elem.IsCustom == false);
+                });
+                var secondaryFieldsCF = jQuery.grep(fields, function (elem) {
+                    return (elem.IsPrimary == false && elem.IsCustom == true);
+                }); 
 
-                    delete fields[i]['__type'];
-                    var fieldName = fields[i].Name + (fields[i].AuxName ? " (" + fields[i].AuxName + ")" : "");
+                $('.report-fields-primary').find('.panel-title > a').text(primaryFields[0].Table);
+                addFieldsToSection(primaryFields, 'primary');
 
-                    $('<li>')
-                                .addClass('report-field ' + getUniqueFieldClass(fields[i]))
-                                .data('field', fields[i])
-                                .append($('<div>', {
-                                    'class': 'checkbox'
-                                }).append($('<label>', {
-                                    'html': ' <span class="text-muted">' + fields[i].Table + '.</span>' + fieldName
-                                }).prepend('<input type="checkbox" />')))
-                                .appendTo(list);
-                    if (tableName != fields[i].Table) {
-                        tableName = fields[i].Table;
-                        optGroupx = $('<optgroup>').attr('label', tableName).appendTo('.summary-desc .summary-field');
-                        optGroupy = $('<optgroup>').attr('label', tableName).appendTo('.summary-calc .summary-field');
-                    }
+                if (primaryFieldsCF.length > 0) {
+                    addFieldsToSection(primaryFieldsCF, 'primary-cf');
+                    $('.report-fields-primary-cf').find('.panel-title  > a').text(primaryFieldsCF[0].Table + ' (Custom Fields)');
+                    $('.report-fields-primary-cf').show();
+                };
 
-                    $('<option>').text(fieldName).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupx);
-                    $('<option>').text(fieldName).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupy);
-                }
+                if (secondaryFields.length > 0) {
+                    addFieldsToSection(secondaryFields, 'secondary');
+                    $('.report-fields-secondary').find('.panel-title > a').text(secondaryFields[0].Table);
+                    $('.report-fields-secondary').show();
+                };
+
+                if (secondaryFieldsCF.length > 0) {
+                    addFieldsToSection(secondaryFieldsCF, 'secondary-cf');
+                    $('.report-fields-secondary-cf').find('.panel-title > a').text(secondaryFieldsCF[0].Table + ' (Custom Fields)');
+                    $('.report-fields-secondary-cf').show();
+                };
+
                 _fields = fields;
 
                 clearSummaryFields();
@@ -436,6 +432,49 @@ $(document).ready(function () {
                 $('#chartFilter').reportFilter('loadFields', fields);
                 if (callback) callback();
             });
+        }
+
+        function addFieldsToSection(fields, sectionName) {
+            var tableName = "";
+            var optGroup = null;
+            var optGroupx = null;
+            var optGroupy = null;
+            var max = Math.floor(fields.length / 3);
+            var rem = fields.length % 3;
+            var iteration = 1;
+            var cnt = rem > 0 ? -1 : 0;
+            var list = $('.report-fields-available.report-fields-' + sectionName + '  ul.report-fields-1');
+
+            for (var i = 0; i < fields.length; i++) {
+                if (cnt > max - 1) {
+                    iteration++;
+                    cnt = rem == iteration ? -1 : 0;
+                    list = $('.report-fields-available.report-fields-' + sectionName + '  ul.report-fields-' + iteration);
+                }
+                cnt++;
+
+
+                delete fields[i]['__type'];
+                var fieldName = fields[i].Name + (fields[i].AuxName ? " (" + fields[i].AuxName + ")" : "");
+
+                $('<li>')
+                            .addClass('report-field ' + getUniqueFieldClass(fields[i]))
+                            .data('field', fields[i])
+                            .append($('<div>', {
+                                'class': 'checkbox'
+                            }).append($('<label>', {
+                                'html': fieldName
+                            }).prepend('<input type="checkbox" />')))
+                            .appendTo(list);
+                if (tableName != fields[i].Table) {
+                    tableName = fields[i].Table;
+                    optGroupx = $('<optgroup>').attr('label', tableName).appendTo('.summary-desc .summary-field');
+                    optGroupy = $('<optgroup>').attr('label', tableName).appendTo('.summary-calc .summary-field');
+                }
+
+                $('<option>').text(fieldName).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupx);
+                $('<option>').text(fieldName).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupy);
+            }
         }
 
         function loadSelectedFields() {
