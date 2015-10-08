@@ -16,8 +16,9 @@
     background-color:#D5E5F7;
 }
 
-.user-container i{
-    cursor: pointer;
+.user-container i {
+  cursor: pointer;
+  font-size: 15px;
 }
 
 .user {cursor:pointer;}
@@ -72,6 +73,10 @@
 
 .ts-icon-online-small {
     background-position: -816px -16px;
+    display: inline-block;
+    margin-left: 10px;
+    position: relative;
+    top: 2px;
 }
 .ts-icon {
     background-image: url("../images/ts_icons_normal.png");
@@ -82,4 +87,8 @@
 
 .ts-icon-offline-small {
     background-position: -832px -16px;
+    display: inline-block;
+    margin-left: 10px;
+    position: relative;
+    top: 2px;
 }
