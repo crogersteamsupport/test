@@ -642,7 +642,7 @@ function SetupActionEditor(elem, action) {
     if ($('#action-new-date-started').data("DateTimePicker"))
       $('#action-new-date-started').data("DateTimePicker").destroy();
 
-    $('#action-new-date-started').datetimepicker({ useCurrent: true, format: dateFormat + ' hh:mm A', defaultDate: new Date() });
+    $('#action-new-date-started').datetimepicker({ format: dateFormat + ' hh:mm A', defaultDate: new Date() });
 
   }
   //$('#action-new-date-started').val(top.Ts.Utils.getMsDate(action.DateCreated));
@@ -896,6 +896,36 @@ function FlipNewActionBadge(isPrivate) {
   _isNewActionPrivate = isPrivate;
 }
 
+function convertToValidDate(val) {
+  var value = '';
+  if (val == "")
+    return value;
+
+  if (dateFormat.indexOf("M") != 0) {
+    var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+    if (dateFormat.indexOf("D") == 0)
+      var day = dateArr[0];
+    if (dateFormat.indexOf("Y") == 0)
+      var year = dateArr[0];
+    if (dateFormat.indexOf("M") == 3 || dateFormat.indexOf("M") == 5)
+      var month = dateArr[1];
+
+    var timeSplit = dateArr[2].split(' ');
+    if (dateFormat.indexOf("Y") == 6)
+      var year = timeSplit[0];
+    else
+      var day = timeSplit[0];
+
+    var theTime = timeSplit[1];
+
+    var formattedDate = month + "/" + day + "/" + year + " " + theTime + (timeSplit[2] != null ? " " + timeSplit[2] : "");
+    value = top.Ts.Utils.getMsDate(formattedDate);
+    return value;
+  }
+  else
+    return val;
+}
+
 function SaveAction(_oldActionID, isPrivate, callback) {
   var action = new top.TeamSupport.Data.ActionProxy();
   action.ActionID = _oldActionID;
@@ -914,7 +944,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   }
 
   action.TimeSpent = timeSpent || 0;
-  action.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
+  action.DateStarted = top.Ts.Utils.getMsDate(convertToValidDate($('#action-new-date-started').val()));
   action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
