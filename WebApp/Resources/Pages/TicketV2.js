@@ -944,7 +944,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   }
 
   action.TimeSpent = timeSpent || 0;
-  action.DateStarted = top.Ts.Utils.getMsDate(convertToValidDate($('#action-new-date-started').val()));
+  action.DateStarted = top.Ts.Utils.getMsDate(moment($('#action-new-date-started').val(), dateFormat + ' hh:mm A').format('MM/DD/YYYY hh:mm A'));
   action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
