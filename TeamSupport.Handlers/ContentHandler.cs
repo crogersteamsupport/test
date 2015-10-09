@@ -29,6 +29,8 @@ using DDay.iCal.Serialization;
 using DDay.iCal;
 using DDay.Collections;
 using System.Drawing.Text;
+using System.Collections.Specialized;
+
 
 namespace TeamSupport.Handlers
 {
@@ -64,6 +66,7 @@ namespace TeamSupport.Handlers
 					{
 						case "images": ProcessImages(context, segments.ToArray(), organizationID); break;
 						case "chat": ProcessChat(context, segments[2], organizationID); break;
+						case "chatstatus": ProcessChatStatus(context, organizationID); break;
 						case "reports": ProcessReport(context, int.Parse(segments[2]), (context.Request["Type"] == null ? "old" : context.Request["Type"])); break;
 						case "ticketexport": ProcessTicketExport(context); break;
 						case "attachments": ProcessAttachment(context, segments[2]); break;
@@ -164,6 +167,19 @@ namespace TeamSupport.Handlers
 				fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
 			}
 			if (File.Exists(fileName)) WriteImage(context, fileName);
+		}
+
+		private void ProcessChatStatus(HttpContext context, int organizationID)
+		{
+
+			context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+			context.Response.AddHeader("Expires", "-1");
+			context.Response.AddHeader("Pragma", "no-cache");
+
+		   context.Response.ContentType = "application/json; charset=utf-8";
+		   context.Response.Write(string.Format("{{\"isOperatorAvailable\": {0}}}", ChatRequests.IsOperatorAvailable(LoginUser.Anonymous, organizationID) ? "true" : "false"));
+
+		  
 		}
 
 		private void ProcessChat(HttpContext context, string command, int organizationID)
