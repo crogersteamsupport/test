@@ -2637,6 +2637,11 @@ Namespace TeamSupport
                       End If
                     ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
                       Try
+								'TicketNumber should not be updatable, if it is mapped (a project to remove non updatable fields off the mappings coming soon) then skip it.
+								If cRMLinkField.TSFieldName.Trim().ToLower() = "ticketnumber" Then
+									Throw New Exception
+								End If
+
                       If ticket.Row(cRMLinkField.TSFieldName) <> TranslateFieldValue(value, ticket.Row(cRMLinkField.TSFieldName).GetType().Name) Then
                         ticket.Row(cRMLinkField.TSFieldName) = TranslateFieldValue(value, ticket.Row(cRMLinkField.TSFieldName).GetType().Name)
                         ticketValuesChanged = True
@@ -2742,8 +2747,8 @@ Namespace TeamSupport
                           'Case "tags"
                           'Case "contacts"
                           'Case "customers"
-                          Case "statusposition", "severityposition", "isclosed", "daysclosed", "daysopened", "closername", "creatorname", "modifiername", "hoursspent", "slawarninghours", "slaviolationhours", "minssincecreated", "dayssincecreated", "minssincemodified", "dayssincemodified", "slaviolationdate", "slawarningdate"
-                            Throw (New Exception("This is a read only field"))
+								  Case "statusposition", "severityposition", "isclosed", "daysclosed", "daysopened", "closername", "creatorname", "modifiername", "hoursspent", "slawarninghours", "slaviolationhours", "minssincecreated", "dayssincecreated", "minssincemodified", "dayssincemodified", "slaviolationdate", "slawarningdate", "ticketnumber"
+									 Throw (New Exception("This is a read only field"))
                           Case Else
                             Throw (New Exception("This must be a new field in the ReportTableFields. Add support for it."))
                         End Select
