@@ -177,9 +177,24 @@ namespace TeamSupport.Data
               ExceptionLogs.LogException(BaseCollection.LoginUser, ex, "EmailTemplates");
               ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g"));
             }
-          else if (objectName == "Ticket" && column.ColumnName.ToString() == "HoursSpent")
+          else if (objectName == "Ticket" && column.ColumnName.ToString().ToLower() == "hoursspent")
           {
-            string dateTimeValue = ConvertDecimalToDateTimeText(row[column].ToString());
+            try
+            {
+              //Tickets save the time spent in hours (decimal value), so we need to convert it to minutes (*60)
+              double timeSpentInDecimal = double.Parse(row[column].ToString()) * 60;
+              string dateTimeValue = ConvertToTimeText(timeSpentInDecimal.ToString());
+              ReplaceField(objectName, column.ColumnName, dateTimeValue);
+            }
+            catch (Exception ex)
+            {
+              ReplaceField(objectName, column.ColumnName, row[column].ToString());
+            }
+          }
+          else if (objectName == "Action" && column.ColumnName.ToString().ToLower() == "timespent")
+          {
+            //Actions save the time spent in minutes pass it as it is.
+            string dateTimeValue = ConvertToTimeText(row[column].ToString());
             ReplaceField(objectName, column.ColumnName, dateTimeValue);
           }
           else
@@ -346,33 +361,32 @@ namespace TeamSupport.Data
       return template;
     }
 
-    private static string ConvertDecimalToDateTimeText(string decimalTextValue)
+    private static string ConvertToTimeText(string decimalTextValue)
     {
       string value = string.Empty;
 
       try
       {
         double decimalValue = double.Parse(decimalTextValue);
-        int totalMinutes = (int)Math.Ceiling(decimalValue * 60);
+        var timeSpan = RoundUpToMinute(TimeSpan.FromMinutes(decimalValue));
+        int hours = timeSpan.Hours;
+        int minutes = timeSpan.Minutes;
+        string hourString = string.Empty;
+        string minuteString = string.Empty;
 
-        if (totalMinutes > 59)
+        if (minutes > 0)
         {
-          int hours = totalMinutes / 60;
-          int minutes = totalMinutes % 60;
-          string hourString = hours == 1 ? " Hour " : " Hours ";
-          string minuteString = minutes == 1 ? " Minute " : " Minutes ";
-          value = string.Format("{0}{1}", hours, hourString);
+          minuteString = minutes == 1 ? "Minute" : "Minutes";
+          minuteString = string.Format("{0} {1} ", minutes, minuteString);
+        }
 
-          if (minutes > 0)
-          {
-            value = string.Format("{0}{1}{2}", value, minutes, minuteString);
-          }
-        }
-        else
+        if (hours > 0)
         {
-          string minuteString = totalMinutes == 1 ? " Minute " : " Minutes ";
-          value = string.Format("{0}{1}", totalMinutes, minuteString);
+          hourString = hours == 1 ? "Hour" : "Hours";
+          hourString = string.Format("{0} {1}", hours, hourString);
         }
+
+        value = string.Format("{0} {1}", hourString, minuteString);
       }
       catch
       {
@@ -382,6 +396,21 @@ namespace TeamSupport.Data
       return value;
     }
 
+    public static TimeSpan RoundUpToMinute(TimeSpan input)
+    {
+      if (input < TimeSpan.Zero)
+      {
+        return -RoundUpToMinute(-input);
+      }
+
+      int minutes = (int)input.TotalMinutes;
+
+      if (input.Seconds > 0)
+      {
+        minutes++;
+      }
+      return TimeSpan.FromMinutes(minutes);
+    }
   }
 
   public partial class EmailTemplates
