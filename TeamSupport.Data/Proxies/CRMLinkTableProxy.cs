@@ -41,6 +41,7 @@ namespace TeamSupport.Data
     [DataMember] public bool AlwaysUseDefaultProjectKey { get; set; }
     [DataMember] public string RestrictedToTicketTypes { get; set; }
     [DataMember] public bool UpdateTicketType { get; set; }
+    [DataMember] public string InstanceName { get; set; }
           
   }
   
@@ -53,6 +54,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.InstanceName = sanitizer.Sanitize(this.InstanceName);
       result.UpdateTicketType = this.UpdateTicketType;
       result.RestrictedToTicketTypes = sanitizer.Sanitize(this.RestrictedToTicketTypes);
       result.AlwaysUseDefaultProjectKey = this.AlwaysUseDefaultProjectKey;

@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public string JiraLinkURL { get; set; }
     [DataMember] public string JiraStatus { get; set; }
     [DataMember] public int? CreatorID { get; set; }
+    [DataMember] public int? CrmLinkID { get; set; }
           
   }
   
@@ -30,6 +31,7 @@ namespace TeamSupport.Data
     public TicketLinkToJiraItemProxy GetProxy()
     {
       TicketLinkToJiraItemProxy result = new TicketLinkToJiraItemProxy();
+      result.CrmLinkID = this.CrmLinkID;
       result.CreatorID = this.CreatorID;
       result.JiraStatus = this.JiraStatus;
       result.JiraLinkURL = this.JiraLinkURL;
