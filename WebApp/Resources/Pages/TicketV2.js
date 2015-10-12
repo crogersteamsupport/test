@@ -1792,6 +1792,7 @@ function SetupProductSection() {
         alert('There was an error setting the product.');
       });
       $(".popover").remove();
+    	}
     });
 
     $('#ticket-Versions').change(function (e) {
