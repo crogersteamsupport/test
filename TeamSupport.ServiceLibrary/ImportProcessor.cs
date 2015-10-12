@@ -5042,7 +5042,7 @@ namespace TeamSupport.ServiceLibrary
 			 OrganizationProduct organizationProduct = organizationProducts.AddNewOrganizationProduct();
 			 organizationProduct.OrganizationID = companyID;
 			 organizationProduct.ProductID = productID;
-			 if (productVersionID == 0)
+			 if (productVersionID != 0)
 			 {
 				organizationProduct.ProductVersionID = productVersionID;
 			 }
