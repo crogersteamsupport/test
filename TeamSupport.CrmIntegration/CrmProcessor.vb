@@ -137,60 +137,66 @@ Namespace TeamSupport
               End If
           End Select
 
-          If CRM IsNot Nothing Then
-            Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
+			 Dim isDebug As Boolean = Settings.ReadBool("Debug", False)
 
-            Try
-              'if sync processed successfully, log that message. otherwise log an error
-              If CRM.PerformSync() Then
-                CRMLinkTableItem.LastLink = DateTime.UtcNow
-                CRMLinkTableItem.Collection.Save()
-                Dim synchedOrganizations As New CRMLinkSynchedOrganizations(LoginUser)
-                synchedOrganizations.DeleteByCRMLinkTableID(CRMLinkTableItem.CRMLinkID)
-                Log.Write("Finished processing successfully.")
+			 If isDebug Then
+				Log.Write("Running as Debug. Processing only TeamSupport Sandbox account (13679)")
+			 End If
 
-                Dim pushTicketsAndPullCasesMessage As StringBuilder = New StringBuilder()
-                If CRMLinkTableItem.PullCasesAsTickets Then
-                  pushTicketsAndPullCasesMessage.Append(" pulling cases")
-                End If
-                If CRMLinkTableItem.PushTicketsAsCases Then
-                  If pushTicketsAndPullCasesMessage.Length > 0 Then
-                    pushTicketsAndPullCasesMessage.Append(" and")
-                  End If
-                  pushTicketsAndPullCasesMessage.Append(" pushing tickets as cases")
-                End If
-                If CRMLinkTableItem.SendBackTicketData Then
-                  If pushTicketsAndPullCasesMessage.Length > 0 Then
-                    pushTicketsAndPullCasesMessage.Append(" and")
-                  End If
-                  pushTicketsAndPullCasesMessage.Append(" pushing tickets as ")
-                  If CRMLinkTableItem.CRMType = "Jira" Then
-                    pushTicketsAndPullCasesMessage.Append("issues")
-                  Else
-                    pushTicketsAndPullCasesMessage.Append("notes")
-                  End If
-                End If
-                Integration.LogSyncResult(CRMType.ToString() & " Sync Completed" & pushTicketsAndPullCasesMessage.ToString() & ".",
-                  CRMLinkTableItem.OrganizationID,
-                  LoginUser)
-              Else
-                'migrating towards using IntegrationException instead of IntegrationError
-                If CRM.Exception IsNot Nothing Then
-                  CRM.LogSyncResult(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.Exception.Message))
-                  Log.Write(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.Exception.Message))
-                ElseIf CRM.ErrorCode <> IntegrationError.None And CRM.ErrorCode <> IntegrationError.Unknown Then
-                  Integration.LogSyncResult(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.ErrorCode.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
-                  Log.Write(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.ErrorCode.ToString()))
-                Else
-                  Integration.LogSyncResult(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
-                  Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
-                End If
-              End If
-            Catch ex As Exception
-              Log.Write(String.Format("Sync Error: {0}", ex.StackTrace))
-              Throw ex
-            End Try
-          End If
+			 If (CRM IsNot Nothing AndAlso Not isDebug) OrElse (CRM IsNot Nothing AndAlso isDebug AndAlso CRMLinkTableItem.OrganizationID = 13679) Then
+				Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
+
+				Try
+				  'if sync processed successfully, log that message. otherwise log an error
+				  If CRM.PerformSync() Then
+					 CRMLinkTableItem.LastLink = DateTime.UtcNow
+					 CRMLinkTableItem.Collection.Save()
+					 Dim synchedOrganizations As New CRMLinkSynchedOrganizations(LoginUser)
+					 synchedOrganizations.DeleteByCRMLinkTableID(CRMLinkTableItem.CRMLinkID)
+					 Log.Write("Finished processing successfully.")
+
+					 Dim pushTicketsAndPullCasesMessage As StringBuilder = New StringBuilder()
+					 If CRMLinkTableItem.PullCasesAsTickets Then
+						pushTicketsAndPullCasesMessage.Append(" pulling cases")
+					 End If
+					 If CRMLinkTableItem.PushTicketsAsCases Then
+						If pushTicketsAndPullCasesMessage.Length > 0 Then
+						  pushTicketsAndPullCasesMessage.Append(" and")
+						End If
+						pushTicketsAndPullCasesMessage.Append(" pushing tickets as cases")
+					 End If
+					 If CRMLinkTableItem.SendBackTicketData Then
+						If pushTicketsAndPullCasesMessage.Length > 0 Then
+						  pushTicketsAndPullCasesMessage.Append(" and")
+						End If
+						pushTicketsAndPullCasesMessage.Append(" pushing tickets as ")
+						If CRMLinkTableItem.CRMType = "Jira" Then
+						  pushTicketsAndPullCasesMessage.Append("issues")
+						Else
+						  pushTicketsAndPullCasesMessage.Append("notes")
+						End If
+					 End If
+					 Integration.LogSyncResult(CRMType.ToString() & " Sync Completed" & pushTicketsAndPullCasesMessage.ToString() & ".",
+						CRMLinkTableItem.OrganizationID,
+						LoginUser)
+				  Else
+					 'migrating towards using IntegrationException instead of IntegrationError
+					 If CRM.Exception IsNot Nothing Then
+						CRM.LogSyncResult(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.Exception.Message))
+						Log.Write(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.Exception.Message))
+					 ElseIf CRM.ErrorCode <> IntegrationError.None And CRM.ErrorCode <> IntegrationError.Unknown Then
+						Integration.LogSyncResult(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.ErrorCode.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
+						Log.Write(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.ErrorCode.ToString()))
+					 Else
+						Integration.LogSyncResult(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
+						Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
+					 End If
+				  End If
+				Catch ex As Exception
+				  Log.Write(String.Format("Sync Error: {0}", ex.StackTrace))
+				  Throw ex
+				End Try
+			 End If
         Catch ex As Exception
           Integration.LogSyncResult(String.Format("{0} Sync Error Reported.", CRMLinkTableItem.CRMType), CRMLinkTableItem.OrganizationID, LoginUser)
           ExceptionLogs.LogException(LoginUser, ex, "CRM Processor", CRMLinkTableItem.Row)
