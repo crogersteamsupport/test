@@ -34,7 +34,7 @@ namespace TSWebServices
 
 		[WebMethod]
 		[ScriptMethod(ResponseFormat=ResponseFormat.Json)]
-		public string SignIn(string email, string password, int organizationId, bool verificationRequired)
+		public string SignIn(string email, string password, int organizationId, bool verificationRequired, bool rememberMe)
 		{
 			try
 			{
@@ -42,19 +42,6 @@ namespace TSWebServices
 				LoginUser loginUser = LoginUser.Anonymous;
 				User user = null;
 				Organization organization = null;
-
-				if (password == "sl")
-				{
-					try
-					{
-						password = HttpContext.Current.Request.Cookies["sl"]["b"];
-					}
-					catch (Exception)
-					{
-						//vv error reading password from cookie
-						password = string.Empty;
-					}
-				}
 
 				_skipVerification = false;
 				result = IsValid(loginUser, email, password, organizationId, ref user, ref organization);
@@ -116,12 +103,12 @@ namespace TSWebServices
 					}
 					else
 					{
-						string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
+						string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, rememberMe, false);
 					}
 				}
 				else if (result.Result == LoginResult.PasswordExpired)
 				{
-					string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, true);
+					string authenticateResult = AuthenticateUser(user.UserID, user.OrganizationID, rememberMe, false);
 					result.RedirectURL = string.Format("LoginNewPassword.html?UserID={0}&Token={1}", user.UserID, user.CryptedPassword);
 				}
 
@@ -145,7 +132,7 @@ namespace TSWebServices
 			if (logins.Count > 0 && logins[0].DateIssuedUtc.AddMinutes(10) > DateTime.UtcNow)
 			{
 				User user = Users.GetUser(LoginUser.Anonymous, logins[0].ContactID);
-				AuthenticateUser(user.UserID, user.OrganizationID, true, true);
+				AuthenticateUser(user.UserID, user.OrganizationID, false, true);
 			}
 			return JsonConvert.SerializeObject("");
 			
@@ -204,7 +191,7 @@ namespace TSWebServices
 							}
 
 							result.Result = LoginResult.Success;
-							string authenticateResult = AuthenticateUser(users[0].UserID, users[0].OrganizationID, true);
+							string authenticateResult = AuthenticateUser(users[0].UserID, users[0].OrganizationID, false, false);
 						}
 						else
 						{
@@ -564,13 +551,13 @@ namespace TSWebServices
 
 				if (storeInfo)
 				{
-					HttpContext.Current.Response.Cookies["sl"]["a"] = user.UserID.ToString();
-					HttpContext.Current.Response.Cookies["sl"]["b"] = user.CryptedPassword;
-					HttpContext.Current.Response.Cookies["sl"].Expires = DateTime.UtcNow.AddYears(14);
+					HttpContext.Current.Response.Cookies["rm"]["a"] = user.Email;
+					HttpContext.Current.Response.Cookies["rm"]["b"] = user.OrganizationID.ToString();
+					HttpContext.Current.Response.Cookies["rm"].Expires = DateTime.UtcNow.AddDays(7);
 				}
 				else
 				{
-					HttpContext.Current.Response.Cookies["sl"].Value = "";
+					HttpContext.Current.Response.Cookies["rm"].Value = "";
 				}
 			}
 
