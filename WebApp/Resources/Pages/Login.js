@@ -1,6 +1,7 @@
 ﻿var loginService = '/Services/LoginService.asmx/';
 var resourcesURL = '/vcr/1_9_0/Pages/';
 var returnURL = '/default.aspx';
+var orgCookie = null;
 
 $(document).ready(function () {
 	returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
@@ -78,7 +79,8 @@ function LoadCompanies(companies) {
     }
 
     if (companies.length > 1) {
-    	companySelect.show();
+        companySelect.show();
+        companySelect.val(orgCookie);
     }
     else companySelect.hide();
   }
@@ -88,11 +90,10 @@ function LoadCompanies(companies) {
 function getRememberMe() {
     var cookies = Ts.Utils.getCookie('rm');
     if (cookies != null) {
-        $('#inputEmail').val(cookies["a"]);
-        CheckEmailForOrgs(cookies["a"]);
-        $('#orgSelect').val(cookies["b"]);
-        $('#rememberMe').attr('checked', 'checked')
-  }
+        $('#inputEmail').val(cookies["a"]).change();
+        orgCookie = cookies["b"];
+        $('#rememberMe').attr('checked', 'checked');
+    }
 }
 
 function IssueAjaxRequest(service, method, data, successCallback, errorCallback) {
