@@ -223,22 +223,16 @@
       };
    },
 
-   getCookie: function(key, subkey) {
-     var value = $.cookie(key);
-     if (value === null) return '';
-     if (subkey === null)
-     {
-       return value == null ? '' : value;
-     }
-
-     var cookies = value.split('&');
-     for (var i = 0; i < cookies.length; i++) {
-       var cookie = cookies[i].split('=');
-       if (cookie.length > 1) {
-         if (cookie[0] == key) return cookie[1] == null ? '' : cookie[1];
+   getCookie: function (key, subkey) {
+       var cookies = $.cookie(key);
+       var splitCookies = cookies.split('&');
+       var returnCookieSet = [];
+       for (var i = 0; i < splitCookies.length; i++) {
+           var cookie = splitCookies[i].split('=');
+           if (subkey !== undefined && cookie[0] == subkey) return cookie;
+           returnCookieSet[cookie[0]] = cookie[1];
        }
-     }
-     return '';
+       return returnCookieSet;
    },
    getSizeString: function (bytes) {
       var s = ['bytes', 'kb', 'MB', 'GB', 'TB', 'PB'];

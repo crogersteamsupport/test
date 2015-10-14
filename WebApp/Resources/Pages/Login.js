@@ -10,16 +10,17 @@ $(document).ready(function () {
 		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result) { window.location = '/Default.aspx'; }, function () { });
 		return;
 	}
-  getRememberMe();
+
   $('#signIn').click(function (e) {
     e.preventDefault();
     var email = $('#inputEmail').val();
     var org = $('#orgSelect').val();
+    var rememberMe = $('#rememberMe').is(":checked"); 
     if (org == "") org = null;
-    var signInData = { email: email, password: $('#inputPassword').val(), organizationId: org, verificationRequired: true };
+    var signInData = { email: email, password: $('#inputPassword').val(), organizationId: org, verificationRequired: true, rememberMe: rememberMe };
 
     IssueAjaxRequest(loginService, "SignIn", signInData,
-    function (result) {debugger
+    function (result) {
       switch (result.Result) {//Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4, ExipredPassword = 5
         case 1:
         	window.location = returnURL;
@@ -51,9 +52,7 @@ $(document).ready(function () {
     CheckEmailForOrgs($(this).val())
   });
 
-  $('#createAccount').click(function (e) {
-    //redirect to signup form
-  });
+  getRememberMe();
 
 function CheckEmailForOrgs(email) { 
   //Code to lookup the email address entered and check for a valid user with multiple orgs. 
@@ -87,17 +86,12 @@ function LoadCompanies(companies) {
 };
 
 function getRememberMe() {
-  var cookie = Ts.Utils.getCookie('rememberme', 'sessionid');
-  if (cookie != null && cookie.length > 0) {
-    var RememberMeData = { userID: cookie };
-    IssueAjaxRequest(loginService, "GetEmail", RememberMeData,
-    function (result) {
-      $('#inputEmail').val(result);
-      $('#remember').attr('checked', 'checked')
-    },
-    function (error) {
-
-    });
+    var cookies = Ts.Utils.getCookie('rm');
+    if (cookies != null) {
+        $('#inputEmail').val(cookies["a"]);
+        CheckEmailForOrgs(cookies["a"]);
+        $('#orgSelect').val(cookies["b"]);
+        $('#rememberMe').attr('checked', 'checked')
   }
 }
 
