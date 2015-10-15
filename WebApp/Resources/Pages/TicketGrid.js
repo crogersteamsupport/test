@@ -261,6 +261,12 @@ TicketGrid = function (options) {
             }
             $('#dialog-severity').modal('show');
         }
+        else if (el.hasClass('ticket-action-due-date')) {
+
+            $('#bulkAssignDueDate').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
+
+            $('#dialog-due-date').modal('show');
+        }
         else if (el.hasClass('ticket-action-status')) {
             var form = $('#dialog-status .modal-body form');
             if (form.find('select').length < 1) {
@@ -384,6 +390,18 @@ TicketGrid = function (options) {
             refreshGrid();
         });
         deselectRows();
+    });
+
+    $('.tickets-save-due-date').click(function (e) {
+        e.preventDefault();
+        $('#dialog-due-date').modal('hide');
+        self.showLoadingIndicator();
+        var ids = getSelectedIDs();
+        top.Ts.Services.Tickets.SetTicketsDueDate(JSON.stringify(ids), $('#bulkAssignDueDate').val(), function () {
+            top.Ts.System.logAction('Ticket Grid - Updated due date');
+            refreshGrid();
+        });
+        deselectRows()
     });
 
     $('.tickets-save-status').click(function (e) {

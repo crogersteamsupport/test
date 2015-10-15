@@ -485,6 +485,7 @@ function CreateNewActionLI() {
   });
 
   $('#action-new-save').click(function (e) {
+    debugger;
   	if ($("#recorder").length == 0) {
   		e.preventDefault();
   		e.stopPropagation();

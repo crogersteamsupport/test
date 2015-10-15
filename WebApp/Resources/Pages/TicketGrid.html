@@ -6,6 +6,7 @@
   <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
   <link href="../SlickGrid/slick.grid.css" rel="stylesheet" type="text/css" />
   <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
   <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="TicketGrid.css" rel="stylesheet" type="text/css" />
   <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
@@ -22,6 +23,10 @@
   <script src="../SlickGrid/slick.grid.js" type="text/javascript"></script>
   <script src="../Js/Ts/ts.datamodel.js" type="text/javascript"></script>
   <script src="TicketGrid.js" type="text/javascript"></script>
+  <script src="../Js/moment.min.js" type="text/javascript"></script>
+  <script src="../Js/bootstrap-datetimepicker.min.js"></script>
+  
+  
 
   <title></title>
 </head>
@@ -50,6 +55,7 @@
             <li><a class="ticket-action-group" href="#">Assign group</a></li>
             <li><a class="ticket-action-status" href="#">Change status</a></li>
             <li><a class="ticket-action-severity" href="#">Change severity</a></li>
+            <li><a class="ticket-action-due-date" href="#">Change due date</a></li>
             <li class="divider"></li>
             <li><a class="ticket-action-read" href="#">Mark as read</a></li>
             <li><a class="ticket-action-unread" href="#">Mark as unread</a></li>
@@ -149,7 +155,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary tickets-save-group">Assign Group</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
+      </div>s
     </div>
   </div>
 </div>
@@ -177,6 +183,28 @@
   </div>
 </div>
 
+    <div class="modal fade" id="dialog-due-date" tabindex="-1" role="dialog" aria-labelledby="dialog-due-date-title" aria-hidden="true">
+        <div class="modal-dialog modal-lgx">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="dialog-due-date-title">Change Due Date</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form">
+                        <div class="form-group">
+                            <label for="bulkAssignDueDate">Choose a due date</label>
+                            <input type="text" class="form-control" id="bulkAssignDueDate">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary tickets-save-due-date">Change Due Date</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <div class="modal fade" id="dialog-status" tabindex="-1" role="dialog" aria-labelledby="dialog-status-title" aria-hidden="true">
   <div class="modal-dialog modal-lgx">
