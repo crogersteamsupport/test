@@ -1429,7 +1429,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void SetTicketsDueDate(string ticketIDs, DateTime datetime)
+        public void SetTicketsDueDate(string ticketIDs, DateTime? datetime)
         {
             Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
             int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
@@ -1498,7 +1498,7 @@ namespace TSWebServices
             }
             else
             {
-                toValue.Append(dueDate.ToString());
+                toValue.Append(dueDate != null ? dueDate.ToString() : string.Empty);
                 ticket.DueDate = (DateTime?)dueDate;
             }
 

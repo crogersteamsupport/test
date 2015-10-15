@@ -263,8 +263,7 @@ TicketGrid = function (options) {
         }
         else if (el.hasClass('ticket-action-due-date')) {
 
-            $('#bulkAssignDueDate').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
-
+            $('#bulkAssignDueDate').datetimepicker({ useCurrent: false, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
             $('#dialog-due-date').modal('show');
         }
         else if (el.hasClass('ticket-action-status')) {
@@ -397,7 +396,14 @@ TicketGrid = function (options) {
         $('#dialog-due-date').modal('hide');
         self.showLoadingIndicator();
         var ids = getSelectedIDs();
-        top.Ts.Services.Tickets.SetTicketsDueDate(JSON.stringify(ids), $('#bulkAssignDueDate').val(), function () {
+
+        var currDate = $('#bulkAssignDueDate').val();
+        var formattedDate = '';
+        if (currDate !== '') {
+            formattedDate = top.Ts.Utils.getMsDate(currDate);
+        }
+        
+        top.Ts.Services.Tickets.SetTicketsDueDate(JSON.stringify(ids), formattedDate, function () {
             top.Ts.System.logAction('Ticket Grid - Updated due date');
             refreshGrid();
         });
