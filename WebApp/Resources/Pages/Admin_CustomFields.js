@@ -295,7 +295,7 @@ AdminCustomFields = function () {
         .appendTo(fieldsDiv);
       $('<span>')
         .addClass('admin-cf-field-name')
-        .text(field.Name)
+        .html(field.Name)
         .appendTo(fieldDiv);
       $('<span>')
         .addClass('admin-cf-field-type')

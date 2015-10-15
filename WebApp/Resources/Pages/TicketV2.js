@@ -238,7 +238,7 @@ var loadTicket = function (ticketNumber, refresh) {
     _ticketCurrUser = _ticketInfo.Ticket.UserID;
     _ticketGroupID = info.Ticket.GroupID;
 
-    $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
+    $('#ticket-title-label').html($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
     $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
     top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
       LoadTicketNotes(note);
@@ -388,7 +388,7 @@ function SetupTicketProperties() {
     $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
     //set the ticket title 
-    $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
+    $('#ticket-title-label').html($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
     $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
     $('.ticket-source').css('backgroundImage', "url('../" + top.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
     //get total number of actions so we can use it to number each action
@@ -1124,9 +1124,10 @@ function LoadTicketControls() {
 
   if ($('#ticket-group').length) {
     top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
-      AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
+    	AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
       for (var i = 0; i < groups.length; i++) {
-        AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
+      	var groupHtmlDecoder = $('<p>').html(groups[i].Name);
+      	AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groupHtmlDecoder.text(), groups[i].IsSelected);
       }
       $('#ticket-group').selectize({
         onDropdownClose: function ($dropdown) {
@@ -1299,7 +1300,7 @@ function SetupTicketPropertyEvents() {
     var input = $('#ticket-title-input');
 
     var titleInputContainer = $('#ticket-title-input-panel').show();
-    $('#ticket-title-input').val(_ticketInfo.Ticket.Name).focus().select();
+    $('#ticket-title-input').val($('#ticket-title-label').text()).focus().select();
 
     $('#ticket-title-save').click(function (e) {
       e.preventDefault();
@@ -2446,13 +2447,14 @@ var AddCustomFieldEdit = function (field, parentContainer) {
   var groupContainer = $('<div>').addClass('form-group form-group-sm')
                           .data('field', field)
                           .appendTo(formcontainer)
-                          .append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+                          .append($('<label>').addClass('col-sm-4 control-label select-label').html(field.Name));
   var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
   var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
+  var valueHtmlDecoder = $('<p>').html(field.Value);
   var input = $('<input type="text">')
                   .addClass('form-control ticket-simple-input muted-placeholder')
                   .attr("placeholder", "Enter Value")
-                  .val(field.Value)
+                  .val(valueHtmlDecoder.text())
                   .appendTo(inputGroupContainer)
                   .after(getUrls(field.Value));
 
