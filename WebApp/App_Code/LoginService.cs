@@ -117,9 +117,10 @@ namespace TSWebServices
 			}
 			catch (Exception ex)
 			{
-				ExceptionLogs.LogException(LoginUser.Anonymous, ex, "signin");
-				throw;
-			}
+        SignInResult errorResult = new SignInResult();
+        errorResult.Error = "There was a error signing you in. Please verify your email and password and try again.";
+        errorResult.Result = LoginResult.Fail;
+      }
 		}
 
 		[WebMethod]
