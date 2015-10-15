@@ -17,7 +17,7 @@ $(document).ready(function () {
     var email = $('#inputEmail').val();
     var org = $('#orgSelect').val();
     var rememberMe = $('#rememberMe').is(":checked"); 
-    if (org == "") org = null;
+    if (org == null) org = 1;
     var signInData = { email: email, password: $('#inputPassword').val(), organizationId: org, verificationRequired: true, rememberMe: rememberMe };
 
     IssueAjaxRequest(loginService, "SignIn", signInData,
