@@ -334,12 +334,6 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteEvent(string.Format("IsNew: {0}", isNew.ToString()));
       try
       {
-
-        
-        
-
-       
-
         if (ticket == null)
         {
           Logs.WriteEvent("Ticket is NULL, canceling.");
@@ -379,12 +373,10 @@ namespace TeamSupport.ServiceLibrary
         {
           if (action.IsVisibleOnPortal) publicActionCount++;
         }
-        Logs.WriteEvent(string.Format("{0} Public Actions Loaded", publicActionCount.ToString()));
 
+        Logs.WriteEvent(string.Format("{0} Public Actions Loaded", publicActionCount.ToString()));
         Logs.WriteEvent("Processing Ticket Assignment");
         
-         
-
         AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
         Logs.WriteEvent("Processing Advanced Portal");
         AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
@@ -880,11 +872,11 @@ namespace TeamSupport.ServiceLibrary
                             ratingLink.Append("&TicketID=" + ticket.TicketID.ToString());
                             ratingLink.Append("&Rating={0}");
                             ratingLink.Append("&CustomerID=" + (contact == null ? "-1" : contact.UserID.ToString()));
-                            ratingLink.Append("\"><img src=\"{1}\" width=\"50\" height=\"50\" /></a>");
+						    ratingLink.Append("\"><img src=\"{1}\" width=\"50\" height=\"50\" title=\"{2}\" alt=\"{2}\" /></a>");
                             string link = ratingLink.ToString();
-                            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Positive", string.Format(link, "1", positiveUrl), message, -1, ticket.OrganizationID);
-                            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Neutral", string.Format(link, "0", neutralUrl), message, -1, ticket.OrganizationID);
-                            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Negative", string.Format(link, "-1", negativeUrl), message, -1, ticket.OrganizationID);
+                            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Positive", string.Format(link, "1", positiveUrl, "Positive"), message, -1, ticket.OrganizationID);
+                            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Neutral", string.Format(link, "0", neutralUrl, "Neutral"), message, -1, ticket.OrganizationID);
+                            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Negative", string.Format(link, "-1", negativeUrl, "Negative"), message, -1, ticket.OrganizationID);
                         }
                         else
                         {
