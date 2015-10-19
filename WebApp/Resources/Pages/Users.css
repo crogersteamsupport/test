@@ -73,7 +73,7 @@
 
 .ts-icon-online-small {
     background-position: -816px -16px;
-    display: inline-block;
+    display: inline-block !important;
     margin-left: 10px;
     position: relative;
     top: 2px;
@@ -87,7 +87,7 @@
 
 .ts-icon-offline-small {
     background-position: -832px -16px;
-    display: inline-block;
+    display: inline-block !important;
     margin-left: 10px;
     position: relative;
     top: 2px;
