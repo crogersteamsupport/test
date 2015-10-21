@@ -13,6 +13,7 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using TeamSupport.Messaging;
 using Newtonsoft.Json;
+using System.Configuration;
 
 namespace TSWebServices
 {
@@ -337,30 +338,35 @@ namespace TSWebServices
 		[ScriptMethod(ResponseFormat = ResponseFormat.Json)]
 		public string GetRemoteLoginUsers(string email, string passPhrase)
 		{
-			List<LoginScanResult> scanResult = new List<LoginScanResult>();
-
-			Organizations organizations = new Organizations(LoginUser.Anonymous);
-			organizations.LoadByEmail(email);
-
-			foreach (Organization organization in organizations)
+			string passKey = ConfigurationManager.AppSettings["RemoteLoginKey"];
+			if (passKey == passPhrase)
 			{
-				Users users = new Users(LoginUser.Anonymous);
-				users.LoadByEmail(email, organization.OrganizationID);
+				List<LoginScanResult> scanResult = new List<LoginScanResult>();
 
-				foreach(User user in users) 
+				Organizations organizations = new Organizations(LoginUser.Anonymous);
+				organizations.LoadByEmail(email);
+
+				foreach (Organization organization in organizations)
 				{
-					LoginScanResult result = new LoginScanResult
-					{
-						OrganizationID = user.OrganizationID,
-						OrganizationName = organization.Name,
-						UserID = user.UserID,
-						UserFullName = user.DisplayName
-					};
-					scanResult.Add(result);
-        }
-			}
+					Users users = new Users(LoginUser.Anonymous);
+					users.LoadByEmail(email, organization.OrganizationID);
 
-			return JsonConvert.SerializeObject(scanResult);
+					foreach (User user in users)
+					{
+						LoginScanResult result = new LoginScanResult
+						{
+							OrganizationID = user.OrganizationID,
+							OrganizationName = organization.Name,
+							UserID = user.UserID,
+							UserFullName = user.DisplayName
+						};
+						scanResult.Add(result);
+					}
+				}
+
+				return JsonConvert.SerializeObject(scanResult);
+			}
+			else return null;
 		}
 
 		public class LoginScanResult
