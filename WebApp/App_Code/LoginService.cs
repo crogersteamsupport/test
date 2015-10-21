@@ -333,7 +333,47 @@ namespace TSWebServices
 			return JsonConvert.SerializeObject(items);
 		}
 
-		 [WebMethod(true)]
+		[WebMethod]
+		[ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+		public string GetRemoteLoginUsers(string email, string passPhrase)
+		{
+			List<LoginScanResult> scanResult = new List<LoginScanResult>();
+
+			Organizations organizations = new Organizations(LoginUser.Anonymous);
+			organizations.LoadByEmail(email);
+
+			foreach (Organization organization in organizations)
+			{
+				Users users = new Users(LoginUser.Anonymous);
+				users.LoadByEmail(email, organization.OrganizationID);
+
+				foreach(User user in users) 
+				{
+					LoginScanResult result = new LoginScanResult
+					{
+						OrganizationID = user.OrganizationID,
+						OrganizationName = organization.Name,
+						UserID = user.UserID,
+						UserFullName = user.DisplayName
+					};
+					scanResult.Add(result);
+        }
+			}
+
+			return JsonConvert.SerializeObject(scanResult);
+		}
+
+		public class LoginScanResult
+		{
+			public int UserID { get; set; }
+			public string UserFullName { get; set; }
+			public string UserAvatarURL { get; set; }
+			public int OrganizationID { get; set; }
+			public string OrganizationName { get; set; }
+			public string RouteURL { get; set; }
+		}
+
+		[WebMethod(true)]
 		 public string GetEmail(int userID)
 		 {
 			User user = Users.GetUser(LoginUser.Anonymous, userID);
