@@ -1777,7 +1777,33 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       }
     }
 
-    public void LoadTeamSupport()
+		public void LoadByEmailExcludeInActive(string email)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT o.*
+																FROM Organizations o
+																WHERE (
+																		(o.ParentID = 1)
+																		OR (o.ParentID IS NULL)
+																		)
+																	AND o.IsActive = 0
+																	AND EXISTS (
+																		SELECT *
+																		FROM Users u
+																		WHERE (u.MarkDeleted = 0)
+																			AND (u.Email = @Email)
+																			AND u.OrganizationID = o.OrganizationID
+																		)
+																ORDER BY o.NAME
+																";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@Email", email);
+				Fill(command, "Organizations,Users");
+			}
+		}
+
+		public void LoadTeamSupport()
     {
       using (SqlCommand command = new SqlCommand())
       {

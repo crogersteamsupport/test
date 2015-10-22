@@ -324,7 +324,7 @@ namespace TSWebServices
 		public string GetCompanies(string email)
 		{
 			Organizations organizations = new Organizations(LoginUser.Anonymous);
-			organizations.LoadByEmail(email);
+			organizations.LoadByEmailExcludeInActive(email);
 			List<ComboBoxItem> items = new List<ComboBoxItem>();
 			foreach (Organization organization in organizations)
 			{
