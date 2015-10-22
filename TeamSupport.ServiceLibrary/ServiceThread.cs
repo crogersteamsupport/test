@@ -156,89 +156,99 @@ namespace TeamSupport.ServiceLibrary
 
     protected virtual void Process()
     {
-      try
-      {
-        DateTime lastTime = DateTime.Now;
-        while (true)
-        {
-          Service service = Services.GetService(_loginUser, ServiceName);
-
-          int interval = Settings.ReadInt("Interval", -1);
-          if (interval < 0)
-          {
-            interval = service.Interval;
-            Settings.WriteInt("Interval", interval);
-          }
-
-          service.Interval = interval;
-
-          try
-          {
-            if (IsStopped && !_runHandlesStop) return;
-            if (service.Enabled && (lastTime.AddMilliseconds(service.Interval) < DateTime.Now || !IsLoop))
+            try
             {
-              service.LastStartTime = DateTime.Now;
-              service.HealthTime = DateTime.Now;
-              service.Collection.Save();
-              Run();
-              lastTime = DateTime.Now;
-              service.RunCount = service.RunCount + 1;
-              service.LastEndTime = DateTime.Now;
-              service.HealthTime = DateTime.Now;
-              service.LastResult = "Success";
-              int total = (int)((DateTime)service.LastEndTime).Subtract((DateTime)service.LastStartTime).TotalSeconds;
-              service.RunTimeMax = service.RunTimeMax < total ? total : service.RunTimeMax;
+                DateTime lastTime = DateTime.Now;
+                while (true)
+                {
+                    Service service = Services.GetService(_loginUser, ServiceName);
 
-              service.RunTimeAvg = service.RunCount > 1 ? (int)((((service.RunCount - 1) * service.RunTimeAvg) + total) / service.RunCount) : total;
-              service.Collection.Save();
+                    int interval = Settings.ReadInt("Interval", -1);
+                    if (interval < 0)
+                    {
+                        interval = service.Interval;
+                        Settings.WriteInt("Interval", interval);
+                    }
+
+                    service.Interval = interval;
+
+                    try
+                    {
+                        if (IsStopped && !_runHandlesStop) return;
+                        if (service.Enabled && (lastTime.AddMilliseconds(service.Interval) < DateTime.Now || !IsLoop))
+                        {
+                            service.LastStartTime = DateTime.Now;
+                            service.HealthTime = DateTime.Now;
+                            service.Collection.Save();
+                            Run();
+                            lastTime = DateTime.Now;
+                            service.RunCount = service.RunCount + 1;
+                            service.LastEndTime = DateTime.Now;
+                            service.HealthTime = DateTime.Now;
+                            service.LastResult = "Success";
+                            int total = (int)((DateTime)service.LastEndTime).Subtract((DateTime)service.LastStartTime).TotalSeconds;
+                            service.RunTimeMax = service.RunTimeMax < total ? total : service.RunTimeMax;
+
+                            service.RunTimeAvg = service.RunCount > 1 ? (int)((((service.RunCount - 1) * service.RunTimeAvg) + total) / service.RunCount) : total;
+                            service.Collection.Save();
+                        }
+                        Thread.Sleep(100);
+                    }
+                    catch (ThreadAbortException)
+                    {
+
+                    }
+                    catch (System.Data.SqlClient.SqlException sqlEx)
+                    {
+                        _logs.WriteException(sqlEx);
+                        service.ErrorCount = service.ErrorCount + 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logs.WriteException(ex);
+                        ExceptionLog log = ExceptionLogs.LogException(_loginUser, ex, "Service - " + ServiceName);
+                        service.ErrorCount = service.ErrorCount + 1;
+
+                        if (log != null)
+                        {
+                            service.LastError = string.Format("[{0} {1}", log.ExceptionLogID.ToString(), ex.Message);
+                            service.Collection.Save();
+                        }
+                    }
+
+                    if (!IsLoop)
+                    {
+                        Stop();
+                        return;
+                    }
+                }
             }
-            Thread.Sleep(100);
-          }
-          catch (ThreadAbortException)
-          {
-
-          }
-          catch (System.Data.SqlClient.SqlException sqlEx)
-          {
-            _logs.WriteException(sqlEx);
-            service.ErrorCount = service.ErrorCount + 1;
-          }
-          catch (Exception ex)
-          {
-            _logs.WriteException(ex);
-            ExceptionLog log = ExceptionLogs.LogException(_loginUser, ex, "Service - " + ServiceName);
-            service.ErrorCount = service.ErrorCount + 1;
-
-            if (log != null)
+            catch (ThreadAbortException)
             {
-              service.LastError = string.Format("[{0} {1}", log.ExceptionLogID.ToString(), ex.Message);
-              service.Collection.Save();
+
             }
-          }
+            catch (Exception ex)
+            {
+                try
+                {
+                    _logs.WriteException(ex);
+                    _logs.WriteEvent(string.Format("{0}: TeamSupport.ServiceLibrary.ServiceThread.Process(). Attention, the service exited the processing loop due to a exception. Check previous log entries.", ServiceName));
+                }
+                catch (Exception)
+                {
 
-          if (!IsLoop)
-          {
-            Stop();
-            return;
-          }
-        }
-      }
-      catch (ThreadAbortException)
-      {
+                }
 
-      }
-      catch (Exception ex)
-      {
-        try
-        {
-          _logs.WriteException(ex);
-          _logs.WriteEvent(string.Format("{0}: TeamSupport.ServiceLibrary.ServiceThread.Process(). Attention, the service exited the processing loop due to a exception. Check previous log entries.", ServiceName));
-        }
-        catch (Exception)
-        {
+                try
+                {
+                    Stop();
+                }
+                catch (Exception)
+                {
 
-        }
-      }
+                }
+                return;
+            }
     }
 
     ///<summary>This function is called by the service to run a specified interval.  This function is called in its own thread.</summary>
