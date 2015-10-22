@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -49,10 +48,6 @@ namespace TeamSupport.Data
     public CustomValueProxy GetProxy()
     {
       CustomValueProxy result = new CustomValueProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       result.ImportFileID = this.ImportFileID;
       result.ModifierID = Row["ModifierID"] == DBNull.Value ? -1 : this.ModifierID;
       result.CreatorID = Row["CreatorID"] == DBNull.Value ? -1 : this.CreatorID;
@@ -67,8 +62,8 @@ namespace TeamSupport.Data
       result.ApiFieldName = this.ApiFieldName;
       result.ListValues = this.ListValues;
       result.FieldType = this.FieldType;
-      result.Name = sanitizer.Sanitize(this.Name);
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Name = this.Name;
+      result.Description = this.Description;
       result.RefType = this.RefType;
       result.AuxID = this.AuxID;
       result.Position = this.Position;
@@ -95,7 +90,7 @@ namespace TeamSupport.Data
       }
       else
       {
-        result.Value = Row["CustomValue"] == DBNull.Value ? "" : sanitizer.Sanitize(this.Value);
+        result.Value = Row["CustomValue"] == DBNull.Value ? "" : this.Value;
       }
 
       return result;
