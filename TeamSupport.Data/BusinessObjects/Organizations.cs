@@ -1787,7 +1787,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 																		(o.ParentID = 1)
 																		OR (o.ParentID IS NULL)
 																		)
-																	AND o.IsActive = 0
+																	AND o.IsActive = 1
 																	AND EXISTS (
 																		SELECT *
 																		FROM Users u
