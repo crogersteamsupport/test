@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -46,27 +45,23 @@ namespace TeamSupport.Data
   {
     public CustomFieldProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       CustomFieldProxy result = new CustomFieldProxy();
       result.ParentProductID = this.ParentProductID;
-      result.ParentCustomValue = sanitizer.Sanitize(this.ParentCustomValue);
+      result.ParentCustomValue = this.ParentCustomValue;
       result.ParentCustomFieldID = this.ParentCustomFieldID;
-      result.Mask = sanitizer.Sanitize(this.Mask);
+      result.Mask = this.Mask;
       result.IsRequiredToClose = this.IsRequiredToClose;
       result.IsRequired = this.IsRequired;
       result.IsFirstIndexSelect = this.IsFirstIndexSelect;
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.ListValues = sanitizer.Sanitize(this.ListValues);
+      result.Description = this.Description;
+      result.ListValues = this.ListValues;
       result.Position = this.Position;
       result.AuxID = this.AuxID;
       result.FieldType = this.FieldType;
       result.RefType = this.RefType;
-      result.ApiFieldName = sanitizer.Sanitize(this.ApiFieldName);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.ApiFieldName = this.ApiFieldName;
+      result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
       result.CustomFieldID = this.CustomFieldID;
       result.CustomFieldCategoryID = this.CustomFieldCategoryID;

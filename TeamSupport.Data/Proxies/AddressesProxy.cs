@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -39,24 +38,19 @@ namespace TeamSupport.Data
   {
     public AddressProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       AddressProxy result = new AddressProxy();
       result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-
-      result.Comment = sanitizer.Sanitize(this.Comment);
-      result.Country = sanitizer.Sanitize(this.Country);
-      result.Zip = sanitizer.Sanitize(this.Zip);
-      result.State = sanitizer.Sanitize(this.State);
-      result.City = sanitizer.Sanitize(this.City);
-      result.Addr3 = sanitizer.Sanitize(this.Addr3);
-      result.Addr2 = sanitizer.Sanitize(this.Addr2);
-      result.Addr1 = sanitizer.Sanitize(this.Addr1);
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Comment = this.Comment;
+      result.Country = this.Country;
+      result.Zip = this.Zip;
+      result.State = this.State;
+      result.City = this.City;
+      result.Addr3 = this.Addr3;
+      result.Addr2 = this.Addr2;
+      result.Addr1 = this.Addr1;
+      result.Description = this.Description;
       result.RefType = this.RefType;
       result.RefID = this.RefID;
       result.AddressID = this.AddressID;

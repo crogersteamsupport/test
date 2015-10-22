@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -28,16 +27,12 @@ namespace TeamSupport.Data
   {
     public KnowledgeBaseCategoryProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       KnowledgeBaseCategoryProxy result = new KnowledgeBaseCategoryProxy();
       result.VisibleOnPortal = this.VisibleOnPortal;
       result.Position = this.Position;
       result.OrganizationID = this.OrganizationID;
-      result.CategoryDesc = sanitizer.Sanitize(this.CategoryDesc);
-      result.CategoryName = sanitizer.Sanitize(this.CategoryName);
+      result.CategoryDesc = this.CategoryDesc;
+      result.CategoryName = this.CategoryName;
       result.ParentID = this.ParentID;
       result.CategoryID = this.CategoryID;
        

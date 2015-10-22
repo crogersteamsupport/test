@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -30,19 +29,15 @@ namespace TeamSupport.Data
   {
     public AgentRatingsOptionProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       AgentRatingsOptionProxy result = new AgentRatingsOptionProxy();
-      result.ExternalPageLink = sanitizer.Sanitize(this.ExternalPageLink);
-      result.RedirectURL = sanitizer.Sanitize(this.RedirectURL);
-      result.NegativeImage = sanitizer.Sanitize(this.NegativeImage);
-      result.NeutralImage = sanitizer.Sanitize(this.NeutralImage);
-      result.PositiveImage = sanitizer.Sanitize(this.PositiveImage);
-      result.NegativeRatingText = sanitizer.Sanitize(this.NegativeRatingText);
-      result.NeutralRatingText = sanitizer.Sanitize(this.NeutralRatingText);
-      result.PositiveRatingText = sanitizer.Sanitize(this.PositiveRatingText);
+      result.ExternalPageLink = this.ExternalPageLink;
+      result.RedirectURL = this.RedirectURL;
+      result.NegativeImage = this.NegativeImage;
+      result.NeutralImage = this.NeutralImage;
+      result.PositiveImage = this.PositiveImage;
+      result.NegativeRatingText = this.NegativeRatingText;
+      result.NeutralRatingText = this.NeutralRatingText;
+      result.PositiveRatingText = this.PositiveRatingText;
       result.OrganizationID = this.OrganizationID;
        
        

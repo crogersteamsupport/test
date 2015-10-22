@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -40,25 +39,21 @@ namespace TeamSupport.Data
   {
     public AssetProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       AssetProxy result = new AssetProxy();
       result.ImportFileID = this.ImportFileID;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ProductVersionID = this.ProductVersionID;
-      result.ImportID = sanitizer.Sanitize(this.ImportID);
-      result.Status = sanitizer.Sanitize(this.Status);
+      result.ImportID = this.ImportID;
+      result.Status = this.Status;
       result.SubPartOf = this.SubPartOf;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.AssignedTo = this.AssignedTo;
       result.ProductID = this.ProductID;
-      result.Notes = sanitizer.Sanitize(this.Notes);
-      result.Location = sanitizer.Sanitize(this.Location);
-      result.Name = sanitizer.Sanitize(this.Name);
-      result.SerialNumber = sanitizer.Sanitize(this.SerialNumber);
+      result.Notes = this.Notes;
+      result.Location = this.Location;
+      result.Name = this.Name;
+      result.SerialNumber = this.SerialNumber;
       result.OrganizationID = this.OrganizationID;
       result.AssetID = this.AssetID;
        

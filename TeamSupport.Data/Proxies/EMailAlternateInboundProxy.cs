@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -27,15 +26,11 @@ namespace TeamSupport.Data
   {
     public EMailAlternateInboundItemProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       EMailAlternateInboundItemProxy result = new EMailAlternateInboundItemProxy();
       result.ProductID = this.ProductID;
       result.DefaultTicketType = this.DefaultTicketType;
       result.GroupToAssign = this.GroupToAssign;
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Description = this.Description;
       result.OrganizationID = this.OrganizationID;
       result.SystemEMailID = this.SystemEMailID;
        

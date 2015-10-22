@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -27,10 +26,6 @@ namespace TeamSupport.Data
   {
     public CustomPortalColumnProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       CustomPortalColumnProxy result = new CustomPortalColumnProxy();
       result.CustomFieldID = this.CustomFieldID;
       result.StockFieldID = this.StockFieldID;
@@ -63,7 +58,7 @@ namespace TeamSupport.Data
           rt.LoadByReportTableFieldID((int)result.StockFieldID);
           result.FieldText = rt[0].Alias;
       }
-      result.FieldText = sanitizer.Sanitize(result.FieldText); 
+       
        
        
       return result;

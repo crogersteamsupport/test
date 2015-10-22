@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -27,13 +26,9 @@ namespace TeamSupport.Data
   {
     public KBStatProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       KBStatProxy result = new KBStatProxy();
-      result.SearchTerm = sanitizer.Sanitize(this.SearchTerm);
-      result.ViewIP = sanitizer.Sanitize(this.ViewIP);
+      result.SearchTerm = this.SearchTerm;
+      result.ViewIP = this.ViewIP;
       result.KBArticleID = this.KBArticleID;
       result.OrganizationID = this.OrganizationID;
       result.KBViewID = this.KBViewID;

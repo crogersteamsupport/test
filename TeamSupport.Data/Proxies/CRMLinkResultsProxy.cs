@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -25,12 +24,8 @@ namespace TeamSupport.Data
   {
     public CRMLinkResultProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       CRMLinkResultProxy result = new CRMLinkResultProxy();
-      result.AttemptResult = sanitizer.Sanitize(this.AttemptResult);
+      result.AttemptResult = this.AttemptResult;
       result.OrganizationID = this.OrganizationID;
       result.CRMResultsID = this.CRMResultsID;
        

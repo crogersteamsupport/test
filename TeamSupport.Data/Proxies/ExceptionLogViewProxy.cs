@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -32,20 +31,16 @@ namespace TeamSupport.Data
   {
     public ExceptionLogViewItemProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       ExceptionLogViewItemProxy result = new ExceptionLogViewItemProxy();
-      result.Name = sanitizer.Sanitize(this.Name);
-      result.LastName = sanitizer.Sanitize(this.LastName);
-      result.FirstName = sanitizer.Sanitize(this.FirstName);
+      result.Name = this.Name;
+      result.LastName = this.LastName;
+      result.FirstName = this.FirstName;
       result.CreatorID = this.CreatorID;
-      result.StackTrace = sanitizer.Sanitize(this.StackTrace);
-      result.Message = sanitizer.Sanitize(this.Message);
-      result.ExceptionName = sanitizer.Sanitize(this.ExceptionName);
-      result.PageInfo = sanitizer.Sanitize(this.PageInfo);
-      result.URL = sanitizer.Sanitize(this.URL);
+      result.StackTrace = this.StackTrace;
+      result.Message = this.Message;
+      result.ExceptionName = this.ExceptionName;
+      result.PageInfo = this.PageInfo;
+      result.URL = this.URL;
       result.ExceptionLogID = this.ExceptionLogID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);

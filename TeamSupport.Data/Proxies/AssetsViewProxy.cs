@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -41,26 +40,22 @@ namespace TeamSupport.Data
   {
     public AssetsViewItemProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       AssetsViewItemProxy result = new AssetsViewItemProxy();
       result.ImportID = this.ImportID;
-      result.Status = sanitizer.Sanitize(this.Status);
+      result.Status = this.Status;
       result.SubPartOf = this.SubPartOf;
-      result.ModifierName = sanitizer.Sanitize(this.ModifierName);
+      result.ModifierName = this.ModifierName;
       result.ModifierID = this.ModifierID;
-      result.CreatorName = sanitizer.Sanitize(this.CreatorName);
+      result.CreatorName = this.CreatorName;
       result.CreatorID = this.CreatorID;
-      result.Notes = sanitizer.Sanitize(this.Notes);
-      result.Location = sanitizer.Sanitize(this.Location);
-      result.Name = sanitizer.Sanitize(this.Name);
-      result.SerialNumber = sanitizer.Sanitize(this.SerialNumber);
+      result.Notes = this.Notes;
+      result.Location = this.Location;
+      result.Name = this.Name;
+      result.SerialNumber = this.SerialNumber;
       result.OrganizationID = this.OrganizationID;
-      result.ProductVersionNumber = sanitizer.Sanitize(this.ProductVersionNumber);
+      result.ProductVersionNumber = this.ProductVersionNumber;
       result.ProductVersionID = this.ProductVersionID;
-      result.ProductName = sanitizer.Sanitize(this.ProductName);
+      result.ProductName = this.ProductName;
       result.ProductID = this.ProductID;
       result.AssetID = this.AssetID;
        

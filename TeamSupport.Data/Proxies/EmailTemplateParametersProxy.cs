@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -25,13 +24,9 @@ namespace TeamSupport.Data
   {
     public EmailTemplateParameterProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       EmailTemplateParameterProxy result = new EmailTemplateParameterProxy();
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Description = this.Description;
+      result.Name = this.Name;
       result.EmailTemplateID = this.EmailTemplateID;
       result.EmailTemplateParameterID = this.EmailTemplateParameterID;
        

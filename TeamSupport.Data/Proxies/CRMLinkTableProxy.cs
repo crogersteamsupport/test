@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -49,19 +48,15 @@ namespace TeamSupport.Data
   {
     public CRMLinkTableItemProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
       result.InstanceName = sanitizer.Sanitize(this.InstanceName);
       result.UpdateTicketType = this.UpdateTicketType;
-      result.RestrictedToTicketTypes = sanitizer.Sanitize(this.RestrictedToTicketTypes);
+      result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;
       result.AlwaysUseDefaultProjectKey = this.AlwaysUseDefaultProjectKey;
       result.UseSandBoxServer = this.UseSandBoxServer;
       result.MatchAccountsByName = this.MatchAccountsByName;
-      result.DefaultProject = sanitizer.Sanitize(this.DefaultProject);
-      result.HostName = sanitizer.Sanitize(this.HostName);
+      result.DefaultProject = this.DefaultProject;
+      result.HostName = this.HostName;
       result.ActionTypeIDToPush = this.ActionTypeIDToPush;
       result.UpdateStatus = this.UpdateStatus;
       result.PullCustomerProducts = this.PullCustomerProducts;
@@ -72,11 +67,11 @@ namespace TeamSupport.Data
       result.AllowPortalAccess = this.AllowPortalAccess;
       result.LastTicketID = this.LastTicketID;
       result.SendBackTicketData = this.SendBackTicketData;
-      result.TypeFieldMatch = sanitizer.Sanitize(this.TypeFieldMatch);
-      result.SecurityToken1 = sanitizer.Sanitize(this.SecurityToken1);
-      result.Password = sanitizer.Sanitize(this.Password);
-      result.Username = sanitizer.Sanitize(this.Username);
-      result.CRMType = sanitizer.Sanitize(this.CRMType);
+      result.TypeFieldMatch = this.TypeFieldMatch;
+      result.SecurityToken1 = this.SecurityToken1;
+      result.Password = this.Password;
+      result.Username = this.Username;
+      result.CRMType = this.CRMType;
       result.Active = this.Active;
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;

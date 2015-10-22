@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -27,15 +26,11 @@ namespace TeamSupport.Data
   {
     public CustomFieldCategoryProxy GetProxy()
     {
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       CustomFieldCategoryProxy result = new CustomFieldCategoryProxy();
       result.AuxID = this.AuxID;
       result.RefType = this.RefType;
       result.Position = this.Position;
-      result.Category = sanitizer.Sanitize(this.Category);
+      result.Category = this.Category;
       result.OrganizationID = this.OrganizationID;
       result.CustomFieldCategoryID = this.CustomFieldCategoryID;
        
