@@ -17,7 +17,6 @@ using dtSearch.Engine;
 using System.Net;
 using System.IO;
 using System.Globalization;
-using Ganss.XSS;
 
 namespace TSWebServices
 {
@@ -559,15 +558,11 @@ namespace TSWebServices
         builder.Append(CreateRecentlyViewed(item));
       }
       builder.Append("</ul>");
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-      return sanitizer.Sanitize(builder.ToString());
+      return builder.ToString();
     }
 
     public string CreateRecentlyViewed(RecentlyViewedItem recent)
     {
-
       string recentHTML;
       AssetsView assetsView = new AssetsView(TSAuthentication.GetLoginUser());
       assetsView.LoadByAssetID(recent.RefID);

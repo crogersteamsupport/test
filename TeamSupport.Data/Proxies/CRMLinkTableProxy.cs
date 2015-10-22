@@ -49,7 +49,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
-      result.InstanceName = sanitizer.Sanitize(this.InstanceName);
+      result.InstanceName = this.InstanceName;
       result.UpdateTicketType = this.UpdateTicketType;
       result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;
       result.AlwaysUseDefaultProjectKey = this.AlwaysUseDefaultProjectKey;
