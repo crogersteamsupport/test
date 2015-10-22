@@ -18,7 +18,6 @@ using System.Net;
 using System.IO;
 using Newtonsoft.Json;
 using LumenWorks.Framework.IO.Csv;
-using Ganss.XSS;
 
 namespace TSWebServices
 {
@@ -1021,14 +1020,10 @@ namespace TSWebServices
       Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
       organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
 
-		var sanitizer = new HtmlSanitizer();
-		sanitizer.AllowedAttributes.Add("class");
-		sanitizer.AllowedAttributes.Add("id");
-
-		List<AutocompleteItem> list = new List<AutocompleteItem>();
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
       foreach (Organization organization in organizations)
       {
-        list.Add(new AutocompleteItem(sanitizer.Sanitize(organization.Name), organization.OrganizationID.ToString(), organization.OrganizationID.ToString()));
+        list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), organization.OrganizationID.ToString()));
       }
 
       return list.ToArray();
