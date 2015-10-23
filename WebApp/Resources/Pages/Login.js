@@ -5,6 +5,7 @@ var orgCookie = null;
 
 $(document).ready(function () {
 	returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
+	if (returnURL == null) returnURL = '/default.aspx';
 	supportToken = top.Ts.Utils.getQueryValue("SupportToken", window);
 	if (supportToken && supportToken != '')
 	{
