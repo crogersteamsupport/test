@@ -1495,5 +1495,25 @@ SET IDENTITY_INSERT Users Off
         Fill(command);
       }
     }
+
+	 public void LoadByImportID(int parentID, string importID)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"SELECT u.*
+                                FROM Users u 
+                                LEFT JOIN Organizations o
+                                ON o.OrganizationID = u.OrganizationID
+                                WHERE (o.ParentID = @ParentID)
+                                AND (u.ImportID = @ImportID)";
+
+
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@ImportID", importID);
+			 command.Parameters.AddWithValue("@ParentID", parentID);
+			 Fill(command);
+		 }
+	 }
+
   }
 }

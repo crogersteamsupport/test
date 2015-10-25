@@ -513,9 +513,12 @@ namespace TeamSupport.ServiceLibrary
         string location = "2";
         switch (ReadString("Location", location).ToLower().Trim())
         {
+          case "1":
           case "assigned": location = "1"; break;
-          case "warehouse": location = "2"; break;
-          case "junkyard": location = "3"; break;
+			 case "2":
+			 case "warehouse": location = "2"; break;
+			 case "3":
+			 case "junkyard": location = "3"; break;
           default:
             break;
         }
@@ -605,218 +608,278 @@ namespace TeamSupport.ServiceLibrary
         
         if (asset.Location == "1")
         {
-          string nameOfCompanyAssignedTo = ReadString("NameOfCompanyAssignedTo", string.Empty);
-          if (!string.IsNullOrEmpty(nameOfCompanyAssignedTo))
+          Users contactAssignedTo = null;
+			 bool contactMatchedByID = false;
+
+			 string importIDOfCompanyAssignedTo = ReadString("ImportIDOfCompanyAssignedTo", string.Empty);
+			 if (!string.IsNullOrEmpty(importIDOfCompanyAssignedTo))
           {
-            Organizations companyAssignedTo = new Organizations(_importUser);
-            companyAssignedTo.LoadByOrganizationNameActive(nameOfCompanyAssignedTo, _organizationID);
-            if (companyAssignedTo.Count == 1)
-            {
-              string emailOfContactAssignedTo = ReadString("EmailOfContactAssignedTo", string.Empty);
-              if (!string.IsNullOrEmpty(emailOfContactAssignedTo))
-              {
-                Users contactAssignedTo = new Users(_importUser);
-                contactAssignedTo.LoadByEmail(emailOfContactAssignedTo, companyAssignedTo[0].OrganizationID);
-                if (contactAssignedTo.Count == 1)
-                {
-                  DateTime? dateShipped = ReadDateNull("DateShipped", string.Empty);
-                  string shippingMethod = ReadString("ShippingMethod", string.Empty);
-                  if (dateShipped == null || shippingMethod == string.Empty)
-                  {
-                    _importLog.Write(messagePrefix + "Skipped. DateShipped and shippingMethod are required for assigned assets.");
-                    continue;
-                  }
+				 Organizations companyAssignedTo = new Organizations(_importUser);
+				 companyAssignedTo.LoadByImportID(importIDOfCompanyAssignedTo, _organizationID);
+				 if (companyAssignedTo.Count == 1)
+				 {
+					 string importIDOfContactAssignedTo = ReadString("ImportIDOfContactAssignedTo", string.Empty);
+					 string emailOfContactAssignedTo = ReadString("EmailOfContactAssignedTo", string.Empty);
+					 if (!string.IsNullOrEmpty(importIDOfContactAssignedTo))
+					 {
+						 contactAssignedTo = new Users(_importUser);
+						 contactAssignedTo.LoadByImportID(importIDOfContactAssignedTo, companyAssignedTo[0].OrganizationID);
+						 contactMatchedByID = true;
+					 }
+					 else if (!string.IsNullOrEmpty(emailOfContactAssignedTo))
+					 {
+						 contactAssignedTo = new Users(_importUser);
+						 contactAssignedTo.LoadByEmail(emailOfContactAssignedTo, companyAssignedTo[0].OrganizationID);
+					 }
+					 else
+					 {
+						 DateTime? dateShipped = ReadDateNull("DateShipped", string.Empty);
+						 string shippingMethod = ReadString("ShippingMethod", string.Empty);
+						 if (dateShipped == null || shippingMethod == string.Empty)
+						 {
+							 _importLog.Write(messagePrefix + "Skipped. DateShipped and shippingMethod are required for assigned assets.");
+							 continue;
+						 }
 
-                  DateTime validDateShipped = (DateTime)dateShipped;
+						 DateTime validDateShipped = (DateTime)dateShipped;
 
-                  newAssignedAsset.Save();
+						 newAssignedAsset.Save();
 
-                  AssetHistory assetHistory = new AssetHistory(_importUser);
-                  AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+						 AssetHistory assetHistory = new AssetHistory(_importUser);
+						 AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
 
-                  DateTime now = DateTime.UtcNow;
+						 DateTime now = DateTime.UtcNow;
 
-                  assetHistoryItem.AssetID = asset.AssetID;
-                  assetHistoryItem.OrganizationID = _organizationID;
-                  assetHistoryItem.ActionTime = now;
-                  assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
-                  assetHistoryItem.ShippedFrom = _organizationID;
-                  assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
-                  assetHistoryItem.ShippedTo = contactAssignedTo[0].UserID;
-                  assetHistoryItem.TrackingNumber = ReadString("TrackingNumber", assetHistoryItem.TrackingNumber);
-                  assetHistoryItem.ShippingMethod = shippingMethod;
-                  assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber", assetHistoryItem.ReferenceNum);
-                  assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
+						 assetHistoryItem.AssetID = asset.AssetID;
+						 assetHistoryItem.OrganizationID = _organizationID;
+						 assetHistoryItem.ActionTime = now;
+						 assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
+						 assetHistoryItem.ShippedFrom = _organizationID;
+						 assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+						 assetHistoryItem.ShippedTo = companyAssignedTo[0].OrganizationID;
+						 assetHistoryItem.TrackingNumber = ReadString("TrackingNumber", assetHistoryItem.TrackingNumber);
+						 assetHistoryItem.ShippingMethod = shippingMethod;
+						 assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber", assetHistoryItem.ReferenceNum);
+						 assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
 
-                  assetHistoryItem.DateCreated = now;
-                  assetHistoryItem.Actor = -2;
-                  assetHistoryItem.RefType = (int)ReferenceType.Contacts;
-                  assetHistoryItem.DateModified = now;
-                  assetHistoryItem.ModifierID = -2;
-						assetHistoryItem.ImportFileID = import.ImportID;
+						 assetHistoryItem.DateCreated = now;
+						 assetHistoryItem.Actor = -2;
+						 assetHistoryItem.RefType = (int)ReferenceType.Organizations;
+						 assetHistoryItem.DateModified = now;
+						 assetHistoryItem.ModifierID = -2;
+						 assetHistoryItem.ImportFileID = import.ImportID;
 
-                  assetHistory.Save();
+						 assetHistory.Save();
 
-                  AssetAssignments assetAssignments = new AssetAssignments(_importUser);
-                  AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
+						 AssetAssignments assetAssignments = new AssetAssignments(_importUser);
+						 AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
 
-                  assetAssignment.HistoryID = assetHistoryItem.HistoryID;
-						assetAssignment.ImportFileID = import.ImportID;
+						 assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+						 assetAssignment.ImportFileID = import.ImportID;
 
-                  assetAssignments.Save();
+						 assetAssignments.Save();
 
-                  string description = String.Format("Assigned asset to {0}.", contactAssignedTo[0].FirstLastName);
-                  ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
-                }
-                else if (contactAssignedTo.Count > 1)
-                {
-                  _importLog.Write(messagePrefix + "Skipped. More than one email matching asigned contact found.");
-                  continue;
-                }
-                else
-                {
-                  _importLog.Write(messagePrefix + "Skipped. No email matching assigned contact found.");
-                  continue;
-                }
-              }
-              else
-              {
-                DateTime? dateShipped = ReadDateNull("DateShipped", string.Empty);
-                string shippingMethod = ReadString("ShippingMethod", string.Empty);
-                if (dateShipped == null || shippingMethod == string.Empty)
-                {
-                  _importLog.Write(messagePrefix + "Skipped. DateShipped and shippingMethod are required for assigned assets.");
-                  continue;
-                }
+						 string description = String.Format("Assigned asset to {0}.", companyAssignedTo[0].Name);
+						 ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
+					 }
+				 }
+				 else if (companyAssignedTo.Count > 1)
+				 {
+					 _importLog.Write(messagePrefix + "Skipped. More than one ImportID matching company found.");
+					 continue;
+				 }
+				 else
+				 {
+					 _importLog.Write(messagePrefix + "Skipped. No ImportID matching company found.");
+					 continue;
+				 }
+			 }
+			 else
+			 {
+				 string nameOfCompanyAssignedTo = ReadString("NameOfCompanyAssignedTo", string.Empty);
+				 if (!string.IsNullOrEmpty(nameOfCompanyAssignedTo))
+				 {
+					 Organizations companyAssignedTo = new Organizations(_importUser);
+					 companyAssignedTo.LoadByOrganizationNameActive(nameOfCompanyAssignedTo, _organizationID);
+					 if (companyAssignedTo.Count == 1)
+					 {
+						 string importIDOfContactAssignedTo = ReadString("ImportIDOfContactAssignedTo", string.Empty);
+						 string emailOfContactAssignedTo = ReadString("EmailOfContactAssignedTo", string.Empty);
+						 if (!string.IsNullOrEmpty(importIDOfContactAssignedTo))
+						 {
+							 contactAssignedTo = new Users(_importUser);
+							 contactAssignedTo.LoadByImportID(importIDOfContactAssignedTo, companyAssignedTo[0].OrganizationID);
+							 contactMatchedByID = true;
+						 }
+						 else if (!string.IsNullOrEmpty(emailOfContactAssignedTo))
+						 {
+							 contactAssignedTo = new Users(_importUser);
+							 contactAssignedTo.LoadByEmail(emailOfContactAssignedTo, companyAssignedTo[0].OrganizationID);
+						 }
+						 else
+						 {
+							 DateTime? dateShipped = ReadDateNull("DateShipped", string.Empty);
+							 string shippingMethod = ReadString("ShippingMethod", string.Empty);
+							 if (dateShipped == null || shippingMethod == string.Empty)
+							 {
+								 _importLog.Write(messagePrefix + "Skipped. DateShipped and shippingMethod are required for assigned assets.");
+								 continue;
+							 }
 
-                DateTime validDateShipped = (DateTime)dateShipped;
+							 DateTime validDateShipped = (DateTime)dateShipped;
 
-                  newAssignedAsset.Save();
+							 newAssignedAsset.Save();
 
-                AssetHistory assetHistory = new AssetHistory(_importUser);
-                AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+							 AssetHistory assetHistory = new AssetHistory(_importUser);
+							 AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
 
-                DateTime now = DateTime.UtcNow;
+							 DateTime now = DateTime.UtcNow;
 
-                assetHistoryItem.AssetID = asset.AssetID;
-                assetHistoryItem.OrganizationID = _organizationID;
-                assetHistoryItem.ActionTime = now;
-                assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
-                assetHistoryItem.ShippedFrom = _organizationID;
-                assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
-                assetHistoryItem.ShippedTo = companyAssignedTo[0].OrganizationID;
-                assetHistoryItem.TrackingNumber = ReadString("TrackingNumber", assetHistoryItem.TrackingNumber);
-                assetHistoryItem.ShippingMethod = shippingMethod;
-                assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber", assetHistoryItem.ReferenceNum);
-                assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
+							 assetHistoryItem.AssetID = asset.AssetID;
+							 assetHistoryItem.OrganizationID = _organizationID;
+							 assetHistoryItem.ActionTime = now;
+							 assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
+							 assetHistoryItem.ShippedFrom = _organizationID;
+							 assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+							 assetHistoryItem.ShippedTo = companyAssignedTo[0].OrganizationID;
+							 assetHistoryItem.TrackingNumber = ReadString("TrackingNumber", assetHistoryItem.TrackingNumber);
+							 assetHistoryItem.ShippingMethod = shippingMethod;
+							 assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber", assetHistoryItem.ReferenceNum);
+							 assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
 
-                assetHistoryItem.DateCreated = now;
-                assetHistoryItem.Actor = -2;
-                assetHistoryItem.RefType = (int)ReferenceType.Organizations;
-                assetHistoryItem.DateModified = now;
-                assetHistoryItem.ModifierID = -2;
+							 assetHistoryItem.DateCreated = now;
+							 assetHistoryItem.Actor = -2;
+							 assetHistoryItem.RefType = (int)ReferenceType.Organizations;
+							 assetHistoryItem.DateModified = now;
+							 assetHistoryItem.ModifierID = -2;
+							 assetHistoryItem.ImportFileID = import.ImportID;
+
+							 assetHistory.Save();
+
+							 AssetAssignments assetAssignments = new AssetAssignments(_importUser);
+							 AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
+
+							 assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+							 assetAssignment.ImportFileID = import.ImportID;
+
+							 assetAssignments.Save();
+
+							 string description = String.Format("Assigned asset to {0}.", companyAssignedTo[0].Name);
+							 ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
+						 }
+					 }
+					 else if (companyAssignedTo.Count > 1)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. More than one name matching company found.");
+						 continue;
+					 }
+					 else
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No name matching company found.");
+						 continue;
+					 }
+				 }
+				 else
+				 {
+					 string importIDOfContactAssignedTo = ReadString("ImportIDOfContactAssignedTo", string.Empty);
+					 string emailOfContactAssignedTo = ReadString("EmailOfContactAssignedTo", string.Empty);
+					 if (!string.IsNullOrEmpty(importIDOfContactAssignedTo))
+					 {
+						 contactAssignedTo = new Users(_importUser);
+						 contactAssignedTo.LoadByImportID(_organizationID, importIDOfContactAssignedTo);
+						 contactMatchedByID = true;
+					 }
+					 else if (!string.IsNullOrEmpty(emailOfContactAssignedTo))
+					 {
+						 contactAssignedTo = new Users(_importUser);
+						 contactAssignedTo.LoadByEmail(_organizationID, emailOfContactAssignedTo);
+					 }
+					 else
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No company or contact info to assign to.");
+						 continue;
+					 }
+				 }
+			 }
+
+			 if (contactAssignedTo != null)
+			 {
+				 if (contactAssignedTo.Count == 1)
+				 {
+					 DateTime? dateShipped = ReadDateNull("DateShipped", string.Empty);
+					 string shippingMethod = ReadString("ShippingMethod", string.Empty);
+					 if (dateShipped == null || shippingMethod == string.Empty)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. DateShipped and shippingMethod are required for assigned assets.");
+						 continue;
+					 }
+
+					 DateTime validDateShipped = (DateTime)dateShipped;
+
+					 newAssignedAsset.Save();
+
+					 AssetHistory assetHistory = new AssetHistory(_importUser);
+					 AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+					 DateTime now = DateTime.UtcNow;
+
+					 assetHistoryItem.AssetID = asset.AssetID;
+					 assetHistoryItem.OrganizationID = _organizationID;
+					 assetHistoryItem.ActionTime = now;
+					 assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
+					 assetHistoryItem.ShippedFrom = _organizationID;
+					 assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+					 assetHistoryItem.ShippedTo = contactAssignedTo[0].UserID;
+					 assetHistoryItem.TrackingNumber = ReadString("TrackingNumber", assetHistoryItem.TrackingNumber);
+					 assetHistoryItem.ShippingMethod = shippingMethod;
+					 assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber", assetHistoryItem.ReferenceNum);
+					 assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
+
+					 assetHistoryItem.DateCreated = now;
+					 assetHistoryItem.Actor = -2;
+					 assetHistoryItem.RefType = (int)ReferenceType.Contacts;
+					 assetHistoryItem.DateModified = now;
+					 assetHistoryItem.ModifierID = -2;
 					 assetHistoryItem.ImportFileID = import.ImportID;
 
-                assetHistory.Save();
+					 assetHistory.Save();
 
-                AssetAssignments assetAssignments = new AssetAssignments(_importUser);
-                AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
+					 AssetAssignments assetAssignments = new AssetAssignments(_importUser);
+					 AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
 
-                assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+					 assetAssignment.HistoryID = assetHistoryItem.HistoryID;
 					 assetAssignment.ImportFileID = import.ImportID;
 
-                assetAssignments.Save();
+					 assetAssignments.Save();
 
-                string description = String.Format("Assigned asset to {0}.", companyAssignedTo[0].Name);
-                ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
-              }
-            }
-            else if (companyAssignedTo.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one name matching company found.");
-              continue;
-            }
-            else
-            {
-              _importLog.Write(messagePrefix + "Skipped. No name matching company found.");
-              continue;
-            }
-          }
-          else
-          {
-            string emailOfContactAssignedTo = ReadString("EmailOfContactAssignedTo", string.Empty);
-            if (!string.IsNullOrEmpty(emailOfContactAssignedTo))
-            {
-              Users contactAssignedTo = new Users(_importUser);
-              contactAssignedTo.LoadByEmail(_organizationID, emailOfContactAssignedTo);
-              if (contactAssignedTo.Count == 1)
-              {
-                DateTime? dateShipped = ReadDateNull("DateShipped", string.Empty);
-                string shippingMethod = ReadString("ShippingMethod", string.Empty);
-                if (dateShipped == null || shippingMethod == string.Empty)
-                {
-                  _importLog.Write(messagePrefix + "Skipped. DateShipped and shippingMethod are required for assigned assets.");
-                  continue;
-                }
-
-                DateTime validDateShipped = (DateTime)dateShipped;
-
-                newAssignedAsset.Save();
-
-                AssetHistory assetHistory = new AssetHistory(_importUser);
-                AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
-
-                DateTime now = DateTime.UtcNow;
-
-                assetHistoryItem.AssetID = asset.AssetID;
-                assetHistoryItem.OrganizationID = _organizationID;
-                assetHistoryItem.ActionTime = now;
-                assetHistoryItem.ActionDescription = "Asset Shipped on " + validDateShipped.Month.ToString() + "/" + validDateShipped.Day.ToString() + "/" + validDateShipped.Year.ToString();
-                assetHistoryItem.ShippedFrom = _organizationID;
-                assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
-                assetHistoryItem.ShippedTo = contactAssignedTo[0].UserID;
-                assetHistoryItem.TrackingNumber = ReadString("TrackingNumber", assetHistoryItem.TrackingNumber);
-                assetHistoryItem.ShippingMethod = shippingMethod;
-                assetHistoryItem.ReferenceNum = ReadString("ReferenceNumber", assetHistoryItem.ReferenceNum);
-                assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
-
-                assetHistoryItem.DateCreated = now;
-                assetHistoryItem.Actor = -2;
-                assetHistoryItem.RefType = (int)ReferenceType.Contacts;
-                assetHistoryItem.DateModified = now;
-                assetHistoryItem.ModifierID = -2;
-					 assetHistoryItem.ImportFileID = import.ImportID;
-
-                assetHistory.Save();
-
-                AssetAssignments assetAssignments = new AssetAssignments(_importUser);
-                AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
-
-                assetAssignment.HistoryID = assetHistoryItem.HistoryID;
-					 assetAssignment.ImportFileID = import.ImportID;
-
-                assetAssignments.Save();
-
-                string description = String.Format("Assigned asset to {0}.", contactAssignedTo[0].FirstLastName);
-                ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
-              }
-              else if (contactAssignedTo.Count > 1)
-              {
-                _importLog.Write(messagePrefix + "Skipped. More than one email matching contact found.");
-                continue;
-              }
-              else
-              {
-                _importLog.Write(messagePrefix + "Skipped. No email matching contact found.");
-                continue;
-              }
-            }
-            else
-            {
-              _importLog.Write(messagePrefix + "Skipped. No company or contact info to assign to.");
-              continue;
-            }
-          }
+					 string description = String.Format("Assigned asset to {0}.", contactAssignedTo[0].FirstLastName);
+					 ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
+				 }
+				 else if (contactAssignedTo.Count > 1)
+				 {
+					 if (contactMatchedByID)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. More than one ImportID matching asigned contact found.");
+					 }
+					 else
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. More than one email matching asigned contact found.");
+					 }
+					 continue;
+				 }
+				 else
+				 {
+					 if (contactMatchedByID)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No ImportID matching assigned contact found.");
+					 }
+					 else
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No email matching assigned contact found.");
+					 }
+					 continue;
+				 }
+			 }
         }
 
         _importLog.Write(messagePrefix + "Asset " + importID + " added to bulk insert.");
