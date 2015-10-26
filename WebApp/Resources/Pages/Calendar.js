@@ -731,8 +731,22 @@
             calendarinfo.ID = -1;
         calendarinfo.title = $('#inputTitle').val();
 
-        calendarinfo.start = convertToValidDate($('#inputAllDay').is(':checked') ? $('#inputStartTime').val() + " 12:00 am" : $('#inputStartTime').val());
-        calendarinfo.end = convertToValidDate($('#inputAllDay').is(':checked') ? $('#inputEndTime').val() + " 12:00 am" : $('#inputEndTime').val());
+        Date.prototype.stdTimezoneOffset = function () {
+        	var jan = new Date(this.getFullYear(), 0, 1);
+        	var jul = new Date(this.getFullYear(), 6, 1);
+        	return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+        }
+
+        Date.prototype.dst = function () {
+        	return this.getTimezoneOffset() < this.stdTimezoneOffset();
+        }
+
+        var today = new Date();
+        var startDateTz =  $('#inputStartTime').val() + (today.dst() == true ? " 1:00 am" : " 12:00 am");
+        var endDateTz = $('#inputEndTime').val() + (today.dst() == true ? " 12:00 am" : " 1:00 am");
+
+        calendarinfo.start = convertToValidDate($('#inputAllDay').is(':checked') ? startDateTz : $('#inputStartTime').val());
+        calendarinfo.end = convertToValidDate($('#inputAllDay').is(':checked') ? endDateTz : $('#inputEndTime').val());
         calendarinfo.description = $('#inputDescription').val();
         calendarinfo.allday = $('#inputAllDay').is(':checked')
         calendarinfo.PageType = pageType;

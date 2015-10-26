@@ -1047,7 +1047,7 @@ $(document).ready(function () {
           top.Ts.Services.Customers.LoadCustomProductFields(organizationProductID, function (custField) {
               for (var i = 0; i < custField.length; i++) {
                   if (custField[i].FieldType == 2 && custField[i].Value == "True")
-                      $('#' + custField[i].CustomFieldID).attr('checked', true);
+                      $('#' + custField[i].CustomFieldID).prop('checked', true);
                   //else if (custField[i].FieldType == 5)
                   //{
                   //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);
@@ -1104,10 +1104,11 @@ $(document).ready(function () {
   }
 
   $('#tblCustomers').on('click', '.customerDelete', function (e) {
-      e.preventDefault();
+  	e.preventDefault();
+  	if (top.Ts.System.User.CanEditProducts || top.Ts.System.User.IsSystemAdmin)
       if (confirm('Are you sure you would like to remove this customer association?')) {
           top.Ts.System.logAction('Product Detail - Delete Customer');
-          top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
+          top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), false, function (e) {
               LoadCustomers();
           });
             

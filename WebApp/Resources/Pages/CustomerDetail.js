@@ -1097,8 +1097,8 @@ $(document).ready(function () {
 
     top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
         _dateFormat = dateformat.replace('D','DD').replace('DDD','DD');
-        $('.datepicker').attr("data-format", dateformat);
-        $('.datepicker').datetimepicker({ pickTime: false });
+        $('.datepicker').attr("data-format", _dateFormat);
+        $('.datepicker').datetimepicker({ pickTime: false, format: _dateFormat });
 
         $('#productExpiration').attr("data-format", dateformat);
         $('.datetimepicker').datetimepicker({});
@@ -2066,7 +2066,7 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
             $('#customProductsControls').append(html);
 
-            $('#customProductsControls .datepicker').datetimepicker({ pickTime: false });
+            $('#customProductsControls .datepicker').datetimepicker({ pickTime: false, format: _dateFormat });
             $('#customProductsControls .datetimepicker').datetimepicker({});
             $('#customProductsControls .timepicker ').datetimepicker({ pickDate: false });
         });

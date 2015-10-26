@@ -85,7 +85,8 @@ namespace TeamSupport.Data
       Product product = (Product)Products.GetProduct(LoginUser, productVersion.ProductID);
       ProductVersion oldVersion = (ProductVersion)GetProductVersion(LoginUser, productVersion.ProductVersionID);
       string description = "";
-
+		string oldVersionString = oldVersion.ReleaseDate == null ? "empty" : ((DateTime)oldVersion.ReleaseDate).ToString(GetDateFormatNormal())
+		;
       if (oldVersion.Description != productVersion.Description)
       {
         description = "Changed description for version '" + productVersion.VersionNumber + "' on product '" + product.Name + "'";
@@ -100,7 +101,7 @@ namespace TeamSupport.Data
 
       if (oldVersion.ReleaseDate != productVersion.ReleaseDate)
       {
-          description = "Changed the release date for version '" + productVersion.VersionNumber + "' on product '" + product.Name + "' from " + ((DateTime)oldVersion.ReleaseDate).ToString(GetDateFormatNormal()) + "' to '" + ((DateTime)productVersion.ReleaseDate).ToString(GetDateFormatNormal()) + "'";
+			description = "Changed the release date for version '" + productVersion.VersionNumber + "' on product '" + product.Name + "' from " + oldVersionString + "' to '" + ((DateTime)productVersion.ReleaseDate).ToString(GetDateFormatNormal()) + "'";
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.ProductVersions, productVersion.ProductVersionID, description);
       }
 

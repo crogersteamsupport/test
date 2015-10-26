@@ -772,9 +772,9 @@ namespace TeamSupport.Services
     }
 
     [WebMethod(true)]
-    public void DeleteOrganizationProduct(int organizationProductID)
+    public void DeleteOrganizationProduct(int organizationProductID, bool bypass = true)
     {
-      if (!UserSession.CurrentUser.IsSystemAdmin) return;
+      if (!UserSession.CurrentUser.IsSystemAdmin && bypass) return;
       try
       {
         OrganizationProducts organizationProducts = new OrganizationProducts(UserSession.LoginUser);

@@ -19,6 +19,8 @@ namespace TeamSupport.Data
     [DataMember] public int RefID { get; set; }
     [DataMember] public ReferenceType RefType { get; set; }
     [DataMember] public string PhoneNumber { get; set; }
+	 [DataMember]
+	 public string FormattedPhoneNumber { get; set; }
     [DataMember] public string Extension { get; set; }
     [DataMember] public string OtherTypeName { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
@@ -41,17 +43,18 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
       result.ModifierName = this.ModifierName;
       result.CreatorName = this.CreatorName;
-      result.PhoneType = this.PhoneType;
+      result.PhoneType =  (this.PhoneType);
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.OtherTypeName = sanitizer.Sanitize(this.OtherTypeName);
-      result.Extension = sanitizer.Sanitize(this.Extension);
-      result.PhoneNumber = sanitizer.Sanitize(this.PhoneNumber);
+      result.OtherTypeName = (this.OtherTypeName);
+      result.Extension = (this.Extension);
+      result.PhoneNumber = (this.PhoneNumber);
       result.RefType = this.RefType;
       result.RefID = this.RefID;
       result.PhoneTypeID = this.PhoneTypeID;
       result.PhoneID = this.PhoneID;
-       
+		result.FormattedPhoneNumber = this.FormattedPhoneNumber;
+
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        

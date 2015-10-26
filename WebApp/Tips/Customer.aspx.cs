@@ -48,7 +48,7 @@ public partial class Tips_Customer : System.Web.UI.Page
       PhoneNumbersView numbers = new PhoneNumbersView(organization.Collection.LoginUser);
       numbers.LoadByID(organization.OrganizationID, ReferenceType.Organizations);
 
-      foreach (PhoneNumbersViewItem number in numbers)
+		foreach (PhoneNumbersViewItemProxy number in numbers.GetPhoneNumbersViewItemProxies())
       {
         props.Append(string.Format("<dt>{0}</dt><dd>{1} {2}</dd>", number.PhoneType, number.FormattedPhoneNumber, number.Extension));
       }
