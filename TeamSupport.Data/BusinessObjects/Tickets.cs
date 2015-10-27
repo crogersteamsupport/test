@@ -851,6 +851,25 @@ AND ts.IsClosed = 0";
         }
     }
 
+		public void LoadTop5KBByCategoryID(int categoryID, int organizationID) 
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT TOP 5 TicketID, NAME
+																FROM Tickets
+																WHERE 
+																	OrganizationID              = @OrganizationID 
+																	AND IsKnowledgeBase         = 1
+																	AND KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
+																ORDER BY 
+																	DateModified desc";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
+				Fill(command, "Tickets");
+			}
+		}
+
     public void AddOrganization(int organizationID, int ticketID)
     {
       if (GetAssociatedOrganizationCount(LoginUser, organizationID, ticketID) > 0) return;

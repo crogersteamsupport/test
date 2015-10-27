@@ -114,7 +114,6 @@ function IssueAjaxRequest(service, method, data, successCallback, errorCallback)
     },
     success: function (jsonResult) {
       successCallback(jsonResult);
-      //alert(jsonResult.UserId + ' ' + jsonResult.OrganizationId + ' ' + jsonResult.Error + ' ' + jsonResult.Result + ' ' + jsonResult.ResultValue);
     },
     error: function (error, errorStatus, errorThrown) {
       if (errorCallback) errorCallback(error);

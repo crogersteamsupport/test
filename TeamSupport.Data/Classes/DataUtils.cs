@@ -1987,7 +1987,7 @@ namespace TeamSupport.Data
 
           objRow["Action Description"] = HttpUtility.HtmlDecode(objRow["Action Description"].ToString());
 
-          objRow.EndEdit();
+					objRow.EndEdit();
         }
       }
       return table;
