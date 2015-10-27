@@ -69,7 +69,8 @@ namespace TeamSupport.Data
     ContactTickets = 52,
     AssetTickets = 53,
     TicketRelationships = 54,
-    AgentRating = 55
+    AgentRating = 55,
+	 PrimaryContacts = 56
 
   };
 
