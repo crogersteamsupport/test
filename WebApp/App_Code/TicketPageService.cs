@@ -864,7 +864,7 @@ namespace TSWebServices
                 ActionTypeID = action.ActionTypeID,
                 Message = SanitizeMessage(action.Description, loginUser),
                 DateCreated = DateTime.SpecifyKind(action.DateCreatedUtc, DateTimeKind.Utc),
-                DateStarted = DateTime.SpecifyKind((DateTime)action.DateStartedUtc, DateTimeKind.Utc),
+					 DateStarted = action.DateStartedUtc != null ? DateTime.SpecifyKind((DateTime)action.DateStartedUtc, DateTimeKind.Utc) : action.DateStartedUtc,
                 OrganizationID = TSAuthentication.OrganizationID,
                 CreatorID = action.CreatorID,
                 CreatorName = displayName,
