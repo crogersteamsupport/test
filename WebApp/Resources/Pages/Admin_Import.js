@@ -38,7 +38,7 @@ ImportPage = function () {
           	logFileName = imports[i].ImportID + '-rolledback.txt'
           }
           var logFileLink = '<a href="../../../dc/1/importlog/' + imports[i].ImportID + '" title="Log File">' + logFileName + '</a>';
-          if (!imports[i].IsRolledBack) {
+          if (!imports[i].IsRolledBack && imports[i].RefType != 56) {
           	logFileLink += "<a href='' id='" + imports[i].ImportID + "' data-refType='" + imports[i].RefType + "' class='rollback' title='Rollback'><span class='fa fa-undo'></span></a>";
           }
 

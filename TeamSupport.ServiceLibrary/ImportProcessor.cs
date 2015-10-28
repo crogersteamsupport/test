@@ -193,6 +193,9 @@ namespace TeamSupport.ServiceLibrary
 				_csv = new CsvReader(new StreamReader(csvFile), true);
 				ImportCustomFields(import.RefType, import.ImportID);
 				break;
+			 case ReferenceType.PrimaryContacts:
+				ImportPrimaryContacts(import);
+				break;
 			 default:
             Logs.WriteEvent("ERROR: Unknown Reference Type");
             break;
@@ -5146,6 +5149,66 @@ namespace TeamSupport.ServiceLibrary
 		 organizationProducts.BulkSave();
 		 UpdateImportCount(import, count);
 		 _importLog.Write(count.ToString() + " organization products imported.");
+
+	 }
+
+	 private void ImportPrimaryContacts(Import import)
+	 {
+		 Organizations companies = new Organizations(_importUser);
+		 companies.LoadByParentID(_organizationID, false);
+
+		 Users contacts = new Users(_loginUser);
+		 contacts.LoadContacts(_organizationID, false);
+
+		 int count = 0;
+		 while (_csv.ReadNextRecord())
+		 {
+			 long rowNumber = _csv.CurrentRecordIndex + 1;
+			 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
+
+			 string companyImportID = ReadString("CompanyImportID", string.Empty);
+			 if (companyImportID != string.Empty)
+			 {
+				 Organization company = companies.FindByImportID(companyImportID);
+				 if (company == null)
+				 {
+					 _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyImportID " + companyImportID + " was found.");
+					 continue;
+				 }
+				 else
+				 {
+					 string contactImportID = ReadString("ContactImportID", string.Empty);
+					 if (contactImportID != string.Empty)
+					 {
+						 User contact = contacts.FindByImportID(contactImportID);
+						 if (contact == null)
+						 {
+							 _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactImportID " + contactImportID + " was found.");
+							 continue;
+						 }
+						 else
+						 {
+							company.PrimaryUserID = contact.UserID;
+							_importLog.Write(messagePrefix + "Company with importID: " + companyImportID + " Primary Contact set as contact with importID: " + contactImportID + ".");
+							count++;
+						 }
+					 }
+					 else
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. ContactImportID is required.");
+						 continue;
+					 }					 
+				 }
+			 }
+			 else
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. CompanyImportID is required.");
+				 continue;
+			 }
+		 }
+		 companies.Save();
+		 UpdateImportCount(import, count);
+		 _importLog.Write(count.ToString() + " Primary Contacts imported.");
 
 	 }
 
