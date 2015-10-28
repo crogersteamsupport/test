@@ -1,4 +1,4 @@
-﻿var dateformat;
+﻿var dateFormat;
 var _dueDate = null;
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
@@ -689,6 +689,23 @@ function InsertCreateError(message) {
 }
 
 function SetupDescriptionEditor() {
+	top.Ts.Services.Customers.GetDateFormat(false, function (format) {
+		dateFormat = format.replace("yyyy", "yy");
+		if (dateFormat.length < 8) {
+			var dateArr = dateFormat.split('/');
+			if (dateArr[0].length < 2) {
+				dateArr[0] = dateArr[0] + dateArr[0];
+			}
+			if (dateArr[1].length < 2) {
+				dateArr[1] = dateArr[1] + dateArr[1];
+			}
+			if (dateArr[2].length < 2) {
+				dateArr[1] = dateArr[1] + dateArr[1];
+			}
+			dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
+		}
+	});
+
   initEditor($('#ticket-description'), true, function (ed) {
     AppendTicketTypeTemplate(_lastTicketTypeID);
 
@@ -1748,7 +1765,10 @@ function showCustomFields() {
 };
 
 function SetupActionTimers() {
-  $('#action-new-date-started').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
+	if ($('#action-new-date-started').data("DateTimePicker"))
+		$('#action-new-date-started').data("DateTimePicker").destroy();
+
+	$('#action-new-date-started').datetimepicker({ format: dateFormat + ' hh:mm A', defaultDate: new Date() });
 
   $('.spinner .btn:first-of-type').click(function () {
     var spinner = $(this).parent().prev();

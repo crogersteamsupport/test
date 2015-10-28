@@ -388,7 +388,7 @@ namespace TeamSupport.Data
     {
         using (SqlCommand command = new SqlCommand())
         {
-			  command.CommandText = "SELECT FirstLastName,AppChatID,UserID  FROM Users WHERE (AppChatstatus = 1) AND (organizationid = @orgid) and (AppChatID != '') and (userid != @userid)";
+			  command.CommandText = "SELECT FirstName, LastName,AppChatID,UserID  FROM Users WHERE (AppChatstatus = 1) AND (organizationid = @orgid) and (AppChatID != '') and (userid != @userid)";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@orgid", organizationID);
             command.Parameters.AddWithValue("@userid", userID);
