@@ -485,7 +485,6 @@ function CreateNewActionLI() {
   });
 
   $('#action-new-save').click(function (e) {
-    debugger;
   	if ($("#recorder").length == 0) {
   		e.preventDefault();
   		e.stopPropagation();
@@ -949,7 +948,9 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
-  action.Description = tinymce.activeEditor.getContent();
+  action.Description = $('#action-new-editor').html();
+
+  //action.Description = tinymce.activeEditor.getContent();
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
   top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
