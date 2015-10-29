@@ -1545,6 +1545,7 @@ function SetupCustomerSection() {
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     },
+	 create: true,
     closeAfterSelect: true,
     plugins: {
       'sticky_placeholder': {},
