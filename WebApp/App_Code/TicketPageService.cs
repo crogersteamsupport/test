@@ -239,33 +239,53 @@ namespace TSWebServices
             return timeLineItems.ToArray();
         }
 
-        [WebMethod]
-        public TimeLineItem RequestUpdate(int ticketID)
-        {
-          TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
-          if (ticket == null) return null;
-          EmailPosts.SendTicketUpdateRequest(TSAuthentication.GetLoginUser(), ticketID);
-          User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
-          TeamSupport.Data.Action action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
-          action.ActionTypeID = null;
-          action.Name = "Update Requested";
-          action.ActionSource = "UpdateRequest";
-          action.SystemActionTypeID = SystemActionType.UpdateRequest;
-          action.Description = String.Format("<p>{0} requested an update for this ticket.</p>", user.FirstName);
-          action.IsVisibleOnPortal = false;
-          action.IsKnowledgeBase = false;
-          action.TicketID = ticket.TicketID;
-          action.CreatorID = TSAuthentication.UserID;
-          action.Collection.Save();
+		[WebMethod]
+		public TimeLineItem RequestUpdate(int ticketID)
+		{
+			TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+			if (ticket == null) return null;
+			EmailPosts.SendTicketUpdateRequest(TSAuthentication.GetLoginUser(), ticketID);
+			User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+			TeamSupport.Data.Action action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+			action.ActionTypeID = null;
+			action.Name = "Update Requested";
+			action.ActionSource = "UpdateRequest";
+			action.SystemActionTypeID = SystemActionType.UpdateRequest;
+			action.Description = String.Format("<p>{0} requested an update for this ticket.</p>", user.FirstName);
+			action.IsVisibleOnPortal = false;
+			action.IsKnowledgeBase = false;
+			action.TicketID = ticket.TicketID;
+			action.CreatorID = TSAuthentication.UserID;
+			action.Collection.Save();
 
 
-          string description = String.Format("{0} requested an update from {1} for {2}", user.FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
-          ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+			string description = String.Format("{0} requested an update from {1} for {2}", user.FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
+			ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
 
-          return GetActionTimelineItem(action);
-        }
+			return GetActionTimelineItem(action);
+		}
 
-        [WebMethod]
+		[WebMethod]
+		public TimeLineItem EmailTicket(int ticketID, string addresses, string introduction)
+		{
+			addresses = addresses.Length > 200 ? addresses.Substring(0, 200) : addresses;
+			EmailPosts posts = new EmailPosts(TSAuthentication.GetLoginUser());
+			EmailPost post = posts.AddNewEmailPost();
+			post.EmailPostType = EmailPostType.TicketSendEmail;
+			post.HoldTime = 0;
+
+			post.Param1 = TSAuthentication.UserID.ToString();
+			post.Param2 = ticketID.ToString();
+			post.Param3 = addresses;
+			post.Text1 = introduction;
+			posts.Save();
+
+			string actionText = string.Format("<i>Action added via introduction e-mail to: {0} </i> <br><br>{1}", addresses, introduction);
+      string logPost = string.Format("{0} sent a email introduction to {1}", TSAuthentication.GetLoginUser().GetUserFullName(), addresses);
+			return LogAction(ticketID, SystemActionType.Email, "Email Introduction", actionText, logPost);
+    }
+
+		[WebMethod]
         public int GetActionCount(int ticketID)
         {
             return Actions.GetTicketActionCount(TSAuthentication.GetLoginUser(), ticketID);
@@ -924,5 +944,26 @@ namespace TSWebServices
 
           }
         }
-    }
+
+		private TimeLineItem LogAction(int ticketID, SystemActionType actionType, string name, string actionText, string actionLog)
+		{
+			TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+			User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+			TeamSupport.Data.Action action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+			action.ActionTypeID = null;
+			action.Name = name;
+			action.ActionSource = name;
+			action.SystemActionTypeID = actionType;
+			action.Description = actionText;
+			action.IsVisibleOnPortal = false;
+			action.IsKnowledgeBase = false;
+			action.TicketID = ticket.TicketID;
+			action.CreatorID = TSAuthentication.UserID;
+			action.Collection.Save();
+
+			ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLog);
+
+			return GetActionTimelineItem(action);
+		}
+	}
 }

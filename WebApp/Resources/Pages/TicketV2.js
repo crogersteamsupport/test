@@ -4038,7 +4038,7 @@ function CreateTicketToolbarDomEvents() {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Emailed');
-    top.Ts.Services.Tickets.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function () {
+    top.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function () {
       $('#email-success').show();
       $('#EmailModal').modal('hide');
     }, function () {
