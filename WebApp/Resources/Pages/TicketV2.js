@@ -1396,6 +1396,7 @@ function SetupTicketPropertyEvents() {
         alert('There was an error saving the ticket portal visible\'s status.');
       });
     }
+    else alert("Sorry, you do not have permission to change ticket visibility, please contact your TeamSupport admin.")
   });
 
   $('#ticket-isKB').change(function (e) {
@@ -3629,6 +3630,9 @@ function CreateTimeLineDelegates() {
       }, function () {
         alert('There was an error editing this action.');
       });
+    }
+    else {
+    	alert('Sorry, you do not have permission to change ticket visibility, please contact your TeamSupport admin.')
     }
   });
 
