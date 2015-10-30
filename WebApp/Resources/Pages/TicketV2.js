@@ -4038,8 +4038,11 @@ function CreateTicketToolbarDomEvents() {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Emailed');
-    top.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function () {
-      $('#email-success').show();
+    top.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function (actionInfo) {
+    	$('#email-success').show();
+    	_actionTotal = _actionTotal + 1;
+    	var actionElement = CreateActionElement(actionInfo, false);
+    	actionElement.find('.ticket-action-number').text(_actionTotal);
       $('#EmailModal').modal('hide');
     }, function () {
       $('#email-error').show();
