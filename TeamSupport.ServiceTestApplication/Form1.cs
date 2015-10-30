@@ -152,7 +152,7 @@ namespace TeamSupport.ServiceTestApplication
       msg.From.Email = "blah@blah.com";
       msg.From.Name = "Mr. blah";
       msg.BodyParts.Add(new Quiksoft.EasyMail.SMTP.BodyPart("<h1>Hello</h1>", BodyPartFormat.HTML));
-      msg.Attachments.Add("c:\\tesxt.png");
+      //msg.Attachments.Add("c:\\tesxt.png");
       msg.CustomHeaders.Add("X-xsMessageId", "");
       msg.CustomHeaders.Add("X-xsMailingId", "");
       //message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
