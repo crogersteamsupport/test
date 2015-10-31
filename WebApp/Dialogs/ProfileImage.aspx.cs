@@ -134,45 +134,61 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 
     public override bool Save()
     {
-        String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
-        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
-        RemoveCachedImages(UserSession.LoginUser.OrganizationID, _userID);
-
-        if (img1.Value != "")
+        try
         {
-            img1.Value = img1.Value.Replace(".ashx", "");
-				string source = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), uploadedFileName);//temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
-				string dest = path + '\\' + _userID + "avatar.jpg";
-            ImageBuilder.Current.Build(source, dest , new ResizeSettings(img1.Value));
+            String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
+            string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
+            RemoveCachedImages(UserSession.LoginUser.OrganizationID, _userID);
 
-            Attachments attachments = new Attachments(UserSession.LoginUser);
-            ////string directory = TSUtils.GetAttachmentPath("Actions", actionID);
-
-            Attachments att = new Attachments(TSAuthentication.GetLoginUser());
-            att.LoadByReference(ReferenceType.UserPhoto, _userID);
-
-				File.Delete(temppath + '\\' + uploadedFileName);
-
-            if (att.Count > 0)
+            if (img1.Value != "")
             {
-                att[0].FileName = _userID + "avatar.jpg";
-                att[0].Path = path + '\\' + _userID + "avatar.jpg";
-                att.Save();
-            }
-            else
-            {
-                Attachment attachment = attachments.AddNewAttachment();
-                attachment.RefType = ReferenceType.UserPhoto;
-                attachment.RefID = _userID;
-                attachment.OrganizationID = _organizationID;
-                attachment.FileName = _userID + "avatar.jpg";
-                attachment.Path = path + '\\' + _userID + "avatar.jpg";
-                attachment.FileType = "image/jpeg";
-                attachment.FileSize = -1;
+                img1.Value = img1.Value.Replace(".ashx", "");
+                string source = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), Session["WorkingImage"].ToString());//temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
+                string dest = path + '\\' + _userID + "avatar.jpg";
+                try
+                {
+                    ImageBuilder.Current.Build(source, dest, new ResizeSettings(img1.Value));
+                }
+                catch (Exception ex2)
+                {
+                    ExceptionLogs.LogException(UserSession.LoginUser, ex2, "ImageBuilder", string.Format("source:{0},  dest:{1}", source, dest));
+                    throw;
+                }
 
-                attachments.Save();
+                Attachments attachments = new Attachments(UserSession.LoginUser);
+                ////string directory = TSUtils.GetAttachmentPath("Actions", actionID);
 
+                Attachments att = new Attachments(TSAuthentication.GetLoginUser());
+                att.LoadByReference(ReferenceType.UserPhoto, _userID);
+
+                File.Delete(source);
+
+                if (att.Count > 0)
+                {
+                    att[0].FileName = _userID + "avatar.jpg";
+                    att[0].Path = path + '\\' + _userID + "avatar.jpg";
+                    att.Save();
+                }
+                else
+                {
+                    Attachment attachment = attachments.AddNewAttachment();
+                    attachment.RefType = ReferenceType.UserPhoto;
+                    attachment.RefID = _userID;
+                    attachment.OrganizationID = _organizationID;
+                    attachment.FileName = _userID + "avatar.jpg";
+                    attachment.Path = path + '\\' + _userID + "avatar.jpg";
+                    attachment.FileType = "image/jpeg";
+                    attachment.FileSize = -1;
+
+                    attachments.Save();
+
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            ExceptionLogs.LogException(UserSession.LoginUser, ex, "Save Avatar");
+            throw;
         }
         return true;
     }
