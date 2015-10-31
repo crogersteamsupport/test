@@ -3154,7 +3154,7 @@ namespace TeamSupport.ServiceLibrary
 
         ticket.DueDate = ReadDateNull("DueDate", string.Empty);
 
-        Product product;
+        Product product = null;
         int productID = ReadInt("ProductID");
         if (productID != 0)
         {
@@ -3166,8 +3166,8 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (productID != 0)
-        {
+		  if (productID == 0)
+		  {
           string productImportID = ReadString("ProductImportID", string.Empty);
           if (productImportID != string.Empty)
           {
@@ -3184,34 +3184,46 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        string productName = ReadString("Product", string.Empty);
-        if (productID != 0 && !string.IsNullOrEmpty(productName))
-        {
-          product = products.FindByName(productName);
-          if (product == null)
-          {
-            Products newProducts = new Products(_importUser);
-            product = newProducts.AddNewProduct();
-            product.Name = productName;
-            product.Description = productName;
-            product.OrganizationID = _organizationID;
-            product.CreatorID = creatorID;
-            product.ModifierID = -2;
-            product.DateCreated = now;
-            product.DateModified = now;
-				product.ImportFileID = import.ImportID;
+        if (productID == 0)
+		  {
+			  string productName = ReadString("Product", string.Empty);
+			  if (!string.IsNullOrEmpty(productName))
+			  {
+				 product = products.FindByName(productName);
+				 if (product == null)
+				 {
+					Products newProducts = new Products(_importUser);
+					product = newProducts.AddNewProduct();
+					product.Name = productName;
+					product.Description = productName;
+					product.OrganizationID = _organizationID;
+					product.CreatorID = creatorID;
+					product.ModifierID = -2;
+					product.DateCreated = now;
+					product.DateModified = now;
+					product.ImportFileID = import.ImportID;
 
-            newProducts.Save();
-            products = new Products(_importUser);
-            products.LoadByOrganizationID(_organizationID);
-          }
-          ticket.ProductID = product.ProductID;
-        }
-        else if (account[0].ProductRequired)
-        {
-          _importLog.Write(messagePrefix + "Skipped. Product is required.");
-          continue;
-        }
+					newProducts.Save();
+					products = new Products(_importUser);
+					products.LoadByOrganizationID(_organizationID);
+				 }
+				 productID = product.ProductID;
+			  }
+		  }
+
+
+        if (productID == 0)
+		  {
+			  if (account[0].ProductRequired)
+			  {
+				 _importLog.Write(messagePrefix + "Skipped. Product is required.");
+				 continue;
+			  }
+		  }
+		  else
+		  {
+			  ticket.ProductID = productID;
+		  }
 
         ProductVersion reportedVersion;
         int reportedVersionID = ReadInt("ReportedVersionID");
