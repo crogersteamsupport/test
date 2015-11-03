@@ -324,7 +324,6 @@ function SetupTicketProperties() {
   }
 
   $('#ticket-properties-area').on('click', 'span.tagRemove', function (e) {
-  debugger
     var tag = $(this).parent();
     tag.remove();
     if ($(tag).hasClass("OrgAnchor")) ReloadProductList();

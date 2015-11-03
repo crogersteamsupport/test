@@ -3439,8 +3439,10 @@ function CreateHandleBarHelpers() {
     if (mins > 0) timeSpentString += mins + ((mins > 1) ? " minutes " : " minute ");
     if (timeSpentString == "") return ""
     else {
-      var time = this.item.DateStarted.localeFormat(top.Ts.Utils.getDateTimePattern())
-      return timeSpentString + " - " + time
+    	if (this.item.DateStarted !== null) {
+    		var time = this.item.DateStarted.localeFormat(top.Ts.Utils.getDateTimePattern())
+    		return timeSpentString + " - " + time
+    	}
     }
 
     return timeSpentString;
