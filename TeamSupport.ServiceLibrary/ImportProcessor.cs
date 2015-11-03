@@ -2486,7 +2486,7 @@ namespace TeamSupport.ServiceLibrary
               if (contactImportID != string.Empty)
               {
                 Users existingContact = new Users(_importUser);
-                existingContact.LoadByImportID(contactImportID, _organizationID);
+					 existingContact.LoadByImportID(_organizationID, contactImportID);
                 if (existingContact.Count == 1)
                 {
                   contactID = existingContact[0].UserID;
@@ -2496,6 +2496,11 @@ namespace TeamSupport.ServiceLibrary
                   _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactImportID " + contactImportID+ " was found for phone numbers.");
                   continue;
                 }
+					 else
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactImportID " + contactImportID + " was found for phone numbers.");
+						 continue;
+					 }
               }
             }
 
