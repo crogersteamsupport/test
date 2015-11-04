@@ -1,7 +1,9 @@
 ﻿var loginService = '/Services/LoginService.asmx/';
 var returnURL = '/default.aspx';
+var codeInfoTemplate = 'A verification code has been sent to the phone number:  {0}. </br> If this is not the correct number please contact your Team Support admin.';
 
 $(document).ready(function () {
+	GetUserPhoneNumb();
   $('#verify').click(function (e) {
     e.preventDefault();
     var code = $('#inputVerificationCode').val();
@@ -46,25 +48,35 @@ $(document).ready(function () {
   })
 });
 
+function GetUserPhoneNumb() {
+	var userId = top.Ts.Utils.getQueryValue("UserID", window);
+	IssueAjaxRequest(loginService, "GetUsersPhoneNumber", { "userID": parseInt(userId) }, successEvent, function () { });
+}
+
+function successEvent(result) {
+	$('#codeInfo').html(codeInfoTemplate.replace("{0}", result));
+}
+
 function IssueAjaxRequest(service, method, data, successCallback, errorCallback) {
-  $.ajax({
-    type: "POST",
-    url: service + method,
-    data: JSON.stringify(data),
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    dataFilter: function (data) {
-      var jsonResult = eval('(' + data + ')');
-      if (jsonResult.hasOwnProperty('d'))
-        return jsonResult.d;
-      else
-        return jsonResult;
-    },
-    success: function (jsonResult) {
-      successCallback(jsonResult);
-    },
-    error: function (error, errorStatus, errorThrown) {
-      errorCallback(error);
-    }
-  });
+	$.ajax({
+		type: "POST",
+		url: service + method,
+		data: JSON.stringify(data),
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		cache: false,
+		dataFilter: function (data) {
+			var jsonResult = eval('(' + data + ')');
+			if (jsonResult.hasOwnProperty('d'))
+				return jsonResult.d;
+			else
+				return jsonResult;
+		},
+		success: function (jsonResult) {
+			successCallback(jsonResult);
+		},
+		error: function (error, errorStatus, errorThrown) {
+			if (errorCallback) errorCallback(error);
+		}
+	});
 }

@@ -348,6 +348,13 @@ namespace TSWebServices
 		}
 
 		[WebMethod]
+		public string GetUsersPhoneNumber(int userID)
+		{
+			User user = Users.GetUser(LoginUser.Anonymous, userID);
+			return JsonConvert.SerializeObject(user.verificationPhoneNumber);
+		}
+
+		[WebMethod]
 		[ScriptMethod(ResponseFormat = ResponseFormat.Json)]
 		public string GetRemoteLoginUsers(string email, string passPhrase)
 		{
@@ -400,7 +407,7 @@ namespace TSWebServices
 		 }
 
 
-		 [WebMethod]
+		[WebMethod]
 		 public string[] SavePassword(int userID, string token, string pw1, string pw2)
 		 {
 			 List<string> result = new List<string>();
