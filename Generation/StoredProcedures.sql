@@ -1,775 +1,625 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
+CREATE PROCEDURE dbo.uspGeneratedSelectNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
+    [NoteID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID]
+  FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
+CREATE PROCEDURE dbo.uspGeneratedInsertNot
 
 (
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @DateCreated datetime,
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
   @CreatorID int,
-  @IsRolledBack bit,
+  @ModifierID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
+  INSERT INTO [dbo].[Notes]
   (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack])
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID])
   VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
     @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @IsDeleted,
-    @NeedsDeleted,
-    @TotalRows,
-    @CompletedRows,
-    @DateStarted,
-    @DateEnded,
-    @DateCreated,
+    @RefID,
+    @Title,
+    @Description,
     @CreatorID,
-    @IsRolledBack)
+    @ModifierID,
+    @DateCreated,
+    @DateModified,
+    @NeedsIndexing,
+    @IsAlert,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+CREATE PROCEDURE dbo.uspGeneratedUpdateNot
 
 (
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
+  @NoteID int,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @IsRolledBack bit
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
+  @ModifierID int,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
+  UPDATE [dbo].[Notes]
   SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
     [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning,
-    [IsDeleted] = @IsDeleted,
-    [NeedsDeleted] = @NeedsDeleted,
-    [TotalRows] = @TotalRows,
-    [CompletedRows] = @CompletedRows,
-    [DateStarted] = @DateStarted,
-    [DateEnded] = @DateEnded,
-    [IsRolledBack] = @IsRolledBack
-  WHERE ([ImportID] = @ImportID)
+    [RefID] = @RefID,
+    [Title] = @Title,
+    [Description] = @Description,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified,
+    [NeedsIndexing] = @NeedsIndexing,
+    [IsAlert] = @IsAlert,
+    [ImportFileID] = @ImportFileID
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+CREATE PROCEDURE dbo.uspGeneratedDeleteNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+  DELETE FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
+CREATE PROCEDURE dbo.uspGeneratedSelectNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
+    [NoteID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID]
+  FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
+CREATE PROCEDURE dbo.uspGeneratedInsertNot
 
 (
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @DateCreated datetime,
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
   @CreatorID int,
-  @IsRolledBack bit,
+  @ModifierID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
+  INSERT INTO [dbo].[Notes]
   (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack])
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID])
   VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
     @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @IsDeleted,
-    @NeedsDeleted,
-    @TotalRows,
-    @CompletedRows,
-    @DateStarted,
-    @DateEnded,
-    @DateCreated,
+    @RefID,
+    @Title,
+    @Description,
     @CreatorID,
-    @IsRolledBack)
+    @ModifierID,
+    @DateCreated,
+    @DateModified,
+    @NeedsIndexing,
+    @IsAlert,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+CREATE PROCEDURE dbo.uspGeneratedUpdateNot
 
 (
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
+  @NoteID int,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @IsRolledBack bit
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
+  @ModifierID int,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
+  UPDATE [dbo].[Notes]
   SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
     [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning,
-    [IsDeleted] = @IsDeleted,
-    [NeedsDeleted] = @NeedsDeleted,
-    [TotalRows] = @TotalRows,
-    [CompletedRows] = @CompletedRows,
-    [DateStarted] = @DateStarted,
-    [DateEnded] = @DateEnded,
-    [IsRolledBack] = @IsRolledBack
-  WHERE ([ImportID] = @ImportID)
+    [RefID] = @RefID,
+    [Title] = @Title,
+    [Description] = @Description,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified,
+    [NeedsIndexing] = @NeedsIndexing,
+    [IsAlert] = @IsAlert,
+    [ImportFileID] = @ImportFileID
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+CREATE PROCEDURE dbo.uspGeneratedDeleteNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+  DELETE FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
+CREATE PROCEDURE dbo.uspGeneratedSelectNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
+    [NoteID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID]
+  FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
+CREATE PROCEDURE dbo.uspGeneratedInsertNot
 
 (
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @DateCreated datetime,
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
   @CreatorID int,
-  @IsRolledBack bit,
+  @ModifierID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
+  INSERT INTO [dbo].[Notes]
   (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack])
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID])
   VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
     @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @IsDeleted,
-    @NeedsDeleted,
-    @TotalRows,
-    @CompletedRows,
-    @DateStarted,
-    @DateEnded,
-    @DateCreated,
+    @RefID,
+    @Title,
+    @Description,
     @CreatorID,
-    @IsRolledBack)
+    @ModifierID,
+    @DateCreated,
+    @DateModified,
+    @NeedsIndexing,
+    @IsAlert,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+CREATE PROCEDURE dbo.uspGeneratedUpdateNot
 
 (
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
+  @NoteID int,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @IsRolledBack bit
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
+  @ModifierID int,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
+  UPDATE [dbo].[Notes]
   SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
     [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning,
-    [IsDeleted] = @IsDeleted,
-    [NeedsDeleted] = @NeedsDeleted,
-    [TotalRows] = @TotalRows,
-    [CompletedRows] = @CompletedRows,
-    [DateStarted] = @DateStarted,
-    [DateEnded] = @DateEnded,
-    [IsRolledBack] = @IsRolledBack
-  WHERE ([ImportID] = @ImportID)
+    [RefID] = @RefID,
+    [Title] = @Title,
+    [Description] = @Description,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified,
+    [NeedsIndexing] = @NeedsIndexing,
+    [IsAlert] = @IsAlert,
+    [ImportFileID] = @ImportFileID
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+CREATE PROCEDURE dbo.uspGeneratedDeleteNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+  DELETE FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
+CREATE PROCEDURE dbo.uspGeneratedSelectNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
+    [NoteID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID]
+  FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
+CREATE PROCEDURE dbo.uspGeneratedInsertNot
 
 (
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @DateCreated datetime,
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
   @CreatorID int,
-  @IsRolledBack bit,
+  @ModifierID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
+  INSERT INTO [dbo].[Notes]
   (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack])
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID])
   VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
     @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @IsDeleted,
-    @NeedsDeleted,
-    @TotalRows,
-    @CompletedRows,
-    @DateStarted,
-    @DateEnded,
-    @DateCreated,
+    @RefID,
+    @Title,
+    @Description,
     @CreatorID,
-    @IsRolledBack)
+    @ModifierID,
+    @DateCreated,
+    @DateModified,
+    @NeedsIndexing,
+    @IsAlert,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+CREATE PROCEDURE dbo.uspGeneratedUpdateNot
 
 (
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
+  @NoteID int,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @IsRolledBack bit
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
+  @ModifierID int,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
+  UPDATE [dbo].[Notes]
   SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
     [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning,
-    [IsDeleted] = @IsDeleted,
-    [NeedsDeleted] = @NeedsDeleted,
-    [TotalRows] = @TotalRows,
-    [CompletedRows] = @CompletedRows,
-    [DateStarted] = @DateStarted,
-    [DateEnded] = @DateEnded,
-    [IsRolledBack] = @IsRolledBack
-  WHERE ([ImportID] = @ImportID)
+    [RefID] = @RefID,
+    [Title] = @Title,
+    [Description] = @Description,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified,
+    [NeedsIndexing] = @NeedsIndexing,
+    [IsAlert] = @IsAlert,
+    [ImportFileID] = @ImportFileID
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+CREATE PROCEDURE dbo.uspGeneratedDeleteNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+  DELETE FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectImport
+CREATE PROCEDURE dbo.uspGeneratedSelectNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ImportID],
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
+    [NoteID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack]
-  FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID]
+  FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertImport
+CREATE PROCEDURE dbo.uspGeneratedInsertNot
 
 (
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @DateCreated datetime,
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
   @CreatorID int,
-  @IsRolledBack bit,
+  @ModifierID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Imports]
+  INSERT INTO [dbo].[Notes]
   (
-    [FileName],
-    [OrganizationID],
-    [ImportGUID],
     [RefType],
-    [AuxID],
-    [IsDone],
-    [IsRunning],
-    [IsDeleted],
-    [NeedsDeleted],
-    [TotalRows],
-    [CompletedRows],
-    [DateStarted],
-    [DateEnded],
-    [DateCreated],
+    [RefID],
+    [Title],
+    [Description],
     [CreatorID],
-    [IsRolledBack])
+    [ModifierID],
+    [DateCreated],
+    [DateModified],
+    [NeedsIndexing],
+    [IsAlert],
+    [ImportFileID])
   VALUES (
-    @FileName,
-    @OrganizationID,
-    @ImportGUID,
     @RefType,
-    @AuxID,
-    @IsDone,
-    @IsRunning,
-    @IsDeleted,
-    @NeedsDeleted,
-    @TotalRows,
-    @CompletedRows,
-    @DateStarted,
-    @DateEnded,
-    @DateCreated,
+    @RefID,
+    @Title,
+    @Description,
     @CreatorID,
-    @IsRolledBack)
+    @ModifierID,
+    @DateCreated,
+    @DateModified,
+    @NeedsIndexing,
+    @IsAlert,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateImport
+CREATE PROCEDURE dbo.uspGeneratedUpdateNot
 
 (
-  @ImportID int,
-  @FileName varchar(255),
-  @OrganizationID int,
-  @ImportGUID uniqueidentifier,
+  @NoteID int,
   @RefType int,
-  @AuxID int,
-  @IsDone bit,
-  @IsRunning bit,
-  @IsDeleted bit,
-  @NeedsDeleted bit,
-  @TotalRows int,
-  @CompletedRows int,
-  @DateStarted datetime,
-  @DateEnded datetime,
-  @IsRolledBack bit
+  @RefID int,
+  @Title varchar(1000),
+  @Description varchar(MAX),
+  @ModifierID int,
+  @DateModified datetime,
+  @NeedsIndexing bit,
+  @IsAlert bit,
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Imports]
+  UPDATE [dbo].[Notes]
   SET
-    [FileName] = @FileName,
-    [OrganizationID] = @OrganizationID,
-    [ImportGUID] = @ImportGUID,
     [RefType] = @RefType,
-    [AuxID] = @AuxID,
-    [IsDone] = @IsDone,
-    [IsRunning] = @IsRunning,
-    [IsDeleted] = @IsDeleted,
-    [NeedsDeleted] = @NeedsDeleted,
-    [TotalRows] = @TotalRows,
-    [CompletedRows] = @CompletedRows,
-    [DateStarted] = @DateStarted,
-    [DateEnded] = @DateEnded,
-    [IsRolledBack] = @IsRolledBack
-  WHERE ([ImportID] = @ImportID)
+    [RefID] = @RefID,
+    [Title] = @Title,
+    [Description] = @Description,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified,
+    [NeedsIndexing] = @NeedsIndexing,
+    [IsAlert] = @IsAlert,
+    [ImportFileID] = @ImportFileID
+  WHERE ([NoteID] = @NoteID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteImport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteImport
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteNot' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteNot
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteImport
+CREATE PROCEDURE dbo.uspGeneratedDeleteNot
 
 (
-  @ImportID int
+  @NoteID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Imports]
-  WHERE ([ImportID] = @ImportID)
+  DELETE FROM [dbo].[Notes]
+  WHERE ([NoteID] = @NoteID)
 GO
 
 

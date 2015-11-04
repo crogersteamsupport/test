@@ -8,11 +8,11 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class Note : BaseItem
+  public partial class Not : BaseItem
   {
     private Notes _notes;
     
-    public Note(DataRow row, Notes notes): base(row, notes)
+    public Not(DataRow row, Notes notes): base(row, notes)
     {
       _notes = notes;
     }
@@ -33,6 +33,12 @@ namespace TeamSupport.Data
     }
     
 
+    
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
     
 
     
@@ -78,9 +84,9 @@ namespace TeamSupport.Data
       set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
-    public ReferenceType RefType
+    public int RefType
     {
-      get { return (ReferenceType)Row["RefType"]; }
+      get { return (int)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
@@ -121,7 +127,7 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class Notes : BaseCollection, IEnumerable<Note>
+  public partial class Notes : BaseCollection, IEnumerable<Not>
   {
     public Notes(LoginUser loginUser): base (loginUser)
     {
@@ -141,9 +147,9 @@ namespace TeamSupport.Data
 
 
 
-    public Note this[int index]
+    public Not this[int index]
     {
-      get { return new Note(Table.Rows[index], this); }
+      get { return new Not(Table.Rows[index], this); }
     }
     
 
@@ -151,10 +157,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(Note note);
-    partial void AfterRowInsert(Note note);
-    partial void BeforeRowEdit(Note note);
-    partial void AfterRowEdit(Note note);
+    partial void BeforeRowInsert(Not not);
+    partial void AfterRowInsert(Not not);
+    partial void BeforeRowEdit(Not not);
+    partial void AfterRowEdit(Not not);
     partial void BeforeRowDelete(int noteID);
     partial void AfterRowDelete(int noteID);    
 
@@ -165,11 +171,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public NoteProxy[] GetNoteProxies()
+    public NotProxy[] GetNotProxies()
     {
-      List<NoteProxy> list = new List<NoteProxy>();
+      List<NotProxy> list = new List<NotProxy>();
 
-      foreach (Note item in this)
+      foreach (Not item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -209,7 +215,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [IsAlert] = @IsAlert  WHERE ([NoteID] = @NoteID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [IsAlert] = @IsAlert,    [ImportFileID] = @ImportFileID  WHERE ([NoteID] = @NoteID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("NoteID", SqlDbType.Int, 4);
@@ -275,13 +281,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing],    [IsAlert]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing],    [IsAlert],    [ImportFileID]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("IsAlert", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -364,17 +384,17 @@ namespace TeamSupport.Data
 
 		try
 		{
-		  foreach (Note note in this)
+		  foreach (Not not in this)
 		  {
-			if (note.Row.RowState == DataRowState.Added)
+			if (not.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(note);
+			  BeforeRowInsert(not);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = note.Row[parameter.ParameterName];
+				  parameter.Value = not.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -385,26 +405,26 @@ namespace TeamSupport.Data
 			  Table.Columns["NoteID"].AutoIncrement = false;
 			  Table.Columns["NoteID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				note.Row["NoteID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(note);
+				not.Row["NoteID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(not);
 			}
-			else if (note.Row.RowState == DataRowState.Modified)
+			else if (not.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(note);
+			  BeforeRowEdit(not);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = note.Row[parameter.ParameterName];
+				parameter.Value = not.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(note);
+			  AfterRowEdit(not);
 			}
-			else if (note.Row.RowState == DataRowState.Deleted)
+			else if (not.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)note.Row["NoteID", DataRowVersion.Original];
+			  int id = (int)not.Row["NoteID", DataRowVersion.Original];
 			  deleteCommand.Parameters["NoteID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -425,10 +445,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (Note note in this)
+      foreach (Not not in this)
       {
-        if (note.Row.Table.Columns.Contains("CreatorID") && (int)note.Row["CreatorID"] == 0) note.Row["CreatorID"] = LoginUser.UserID;
-        if (note.Row.Table.Columns.Contains("ModifierID")) note.Row["ModifierID"] = LoginUser.UserID;
+        if (not.Row.Table.Columns.Contains("CreatorID") && (int)not.Row["CreatorID"] == 0) not.Row["CreatorID"] = LoginUser.UserID;
+        if (not.Row.Table.Columns.Contains("ModifierID")) not.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -441,38 +461,38 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public Note FindByNoteID(int noteID)
+    public Not FindByNoteID(int noteID)
     {
-      foreach (Note note in this)
+      foreach (Not not in this)
       {
-        if (note.NoteID == noteID)
+        if (not.NoteID == noteID)
         {
-          return note;
+          return not;
         }
       }
       return null;
     }
 
-    public virtual Note AddNewNote()
+    public virtual Not AddNewNot()
     {
       if (Table.Columns.Count < 1) LoadColumns("Notes");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new Note(row, this);
+      return new Not(row, this);
     }
     
     public virtual void LoadByNoteID(int noteID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateCreated], [DateModified], [NeedsIndexing], [IsAlert] FROM [dbo].[Notes] WHERE ([NoteID] = @NoteID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateCreated], [DateModified], [NeedsIndexing], [IsAlert], [ImportFileID] FROM [dbo].[Notes] WHERE ([NoteID] = @NoteID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("NoteID", noteID);
         Fill(command);
       }
     }
     
-    public static Note GetNote(LoginUser loginUser, int noteID)
+    public static Not GetNot(LoginUser loginUser, int noteID)
     {
       Notes notes = new Notes(loginUser);
       notes.LoadByNoteID(noteID);
@@ -487,13 +507,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<Note> Members
+    #region IEnumerable<Not> Members
 
-    public IEnumerator<Note> GetEnumerator()
+    public IEnumerator<Not> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new Note(row, this);
+        yield return new Not(row, this);
       }
     }
 

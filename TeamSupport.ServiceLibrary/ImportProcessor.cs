@@ -196,6 +196,9 @@ namespace TeamSupport.ServiceLibrary
 			 case ReferenceType.PrimaryContacts:
 				ImportPrimaryContacts(import);
 				break;
+			 case ReferenceType.Notes:
+				ImportCustomerNotes(import);
+				break;
 			 default:
             Logs.WriteEvent("ERROR: Unknown Reference Type");
             break;
@@ -5232,6 +5235,113 @@ namespace TeamSupport.ServiceLibrary
 		 UpdateImportCount(import, count);
 		 _importLog.Write(count.ToString() + " Primary Contacts imported.");
 
+	 }
+
+	 private void ImportCustomerNotes(Import import)
+	 {
+		 Users users = new Users(_loginUser);
+		 users.LoadByOrganizationID(_organizationID, false);
+
+		 Organizations companies = new Organizations(_loginUser);
+		 companies.LoadByParentID(_organizationID, false);
+
+
+		 Notes notes = new Notes(_loginUser);
+		 int count = 0;
+		 while (_csv.ReadNextRecord())
+		 {
+			 long rowNumber = _csv.CurrentRecordIndex + 1;
+			 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
+
+			 int companyID = ReadInt("CompanyID");
+			 if (companyID != 0)
+			 {
+				 Organization company = companies.FindByOrganizationID(companyID);
+				 if (company == null)
+				 {
+					 _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyID " + companyID.ToString() + " was found.");
+					 continue;
+				 }
+			 }
+
+			 if (companyID == 0)
+			 {
+				 string companyImportID = ReadString("CompanyImportID", string.Empty);
+				 if (companyImportID != string.Empty)
+				 {
+					 Organization company = companies.FindByImportID(companyImportID);
+					 if (company == null)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyImportID " + companyImportID + " was found.");
+						 continue;
+					 }
+					 else
+					 {
+						 companyID = company.OrganizationID;
+					 }
+				 }
+			 }
+
+			 if (companyID == 0)
+			 {
+				 string companyName = ReadString("CompanyName", string.Empty);
+				 if (companyName != string.Empty)
+				 {
+					 Organization company = companies.FindByName(companyName);
+					 if (company == null)
+					 {
+						 _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyName " + companyName + " was found.");
+						 continue;
+					 }
+					 else
+					 {
+						 companyID = company.OrganizationID;
+					 }
+				 }
+			 }
+
+			 if (companyID == 0)
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. No company matching either the CompanyID, the CompanyImportID or the CompanyName was found.");
+				 continue;
+			 }
+
+			 Note note = notes.AddNewNote();
+			 DateTime? dateCreated = ReadDateNull("DateCreated", note.DateCreated.ToString());
+			 if (dateCreated != null)
+			 {
+				 note.DateCreated = (DateTime)dateCreated;
+			 }
+			 int creatorID = -2;
+			 if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
+			 {
+				 User creator = users.FindByUserID(creatorID);
+				 if (creator != null)
+				 {
+					 creatorID = creator.UserID;
+				 }
+			 }
+			 note.CreatorID = creatorID;
+			 note.Description = ConvertHtmlLineBreaks(ReadString("Description", string.Empty));
+			 note.RefID = companyID;
+			 note.RefType = ReferenceType.Organizations;
+			 note.Title = ReadString("Title", string.Empty).Trim();
+			 note.ModifierID = -2;
+			 note.ImportFileID = import.ImportID;
+
+			 _importLog.Write(messagePrefix + "Organization " + companyID.ToString() + " - Note added to bulk insert.");
+			 count++;
+
+			 if (count % BULK_LIMIT == 0)
+			 {
+				 notes.BulkSave();
+				 notes = new Notes(_importUser);
+				 UpdateImportCount(import, count);
+			 }
+		 }
+		 notes.BulkSave();
+		 UpdateImportCount(import, count);
+		 _importLog.Write(count.ToString() + " organization notes imported.");
 	 }
 
 	 private bool IsTicketRelated(Ticket ticket1, Ticket ticket2)

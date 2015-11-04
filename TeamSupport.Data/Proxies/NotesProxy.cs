@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public string CreatorName { get; set; }
     [DataMember]
     public bool IsAlert { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
   }
   
   public partial class Note : BaseItem
@@ -36,6 +37,7 @@ namespace TeamSupport.Data
     {
       NoteProxy result = new NoteProxy();
       var sanitizer = new HtmlSanitizer();
+      result.ImportFileID = this.ImportFileID;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;

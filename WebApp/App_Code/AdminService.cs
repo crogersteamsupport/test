@@ -465,6 +465,9 @@ namespace TSWebServices
 				query.Append(GetRollbackCustomValuesQuery());
 				query.Append(GetRollbackOrganizationProductsQuery());
 				break;
+			case ReferenceType.Notes:
+				query.Append(GetRollbackOrganizationNotesQuery());
+				break;
 		}
 
 		query.Append(@"
@@ -746,7 +749,23 @@ namespace TSWebServices
 				o.ParentID = @OrganizationID
 				AND op.ImportFileID = @ImportFileID
 		 ";
-	 }	 
+	 }
+
+	 private string GetRollbackOrganizationNotesQuery()
+	 {
+		 return @"
+			DELETE
+				n
+			FROM
+				Notes n
+				JOIN Organizations o
+					ON n.RefType = 9
+					AND n.RefID = o.OrganizationID
+			WHERE
+				o.ParentID = @OrganizationID
+				AND n.ImportFileID = @ImportFileID
+		 ";
+	 }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]

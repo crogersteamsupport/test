@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public bool IsAlert
@@ -209,7 +215,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [IsAlert] = @IsAlert  WHERE ([NoteID] = @NoteID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [IsAlert] = @IsAlert,    [ImportFileID] = @ImportFileID  WHERE ([NoteID] = @NoteID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("NoteID", SqlDbType.Int, 4);
@@ -275,13 +281,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing],    [IsAlert]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing],    [IsAlert],    [ImportFileID]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("IsAlert", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -465,7 +485,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateCreated], [DateModified], [NeedsIndexing], [IsAlert] FROM [dbo].[Notes] WHERE ([NoteID] = @NoteID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateCreated], [DateModified], [NeedsIndexing], [IsAlert], [ImportFileID] FROM [dbo].[Notes] WHERE ([NoteID] = @NoteID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("NoteID", noteID);
         Fill(command);
