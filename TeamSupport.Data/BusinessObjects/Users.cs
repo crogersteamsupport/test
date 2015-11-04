@@ -9,89 +9,89 @@ using System.Net.Mail;
 
 namespace TeamSupport.Data
 {
-  public partial class User 
-  {
-    public UsersViewItem GetUserView()
+    public partial class User
     {
-      return UsersView.GetUsersViewItem(BaseCollection.LoginUser, UserID);
-    }
-
-    public ContactsViewItem GetContactView()
-    {
-      return ContactsView.GetContactsViewItem(BaseCollection.LoginUser, UserID);
-    }
-
-    public string DisplayName
-    {
-      get
-      {
-        StringBuilder builder = new StringBuilder();
-        if (!string.IsNullOrEmpty(this.FirstName))
+        public UsersViewItem GetUserView()
         {
-          builder.Append(this.FirstName);
+            return UsersView.GetUsersViewItem(BaseCollection.LoginUser, UserID);
         }
 
-        if (!string.IsNullOrEmpty(this.LastName))
+        public ContactsViewItem GetContactView()
         {
-          if (builder.Length > 0) builder.Append(" ");
-          builder.Append(this.LastName);
+            return ContactsView.GetContactsViewItem(BaseCollection.LoginUser, UserID);
         }
 
-        return builder.Length > 0 ? builder.ToString() : "Unknown";
-      }
-    }
-    public string FirstLastName
-    {
-      get
-      {
-        return DisplayName;
-      }
-    }
+        public string DisplayName
+        {
+            get
+            {
+                StringBuilder builder = new StringBuilder();
+                if (!string.IsNullOrEmpty(this.FirstName))
+                {
+                    builder.Append(this.FirstName);
+                }
 
-    public bool IsSameName(string name)
-    {
-      StringBuilder builder = new StringBuilder();
-      name = name.Trim().ToLower();
-      foreach (char c in name)
-	    {
-        if (char.IsLetterOrDigit(c)) builder.Append(c);
-	    }
+                if (!string.IsNullOrEmpty(this.LastName))
+                {
+                    if (builder.Length > 0) builder.Append(" ");
+                    builder.Append(this.LastName);
+                }
 
-      name = builder.ToString();
+                return builder.Length > 0 ? builder.ToString() : "Unknown";
+            }
+        }
+        public string FirstLastName
+        {
+            get
+            {
+                return DisplayName;
+            }
+        }
 
-      return ((FirstName.Trim() + LastName.Trim()).ToLower() == name) || ((LastName.Trim() + FirstName.Trim()).ToLower() == name);
-    }
+        public bool IsSameName(string name)
+        {
+            StringBuilder builder = new StringBuilder();
+            name = name.Trim().ToLower();
+            foreach (char c in name)
+            {
+                if (char.IsLetterOrDigit(c)) builder.Append(c);
+            }
 
-    public void UpdatePing()
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "UPDATE Users SET LastPing = GETUTCDATE() WHERE UserID = @UserID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@UserID", UserID);
-        Collection.ExecuteNonQuery(command, "Users");
-      }
-    }
+            name = builder.ToString();
 
-    public void EmailCountToMuroc(bool isNew)
-    { 
-      //UsersViewItem view = GetUserView();
-      Organization o = Organizations.GetOrganization(BaseCollection.LoginUser, this.OrganizationID);
-      MailMessage message = new MailMessage();
-      message.From = new MailAddress("support@teamsupport.com");
+            return ((FirstName.Trim() + LastName.Trim()).ToLower() == name) || ((LastName.Trim() + FirstName.Trim()).ToLower() == name);
+        }
 
-      string[] addresses = SystemSettings.ReadString(BaseCollection.LoginUser, "UserCountNotifications", "").Split('|');
-      if (addresses != null && addresses.Length < 1) return;
-      foreach (string address in addresses)
-      {
-        message.To.Add(new MailAddress(address));
-      }
-      
-      message.Subject = isNew ? "TeamSupport User Added" : "TeamSupport User Removed";
-      message.Subject += " - " + o.Name;
-      int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
-      message.IsBodyHtml = true;
-      string body = @"
+        public void UpdatePing()
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE Users SET LastPing = GETUTCDATE() WHERE UserID = @UserID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", UserID);
+                Collection.ExecuteNonQuery(command, "Users");
+            }
+        }
+
+        public void EmailCountToMuroc(bool isNew)
+        {
+            //UsersViewItem view = GetUserView();
+            Organization o = Organizations.GetOrganization(BaseCollection.LoginUser, this.OrganizationID);
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress("support@teamsupport.com");
+
+            string[] addresses = SystemSettings.ReadString(BaseCollection.LoginUser, "UserCountNotifications", "").Split('|');
+            if (addresses != null && addresses.Length < 1) return;
+            foreach (string address in addresses)
+            {
+                message.To.Add(new MailAddress(address));
+            }
+
+            message.Subject = isNew ? "TeamSupport User Added" : "TeamSupport User Removed";
+            message.Subject += " - " + o.Name;
+            int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
+            message.IsBodyHtml = true;
+            string body = @"
 <div>{5}</div>
 <table>
   <tr>
@@ -107,367 +107,367 @@ namespace TeamSupport.Data
     <td>{4:D}</td>
   </tr>
 </table>";
-      message.Body = string.Format(body, o.Name, OrganizationID, FirstLastName, UserID, count, message.Subject);
-      Emails.AddEmail(Collection.LoginUser, 1078, null, "User Count Changed", message);
-    
-    }
+            message.Body = string.Format(body, o.Name, OrganizationID, FirstLastName, UserID, count, message.Subject);
+            Emails.AddEmail(Collection.LoginUser, 1078, null, "User Count Changed", message);
 
-    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
-    {
-      Users users = new Users(loginUser);
-      if (parentID != null)
-      {
-        users.LoadByName(name, (int)parentID, true, false, false);
-      }
-      else
-      {
-        users.LoadByName(name, loginUser.OrganizationID, true, false, false);
-      }
-      if (users.IsEmpty) return null;
-      else return users[0].UserID;
-    }
+        }
 
-    public static int? GetIDByEmail(LoginUser loginUser, string email, int? parentID)
-    {
-      Users users = new Users(loginUser);
-      if (parentID != null)
-      {
-        users.LoadByEmail(email, (int)parentID);
-      }
-      else
-      {
-        users.LoadByEmail(loginUser.OrganizationID, email);
-      }
-      if (users.IsEmpty) return null;
-      else return users[0].UserID;
-    }
-
-    public void FullReadFromXml(string data, bool isInsert, ref PhoneNumber phoneNumber, ref Address address)
-    {
-      //None of its fields are foreign keys. So we call the ReadFromXml method and then we add the phone and address fields.
-      this.ReadFromXml(data, isInsert);
-
-      LoginUser user = Collection.LoginUser;
-      FieldMap fieldMap = Collection.FieldMap;
-
-      StringReader reader = new StringReader(data);
-      DataSet dataSet = new DataSet();
-      dataSet.ReadXml(reader);
-
-      try
-      {
-        object phoneTypeID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneTypeID", "PhoneType", PhoneType.GetIDByName, false, null, true);
-        if (phoneTypeID != null) phoneNumber.PhoneTypeID = Convert.ToInt32(phoneTypeID);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object phoneNumberObject = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneNumber", string.Empty, null, false, null, true);
-        if (phoneNumberObject != null) phoneNumber.Number = Convert.ToString(phoneNumberObject);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object phoneExtension = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "phoneExtension", string.Empty, null, false, null, true);
-        if (phoneExtension != null) phoneNumber.Extension = Convert.ToString(phoneExtension);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object addressDescription = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressDescription", string.Empty, null, false, null, true);
-        if (addressDescription != null) address.Description = Convert.ToString(addressDescription);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object addressLine1 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine1", string.Empty, null, false, null, true);
-        if (addressLine1 != null) address.Addr1 = Convert.ToString(addressLine1);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object addressLine2 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine2", string.Empty, null, false, null, true);
-        if (addressLine2 != null) address.Addr2 = Convert.ToString(addressLine2);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object addressLine3 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine3", string.Empty, null, false, null, true);
-        if (addressLine3 != null) address.Addr3 = Convert.ToString(addressLine3);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object addressCity = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressCity", string.Empty, null, false, null, true);
-        if (addressCity != null) address.City = Convert.ToString(addressCity);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object addressState = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressState", string.Empty, null, false, null, true);
-        if (addressState != null) address.State = Convert.ToString(addressState);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object addressZip = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressZip", string.Empty, null, false, null, true);
-        if (addressZip != null) address.Zip = Convert.ToString(addressZip);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        object addressCountry = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressCountry", string.Empty, null, false, null, true);
-        if (addressCountry != null) address.Country = Convert.ToString(addressCountry);
-      }
-      catch
-      {
-      }
-    }
-
-    public string FontSizeDescription
-    {
-      get { return Enums.GetDescription((FontSize)Row["FontSize"]); }
-    }
-
-    public string FontFamilyDescription
-    {
-      get { return Enums.GetDescription((FontFamily)Row["FontFamily"]); }
-    }
-  }
-  
-  public partial class Users
-  {
-
-    partial void BeforeRowDelete(int userID)
-    {
-      User user = (User)Users.GetUser(LoginUser, userID);
-      string description;
-      if (user.OrganizationID == LoginUser.OrganizationID)
-        description = "Deleted user '" + user.FirstName + " " + user.LastName + "'";
-      else
-        description = "Deleted contact '" + user.FirstName + " " + user.LastName + "'";
-
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Users, userID, description);
-    }
-
-    partial void BeforeRowEdit(User user)
-    {
-      string description;
-      User oldUser = (User)Users.GetUser(LoginUser, user.UserID);
-      string name = oldUser.FirstName + " " + oldUser.LastName;
-
-      if (oldUser.CryptedPassword != user.CryptedPassword)
-      {
-        description = "Changed '" + name + "' password";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.Email != user.Email)
-      {
-        description = "Changed '" + name + "' email from '" + oldUser.Email + "' to '" + user.Email + '"';
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.FirstName != user.FirstName)
-      {
-        description = "Changed '" + name + "' first name to '" + user.FirstName + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.LastName != user.LastName)
-      {
-        description = "Changed '" + name + "' last name to '" + user.LastName + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.MiddleName != user.MiddleName)
-      {
-        description = "Changed '" + name + "' middle name to '" + user.MiddleName + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.InOffice != user.InOffice)
-      {
-        description = "Changed '" + name + "' in office status to '" + user.InOffice.ToString() + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.InOfficeComment != user.InOfficeComment)
-      {
-        description = "Changed '" + name + "' in office comment";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.IsActive != user.IsActive)
-      {
-        description = "Changed '" + name + "' active status to '" + user.IsActive.ToString() + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.IsFinanceAdmin != user.IsFinanceAdmin)
-      {
-        description = "Changed '" + name + "' financial administrator access rights to '" + user.IsFinanceAdmin.ToString() + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.IsSystemAdmin != user.IsSystemAdmin)
-      {
-        description = "Changed '" + name + "' system administrator access rights to '" + user.IsSystemAdmin.ToString() + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.IsPortalUser != user.IsPortalUser)
-      {
-        description = "Changed '" + name + "' user portal access rights to '" + user.IsPortalUser.ToString() + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-
-      if (oldUser.PrimaryGroupID != user.PrimaryGroupID)
-      {
-        string group1 = oldUser.PrimaryGroupID == null ? "Unassigned" : ((Group)Groups.GetGroup(LoginUser, (int) oldUser.PrimaryGroupID)).Name;
-        string group2 = user.PrimaryGroupID == null ? "Unassigned" : ((Group)Groups.GetGroup(LoginUser, (int)user.PrimaryGroupID)).Name;
-
-        description = "Changed '" + name + "' primary group from '" + group1 + "' to '" + group2 + "'";
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
-      }
-    }
-
-    partial void AfterRowInsert(User user)
-    {
-      string description;
-      if (user.OrganizationID == LoginUser.OrganizationID)
-        description = "Created user '" + user.FirstName + " " + user.LastName + "'";
-      else
-        description = "Created contact '" + user.FirstName + " " + user.LastName + "'";
-
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, user.UserID, description);
-    }
-
-    public void LoadByChatID(string chatID)
-    {
-        using (SqlCommand command = new SqlCommand())
+        public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
         {
-            command.CommandText = "SELECT organizationid, userid FROM Users WHERE (AppChatID = @chatid)";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@chatid", chatID);
-            Fill(command);
+            Users users = new Users(loginUser);
+            if (parentID != null)
+            {
+                users.LoadByName(name, (int)parentID, true, false, false);
+            }
+            else
+            {
+                users.LoadByName(name, loginUser.OrganizationID, true, false, false);
+            }
+            if (users.IsEmpty) return null;
+            else return users[0].UserID;
+        }
+
+        public static int? GetIDByEmail(LoginUser loginUser, string email, int? parentID)
+        {
+            Users users = new Users(loginUser);
+            if (parentID != null)
+            {
+                users.LoadByEmail(email, (int)parentID);
+            }
+            else
+            {
+                users.LoadByEmail(loginUser.OrganizationID, email);
+            }
+            if (users.IsEmpty) return null;
+            else return users[0].UserID;
+        }
+
+        public void FullReadFromXml(string data, bool isInsert, ref PhoneNumber phoneNumber, ref Address address)
+        {
+            //None of its fields are foreign keys. So we call the ReadFromXml method and then we add the phone and address fields.
+            this.ReadFromXml(data, isInsert);
+
+            LoginUser user = Collection.LoginUser;
+            FieldMap fieldMap = Collection.FieldMap;
+
+            StringReader reader = new StringReader(data);
+            DataSet dataSet = new DataSet();
+            dataSet.ReadXml(reader);
+
+            try
+            {
+                object phoneTypeID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneTypeID", "PhoneType", PhoneType.GetIDByName, false, null, true);
+                if (phoneTypeID != null) phoneNumber.PhoneTypeID = Convert.ToInt32(phoneTypeID);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object phoneNumberObject = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneNumber", string.Empty, null, false, null, true);
+                if (phoneNumberObject != null) phoneNumber.Number = Convert.ToString(phoneNumberObject);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object phoneExtension = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "phoneExtension", string.Empty, null, false, null, true);
+                if (phoneExtension != null) phoneNumber.Extension = Convert.ToString(phoneExtension);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object addressDescription = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressDescription", string.Empty, null, false, null, true);
+                if (addressDescription != null) address.Description = Convert.ToString(addressDescription);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object addressLine1 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine1", string.Empty, null, false, null, true);
+                if (addressLine1 != null) address.Addr1 = Convert.ToString(addressLine1);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object addressLine2 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine2", string.Empty, null, false, null, true);
+                if (addressLine2 != null) address.Addr2 = Convert.ToString(addressLine2);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object addressLine3 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine3", string.Empty, null, false, null, true);
+                if (addressLine3 != null) address.Addr3 = Convert.ToString(addressLine3);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object addressCity = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressCity", string.Empty, null, false, null, true);
+                if (addressCity != null) address.City = Convert.ToString(addressCity);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object addressState = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressState", string.Empty, null, false, null, true);
+                if (addressState != null) address.State = Convert.ToString(addressState);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object addressZip = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressZip", string.Empty, null, false, null, true);
+                if (addressZip != null) address.Zip = Convert.ToString(addressZip);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                object addressCountry = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressCountry", string.Empty, null, false, null, true);
+                if (addressCountry != null) address.Country = Convert.ToString(addressCountry);
+            }
+            catch
+            {
+            }
+        }
+
+        public string FontSizeDescription
+        {
+            get { return Enums.GetDescription((FontSize)Row["FontSize"]); }
+        }
+
+        public string FontFamilyDescription
+        {
+            get { return Enums.GetDescription((FontFamily)Row["FontFamily"]); }
         }
     }
 
-    public void LoadChatOnlineUsers(int organizationID, int userID)
+    public partial class Users
     {
-        using (SqlCommand command = new SqlCommand())
+
+        partial void BeforeRowDelete(int userID)
         {
-			  command.CommandText = "SELECT FirstName, LastName,AppChatID,UserID  FROM Users WHERE (AppChatstatus = 1) AND (organizationid = @orgid) and (AppChatID != '') and (userid != @userid)";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@orgid", organizationID);
-            command.Parameters.AddWithValue("@userid", userID);
-            Fill(command);
-        }
-    }
+            User user = (User)Users.GetUser(LoginUser, userID);
+            string description;
+            if (user.OrganizationID == LoginUser.OrganizationID)
+                description = "Deleted user '" + user.FirstName + " " + user.LastName + "'";
+            else
+                description = "Deleted contact '" + user.FirstName + " " + user.LastName + "'";
 
-    public int GetChatConnections()
-    {
-        using (SqlCommand command = new SqlCommand())
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Users, userID, description);
+        }
+
+        partial void BeforeRowEdit(User user)
         {
-            command.CommandText = "SELECT COUNT(*) FROM Users (AppChatstatus = 1) and (AppChatID != '')";
-            command.CommandType = CommandType.Text;
-            return (int)ExecuteScalar(command);
+            string description;
+            User oldUser = (User)Users.GetUser(LoginUser, user.UserID);
+            string name = oldUser.FirstName + " " + oldUser.LastName;
+
+            if (oldUser.CryptedPassword != user.CryptedPassword)
+            {
+                description = "Changed '" + name + "' password";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.Email != user.Email)
+            {
+                description = "Changed '" + name + "' email from '" + oldUser.Email + "' to '" + user.Email + '"';
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.FirstName != user.FirstName)
+            {
+                description = "Changed '" + name + "' first name to '" + user.FirstName + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.LastName != user.LastName)
+            {
+                description = "Changed '" + name + "' last name to '" + user.LastName + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.MiddleName != user.MiddleName)
+            {
+                description = "Changed '" + name + "' middle name to '" + user.MiddleName + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.InOffice != user.InOffice)
+            {
+                description = "Changed '" + name + "' in office status to '" + user.InOffice.ToString() + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.InOfficeComment != user.InOfficeComment)
+            {
+                description = "Changed '" + name + "' in office comment";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.IsActive != user.IsActive)
+            {
+                description = "Changed '" + name + "' active status to '" + user.IsActive.ToString() + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.IsFinanceAdmin != user.IsFinanceAdmin)
+            {
+                description = "Changed '" + name + "' financial administrator access rights to '" + user.IsFinanceAdmin.ToString() + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.IsSystemAdmin != user.IsSystemAdmin)
+            {
+                description = "Changed '" + name + "' system administrator access rights to '" + user.IsSystemAdmin.ToString() + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.IsPortalUser != user.IsPortalUser)
+            {
+                description = "Changed '" + name + "' user portal access rights to '" + user.IsPortalUser.ToString() + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
+
+            if (oldUser.PrimaryGroupID != user.PrimaryGroupID)
+            {
+                string group1 = oldUser.PrimaryGroupID == null ? "Unassigned" : ((Group)Groups.GetGroup(LoginUser, (int)oldUser.PrimaryGroupID)).Name;
+                string group2 = user.PrimaryGroupID == null ? "Unassigned" : ((Group)Groups.GetGroup(LoginUser, (int)user.PrimaryGroupID)).Name;
+
+                description = "Changed '" + name + "' primary group from '" + group1 + "' to '" + group2 + "'";
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
+            }
         }
-    }
 
-    public void LoadByImportID(string importID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Users WHERE (ImportID = @ImportID) AND (MarkDeleted = 0)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ImportID", importID.Trim());
-        Fill(command);
-      }
-    }
+        partial void AfterRowInsert(User user)
+        {
+            string description;
+            if (user.OrganizationID == LoginUser.OrganizationID)
+                description = "Created user '" + user.FirstName + " " + user.LastName + "'";
+            else
+                description = "Created contact '" + user.FirstName + " " + user.LastName + "'";
 
-    public void LoadByEmail(string email)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Users WHERE (Email = @Email) AND (MarkDeleted = 0)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@Email", email.Trim());
-        Fill(command);
-      }
-    }
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, user.UserID, description);
+        }
 
-    public void LoadByEmail(string email, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT u.*
+        public void LoadByChatID(string chatID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT organizationid, userid FROM Users WHERE (AppChatID = @chatid)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@chatid", chatID);
+                Fill(command);
+            }
+        }
+
+        public void LoadChatOnlineUsers(int organizationID, int userID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT FirstName, LastName,AppChatID,UserID  FROM Users WHERE (AppChatstatus = 1) AND (organizationid = @orgid) and (AppChatID != '') and (userid != @userid)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@orgid", organizationID);
+                command.Parameters.AddWithValue("@userid", userID);
+                Fill(command);
+            }
+        }
+
+        public int GetChatConnections()
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT COUNT(*) FROM Users (AppChatstatus = 1) and (AppChatID != '')";
+                command.CommandType = CommandType.Text;
+                return (int)ExecuteScalar(command);
+            }
+        }
+
+        public void LoadByImportID(string importID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users WHERE (ImportID = @ImportID) AND (MarkDeleted = 0)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ImportID", importID.Trim());
+                Fill(command);
+            }
+        }
+
+        public void LoadByEmail(string email)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users WHERE (Email = @Email) AND (MarkDeleted = 0)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@Email", email.Trim());
+                Fill(command);
+            }
+        }
+
+        public void LoadByEmail(string email, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.*
                                 FROM Users u 
                                 WHERE (u.OrganizationID = @OrganizationID)
                                 AND (u.Email = @Email)
                                 AND (u.MarkDeleted = 0)";
 
 
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@Email", email.Trim());
-        Fill(command);
-      }
-    }
-    
-    public void LoadByEmailIncludingDeleted(string email, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT u.*
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@Email", email.Trim());
+                Fill(command);
+            }
+        }
+
+        public void LoadByEmailIncludingDeleted(string email, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.*
                                 FROM Users u 
                                 WHERE (u.OrganizationID = @OrganizationID)
                                 AND (u.Email = @Email)";
 
 
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@Email", email.Trim());
-        Fill(command);
-      }
-    }
-   
-    public void LoadByEmail(int parentID, string email)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT u.*
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@Email", email.Trim());
+                Fill(command);
+            }
+        }
+
+        public void LoadByEmail(int parentID, string email)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.*
                                 FROM Users u 
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
@@ -476,100 +476,121 @@ namespace TeamSupport.Data
                                 AND (u.MarkDeleted = 0)";
 
 
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ParentID", parentID);
-        command.Parameters.AddWithValue("@Email", email.Trim());
-        Fill(command);
-      }
-    }
-
-    public void LoadFinanceAdmins(int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Users WHERE @OrganizationID = OrganizationID AND IsFinanceAdmin = 1 AND MarkDeleted = 0";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        Fill(command);
-      }
-    }
-
-    public bool IsEmailValid(string email, int userID, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT COUNT(*) FROM Users WHERE (Email = @Email) AND (UserID != @UserID) AND (OrganizationID = @OrganizationID) AND (MarkDeleted = 0)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@Email", email);
-        command.Parameters.AddWithValue("@UserID", userID);
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        return (int)ExecuteScalar(command) < 1;
-      }
-    }
-
-    public void LoadByGroupID(int groupID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-          command.CommandText = "SELECT * FROM Users u LEFT JOIN GroupUsers gu ON u.UserID = gu.UserID WHERE gu.GroupID = @GroupID AND u.IsActive = 1 AND u.MarkDeleted = 0 order by u.LastName";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@GroupID", groupID);
-        Fill(command, "Users,GroupUsers");
-      }
-    }
-
-    public void LoadByOrganizationID(int organizationID, bool loadOnlyActive)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT *, LastName + ', ' + FirstName AS DisplayName FROM Users WHERE OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (MarkDeleted = 0) ORDER BY FirstName, LastName";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
-        Fill(command);
-      }
-    }
-    public void LoadByOrganizationIDLastName(int organizationID, bool loadOnlyActive)
-    {
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = "SELECT *, LastName + ', ' + FirstName AS DisplayName FROM Users WHERE OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (MarkDeleted = 0) ORDER BY LastName, FirstName";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@OrganizationID", organizationID);
-            command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
-            Fill(command);
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ParentID", parentID);
+                command.Parameters.AddWithValue("@Email", email.Trim());
+                Fill(command);
+            }
         }
-    }
 
-    /// <summary>
-    /// Get users by name
-    /// </summary>
-    /// <param name="text">Text containing the search terms to find the users name.</param>
-    /// <param name="organizationID">The organization the user belongs to</param>
-    /// <param name="loadOnlyActive">Load only active users</param>
-    /// <param name="onlyAdmin">Load only admin users</param>
-    /// <param name="onlyChat">Load only chat users</param>
-    public void LoadByName(string text, int organizationID, bool onlyActive, bool onlyAdmin, bool onlyChat, int userID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Users WHERE (FirstName + ' ' + LastName LIKE '%'+@Text+'%' OR LastName + ', ' + FirstName LIKE '%'+@Text+'%') AND OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (@IsSystemAdmin = 0 OR IsSystemAdmin = 1) AND (@IsChatUser = 0 OR IsChatUser = 1) AND (MarkDeleted = 0) AND (UserID <> @UserID) ORDER BY LastName, FirstName";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@IsChatUser", onlyChat);
-        command.Parameters.AddWithValue("@IsSystemAdmin", onlyAdmin);
-        command.Parameters.AddWithValue("@ActiveOnly", onlyActive);
-        command.Parameters.AddWithValue("@UserID", userID);
-        command.Parameters.AddWithValue("@Text", text);
-        Fill(command);
-      }
-    }
+        public void LoadPortalUserByEmail(int parentID, string email)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.*
+                                FROM Users u 
+                                LEFT JOIN Organizations o
+                                ON o.OrganizationID = u.OrganizationID
+                                WHERE (o.ParentID = @ParentID)
+                                AND (u.IsPortalUser = 1)
+                                AND (u.Email = @Email)
+                                AND (u.MarkDeleted = 0)";
 
-    public void LoadByFirstAndLastName(string firstAndLastName, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"
+
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ParentID", parentID);
+                command.Parameters.AddWithValue("@Email", email.Trim());
+                Fill(command);
+            }
+        }
+
+        public void LoadFinanceAdmins(int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users WHERE @OrganizationID = OrganizationID AND IsFinanceAdmin = 1 AND MarkDeleted = 0";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
+
+        public bool IsEmailValid(string email, int userID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT COUNT(*) FROM Users WHERE (Email = @Email) AND (UserID != @UserID) AND (OrganizationID = @OrganizationID) AND (MarkDeleted = 0)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@Email", email);
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                return (int)ExecuteScalar(command) < 1;
+            }
+        }
+
+        public void LoadByGroupID(int groupID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users u LEFT JOIN GroupUsers gu ON u.UserID = gu.UserID WHERE gu.GroupID = @GroupID AND u.IsActive = 1 AND u.MarkDeleted = 0 order by u.LastName";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@GroupID", groupID);
+                Fill(command, "Users,GroupUsers");
+            }
+        }
+
+        public void LoadByOrganizationID(int organizationID, bool loadOnlyActive)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT *, LastName + ', ' + FirstName AS DisplayName FROM Users WHERE OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (MarkDeleted = 0) ORDER BY FirstName, LastName";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+                Fill(command);
+            }
+        }
+        public void LoadByOrganizationIDLastName(int organizationID, bool loadOnlyActive)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT *, LastName + ', ' + FirstName AS DisplayName FROM Users WHERE OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (MarkDeleted = 0) ORDER BY LastName, FirstName";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+                Fill(command);
+            }
+        }
+
+        /// <summary>
+        /// Get users by name
+        /// </summary>
+        /// <param name="text">Text containing the search terms to find the users name.</param>
+        /// <param name="organizationID">The organization the user belongs to</param>
+        /// <param name="loadOnlyActive">Load only active users</param>
+        /// <param name="onlyAdmin">Load only admin users</param>
+        /// <param name="onlyChat">Load only chat users</param>
+        public void LoadByName(string text, int organizationID, bool onlyActive, bool onlyAdmin, bool onlyChat, int userID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users WHERE (FirstName + ' ' + LastName LIKE '%'+@Text+'%' OR LastName + ', ' + FirstName LIKE '%'+@Text+'%') AND OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (@IsSystemAdmin = 0 OR IsSystemAdmin = 1) AND (@IsChatUser = 0 OR IsChatUser = 1) AND (MarkDeleted = 0) AND (UserID <> @UserID) ORDER BY LastName, FirstName";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@IsChatUser", onlyChat);
+                command.Parameters.AddWithValue("@IsSystemAdmin", onlyAdmin);
+                command.Parameters.AddWithValue("@ActiveOnly", onlyActive);
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@Text", text);
+                Fill(command);
+            }
+        }
+
+        public void LoadByFirstAndLastName(string firstAndLastName, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
           SELECT
             *
           FROM
@@ -577,32 +598,32 @@ namespace TeamSupport.Data
           WHERE 
             FirstName + ' ' + LastName = @FirstAndLastName
             AND OrganizationID = @OrganizationID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@FirstAndLastName", firstAndLastName);
-        Fill(command);
-      }
-    }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@FirstAndLastName", firstAndLastName);
+                Fill(command);
+            }
+        }
 
-    /// <summary>
-    /// Get users by name
-    /// </summary>
-    /// <param name="text">Text containing the search terms to find the users name.</param>
-    /// <param name="organizationID">The organization the user belongs to</param>
-    /// <param name="loadOnlyActive">Load only active users</param>
-    /// <param name="onlyAdmin">Load only admin users</param>
-    /// <param name="onlyChat">Load only chat users</param>
-    /// <param name="userID">Load all but this user</param>
-    public void LoadByName(string text, int organizationID, bool onlyActive, bool onlyAdmin, bool onlyChat)
-    {
-      LoadByName(text, organizationID, onlyActive, onlyAdmin, onlyChat, -1);
-    }
+        /// <summary>
+        /// Get users by name
+        /// </summary>
+        /// <param name="text">Text containing the search terms to find the users name.</param>
+        /// <param name="organizationID">The organization the user belongs to</param>
+        /// <param name="loadOnlyActive">Load only active users</param>
+        /// <param name="onlyAdmin">Load only admin users</param>
+        /// <param name="onlyChat">Load only chat users</param>
+        /// <param name="userID">Load all but this user</param>
+        public void LoadByName(string text, int organizationID, bool onlyActive, bool onlyAdmin, bool onlyChat)
+        {
+            LoadByName(text, organizationID, onlyActive, onlyAdmin, onlyChat, -1);
+        }
 
-    public void LoadContactsAndUsers(int organizationID, bool loadOnlyActive)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT u.*, u.LastName + ', ' + u.FirstName AS DisplayName 
+        public void LoadContactsAndUsers(int organizationID, bool loadOnlyActive)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.*, u.LastName + ', ' + u.FirstName AS DisplayName 
                                 FROM Users u 
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
@@ -611,19 +632,19 @@ namespace TeamSupport.Data
                                 AND (@ActiveOnly = 0 OR o.IsActive = 1)
                                 AND (u.MarkDeleted = 0) 
                                 ORDER BY u.LastName, u.FirstName";
-                                
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
-        Fill(command);
-      }
-    }
 
-    public void LoadContacts(int organizationID, bool loadOnlyActive)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT u.*, u.LastName + ', ' + u.FirstName AS DisplayName 
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+                Fill(command);
+            }
+        }
+
+        public void LoadContacts(int organizationID, bool loadOnlyActive)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.*, u.LastName + ', ' + u.FirstName AS DisplayName 
                                 FROM Users u 
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
@@ -633,18 +654,18 @@ namespace TeamSupport.Data
                                 AND (u.MarkDeleted = 0) 
                                 ORDER BY u.LastName, u.FirstName";
 
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
-        Fill(command);
-      }
-    }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+                Fill(command);
+            }
+        }
 
-    public void LoadByOrganizationIDForGrid(int organizationID, bool loadOnlyActive)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT u.*,
+        public void LoadByOrganizationIDForGrid(int organizationID, bool loadOnlyActive)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.*,
                                 (SELECT COUNT(*) FROM TicketGridView tgv WHERE (tgv.UserID = u.UserID) AND (tgv.IsClosed = 0)) AS TicketCount,
                                 CASE
                                   WHEN DATEDIFF(ss, u.LastActivity, GETUTCDATE()) < 300 THEN 1 ELSE 0 END AS IsOnline
@@ -653,42 +674,42 @@ namespace TeamSupport.Data
                                 AND (@ActiveOnly = 0 OR IsActive = 1) 
                                 AND (u.MarkDeleted = 0)
                                 ORDER BY LastName, FirstName";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
-        Fill(command);
-      }
-    }
-
-    public int GetUserTicketCount(int userID, bool isClosed)
-    {
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = @"SELECT COUNT(*) FROM TicketGridView WHERE UserID = @UserID and IsClosed=@IsClosed";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@UserID", userID);
-            command.Parameters.AddWithValue("@IsClosed", isClosed);
-            return (int)ExecuteScalar(command);
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+                Fill(command);
+            }
         }
 
-    }
-    
-    public void LoadByCalGUID(string calGUID)
-    {
-        using (SqlCommand command = new SqlCommand())
+        public int GetUserTicketCount(int userID, bool isClosed)
         {
-            command.CommandText = @"SELECT * FROM Users WHERE CalGUID = @calGUID";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@calGUID", calGUID);
-            Fill(command);
-        }
-    }
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT COUNT(*) FROM TicketGridView WHERE UserID = @UserID and IsClosed=@IsClosed";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@IsClosed", isClosed);
+                return (int)ExecuteScalar(command);
+            }
 
-    public void LoadByOnline()
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT 
+        }
+
+        public void LoadByCalGUID(string calGUID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT * FROM Users WHERE CalGUID = @calGUID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@calGUID", calGUID);
+                Fill(command);
+            }
+        }
+
+        public void LoadByOnline()
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT 
                                 u.*, 
                                 o.Name AS OrganizationName,
                                 CASE
@@ -704,190 +725,190 @@ namespace TeamSupport.Data
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (DATEDIFF(ss, u.LastPing, GETDATE()) < 45)
                                 ORDER BY LastName, FirstName";
-        command.CommandType = CommandType.Text;
-        Fill(command);
-      }
-    }
-
-    public void DeleteUserGroup(int userID, int groupID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "DELETE FROM GroupUsers WHERE (UserID = @UserID) AND (GroupID = @GroupID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@UserID", userID);
-        command.Parameters.AddWithValue("@GroupID", groupID);
-        ExecuteNonQuery(command, "GroupUsers");
-      }
-
-      User user = (User)Users.GetUser(LoginUser, userID);
-      Group group = (Group)Groups.GetGroup(LoginUser, groupID);
-      string description = "Removed '" + user.FirstName + " " + user.LastName + "' from group '" + group.Name + "'";
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, groupID, description);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
-
-    }
-
-    public void UpdateDeletedOrg(int organizationID, int unknownID)
-    {
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = "UPDATE Users SET OrganizationID = @unknownID WHERE OrganizationID = @OrgID";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@OrgID", organizationID);
-            command.Parameters.AddWithValue("@unknownID", unknownID);
-            ExecuteNonQuery(command, "Users");
-
-            command.CommandText = "UPDATE OrganizationTickets SET OrganizationID = @unknownID WHERE OrganizationID = @OrgID";
-            command.CommandType = CommandType.Text;
-            ExecuteNonQuery(command, "OrganizationTickets");
-
-
-            command.CommandText =  @"DELETE FROM RecentlyViewedItems WHERE (refID = @orgID) AND (refType = 1)";
-            command.CommandType = CommandType.Text;
-            ExecuteNonQuery(command, "RecentlyViewedItems");
-        }
-    }
-
-
-    public void AddUserGroup(int userID, int groupID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "INSERT INTO GroupUsers (GroupID, UserID, DateCreated, DateModified, CreatorID, ModifierID) VALUES (@GroupID, @UserID, @DateCreated, @DateModified, @CreatorID, @ModifierID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@GroupID", groupID);
-        command.Parameters.AddWithValue("@UserID", userID);
-        command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
-        command.Parameters.AddWithValue("@DateModified", DateTime.UtcNow);
-        command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
-        command.Parameters.AddWithValue("@ModifierID", LoginUser.UserID);
-        ExecuteNonQuery(command, "GroupUsers");
-      }
-
-      User user = (User)Users.GetUser(LoginUser, userID);
-      Group group = (Group)Groups.GetGroup(LoginUser, groupID);
-      string description = "Added '" + user.FirstName + " " + user.LastName + "' to group '" + group.Name + "'";
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, groupID, description);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
-
-    }
-
-    public void AddUserCustomer(int userID, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "INSERT INTO UserRightsOrganizations (UserID, OrganizationID) VALUES (@UserID, @OrganizationID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@UserID", userID);
-        ExecuteNonQuery(command);
-      }
-
-      User user = (User)Users.GetUser(LoginUser, userID);
-      Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
-      string description = string.Format("Added customer '{0}' to user '{1}'.", organization.Name, user.FirstLastName);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, organizationID, description);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
-    }
-
-    public void RemoveUserCustomer(int userID, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "DELETE FROM UserRightsOrganizations WHERE UserID=@UserID AND OrganizationID=@OrganizationID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        command.Parameters.AddWithValue("@UserID", userID);
-        ExecuteNonQuery(command);
-      }
-
-      User user = (User)Users.GetUser(LoginUser, userID);
-      Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
-      string description = string.Format("Removed customer '{0}' from user '{1}'.", organization.Name, user.FirstLastName);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, organizationID, description);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
-    }
-
-    public void AddUserProductFamily(int userID, int productFamilyID)
-    {
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = "INSERT INTO UserRightsProductFamilies (UserID, ProductFamilyID) VALUES (@UserID, @ProductFamilyID)";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
-            command.Parameters.AddWithValue("@UserID", userID);
-            ExecuteNonQuery(command);
+                command.CommandType = CommandType.Text;
+                Fill(command);
+            }
         }
 
-        User user = (User)Users.GetUser(LoginUser, userID);
-        ProductFamily productFamily = ProductFamilies.GetProductFamily(LoginUser, productFamilyID);
-        string description = string.Format("Added product family '{0}' to user '{1}'.", productFamily.Name, user.FirstLastName);
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamilyID, description);
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
-    }
-
-    public void RemoveUserProductFamily(int userID, int productFamilyID)
-    {
-        using (SqlCommand command = new SqlCommand())
+        public void DeleteUserGroup(int userID, int groupID)
         {
-            command.CommandText = "DELETE FROM UserRightsProductFamilies WHERE UserID=@UserID AND ProductFamilyID=@ProductFamilyID";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
-            command.Parameters.AddWithValue("@UserID", userID);
-            ExecuteNonQuery(command);
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "DELETE FROM GroupUsers WHERE (UserID = @UserID) AND (GroupID = @GroupID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@GroupID", groupID);
+                ExecuteNonQuery(command, "GroupUsers");
+            }
+
+            User user = (User)Users.GetUser(LoginUser, userID);
+            Group group = (Group)Groups.GetGroup(LoginUser, groupID);
+            string description = "Removed '" + user.FirstName + " " + user.LastName + "' from group '" + group.Name + "'";
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, groupID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+
         }
 
-        User user = (User)Users.GetUser(LoginUser, userID);
-        ProductFamily productFamily = ProductFamilies.GetProductFamily(LoginUser, productFamilyID);
-        string description = string.Format("Removed product family '{0}' from user '{1}'.", productFamily.Name, user.FirstLastName);
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamilyID, description);
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
-    }
-
-    public void LoadByNotGroupID(int groupID, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-          command.CommandText = "SELECT * FROM Users u WHERE (u.OrganizationID = @OrganizationID) AND (u.IsActive = 1) AND (u.MarkDeleted = 0) AND (1 not in (SELECT 1 FROM GroupUsers gu WHERE gu.GroupID = @GroupID AND gu.UserID = u.UserID)) order by LastName asc";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@GroupID", groupID);
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        Fill(command, "Users,GroupUsers");
-      }
-
-    }
-
-    public void LoadByReceiveUnassignedGroupEmails( int organizationID)
-    {
-        using (SqlCommand command = new SqlCommand())
+        public void UpdateDeletedOrg(int organizationID, int unknownID)
         {
-            command.CommandText = "SELECT * FROM Users u WHERE (u.OrganizationID = @OrganizationID) AND (u.IsActive = 1) AND (u.MarkDeleted = 0) AND  (u.ReceiveUnassignedGroupEmails = 1)";
-            command.CommandType = CommandType.Text;            
-            command.Parameters.AddWithValue("@OrganizationID", organizationID);
-            Fill(command, "Userss");
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE Users SET OrganizationID = @unknownID WHERE OrganizationID = @OrgID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrgID", organizationID);
+                command.Parameters.AddWithValue("@unknownID", unknownID);
+                ExecuteNonQuery(command, "Users");
+
+                command.CommandText = "UPDATE OrganizationTickets SET OrganizationID = @unknownID WHERE OrganizationID = @OrgID";
+                command.CommandType = CommandType.Text;
+                ExecuteNonQuery(command, "OrganizationTickets");
+
+
+                command.CommandText = @"DELETE FROM RecentlyViewedItems WHERE (refID = @orgID) AND (refType = 1)";
+                command.CommandType = CommandType.Text;
+                ExecuteNonQuery(command, "RecentlyViewedItems");
+            }
         }
 
-    }
 
-    public void LoadByTicketSubscription(int ticketID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT u.* FROM Users u LEFT JOIN Subscriptions s ON u.UserID = s.UserID WHERE (s.RefID = @TicketID) AND (s.RefType = @RefType) AND (u.IsActive = 1) AND (u.MarkDeleted = 0)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        command.Parameters.AddWithValue("@RefType", (int)ReferenceType.Tickets);
-        Fill(command, "Users,Tickets,Subscriptions");
-      }
-    }
+        public void AddUserGroup(int userID, int groupID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "INSERT INTO GroupUsers (GroupID, UserID, DateCreated, DateModified, CreatorID, ModifierID) VALUES (@GroupID, @UserID, @DateCreated, @DateModified, @CreatorID, @ModifierID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@GroupID", groupID);
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@DateModified", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
+                command.Parameters.AddWithValue("@ModifierID", LoginUser.UserID);
+                ExecuteNonQuery(command, "GroupUsers");
+            }
 
-    public void LoadByCustomerSubscription(int ticketID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText =
-@"SELECT u.* FROM Users u 
+            User user = (User)Users.GetUser(LoginUser, userID);
+            Group group = (Group)Groups.GetGroup(LoginUser, groupID);
+            string description = "Added '" + user.FirstName + " " + user.LastName + "' to group '" + group.Name + "'";
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, groupID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+
+        }
+
+        public void AddUserCustomer(int userID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "INSERT INTO UserRightsOrganizations (UserID, OrganizationID) VALUES (@UserID, @OrganizationID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@UserID", userID);
+                ExecuteNonQuery(command);
+            }
+
+            User user = (User)Users.GetUser(LoginUser, userID);
+            Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
+            string description = string.Format("Added customer '{0}' to user '{1}'.", organization.Name, user.FirstLastName);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, organizationID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+        }
+
+        public void RemoveUserCustomer(int userID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "DELETE FROM UserRightsOrganizations WHERE UserID=@UserID AND OrganizationID=@OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@UserID", userID);
+                ExecuteNonQuery(command);
+            }
+
+            User user = (User)Users.GetUser(LoginUser, userID);
+            Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
+            string description = string.Format("Removed customer '{0}' from user '{1}'.", organization.Name, user.FirstLastName);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, organizationID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+        }
+
+        public void AddUserProductFamily(int userID, int productFamilyID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "INSERT INTO UserRightsProductFamilies (UserID, ProductFamilyID) VALUES (@UserID, @ProductFamilyID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                command.Parameters.AddWithValue("@UserID", userID);
+                ExecuteNonQuery(command);
+            }
+
+            User user = (User)Users.GetUser(LoginUser, userID);
+            ProductFamily productFamily = ProductFamilies.GetProductFamily(LoginUser, productFamilyID);
+            string description = string.Format("Added product family '{0}' to user '{1}'.", productFamily.Name, user.FirstLastName);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamilyID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+        }
+
+        public void RemoveUserProductFamily(int userID, int productFamilyID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "DELETE FROM UserRightsProductFamilies WHERE UserID=@UserID AND ProductFamilyID=@ProductFamilyID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                command.Parameters.AddWithValue("@UserID", userID);
+                ExecuteNonQuery(command);
+            }
+
+            User user = (User)Users.GetUser(LoginUser, userID);
+            ProductFamily productFamily = ProductFamilies.GetProductFamily(LoginUser, productFamilyID);
+            string description = string.Format("Removed product family '{0}' from user '{1}'.", productFamily.Name, user.FirstLastName);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamilyID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+        }
+
+        public void LoadByNotGroupID(int groupID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users u WHERE (u.OrganizationID = @OrganizationID) AND (u.IsActive = 1) AND (u.MarkDeleted = 0) AND (1 not in (SELECT 1 FROM GroupUsers gu WHERE gu.GroupID = @GroupID AND gu.UserID = u.UserID)) order by LastName asc";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@GroupID", groupID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command, "Users,GroupUsers");
+            }
+
+        }
+
+        public void LoadByReceiveUnassignedGroupEmails(int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users u WHERE (u.OrganizationID = @OrganizationID) AND (u.IsActive = 1) AND (u.MarkDeleted = 0) AND  (u.ReceiveUnassignedGroupEmails = 1)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command, "Userss");
+            }
+
+        }
+
+        public void LoadByTicketSubscription(int ticketID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT u.* FROM Users u LEFT JOIN Subscriptions s ON u.UserID = s.UserID WHERE (s.RefID = @TicketID) AND (s.RefType = @RefType) AND (u.IsActive = 1) AND (u.MarkDeleted = 0)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                command.Parameters.AddWithValue("@RefType", (int)ReferenceType.Tickets);
+                Fill(command, "Users,Tickets,Subscriptions");
+            }
+        }
+
+        public void LoadByCustomerSubscription(int ticketID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText =
+        @"SELECT u.* FROM Users u 
 WHERE(u.IsActive = 1) 
 AND (u.MarkDeleted = 0)
 AND u.UserID IN
@@ -897,35 +918,35 @@ AND u.UserID IN
   AND s.RefID IN (SELECT ot.OrganizationID FROM OrganizationTickets ot WHERE (ot.TicketID = @TicketID))
 )
 ";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        command.Parameters.AddWithValue("@RefType", (int)ReferenceType.Organizations);
-        Fill(command, "Users,Tickets,Subscriptions");
-      }
-    }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                command.Parameters.AddWithValue("@RefType", (int)ReferenceType.Organizations);
+                Fill(command, "Users,Tickets,Subscriptions");
+            }
+        }
 
-    public void LoadBasicPortalUsers(int ticketID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT u.* FROM Users u 
+        public void LoadBasicPortalUsers(int ticketID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.* FROM Users u 
 LEFT JOIN UserTickets ut ON ut.UserID = u.UserID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID
 WHERE ut.TicketID = @TicketID
 AND u.MarkDeleted = 0
 AND o.IsActive = 1
 AND (o.HasPortalAccess = 0 OR u.IsPortalUser = 0)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        Fill(command, "Users,Tickets");
-      }
-    }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                Fill(command, "Users,Tickets");
+            }
+        }
 
-    public void LoadAdvancedPortalUsers(int ticketID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT u.* FROM Users u 
+        public void LoadAdvancedPortalUsers(int ticketID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.* FROM Users u 
 LEFT JOIN UserTickets ut ON ut.UserID = u.UserID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID
 WHERE ut.TicketID = @TicketID
@@ -933,30 +954,30 @@ AND o.HasPortalAccess = 1
 AND u.MarkDeleted = 0
 AND o.IsActive = 1
 AND u.IsPortalUser = 1";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        Fill(command, "Users,Tickets");
-      }
-    }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                Fill(command, "Users,Tickets");
+            }
+        }
 
-    public void LoadBySalesForceID(string salesForceID, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Users WHERE (SalesForceID = @salesForceID) AND (OrganizationID = @organizationID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@salesForceID", salesForceID.Trim());
-        command.Parameters.AddWithValue("@organizationID", organizationID);
-        Fill(command);
-      }
-    }
+        public void LoadBySalesForceID(string salesForceID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users WHERE (SalesForceID = @salesForceID) AND (OrganizationID = @organizationID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@salesForceID", salesForceID.Trim());
+                command.Parameters.AddWithValue("@organizationID", organizationID);
+                Fill(command);
+            }
+        }
 
-    public void LoadBySalesForceIDInParentOrganization(string salesForceID, int parentOrganizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = 
-        @"
+        public void LoadBySalesForceIDInParentOrganization(string salesForceID, int parentOrganizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText =
+                @"
           SELECT 
             u.* 
           FROM 
@@ -967,253 +988,253 @@ AND u.IsPortalUser = 1";
             u.SalesForceID = @salesForceID
             AND o.Parent = @parentOrganizationID
         ";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@salesForceID", salesForceID.Trim());
-        command.Parameters.AddWithValue("@organizationID", parentOrganizationID);
-        Fill(command);
-      }
-    }
-
-    public static string GetUserFullName(LoginUser loginUser, int userID)
-    {
-      User user = (User)Users.GetUser(loginUser, userID);
-      return user == null ? "" : user.FirstName + " " + user.LastName;
-
-    }
-
-    public static void UpdateUserActivityTime(LoginUser loginUser, int userID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "uspUpdateUserActivityTime";
-        command.CommandType = CommandType.StoredProcedure;
-        command.Parameters.AddWithValue("@UserID", userID);
-        (new Users(loginUser)).ExecuteNonQuery(command, "Users");
-      }
-    }
-
-    public static void UpdateUserPingTime(LoginUser loginUser, int userID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "uspUpdateUserPingTime";
-        command.CommandType = CommandType.StoredProcedure;
-        command.Parameters.AddWithValue("@UserID", userID);
-        (new Users(loginUser)).ExecuteNonQuery(command, "Users");
-      }
-    }
-
-    public User FindByImportID(string importID)
-    {
-      importID = importID.Trim().ToLower();
-
-      foreach (User user in this)
-      {
-        if ((user.ImportID != null && user.ImportID.Trim().ToLower() == importID) ||
-            (user.ImportID != null && user.ImportID.Trim().ToLower() == "[contact]" + importID) || 
-            user.Email.Trim().ToLower() == importID ||
-            user.IsSameName(importID))
-        {
-          return user;
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@salesForceID", salesForceID.Trim());
+                command.Parameters.AddWithValue("@organizationID", parentOrganizationID);
+                Fill(command);
+            }
         }
-      }
-      return null;
-    }
 
-    public User Find(string text)
-    {
-      if (string.IsNullOrEmpty(text)) return null;
-
-      foreach (User user in this)
-      {
-        if (user.ImportID != null && user.ImportID.Trim().ToLower() == text.Trim().ToLower() ||
-          string.Compare(user.FirstLastName, text, true) == 0 ||
-          string.Compare(user.DisplayName, text, true) == 0 ||
-          string.Compare(user.Email, text, true) == 0)
+        public static string GetUserFullName(LoginUser loginUser, int userID)
         {
-          return user;
+            User user = (User)Users.GetUser(loginUser, userID);
+            return user == null ? "" : user.FirstName + " " + user.LastName;
+
         }
-      }
-      return null;
-    }
 
-    public User FindByEmail(string email)
-    {
-      foreach (User user in this)
-      {
-        if (user.Email.Trim().ToLower() == email.Trim().ToLower())
+        public static void UpdateUserActivityTime(LoginUser loginUser, int userID)
         {
-          return user;
-        }
-      }
-      return null;
-    }
-
-    public User FindBySalesForceID(string salesForceID)
-    {
-        foreach (User user in this)
-        {
-            try
+            using (SqlCommand command = new SqlCommand())
             {
-                if (null != user.SalesForceID && user.SalesForceID.ToString().Trim().ToLower() == salesForceID.Trim().ToLower())
+                command.CommandText = "uspUpdateUserActivityTime";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@UserID", userID);
+                (new Users(loginUser)).ExecuteNonQuery(command, "Users");
+            }
+        }
+
+        public static void UpdateUserPingTime(LoginUser loginUser, int userID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "uspUpdateUserPingTime";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@UserID", userID);
+                (new Users(loginUser)).ExecuteNonQuery(command, "Users");
+            }
+        }
+
+        public User FindByImportID(string importID)
+        {
+            importID = importID.Trim().ToLower();
+
+            foreach (User user in this)
+            {
+                if ((user.ImportID != null && user.ImportID.Trim().ToLower() == importID) ||
+                    (user.ImportID != null && user.ImportID.Trim().ToLower() == "[contact]" + importID) ||
+                    user.Email.Trim().ToLower() == importID ||
+                    user.IsSameName(importID))
                 {
                     return user;
                 }
             }
-            catch (Exception ex)
+            return null;
+        }
+
+        public User Find(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return null;
+
+            foreach (User user in this)
             {
-                //User does not have a contact id
+                if (user.ImportID != null && user.ImportID.Trim().ToLower() == text.Trim().ToLower() ||
+                  string.Compare(user.FirstLastName, text, true) == 0 ||
+                  string.Compare(user.DisplayName, text, true) == 0 ||
+                  string.Compare(user.Email, text, true) == 0)
+                {
+                    return user;
+                }
+            }
+            return null;
+        }
+
+        public User FindByEmail(string email)
+        {
+            foreach (User user in this)
+            {
+                if (user.Email.Trim().ToLower() == email.Trim().ToLower())
+                {
+                    return user;
+                }
+            }
+            return null;
+        }
+
+        public User FindBySalesForceID(string salesForceID)
+        {
+            foreach (User user in this)
+            {
+                try
+                {
+                    if (null != user.SalesForceID && user.SalesForceID.ToString().Trim().ToLower() == salesForceID.Trim().ToLower())
+                    {
+                        return user;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //User does not have a contact id
+                }
+            }
+            return null;
+        }
+
+        public User FindByName(string firstName, string lastName)
+        {
+            foreach (User user in this)
+            {
+                if (user.FirstName.Trim().ToLower() == firstName.Trim().ToLower() && user.LastName.Trim().ToLower() == lastName.Trim().ToLower())
+                {
+                    return user;
+                }
+            }
+            return null;
+        }
+
+        public static void MarkUserDeleted(LoginUser loginUser, int userID)
+        {
+            Users users = new Users(loginUser);
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "DELETE FROM GroupUsers WHERE (UserID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "GroupUsers");
+
+                command.CommandText = "DELETE FROM Subscriptions WHERE (UserID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "Subscriptions");
+
+                command.CommandText = "DELETE FROM TicketQueue WHERE (UserID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "TicketQueue");
+
+                command.CommandText = "DELETE FROM UserSettings WHERE (UserID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "UserSettings");
+
+                command.CommandText = "DELETE FROM UserSettings WHERE (UserID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "UserSettings");
+
+                command.CommandText = "DELETE FROM Notes WHERE (RefID = @UserID) AND (RefType = 22)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "Notes");
+
+                command.CommandText = "DELETE FROM Addresses WHERE (RefID = @UserID) AND (RefType = 22)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "Addresses");
+
+                command.CommandText = "DELETE FROM PhoneNumbers WHERE (RefID = @UserID) AND (RefType = 22)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "PhoneNumbers");
+
+                command.CommandText = "UPDATE Tickets SET UserID = null WHERE (UserID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "Tickets");
+
+                command.CommandText = "DELETE FROM RecentlyViewedItems WHERE (refID = @UserID) AND (refType = 0)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "RecentlyViewedItems");
+
+            }
+
+            User user = Users.GetUser(loginUser, userID);
+            if (user != null)
+            {
+                user.MarkDeleted = true;
+                user.Collection.Save();
+            }
+
+        }
+
+        public static void MarkUsersChatUnavailable(LoginUser loginUser, int organizationID)
+        {
+            ChatUserSettings chatUserSettings = new ChatUserSettings(loginUser);
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE ChatUserSettings SET IsAvailable = 0 WHERE UserID IN (SELECT UserID FROM Users WHERE OrganizationID = @OrganizationID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                chatUserSettings.ExecuteNonQuery(command, "ChatUserSettings");
             }
         }
-        return null;
-    }
 
-    public User FindByName(string firstName, string lastName)
-    {
-      foreach (User user in this)
-      {
-        if (user.FirstName.Trim().ToLower() == firstName.Trim().ToLower() && user.LastName.Trim().ToLower() == lastName.Trim().ToLower())
+        public static void DeleteUser(LoginUser loginUser, int userID)
         {
-          return user;
+            Users users = new Users(loginUser);
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "DELETE FROM GroupUsers WHERE (UserID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                users.ExecuteNonQuery(command, "GroupUsers");
+            }
+
+
+            users.LoadByUserID(userID);
+            if (!users.IsEmpty) users[0].Delete();
+            users.Save();
+
         }
-      }
-      return null;
-    }
 
-    public static void MarkUserDeleted(LoginUser loginUser, int userID)
-    {
-      Users users = new Users(loginUser);
-
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "DELETE FROM GroupUsers WHERE (UserID = @UserID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "GroupUsers");
-
-        command.CommandText = "DELETE FROM Subscriptions WHERE (UserID = @UserID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "Subscriptions");
-
-        command.CommandText = "DELETE FROM TicketQueue WHERE (UserID = @UserID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "TicketQueue");
-
-        command.CommandText = "DELETE FROM UserSettings WHERE (UserID = @UserID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "UserSettings");
-
-        command.CommandText = "DELETE FROM UserSettings WHERE (UserID = @UserID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "UserSettings");
-
-        command.CommandText = "DELETE FROM Notes WHERE (RefID = @UserID) AND (RefType = 22)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "Notes");
-
-        command.CommandText = "DELETE FROM Addresses WHERE (RefID = @UserID) AND (RefType = 22)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "Addresses");
-
-        command.CommandText = "DELETE FROM PhoneNumbers WHERE (RefID = @UserID) AND (RefType = 22)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "PhoneNumbers");
-
-        command.CommandText = "UPDATE Tickets SET UserID = null WHERE (UserID = @UserID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "Tickets");
-
-        command.CommandText = "DELETE FROM RecentlyViewedItems WHERE (refID = @UserID) AND (refType = 0)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "RecentlyViewedItems");
-
-      }
-
-      User user = Users.GetUser(loginUser, userID);
-      if (user != null)
-      {
-        user.MarkDeleted = true;
-        user.Collection.Save();
-      }
-    
-    }
-
-    public static void MarkUsersChatUnavailable(LoginUser loginUser, int organizationID)
-    {
-      ChatUserSettings chatUserSettings = new ChatUserSettings(loginUser);
-
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "UPDATE ChatUserSettings SET IsAvailable = 0 WHERE UserID IN (SELECT UserID FROM Users WHERE OrganizationID = @OrganizationID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        chatUserSettings.ExecuteNonQuery(command, "ChatUserSettings");
-      }
-    }
-
-    public static void DeleteUser(LoginUser loginUser, int userID)
-    {
-      Users users = new Users(loginUser);
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "DELETE FROM GroupUsers WHERE (UserID = @UserID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@UserID", userID);
-        users.ExecuteNonQuery(command, "GroupUsers");
-      }
-
-
-      users.LoadByUserID(userID);
-      if (!users.IsEmpty) users[0].Delete();
-      users.Save();
-    
-    }
-
-    public static Organization GetTSOrganization(LoginUser loginUser, int userID)
-    {
-      User user = (User)Users.GetUser(loginUser, userID);
-      if (user == null) return null;
-      Organization organization = (Organization)Organizations.GetOrganization(loginUser, user.OrganizationID);
-      if (organization == null) return null;
-      if (organization.ParentID == null || organization.ParentID == 1) return organization;
-
-      Organization parent = (Organization)Organizations.GetOrganization(loginUser, (int)organization.ParentID);
-      if (parent == null) return null;
-      return parent;
-    }
-
-    public static void CreateDefaultUsers(LoginUser loginUser)
-    {
-      Users users = new Users(loginUser);
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "";
-        command.CommandType = CommandType.Text;
-
-
-        Organization organization = Organizations.GetOrganization(loginUser, 1078);
-        if (organization == null)
+        public static Organization GetTSOrganization(LoginUser loginUser, int userID)
         {
-          command.CommandText = @"
+            User user = (User)Users.GetUser(loginUser, userID);
+            if (user == null) return null;
+            Organization organization = (Organization)Organizations.GetOrganization(loginUser, user.OrganizationID);
+            if (organization == null) return null;
+            if (organization.ParentID == null || organization.ParentID == 1) return organization;
+
+            Organization parent = (Organization)Organizations.GetOrganization(loginUser, (int)organization.ParentID);
+            if (parent == null) return null;
+            return parent;
+        }
+
+        public static void CreateDefaultUsers(LoginUser loginUser)
+        {
+            Users users = new Users(loginUser);
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "";
+                command.CommandType = CommandType.Text;
+
+
+                Organization organization = Organizations.GetOrganization(loginUser, 1078);
+                if (organization == null)
+                {
+                    command.CommandText = @"
 SET IDENTITY_INSERT [Organizations] ON
 INSERT INTO [Organizations]
            (OrganizationID,
@@ -1284,13 +1305,13 @@ INSERT INTO [Organizations]
      )
 SET IDENTITY_INSERT [Organizations] OFF
 ";
-          users.ExecuteNonQuery(command, "Organizations");
-        }
+                    users.ExecuteNonQuery(command, "Organizations");
+                }
 
-        organization = Organizations.GetOrganization(loginUser, 1);
-        if (organization == null)
-        {
-          command.CommandText = @"
+                organization = Organizations.GetOrganization(loginUser, 1);
+                if (organization == null)
+                {
+                    command.CommandText = @"
 SET IDENTITY_INSERT [Organizations] ON
 
 INSERT INTO [Organizations]
@@ -1363,13 +1384,13 @@ INSERT INTO [Organizations]
 
 SET IDENTITY_INSERT [Organizations] OFF
 ";
-          users.ExecuteNonQuery(command, "Organizations");
-        }
+                    users.ExecuteNonQuery(command, "Organizations");
+                }
 
-        User user = Users.GetUser(loginUser, 54);
-        if (user == null)
-        {
-          command.CommandText = @"
+                User user = Users.GetUser(loginUser, 54);
+                if (user == null)
+                {
+                    command.CommandText = @"
 SET IDENTITY_INSERT Users On
 
 INSERT INTO [Users]
@@ -1419,13 +1440,13 @@ INSERT INTO [Users]
 
 SET IDENTITY_INSERT Users Off
 ";
-          users.ExecuteNonQuery(command, "Users");
-        }
+                    users.ExecuteNonQuery(command, "Users");
+                }
 
-        user = Users.GetUser(loginUser, 34);
-        if (user == null)
-        {
-          command.CommandText = @"
+                user = Users.GetUser(loginUser, 34);
+                if (user == null)
+                {
+                    command.CommandText = @"
 SET IDENTITY_INSERT Users On
 
 INSERT INTO [Users]
@@ -1476,31 +1497,31 @@ INSERT INTO [Users]
 SET IDENTITY_INSERT Users Off
 
 ";
-          users.ExecuteNonQuery(command, "Users");
+                    users.ExecuteNonQuery(command, "Users");
+                }
+            }
+
+
+
         }
-      }
 
-    
-    
-    }
+        public void LoadByImportID(string importID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Users WHERE ImportID = @ImportID AND OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ImportID", importID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
 
-    public void LoadByImportID(string importID, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Users WHERE ImportID = @ImportID AND OrganizationID = @OrganizationID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ImportID", importID);
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        Fill(command);
-      }
-    }
-
-	 public void LoadByImportID(int parentID, string importID)
-	 {
-		 using (SqlCommand command = new SqlCommand())
-		 {
-			 command.CommandText = @"SELECT u.*
+        public void LoadByImportID(int parentID, string importID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT u.*
                                 FROM Users u 
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
@@ -1508,12 +1529,12 @@ SET IDENTITY_INSERT Users Off
                                 AND (u.ImportID = @ImportID)";
 
 
-			 command.CommandType = CommandType.Text;
-			 command.Parameters.AddWithValue("@ImportID", importID);
-			 command.Parameters.AddWithValue("@ParentID", parentID);
-			 Fill(command);
-		 }
-	 }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ImportID", importID);
+                command.Parameters.AddWithValue("@ParentID", parentID);
+                Fill(command);
+            }
+        }
 
-  }
+    }
 }
