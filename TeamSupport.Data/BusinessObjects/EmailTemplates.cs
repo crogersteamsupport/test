@@ -102,7 +102,7 @@ namespace TeamSupport.Data
       }
       else
       {
-        builder.AppendLine(" with the next introduction:<br/><br/>");
+        builder.AppendLine(".<br/><br/>");
         builder.AppendLine();
         builder.AppendLine("\"" + introduction + "\"");
       }
