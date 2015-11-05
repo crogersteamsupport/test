@@ -2473,6 +2473,9 @@ namespace TeamSupport.ServiceLibrary
             newPhoneNumber3.RefID = orgID;
             break;
 			 case ReferenceType.Contacts:
+				newPhoneNumber.RefType = ReferenceType.Users;
+				newPhoneNumber2.RefType = ReferenceType.Users;
+				newPhoneNumber3.RefType = ReferenceType.Users;
 				int contactID = ReadInt("ContactID");
             if (contactID != 0)
             {
@@ -2507,49 +2510,52 @@ namespace TeamSupport.ServiceLibrary
               }
             }
 
-            string contactEmail = ReadString("ContactEmail", string.Empty);
-            string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
-            if (!contactList.TryGetValue(searchTerm.ToUpper(), out contactID))
+            if (contactID == 0)
             {
-              string firstName = ReadString("FirstName", string.Empty);
-              string lastName = ReadString("LastName", string.Empty);
-              if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
-              {
-                Users newContacts = new Users(_importUser);
-                User newContact = newContacts.AddNewUser();
-                newContact.FirstName = firstName;
-                newContact.LastName = lastName;
-                newContact.Email = contactEmail;
-                newContact.OrganizationID = orgID;
-                newContact.ActivatedOn = now;
-                newContact.CryptedPassword = "";
-                newContact.DeactivatedOn = null;
-                newContact.InOffice = false;
-                newContact.InOfficeComment = "";
-                newContact.IsFinanceAdmin = false;
-                newContact.IsPasswordExpired = true;
-                newContact.IsSystemAdmin = false;
-                newContact.LastActivity = now;
-                newContact.LastLogin = now;
-                newContact.NeedsIndexing = true;
-                newContact.PrimaryGroupID = null;
-                if (dateCreated != null)
-                {
-                  newContact.DateCreated = (DateTime)dateCreated;
-                }
-                newContact.CreatorID = creatorID;
-                newContact.ModifierID = -2;
-					 newContact.ImportFileID = import.ImportID;
+					string contactEmail = ReadString("ContactEmail", string.Empty);
+					string searchTerm = contactEmail.Replace(" ", string.Empty) + "(" + companyName.Replace(" ", string.Empty) + ")";
+					if (!contactList.TryGetValue(searchTerm.ToUpper(), out contactID))
+					{
+					  string firstName = ReadString("FirstName", string.Empty);
+					  string lastName = ReadString("LastName", string.Empty);
+					  if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
+					  {
+						 Users newContacts = new Users(_importUser);
+						 User newContact = newContacts.AddNewUser();
+						 newContact.FirstName = firstName;
+						 newContact.LastName = lastName;
+						 newContact.Email = contactEmail;
+						 newContact.OrganizationID = orgID;
+						 newContact.ActivatedOn = now;
+						 newContact.CryptedPassword = "";
+						 newContact.DeactivatedOn = null;
+						 newContact.InOffice = false;
+						 newContact.InOfficeComment = "";
+						 newContact.IsFinanceAdmin = false;
+						 newContact.IsPasswordExpired = true;
+						 newContact.IsSystemAdmin = false;
+						 newContact.LastActivity = now;
+						 newContact.LastLogin = now;
+						 newContact.NeedsIndexing = true;
+						 newContact.PrimaryGroupID = null;
+						 if (dateCreated != null)
+						 {
+							newContact.DateCreated = (DateTime)dateCreated;
+						 }
+						 newContact.CreatorID = creatorID;
+						 newContact.ModifierID = -2;
+						 newContact.ImportFileID = import.ImportID;
 
-                newContacts.Save();
-                contactID = newContact.UserID;
-                contactList.Add(searchTerm, contactID);
-              }
-              else
-              {
-                _importLog.Write(messagePrefix + "Skipped. Phone number could not be added as contact does not exists and either first ("+ firstName +") or last ("+ lastName +") name are missing.");
-                continue;
-              }
+						 newContacts.Save();
+						 contactID = newContact.UserID;
+						 contactList.Add(searchTerm, contactID);
+					  }
+					  else
+					  {
+						 _importLog.Write(messagePrefix + "Skipped. Phone number could not be added as contact does not exists and either first ("+ firstName +") or last ("+ lastName +") name are missing.");
+						 continue;
+					  }
+				  }
             }
             newPhoneNumber.RefID = contactID;
             newPhoneNumber2.RefID = contactID;
