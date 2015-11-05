@@ -3485,7 +3485,14 @@ namespace TeamSupport.ServiceLibrary
           action.TicketID = ticket.TicketID;
 			 action.ImportFileID = import.ImportID;
           //action.TimeSpent = info.TimeSpent;
-          //action.DateStarted = info.DateStarted;
+			 if (dateCreated != null)
+			 {
+				 action.DateCreated = (DateTime)dateCreated;
+			 }
+			 else
+			 {
+				 action.DateCreated = now;
+			 }
           actions.Save();
         //}
         EmailPosts.DeleteImportEmails(_importUser);
