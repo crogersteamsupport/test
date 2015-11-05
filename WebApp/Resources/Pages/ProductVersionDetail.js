@@ -74,7 +74,7 @@ $(document).ready(function () {
 
   $('#productVersionEdit').click(function (e) {
     top.Ts.System.logAction('Product Version Detail - Product Version Edit');
-    $('.productVersionProperties p').toggleClass("editable");
+    $('.productVersionProperties > p').toggleClass("editable");
     $('.productVersionProperties span').toggleClass("editable");
     $('.customProperties p').toggleClass("editable");
 
@@ -426,21 +426,25 @@ $(document).ready(function () {
         desc = desc.replace(/<br\s?\/?>/g, "\n");
         $('#fieldDesc').tinymce().setContent(desc);
         $('#fieldDesc').tinymce().focus();
-//        $('#fieldDesc').html(desc);
+        //$('#fieldDesc').html(desc);
+        $('#descriptionContent').hide();
         $('#descriptionForm').show();
       });
 
       $('#btnDescriptionCancel').click(function (e) {
         e.preventDefault();
         $('#descriptionForm').hide();
+        $('#descriptionContent').show();
         header.show();
         $('#productVersionEdit').removeClass("disabled");
       });
 
       $('#btnDescriptionSave').click(function (e) {
+          debugger;
         e.preventDefault();
         top.Ts.System.logAction('Product Version Detail - Save Description Edit');
         top.Ts.Services.Products.SetVersionDescription(_productVersionID, $(this).prev().find('textarea').val(), function (result) {
+            debugger;
             header.html(result);
             $('#productVersionEdit').removeClass("disabled");
         },
@@ -450,6 +454,7 @@ $(document).ready(function () {
             $('#productVersionEdit').removeClass("disabled");
         });
         $('#descriptionForm').hide();
+        $('#descriptionContent').show();
         header.show();
       })
       $('#productVersionEdit').addClass("disabled");

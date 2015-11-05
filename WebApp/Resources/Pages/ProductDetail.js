@@ -568,6 +568,7 @@ $(document).ready(function () {
         e.preventDefault();
         top.Ts.System.logAction('Product Detail - Save Description Edit');
         top.Ts.Services.Products.SetDescription(_productID, $(this).prev().find('textarea').val(), function (result) {
+            debugger;
             header.html(result);
             $('#productEdit').removeClass("disabled");
         },
