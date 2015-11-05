@@ -74,7 +74,7 @@ $(document).ready(function () {
 
   $('#productVersionEdit').click(function (e) {
     top.Ts.System.logAction('Product Version Detail - Product Version Edit');
-    $('.productVersionProperties > p').toggleClass("editable");
+    $('.productVersionProperties p').toggleClass("editable");
     $('.productVersionProperties span').toggleClass("editable");
     $('.customProperties p').toggleClass("editable");
 
@@ -440,12 +440,10 @@ $(document).ready(function () {
       });
 
       $('#btnDescriptionSave').click(function (e) {
-          debugger;
         e.preventDefault();
         top.Ts.System.logAction('Product Version Detail - Save Description Edit');
         top.Ts.Services.Products.SetVersionDescription(_productVersionID, $(this).prev().find('textarea').val(), function (result) {
-            debugger;
-            header.html(result);
+            header.html($(result).children('span:first').addClass('editable'));
             $('#productVersionEdit').removeClass("disabled");
         },
         function (error) {
