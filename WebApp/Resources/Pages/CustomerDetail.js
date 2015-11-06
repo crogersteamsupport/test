@@ -1190,7 +1190,7 @@ $(document).ready(function () {
             top.Ts.Services.Customers.LoadCustomProductFields(product, function (custField) {
                 for (var i = 0; i < custField.length; i++) {
                     if (custField[i].FieldType == 2)
-                        $('#' + custField[i].CustomFieldID).attr('checked', custField[i].Value);
+                        $('#' + custField[i].CustomFieldID).prop('checked', custField[i].Value);
                     //else if (custField[i].FieldType == 5)
                     //{
                     //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);
