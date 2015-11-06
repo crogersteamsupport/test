@@ -43,6 +43,7 @@ TicketGrid = function (options) {
     var tmrHideLoading = null;
     this.defaults = { "isCompact": false };
     this.options = $.extend({}, this.defaults, options);
+    var dateFormat;
 
     var execSelectTicket = null;
     var selectTicket = function (request, response) {
@@ -262,8 +263,28 @@ TicketGrid = function (options) {
             $('#dialog-severity').modal('show');
         }
         else if (el.hasClass('ticket-action-due-date')) {
+            var currDate = new Date();
+            duedate = top.Ts.Utils.getMsDate(currDate);
 
-            $('#bulkAssignDueDate').datetimepicker({ useCurrent: false, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
+            top.Ts.Services.Customers.GetDateFormat(false, function (format) {
+                dateFormat = format.replace("yyyy", "yy");
+                if (dateFormat.length < 8) {
+                    var dateArr = dateFormat.split('/');
+                    if (dateArr[0].length < 2) {
+                        dateArr[0] = dateArr[0] + dateArr[0];
+                    }
+                    if (dateArr[1].length < 2) {
+                        dateArr[1] = dateArr[1] + dateArr[1];
+                    }
+                    if (dateArr[2].length < 2) {
+                        dateArr[1] = dateArr[1] + dateArr[1];
+                    }
+                    dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
+                }
+
+                $('#bulkAssignDueDate').datetimepicker({ format: dateFormat + ' hh:mm A', defaultDate: new Date() });
+            });
+
             $('#dialog-due-date').modal('show');
         }
         else if (el.hasClass('ticket-action-status')) {
@@ -398,15 +419,16 @@ TicketGrid = function (options) {
         var ids = getSelectedIDs();
 
         var currDate = $('#bulkAssignDueDate').val();
-        var formattedDate = '';
-        if (currDate !== '') {
-            formattedDate = top.Ts.Utils.getMsDate(currDate);
-        }
         
-        top.Ts.Services.Tickets.SetTicketsDueDate(JSON.stringify(ids), formattedDate, function () {
-            top.Ts.System.logAction('Ticket Grid - Updated due date');
-            refreshGrid();
-        });
+        if (currDate !== '') {
+            var formattedDate = top.Ts.Utils.getMsDate(moment(currDate, dateFormat + ' hh:mm A').format('MM/DD/YYYY hh:mm A'))
+
+            top.Ts.Services.Tickets.SetTicketsDueDate(JSON.stringify(ids), formattedDate, function () {
+                top.Ts.System.logAction('Ticket Grid - Updated due date');
+                refreshGrid();
+            });
+        }
+       
         deselectRows()
     });
 
