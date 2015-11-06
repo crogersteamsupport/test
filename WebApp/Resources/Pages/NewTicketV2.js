@@ -410,7 +410,7 @@ function SaveTicket() {
         info.IsKnowledgebase = ($('#ticket-isKB').length) ? $('#ticket-isKB').prop('checked') : false;//$('#ticket-isKB').prop('checked');
         info.KnowledgeBaseCategoryID = ($('#ticket-KB-Category').length) ? $('#ticket-KB-Category').val() : '-1'; //($('#ticket-KB-Category').val() == '') ? '-1' : $('#ticket-KB-Category').val();
         info.Description = tinyMCE.activeEditor.getContent();
-        info.DateStarted = top.Ts.Utils.getMsDate($('#action-new-date-started').val());
+        info.DateStarted = top.Ts.Utils.getMsDate(moment($('#action-new-date-started').val(), dateFormat + ' hh:mm A').format('MM/DD/YYYY hh:mm A')); 
 
         var timeSpent = parseInt($('#action-new-hours').val()) * 60 + parseInt($('#action-new-minutes').val());
         info.TimeSpent = timeSpent;
