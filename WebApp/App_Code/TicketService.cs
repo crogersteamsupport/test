@@ -2295,7 +2295,7 @@ namespace TSWebServices
                 customer.OrganizationID = contact.OrganizationID;
                 customer.Contact = contact.FirstName + " " + contact.LastName;
                 customer.UserID = contact.UserID;
-                if (!(bool)contact.OrganizationActive || !contact.IsActive)
+					 if (!(bool)contact.OrganizationActive || !contact.IsActive || contact.OrganizationSAExpirationDateUtc < DateTime.UtcNow)
                 {
                     customer.Flag = true;
                 }
@@ -2742,7 +2742,7 @@ WHERE t.TicketID = @TicketID
             info.Queuers = GetQueuers(ticket);
 
             Reminders reminders = new Reminders(ticket.Collection.LoginUser);
-            reminders.LoadByItem(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
+				reminders.LoadByItem(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
             info.Reminders = reminders.GetReminderProxies();
 
             Assets assets = new Assets(ticket.Collection.LoginUser);

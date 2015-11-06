@@ -28,7 +28,7 @@ var dateformat;
 var _timerid;
 var _timerElapsed = 0;
 var speed = 50, counter = 0, start;
-
+var reminderClose = false;
 var userFullName = top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName;
 
 var clueTipOptions = top.Ts.Utils.getClueTipOptions(null);
@@ -199,6 +199,61 @@ Selectize.define('no_results', function (options) {
   })();
 });
 
+$.fn.autoGrow = function () {
+	return this.each(function () {
+		// Variables
+		var colsDefault = this.cols;
+		var rowsDefault = this.rows;
+
+		//Functions
+		var grow = function () {
+			growByRef(this);
+		}
+
+		var growByRef = function (obj) {
+			var linesCount = 0;
+			var lines = obj.value.split('\n');
+
+			for (var i = lines.length - 1; i >= 0; --i) {
+				linesCount += Math.floor((lines[i].length / colsDefault) + 1);
+			}
+
+			if (linesCount > rowsDefault)
+				obj.rows = linesCount + 1;
+			else
+				obj.rows = rowsDefault;
+		}
+
+		var characterWidth = function (obj) {
+			var characterWidth = 0;
+			var temp1 = 0;
+			var temp2 = 0;
+			var tempCols = obj.cols;
+
+			obj.cols = 1;
+			temp1 = obj.offsetWidth;
+			obj.cols = 2;
+			temp2 = obj.offsetWidth;
+			characterWidth = temp2 - temp1;
+			obj.cols = tempCols;
+
+			return characterWidth;
+		}
+
+		// Manipulations
+		//this.style.width = "auto";
+		this.style.height = "auto";
+		this.style.overflow = "hidden";
+		//this.style.width = ((characterWidth(this) * this.cols) + 6) + "px";
+		this.onkeyup = grow;
+		this.onfocus = grow;
+		this.onblur = grow;
+		growByRef(this);
+	});
+};
+
+$("input[type=text], textarea").autoGrow();
+
 $(document).ready(function () {
   _ticketNumber = top.Ts.Utils.getQueryValue("TicketNumber", window);
 
@@ -301,6 +356,8 @@ function CreateNewAction(actions) {
 function SetupTicketPage() {
   //Create the new action LI element
   CreateNewActionLI();
+
+  $("input[type=text], textarea").autoGrow();
 
   top.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
     jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
@@ -1838,6 +1895,10 @@ function LoadProductList(products) {
           return '<div data-ticketid="' + _ticketID + '" data-productid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option ProductAnchor">' + escape(item.text) + '</div>';
         }
       },
+      plugins: {
+      	'sticky_placeholder': {},
+      	'no_results': {}
+      },
       allowEmptyOption: true,
       loadThrottle: null,
       onDropdownClose: function ($dropdown) {
@@ -2274,6 +2335,12 @@ function SetupRemindersSection() {
     selectizeControl.addOption(currUserObj);
     selectizeControl.addItem(top.Ts.System.User.UserID);
 
+    $('#RemindersModal').on('hidden.bs.modal', function () {
+    	$('#ticket-reminder-title').val('');
+    	$('#ticket-reminder-date').val('');
+    	$('#reminderID').text('');
+    })
+
     $('#ticket-reminder-save').click(function (e) {
       var selectizeControl = $reminderSelect[0].selectize;
       var date = top.Ts.Utils.getMsDate($('#ticket-reminder-date').val());
@@ -2299,6 +2366,7 @@ function SetupRemindersSection() {
         $('#reminderID').text('');
         $('#ticket-reminder-title').val('');
         $('#ticket-reminder-date').val('');
+        $('#reminder-error').hide();
         selectizeControl.clear();
         top.Ts.Services.System.GetItemReminders(top.Ts.ReferenceTypes.Tickets, _ticketID, top.Ts.System.User.UserID, function (reminders) {
           AddReminders(reminders);
@@ -2310,8 +2378,10 @@ function SetupRemindersSection() {
     });
 
     $('#ticket-reminder-span').on('click', 'span.tagRemove', function (e) {
-      var reminder = $(this).parent()[0];
-      if (reminder) {
+    	var reminder = $(this).parent()[0];
+    	reminderClose = true;
+    	var currentUserID = $(reminder).data().tag.CreatorID;
+    	if (reminder && currentUserID == top.Ts.System.User.UserID) {
         top.Ts.Services.System.DismissReminder(reminder.id, function () {
           reminder.remove();
           window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removereminder", userFullName);
@@ -2319,8 +2389,11 @@ function SetupRemindersSection() {
           alert('There was a problem removing the reminder from the ticket.');
         });
       }
-      else {
-        alert('There was a problem removing the reminder from the ticket.');
+    	else {
+    		if (currentUserID != top.Ts.System.User.UserID)
+    			alert('You do not have permission to delete this reminder');
+			else
+				alert('There was a problem removing the reminder from the ticket.');
       }
     });
 
@@ -2332,6 +2405,7 @@ function SetupRemindersSection() {
       $('#ticket-reminder-title').val(reminder.Description);
       var date = reminder.DueDate == null ? null : top.Ts.Utils.getMsDate(reminder.DueDate);
       $('#ticket-reminder-date').val(date.localeFormat(top.Ts.Utils.getDateTimePattern()));
+      if (!reminderClose)
       $('#RemindersModal').modal('show');
     });
   }
@@ -2452,10 +2526,11 @@ var AddCustomFieldEdit = function (field, parentContainer) {
                           .append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
   var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-  var input = $('<input type="text">')
-                  .addClass('form-control ticket-simple-input muted-placeholder')
+  var input = $('<textarea rows="1">')
+                  .addClass('form-control ticket-simple-textarea muted-placeholder')
                   .attr("placeholder", "Enter Value")
                   .val(field.Value)
+						.autoGrow()
                   .appendTo(inputGroupContainer)
                   .after(getUrls(field.Value));
 

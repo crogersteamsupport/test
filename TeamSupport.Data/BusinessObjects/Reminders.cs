@@ -75,6 +75,19 @@ namespace TeamSupport.Data
       }
     }
 
+	 public void LoadByItemAll(ReferenceType refType, int refID, int? userID)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = "SELECT * FROM Reminders WHERE (IsDismissed = 0) AND (RefType = @RefType) AND (RefID = @RefID) ORDER BY DueDate";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@UserID", userID ?? -1);
+			 command.Parameters.AddWithValue("@RefType", refType);
+			 command.Parameters.AddWithValue("@RefID", refID);
+			 Fill(command);
+		 }
+	 }
+
     public void LoadForEmail()
     {
       using (SqlCommand command = new SqlCommand())

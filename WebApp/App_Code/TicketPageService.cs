@@ -60,7 +60,7 @@ namespace TSWebServices
             info.Queuers = GetQueuers(ticket);
 
             Reminders reminders = new Reminders(ticket.Collection.LoginUser);
-            reminders.LoadByItem(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
+				reminders.LoadByItemAll(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
             info.Reminders = reminders.GetReminderProxies();
 
             Assets assets = new Assets(ticket.Collection.LoginUser);

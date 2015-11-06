@@ -600,7 +600,7 @@ namespace TSWebServices
     public ReminderProxy[] GetItemReminders(ReferenceType refType, int refID, int? userID)
     {
       Reminders reminders = new Reminders(TSAuthentication.GetLoginUser());
-      reminders.LoadByItem(refType, refID, userID);
+      reminders.LoadByItemAll(refType, refID, userID);
       return reminders.GetReminderProxies();
     }
 

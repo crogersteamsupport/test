@@ -1030,14 +1030,16 @@ namespace TSWebServices
                 PhoneTypes phoneTypes = new PhoneTypes(TSAuthentication.GetLoginUser());
                 phoneTypes.LoadByOrganizationID(TSAuthentication.OrganizationID);
                 
+					 if (phone != "")
+					 { 
+						 PhoneNumber p = new PhoneNumbers(TSAuthentication.GetLoginUser()).AddNewPhoneNumber();
+						 p.PhoneTypeID = phoneTypes[0].PhoneTypeID;
+						 p.Number = phone;
+						 p.RefType = ReferenceType.Users;
+						 p.RefID = user.UserID;
 
-                PhoneNumber p = new PhoneNumbers(TSAuthentication.GetLoginUser()).AddNewPhoneNumber();
-                p.PhoneTypeID = phoneTypes[0].PhoneTypeID;
-                p.Number = phone;
-                p.RefType = ReferenceType.Users;
-                p.RefID = user.UserID;
-
-                p.Collection.Save();
+						 p.Collection.Save();
+					 }
 
                 string password = DataUtils.GenerateRandomPassword();
                 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
