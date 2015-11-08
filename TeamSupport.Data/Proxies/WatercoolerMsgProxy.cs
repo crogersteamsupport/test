@@ -39,7 +39,7 @@ namespace TeamSupport.Data
       result.NeedsIndexing = this.NeedsIndexing;
       result.IsDeleted = this.IsDeleted;
       result.MessageParent = this.MessageParent;
-      result.Message = sanitizer.Sanitize(MakeLink(this.Message));
+      result.Message = (MakeLink(this.Message));
       result.OrganizationID = this.OrganizationID;
       result.UserID = this.UserID;
       result.MessageID = this.MessageID;

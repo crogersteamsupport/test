@@ -40,7 +40,7 @@ namespace TeamSupport.Data
       result.HasEmailSent = this.HasEmailSent;
       result.IsDismissed = this.IsDismissed;
       result.UserID = this.UserID;
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Description = (this.Description);
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.ReminderID = this.ReminderID;

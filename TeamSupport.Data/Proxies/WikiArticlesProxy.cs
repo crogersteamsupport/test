@@ -57,8 +57,8 @@ namespace TeamSupport.Data
       result.PublicEdit = this.PublicEdit;
       result.PublicView = this.PublicView;
       result.Version = this.Version;
-      result.Body = sanitizer.Sanitize(this.Body);
-      result.ArticleName = sanitizer.Sanitize(this.ArticleName);
+      result.Body = (this.Body);
+      result.ArticleName = (this.ArticleName);
       result.OrganizationID = this.OrganizationID;
       result.ParentID = this.ParentID;
       result.ArticleID = this.ArticleID;

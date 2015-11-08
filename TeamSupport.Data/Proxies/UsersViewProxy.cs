@@ -72,12 +72,12 @@ namespace TeamSupport.Data
       result.IsSystemAdmin = this.IsSystemAdmin;
       result.MarkDeleted = this.MarkDeleted;
       result.IsActive = this.IsActive;
-      result.Title = sanitizer.Sanitize(this.Title);
-      result.LastName = sanitizer.Sanitize(this.LastName);
-      result.MiddleName = sanitizer.Sanitize(this.MiddleName);
+      result.Title = (this.Title);
+      result.LastName = (this.LastName);
+      result.MiddleName = (this.MiddleName);
       result.UserID = this.UserID;
-      result.FirstName = sanitizer.Sanitize(this.FirstName);
-      result.Email = sanitizer.Sanitize(this.Email);
+      result.FirstName = (this.FirstName);
+      result.Email = (this.Email);
        
       result.LastLogin = DateTime.SpecifyKind(this.LastLoginUtc, DateTimeKind.Utc);
       result.LastActivity = DateTime.SpecifyKind(this.LastActivityUtc, DateTimeKind.Utc);

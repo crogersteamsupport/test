@@ -62,8 +62,8 @@ namespace TeamSupport.Data
       result.CustomRefType = ReferenceType.None;
       result.CustomFieldKeyName = this.CustomFieldKeyName;
       result.Query = this.Query;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Description = (this.Description);
+      result.Name = (this.Name);
       result.OrganizationID = this.OrganizationID;
       result.ReportID = this.ReportID;
        

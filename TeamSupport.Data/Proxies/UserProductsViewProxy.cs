@@ -53,7 +53,7 @@ namespace TeamSupport.Data
       result.UserName = this.UserName;
       result.UserID = this.UserID;
       result.UserProductID = this.UserProductID;
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Description = (this.Description);
       result.IsReleased = this.IsReleased;
       result.ProductVersionStatusID = this.ProductVersionStatusID;
       result.VersionNumber = this.VersionNumber;

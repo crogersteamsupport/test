@@ -41,8 +41,8 @@ namespace TeamSupport.Data
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Title = sanitizer.Sanitize(this.Title);
+      result.Description = (this.Description);
+      result.Title = (this.Title);
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.NoteID = this.NoteID;

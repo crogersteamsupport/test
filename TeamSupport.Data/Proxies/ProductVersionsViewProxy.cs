@@ -49,13 +49,13 @@ namespace TeamSupport.Data
       result.JiraProjectKey = this.JiraProjectKey;
       result.ProductFamilyID = this.ProductFamilyID;
       result.OrganizationID = this.OrganizationID;
-      result.ProductName = sanitizer.Sanitize(this.ProductName);
+      result.ProductName = (this.ProductName);
       result.VersionStatus = this.VersionStatus;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.ImportID = this.ImportID;
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Description = (this.Description);
       result.IsReleased = this.IsReleased;
       result.VersionNumber = this.VersionNumber;
       result.ProductVersionStatusID = this.ProductVersionStatusID;

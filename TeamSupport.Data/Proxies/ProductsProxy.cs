@@ -46,8 +46,8 @@ namespace TeamSupport.Data
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.ImportID = this.ImportID;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Description = (this.Description);
+      result.Name = (this.Name);
       result.OrganizationID = this.OrganizationID;
       result.ProductID = this.ProductID;
        

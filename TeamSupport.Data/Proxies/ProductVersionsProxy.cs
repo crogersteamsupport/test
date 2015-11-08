@@ -47,7 +47,7 @@ namespace TeamSupport.Data
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.ImportID = this.ImportID;
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Description = (this.Description);
       result.IsReleased = this.IsReleased;
       result.VersionNumber = this.VersionNumber;
       result.ProductVersionStatusID = this.ProductVersionStatusID;

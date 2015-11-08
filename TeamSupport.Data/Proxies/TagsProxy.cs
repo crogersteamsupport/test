@@ -34,7 +34,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       result.CreatorID = this.CreatorID;
-      result.Value = sanitizer.Sanitize(this.Value);
+      result.Value = (this.Value);
       result.OrganizationID = this.OrganizationID;
       result.TagID = this.TagID;
        

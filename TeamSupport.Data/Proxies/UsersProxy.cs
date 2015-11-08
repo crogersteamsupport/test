@@ -172,11 +172,11 @@ namespace TeamSupport.Data
       result.MarkDeleted = this.MarkDeleted;
       result.IsActive = this.IsActive;
       result.CryptedPassword = this.CryptedPassword;
-      result.Title = sanitizer.Sanitize(this.Title);
-      result.LastName = sanitizer.Sanitize(this.LastName);
-      result.MiddleName = sanitizer.Sanitize(this.MiddleName);
-      result.FirstName = sanitizer.Sanitize(this.FirstName);
-      result.Email = sanitizer.Sanitize(this.Email);
+      result.Title = (this.Title);
+      result.LastName = (this.LastName);
+      result.MiddleName = (this.MiddleName);
+      result.FirstName = (this.FirstName);
+      result.Email = (this.Email);
       result.UserID = this.UserID;
        
       result.LastLogin = DateTime.SpecifyKind(this.LastLoginUtc, DateTimeKind.Utc);

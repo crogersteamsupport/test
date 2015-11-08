@@ -38,8 +38,8 @@ namespace TeamSupport.Data
       result.ModifiedBy = this.ModifiedBy;
       result.CreatedBy = this.CreatedBy;
       result.Version = this.Version;
-      result.Body = sanitizer.Sanitize(this.Body);
-      result.ArticleName = sanitizer.Sanitize(this.ArticleName);
+      result.Body = (this.Body);
+      result.ArticleName = (this.ArticleName);
       result.OrganizationID = this.OrganizationID;
       result.ArticleID = this.ArticleID;
       result.HistoryID = this.HistoryID;

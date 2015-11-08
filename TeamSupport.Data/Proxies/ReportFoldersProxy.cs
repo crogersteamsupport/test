@@ -33,7 +33,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
       result.CreatorID = this.CreatorID;
       result.ParentID = this.ParentID;
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Name = (this.Name);
       result.FolderID = this.FolderID;
       result.OrganizationID = this.OrganizationID;
        

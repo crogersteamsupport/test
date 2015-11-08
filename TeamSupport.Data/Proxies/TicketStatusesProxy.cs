@@ -46,8 +46,8 @@ namespace TeamSupport.Data
       result.IsClosed = this.IsClosed;
       result.TicketTypeID = this.TicketTypeID;
       result.Position = this.Position;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Description = (this.Description);
+      result.Name = (this.Name);
       result.TicketStatusID = this.TicketStatusID;
        
        

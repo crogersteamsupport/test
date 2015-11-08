@@ -73,9 +73,9 @@ namespace TeamSupport.Data
       result.PrimaryUserID = this.PrimaryUserID;
       result.InActiveReason = this.InActiveReason;
       result.IsActive = this.IsActive;
-      result.Website = sanitizer.Sanitize(this.Website);
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Website = (this.Website);
+      result.Description = (this.Description);
+      result.Name = (this.Name);
       result.OrganizationID = this.OrganizationID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);

@@ -41,16 +41,16 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("class");
       sanitizer.AllowedAttributes.Add("id");
 
-      result.ContactName = sanitizer.Sanitize(this.ContactName);
-      result.OrganizationName = sanitizer.Sanitize(this.OrganizationName);
+      result.ContactName = (this.ContactName);
+      result.OrganizationName = (this.OrganizationName);
       result.ParentOrganizationID = this.ParentOrganizationID;
       result.ModifierName = this.ModifierName;
       result.CreatorName = this.CreatorName;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Title = sanitizer.Sanitize(this.Title);
+      result.Description = (this.Description);
+      result.Title = (this.Title);
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.NoteID = this.NoteID;

@@ -42,14 +42,14 @@ namespace TeamSupport.Data
       result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.OtherTypeName = sanitizer.Sanitize(this.OtherTypeName);
+      result.OtherTypeName = (this.OtherTypeName);
       result.Extension = this.Extension;
       result.Number = this.Number;
       result.RefType = this.RefType;
       result.RefID = this.RefID;
       result.PhoneTypeID = this.PhoneTypeID;
       result.PhoneID = this.PhoneID;
-      result.PhoneTypeName = sanitizer.Sanitize(this.PhoneTypeName);
+      result.PhoneTypeName = (this.PhoneTypeName);
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);

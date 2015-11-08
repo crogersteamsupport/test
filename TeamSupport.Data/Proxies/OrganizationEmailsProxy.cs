@@ -39,10 +39,10 @@ namespace TeamSupport.Data
       result.ProductFamilyID = this.ProductFamilyID;
       result.UseGlobalTemplate = this.UseGlobalTemplate;
       result.IsHtml = this.IsHtml;
-      result.Body = sanitizer.Sanitize(this.Body);
-      result.Footer = sanitizer.Sanitize(this.Footer);
-      result.Header = sanitizer.Sanitize(this.Header);
-      result.Subject = sanitizer.Sanitize(this.Subject);
+      result.Body = (this.Body);
+      result.Footer = (this.Footer);
+      result.Header = (this.Header);
+      result.Subject = (this.Subject);
       result.EmailTemplateID = this.EmailTemplateID;
       result.OrganizationID = this.OrganizationID;
       result.OrganizationEmailID = this.OrganizationEmailID;

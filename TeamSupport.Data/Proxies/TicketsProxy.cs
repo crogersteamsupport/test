@@ -79,7 +79,7 @@ namespace TeamSupport.Data
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;
       result.TicketNumber = this.TicketNumber;
       result.ParentID = this.ParentID;
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Name = (this.Name);
       result.OrganizationID = this.OrganizationID;
       result.TicketSeverityID = this.TicketSeverityID;
       result.TicketTypeID = this.TicketTypeID;

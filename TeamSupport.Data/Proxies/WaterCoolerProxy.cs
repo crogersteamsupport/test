@@ -35,7 +35,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       result.MessageType = this.MessageType;
-      result.Message = sanitizer.Sanitize(this.Message);
+      result.Message = (this.Message);
       result.ReplyTo = this.ReplyTo;
       result.GroupFor = this.GroupFor;
       result.OrganizationID = this.OrganizationID;

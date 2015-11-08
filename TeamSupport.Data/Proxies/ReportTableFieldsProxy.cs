@@ -36,12 +36,12 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
       result.LookupTableID = this.LookupTableID;
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Description = (this.Description);
       result.IsVisible = this.IsVisible;
       result.Size = this.Size;
       result.DataType = this.DataType;
-      result.Alias = sanitizer.Sanitize(this.Alias);
-      result.FieldName = sanitizer.Sanitize(this.FieldName);
+      result.Alias = (this.Alias);
+      result.FieldName = (this.FieldName);
       result.ReportTableID = this.ReportTableID;
       result.ReportTableFieldID = this.ReportTableFieldID;
        

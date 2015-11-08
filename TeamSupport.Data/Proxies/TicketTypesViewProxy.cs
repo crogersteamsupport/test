@@ -38,7 +38,7 @@ namespace TeamSupport.Data
       var sanitizer = new HtmlSanitizer();
       sanitizer.AllowedAttributes.Add("class");
       sanitizer.AllowedAttributes.Add("id");
-      result.ProductFamilyName = sanitizer.Sanitize(this.ProductFamilyName);
+      result.ProductFamilyName = (this.ProductFamilyName);
       result.ProductFamilyID = this.ProductFamilyID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
@@ -46,8 +46,8 @@ namespace TeamSupport.Data
       result.IconUrl = this.IconUrl;
       result.OrganizationID = this.OrganizationID;
       result.Position = this.Position;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Description = (this.Description);
+      result.Name = (this.Name);
       result.TicketTypeID = this.TicketTypeID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);

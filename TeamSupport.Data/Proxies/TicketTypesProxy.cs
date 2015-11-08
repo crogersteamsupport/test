@@ -43,8 +43,8 @@ namespace TeamSupport.Data
       //result.CreatorID = this.CreatorID;
       //result.OrganizationID = this.OrganizationID;
       result.Position = this.Position;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Description = (this.Description);
+      result.Name = (this.Name);
       result.TicketTypeID = this.TicketTypeID;
        
        

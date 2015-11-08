@@ -51,10 +51,10 @@ namespace TeamSupport.Data
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;
       result.ProductVersionID = this.ProductVersionID;
       result.ProductID = this.ProductID;
-      result.OrganizationName = sanitizer.Sanitize(this.OrganizationName);
+      result.OrganizationName = (this.OrganizationName);
       result.OrganizationID = this.OrganizationID;
       result.OrganizationProductID = this.OrganizationProductID;
-      result.Description = sanitizer.Sanitize(this.Description);
+      result.Description = (this.Description);
       result.IsReleased = this.IsReleased;
       result.ProductVersionStatusID = this.ProductVersionStatusID;
       result.VersionNumber = this.VersionNumber;

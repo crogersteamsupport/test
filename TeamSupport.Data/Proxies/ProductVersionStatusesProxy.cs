@@ -43,8 +43,8 @@ namespace TeamSupport.Data
       result.IsDiscontinued = this.IsDiscontinued;
       result.IsShipping = this.IsShipping;
       result.Position = this.Position;
-      result.Description = sanitizer.Sanitize(this.Description);
-      result.Name = sanitizer.Sanitize(this.Name);
+      result.Description = (this.Description);
+      result.Name = (this.Name);
       result.ProductVersionStatusID = this.ProductVersionStatusID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
