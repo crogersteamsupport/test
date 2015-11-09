@@ -870,7 +870,27 @@ AND ts.IsClosed = 0";
 			}
 		}
 
-    public void AddOrganization(int organizationID, int ticketID)
+		public void LoadPortalUserTickets(int userID, int isClosed)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT T.*
+																FROM UserTickets as UT
+																INNER JOIN Tickets as T ON UT.TicketID = T.TicketID
+																INNER JOIN TicketStatuses as TS ON T.TicketStatusID = TS.TicketStatusID
+																WHERE UT.TicketID = T.TicketID
+																		AND UT.UserID = @UserID
+																		AND T.IsVisibleOnPortal = @IsClosed
+																		AND TS.IsClosed = 0
+																		AND T.TicketID NOT IN ( SELECT TicketID FROM forumtickets )";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@UserID", userID);
+				command.Parameters.AddWithValue("@OrganizationID", isClosed);
+				Fill(command, "TicketGridView,Actions");
+			}
+		}
+
+		public void AddOrganization(int organizationID, int ticketID)
     {
       if (GetAssociatedOrganizationCount(LoginUser, organizationID, ticketID) > 0) return;
       
@@ -2087,7 +2107,7 @@ AND u.OrganizationID = @OrganizationID
       }
     }
 
-    public void ReplaceTicketType(int oldID, int newID)
+		public void ReplaceTicketType(int oldID, int newID)
     {
       using (SqlCommand command = new SqlCommand())
       {
