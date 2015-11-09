@@ -3715,7 +3715,13 @@ namespace TeamSupport.ServiceLibrary
 
     private void ImportContactTickets(Import import)
     {
-      while (_csv.ReadNextRecord())
+		Users contacts = new Users(_importUser);
+		contacts.LoadContacts(_organizationID, false);
+
+		Organizations companies = new Organizations(_importUser);
+		companies.LoadByParentID(_organizationID, false);
+
+		while (_csv.ReadNextRecord())
       {
         long rowNumber = _csv.CurrentRecordIndex + 1;
         string messagePrefix = "Row " + rowNumber.ToString() + ": ";
@@ -3770,292 +3776,449 @@ namespace TeamSupport.ServiceLibrary
           continue;
         }
 
-        Organizations company = new Organizations(_importUser);
+		  User contact = null;
 
-        int companyID = ReadInt("CompanyID");
-        if (companyID != 0)
-        {
-          company.LoadByOrganizationID(companyID);
-          if (company.Count != 1 || company[0].ParentID != _organizationID)
-          {
-            _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyID " + companyID.ToString() + " was found.");
-            continue;
-          }
-        }
+		  int contactID = ReadInt("ContactID");
+		  if (contactID != 0)
+		  {
+			  contact = contacts.FindByUserID(contactID);
+			  if (contact == null)
+			  {
+				  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactID " + contactID.ToString() + " was found.");
+				  continue;
+			  }
+		  }
 
-        string companyImportID = ReadString("CompanyImportID", string.Empty);
-        if (company.Count == 0)
-        {
-          if (companyImportID != string.Empty)
-          {
-            company = new Organizations(_importUser); 
-            company.LoadByImportID(companyImportID, _organizationID);
-            if (company.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one company matching the CompanyImportID " + companyImportID + " was found.");
-              continue;
-            }
-          }
-        }
+		  string contactImportID = ReadString("ContactImportID", string.Empty);
+		  if (contactID == 0 && contactImportID != string.Empty)
+		  {
+			  contact = contacts.FindByImportID(contactImportID);
+			  if (contact == null)
+			  {
+				  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactImportID " + contactImportID + " was found.");
+				  continue;
+			  }
+			  else
+			  {
+				  contactID = contact.UserID;
+			  }
+		  }
 
-        if (company.Count == 0)
-        {
-          string companyName = ReadString("CompanyName", string.Empty);
-          if (companyName != string.Empty)
-          {
-            company = new Organizations(_importUser);
-            company.LoadByName(companyName, _organizationID);
-            if (company.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one company matching the CompanyName " + companyName + " was found.");
-              continue;
-            }
-          }
-        }
+		  if (contactID == 0)
+		  {
+			  Organization company = null;
 
-        if (company.Count == 0)
-        {
-          _importLog.Write(messagePrefix + "No company matching either the CompanyImportID or the CompanyName was found.");
-        }
-        else
-        {
-          Users contact = new Users(_importUser);
+			  int companyID = ReadInt("CompanyID");
+			  if (companyID != 0)
+			  {
+				  company = companies.FindByOrganizationID(companyID);
+				  if (company == null)
+				  {
+					  _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyID " + companyID.ToString() + " was found.");
+					  continue;
+				  }
+			  }
 
-          int contactID = ReadInt("ContactID");
-          if (contactID != 0)
-          {
-            contact.LoadByUserID(contactID);
-            if (contact.Count != 1 || contact[0].OrganizationID != company[0].OrganizationID)
-            {
-              _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactID " + contactID.ToString() + " was found.");
-              continue;
-            }
-          }
+			  string companyImportID = ReadString("CompanyImportID", string.Empty);
+			  if (companyID == 0)
+			  {
+				  if (companyImportID != string.Empty)
+				  {
+					  company = companies.FindByImportID(companyImportID);
+					  if (company == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyImportID " + companyImportID + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  companyID = company.OrganizationID;
+					  }
+				  }
+			  }
 
-          string contactImportID = ReadString("ContactImportID", string.Empty);
-          if (contactID != 0 && contactImportID != string.Empty)
-          {
-            contact = new Users(_importUser); 
-            contact.LoadByImportID(contactImportID, company[0].OrganizationID);
-            if (contact.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactImportID " + contactImportID + " was found.");
-              continue;
-            }
-          }
+			  if (companyID == 0)
+			  {
+				  string companyName = ReadString("CompanyName", string.Empty);
+				  if (companyName != string.Empty)
+				  {
+					  company = companies.FindByName(companyName);
+					  if (company == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyName " + companyName + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  companyID = company.OrganizationID;
+					  }
+				  }
+			  }
 
-          if (contact.Count == 0)
-          {
-            string contactEmail = ReadString("ContactEmail", string.Empty);
-            if (contactEmail != string.Empty)
-            {
-              contact = new Users(_importUser);
-              contact.LoadByEmail(contactEmail, company[0].OrganizationID);
-              if (contact.Count > 1)
-              {
-                _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactEmail " + contactEmail + " was found.");
-                continue;
-              }
-            }
-          }
+			  if (companyID == 0)
+			  {
+				  string contactEmail = ReadString("ContactEmail", string.Empty);
+				  if (contactEmail != string.Empty)
+				  {
+					  contact = contacts.FindByEmail(contactEmail);
+					  if (contact == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactEmail " + contactEmail + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  contactID = contact.UserID;
+					  }
+				  }
 
-          if (contact.Count == 0)
-          {
-            string firstName = ReadString("FirstName", string.Empty);
-            string lastName = ReadString("LastName", string.Empty);
-            contact = new Users(_importUser);
-            contact.LoadByFirstAndLastName(firstName + " " + lastName, company[0].OrganizationID);
-            if (contact.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one contact matching " + firstName + " " + lastName + " was found.");
-              continue;
-            }
-          }
+				  if (contactID == 0)
+				  {
+					  string firstName = ReadString("FirstName", string.Empty);
+					  string lastName = ReadString("LastName", string.Empty);
+					  if (firstName != string.Empty || lastName != string.Empty)
+					  {
+						  contact = contacts.FindByName(firstName, lastName);
+						  if (contact == null)
+						  {
+							  _importLog.Write(messagePrefix + "Skipped. No contact matching " + firstName + " " + lastName + " was found.");
+							  continue;
+						  }
+						  else
+						  {
+							  contactID = contact.UserID;
+						  }
+					  }
+				  }
+			  }
+			  else
+			  {
+				  string contactEmail = ReadString("ContactEmail", string.Empty);
+				  if (contactEmail != string.Empty)
+				  {
+					  contact = contacts.FindByEmailAndOrganization(contactEmail, companyID);
+					  if (contact == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactEmail " + contactEmail + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  contactID = contact.UserID;
+					  }
+				  }
 
-          if (contact.Count == 0)
-          {
-            _importLog.Write(messagePrefix + "No company matching either the ContactImportID, ContactEmail or the First and Last Name was found.");
-          }
-          else
-          {
-            ticket.AddContact(contact[0].UserID, ticket[0].TicketID, import.ImportID);
-            _importLog.Write(messagePrefix + "Contact " + contact[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
-          }
-        }
+				  if (contactID == 0)
+				  {
+					  string firstName = ReadString("FirstName", string.Empty);
+					  string lastName = ReadString("LastName", string.Empty);
+					  if (firstName != string.Empty || lastName != string.Empty)
+					  {
+						  contact = contacts.FindByNameAndOrganization(firstName, lastName, companyID);
+						  if (contact == null)
+						  {
+							  _importLog.Write(messagePrefix + "Skipped. No contact matching " + firstName + " " + lastName + " was found.");
+							  continue;
+						  }
+						  else
+						  {
+							  contactID = contact.UserID;
+						  }
+					  }
+				  }
+			  }
+		  }
 
+		  if (contactID != 0)
+		  {
+			  ticket.AddContact(contactID, ticket[0].TicketID, import.ImportID);
+			  _importLog.Write(messagePrefix + "Contact " + contact.FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+		  }
+		  else
+		  {
+			  _importLog.Write(messagePrefix + "No contact found to add to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+		  }
 
-        Organizations company2 = new Organizations(_importUser);
+		  User contact2 = null;
+		  int contact2ID = 0;
 
-        string companyImportID2 = ReadString("CompanyImportID2", string.Empty);
-        if (companyImportID2 != string.Empty)
-        {
-          company2.LoadByImportID(companyImportID2, _organizationID);
-          if (company2.Count > 1)
-          {
-            _importLog.Write(messagePrefix + "Skipped. More than one company matching the CompanyImportID2 " + companyImportID2 + " was found.");
-            continue;
-          }
-        }
+		  string contactImportID2 = ReadString("ContactImportID2", string.Empty);
+		  if (contactImportID2 != string.Empty)
+		  {
+			  contact2 = contacts.FindByImportID(contactImportID2);
+			  if (contact2 == null)
+			  {
+				  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactImportID2 " + contactImportID2 + " was found.");
+				  continue;
+			  }
+			  else
+			  {
+				  contact2ID = contact2.UserID;
+			  }
+		  }
 
-        if (company2.Count == 0)
-        {
-          string companyName2 = ReadString("CompanyName2", string.Empty);
-          if (companyName2 != string.Empty)
-          {
-            company2 = new Organizations(_importUser);
-            company2.LoadByName(companyName2, _organizationID);
-            if (company2.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one company matching the CompanyName2 " + companyName2 + " was found.");
-              continue;
-            }
-          }
-        }
+		  if (contact2ID == 0)
+		  {
+			  Organization company2 = null;
+			  int company2ID = 0;
 
-        if (company2.Count == 0)
-        {
-          _importLog.Write(messagePrefix + "No company matching either the CompanyImportID2 or the CompanyName2 was found.");
-        }
-        else
-        {
-          Users contact2 = new Users(_importUser);
+			  string companyImportID2 = ReadString("CompanyImportID2", string.Empty);
+			  if (companyImportID2 != string.Empty)
+			  {
+				 company2 = companies.FindByImportID(companyImportID2);
+				 if (company2 == null)
+				 {
+					_importLog.Write(messagePrefix + "Skipped. No company matching the CompanyImportID2 " + companyImportID2 + " was found.");
+					continue;
+				 }
+				 else
+				 {
+					 company2ID = company2.OrganizationID;
+				 }
+			  }
 
-          string contactImportID2 = ReadString("ContactImportID2", string.Empty);
-          if (contactImportID2 != string.Empty)
-          {
-            contact2.LoadByImportID(contactImportID2, company2[0].OrganizationID);
-            if (contact2.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactImportID2 " + contactImportID2 + " was found.");
-              continue;
-            }
-          }
+			  if (company2ID == 0)
+			  {
+				 string companyName2 = ReadString("CompanyName2", string.Empty);
+				 if (companyName2 != string.Empty)
+				 {
+					company2 = companies.FindByName(companyName2);
+					if (company2 == null)
+					{
+					  _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyName2 " + companyName2 + " was found.");
+					  continue;
+					}
+					else
+					{
+						company2ID = company2.OrganizationID;
+					}
+				 }
+			  }
 
-          if (contact2.Count == 0)
-          {
-            string contactEmail2 = ReadString("ContactEmail2", string.Empty);
-            if (contactEmail2 != string.Empty)
-            {
-              contact2 = new Users(_importUser);
-              contact2.LoadByEmail(contactEmail2, company2[0].OrganizationID);
-              if (contact2.Count > 1)
-              {
-                _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactEmail2 " + contactEmail2 + " was found.");
-                continue;
-              }
-            }
-          }
+			  if (company2ID == 0)
+			  {
+				  string contactEmail2 = ReadString("ContactEmail2", string.Empty);
+				  if (contactEmail2 != string.Empty)
+				  {
+					  contact2 = contacts.FindByEmail(contactEmail2);
+					  if (contact2 == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactEmail2 " + contactEmail2 + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  contact2ID = contact2.UserID;
+					  }
+				  }
 
-          if (contact2.Count == 0)
-          {
-            string firstName2 = ReadString("FirstName2", string.Empty);
-            string lastName2 = ReadString("LastName2", string.Empty);
-            contact2 = new Users(_importUser);
-            contact2.LoadByFirstAndLastName(firstName2 + " " + lastName2, company2[0].OrganizationID);
-            if (contact2.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one contact matching the first and last name 2 (" + firstName2 + " " + lastName2 + ") was found.");
-              continue;
-            }
-          }
+				  if (contact2ID == 0)
+				  {
+					  string firstName2 = ReadString("FirstName2", string.Empty);
+					  string lastName2 = ReadString("LastName2", string.Empty);
+					  if (firstName2 != string.Empty || lastName2 != string.Empty)
+					  {
+						  contact2 = contacts.FindByName(firstName2, lastName2);
+						  if (contact2 == null)
+						  {
+							  _importLog.Write(messagePrefix + "Skipped. No contact matching the first and last name 2 (" + firstName2 + " " + lastName2 + ") was found.");
+							  continue;
+						  }
+						  else
+						  {
+							  contact2ID = contact2.UserID;
+						  }
+					  }
+				  }
+			  }
+			  else
+			  {
+				  string contactEmail2 = ReadString("ContactEmail2", string.Empty);
+				  if (contactEmail2 != string.Empty)
+				  {
+					  contact2 = contacts.FindByEmailAndOrganization(contactEmail2, company2ID);
+					  if (contact2 == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactEmail2 " + contactEmail2 + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  contact2ID = contact2.UserID;
+					  }
+				  }
 
-          if (contact2.Count == 0)
-          {
-            _importLog.Write(messagePrefix + "No company matching either the ContactImportID2, ContactEmail2 or the First and Last Name2 was found.");
-          }
-          else
-          {
-            ticket.AddContact(contact2[0].UserID, ticket[0].TicketID, import.ImportID);
-            _importLog.Write(messagePrefix + "Contact " + contact2[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
-          }
-        }
+				 if (contact2ID == 0)
+				 {
+					string firstName2 = ReadString("FirstName2", string.Empty);
+					string lastName2 = ReadString("LastName2", string.Empty);
+					if (firstName2 != string.Empty || lastName2 != string.Empty)
+					{
+						contact2 = contacts.FindByNameAndOrganization(firstName2, lastName2, company2ID);
+						if (contact2 == null)
+						{
+							_importLog.Write(messagePrefix + "Skipped. No contact matching the first and last name 2 (" + firstName2 + " " + lastName2 + ") was found.");
+							continue;
+						}
+						else
+						{
+							contact2ID = contact2.UserID;
+						}
+					}
+				 }
+			  }
+		  }
 
-        Organizations company3 = new Organizations(_importUser);
+		  if (contact2ID != 0)
+		  {
+			  ticket.AddContact(contact2ID, ticket[0].TicketID, import.ImportID);
+			  _importLog.Write(messagePrefix + "Contact " + contact2.FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+		  }
+		  else
+		  {
+			  _importLog.Write(messagePrefix + "No contact2 found to add to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+		  }
 
-        string companyImportID3 = ReadString("CompanyImportID3", string.Empty);
-        if (companyImportID3 != string.Empty)
-        {
-          company3.LoadByImportID(companyImportID3, _organizationID);
-          if (company3.Count > 1)
-          {
-            _importLog.Write(messagePrefix + "Skipped. More than one company matching the CompanyImportID3 " + companyImportID3 + " was found.");
-            continue;
-          }
-        }
+		  User contact3 = null;
+		  int contact3ID = 0;
 
-        if (company3.Count == 0)
-        {
-          string companyName3 = ReadString("CompanyName3", string.Empty);
-          if (companyName3 != string.Empty)
-          {
-            company3 = new Organizations(_importUser);
-            company3.LoadByName(companyName3, _organizationID);
-            if (company3.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one company matching the CompanyName3 " + companyName3 + " was found.");
-              continue;
-            }
-          }
-        }
+		  string contactImportID3 = ReadString("ContactImportID3", string.Empty);
+		  if (contactImportID3 != string.Empty)
+		  {
+			  contact3 = contacts.FindByImportID(contactImportID3);
+			  if (contact3 == null)
+			  {
+				  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactImportID3 " + contactImportID3 + " was found.");
+				  continue;
+			  }
+			  else
+			  {
+				  contact3ID = contact3.UserID;
+			  }
+		  }
 
-        if (company3.Count == 0)
-        {
-          _importLog.Write(messagePrefix + "No company matching either the CompanyImportID3 or the CompanyName3 was found.");
-        }
-        else
-        {
-          Users contact3 = new Users(_importUser);
+		  if (contact3ID == 0)
+		  {
+			  Organization company3 = null;
+			  int company3ID = 0;
 
-          string contactImportID3 = ReadString("ContactImportID3", string.Empty);
-          if (contactImportID3 != string.Empty)
-          {
-            contact3.LoadByImportID(contactImportID3, company3[0].OrganizationID);
-            if (contact3.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactImportID3 " + contactImportID3 + " was found.");
-              continue;
-            }
-          }
+			  string companyImportID3 = ReadString("CompanyImportID3", string.Empty);
+			  if (companyImportID3 != string.Empty)
+			  {
+				  company3 = companies.FindByImportID(companyImportID3);
+				  if (company3 == null)
+				  {
+					  _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyImportID3 " + companyImportID3 + " was found.");
+					  continue;
+				  }
+				  else
+				  {
+					  company3ID = company3.OrganizationID;
+				  }
+			  }
 
-          if (contact3.Count == 0)
-          {
-            string contactEmail3 = ReadString("ContactEmail3", string.Empty);
-            if (contactEmail3 != string.Empty)
-            {
-              contact3 = new Users(_importUser);
-              contact3.LoadByEmail(contactEmail3, company3[0].OrganizationID);
-              if (contact3.Count > 1)
-              {
-                _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactEmail3 " + contactEmail3 + " was found.");
-                continue;
-              }
-            }
-          }
+			  if (company3ID == 0)
+			  {
+				  string companyName3 = ReadString("CompanyName3", string.Empty);
+				  if (companyName3 != string.Empty)
+				  {
+					  company3 = companies.FindByName(companyName3);
+					  if (company3 == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No company matching the CompanyName3 " + companyName3 + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  company3ID = company3.OrganizationID;
+					  }
+				  }
+			  }
 
-          if (contact3.Count == 0)
-          {
-            string firstName3 = ReadString("FirstName3", string.Empty);
-            string lastName3 = ReadString("LastName3", string.Empty);
-            contact3 = new Users(_importUser);
-            contact3.LoadByFirstAndLastName(firstName3 + " " + lastName3, company3[0].OrganizationID);
-            if (contact3.Count > 1)
-            {
-              _importLog.Write(messagePrefix + "Skipped. More than one contact matching the first and last name3 (" + firstName3 + " " + lastName3 + ") was found.");
-              continue;
-            }
-          }
+			  if (company3ID == 0)
+			  {
+				  string contactEmail3 = ReadString("ContactEmail3", string.Empty);
+				  if (contactEmail3 != string.Empty)
+				  {
+					  contact3 = contacts.FindByEmail(contactEmail3);
+					  if (contact3 == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactEmail3 " + contactEmail3 + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  contact3ID = contact3.UserID;
+					  }
+				  }
 
-          if (contact3.Count == 0)
-          {
-            _importLog.Write(messagePrefix + "No contact matching either the ContactImportID3, ContactEmail3 or the First and Last Name3 was found.");
-          }
-          else
-          {
-            ticket.AddContact(contact3[0].UserID, ticket[0].TicketID, import.ImportID);
-            _importLog.Write(messagePrefix + "Contact " + contact3[0].FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
-          }
-        }
-      }
+				  if (contact3ID == 0)
+				  {
+					  string firstName3 = ReadString("FirstName3", string.Empty);
+					  string lastName3 = ReadString("LastName3", string.Empty);
+					  if (firstName3 != string.Empty || lastName3 != string.Empty)
+					  {
+						  contact3 = contacts.FindByName(firstName3, lastName3);
+						  if (contact3 == null)
+						  {
+							  _importLog.Write(messagePrefix + "Skipped. No contact matching the first and last name 3 (" + firstName3 + " " + lastName3 + ") was found.");
+							  continue;
+						  }
+						  else
+						  {
+							  contact3ID = contact3.UserID;
+						  }
+					  }
+				  }
+			  }
+			  else
+			  {
+				  string contactEmail3 = ReadString("ContactEmail3", string.Empty);
+				  if (contactEmail3 != string.Empty)
+				  {
+					  contact3 = contacts.FindByEmailAndOrganization(contactEmail3, company3ID);
+					  if (contact3 == null)
+					  {
+						  _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactEmail3 " + contactEmail3 + " was found.");
+						  continue;
+					  }
+					  else
+					  {
+						  contact3ID = contact3.UserID;
+					  }
+				  }
+
+				  if (contact3ID == 0)
+				  {
+					  string firstName3 = ReadString("FirstName3", string.Empty);
+					  string lastName3 = ReadString("LastName3", string.Empty);
+					  if (firstName3 != string.Empty || lastName3 != string.Empty)
+					  {
+						  contact3 = contacts.FindByNameAndOrganization(firstName3, lastName3, company3ID);
+						  if (contact3 == null)
+						  {
+							  _importLog.Write(messagePrefix + "Skipped. No contact matching the first and last name3 (" + firstName3 + " " + lastName3 + ") was found.");
+							  continue;
+						  }
+						  else
+						  {
+							  contact3ID = contact3.UserID;
+						  }
+					  }
+				  }
+			  }
+		  }
+
+		  if (contact3ID != 0)
+		  {
+			  ticket.AddContact(contact3ID, ticket[0].TicketID, import.ImportID);
+			  _importLog.Write(messagePrefix + "Contact " + contact3.FirstLastName + " was added to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+		  }
+		  else
+		  {
+			  _importLog.Write(messagePrefix + "No contact3 found to add to ticket number " + ticket[0].TicketNumber.ToString() + ".");
+		  }
+		}
     }
 
     private void ImportAssetTickets(Import import)

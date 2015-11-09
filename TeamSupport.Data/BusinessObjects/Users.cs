@@ -1070,6 +1070,18 @@ AND u.IsPortalUser = 1";
             return null;
         }
 
+	 public User FindByEmailAndOrganization(string email, int organizationID)
+	 {
+		 foreach (User user in this)
+		 {
+			 if (user.Email.Trim().ToLower() == email.Trim().ToLower() && user.OrganizationID == organizationID)
+			 {
+				 return user;
+			 }
+		 }
+		 return null;
+	 }
+
         public User FindBySalesForceID(string salesForceID)
         {
             foreach (User user in this)
@@ -1100,6 +1112,18 @@ AND u.IsPortalUser = 1";
             }
             return null;
         }
+
+	 public User FindByNameAndOrganization(string firstName, string lastName, int organizationID)
+	 {
+		 foreach (User user in this)
+		 {
+			 if (user.FirstName.Trim().ToLower() == firstName.Trim().ToLower() && user.LastName.Trim().ToLower() == lastName.Trim().ToLower() && user.OrganizationID == organizationID)
+			 {
+				 return user;
+			 }
+		 }
+		 return null;
+	 }
 
         public static void MarkUserDeleted(LoginUser loginUser, int userID)
         {
