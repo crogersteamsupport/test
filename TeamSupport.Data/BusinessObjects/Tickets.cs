@@ -870,7 +870,7 @@ AND ts.IsClosed = 0";
 			}
 		}
 
-		public void LoadPortalUserTickets(int userID, int isClosed)
+		public void LoadPortalUserTickets(int userID, bool isClosed)
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
@@ -885,7 +885,7 @@ AND ts.IsClosed = 0";
 																		AND T.TicketID NOT IN ( SELECT TicketID FROM forumtickets )";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@UserID", userID);
-				command.Parameters.AddWithValue("@OrganizationID", isClosed);
+				command.Parameters.AddWithValue("@IsClosed", isClosed);
 				Fill(command, "TicketGridView,Actions");
 			}
 		}
