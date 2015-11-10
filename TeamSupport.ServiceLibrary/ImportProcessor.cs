@@ -1931,6 +1931,7 @@ namespace TeamSupport.ServiceLibrary
         user.BlockInboundEmail = ReadBool("PreventEmailFromCreatingAndUpdatingTickets", user.BlockInboundEmail.ToString());
         user.BlockEmailFromCreatingOnly = ReadBool("PreventEmailFromCreatingButAllowUpdatingTickets", user.BlockEmailFromCreatingOnly.ToString());
         user.IsPortalUser = ReadBool("PortalUser", user.IsPortalUser.ToString());
+		  user.PortalLimitOrgTickets = ReadBool("DisableOrganizationTicketsViewonPortal", user.PortalLimitOrgTickets.ToString());
 
         string isActive = ReadString("IsActive", string.Empty);
         if (!string.IsNullOrEmpty(isActive))
