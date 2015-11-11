@@ -422,8 +422,10 @@ $(document).ready(function () {
       var header = $(this).hide();
       top.Ts.System.logAction('Product Version Detail - Edit Description');
       top.Ts.Services.Products.GetVersion(_productVersionID, function (productVersion) {
-        var desc = productVersion.Description;
-        desc = desc.replace(/<br\s?\/?>/g, "\n");
+          var desc = productVersion.Description;
+          debugger;
+          desc = desc.replace(/<br\s?\/?>/g, "\n");
+
         $('#fieldDesc').tinymce().setContent(desc);
         $('#fieldDesc').tinymce().focus();
         //$('#fieldDesc').html(desc);
@@ -442,8 +444,14 @@ $(document).ready(function () {
       $('#btnDescriptionSave').click(function (e) {
         e.preventDefault();
         top.Ts.System.logAction('Product Version Detail - Save Description Edit');
+        var x = $(this).prev().find('textarea').val();
         top.Ts.Services.Products.SetVersionDescription(_productVersionID, $(this).prev().find('textarea').val(), function (result) {
-            header.html($(result).children('span:first').addClass('editable'));
+            header.html(result);
+            header.html($(result).first('p').addClass('editable'));
+            //header.html.addClass('editable');
+            //header.html($(result.children.addClass('editable'))
+           
+            //header.html($(result).children('p:first').addClass('editable'));
             $('#productVersionEdit').removeClass("disabled");
         },
         function (error) {
