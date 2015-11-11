@@ -176,10 +176,11 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Use Product Lines:", organization.UseProductFamilies.ToString() });
 
     table.Rows.Add(new string[] { "Customer Insights:", organization.IsCustomerInsightsActive.ToString() });
-	 table.Rows.Add(new string[] { "Two Factor Verification:", organization.TwoStepVerificationEnabled.ToString() });
-	 table.Rows.Add(new string[] { "How many days before user passwords expire:", organization.DaysBeforePasswordExpire.ToString() });
-    
-    rptProperties.DataSource = table;
+	table.Rows.Add(new string[] { "Two Factor Verification:", organization.TwoStepVerificationEnabled.ToString() });
+	table.Rows.Add(new string[] { "How many days before user passwords expire:", organization.DaysBeforePasswordExpire.ToString() });
+	table.Rows.Add(new string[] { "Do not include attachments on outbound emails:", organization.NoAttachmentsInOutboundEmail.ToString() });
+
+	rptProperties.DataSource = table;
     rptProperties.DataBind();
   }
 

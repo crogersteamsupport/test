@@ -112,7 +112,8 @@ namespace TeamSupport.Data
     [DataMember] public bool IsCustomerInsightsActive { get; set; }
     [DataMember] public bool TwoStepVerificationEnabled { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
-	[DataMember] public int DaysBeforePasswordExpire { get; set; }
+    [DataMember] public int DaysBeforePasswordExpire { get; set; }
+    [DataMember] public bool NoAttachmentsInOutboundEmail { get; set; }
           
   }
   
@@ -126,6 +127,7 @@ namespace TeamSupport.Data
       sanitizer.AllowedAttributes.Add("id");
 
 	  result.DaysBeforePasswordExpire = this.DaysBeforePasswordExpire;
+	  result.NoAttachmentsInOutboundEmail = this.NoAttachmentsInOutboundEmail;
       result.ImportFileID = this.ImportFileID;
       result.TwoStepVerificationEnabled = this.TwoStepVerificationEnabled;
       result.IsCustomerInsightsActive = this.IsCustomerInsightsActive;

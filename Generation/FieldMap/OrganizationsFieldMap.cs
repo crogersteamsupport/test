@@ -113,6 +113,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TwoStepVerificationEnabled", "TwoStepVerificationEnabled", false, false, false);
       _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
       _fieldMap.AddMap("DaysBeforePasswordExpire", "DaysBeforePasswordExpire", false, false, false);
+      _fieldMap.AddMap("NoAttachmentsInOutboundEmail", "NoAttachmentsInOutboundEmail", false, false, false);
             
     }
   }

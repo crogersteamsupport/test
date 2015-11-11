@@ -113,6 +113,7 @@ namespace TeamSupport.Data
     [DataMember] public bool TwoStepVerificationEnabled { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public int DaysBeforePasswordExpire { get; set; }
+    [DataMember] public bool NoAttachmentsInOutboundEmail { get; set; }
           
   }
   
@@ -121,6 +122,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.NoAttachmentsInOutboundEmail = this.NoAttachmentsInOutboundEmail;
       result.DaysBeforePasswordExpire = this.DaysBeforePasswordExpire;
       result.ImportFileID = this.ImportFileID;
       result.TwoStepVerificationEnabled = this.TwoStepVerificationEnabled;

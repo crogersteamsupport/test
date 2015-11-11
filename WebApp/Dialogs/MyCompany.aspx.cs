@@ -182,8 +182,9 @@ public partial class Dialogs_Organization : BaseDialogPage
     }
 
     cbIsCustomerInsightsActive.Checked = organization.IsCustomerInsightsActive;
-	 cbTwoStepVerification.Checked = organization.TwoStepVerificationEnabled;
-	 textPWExpire.Value = organization.DaysBeforePasswordExpire;
+	cbTwoStepVerification.Checked = organization.TwoStepVerificationEnabled;
+	cbNoAttachmentsInOutboundEmail.Checked = organization.NoAttachmentsInOutboundEmail;
+    textPWExpire.Value = organization.DaysBeforePasswordExpire;
 
     if (string.IsNullOrEmpty(organization.TimeZoneID))
       cmbTimeZones.SelectedValue = "Central Standard Time";
@@ -273,8 +274,9 @@ public partial class Dialogs_Organization : BaseDialogPage
     organization.UseProductFamilies = cbUseProductFamilies.Checked;
 
     organization.IsCustomerInsightsActive = cbIsCustomerInsightsActive.Checked;
-	 organization.TwoStepVerificationEnabled = cbTwoStepVerification.Checked;
-	 organization.DaysBeforePasswordExpire = (int)textPWExpire.Value;
+	organization.TwoStepVerificationEnabled = cbTwoStepVerification.Checked;
+	organization.NoAttachmentsInOutboundEmail = cbNoAttachmentsInOutboundEmail.Checked;
+    organization.DaysBeforePasswordExpire = (int)textPWExpire.Value;
 
     try
     {
