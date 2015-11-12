@@ -61,6 +61,7 @@ public partial class Tips_Customer : System.Web.UI.Page
 
       foreach (TicketsViewItem t in tickets)
       {
+			if(t.TicketNumber != null && t.Name != null && t.Status != null)
           recent.Append(string.Format("<div><a href='{0}?TicketNumber={1}' target='_blank' onclick='top.Ts.MainPage.openTicket({2}); return false;'><span class='ticket-tip-number'>{3}</span><span class='ticket-tip-status'>{4}</span><span class='ticket-tip-name'>{5}</span></a></div>", domain, t.TicketNumber, t.TicketNumber, t.TicketNumber, t.Status.Length > 17 ? t.Status.Substring(0, 15) + "..." : t.Status, t.Name.Length > 35 ? t.Name.Substring(0, 33) + "..." : t.Name)); 
       }
 
