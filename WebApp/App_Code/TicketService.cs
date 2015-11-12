@@ -2309,7 +2309,7 @@ namespace TSWebServices
                 customer.Company = organization.Name;
                 customer.OrganizationID = organization.OrganizationID;
                 customer.UserID = null;
-                if (!organization.IsActive)
+					 if (!organization.IsActive || organization.SAExpirationDateUtc < DateTime.UtcNow)
                 {
                     customer.Flag = true;
                 }
