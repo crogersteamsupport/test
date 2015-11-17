@@ -401,23 +401,25 @@ $(document).ready(function () {
                 $('.report-fields-primary').find('.panel-title > a').text(primaryFields[0].Table);
                 addFieldsToSection(primaryFields, 'primary');
 
-                if (primaryFieldsCF.length > 0) {
-                    addFieldsToSection(primaryFieldsCF, 'primary-cf');
-                    $('.report-fields-primary-cf').find('.panel-title  > a').text(primaryFieldsCF[0].Table + ' (Custom Fields)');
-                    $('.report-fields-primary-cf').show();
-                };
+                if (_typeClass == 'report-class-tabular' || _typeClass == 'report-class-tickets') {
+                	if (primaryFieldsCF.length > 0) {
+                		addFieldsToSection(primaryFieldsCF, 'primary-cf');
+                		$('.report-fields-primary-cf').find('.panel-title  > a').text(primaryFieldsCF[0].Table + ' (Custom Fields)');
+                		$('.report-fields-primary-cf').show();
+                	};
 
-                if (secondaryFields.length > 0) {
-                    addFieldsToSection(secondaryFields, 'secondary');
-                    $('.report-fields-secondary').find('.panel-title > a').text(secondaryFields[0].Table);
-                    $('.report-fields-secondary').show();
-                };
+                	if (secondaryFields.length > 0) {
+                		addFieldsToSection(secondaryFields, 'secondary');
+                		$('.report-fields-secondary').find('.panel-title > a').text(secondaryFields[0].Table);
+                		$('.report-fields-secondary').show();
+                	};
 
-                if (secondaryFieldsCF.length > 0) {
-                    addFieldsToSection(secondaryFieldsCF, 'secondary-cf');
-                    $('.report-fields-secondary-cf').find('.panel-title > a').text(secondaryFieldsCF[0].Table + ' (Custom Fields)');
-                    $('.report-fields-secondary-cf').show();
-                };
+                	if (secondaryFieldsCF.length > 0) {
+                		addFieldsToSection(secondaryFieldsCF, 'secondary-cf');
+                		$('.report-fields-secondary-cf').find('.panel-title > a').text(secondaryFieldsCF[0].Table + ' (Custom Fields)');
+                		$('.report-fields-secondary-cf').show();
+                	};
+                }
 
                 _fields = fields;
 
