@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Text;
+using System.Globalization;
 
 public partial class Tips_Ticket : System.Web.UI.Page
 {
@@ -26,6 +27,9 @@ public partial class Tips_Ticket : System.Web.UI.Page
       tipNumber.InnerText = "Ticket #" + ticket.TicketNumber.ToString();
       tipNumber.Attributes.Add("onclick", "top.Ts.MainPage.openTicket(" + ticket.TicketNumber + "); return false;");
       tipName.InnerHtml = ticket.Name;
+
+		CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
+
       StringBuilder props = new StringBuilder();
       AddStringProperty(props, "Assigned To", ticket.UserName, true, "", "openUser", ticket.UserID);
       AddStringProperty(props, "Group", ticket.GroupName, true, null, null, null);
@@ -34,6 +38,9 @@ public partial class Tips_Ticket : System.Web.UI.Page
       AddStringProperty(props, "Severity", ticket.Severity, false, null, null, null);
       AddStringProperty(props, "Customers", GetCustomerLinks(ticketID), false, null, null, null);
       AddStringProperty(props, "Tags", GetTagLinks(ticketID), false, null, null, null);
+		if (ticket.DueDate != null)
+			AddStringProperty(props, "Due Date", ticket.DueDate.ToString(), false, null, null, null);
+
       tipProps.InnerHtml = props.ToString();
     }
 
