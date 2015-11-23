@@ -475,8 +475,8 @@ namespace TSWebServices
             var sanitizer = new HtmlSanitizer();
             sanitizer.AllowedAttributes.Add("class");
             sanitizer.AllowedAttributes.Add("id");
-            contact[0] = sanitizer.Sanitize(contactInfo.ToString());
-            contact[1] = sanitizer.Sanitize(html.ToString());
+            contact[0] = (contactInfo.ToString());
+            contact[1] = (html.ToString());
             
             return contact;
 
@@ -689,7 +689,7 @@ namespace TSWebServices
             sanitizer.AllowedAttributes.Add("class");
             sanitizer.AllowedAttributes.Add("data-organizationid");
             
-            return sanitizer.Sanitize(builder.ToString());
+            return (builder.ToString());
         }
 
         [WebMethod]
