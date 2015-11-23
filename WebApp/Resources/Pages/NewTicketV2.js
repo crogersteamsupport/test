@@ -292,14 +292,14 @@ function SetupTicketProperties() {
       },
       closeAfterSelect: true
     });
-    AppendTicketTypeTemplate(_lastTicketTypeID);
+    //AppendTicketTypeTemplate(_lastTicketTypeID);
   }
 
   $('#ticket-type').change(function (e) {
     SetupStatusField();
     showCustomFields();
     _lastTicketTypeID = $(this).val();
-    AppendTicketTypeTemplate(_lastTicketTypeID);
+    //AppendTicketTypeTemplate(_lastTicketTypeID);
   });
 
   //Status
@@ -660,6 +660,11 @@ function isFormValid(callback) {
           }
         });
 
+        if ($('#ticket-Customer > .tag-error').length > 0) {
+        	InsertCreateError("An inactive customer can not be added to the ticket");
+        	result = false;
+        }
+
         if (cfHasError) { InsertCreateError("Please fill in the red required custom fields."); }
         
         //If custom required check if the ticket is a KB if not then see if we have at least one customer
@@ -752,14 +757,14 @@ function SetupDescriptionEditor() {
     $('#inserttok').hide();
 
     $('#inserttok').click(function (e) {
-        top.Ts.System.logAction('Ticket - Video Recording Insert Clicked');
-        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
-        session.unpublish(publisher);
-        $('#rcdtok').show();
-        $('#stoptok').hide();
-        $('#inserttok').hide();
-        $('#recordVideoContainer').hide();
-        $('#statusText').text("");
+    	top.Ts.System.logAction('Ticket - Video Recording Insert Clicked');
+    		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+    		session.unpublish(publisher);
+    		$('#rcdtok').show();
+    		$('#stoptok').hide();
+    		$('#inserttok').hide();
+    		$('#recordVideoContainer').hide();
+    		$('#statusText').text("");
     });
 
     $('#deletetok').hide();
@@ -2199,8 +2204,8 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 var appendTemplateText = function (value) {
   top.Ts.Services.Tickets.GetValueTemplateText(value, function (result) {
     if (result != null && result != "" && result != "<br>") {
-      var currenttext = tinyMCE.activeEditor.getContent();
-      tinyMCE.activeEditor.setContent(currenttext + result);
+    	var currenttext = tinyMCE.activeEditor.getContent();
+    	tinyMCE.activeEditor.setContent(currenttext + result);
     }
   });
 }
@@ -2282,8 +2287,8 @@ function AppendTicketTypeTemplate(TicketType) {
   top.Ts.Services.Tickets.GetTicketTypeTemplateText(TicketType, function (result) {
     if (result != null && result != "" && result != "<br>") {
       if (tinyMCE.activeEditor) {
-        var currenttext = tinyMCE.activeEditor.getContent();
-        tinyMCE.activeEditor.setContent(currenttext + result);
+      	var currenttext = tinyMCE.activeEditor.getContent();
+      	tinyMCE.activeEditor.setContent(currenttext + result);
       }
     }
   });
