@@ -905,7 +905,7 @@ $(document).ready(function () {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this customer association?')) {
             top.Ts.System.logAction('Product Line Detail - Delete Customer');
-            top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
+            top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), false, function (e) {
                 LoadCustomers();
             });
 

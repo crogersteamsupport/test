@@ -708,7 +708,7 @@ function SetupActionEditor(elem, action) {
     $("#action-new-type").val($("#action-new-type option:first").val());
     $('#action-new-editor').val('');
     if (action) {
-      $('#action-new-type').val(action.ActionTypeID);
+    	$('#action-new-type').val(action.ActionTypeID);
       if (action.TimeSpent) {
         $('#action-new-hours').val(Math.floor(action.TimeSpent / 60));
         $('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
@@ -843,13 +843,13 @@ function SetupActionEditor(elem, action) {
   element.find('#inserttok').hide();
 
   element.find('#inserttok').click(function (e) {
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
-      session.unpublish(publisher);
-      element.find('#rcdtok').show();
-      element.find('#stoptok').hide();
-      element.find('#inserttok').hide();
-      element.find('#recordVideoContainer').hide();
-      element.find('#statusText').text("");
+  		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+  		session.unpublish(publisher);
+  		element.find('#rcdtok').show();
+  		element.find('#stoptok').hide();
+  		element.find('#inserttok').hide();
+  		element.find('#recordVideoContainer').hide();
+  		element.find('#statusText').text("");
   });
 
   element.find('#deletetok').hide();
@@ -1702,7 +1702,7 @@ function AddCustomers(customers) {
       cssClasses = cssClasses + " tag-error"
     }
     if (customers[i].Contact !== null && customers[i].Company !== null) {
-      label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
+    	label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
       var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
     }
     else if (customers[i].Contact !== null) {
@@ -3720,8 +3720,9 @@ function CreateTimeLineDelegates() {
     var self = $(this);
     var action = self.closest('li').data().action;
     var editor = $('#action-new-editor');
-    SetupActionEditor(editor, action);
     SetupActionTypeSelect();
+    SetupActionEditor(editor, action);
+    
 
     $('#action-new-KB').prop('checked', action.IsKnowledgeBase);
 

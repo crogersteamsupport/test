@@ -661,7 +661,7 @@ function isFormValid(callback) {
         });
 
         if ($('#ticket-Customer > .tag-error').length > 0) {
-        	InsertCreateError("An inactive customer can not be added to the ticket");
+        	InsertCreateError("An inactive contact can not be added to the ticket");
         	result = false;
         }
 

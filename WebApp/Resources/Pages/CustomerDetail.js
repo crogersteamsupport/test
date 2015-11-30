@@ -1190,8 +1190,11 @@ $(document).ready(function () {
             $('#btnProductSave').text("Save");
             top.Ts.Services.Customers.LoadCustomProductFields(product, function (custField) {
                 for (var i = 0; i < custField.length; i++) {
-                    if (custField[i].FieldType == 2)
-                        $('#' + custField[i].CustomFieldID).prop('checked', custField[i].Value);
+                	if (custField[i].FieldType == 2)
+                	{
+                		if (custField[i].Value == "True")
+                		$('#' + custField[i].CustomFieldID).prop('checked', true);
+                	}
                     //else if (custField[i].FieldType == 5)
                     //{
                     //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);
@@ -1265,7 +1268,7 @@ $(document).ready(function () {
         e.preventDefault();
         if (confirm('All contact associations with this product and version will also be deleted. Are you sure you would like to remove this product association?')) {
             top.Ts.System.logAction('Customer Detail - Delete Product');
-            top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
+            top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), false, function (e) {
                 LoadProducts();
             });
             
