@@ -1560,5 +1560,182 @@ SET IDENTITY_INSERT Users Off
             }
         }
 
-    }
+		  public void MergeUpdateTickets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+		  {
+			  Tickets tickets = new Tickets(loginUser);
+			  tickets.LoadByContact(losingUserID);
+
+			  if (tickets.Count > 0)
+			  {
+				  foreach (Ticket ticket in tickets)
+				  {
+					  ticket.Collection.AddContact(winningUserID, ticket.TicketID);
+					  ticket.Collection.RemoveContact(losingUserID, ticket.TicketID);
+				  }
+			  }
+				
+			  string description = "Merged '" + contactName + "' tickets.";
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tickets, winningUserID, description);
+		  }
+
+		  public void MergeUpdateNotes(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+		  {
+			  using (SqlCommand command = new SqlCommand())
+			  {
+				  command.CommandText = @"
+			 UPDATE
+				Notes 
+			 SET
+				RefID = @winningUserID 
+				, NeedsIndexing = 1
+			 WHERE
+				RefID = @losingUserID 
+				AND RefType = 22";
+				  command.CommandType = CommandType.Text;
+				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
+				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
+				  ExecuteNonQuery(command, "Notes");
+			  }
+			  string description = "Merged '" + contactName + "' Notes.";
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Notes, winningUserID, description);
+		  }
+
+		  public void MergeUpdateFiles(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+		  {
+			  Attachments attachments = new Attachments(loginUser);
+			  attachments.LoadByReference(ReferenceType.Users, losingUserID);
+			  if (attachments.Count > 0)
+			  {
+				  string pathWithoutFileName = System.IO.Path.GetDirectoryName(attachments[0].Path);
+				  string losingOrganizationFolderName = @"\" + losingUserID.ToString();
+				  string winningOrganizationFolderName = @"\" + winningUserID.ToString();
+				  string newPath = pathWithoutFileName.Replace(losingOrganizationFolderName, winningOrganizationFolderName);
+
+				  foreach (Attachment attachment in attachments)
+				  {
+					  string newFileName = DataUtils.VerifyUniqueUrlFileName(newPath, attachment.FileName);
+					  string newFullPath = Path.Combine(newPath, newFileName);
+					  System.IO.File.Copy(attachment.Path, newFullPath, true);
+					  System.IO.File.Delete(attachment.Path);
+
+					  attachment.FileName = newFileName;
+					  attachment.Path = newFullPath;
+					  attachment.RefID = winningUserID;
+				  }
+
+				  System.IO.Directory.Delete(pathWithoutFileName);
+				  attachments.Save();
+				  string description = "Merged '" + contactName + "' Files.";
+				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Attachments, winningUserID, description);
+			  }
+		  }
+
+		  public void MergeUpdateProducts(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+		  {
+			  using (SqlCommand command = new SqlCommand())
+			  {
+				  command.CommandText = @"
+			 UPDATE
+				UserProducts 
+			 SET
+				UserID = @winningUserID 
+			 WHERE
+				UserID = @losingUserID";
+				  command.CommandType = CommandType.Text;
+				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
+				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
+				  ExecuteNonQuery(command, "UserProducts");
+			  }
+
+			  UserProductsView userProducts = new UserProductsView(loginUser);
+			  userProducts.LoadByContactIDMissingCompanyReference(winningUserID);
+			  if (userProducts.Count > 0)
+			  {
+				  User contact = Users.GetUser(loginUser, winningUserID);
+				  foreach (UserProductsViewItem userProduct in userProducts)
+				  {
+					  OrganizationProduct organizationProduct = (new OrganizationProducts(loginUser)).AddNewOrganizationProduct();
+					  string description = String.Format("Added {0} product association by contact merging to {1} ", userProduct.Product, contact.FirstLastName);
+					  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, contact.OrganizationID, description);
+					  organizationProduct.OrganizationID = contact.OrganizationID;
+					  organizationProduct.ProductID = userProduct.ProductID;
+					  organizationProduct.ProductVersionID = userProduct.ProductVersionID;
+					  organizationProduct.SupportExpiration = userProduct.SupportExpiration;
+
+					  organizationProduct.Collection.Save();
+				  }
+			  }
+			  string mergeDescription = "Merged '" + contactName + "' Products.";
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, mergeDescription);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, winningUserID, mergeDescription);
+		  }
+
+		  public void MergeUpdateAssets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+		  {
+			  using (SqlCommand command = new SqlCommand())
+			  {
+				  command.CommandText = @"
+			 UPDATE
+				AssetHistory 
+			 SET
+				ShippedTo = @winningUserID 
+			 WHERE
+				ShippedTo = @losingUserID
+				AND RefType = 32
+				AND OrganizationID = @parentOrganizationID";
+				  command.CommandType = CommandType.Text;
+				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
+				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
+				  command.Parameters.AddWithValue("@parentOrganizationID", loginUser.OrganizationID);
+				  ExecuteNonQuery(command, "AssetHistory");
+			  }
+			  using (SqlCommand command = new SqlCommand())
+			  {
+				  command.CommandText = @"
+			 UPDATE
+				AssetHistory 
+			 SET
+				ShippedFrom = @winningUserID 
+			 WHERE
+				ShippedFrom = @losingUserID
+				AND RefType = 32
+				AND OrganizationID = @parentOrganizationID";
+				  command.CommandType = CommandType.Text;
+				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
+				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
+				  command.Parameters.AddWithValue("@parentOrganizationID", loginUser.OrganizationID);
+				  ExecuteNonQuery(command, "AssetHistory");
+			  }
+			  string description = "Merged '" + contactName + "' Assets.";
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, winningUserID, description);
+		  }
+
+		  public void MergeUpdateRatings(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+		  {
+			  using (SqlCommand command = new SqlCommand())
+			  {
+				  command.CommandText = @"
+			 UPDATE
+				AgentRatings 
+			 SET
+				CompanyID = (SELECT OrganizationID FROM Users WHERE UserID = @winningUserID) 
+				, ContactID = @winningUserID
+			 WHERE
+				ContactID = @losingUserID
+				AND OrganizationID = @parentOrganizationID";
+				  command.CommandType = CommandType.Text;
+				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
+				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
+				  command.Parameters.AddWithValue("@parentOrganizationID", loginUser.OrganizationID);
+				  ExecuteNonQuery(command, "AgentRatings");
+			  }
+			  string description = "Merged '" + contactName + "' AgentRatings.";
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.AgentRating, winningUserID, description);
+		  }
+	 }
 }

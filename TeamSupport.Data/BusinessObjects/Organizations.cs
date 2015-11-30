@@ -2618,5 +2618,231 @@ ORDER BY
         Fill(command);
       }
     }
+
+	 public void MergeUpdateContacts(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				Users 
+			 SET
+				OrganizationID = @winningOrganizationID
+				, NeedsIndexing = 1 
+			 WHERE
+				OrganizationID = @losingOrganizationID";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 ExecuteNonQuery(command, "OrganizationContacts");
+		 }
+		 string description = "Merged '" + companyName + "' tickets.";
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningOrganizationID, description);
+	 }
+
+	 public void MergeUpdateTickets(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				OrganizationTickets 
+			 SET
+				OrganizationID = @winningOrganizationID 
+			 WHERE
+				OrganizationID = @losingOrganizationID";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 ExecuteNonQuery(command, "OrganizationTickets");
+		 }
+		 string description = "Merged '" + companyName + "' tickets.";
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tickets, winningOrganizationID, description);
+	 }
+
+	 public void MergeUpdateNotes(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				Notes 
+			 SET
+				RefID = @winningOrganizationID
+				, NeedsIndexing = 1 
+			 WHERE
+				RefID = @losingOrganizationID 
+				AND RefType = 9";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 ExecuteNonQuery(command, "Notes");
+		 }
+		 string description = "Merged '" + companyName + "' Notes.";
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Notes, winningOrganizationID, description);
+	 }
+
+	 public void MergeUpdateFiles(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 Attachments attachments = new Attachments(loginUser);
+		 attachments.LoadByReference(ReferenceType.Organizations, losingOrganizationID);
+		 if (attachments.Count > 0)
+		 {
+			 string pathWithoutFileName = System.IO.Path.GetDirectoryName(attachments[0].Path);
+			 string losingOrganizationFolderName = @"\" + losingOrganizationID.ToString();
+			 string winningOrganizationFolderName =  @"\" + winningOrganizationID.ToString();
+			 string newPath = pathWithoutFileName.Replace(losingOrganizationFolderName, winningOrganizationFolderName);
+
+			 foreach (Attachment attachment in attachments)
+			 {
+				 string newFileName = DataUtils.VerifyUniqueUrlFileName(newPath, attachment.FileName);
+				 string newFullPath = Path.Combine(newPath, newFileName);
+				 System.IO.File.Copy(attachment.Path, newFullPath, true);
+				 System.IO.File.Delete(attachment.Path);
+				
+				attachment.FileName = newFileName;
+				attachment.Path = newFullPath;
+				attachment.RefID = winningOrganizationID;
+			 }
+
+			 System.IO.Directory.Delete(pathWithoutFileName);
+			 attachments.Save();
+			 string description = "Merged '" + companyName + "' Files.";
+			 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+			 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Attachments, winningOrganizationID, description);
+		 }
+	 }
+
+	 public void MergeUpdateProducts(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				OrganizationProducts 
+			 SET
+				OrganizationID = @winningOrganizationID 
+			 WHERE
+				OrganizationID = @losingOrganizationID";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 ExecuteNonQuery(command, "OrganizationProducts");
+		 }
+		 string description = "Merged '" + companyName + "' Products.";
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, winningOrganizationID, description);
+	 }
+
+	 public void MergeUpdateAssets(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				AssetHistory 
+			 SET
+				ShippedTo = @winningOrganizationID 
+			 WHERE
+				ShippedTo = @losingOrganizationID
+				AND RefType = 9
+				AND OrganizationID = @parentOrganizationID";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 command.Parameters.AddWithValue("@parentOrganizationID", loginUser.OrganizationID);
+			 ExecuteNonQuery(command, "AssetHistory");
+		 }
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				AssetHistory 
+			 SET
+				ShippedFrom = @winningOrganizationID 
+			 WHERE
+				ShippedFrom = @losingOrganizationID
+				AND RefType = 9
+				AND OrganizationID = @parentOrganizationID";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 command.Parameters.AddWithValue("@parentOrganizationID", loginUser.OrganizationID);
+			 ExecuteNonQuery(command, "AssetHistory");
+		 }
+		 string description = "Merged '" + companyName + "' Assets.";
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, winningOrganizationID, description);
+	 }
+
+	 public void MergeUpdateWaterCoolerMessages(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				WatercoolerAttachments 
+			 SET
+				AttachmentID = @winningOrganizationID 
+			 WHERE
+				AttachmentID = @losingOrganizationID
+				AND RefType = 2";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 ExecuteNonQuery(command, "WatercoolerAttachments");
+		 }
+		 string description = "Merged '" + companyName + "' WaterCoolerMessages.";
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.WaterCooler, winningOrganizationID, description);
+	 }
+
+	 public void MergeUpdateRatings(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				AgentRatings 
+			 SET
+				CompanyID = @winningOrganizationID 
+			 WHERE
+				CompanyID = @losingOrganizationID
+				AND OrganizationID = @parentOrganizationID";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 command.Parameters.AddWithValue("@parentOrganizationID", loginUser.OrganizationID);
+			 ExecuteNonQuery(command, "AgentRatings");
+		 }
+		 string description = "Merged '" + companyName + "' AgentRatings.";
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.AgentRating, winningOrganizationID, description);
+	 }
+
+	 public void MergeUpdateCalendar(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 UPDATE
+				CalendarRef 
+			 SET
+				RefID = @winningOrganizationID 
+			 WHERE
+				RefID = @losingOrganizationID
+				AND RefType = 2";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 ExecuteNonQuery(command, "CalendarRef");
+		 }
+		 string description = "Merged '" + companyName + "' CalendarEvents.";
+		 //ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 //ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType., winningOrganizationID, description);
+	 }
   }
 }

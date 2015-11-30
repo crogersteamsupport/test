@@ -13,6 +13,7 @@ var organizationID = null;
 var ratingFilter = '';
 var _isUnknown = false;
 var _execGetAsset = null;
+var _execGetCustomer = null;
 var _productsSortColumn = 'Date Created';
 var _productsSortDirection = 'DESC';
 var _productHeadersAdded = false;
@@ -1306,6 +1307,82 @@ $(document).ready(function () {
         window.location = window.location;
     });
 
+    var getCustomers = function (request, response) {
+    	if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
+    	_execGetCustomer = top.Ts.Services.Organizations.GetOrganizationForTicket(request.term, function (result) { response(result); });
+    }
+
+    $("#Company-Merge-search").autocomplete({
+    	minLength: 2,
+    	source: getCustomers,
+    	select: function (event, ui) {
+    		if (ui.item.id == organizationID) {
+    			alert("Sorry, but you can not merge this company into itself.");
+    			return;
+    		}
+
+    		$(this).data('organizationid', ui.item.id).removeClass('ui-autocomplete-loading');
+
+    		try {
+    			top.Ts.Services.Organizations.GetOrganization(ui.item.id, function (info) {
+    				var descriptionString = info.Description;
+
+    				if (ellipseString(info.Description, 30).indexOf("<img src") !== -1)
+    					descriptionString = "This company description starts off with an embedded/linked image. We have disabled this for the preview.";
+    				else if (ellipseString(info.Description, 30).indexOf(".viewscreencast.com") !== -1)
+    					descriptionString = "This company description starts off with an embedded recorded video.  We have disabled this for the preview.";
+    				else
+    					descriptionString = ellipseString(info.Description, 30);
+
+    				var companyPreviewName = "<div><strong>Company Name:</strong> " + info.Name + "</div>";
+    				var companyPreviewWebsite = "<div><strong>Company Website:</strong> " + info.Website + "</div>";
+    				var companyPreviewDesc = "<div><strong>Company Desciption Sample:</strong> " + descriptionString + "</div>";
+
+    				$('#companymerge-preview-details').after(companyPreviewName + companyPreviewWebsite + companyPreviewDesc);
+    				$('#dialog-companymerge-preview').show();
+    				$('#dialog-companymerge-warning').show();
+    				$(".dialog-companymerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
+    			})
+    		}
+    		catch (e) {
+    			alert("Sorry, there was a problem loading the information for that company.");
+    		}
+    	},
+    	position: { my: "right top", at: "right bottom", collision: "fit flip" }
+    });
+
+    $('#company-merge-complete').click(function (e) {
+    	e.preventDefault();
+    	if ($('#Company-Merge-search').val() == "") {
+    		alert("Please select a valid company to merge");
+    		return;
+    	}
+
+    	if ($('#dialog-companymerge-confirm').prop("checked")) {
+    		var winningID = $('#Company-Merge-search').data('organizationid');
+    		//var winningCompanyName = $('#Company-Merge-search').data('organizationname');
+    		var JSTop = top;
+    		//var window = window;
+    		top.Ts.Services.Customers.MergeCompanies(winningID, organizationID, function (result) {
+    			if (result != "")
+    				alert(result);
+    			else {
+    				$('#MergeModal').modal('hide');
+    				JSTop.Ts.MainPage.closeNewCustomerTab(organizationID);
+    				JSTop.Ts.MainPage.openNewCustomer(winningID);
+    				//window.location = window.location;
+    				//window.top.ticketSocket.server.ticketUpdate(organizationID + "," + winningID, "merge", userFullName);
+    			}
+    		});
+    		//top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+    		//  function () {
+    		//  $('#merge-error').show();
+    		//});
+    	}
+    	else {
+    		alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+    	}
+    });
 
     $('#customerDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this organization?')) {

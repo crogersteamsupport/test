@@ -2569,6 +2569,26 @@ WHERE
         Fill(command);
       }
     }
+
+	 public void LoadbyCompany(int companyID, int orgID)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 SELECT 
+				t.*
+			FROM
+				Tickets t
+				JOIN OrganizationTickets ot
+			WHERE 
+				t.OrganizationID = @OrgID
+				AND ot.OrganizationID = @companyID";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@companyID", companyID);
+			 command.Parameters.AddWithValue("@OrgID", orgID);
+			 Fill(command);
+		 }
+	 }
   }
 }
 

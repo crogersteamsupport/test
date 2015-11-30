@@ -9,6 +9,7 @@
 /// <reference path="~/Default.aspx" />
 var userID = null;
 var ratingFilter = '';
+var _execGetContact = null;
 var _execGetAsset = null;
 var _productsSortColumn = 'Date Created';
 var _productsSortDirection = 'DESC';
@@ -161,6 +162,74 @@ $(document).ready(function () {
     $('#contactRefresh').click(function (e) {
         top.Ts.System.logAction('Contact Detail - Refresh Window');
         window.location = window.location;
+    });
+
+    function getContacts(request, response) {
+    	if (_execGetContact) { _execGetContact._executor.abort(); }
+    	_execGetContact = top.Ts.Services.Organizations.GetContacts(request.term, function (result) { response(result); });
+    	isModified(true);
+    }
+
+    $("#Contact-Merge-search").autocomplete({
+    	minLength: 2,
+    	source: getContacts,
+    	select: function (event, ui) {
+    		if (ui.item.id == userID) {
+    			alert("Sorry, but you can not merge this contact into itself.");
+    			return;
+    		}
+
+    		$(this).data('userid', ui.item.id).removeClass('ui-autocomplete-loading');
+
+    		try {
+    			top.Ts.Services.Organizations.GetUser(ui.item.id, function (info) {
+    				var contactPreviewName = "<div><strong>Contact Name:</strong> " + info.FirstName + " " + info.MiddleName + " " + info.LastName + "</div>";
+    				var contactPreviewEmail = "<div><strong>Contact Email:</strong> " + info.Email + "</div>";
+
+    				$('#contactmerge-preview-details').after(contactPreviewName + contactPreviewEmail);
+    				$('#dialog-contactmerge-preview').show();
+    				$('#dialog-contactmerge-warning').show();
+    				$(".dialog-contactmerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
+    			})
+    		}
+    		catch (e) {
+    			alert("Sorry, there was a problem loading the information for that contact.");
+    		}
+    	},
+    	position: { my: "right top", at: "right bottom", collision: "fit flip" }
+    });
+
+    $('#contact-merge-complete').click(function (e) {
+    	e.preventDefault();
+    	if ($('#Contact-Merge-search').val() == "") {
+    		alert("Please select a valid contact to merge");
+    		return;
+    	}
+
+    	if ($('#dialog-contactmerge-confirm').prop("checked")) {
+    		var winningID = $('#Contact-Merge-search').data('userid');
+    		//var winningContactName = $('#Contact-Merge-search').data('username');
+    		var JSTop = top;
+    		//var window = window;
+    		top.Ts.Services.Customers.MergeContacts(winningID, userID, function (result) {
+    			if (result != "")
+    				alert(result);
+    			else {
+    				$('#MergeModal').modal('hide');
+    				JSTop.Ts.MainPage.closeNewContactTab(userID);
+    				JSTop.Ts.MainPage.openNewContact(winningID);
+    				//window.location = window.location;
+    				//window.top.ticketSocket.server.ticketUpdate(userID + "," + winningID, "merge", userFullName);
+    			}
+    		});
+    		//top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+    		//  function () {
+    		//  $('#merge-error').show();
+    		//});
+    	}
+    	else {
+    		alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+    	}
     });
 
     $('#historyToggle').on('click', function () {

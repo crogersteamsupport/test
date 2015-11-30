@@ -82,6 +82,25 @@ namespace TeamSupport.Data
               Fill(command);
           }
       }
+
+		public void LoadByContactID(int contactID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"
+        SELECT
+			*
+		FROM
+			UserProducts
+		WHERE
+			UserID = @UserID";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@UserID", contactID);
+				//command.Parameters.AddWithValue("@start", start);
+				//command.Parameters.AddWithValue("@end", end);
+				Fill(command);
+			}
+		}
   }
   
 }

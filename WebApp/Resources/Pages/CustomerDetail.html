@@ -39,6 +39,9 @@
             </div>
             <div class="btn-group">
               <button class="btn btn-default customer-tooltip" type="button" title="Refresh this company" id="customerRefresh"><i class="fa fa-refresh"></i></button>
+					<button id="Company-Merge" class="btn btn-default customer-tooltip" title="Merge this company" type="button" data-toggle="modal" data-target="#MergeModal">
+						<i class="fa fa-exchange"></i> Merge
+					</button>
               <button class="btn btn-default customer-tooltip" type="button" title="Subscribe to this company" id="customerSubscribe"><i class="fa fa-rss"></i></button>
               <button class="btn btn-default customer-tooltip" type="button" title="Add a reminder" data-target="#modalReminder" data-toggle="modal" id="customerReminder"><i class="fa fa-bell"></i></button>
               <button class="btn btn-default customer-tooltip" type="button" title="Delete" id="customerDelete"><i class="fa fa-trash-o"></i></button>
@@ -814,6 +817,48 @@
       <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
+  </div>
+  <div id="MergeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MergeModalTitle" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="MergeModalTitle">Merge Companies</h4>
+        </div>
+        <div class="modal-body">
+          <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+            <h4>1. You have selected the "loser" of the merge</h4>
+            <p>All the contacts, tickets, notes, files, products, assets, watercooler messages, ratings and calendar entris of this company will be moved to the "winner" you choose below. The "loser" will then be deleted.</p>
+          </div>
+
+          <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+            <h4>2. Next choose the Company you want to keep the "winner"</h4>
+            <p>You can only choose one Company. If you'd like to merge more than two companies together just go through the merge process again after the merge you are performing now is done.</p>
+          </div>
+
+          <input type="text" id="Company-Merge-search" class="form-control" placeholder="Search for the company you want to merge ..." />
+
+          <div class="ui-helper-hidden" id="dialog-companymerge-preview" style="padding-top: 10px;">
+			 	<div id="companymerge-preview-details">Here is some basic information about the company you have selected :</div>
+          </div>
+
+          <div class="ui-helper-hidden" id="dialog-companymerge-warning" style="padding-top:10px;">
+            <h4>3. Finally, click "OK" to merge these Companies.</h4>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="dialog-companymerge-confirm"> I understand that I will be deleting the losing company, and there is no recovery from that action.
+              </label>
+            </div>
+          </div>
+          <div id="merge-success" class="alert alert-success" role="alert" style="display:none;">Merge Successfull!</div>
+          <div id="merge-error" class="alert alert-danger" role="alert" style="display:none;">There was an error merging your companies.  Please try again.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button id="company-merge-complete" type="button" class="btn btn-primary">OK</button>
+        </div>
+      </div>
+    </div>
   </div>
 
 <!--    <div class="modal fade" id="modalAlert">
