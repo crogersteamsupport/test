@@ -483,7 +483,7 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadPortalUserByEmail(int parentID, string email)
+        public void LoadPortalUserByEmail(int orgID, string email)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -491,14 +491,14 @@ namespace TeamSupport.Data
                                 FROM Users u 
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
-                                WHERE (o.ParentID = @ParentID)
+                                WHERE ((o.ParentID = @OrgID) or (o.OrganizationID = @OrgID))
                                 AND (u.IsPortalUser = 1)
                                 AND (u.Email = @Email)
                                 AND (u.MarkDeleted = 0)";
 
 
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@ParentID", parentID);
+                command.Parameters.AddWithValue("@OrgID", orgID);
                 command.Parameters.AddWithValue("@Email", email.Trim());
                 Fill(command);
             }

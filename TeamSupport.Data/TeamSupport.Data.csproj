@@ -227,6 +227,7 @@
     <Compile Include="BusinessObjects\ForumTickets.cs" />
     <Compile Include="BusinessObjects\FullContactUpdates.cs" />
     <Compile Include="BusinessObjects\GroupAssignmentHistory.cs" />
+    <Compile Include="BusinessObjects\HubAccounts.cs" />
     <Compile Include="BusinessObjects\ImportFields.cs" />
     <Compile Include="BusinessObjects\ImportFieldsView.cs" />
     <Compile Include="BusinessObjects\ImportMaps.cs" />
