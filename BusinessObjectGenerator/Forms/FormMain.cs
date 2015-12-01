@@ -203,7 +203,7 @@ namespace BusinessObjectGenerator
 
     private void GetConnection()
     {
-      //if (!Forms.FormConnect.Connect()) return;
+      if (!Forms.FormConnect.Connect()) return;
 
       cmbDatabases.Items.Clear();
 
@@ -243,7 +243,7 @@ namespace BusinessObjectGenerator
         }
         catch (Exception ex)
         {
-          MessageBox.Show("Unable to connect to the database server.\n\nHost:"+AppSettings.Default.Host+"\nError: " + ex.Message + "\n" + ex.StackTrace);
+          MessageBox.Show("Unable to connect to the database server.\nError: " + ex.Message + "\n" + ex.StackTrace);
           return;
         }
       }
@@ -253,12 +253,12 @@ namespace BusinessObjectGenerator
 
     private string GetConnectionString()
     {
-      return "Data Source=localhost;Integrated Security=True";
+      return string.Format("Data Source={0};Persist Security Info=True;User ID={1};password={2}", AppSettings.Default.Host, AppSettings.Default.UserName, AppSettings.Default.Password);
     }
 
     private string GetConnectionString(string catalog)
     {
-      return string.Format("Data Source=localhost;Integrated Security=True;Initial Catalog={0}", catalog);
+      return string.Format("Data Source={0};Persist Security Info=True;User ID={1};password={2};Initial Catalog={3}", AppSettings.Default.Host, AppSettings.Default.UserName, AppSettings.Default.Password, catalog);
     }
 
     private void LoadDatabases(SqlConnection connection)
