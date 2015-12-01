@@ -401,25 +401,29 @@ $(document).ready(function () {
                 $('.report-fields-primary').find('.panel-title > a').text(primaryFields[0].Table);
                 addFieldsToSection(primaryFields, 'primary');
 
-                if (_typeClass == 'report-class-tabular' || _typeClass == 'report-class-tickets') {
-                	if (primaryFieldsCF.length > 0) {
+						 if (primaryFieldsCF.length > 0) {
                 		addFieldsToSection(primaryFieldsCF, 'primary-cf');
-                		$('.report-fields-primary-cf').find('.panel-title  > a').text(primaryFieldsCF[0].Table + ' (Custom Fields)');
-                		$('.report-fields-primary-cf').show();
-                	};
+                		if (_typeClass == 'report-class-tabular' || _typeClass == 'report-class-tickets') {
+                			$('.report-fields-primary-cf').find('.panel-title  > a').text(primaryFieldsCF[0].Table + ' (Custom Fields)');
+                			$('.report-fields-primary-cf').show();
+                		}
+						};
 
                 	if (secondaryFields.length > 0) {
                 		addFieldsToSection(secondaryFields, 'secondary');
-                		$('.report-fields-secondary').find('.panel-title > a').text(secondaryFields[0].Table);
-                		$('.report-fields-secondary').show();
+                		if (_typeClass == 'report-class-tabular' || _typeClass == 'report-class-tickets') {
+                			$('.report-fields-secondary').find('.panel-title > a').text(secondaryFields[0].Table);
+                			$('.report-fields-secondary').show();
+                		}
                 	};
 
                 	if (secondaryFieldsCF.length > 0) {
                 		addFieldsToSection(secondaryFieldsCF, 'secondary-cf');
-                		$('.report-fields-secondary-cf').find('.panel-title > a').text(secondaryFieldsCF[0].Table + ' (Custom Fields)');
-                		$('.report-fields-secondary-cf').show();
+                		if (_typeClass == 'report-class-tabular' || _typeClass == 'report-class-tickets') {
+                			$('.report-fields-secondary-cf').find('.panel-title > a').text(secondaryFieldsCF[0].Table + ' (Custom Fields)');
+                			$('.report-fields-secondary-cf').show();
+                		}
                 	};
-                }
 
                 _fields = fields;
 
@@ -458,16 +462,17 @@ $(document).ready(function () {
 
                 delete fields[i]['__type'];
                 var fieldName = fields[i].Name + (fields[i].AuxName ? " (" + fields[i].AuxName + ")" : "");
-
-                $('<li>')
-                            .addClass('report-field ' + getUniqueFieldClass(fields[i]))
-                            .data('field', fields[i])
-                            .append($('<div>', {
-                                'class': 'checkbox'
-                            }).append($('<label>', {
-                                'html': fieldName
-                            }).prepend('<input type="checkbox" />')))
-                            .appendTo(list);
+                if (_typeClass == 'report-class-tabular' || _typeClass == 'report-class-tickets') {
+                	$('<li>')
+										.addClass('report-field ' + getUniqueFieldClass(fields[i]))
+										.data('field', fields[i])
+										.append($('<div>', {
+											'class': 'checkbox'
+										}).append($('<label>', {
+											'html': fieldName
+										}).prepend('<input type="checkbox" />')))
+										.appendTo(list);
+                }
                 if (tableName != fields[i].Table) {
                     tableName = fields[i].Table;
                     optGroupx = $('<optgroup>').attr('label', tableName).appendTo('.summary-desc .summary-field');
