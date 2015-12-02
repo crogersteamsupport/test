@@ -153,8 +153,10 @@ $(document).ready(function () {
         $('#fileToggle').hide();
     }
 
-    if (!_isAdmin)
-        $('#customerDelete').hide();
+    if (!_isAdmin) {
+    	$('#customerDelete').hide();
+    	$('#Company-Merge').hide();
+	 }
 
     if (!_isAdmin && !top.Ts.System.User.CanCreateContact) {
         $('.contact-action-add').hide();

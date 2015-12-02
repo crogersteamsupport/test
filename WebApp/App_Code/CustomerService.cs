@@ -3078,6 +3078,21 @@ namespace TSWebServices
 
 			  try
 			  {
+				  company.Collection.DeleteRecentlyViewItems(losingOrganizationID);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error deleting company from recently viewed items. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
 				  company.Collection.DeleteFromDB(losingOrganizationID);
 			  }
 			  catch (Exception e)
@@ -3115,7 +3130,7 @@ namespace TSWebServices
 				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
-				  errLocation = string.Format("Error merging company tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -3130,7 +3145,7 @@ namespace TSWebServices
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging company notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -3145,7 +3160,7 @@ namespace TSWebServices
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging company files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -3160,7 +3175,7 @@ namespace TSWebServices
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging company products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -3175,12 +3190,27 @@ namespace TSWebServices
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging company assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
 			  {
 				  contact.Collection.MergeUpdateRatings(losingUserID, winningUserID, contact.FirstLastName, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging contact ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.DeleteRecentlyViewItems(losingUserID);
 			  }
 			  catch (Exception e)
 			  {

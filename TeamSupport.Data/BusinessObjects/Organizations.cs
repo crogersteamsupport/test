@@ -2844,5 +2844,21 @@ ORDER BY
 		 //ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
 		 //ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType., winningOrganizationID, description);
 	 }
+
+	 public void DeleteRecentlyViewItems(int losingOrganizationID)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 DELETE
+				RecentlyViewedItems 
+			 WHERE
+				RefID = @losingOrganizationID
+				AND RefType = 1";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 ExecuteNonQuery(command, "RecentlyViewedItems");
+		 }
+	 }
   }
 }

@@ -147,8 +147,10 @@ $(document).ready(function () {
         $('#contactAddressButton').hide();
     }
 
-    if (!_isAdmin)
-        $('#contactDelete').hide();
+    if (!_isAdmin) {
+    	$('#contactDelete').hide();
+    	$('#Contact-Merge').hide();
+	 }
 
     if (!top.Ts.System.Organization.IsInventoryEnabled) {
         $('#contactTabs a[href="#contact-products"]').hide();

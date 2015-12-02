@@ -1562,7 +1562,8 @@ SET IDENTITY_INSERT Users Off
 
 		  public void MergeUpdateTickets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
 		  {
-			  Tickets tickets = new Tickets(loginUser);
+			  LoginUser noEmailPostLoginUser = new LoginUser(loginUser.ConnectionString, -5, loginUser.OrganizationID, null);
+			  Tickets tickets = new Tickets(noEmailPostLoginUser);
 			  tickets.LoadByContact(losingUserID);
 
 			  if (tickets.Count > 0)
@@ -1736,6 +1737,22 @@ SET IDENTITY_INSERT Users Off
 			  string description = "Merged '" + contactName + "' AgentRatings.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.AgentRating, winningUserID, description);
+		  }
+
+		  public void DeleteRecentlyViewItems(int losingUserID)
+		  {
+			  using (SqlCommand command = new SqlCommand())
+			  {
+				  command.CommandText = @"
+			 DELETE
+				RecentlyViewedItems 
+			 WHERE
+				RefID = @losingUserID
+				AND RefType = 0";
+				  command.CommandType = CommandType.Text;
+				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
+				  ExecuteNonQuery(command, "RecentlyViewedItems");
+			  }
 		  }
 	 }
 }
