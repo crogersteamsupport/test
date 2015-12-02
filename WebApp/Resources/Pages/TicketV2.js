@@ -1821,12 +1821,6 @@ function SetupProductSection() {
     });
 
     $('#ticket-Product').change(function (e) {
-      if (_ticketInfo.LinkToJira != null && _ticketInfo.LinkToJira.JiraKey) {
-        e.preventDefault();
-        SetProduct(_ticketInfo.Ticket.ProductID);
-        alert("The Product can't be changed if the Ticket is linked to Jira. Unlink ticket before changing product.");
-      }
-      else {
         var self = $(this);
       top.Ts.Services.Tickets.SetProduct(_ticketID, self.val(), function (result) {
         if (result !== null) {
@@ -1853,7 +1847,6 @@ function SetupProductSection() {
         alert('There was an error setting the product.');
       });
       $(".popover").remove();
-    	}
     });
 
     $('#ticket-Versions').change(function (e) {

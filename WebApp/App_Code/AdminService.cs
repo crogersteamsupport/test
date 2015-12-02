@@ -16,7 +16,6 @@ using System.Runtime.Serialization;
 using dtSearch.Engine;
 using System.Net;
 using System.IO;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace TSWebServices
@@ -290,54 +289,40 @@ namespace TSWebServices
     public bool GetIsJiraLinkActiveForTicket(int ticketId)
     {
       bool result = false;
-		LoginUser loginUser = TSAuthentication.GetLoginUser();
-		CRMLinkTable organizationLinks = new CRMLinkTable(loginUser);
+   
+      CRMLinkTable organizationLinks = new CRMLinkTable(TSAuthentication.GetLoginUser());
       organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
-		List<CRMLinkTableItem> organizationJiraLinks = organizationLinks.Where(p => p.CRMType.ToLower() == "jira").ToList();
-
-		if (organizationJiraLinks != null && organizationJiraLinks.Where(p => p.Active).Any())
+      foreach (CRMLinkTableItem link in organizationLinks)
+      {
+        if (link.CRMType == "Jira" && link.Active)
         {
-			TicketLinkToJira ticketLink = new TicketLinkToJira(loginUser);
-			ticketLink.LoadByTicketID(ticketId);
-
-			if (ticketLink != null && ticketLink.Any())
+          if (string.IsNullOrEmpty(link.RestrictedToTicketTypes))
           {
             result = true;
           }
           else
           {
-				TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
+            TicketsView ticket = new TicketsView(TSAuthentication.GetLoginUser());
+            ticket.LoadByTicketID(ticketId);
 
-				if (ticket.ProductID != null)
-				{
-					JiraInstanceProducts jiraInstanceProduct = new JiraInstanceProducts(loginUser);
-					jiraInstanceProduct.LoadByProductAndOrganization((int)ticket.ProductID, ticket.OrganizationID, "Jira");
-
-					if (jiraInstanceProduct != null && jiraInstanceProduct.Count > 0)
-					{
-						CRMLinkTableItem ticketJiraInstance = organizationJiraLinks.Where(p => p.CRMLinkID == jiraInstanceProduct[0].CrmLinkId && p.Active).SingleOrDefault();
-
-						if (ticketJiraInstance != null && ticketJiraInstance.CRMLinkID != 0)
-						{
-							if (string.IsNullOrEmpty(ticketJiraInstance.RestrictedToTicketTypes))
-							{
-								result = true;
-							}
-							else
-							{
-								foreach (string allowedTicketType in ticketJiraInstance.RestrictedToTicketTypes.Split(','))
-								{
-									result = ticket.TicketTypeID.ToString() == allowedTicketType;
+            foreach(string allowedTicketType in link.RestrictedToTicketTypes.Split(','))
+            {
+              result = ticket[0].TicketTypeID.ToString() == allowedTicketType;
               
-									if (result)
-									{
-										break;
-									}
-								}
-							}
-						}
-					}
+              if (result)
+              {
+                break;
+              }
+            }
+
+            //If restricted check if it was linked already
+            if (!result)
+            {
+              TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+              ticketLinkToJira.LoadByTicketID(ticketId);
+              result = ticketLinkToJira != null && ticketLinkToJira.Count > 0;
+            }
           }
         }
       }
@@ -802,14 +787,5 @@ namespace TSWebServices
     public int? ParentID { get; set; }
     [DataMember]
     public List<int> CategoryIDs { get; set; }
-  }
-
-  [DataContract]
-  public class JiraInstance
-  {
-    [DataMember]
-    public int CrmLinkId { get; set; }
-    [DataMember]
-    public string Name { get; set; }
   }
 }

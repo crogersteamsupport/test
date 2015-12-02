@@ -411,15 +411,6 @@ namespace TSWebServices
       return table.GetCRMLinkTableItemProxies();
     }
 
-	 [WebMethod]
-	 public CRMLinkTableItemProxy[] LoadOrgCrmLinks(int organizationID)
-	 {
-		 LoginUser loginUser = TSAuthentication.GetLoginUser();
-		 CRMLinkTable table = new CRMLinkTable(loginUser);
-		 table.LoadByOrganizationID(organizationID);
-		 return table.GetCRMLinkTableItemProxies();
-	 }
-
     [WebMethod]
     public SlaLevelProxy[] GetSlaLevels()
     {
@@ -453,8 +444,7 @@ namespace TSWebServices
       bool matchAccountsByName,
       bool useSandBoxServer,
       bool alwaysUseDefaultProjectKey,
-      string restrictedToTicketTypes,
-      string jiraInstanceName
+      string restrictedToTicketTypes
     )
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
@@ -467,7 +457,6 @@ namespace TSWebServices
         item.LastTicketID = -1;
         item.OrganizationID = TSAuthentication.OrganizationID;
         item.SendBackTicketData = true;
-        item.InstanceName = jiraInstanceName;
       }
       else
       {

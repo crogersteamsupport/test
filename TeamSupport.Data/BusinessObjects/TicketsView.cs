@@ -567,7 +567,7 @@ namespace TeamSupport.Data
 
         if (!hasTickeTypeIdParameter)
         {
-          command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+        command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
         }
         
         this.DeleteAll();
@@ -1955,7 +1955,6 @@ WHERE tgv.OrganizationID = @OrganizationID"
           WHERE 
             j.SyncWithJira = 1
             AND t.OrganizationID = @OrgID 
-				AND j.CrmLinkID = @CrmLinkId
             AND 
             (
               j.DateModifiedByJiraSync IS NULL
@@ -1971,7 +1970,6 @@ WHERE tgv.OrganizationID = @OrganizationID"
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
         command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
-		  command.Parameters.AddWithValue("@CrmLinkId", item.CRMLinkID);
 
         Fill(command);
       }

@@ -40,7 +40,6 @@ namespace TeamSupport.Data
     [DataMember] public bool AlwaysUseDefaultProjectKey { get; set; }
     [DataMember] public string RestrictedToTicketTypes { get; set; }
     [DataMember] public bool UpdateTicketType { get; set; }
-    [DataMember] public string InstanceName { get; set; }
           
   }
   
@@ -49,7 +48,6 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
-      result.InstanceName = this.InstanceName;
       result.UpdateTicketType = this.UpdateTicketType;
       result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;
       result.AlwaysUseDefaultProjectKey = this.AlwaysUseDefaultProjectKey;

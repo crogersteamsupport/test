@@ -338,9 +338,6 @@ $(document).ready(function () {
         top.Ts.Services.Products.GetProperties(_productID, function (result) {
         $('#jiraIntegrationBox').show();
         $('#fieldJiraProjectKey').text(result.JiraProjectKey != null && result.JiraProjectKey != "" ? result.JiraProjectKey : "Not Set");
-
-        $('#fieldJiraInstance').text(result.JiraInstance);
-        $('#fieldJiraInstance').data('field', result.CrmLinkId);
         });
       }
     });
@@ -480,64 +477,6 @@ $(document).ready(function () {
       })
       .insertAfter(container1);
     $('#productEdit').addClass("disabled");
-  });
-
-  $('#fieldJiraInstance').click(function (e) {
-  	e.preventDefault();
-
-  	if (!$(this).hasClass('editable'))
-  		return false;
-
-  	var header = $(this).hide();
-  	top.Ts.System.logAction('Product Detail - Edit Jira Instance');
-  	var container = $('<div>').insertAfter(header);
-
-  	var container1 = $('<div>')
-		.addClass('col-xs-9')
-		.attr('style', 'padding-left: 1px')
-		.appendTo(container);
-
-  	var select = $('<select>').addClass('form-control').attr('id', 'ddlfieldJiraInstance').appendTo(container1);
-
-  	top.Ts.Services.Organizations.LoadOrgCrmLinks(top.Ts.System.Organization.OrganizationID, function (links) {
-  		$('<option>').attr('value', '-1').text('None').appendTo(select);
-  		for (var i = 0; i < links.length; i++) {
-  		  if (links[i].CRMType.toLowerCase() == "jira") {
-  		    var opt = $('<option>').attr('value', links[i].CRMLinkID).text(links[i].InstanceName).data('o', links[i]);
-  		    if (header.data('field') == links[i].CRMLinkID)
-  					opt.attr('selected', 'selected');
-  				opt.appendTo(select);
-  			}
-  		}
-  	});
-
-  	$('<i>')
-	  .addClass('col-xs-1 fa fa-times')
-	  .click(function (e) {
-	  	$(this).closest('div').remove();
-	  	header.show();
-	  	$('#productEdit').removeClass("disabled");
-	  })
-	  .insertAfter(container1);
-
-  	$('#ddlfieldJiraInstance').on('change', function () {
-  		var value = $(this).val();
-  		var name = this.options[this.selectedIndex].innerHTML;
-  		container.remove();
-  		top.Ts.System.logAction('Product Detail - Save Jira Instance Edit');
-
-  		top.Ts.Services.Products.SetJiraInstance(_productID, value, name, function (result) {
-  			header.data('field', result);
-  			header.text(name);
-  			header.show();
-  			$('#productEdit').removeClass("disabled");
-  		}, function () {
-  			alert("There was a problem saving your product property.");
-  			$('#productEdit').removeClass("disabled");
-  		});
-  	});
-
-  	$('#productEdit').addClass("disabled");
   });
 
   $('#fieldDescription').click(function (e) {

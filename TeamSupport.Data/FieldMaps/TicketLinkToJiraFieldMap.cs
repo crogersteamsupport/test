@@ -22,7 +22,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("JiraLinkURL", "JiraLinkURL", false, false, false);
       _fieldMap.AddMap("JiraStatus", "JiraStatus", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
-      _fieldMap.AddMap("CrmLinkID", "CrmLinkID", false, false, false);
             
     }
   }

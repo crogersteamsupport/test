@@ -10,11 +10,7 @@
 var slaLevels;
 var actionTypes;
 var ticketTypes;
-var jiraInstances;
 var adminInt = null;
-var _selectedJiraInstance = "";
-var _isNewJiraInstance = false;
-
 $(document).ready(function () {
   adminInt = new AdminInt();
   adminInt.refresh();
@@ -23,6 +19,7 @@ $(document).ready(function () {
 function onShow() {
   adminInt.refresh();
 };
+
 
 AdminInt = function () {
   top.Ts.Services.Organizations.GetSlaLevels(function (result) {
@@ -48,15 +45,8 @@ AdminInt = function () {
   });
 
   top.Ts.Services.Organizations.GetCrmLinks(function (result) {
-    jiraInstances = result;
-
     for (var i = 0; i < result.length; i++) {
-      //On first load, just load the Default Jira instance.
-      if ((result[i].CRMType.toLowerCase() == 'jira' && result[i].InstanceName.toLowerCase() == 'default')
-        || result[i].CRMType.toLowerCase() != 'jira') {
-        loadPanel($('.' + result[i].CRMType.toLowerCase() + ' .int-panel').data('link', result[i]));
-      }
-
+      loadPanel($('.' + result[i].CRMType.toLowerCase() + ' .int-panel').data('link', result[i]));
     }
   });
 
@@ -144,64 +134,10 @@ AdminInt = function () {
       loadSlaLevels($(this).next());
       loadActionTypes($(this).next());
       loadTicketTypes($(this).next());
-      loadJiraInstancesList($(this).next());
       $(this).next().show();
     }
 
   });
-
-  function ReLoadJiraInstances(panel) {
-    top.Ts.Services.Organizations.GetCrmLinks(function (result) {
-      jiraInstances = result;
-      loadJiraInstancesList(panel);
-
-      $("#JiraInstacesListWrapper").show();
-      $("#AddingInstanceLabel").hide();
-      $("#NewInstance").show();
-
-      _isNewJiraInstance = false;
-    });
-  }
-
-  function loadJiraInstancesList(panel) {
-  	var instancesList = panel.find('.int-jiraInstances');
-  	if (instancesList == null) return;
-
-  	panel = $(panel);
-  	var item = panel.data('link');
-
-  	if (jiraInstances != null && jiraInstances.length > 0) {
-  	  instancesList.empty();
-
-  	  for (var i = 0; i < jiraInstances.length; i++) {
-  	    var selected = '">';
-
-  	    if (jiraInstances[i].CRMType.toLowerCase() == 'jira') {
-  	      if (item != null && item.CRMLinkID > 0 && item.CRMLinkID == jiraInstances[i].CRMLinkID) {
-  	        selected = '" selected="selected">';
-  	      }
-
-  	      instancesList.append('<option value="' + jiraInstances[i].CRMLinkID + selected + jiraInstances[i].InstanceName + '</option>');
-  	    }
-  	  }
-
-  	  $('.int-jiraInstances').combobox({
-  	    selected: function (e, ui) {
-  	      onJiraInstanceChange(this);
-  	      _selectedJiraInstance = $(this).val();
-
-  	      for (var i = 0; i < jiraInstances.length; i++) {
-  	        if (jiraInstances[i].CRMLinkID == _selectedJiraInstance) {
-  	          loadPanel($('.jira .int-panel').data('link', jiraInstances[i]));
-  	        }
-  	      }
-  	    }
-  	  });
-  	}
-  	else {
-  	  instancesList.attr('disabled', 'disabled');
-  	}
-  }
 
   function loadMaps(element) {
     var data = element.data('link');
@@ -257,12 +193,17 @@ AdminInt = function () {
             .attr('value', top.Ts.ReferenceTypes.Contacts)
             .appendTo('.int-zoho-map-type');
 
+//          $('<option>')
+//            .text('Product')
+//            .attr('value', top.Ts.ReferenceTypes.Products)
+//            .appendTo('.int-zoho-map-type');
+
           $('.int-zoho-map-type').combobox({ selected: function (e, ui) {
             loadFields(element.find('.int-zoho-map-tsfield'), element.find('.int-zoho-map-type').val());
           }
           });
 
-				loadFields(element.find('.int-zoho-map-tsfield'), element.find('.int-zoho-map-type').val());
+        loadFields(element.find('.int-zoho-map-tsfield'), element.find('.int-zoho-map-type').val());
         }
         break;
     }
@@ -499,6 +440,7 @@ AdminInt = function () {
     parent.find('.int-zoho-map-crmfield').val('');
   });
 
+
   $('.int-type').delegate('.int-save', 'click', function (e) {
     e.preventDefault();
     var parent = $(this).parents('.int-panel');
@@ -516,20 +458,10 @@ AdminInt = function () {
       flag = true;
     }
 
-    var jiraInstanceName = "";
-    if (parent.find('#InstanceName').length > 0) {
-      jiraInstanceName = parent.find('#InstanceName').val();
-
-      if (jiraInstanceName == null || jiraInstanceName == "") {
-        parent.find('.int-message').append('<div>Enter a Instance Name.</div>').show();
-        flag = true;
-      }
-    }
-
     if (flag) return;
     parent.find('.int-action').hide();
 
-    var linkID = parent.data('link') == undefined || _isNewJiraInstance ? -1 : parent.data('link').CRMLinkID;
+    var linkID = parent.data('link') == undefined ? -1 : parent.data('link').CRMLinkID;
 
     var crmType = '';
     var type = parent.parents('.int-type');
@@ -672,11 +604,9 @@ AdminInt = function () {
           useSandBoxServer,
           alwaysUseDefaultProjectKey,
           restrictedToTicketTypes,
-          jiraInstanceName,
           function (result) {
             parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
             loadMaps(parent);
-            ReLoadJiraInstances(parent);
             top.Ts.System.logAction('Admin Integration - Settings Saved');
           },
           function () {
@@ -688,14 +618,15 @@ AdminInt = function () {
 
   });
 
+
   $('.int-type').delegate('.int-cancel', 'click', function (e) {
     e.preventDefault();
     var panel = $(this).parents('.int-panel');
     panel.find('.int-action').hide();
     panel.find('.int-message').hide();
     loadPanel(panel);
-    _isNewJiraInstance = false;
   });
+
 
   var onChange = function (e) {
     var footer = $(this).parents('.int-panel').find('.int-footer');
@@ -723,72 +654,17 @@ AdminInt = function () {
     }
   }
 
-  var onJiraInstanceChange = function (ui) {
-    var footer = $(ui).parents('.int-panel').find('.int-footer');
-
-    if (footer.length < 1) {
-      footer = $('<div>').addClass('int-footer');
-      $('<div>').addClass('int-message ui-helper-hidden ui-corner-all ui-state-active').appendTo(footer);
-      var actions = $('<div>').addClass('int-action').appendTo(footer);
-
-      $('<button>')
-      .text('Save')
-      .addClass('int-save ui-state-active')
-      .appendTo(actions)
-      .button();
-
-      $('<button>')
-      .text('Cancel')
-      .addClass('int-cancel')
-      .appendTo(actions)
-      .button();
-      footer.appendTo($(ui).parents('.int-panel'));
-    }
-    else {
-      footer.find('.int-action').show();
-    }
-  }
-
   $('.int-panel input').change(onChange).keydown(onChange);
   $('.int-defaultSla').change(onChange);
   $('.int-actionTypeToPush').change(onChange);
   $('.int-content-center input').unbind('change').unbind('keydown');
   $('.int-ticketTypeToPush').change(onChange);
-
-  $("#NewInstance").click(function (e, ui) {
-    loadPanelNewJiraInstance();
-    _isNewJiraInstance = true;
-    $(this).hide();
-    $("#JiraInstacesListWrapper").hide();
-    $("#AddingInstanceLabel").show();
-    onJiraInstanceChange(this);
-  });
-
-  function loadPanelNewJiraInstance() {
-    var element = $('.jira .int-panel');
-    element.find('.int-crm-instancename').val("");
-    element.find('.int-crm-host').val("");
-    element.find('.int-crm-user').val("");
-    element.find('.int-crm-password').val("");
-    element.find('.int-crm-password-confirm').val("");
-    element.find('.int-crm-project').val("");
-    element.find('.int-crm-update-status').prop('checked', false);
-    element.find('.int-crm-update-type').prop('checked', false);
-    element.find('.int-crm-active').prop('checked', false);
-    element.find('.int-crm-always-use-default-project-key').prop('checked', false);
-    element.find('.int-crm-ticket-types').prop('checked', true);
-
-    $("#restrictedTicketTypesList option:selected").removeAttr("selected");
-    $('#restrictedTicketTypesList').hide();
-  }
-
+  
   function loadPanel(element) {
     element = $(element);
     var item = element.data('link');
     if (item == null) return;
-
     element.addClass('crmlinkid_' + item.CRMLinkID);
-    element.find('.int-crm-instancename').val(item.InstanceName);
     element.find('.int-crm-host').val(item.HostName);
     element.find('.int-crm-user').val(item.Username);
     element.find('.int-crm-password').val(item.Password);
@@ -869,17 +745,12 @@ AdminInt = function () {
 
     if (item.RestrictedToTicketTypes) {
       element.find('.int-crm-ticket-types').prop('checked', false);
-      loadTicketTypes(element);
-      element.find('#restrictedTicketTypesList').show();
+      $('#restrictedTicketTypesList').show();
     }
     else {
       element.find('.int-crm-ticket-types').prop('checked', true);
-      element.find('#restrictedTicketTypesList').hide();
+      $('#restrictedTicketTypesList').hide();
     }
-
-    $("#AddingInstanceLabel").hide();
-    $("#JiraInstacesListWrapper").show();
-    $("#NewInstance").show();
   }
 
   $('.int-crm-ticket-types').click(function (e) {
@@ -910,6 +781,11 @@ AdminInt = function () {
   });
 
 };
+
+function loadCrmFields(crmLinkID) { 
+
+}
+
 
 AdminInt.prototype = {
   constructor: AdminInt,

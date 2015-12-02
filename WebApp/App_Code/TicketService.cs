@@ -1807,29 +1807,48 @@ namespace TSWebServices
             return pinned;
         }
 
-        [WebMethod]
-        public bool SetJiraIssueKey(int ticketID, string jiraIssueKey)
-        {
-            bool result = false;
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
+		[WebMethod]
+		public bool SetJiraIssueKey(int ticketID, string jiraIssueKey)
+		{
+			bool result = false;
 
-            result = SetSyncWithJira(loginUser, ticketID, jiraIssueKey);
+			TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+			ticketLinkToJira.LoadByTicketID(ticketID);
+			if (ticketLinkToJira.Count == 0)
+			{
+				TicketLinkToJiraItem ticketLinkToJiraItem = ticketLinkToJira.AddNewTicketLinkToJiraItem();
+				ticketLinkToJiraItem.TicketID = ticketID;
+				ticketLinkToJiraItem.JiraKey = jiraIssueKey;
+				ticketLinkToJiraItem.SyncWithJira = true;
+				ticketLinkToJiraItem.CreatorID = TSAuthentication.UserID;
+				ticketLinkToJiraItem.Collection.Save();
+				result = true;
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        [WebMethod]
-        public bool SetSyncWithJira(int ticketID)
-        {
-            bool result = false;
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
+		[WebMethod]
+		public bool SetSyncWithJira(int ticketID)
+		{
+			bool result = false;
 
-            result = SetSyncWithJira(loginUser, ticketID, null);
+			TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+			ticketLinkToJira.LoadByTicketID(ticketID);
+			if (ticketLinkToJira.Count == 0)
+			{
+				TicketLinkToJiraItem ticketLinkToJiraItem = ticketLinkToJira.AddNewTicketLinkToJiraItem();
+				ticketLinkToJiraItem.TicketID = ticketID;
+				ticketLinkToJiraItem.SyncWithJira = true;
+				ticketLinkToJiraItem.CreatorID = TSAuthentication.UserID;
+				ticketLinkToJiraItem.Collection.Save();
+				result = true;
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        [WebMethod]
+		[WebMethod]
         public bool UnSetSyncWithJira(int ticketID)
         {
             bool result = false;
@@ -3850,42 +3869,6 @@ WHERE t.TicketID = @TicketID
 
 
             return true;
-        }
-
-        private bool SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
-        {
-            bool result = false;
-
-            TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
-            ticketLinkToJira.LoadByTicketID(ticketId);
-
-            if (ticketLinkToJira.Count == 0)
-            {
-                try
-                {
-                    TicketLinkToJiraItem ticketLinkToJiraItem = ticketLinkToJira.AddNewTicketLinkToJiraItem();
-                    ticketLinkToJiraItem.TicketID = ticketId;
-                    ticketLinkToJiraItem.JiraKey = jiraIssueKey;
-                    ticketLinkToJiraItem.SyncWithJira = true;
-                    ticketLinkToJiraItem.CreatorID = loginUser.UserID;
-
-                    TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
-                    ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, "jira", ticket.ProductID, loginUser);
-
-                    if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
-                    {
-                        ticketLinkToJiraItem.Collection.Save();
-                        result = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    result = false;
-                    ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
-                }
-            }
-
-            return result;
         }
     }
 
