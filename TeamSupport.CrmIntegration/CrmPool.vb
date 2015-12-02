@@ -88,10 +88,9 @@ Namespace TeamSupport
         Dim isAlreadyProcessingValue As Boolean = False
         For Each link As CRMLinkTableItem In links
 
-          MyBase.Logs.WriteEvent(String.Format("Checking link type: {0} of OrgID: {1}{2}", link.CRMType, link.OrganizationID.ToString(), If(link.CRMType.ToLower() = "jira", String.Format(" ({0})", link.InstanceName), "")), True)
-          LogJiraInstanceProducts(link)
+          MyBase.Logs.WriteEvent("Checking link type: " + link.CRMType + " of OrgID: " + link.OrganizationID.ToString(), true)
 
-          If _threads.Count >= maxThreads Then
+			If _threads.Count >= maxThreads Then
             MyBase.Logs.WriteEvent("CrmPool finishing as its threads count exceeds maxThreads", True)
             Return
           End If
@@ -110,34 +109,15 @@ Namespace TeamSupport
         Next
       End Sub
 
-		Private Function IsAlreadyProcessing(ByVal crmLinkID As Integer) As Boolean
-		  For Each thread As CrmProcessor In _threads
-			 If thread.CrmLinkID = crmLinkID Then
-				Return True
-			 End If
-		  Next
-		  Return False
-		End Function
-
-      '//vv
-		Private Sub LogJiraInstanceProducts(ByVal link As CRMLinkTableItem)
-			If link.CRMType.ToLower() = "jira" Then
-          Dim jiraInstances As JiraInstanceProducts = New JiraInstanceProducts(_loginUser)
-          jiraInstances.LoadByOrganizationAndLinkId(link.OrganizationID, link.CRMLinkID, link.CRMType)
-          Dim productsListString As String = String.Empty
-          For Each jiraInstance As JiraInstanceProduct In jiraInstances
-            If (productsListString = ",") Then
-              productsListString = productsListString + ","
-            End If
-
-            Dim product As Product = Products.GetProduct(_loginUser, jiraInstance.ProductId)
-            productsListString = productsListString + String.Format("{0} ({1})", product.Name, product.ProductID)
-          Next
-
-          MyBase.Logs.WriteEvent(String.Format("Instances associated to Products: {0}", If(Not String.IsNullOrEmpty(productsListString), productsListString, "None")))
-			 End If
-		End Sub
-    End Class
+			Private Function IsAlreadyProcessing(ByVal crmLinkID As Integer) As Boolean
+				For Each thread As CrmProcessor In _threads
+					If thread.CrmLinkID = crmLinkID Then
+						Return True
+					End If
+				Next
+				Return False
+			End Function
+		End Class
 
   End Namespace
 End Namespace
