@@ -2636,7 +2636,7 @@ ORDER BY
 			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
 			 ExecuteNonQuery(command, "OrganizationContacts");
 		 }
-		 string description = "Merged '" + companyName + "' tickets.";
+		 string description = "Merged '" + companyName + "' contacts.";
 		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
 		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningOrganizationID, description);
 	 }

@@ -2941,11 +2941,13 @@ namespace TSWebServices
 		  {
 			  LoginUser loginUser = TSAuthentication.GetLoginUser();
 			  Organization company = Organizations.GetOrganization(loginUser, winningOrganizationID);
+			  Organization loosingCompany = Organizations.GetOrganization(loginUser, losingOrganizationID);
+			  string lossingCompanyNameForHistoryEntries = loosingCompany.Name + " (" + loosingCompany.OrganizationID.ToString() + ")";
 			  String errLocation = "";
 
 			  try
 			  {
-				  company.Collection.MergeUpdateContacts(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateContacts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -2959,7 +2961,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  company.Collection.MergeUpdateTickets(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateTickets(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -2973,7 +2975,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  company.Collection.MergeUpdateNotes(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateNotes(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -2988,7 +2990,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  company.Collection.MergeUpdateFiles(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateFiles(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3003,7 +3005,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  company.Collection.MergeUpdateProducts(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateProducts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3018,7 +3020,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  company.Collection.MergeUpdateAssets(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateAssets(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3033,7 +3035,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  company.Collection.MergeUpdateWaterCoolerMessages(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateWaterCoolerMessages(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3048,7 +3050,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  company.Collection.MergeUpdateRatings(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateRatings(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3063,7 +3065,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  company.Collection.MergeUpdateCalendar(losingOrganizationID, winningOrganizationID, company.Name, loginUser);
+				  company.Collection.MergeUpdateCalendar(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3117,11 +3119,13 @@ namespace TSWebServices
 		  {
 			  LoginUser loginUser = TSAuthentication.GetLoginUser();
 			  User contact = Users.GetUser(loginUser, winningUserID);
+			  User loosingContact = Users.GetUser(loginUser, losingUserID);
+			  string lossingContactNameForHistoryEntries = loosingContact.FirstLastName + " (" + loosingContact.UserID.ToString() + ")";
 			  String errLocation = "";
 
 			  try
 			  {
-				  contact.Collection.MergeUpdateTickets(losingUserID, winningUserID, contact.FirstLastName, loginUser);
+				  contact.Collection.MergeUpdateTickets(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3135,7 +3139,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  contact.Collection.MergeUpdateNotes(losingUserID, winningUserID, contact.FirstLastName, loginUser);
+				  contact.Collection.MergeUpdateNotes(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3150,7 +3154,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  contact.Collection.MergeUpdateFiles(losingUserID, winningUserID, contact.FirstLastName, loginUser);
+				  contact.Collection.MergeUpdateFiles(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3165,7 +3169,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  contact.Collection.MergeUpdateProducts(losingUserID, winningUserID, contact.FirstLastName, loginUser);
+				  contact.Collection.MergeUpdateProducts(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3180,7 +3184,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  contact.Collection.MergeUpdateAssets(losingUserID, winningUserID, contact.FirstLastName, loginUser);
+				  contact.Collection.MergeUpdateAssets(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {
@@ -3195,7 +3199,7 @@ namespace TSWebServices
 
 			  try
 			  {
-				  contact.Collection.MergeUpdateRatings(losingUserID, winningUserID, contact.FirstLastName, loginUser);
+				  contact.Collection.MergeUpdateRatings(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
 			  {

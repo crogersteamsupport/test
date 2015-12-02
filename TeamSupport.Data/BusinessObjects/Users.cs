@@ -1576,7 +1576,7 @@ SET IDENTITY_INSERT Users Off
 			  }
 				
 			  string description = "Merged '" + contactName + "' tickets.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tickets, winningUserID, description);
 		  }
 
@@ -1599,7 +1599,7 @@ SET IDENTITY_INSERT Users Off
 				  ExecuteNonQuery(command, "Notes");
 			  }
 			  string description = "Merged '" + contactName + "' Notes.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Notes, winningUserID, description);
 		  }
 
@@ -1629,7 +1629,7 @@ SET IDENTITY_INSERT Users Off
 				  System.IO.Directory.Delete(pathWithoutFileName);
 				  attachments.Save();
 				  string description = "Merged '" + contactName + "' Files.";
-				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Attachments, winningUserID, description);
 			  }
 		  }
@@ -1670,7 +1670,7 @@ SET IDENTITY_INSERT Users Off
 				  }
 			  }
 			  string mergeDescription = "Merged '" + contactName + "' Products.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, mergeDescription);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, mergeDescription);
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, winningUserID, mergeDescription);
 		  }
 
@@ -1711,7 +1711,7 @@ SET IDENTITY_INSERT Users Off
 				  ExecuteNonQuery(command, "AssetHistory");
 			  }
 			  string description = "Merged '" + contactName + "' Assets.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, winningUserID, description);
 		  }
 
@@ -1735,7 +1735,7 @@ SET IDENTITY_INSERT Users Off
 				  ExecuteNonQuery(command, "AgentRatings");
 			  }
 			  string description = "Merged '" + contactName + "' AgentRatings.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.AgentRating, winningUserID, description);
 		  }
 
