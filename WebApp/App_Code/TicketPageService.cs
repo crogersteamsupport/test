@@ -324,7 +324,7 @@ namespace TSWebServices
                 action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
                 action.TicketID = proxy.TicketID;
                 action.CreatorID = TSAuthentication.UserID;
-                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase)
+                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
                 {
                     if (!proxy.Description.Contains(user.Signature))
                     {
@@ -342,7 +342,7 @@ namespace TSWebServices
             }
             else
             {
-              if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase)
+					if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
                 {
                     if (!string.IsNullOrWhiteSpace(user.Signature))
                     {
