@@ -499,7 +499,7 @@ namespace TSWebServices
 				}
 				else
 				{
-					if ((organization.ParentID == 1 && organization.OrganizationID != 1) && user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !isNewSignUp)
+					if (user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !isNewSignUp)
 					{
 						validation.Error = "Invalid email or password.";
 						validation.Result = LoginResult.Fail;
