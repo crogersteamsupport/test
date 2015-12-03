@@ -17,6 +17,9 @@ public partial class Tips_Ticket : System.Web.UI.Page
 
       int ticketID = int.Parse(Request["TicketID"]);
       TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+		
+		CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
+		
       if (ticket == null) EndResponse("Invalid Ticket");
 
       if (ticket.SlaViolationTime < 0) tipSla.Attributes.Add("class", "ts-icon ts-icon-sla-bad");
@@ -28,7 +31,7 @@ public partial class Tips_Ticket : System.Web.UI.Page
       tipNumber.Attributes.Add("onclick", "top.Ts.MainPage.openTicket(" + ticket.TicketNumber + "); return false;");
       tipName.InnerHtml = ticket.Name;
 
-		CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
+		var t = (DateTime)ticket.DueDate;
 
       StringBuilder props = new StringBuilder();
       AddStringProperty(props, "Assigned To", ticket.UserName, true, "", "openUser", ticket.UserID);
@@ -39,8 +42,12 @@ public partial class Tips_Ticket : System.Web.UI.Page
       AddStringProperty(props, "Customers", GetCustomerLinks(ticketID), false, null, null, null);
       AddStringProperty(props, "Tags", GetTagLinks(ticketID), false, null, null, null);
 		if (ticket.DueDate != null)
-			AddStringProperty(props, "Due Date", ticket.DueDate.ToString(), false, null, null, null);
-
+		{
+			if (ticket.DueDateUtc < DateTime.UtcNow)
+				AddStringProperty(props, "Due Date", t.ToString(us.DateTimeFormat.ShortDatePattern + "  hh:mm A"), false, null, null, null, true);
+			else
+				AddStringProperty(props, "Due Date", t.ToString(us.DateTimeFormat.ShortDatePattern + "  hh:mm A"), false, null, null, null);
+		}
       tipProps.InnerHtml = props.ToString();
     }
 
@@ -78,10 +85,16 @@ public partial class Tips_Ticket : System.Web.UI.Page
       return result.ToString();
     }
 
-    private void AddStringProperty(StringBuilder props, string name, string value, bool canBeUnassigned, string href, string function, int? id)
+    private void AddStringProperty(StringBuilder props, string name, string value, bool canBeUnassigned, string href, string function, int? id, bool isInvalid = false)
     {
       string s = GetValueString(value, canBeUnassigned, href, function, id);
-      if (!string.IsNullOrEmpty(s)) props.Append(string.Format("<dt>{0}</dt><dd>{1}</dd>", name, s));
+      if (!string.IsNullOrEmpty(s))
+		{
+			if (isInvalid)
+				props.Append(string.Format("<dt>{0}</dt><dd style='color:red'>{1}</dd>", name, s));
+			else
+				props.Append(string.Format("<dt>{0}</dt><dd>{1}</dd>", name, s));
+		}
     }
 
     private string GetValueString(string value, bool canBeUnassigned, string href, string function, int? id)
