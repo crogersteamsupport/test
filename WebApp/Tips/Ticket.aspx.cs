@@ -31,8 +31,7 @@ public partial class Tips_Ticket : System.Web.UI.Page
       tipNumber.Attributes.Add("onclick", "top.Ts.MainPage.openTicket(" + ticket.TicketNumber + "); return false;");
       tipName.InnerHtml = ticket.Name;
 
-		DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)ticket.DueDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
-      StringBuilder props = new StringBuilder();
+		StringBuilder props = new StringBuilder();
       AddStringProperty(props, "Assigned To", ticket.UserName, true, "", "openUser", ticket.UserID);
       AddStringProperty(props, "Group", ticket.GroupName, true, null, null, null);
       AddStringProperty(props, "Type", ticket.TicketTypeName, false, null, null, null);
@@ -42,6 +41,8 @@ public partial class Tips_Ticket : System.Web.UI.Page
       AddStringProperty(props, "Tags", GetTagLinks(ticketID), false, null, null, null);
 		if (ticket.DueDate != null)
 		{
+			DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)ticket.DueDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
+      
 			if (ticket.DueDateUtc < DateTime.UtcNow)
 				AddStringProperty(props, "Due Date", cstTime.ToString(us.DateTimeFormat.ShortDatePattern + "  HH:mm"), false, null, null, null, true);
 			else
