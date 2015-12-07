@@ -1812,14 +1812,8 @@ AND a.OrganizationID = @OrganizationID
           {
             string folder = row["Folder"].ToString().Trim();
             string root = Path.GetDirectoryName(_fileName);
-            _log.AppendMessage("filename: " + _fileName + "\"");
-            _log.AppendMessage("root: \"" + root + "\"");
-            _log.AppendMessage("folder: \"" + folder + "\"");
-            _log.AppendMessage("file: \"" + mask + "\"");
             string sourceFile = root + folder; 
-            _log.AppendMessage("source: " + sourceFile);
             sourceFile = Path.Combine(sourceFile, mask);
-            _log.AppendMessage("source: " + sourceFile);
             ImportAttachment(row, sourceFile, attachments, actions, tickets, customers);
           }
         }
