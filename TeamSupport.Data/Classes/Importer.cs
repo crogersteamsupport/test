@@ -1810,11 +1810,20 @@ AND a.OrganizationID = @OrganizationID
           }
           else
           {
+
+//filename: C:\ServerShare\Kevin\Imports\Import - 2015 - 12_06_new.xlsx
+//root: C:\ServerShare\Kevin\Imports
+//folder: \home\teamsupport\10638286
+//file:GEE_License_File_Generator.xlsx
+            string folder = row["Folder"].ToString().Trim();
+            string root = Path.GetDirectoryName(_fileName);
+            string sourceFile = Path.Combine(root, Path.Combine(folder, mask));
             _log.AppendMessage("filename: " + _fileName);
-            _log.AppendMessage("root: " + Path.GetDirectoryName(_fileName));
-            _log.AppendMessage("folder: " + row["Folder"].ToString().Trim());
+            _log.AppendMessage("root: " + root);
+            _log.AppendMessage("folder: " + folder);
             _log.AppendMessage("file: " + mask);
-            string sourceFile = Path.Combine(Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim()), mask);
+            _log.AppendMessage("source: " + sourceFile);
+
             ImportAttachment(row, sourceFile, attachments, actions, tickets, customers);
           }
         }
