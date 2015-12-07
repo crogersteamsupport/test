@@ -662,8 +662,16 @@ namespace TSWebServices
           return pinned;
         }
 
+		[WebMethod]
+		public TicketsViewItemProxy GetTicketSLAInfo(int ticketNumber)
+		{
+			TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+			if (ticket == null) return null;
+			return ticket.GetProxy();
+		}
 
-        [DataContract]
+
+				[DataContract]
         public class TicketPageInfo
         {
             [DataMember]

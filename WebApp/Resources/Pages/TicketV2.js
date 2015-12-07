@@ -1431,8 +1431,9 @@ function SetupTicketPropertyEvents() {
     var self = $(this);
     var value = self.val();
     top.Ts.Services.Tickets.SetTicketSeverity(_ticketID, value, function (result) {
-      if (result !== null) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName);
+    	if (result !== null) {
+    		resetSLAInfo();
+      	window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName); 
       }
     },
     function (error) {
@@ -4599,6 +4600,15 @@ var removeUserViewing = function (ticketNum, userID) {
       $('#ticket-now-viewing').hide();
     }
   }
+}
+
+var resetSLAInfo = function () {
+	top.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {
+		_ticketInfo.Ticket.SlaViolationTime = info.SlaViolationTime;
+		_ticketInfo.Ticket.SlaWarningTime = info.SlaWarningTime;
+		_ticketInfo.Ticket.SlaViolationDate = info.SlaViolationDate;
+		setSLAInfo();
+	});
 }
 
 var setSLAInfo = function () {
