@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -28,9 +27,6 @@ namespace TeamSupport.Data
     public ReportFolderProxy GetProxy()
     {
       ReportFolderProxy result = new ReportFolderProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
       result.CreatorID = this.CreatorID;
       result.ParentID = this.ParentID;
       result.Name = (this.Name);

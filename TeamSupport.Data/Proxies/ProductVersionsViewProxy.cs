@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -42,9 +41,6 @@ namespace TeamSupport.Data
     public ProductVersionsViewItemProxy GetProxy()
     {
       ProductVersionsViewItemProxy result = new ProductVersionsViewItemProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
 
       result.JiraProjectKey = this.JiraProjectKey;
       result.ProductFamilyID = this.ProductFamilyID;

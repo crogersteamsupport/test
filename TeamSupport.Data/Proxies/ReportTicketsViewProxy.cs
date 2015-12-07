@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -104,10 +103,6 @@ namespace TeamSupport.Data
     public ReportTicketsViewItemProxy GetProxy()
     {
       ReportTicketsViewItemProxy result = new ReportTicketsViewItemProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
-
       result.HourOfDayCreated = this.HourOfDayCreated;
       result.DayOfWeekCreated = this.DayOfWeekCreated;
       result.MinutesToInitialResponse = this.MinutesToInitialResponse;

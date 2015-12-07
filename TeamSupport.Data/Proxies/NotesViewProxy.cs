@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -37,9 +36,6 @@ namespace TeamSupport.Data
     public NotesViewItemProxy GetProxy()
     {
       NotesViewItemProxy result = new NotesViewItemProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
 
       result.ContactName = (this.ContactName);
       result.OrganizationName = (this.OrganizationName);

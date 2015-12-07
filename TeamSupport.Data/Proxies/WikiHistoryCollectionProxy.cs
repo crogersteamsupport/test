@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -32,9 +31,6 @@ namespace TeamSupport.Data
     public WikiHistoryProxy GetProxy()
     {
       WikiHistoryProxy result = new WikiHistoryProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
       result.ModifiedBy = this.ModifiedBy;
       result.CreatedBy = this.CreatedBy;
       result.Version = this.Version;

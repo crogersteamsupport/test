@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using System.Globalization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -112,9 +111,6 @@ namespace TeamSupport.Data
     {
 
       UserProxy result = new UserProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
 
       result.ImportFileID = this.ImportFileID;
       result.verificationCode = this.verificationCode;

@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -52,9 +51,6 @@ namespace TeamSupport.Data
     public UsersViewItemProxy GetProxy()
     {
       UsersViewItemProxy result = new UsersViewItemProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
       result.IsChatUser = this.IsChatUser;
       result.CryptedPassword = this.CryptedPassword;
       result.IsOnline = this.IsOnline;

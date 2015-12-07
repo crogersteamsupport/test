@@ -7,7 +7,6 @@ using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
-using Ganss.XSS;
 
 namespace TeamSupport.Data
 {
@@ -34,9 +33,6 @@ namespace TeamSupport.Data
     public WaterCoolerViewItemProxy GetProxy()
     {
       WaterCoolerViewItemProxy result = new WaterCoolerViewItemProxy();
-      var sanitizer = new HtmlSanitizer();
-      sanitizer.AllowedAttributes.Add("class");
-      sanitizer.AllowedAttributes.Add("id");
       result.NeedsIndexing = this.NeedsIndexing;
       result.IsDeleted = this.IsDeleted;
       result.MessageParent = this.MessageParent;

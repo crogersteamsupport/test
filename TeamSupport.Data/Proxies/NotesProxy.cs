@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using Ganss.XSS;
 
 
 namespace TeamSupport.Data
@@ -36,7 +35,6 @@ namespace TeamSupport.Data
     public NoteProxy GetProxy()
     {
       NoteProxy result = new NoteProxy();
-      var sanitizer = new HtmlSanitizer();
       result.ImportFileID = this.ImportFileID;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
