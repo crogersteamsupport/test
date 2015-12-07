@@ -214,8 +214,25 @@ namespace TSWebServices
       afiAssignedUserIsBusy.OtherTrigger = "ticketsview.assignedusernotavailable";
       fieldItems.Add(afiAssignedUserIsBusy);
 
+      AutoFieldItem afiAgentRatings = new AutoFieldItem();
+      afiCurrentDayOfWeek.Alias = "Agent Rating";
+      afiCurrentDayOfWeek.DataType = "list";
+      afiCurrentDayOfWeek.FieldID = 999;
+      afiCurrentDayOfWeek.FieldName = "AgentRating";
+      afiCurrentDayOfWeek.IsCustom = false;
+      afiCurrentDayOfWeek.IsVisible = true;
+      afiCurrentDayOfWeek.ListValues = new string[] { "Positive", "Negative", "Neutral" };
+      afiCurrentDayOfWeek.LookupTableID = null;
+      afiCurrentDayOfWeek.Size = 0;
+      afiCurrentDayOfWeek.Description = "";
+      afiCurrentDayOfWeek.TableID = -2;
+      afiCurrentDayOfWeek.RefType = ReferenceType.Tickets;
+      afiCurrentDayOfWeek.AuxID = null;
+      afiCurrentDayOfWeek.OtherTrigger = "ticketsview.AgentRating";
+      fieldItems.Add(afiAgentRatings);
+
       result.Fields = fieldItems.ToArray();
-      
+
       Users users = new Users(UserSession.LoginUser);
       users.LoadByOrganizationID(UserSession.LoginUser.OrganizationID, true);
       List<AutocompleteItem> userItems = new List<AutocompleteItem>();
