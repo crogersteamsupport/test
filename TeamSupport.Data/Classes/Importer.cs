@@ -1816,7 +1816,7 @@ AND a.OrganizationID = @OrganizationID
             _log.AppendMessage("root: \"" + root + "\"");
             _log.AppendMessage("folder: \"" + folder + "\"");
             _log.AppendMessage("file: \"" + mask + "\"");
-            string sourceFile = Path.Combine(root, folder); 
+            string sourceFile = root + folder; 
             _log.AppendMessage("source: " + sourceFile);
             sourceFile = Path.Combine(sourceFile, mask);
             _log.AppendMessage("source: " + sourceFile);
