@@ -1811,6 +1811,7 @@ AND a.OrganizationID = @OrganizationID
           else
           {
             _log.AppendMessage("filename: " + _fileName);
+            _log.AppendMessage("root: " + Path.GetDirectoryName(_fileName));
             _log.AppendMessage("folder: " + row["Folder"].ToString().Trim());
             _log.AppendMessage("file: " + mask);
             string sourceFile = Path.Combine(Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim()), mask);
