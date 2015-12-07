@@ -1798,7 +1798,7 @@ AND a.OrganizationID = @OrganizationID
             string path = Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim());
             if (!Directory.Exists(path))
             {
-              _log.AppendError(row, "Attachment skipped due to directory does not exist.");
+              _log.AppendError(row, "Attachment skipped due to directory does not exist. - " + path);
               continue;
             }
 
@@ -1834,7 +1834,7 @@ AND a.OrganizationID = @OrganizationID
 
       if (!File.Exists(sourceFile))
       {
-        _log.AppendError(row, "Attachment skipped due to file does not exist.");
+        _log.AppendError(row, "Attachment skipped due to file does not exist.2 - " + sourceFile);
         return;
       }
 
