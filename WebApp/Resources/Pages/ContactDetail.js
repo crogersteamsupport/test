@@ -203,8 +203,10 @@ $(document).ready(function () {
 
     $('#contact-merge-complete').click(function (e) {
     	e.preventDefault();
+    	$('#contact-merge-complete').attr('disabled', 'disabled');
     	if ($('#Contact-Merge-search').val() == "") {
     		alert("Please select a valid contact to merge");
+    		$('#contact-merge-complete').removeAttr('disabled');
     		return;
     	}
 
@@ -214,6 +216,7 @@ $(document).ready(function () {
     		var JSTop = top;
     		//var window = window;
     		top.Ts.Services.Customers.MergeContacts(winningID, userID, function (result) {
+    			$('#contact-merge-complete').removeAttr('disabled');
     			if (result != "")
     				alert(result);
     			else {
@@ -231,7 +234,8 @@ $(document).ready(function () {
     	}
     	else {
     		alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
-    	}
+    		$('#contact-merge-complete').removeAttr('disabled');
+		 }
     });
 
     $('#historyToggle').on('click', function () {
