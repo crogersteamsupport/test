@@ -280,8 +280,8 @@ namespace TSWebServices
 			post.Text1 = introduction;
 			posts.Save();
 
-			string actionText = string.Format("<i>Action added via introduction e-mail to: {0} </i> <br><br>{1}", addresses, introduction);
-      string logPost = string.Format("{0} sent a email introduction to {1}", TSAuthentication.GetLoginUser().GetUserFullName(), addresses);
+			string actionText = string.Format("<i>Action added via the Email Ticket button to: {0} </i> <br><br>{1}", addresses, introduction);
+			string logPost = string.Format("{0} sent a email introduction to {1}", TSAuthentication.GetLoginUser().GetUserFullName(), addresses);
 			return LogAction(ticketID, SystemActionType.Email, "Email Introduction", actionText, logPost);
     }
 
