@@ -392,7 +392,7 @@ namespace TeamSupport.ServiceLibrary
         action.ModifierID = -2;
         action.Name = "";
         action.TicketID = ticketID;
-        //action.ImportID = importID;
+		  action.ImportID = ReadString("ActionImportID", string.Empty);
         action.TimeSpent = ReadIntNull("TimeSpent", action.TimeSpent.ToString());
 
         action.Pinned = ReadBool("IsPinned", action.Pinned.ToString());
