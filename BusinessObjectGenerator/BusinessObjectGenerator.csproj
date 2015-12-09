@@ -101,7 +101,6 @@
     <Compile Include="StoredProcGenerator.cs" />
     <Compile Include="TableSchema.cs">
       <DependentUpon>TableSchema.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="TableSchema.Designer.cs">
       <AutoGen>True</AutoGen>

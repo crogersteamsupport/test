@@ -299,7 +299,7 @@ function SetupTicketProperties() {
     SetupStatusField();
     showCustomFields();
     _lastTicketTypeID = $(this).val();
-    //AppendTicketTypeTemplate(_lastTicketTypeID);
+    AppendTicketTypeTemplate(_lastTicketTypeID);
   });
 
   //Status
@@ -2357,9 +2357,7 @@ function setInitialValue() {
         SetType(ticketTypeID);
         showCustomFields();
         _lastTicketTypeID = ticketTypeID;
-        AppendTicketTypeTemplate(ticketTypeID);
       }
-
   }
 
   var chatID = top.Ts.Utils.getQueryValue('chatid', window)

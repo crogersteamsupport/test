@@ -205,6 +205,10 @@
     <Compile Include="BusinessObjects\CRMLinkResults.cs" />
     <Compile Include="BusinessObjects\CRMLinkSynchedOrganizations.cs" />
     <Compile Include="BusinessObjects\CRMLinkTable.cs" />
+    <Compile Include="BusinessObjects\CustomerHubAuthentication.cs" />
+    <Compile Include="BusinessObjects\CustomerHubDisplaySettings.cs" />
+    <Compile Include="BusinessObjects\CustomerHubFeatureSettings.cs" />
+    <Compile Include="BusinessObjects\CustomerHubs.cs" />
     <Compile Include="BusinessObjects\CustomFieldCategories.cs" />
     <Compile Include="BusinessObjects\CustomFields.cs" />
     <Compile Include="BusinessObjects\CustomFieldsView.cs" />
@@ -313,6 +317,10 @@
     <Compile Include="FieldMaps\CRMLinkErrorsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkFieldsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkSynchedOrganizationsFieldMap.cs" />
+    <Compile Include="FieldMaps\CustomerHubAuthenticationFieldMap.cs" />
+    <Compile Include="FieldMaps\CustomerHubDisplaySettingsFieldMap.cs" />
+    <Compile Include="FieldMaps\CustomerHubFeatureSettingsFieldMap.cs" />
+    <Compile Include="FieldMaps\CustomerHubsFieldMap.cs" />
     <Compile Include="FieldMaps\CustomFieldCategoriesFieldMap.cs" />
     <Compile Include="FieldMaps\CustomFieldsViewFieldMap.cs" />
     <Compile Include="FieldMaps\CustomPortalColumnsFieldMap.cs" />
@@ -553,6 +561,10 @@
     <Compile Include="Generated\GeneratedCRMLinkResults.cs" />
     <Compile Include="Generated\GeneratedCRMLinkSynchedOrganizations.cs" />
     <Compile Include="Generated\GeneratedCRMLinkTable.cs" />
+    <Compile Include="Generated\GeneratedCustomerHubAuthentication.cs" />
+    <Compile Include="Generated\GeneratedCustomerHubDisplaySettings.cs" />
+    <Compile Include="Generated\GeneratedCustomerHubFeatureSettings.cs" />
+    <Compile Include="Generated\GeneratedCustomerHubs.cs" />
     <Compile Include="Generated\GeneratedCustomFieldCategories.cs" />
     <Compile Include="Generated\GeneratedCustomFields.cs" />
     <Compile Include="Generated\GeneratedCustomFieldsView.cs" />
@@ -679,6 +691,10 @@
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
     <Compile Include="Proxies\CalendarRefProxy.cs" />
+    <Compile Include="Proxies\CustomerHubAuthenticationProxy.cs" />
+    <Compile Include="Proxies\CustomerHubDisplaySettingsProxy.cs" />
+    <Compile Include="Proxies\CustomerHubFeatureSettingsProxy.cs" />
+    <Compile Include="Proxies\CustomerHubsProxy.cs" />
     <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
     <Compile Include="Proxies\CustomPortalColumnsProxy.cs" />
     <Compile Include="Proxies\FullContactUpdatesProxy.cs" />

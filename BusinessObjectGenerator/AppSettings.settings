@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="Host" Type="System.String" Scope="User">
-      <Value Profile="(Default)">localhost</Value>
+      <Value Profile="(Default)">dev-sql</Value>
     </Setting>
     <Setting Name="OutputPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -12,13 +12,13 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Database" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">TeamSupport</Value>
     </Setting>
     <Setting Name="UserName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">sa</Value>
+      <Value Profile="(Default)">dev</Value>
     </Setting>
     <Setting Name="Password" Type="System.String" Scope="User">
-      <Value Profile="(Default)">muroc</Value>
+      <Value Profile="(Default)">TsDev2015!</Value>
     </Setting>
     <Setting Name="LastSchema" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
