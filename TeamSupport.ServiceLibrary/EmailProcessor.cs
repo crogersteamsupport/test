@@ -1285,7 +1285,7 @@ namespace TeamSupport.ServiceLibrary
 
     private void RemoveBusinessHoursUsers(List<UserEmail> list, Ticket ticket)
     {
-      Logs.WriteEvent("Removing Busniess Hours User");
+      Logs.WriteEvent("Removing Bussiness Hours User");
       Organization organization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
 
       Logs.WriteParam("Ticket Organization", ticket.OrganizationID.ToString());

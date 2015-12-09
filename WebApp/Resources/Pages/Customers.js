@@ -38,7 +38,7 @@
             searchContacts = true;
         }
         top.Ts.System.logAction('Customer Page - Search Executed');
-        top.Ts.Services.Search.SearchCompaniesAndContacts($('#searchString').val(), start, 20, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, function (items) {
+        top.Ts.Services.Search.SearchCompaniesAndContacts($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, function (items) {
             $('.searchresults').fadeTo(0, 1);
 
             if (start == 0) {

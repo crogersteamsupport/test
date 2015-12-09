@@ -177,7 +177,7 @@ namespace TeamSupport.ServiceLibrary
       string violationType = "";
       switch (slaViolationType)
       {
-        case SlaViolationType.InitialResponse: violationType = "Initial Resoponse"; break;
+        case SlaViolationType.InitialResponse: violationType = "Initial Response"; break;
         case SlaViolationType.LastAction: violationType = "Last Action"; break;
         case SlaViolationType.TimeClosed: violationType = "Time to Close"; break;
         default: break;
@@ -203,7 +203,7 @@ namespace TeamSupport.ServiceLibrary
       Actions actions = new Actions(LoginUser);
       actions.LoadLatestByTicket(ticket.TicketID, false);
 
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, violationType + " SLA violation occured");
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, violationType + " SLA violation occurred");
 
       MailMessage message = EmailTemplates.GetSlaEmail(LoginUser, ticket, violationType, isWarning);
 
