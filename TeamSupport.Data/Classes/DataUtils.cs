@@ -250,24 +250,26 @@ namespace TeamSupport.Data
     public static string GetCustomFieldColumn(LoginUser loginUser, CustomField field, string refIDFieldName, bool allowSpaces, bool writeAlias)
     {
       StringBuilder builder = new StringBuilder();
-      builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS ");
-      switch (field.FieldType)
-      {
-        case CustomFieldType.Date:
-        case CustomFieldType.Time:
-        case CustomFieldType.DateTime:
-          builder.Append("datetime");
-          break;
-        case CustomFieldType.Boolean:
-          builder.Append("bit");
-          break;
-        case CustomFieldType.Number:
-          builder.Append("decimal");
-          break;
-        default:
-          builder.Append("varchar(8000)");
-          break;
-      }
+      builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
+
+			//MT:  Removed 12/10/15  Was causing issues loading reports with custom fields in the select that have bad values in the database
+      //switch (field.FieldType)
+      //{
+      //  case CustomFieldType.Date:
+      //  case CustomFieldType.Time:
+      //  case CustomFieldType.DateTime:
+      //    builder.Append("datetime");
+      //    break;
+      //  case CustomFieldType.Boolean:
+      //    builder.Append("bit");
+      //    break;
+      //  case CustomFieldType.Number:
+      //    builder.Append("decimal");
+      //    break;
+      //  default:
+      //    builder.Append("varchar(8000)");
+      //    break;
+      //}
       builder.Append(") FROM CustomValues WHERE (CustomFieldID = ");
       builder.Append(field.CustomFieldID.ToString());
       builder.Append(") AND (RefID = ");

@@ -858,8 +858,8 @@ namespace TeamSupport.Data
         case "bit":
           switch (condition.Comparator.ToUpper())
           {
-            case "IS TRUE": builder.Append(string.Format("{0} = 1", fieldName)); break;
-            case "IS FALSE": builder.Append(string.Format("{0} = 0", fieldName)); break;
+            case "IS TRUE": builder.Append(string.Format("{0} = 'True'", fieldName)); break;
+            case "IS FALSE": builder.Append(string.Format("{0} = 'False'", fieldName)); break;
             case "IS EMPTY": builder.Append(string.Format("{0} IS NULL", fieldName)); break;
             case "IS NOT EMPTY": builder.Append(string.Format("{0} IS NOT NULL", fieldName)); break;
             default:
