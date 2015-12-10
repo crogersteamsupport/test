@@ -151,7 +151,8 @@ namespace TeamSupport.ServiceTestApplication
       msg.Subject = "KEVIN'S TEST EMAIL";
       msg.From.Email = "blah@blah.com";
       msg.From.Name = "Mr. blah";
-      msg.BodyParts.Add(new Quiksoft.EasyMail.SMTP.BodyPart("<h1>Hello</h1>", BodyPartFormat.HTML));
+      msg.BodyParts.Add(new Quiksoft.EasyMail.SMTP.BodyPart("三菱電機 増田です。", BodyPartFormat.HTML));
+      msg.CharsetEncoding = System.Text.Encoding.UTF8;
       //msg.Attachments.Add("c:\\tesxt.png");
       msg.CustomHeaders.Add("X-xsMessageId", "");
       msg.CustomHeaders.Add("X-xsMailingId", "");
