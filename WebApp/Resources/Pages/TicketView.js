@@ -245,6 +245,31 @@ TicketGrid = function (options) {
             }
             $('#dialog-severity').modal('show');
         }
+        else if (el.hasClass('ticket-action-due-date')) {
+        	var currDate = new Date();
+        	duedate = top.Ts.Utils.getMsDate(currDate);
+
+        	top.Ts.Services.Customers.GetDateFormat(false, function (format) {
+        		dateFormat = format.replace("yyyy", "yy");
+        		if (dateFormat.length < 8) {
+        			var dateArr = dateFormat.split('/');
+        			if (dateArr[0].length < 2) {
+        				dateArr[0] = dateArr[0] + dateArr[0];
+        			}
+        			if (dateArr[1].length < 2) {
+        				dateArr[1] = dateArr[1] + dateArr[1];
+        			}
+        			if (dateArr[2].length < 2) {
+        				dateArr[1] = dateArr[1] + dateArr[1];
+        			}
+        			dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
+        		}
+
+        		$('#bulkAssignDueDate').datetimepicker({ format: dateFormat + ' hh:mm A', defaultDate: new Date() });
+        	});
+
+        	$('#dialog-due-date').modal('show');
+        }
         else if (el.hasClass('ticket-action-status')) {
             var form = $('#dialog-status .modal-body form');
             if (form.find('select').length < 1) {
@@ -368,6 +393,26 @@ TicketGrid = function (options) {
             refreshGrid();
         });
         deselectRows();
+    });
+
+    $('.tickets-save-due-date').click(function (e) {
+    	e.preventDefault();
+    	$('#dialog-due-date').modal('hide');
+    	self.showLoadingIndicator();
+    	var ids = getSelectedIDs();
+
+    	var currDate = $('#bulkAssignDueDate').val();
+
+    	if (currDate !== '') {
+    		var formattedDate = top.Ts.Utils.getMsDate(moment(currDate, dateFormat + ' hh:mm A').format('MM/DD/YYYY hh:mm A'))
+
+    		top.Ts.Services.Tickets.SetTicketsDueDate(JSON.stringify(ids), formattedDate, function () {
+    			top.Ts.System.logAction('Ticket Grid - Updated due date');
+    			refreshGrid();
+    		});
+    	}
+
+    	deselectRows()
     });
 
     $('.tickets-save-status').click(function (e) {
