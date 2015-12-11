@@ -250,46 +250,71 @@ namespace TeamSupport.Data
     public static string GetCustomFieldColumn(LoginUser loginUser, CustomField field, string refIDFieldName, bool allowSpaces, bool writeAlias)
     {
       StringBuilder builder = new StringBuilder();
-      builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
+			//builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
+			builder.Append("(SELECT ");
 
 			//MT:  Removed 12/10/15  Was causing issues loading reports with custom fields in the select that have bad values in the database
-      //switch (field.FieldType)
-      //{
-      //  case CustomFieldType.Date:
-      //  case CustomFieldType.Time:
-      //  case CustomFieldType.DateTime:
-      //    builder.Append("datetime");
-      //    break;
-      //  case CustomFieldType.Boolean:
-      //    builder.Append("bit");
-      //    break;
-      //  case CustomFieldType.Number:
-      //    builder.Append("decimal");
-      //    break;
-      //  default:
-      //    builder.Append("varchar(8000)");
-      //    break;
-      //}
-      builder.Append(") FROM CustomValues WHERE (CustomFieldID = ");
+			//switch (field.FieldType)
+			//{
+			//  case CustomFieldType.Date:
+			//  case CustomFieldType.Time:
+			//  case CustomFieldType.DateTime:
+			//    builder.Append("datetime");
+			//    break;
+			//  case CustomFieldType.Boolean:
+			//    builder.Append("bit");
+			//    break;
+			//  case CustomFieldType.Number:
+			//    builder.Append("decimal");
+			//    break;
+			//  default:
+			//    builder.Append("varchar(8000)");
+			//    break;
+			//}
+
+			//MT: Replaced above by adding in NULLIF checks on the datatype to ensure SQL queries dont crash from changed CF types. 
+			switch (field.FieldType)
+			{
+				case CustomFieldType.Date:
+				case CustomFieldType.Time:
+				case CustomFieldType.DateTime:
+					builder.Append("CAST(NULLIF(ISDATE(NULLIF(RTRIM(CustomValue), '')), 0) AS DATETIME"); //good
+					//builder.Append("datetime");
+					break;
+				case CustomFieldType.Boolean:
+					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");  //good
+					//builder.Append("bit");
+					break;
+				case CustomFieldType.Number:
+					builder.Append("CAST(NULLIF(ISNUMERIC(NULLIF(RTRIM(CustomValue), '')), 0) AS decimal"); //good
+					//builder.Append("decimal");
+					break;
+				default:
+					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
+					//builder.Append("varchar(8000)");
+					break;
+			}
+
+			builder.Append(") FROM CustomValues WHERE (CustomFieldID = ");
       builder.Append(field.CustomFieldID.ToString());
       builder.Append(") AND (RefID = ");
       builder.Append(refIDFieldName);
       builder.Append(")) ");
 
 
-      //"(SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = 654) AND (RefID = TicketsView.TicketID)) AS [Approved By Manager]"
-      //MT:  Removed on 7/13/15 because it is causing issues in tickets with select custom fields since its showing the first item in the list as the default. 
-      //if (field.FieldType == CustomFieldType.PickList)
-      //{
-        //string[] items = field.ListValues.Split('|');
-        //if (items.Length > 0)
-        //{
-        //  builder.Insert(0, "ISNULL(");
-        //  builder.Append(", '" + items[0].Replace("'", "''") + "')");
-        //}
-      //}
+			//"(SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = 654) AND (RefID = TicketsView.TicketID)) AS [Approved By Manager]"
+			//MT:  Removed on 7/13/15 because it is causing issues in tickets with select custom fields since its showing the first item in the list as the default. 
+			//if (field.FieldType == CustomFieldType.PickList)
+			//{
+			//string[] items = field.ListValues.Split('|');
+			//if (items.Length > 0)
+			//{
+			//  builder.Insert(0, "ISNULL(");
+			//  builder.Append(", '" + items[0].Replace("'", "''") + "')");
+			//}
+			//}
 
-      if (writeAlias)
+			if (writeAlias)
       {
         builder.Append("AS [");
 

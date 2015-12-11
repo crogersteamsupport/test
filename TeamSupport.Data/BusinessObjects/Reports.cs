@@ -771,6 +771,9 @@ namespace TeamSupport.Data
 						case CustomFieldType.Date:
 							dataType = "datetime";
 							break;
+						case CustomFieldType.Time:
+							dataType = "datetime";
+							break;
 						case CustomFieldType.Boolean:
               dataType = "bit";
               break;
