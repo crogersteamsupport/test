@@ -50,7 +50,7 @@
             top.Ts.Services.Organizations.GetPortalOption(ui.item.id, function (po) {
               top.Ts.Services.Organizations.AdminGetCrmLinks(ui.item.id, function (crms) {
 
-                var apiLink = 'https://' + org.OrganizationID + ':' + org.WebServiceID + '@app.teamsupport.com/api/xml/';
+              	var apiLink = 'https://' + org.OrganizationID + ':' + org.WebServiceID + '@' + top.Ts.System.AppDomain + '/api/xml/';
                 org.ApiLink = '<a href="' + apiLink + '" target="_blank">' + apiLink + '</a>';
                 var orgDiv = $('#divOrganization').empty().data('o', org);
 

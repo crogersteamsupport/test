@@ -25,7 +25,7 @@
       $("*").find("input, textarea, select, button").uniform();
       $('#btnContinue').click(function (e) {
         e.preventDefault();
-        window.open('https://app.teamsupport.com/Login.aspx?SignUpID=' + getURLParameter('userid'));
+        window.open(location.protocol + '//' + location.host + '/Login.aspx?SignUpID=' + getURLParameter('userid'));
       });
     });
   </script>

@@ -1537,9 +1537,11 @@ namespace TeamSupport.Data
 
     public void LoadForZoho(int organizationID, DateTime? lastModified)
     {
+			StringBuilder theString = new StringBuilder();
+
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = @"
+			theString.AppendFormat(@"
             WITH TicketIDs 
             AS 
             (
@@ -1553,7 +1555,7 @@ namespace TeamSupport.Data
             )              
             SELECT
               TicketNumber,
-              'https://app.teamsupport.com?ticketid=' + CONVERT(VARCHAR,tv.TicketID) AS 'TicketURL',
+              '{0}?ticketid=' + CONVERT(VARCHAR,tv.TicketID) AS 'TicketURL',
               Name,
               TicketTypeName,
               TicketSource,
@@ -1608,7 +1610,8 @@ namespace TeamSupport.Data
               INNER JOIN TicketIDs
                 ON TicketIDs.TicketID = tv.TicketID
             ORDER BY
-              TicketNumber";
+              TicketNumber", SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com"));
+            command.CommandText = theString.ToString();
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
             command.Parameters.AddWithValue("@LastMod", lastModified.HasValue ? lastModified.Value.AddMinutes(-15) : new DateTime(1900,1,1));

@@ -90,7 +90,7 @@
 
         jQuery.ajax({
             type: "GET",
-            url: "https://app.teamsupport.com/signup/fn/validatecompany",
+            url: top.Ts.System.AppDomain + "/signup/fn/validatecompany",
             data: { name: company },
             crossDomain: true,
             dataType: 'jsonp'

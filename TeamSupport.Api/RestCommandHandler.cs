@@ -28,7 +28,12 @@ namespace TeamSupport.Api
     {
       try
       {
-        string connection = System.Web.Configuration.WebConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString.Replace("app.teamsupport.com", "API");
+			string s = System.Web.Configuration.WebConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
+			var start = s.IndexOf('=');
+			var end = s.IndexOf(';');
+			var subStr = s.Substring(start + 1, end - (start + 1));
+
+			string connection = s.Replace(subStr, "API");
 
         int organizationID = int.Parse(context.Request.Headers["OrganizationID"]);
         _loginUser = new LoginUser(connection, (int)SystemUser.API, organizationID, null);

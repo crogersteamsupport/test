@@ -1047,7 +1047,7 @@ for more information or use an alternate browser like Firefox or Internet Explor
 The following steps will refresh your browser<br><br> \
 1. Allow the screen recorder Java plugins to run on your browser by clicking on the Trust button at the top of the page: <br>\
 <img src='../Images/icons/SafariInMacPluginDialog.png' alt='plugin dialog' width='30%' style='margin-top: 10px'><br><br> \
-2. Navigate to Safari > Preferences > Security > Internet Plugins - Website Settings > Java and change the app.teamsupport.com setting to Run in Unsafe Mode and click on the Trust button: <br>\
+2. Navigate to Safari > Preferences > Security > Internet Plugins - Website Settings > Java and change the " + top.Ts.System.AppDomain + " setting to Run in Unsafe Mode and click on the Trust button: <br>\
 <img src='../Images/icons/SafariInMacUnsafeModeDialog.png' alt='plugin dialog' width='30%' style='margin-top: 10px'>");
                             $('.divScreenRecorderMessages').show();
                           }
@@ -2588,7 +2588,7 @@ The following steps will refresh your browser<br><br> \
 
   $('#inserttok').click(function (e) {
       top.Ts.System.logAction('New Ticket - Video Recording Insert Clicked');
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + top.Ts.System.AppDomain + '"/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
       $('#rcdtok').show();
       $('#stoptok').hide();
       $('#inserttok').hide();

@@ -108,7 +108,7 @@ AdminInt = function () {
       $('<dd>').html(current).appendTo(list);
       $('<dt>').text('Maximum daily requests:').appendTo(list);
       $('<dd>').text(info.RequestMax).appendTo(list);
-      var link = 'https://' + top.Ts.System.Organization.OrganizationID + ':' + info.Token + '@app.teamsupport.com/api/xml/users';
+      var link = 'https://' + top.Ts.System.Organization.OrganizationID + ':' + info.Token + '@'+ top.Ts.System.AppDomain + '/api/xml/users';
       $('.int-api-link-users').attr('href', link).text(link);
     }
     else {

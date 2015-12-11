@@ -1294,7 +1294,7 @@ AdminPortal = function () {
   })();
 
   function buildWidgetCode() {
-      var defaultString = "<script src='http://app.teamsupport.com/widget.js'></script>\n";
+  	var defaultString = "<script src='"+ top.Ts.System.AppDomain + "/widget.js'></script>\n";
       var options = "";
       if ($('#widget-width').val() != '')
       {

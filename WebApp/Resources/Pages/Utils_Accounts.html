@@ -140,7 +140,7 @@
             	e.preventDefault();
 
             	top.Ts.Services.Users.AdminGetUserLogin(user.UserID, function (token) {
-            		link.parent().empty().text("https://app.teamsupport.com/Login.html?SupportToken=" + token);
+            		link.parent().empty().text(top.Ts.System.AppDomain + "/Login.html?SupportToken=" + token);
             	});
             	
 

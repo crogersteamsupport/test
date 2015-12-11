@@ -9,7 +9,7 @@
     setInterval(tryLogin, 20000);
 
     function tryLogin() {
-      window.location = 'https://app.teamsupport.com/Login.aspx';
+    	window.location = location.protocol + '//' + location.host + '/Login.aspx';
     }
   </script>
 </asp:Content>
