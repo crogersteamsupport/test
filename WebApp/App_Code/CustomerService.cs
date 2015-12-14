@@ -3080,6 +3080,21 @@ namespace TSWebServices
 
 			  try
 			  {
+				  company.Collection.MergeUpdateCustomValues(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging company custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
 				  company.Collection.DeleteRecentlyViewItems(losingOrganizationID);
 			  }
 			  catch (Exception e)
@@ -3210,6 +3225,21 @@ namespace TSWebServices
 				  log.Collection.Save();
 
 				  errLocation = string.Format("Error merging contact ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.MergeUpdateCustomValues(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging contact custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try

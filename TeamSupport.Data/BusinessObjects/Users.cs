@@ -1560,6 +1560,151 @@ SET IDENTITY_INSERT Users Off
             }
         }
 
+		  public string MergeContacts(User contact, User loosingContact, LoginUser loginUser)
+		  {
+			  string lossingContactNameForHistoryEntries = loosingContact.FirstLastName + " (" + loosingContact.UserID.ToString() + ")";
+			  String errLocation = "";
+
+			  try
+			  {
+				  contact.Collection.MergeUpdateTickets(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+				  errLocation = string.Format("Error merging contact tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.MergeUpdateNotes(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging contact notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.MergeUpdateFiles(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging contact files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.MergeUpdateProducts(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging contact products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.MergeUpdateAssets(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging contact assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.MergeUpdateRatings(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging contact ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.MergeUpdateCustomValues(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging contact custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.DeleteRecentlyViewItems(loosingContact.UserID);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
+				  contact.Collection.DeleteFromDB(loosingContact.UserID);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+
+				  errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  contact.NeedsIndexing = true;
+			  contact.Collection.Save();
+
+			  return errLocation;
+		  }
+
 		  public void MergeUpdateTickets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
 		  {
 			  LoginUser noEmailPostLoginUser = new LoginUser(loginUser.ConnectionString, -5, loginUser.OrganizationID, null);
@@ -1738,6 +1883,86 @@ SET IDENTITY_INSERT Users Off
 			  string description = "Merged '" + contactName + "' AgentRatings.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.AgentRating, winningUserID, description);
+		  }
+
+		  public void MergeUpdateCustomValues(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+		  {
+// This was best solution but is failing with Subquery returned more than 1 value. This is not permitted when the subquery follows =, !=, <, <= , >, >= or when the subquery is used as an expression.
+// probably trigger designed with single record update at a time.
+// we'll need to implement solution on .net
+//			  using (SqlCommand command = new SqlCommand())
+//			  {
+//				  command.CommandText = @"
+//				UPDATE
+//					cvl
+//				SET
+//					cvl.RefID = @winningUserID
+//				FROM
+//					CustomValues cvl
+//					LEFT JOIN CustomValues cvw
+//						ON cvl.CustomFieldID = cvw.CustomFieldID
+//						AND cvw.RefID = @winningUserID
+//					JOIN CustomFields cf
+//						ON cvl.CustomFieldID = cf.CustomFieldID
+//				WHERE
+//					cf.OrganizationID = @ParentOrganizationID
+//					AND cf.RefType = 32
+//					AND cvl.RefID = @losingUserID
+//					AND cvw.CustomValueID IS NULL";
+//				  command.CommandType = CommandType.Text;
+//				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
+//				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
+//				  command.Parameters.AddWithValue("@ParentOrganizationID", loginUser.OrganizationID);
+//				  ExecuteNonQuery(command, "CustomValues");
+//			  }
+//			  using (SqlCommand command = new SqlCommand())
+//			  {
+//				  command.CommandText = @"
+//				UPDATE
+//					cvw
+//				SET
+//					cvw.CustomValue = cvl.CustomValue
+//				FROM
+//					CustomValues cvl
+//					LEFT JOIN CustomValues cvw
+//						ON cvl.CustomFieldID = cvw.CustomFieldID
+//						AND cvw.RefID = @winningUserID
+//					JOIN CustomFields cf
+//						ON cvl.CustomFieldID = cf.CustomFieldID
+//				WHERE
+//					cf.OrganizationID = @ParentOrganizationID
+//					AND cf.RefType = 32
+//					AND cvl.RefID = @losingUserID
+//					AND LTRIM(RTRIM(cvw.CustomValue)) = ''";
+//				  command.CommandType = CommandType.Text;
+//				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
+//				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
+//				  command.Parameters.AddWithValue("@ParentOrganizationID", loginUser.OrganizationID);
+//				  ExecuteNonQuery(command, "CustomValues");
+//			  }
+			  CustomValues loosingContactCustomValues = new CustomValues(loginUser);
+			  loosingContactCustomValues.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.Contacts, losingUserID);
+			  if (loosingContactCustomValues.Count > 0)
+			  {
+				  CustomValues winningContactCustomValues = new CustomValues(loginUser);
+				  winningContactCustomValues.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.Contacts, winningUserID);
+				  foreach (CustomValue loosingContactCustomValue in loosingContactCustomValues)
+				  {
+					if (!string.IsNullOrEmpty(loosingContactCustomValue.Value.Trim()))
+					{
+						CustomValue winningContactCustomValue = winningContactCustomValues.FindByCustomFieldID(loosingContactCustomValue.CustomFieldID);
+						if (string.IsNullOrEmpty(winningContactCustomValue.Value.Trim()))
+						{
+							winningContactCustomValue.Value = loosingContactCustomValue.Value;
+						}
+					}
+				  }
+				  winningContactCustomValues.Save();
+			  }
+
+			  string description = "Merged '" + contactName + "' CustomValues.";
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.CustomValues, winningUserID, description);
 		  }
 
 		  public void DeleteRecentlyViewItems(int losingUserID)

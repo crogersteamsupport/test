@@ -460,6 +460,18 @@ ORDER BY cf.Position";
         }
     }
 
+	 public CustomValue FindByCustomFieldID(int customFieldID)
+	 {
+		 foreach (CustomValue customValue in this)
+		 {
+			 if (customValue.CustomFieldID == customFieldID)
+			 {
+				 return customValue;
+			 }
+		 }
+		 return null;
+	 }
+
     partial void BeforeRowEdit(CustomValue newValue)
     {
       CustomValue oldValue = CustomValues.GetCustomValue(LoginUser, newValue.CustomValueID);

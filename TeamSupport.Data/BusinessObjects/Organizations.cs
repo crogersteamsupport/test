@@ -2621,9 +2621,27 @@ ORDER BY
 
 	 public void MergeUpdateContacts(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
 	 {
-		 using (SqlCommand command = new SqlCommand())
+		 Users losingOrganizationContacts = new Users(loginUser);
+		 losingOrganizationContacts.LoadByOrganizationID(losingOrganizationID, true);
+		 if (losingOrganizationContacts.Count > 0)
 		 {
-			 command.CommandText = @"
+			 Users winningOrganizationContacts = new Users(loginUser);
+			 winningOrganizationContacts.LoadByOrganizationID(winningOrganizationID, false);
+			 foreach (User losingOrganizationContact in losingOrganizationContacts)
+			 {
+				 if (losingOrganizationContact.Email != string.Empty)
+				 {
+					 User winningOrganizationMatchingContact = winningOrganizationContacts.FindByEmail(losingOrganizationContact.Email);
+					 if (winningOrganizationMatchingContact != null)
+					 {
+						string mergeContactErrLocation = winningOrganizationMatchingContact.Collection.MergeContacts(winningOrganizationMatchingContact, losingOrganizationContact, loginUser);
+					 }
+				 }
+			 }
+
+			 using (SqlCommand command = new SqlCommand())
+			 {
+				 command.CommandText = @"
 			 UPDATE
 				Users 
 			 SET
@@ -2631,10 +2649,11 @@ ORDER BY
 				, NeedsIndexing = 1 
 			 WHERE
 				OrganizationID = @losingOrganizationID";
-			 command.CommandType = CommandType.Text;
-			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
-			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
-			 ExecuteNonQuery(command, "OrganizationContacts");
+				 command.CommandType = CommandType.Text;
+				 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+				 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+				 ExecuteNonQuery(command, "OrganizationContacts");
+			 }
 		 }
 		 string description = "Merged '" + companyName + "' contacts.";
 		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
@@ -2844,6 +2863,86 @@ ORDER BY
 		 string description = "Merged '" + companyName + "' CalendarEvents.";
 		 //ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
 		 //ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType., winningOrganizationID, description);
+	 }
+
+	 public void MergeUpdateCustomValues(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+	 {
+// This was best solution but is failing with Subquery returned more than 1 value. This is not permitted when the subquery follows =, !=, <, <= , >, >= or when the subquery is used as an expression.
+// probably trigger designed with single record update at a time.
+// we'll need to implement solution on .net
+//		 using (SqlCommand command = new SqlCommand())
+//		 {
+//			 command.CommandText = @"
+//				UPDATE
+//					cvl
+//				SET
+//					cvl.RefID = @WinnerCompanyID
+//				FROM
+//					CustomValues cvl
+//					LEFT JOIN CustomValues cvw
+//						ON cvl.CustomFieldID = cvw.CustomFieldID
+//						AND cvw.RefID = @WinnerCompanyID
+//					JOIN CustomFields cf
+//						ON cvl.CustomFieldID = cf.CustomFieldID
+//				WHERE
+//					cf.OrganizationID = @ParentOrganizationID
+//					AND cf.RefType = 9
+//					AND cvl.RefID = @LossingCompanyID
+//					AND cvw.CustomValueID IS NULL";
+//			 command.CommandType = CommandType.Text;
+//			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+//			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+//			 command.Parameters.AddWithValue("@ParentOrganizationID", loginUser.OrganizationID);
+//			 ExecuteNonQuery(command, "CustomValues");
+//		 }
+//		 using (SqlCommand command = new SqlCommand())
+//		 {
+//			 command.CommandText = @"
+//				UPDATE
+//					cvw
+//				SET
+//					cvw.CustomValue = cvl.CustomValue
+//				FROM
+//					CustomValues cvl
+//					LEFT JOIN CustomValues cvw
+//						ON cvl.CustomFieldID = cvw.CustomFieldID
+//						AND cvw.RefID = @WinnerCompanyID
+//					JOIN CustomFields cf
+//						ON cvl.CustomFieldID = cf.CustomFieldID
+//				WHERE
+//					cf.OrganizationID = @ParentOrganizationID
+//					AND cf.RefType = 9
+//					AND cvl.RefID = @LossingCompanyID
+//					AND LTRIM(RTRIM(cvw.CustomValue)) = ''";
+//			 command.CommandType = CommandType.Text;
+//			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+//			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+//			 command.Parameters.AddWithValue("@ParentOrganizationID", loginUser.OrganizationID);
+//			 ExecuteNonQuery(command, "CustomValues");
+//		 }
+		 CustomValues loosingCompanyCustomValues = new CustomValues(loginUser);
+		 loosingCompanyCustomValues.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.Organizations, losingOrganizationID);
+		 if (loosingCompanyCustomValues.Count > 0)
+		 {
+			 CustomValues winningCompanyCustomValues = new CustomValues(loginUser);
+			 winningCompanyCustomValues.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.Organizations, winningOrganizationID);
+			 foreach (CustomValue loosingCompanyCustomValue in loosingCompanyCustomValues)
+			 {
+				 if (!string.IsNullOrEmpty(loosingCompanyCustomValue.Value.Trim()))
+				 {
+					 CustomValue winningCompanyCustomValue = winningCompanyCustomValues.FindByCustomFieldID(loosingCompanyCustomValue.CustomFieldID);
+					 if (string.IsNullOrEmpty(winningCompanyCustomValue.Value.Trim()))
+					 {
+						 winningCompanyCustomValue.Value = loosingCompanyCustomValue.Value;
+					 }
+				 }
+			 }
+			 winningCompanyCustomValues.Save();
+		 }
+
+		 string description = "Merged '" + companyName + "' CustomValues.";
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+		 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.CustomValues, winningOrganizationID, description);
 	 }
 
 	 public void DeleteRecentlyViewItems(int losingOrganizationID)
