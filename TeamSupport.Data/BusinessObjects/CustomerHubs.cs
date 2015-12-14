@@ -28,7 +28,7 @@ namespace TeamSupport.Data
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = "SELECT * FROM [CustomerHubs] WHERE PortalName = @Name";
+				command.CommandText = "SELECT * FROM [CustomerHubs] WHERE Lower(PortalName) = @Name";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@Name", name);
 				Fill(command);
