@@ -12,6 +12,25 @@
 $(document).ready(function () {
   var _organizatinID = -1;
   var _isAdmin = top.Ts.System.User.IsSystemAdmin && (_organizatinID != top.Ts.System.User.OrganizationID);
+  var dateFormat;
+
+  top.Ts.Services.Customers.GetDateFormat(false, function (format) {
+  	dateFormat = format.replace("yyyy", "yy");
+  	if (dateFormat.length < 8) {
+  		var dateArr = dateFormat.split('/');
+  		if (dateArr[0].length < 2) {
+  			dateArr[0] = dateArr[0] + dateArr[0];
+  		}
+  		if (dateArr[1].length < 2) {
+  			dateArr[1] = dateArr[1] + dateArr[1];
+  		}
+  		if (dateArr[2].length < 2) {
+  			dateArr[1] = dateArr[1] + dateArr[1];
+  		}
+  		dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
+  	}
+  	$('#inputExpectedRelease').datetimepicker({ pickTime: false, format: dateFormat });
+  });
 
   if (top.Ts.System.Organization.UseProductFamilies) {
       LoadProductFamilies();
@@ -67,7 +86,7 @@ $(document).ready(function () {
   LoadProducts();
   LoadStatuses();
 
-  $('#inputExpectedRelease').datetimepicker({ pickTime: false });
+  
 
   LoadCustomControls();
   LoadVersionCustomControls();
@@ -213,7 +232,7 @@ $(document).ready(function () {
       versionInfo.VersionNumber = $("#inputVersionNumber").val();
       versionInfo.ProductID = $("#ddlProduct").val();
       versionInfo.ProductVersionStatusID = $("#ddlStatus").val();
-      versionInfo.ReleaseDate = $("#inputExpectedRelease").val();
+      versionInfo.ReleaseDate = moment($("#inputExpectedRelease").val(), dateFormat).format('MM/DD/YYYY');
       versionInfo.IsReleased = $("#cbReleased").prop('checked');
       versionInfo.Description = $("#inputDescription").val();
       versionInfo.JiraProjectKey = $("#inputProductVersionJiraProjectKey").val();
