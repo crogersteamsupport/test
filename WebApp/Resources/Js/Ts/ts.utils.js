@@ -121,6 +121,7 @@
  
    getDateString: function(date, showDate, showTime, isUTC)
    {
+	debugger
      if (!date) return "";
      var msDate = date;
      if (!msDate.localeFormat)
@@ -128,16 +129,19 @@
        msDate = this.getMsDate(isUTC ? moment.utc(date) : moment(date));
      }
 
-     if ((!showDate || showDate === true) && (!showTime || showTime === true))
+     if ((showDate || showDate === true) && (showTime || showTime === true))
      {
-       return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
+     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
      }
-     else if (showDate || showDate === true){
-       return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern);
+     else if ((showDate || showDate === true) && (!showTime || showTime === false))
+     {
+     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern);
      }
-     else {
-       return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
-      }
+     else if ((!showDate || showDate === false) && (showTime || showTime === true))
+     {
+     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
+     }
+     else msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
    },
 
    getJqueryDateFormat: function(dateFormat)
