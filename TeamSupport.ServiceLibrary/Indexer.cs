@@ -280,7 +280,7 @@ namespace TeamSupport.ServiceLibrary
       if (isNew)
       {
         Directory.CreateDirectory(path);
-        Logs.WriteEvent("Createing path: " + path);
+        Logs.WriteEvent("Creating path: " + path);
       }
 
       if (isRebuilder) DeleteIndex(path);
@@ -315,17 +315,20 @@ namespace TeamSupport.ServiceLibrary
         job.ActionAdd = true;
         job.CreateRelativePaths = false;
         job.StoredFields = Server.Tokenize(storedFields);
-        //string tempPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "TempIndexFiles" + indexPath);
-        //if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
-        //job.TempFileDir = tempPath;
+		//string tempPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "TempIndexFiles" + indexPath);
+		//if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
+		//job.TempFileDir = tempPath;
 
-        job.IndexingFlags =
-            IndexingFlags.dtsAlwaysAdd |
-            IndexingFlags.dtsIndexCacheOriginalFile |
-            IndexingFlags.dtsIndexCacheText |
-            IndexingFlags.dtsIndexCacheTextWithoutFields;
+		//per Radomir the dtSearch consultant. replace below with next line
+		//job.IndexingFlags =
+		//	IndexingFlags.dtsAlwaysAdd |
+		//	IndexingFlags.dtsIndexCacheOriginalFile |
+		//	IndexingFlags.dtsIndexCacheText |
+		//	IndexingFlags.dtsIndexCacheTextWithoutFields;
+		//per Radomir the dtSearch consultant, use this only
+		job.IndexingFlags = IndexingFlags.dtsAlwaysAdd;
 
-        try
+		try
         {
           job.ExecuteInThread();
 
