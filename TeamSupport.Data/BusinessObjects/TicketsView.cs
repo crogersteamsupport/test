@@ -298,6 +298,17 @@ namespace TeamSupport.Data
         }
     }
 
+	 public void LoadLatest5UserTickets(int userID)
+	 {
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = "SELECT top 5 tv.* FROM TicketsView tv LEFT JOIN UserTickets ut ON ut.TicketID = tv.TicketID WHERE ut.UserID = @UserID ORDER BY TicketNumber desc";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@UserID", userID);
+			 Fill(command);
+		 }
+	 }
+
     public void LoadLatest5ProductTickets(int productID)
     {
       using (SqlCommand command = new SqlCommand())

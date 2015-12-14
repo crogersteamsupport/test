@@ -23,6 +23,7 @@ public partial class Tips_User : System.Web.UI.Page
         }
       }
 
+		string domain = Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com");
       int userID = int.Parse(Request["UserID"]);
       User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
       if (user == null) EndResponse("Invalid User");
@@ -67,6 +68,24 @@ public partial class Tips_User : System.Web.UI.Page
       }
 
       tipProps.InnerHtml = props.ToString();
+
+		TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+		tickets.LoadLatest5UserTickets(user.UserID);
+		StringBuilder recent = new StringBuilder();
+
+		foreach (TicketsViewItem t in tickets)
+		{
+			if (t.TicketNumber != null && t.Name != null && t.Status != null)
+				recent.Append(string.Format("<div><a href='{0}?TicketNumber={1}' target='_blank' onclick='top.Ts.MainPage.openTicket({2}); return false;'><span class='ticket-tip-number'>{3}</span><span class='ticket-tip-status'>{4}</span><span class='ticket-tip-name'>{5}</span></a></div>", domain, t.TicketNumber, t.TicketNumber, t.TicketNumber, t.Status.Length > 17 ? t.Status.Substring(0, 15) + "..." : t.Status, t.Name.Length > 35 ? t.Name.Substring(0, 33) + "..." : t.Name));
+		}
+
+		if (recent.Length == 0)
+			recent.Append("There are no recent tickets for this user");
+
+		tipRecent.InnerHtml = recent.ToString();
+
+
+
     }
 
     private void EndResponse(string message)

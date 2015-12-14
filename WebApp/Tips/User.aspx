@@ -5,6 +5,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
+    <style>
+      .tip-customer-expired { color: Red;}
+      .ui-cluetip-content dd { width: 60%; }
+      .ui-cluetip-content dt { width: 35%;}
+      .title{line-height: 1.5em;display:block;font-weight:bold;}
+      .ticket-tip-number{display: inline-block;width: 50px;}
+      .ticket-tip-status{display: inline-block;width: 100px;}
+      .ticket-tip-name{display: inline;width: 100px;}
+      .red{color:red;}
+    </style>
 </head>
 <body>
   <div>
@@ -19,6 +29,15 @@
       <dt>Office</dt>
       <dd>817-886-0797</dd>
     </dl>
+    <div class="ui-widget-content ts-separator"></div>
+        <span class="title">Recent Ticket History</span>
+        <div id="tipRecent" runat="server">
+            <div><span class="ticket-item">#1234</span><span class="ticket-item">Closed</span><span class="ticket-item">Ticket name blah blah</span></div>
+            <div><span class="ticket-item">#1234</span><span class="ticket-item">Closed</span><span class="ticket-item">Ticket name blah blah</span></div>
+            <div><span class="ticket-item">#1234</span><span class="ticket-item">Closed</span><span class="ticket-item">Ticket name blah blah</span></div>
+            <div><span class="ticket-item">#1234</span><span class="ticket-item">Closed</span><span class="ticket-item">Ticket name blah blah</span></div>
+            <div><span class="ticket-item">#1234</span><span class="ticket-item">Closed</span><span class="ticket-item">Ticket name blah blah</span></div>
+        </div>
     <div class="ui-helper-clearfix"></div>
   </div>
 </body>
