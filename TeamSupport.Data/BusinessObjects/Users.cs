@@ -483,7 +483,28 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadPortalUserByEmail(int orgID, string email)
+		public void LoadByEmailOrderByActive(int parentID, string email)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT u.*
+                                FROM Users u 
+                                LEFT JOIN Organizations o
+                                ON o.OrganizationID = u.OrganizationID
+                                WHERE (o.ParentID = @ParentID)
+                                AND (u.Email = @Email)
+                                AND (u.MarkDeleted = 0)
+																ORDER BY IsActive desc";
+
+
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ParentID", parentID);
+				command.Parameters.AddWithValue("@Email", email.Trim());
+				Fill(command);
+			}
+		}
+
+		public void LoadPortalUserByEmail(int orgID, string email)
         {
             using (SqlCommand command = new SqlCommand())
             {

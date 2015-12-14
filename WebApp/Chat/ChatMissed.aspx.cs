@@ -61,7 +61,7 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
         action.Collection.Save();
 
         Users users = new Users(LoginUser.Anonymous);
-        users.LoadByEmail(organization.OrganizationID, client.Email);
+        users.LoadByEmailOrderByActive(organization.OrganizationID, client.Email);
         if (!users.IsEmpty) ticket.Collection.AddContact(users[0].UserID, ticket.TicketID);
       }
       else
