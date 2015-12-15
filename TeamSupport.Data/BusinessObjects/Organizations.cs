@@ -2921,23 +2921,47 @@ ORDER BY
 //			 ExecuteNonQuery(command, "CustomValues");
 //		 }
 		 CustomValues loosingCompanyCustomValues = new CustomValues(loginUser);
-		 loosingCompanyCustomValues.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.Organizations, losingOrganizationID);
+		 loosingCompanyCustomValues.LoadExistingOnlyByReferenceType(loginUser.OrganizationID, ReferenceType.Organizations, losingOrganizationID);
 		 if (loosingCompanyCustomValues.Count > 0)
 		 {
 			 CustomValues winningCompanyCustomValues = new CustomValues(loginUser);
-			 winningCompanyCustomValues.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.Organizations, winningOrganizationID);
+			 winningCompanyCustomValues.LoadExistingOnlyByReferenceType(loginUser.OrganizationID, ReferenceType.Organizations, winningOrganizationID);
+			 bool updateExistingCustomValues = false;
+			 bool saveNewCustomValues = false;
+			 CustomValues newCustomValues = new CustomValues(loginUser);
 			 foreach (CustomValue loosingCompanyCustomValue in loosingCompanyCustomValues)
 			 {
-				 if (!string.IsNullOrEmpty(loosingCompanyCustomValue.Value.Trim()))
+				 if (loosingCompanyCustomValue.Value.Trim() != string.Empty)
 				 {
 					 CustomValue winningCompanyCustomValue = winningCompanyCustomValues.FindByCustomFieldID(loosingCompanyCustomValue.CustomFieldID);
-					 if (string.IsNullOrEmpty(winningCompanyCustomValue.Value.Trim()))
+					 if (winningCompanyCustomValue != null)
 					 {
-						 winningCompanyCustomValue.Value = loosingCompanyCustomValue.Value;
+						 if (winningCompanyCustomValue.Value.Trim() == string.Empty)
+						 {
+							winningCompanyCustomValue.Value = loosingCompanyCustomValue.Value;
+							updateExistingCustomValues = true;
+						 }
+					 }
+					 else
+					 {
+						CustomValue newCustomValue = newCustomValues.AddNewCustomValue();
+						newCustomValue.CustomFieldID = loosingCompanyCustomValue.CustomFieldID;
+						newCustomValue.RefID = winningOrganizationID;
+						newCustomValue.Value = loosingCompanyCustomValue.Value;
+						newCustomValue.CreatorID = loosingCompanyCustomValue.CreatorID;
+						newCustomValue.ModifierID = loosingCompanyCustomValue.ModifierID;
+						saveNewCustomValues = true;
 					 }
 				 }
 			 }
-			 winningCompanyCustomValues.Save();
+			 if (updateExistingCustomValues)
+			 {
+				 winningCompanyCustomValues.Save();
+			 }
+			 if (saveNewCustomValues)
+			 {
+				 newCustomValues.Save();
+			 }
 		 }
 
 		 string description = "Merged '" + companyName + "' CustomValues.";

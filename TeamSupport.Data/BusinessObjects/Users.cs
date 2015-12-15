@@ -1962,23 +1962,47 @@ SET IDENTITY_INSERT Users Off
 //				  ExecuteNonQuery(command, "CustomValues");
 //			  }
 			  CustomValues loosingContactCustomValues = new CustomValues(loginUser);
-			  loosingContactCustomValues.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.Contacts, losingUserID);
+			  loosingContactCustomValues.LoadExistingOnlyByReferenceType(loginUser.OrganizationID, ReferenceType.Contacts, losingUserID);
 			  if (loosingContactCustomValues.Count > 0)
 			  {
 				  CustomValues winningContactCustomValues = new CustomValues(loginUser);
-				  winningContactCustomValues.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.Contacts, winningUserID);
+				  winningContactCustomValues.LoadExistingOnlyByReferenceType(loginUser.OrganizationID, ReferenceType.Contacts, winningUserID);
+				  bool updateExistingCustomValues = false;
+				  bool saveNewCustomValues = false;
+				  CustomValues newCustomValues = new CustomValues(loginUser);
 				  foreach (CustomValue loosingContactCustomValue in loosingContactCustomValues)
 				  {
-					if (!string.IsNullOrEmpty(loosingContactCustomValue.Value.Trim()))
-					{
-						CustomValue winningContactCustomValue = winningContactCustomValues.FindByCustomFieldID(loosingContactCustomValue.CustomFieldID);
-						if (string.IsNullOrEmpty(winningContactCustomValue.Value.Trim()))
-						{
-							winningContactCustomValue.Value = loosingContactCustomValue.Value;
-						}
-					}
+					  if (loosingContactCustomValue.Value.Trim() != string.Empty)
+					  {
+						  CustomValue winningContactCustomValue = winningContactCustomValues.FindByCustomFieldID(loosingContactCustomValue.CustomFieldID);
+						  if (winningContactCustomValue != null)
+						  {
+							  if (winningContactCustomValue.Value.Trim() == string.Empty)
+							  {
+								  winningContactCustomValue.Value = loosingContactCustomValue.Value;
+								  updateExistingCustomValues = true;
+							  }
+						  }
+						  else
+						  {
+							  CustomValue newCustomValue = newCustomValues.AddNewCustomValue();
+							  newCustomValue.CustomFieldID = loosingContactCustomValue.CustomFieldID;
+							  newCustomValue.RefID = winningUserID;
+							  newCustomValue.Value = loosingContactCustomValue.Value;
+							  newCustomValue.CreatorID = loosingContactCustomValue.CreatorID;
+							  newCustomValue.ModifierID = loosingContactCustomValue.ModifierID;
+							  saveNewCustomValues = true;
+						  }
+					  }
 				  }
-				  winningContactCustomValues.Save();
+				  if (updateExistingCustomValues)
+				  {
+					  winningContactCustomValues.Save();
+				  }
+				  if (saveNewCustomValues)
+				  {
+					  newCustomValues.Save();
+				  }
 			  }
 
 			  string description = "Merged '" + contactName + "' CustomValues.";
