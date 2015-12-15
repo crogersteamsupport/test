@@ -37,7 +37,7 @@ namespace TeamSupport.ServiceLibrary
           {
             actionText = HtmlUtility.Sanitize(actionText);
             SqlCommand command = new SqlCommand();
-            command.CommandText = "UPDATE Actions SET Description = @Description, ModifierID=-5, IsClean=1 WHERE ActionID=@ActionID";
+            command.CommandText = "UPDATE Actions SET Description = @Description, IsClean=1 WHERE ActionID=@ActionID";
             command.Parameters.AddWithValue("ActionID", action.ActionID);
             command.Parameters.AddWithValue("Description", actionText);
             SqlExecutor.ExecuteNonQuery(_loginUser, command);
