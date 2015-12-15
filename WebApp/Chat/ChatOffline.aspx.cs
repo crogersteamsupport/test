@@ -129,7 +129,7 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
     action.Collection.Save();
 
     Users users = new Users(LoginUser.Anonymous);
-    users.LoadByEmail(_organization.OrganizationID, textEmail.Text);
+    users.LoadByEmailOrderByActive(_organization.OrganizationID, textEmail.Text);
     if (!users.IsEmpty) ticket.Collection.AddContact(users[0].UserID, ticket.TicketID);
 
     Response.Redirect("OfflineThanks.aspx");
