@@ -232,7 +232,10 @@ $(document).ready(function () {
       versionInfo.VersionNumber = $("#inputVersionNumber").val();
       versionInfo.ProductID = $("#ddlProduct").val();
       versionInfo.ProductVersionStatusID = $("#ddlStatus").val();
-      versionInfo.ReleaseDate = moment($("#inputExpectedRelease").val(), dateFormat).format('MM/DD/YYYY');
+      if ($("#inputExpectedRelease").val() != "")
+      	versionInfo.ReleaseDate = moment($("#inputExpectedRelease").val(), dateFormat).format('MM/DD/YYYY');
+      else
+      	versionInfo.ReleaseDate = "";
       versionInfo.IsReleased = $("#cbReleased").prop('checked');
       versionInfo.Description = $("#inputDescription").val();
       versionInfo.JiraProjectKey = $("#inputProductVersionJiraProjectKey").val();
