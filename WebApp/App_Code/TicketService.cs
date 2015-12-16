@@ -25,6 +25,7 @@ using System.Linq;
 using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
+using NewRelic.Api;
 
 namespace TSWebServices
 {
@@ -808,23 +809,24 @@ namespace TSWebServices
         {
             try
             {
-                SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, TSAuthentication.GetLoginUser(), filter);
-                List<AutocompleteItem> items = new List<AutocompleteItem>();
-                //for (int i = 0; i < job.Errors.Count; i++) { items.Add(new AutocompleteItem(job.Errors.Message(i), "")); }
+				Stopwatch stopWatch = Stopwatch.StartNew();
+				SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, TSAuthentication.GetLoginUser(), filter);
+				stopWatch.Stop();
+				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTickets_Metric", stopWatch.ElapsedMilliseconds);
 
-                for (int i = 0; i < results.Count; i++)
+				List<AutocompleteItem> items = new List<AutocompleteItem>();
+
+				stopWatch = Stopwatch.StartNew();
+				for (int i = 0; i < results.Count; i++)
                 {
                     results.GetNthDoc(i);
 
                     items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
                 }
-                //TESTCODE:
-                //items.Add(new AutocompleteItem("19010: Questions about Tables", "19010", "3887808"));
-                //items.Add(new AutocompleteItem("19009: Questions about Tables", "19009", "3887807"));
-                //items.Add(new AutocompleteItem("19008: Questions about Tables", "19008", "3887803"));
-                //items.Add(new AutocompleteItem("19006: Questions about Tables", "19006", "3887801"));
-                //items.Add(new AutocompleteItem("19005: Questions about Tables", "19005", "3887800"));
-                return items.ToArray();
+				stopWatch.Stop();
+				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTicketsPullData_Metric", stopWatch.ElapsedMilliseconds);
+
+				return items.ToArray();
             }
             catch (Exception ex)
             {
