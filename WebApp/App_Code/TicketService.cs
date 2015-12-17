@@ -809,10 +809,12 @@ namespace TSWebServices
         {
             try
             {
+				LoginUser loginUser = TSAuthentication.GetLoginUser();
 				Stopwatch stopWatch = Stopwatch.StartNew();
-				SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, TSAuthentication.GetLoginUser(), filter);
+				SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, loginUser, filter);
 				stopWatch.Stop();
 				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTickets_Metric", stopWatch.ElapsedMilliseconds);
+				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
 
 				List<AutocompleteItem> items = new List<AutocompleteItem>();
 
