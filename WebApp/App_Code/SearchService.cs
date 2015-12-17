@@ -1359,8 +1359,8 @@ namespace TSWebServices
 			//Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
 			if (stopWatch.ElapsedMilliseconds > 500)
 			{
-				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
-				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-Term", searchTerm);
+				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
+				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
 			}
 
 				int topLimit = from + count;
