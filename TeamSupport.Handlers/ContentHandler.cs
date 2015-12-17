@@ -30,6 +30,8 @@ using DDay.iCal;
 using DDay.Collections;
 using System.Drawing.Text;
 using System.Collections.Specialized;
+using System.Dynamic;
+
 
 
 namespace TeamSupport.Handlers
@@ -80,6 +82,7 @@ namespace TeamSupport.Handlers
 						case "companylogo": ProcessCompanyLogo(context, segments.ToArray(), organizationID); break;
 						case "contactavatar": ProcessContactAvatar(context, segments.ToArray(), organizationID); break;
 						case "importlog": ProcessImportLog(context, int.Parse(segments[2])); break;
+                        case "screenrecordingsettings": ProcessScreenRecordingSettings(context); break;
 						default: context.Response.End(); break;
 					}
 				}
@@ -1350,5 +1353,25 @@ namespace TeamSupport.Handlers
 				}
 			}
 		}
-	}
+
+        private void ProcessScreenRecordingSettings(HttpContext context)
+        {
+            if (context.Request.Headers["Authorization"] != "fb7d29fc916a4faebde8a9bd953fd57b") return;
+
+            dynamic result = new ExpandoObject();
+            result.accessKey = SystemSettings.ReadString(LoginUser.Anonymous, "AWS-Key", "");
+            result.password = SystemSettings.ReadString(LoginUser.Anonymous, "AWS-Password", "");
+            result.bucket = SystemSettings.ReadString(LoginUser.Anonymous, "AWS-VideoBucket", "");
+            if (result.accessKey == "") SystemSettings.WriteString(LoginUser.Anonymous, "AWS-Key", "");
+            if (result.password == "") SystemSettings.WriteString(LoginUser.Anonymous, "AWS-Password", "");
+            if (result.bucket == "") SystemSettings.WriteString(LoginUser.Anonymous, "AWS-VideoBucket", "");
+
+            context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            context.Response.AddHeader("Expires", "-1");
+            context.Response.AddHeader("Pragma", "no-cache");
+            context.Response.ContentType = "application/json; charset=utf-8";
+            context.Response.Write(JsonConvert.SerializeObject(result));
+
+        }
+    }
 }
