@@ -813,12 +813,18 @@ namespace TSWebServices
 				Stopwatch stopWatch = Stopwatch.StartNew();
 				SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, loginUser, filter);
 				stopWatch.Stop();
-				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTickets_Metric", stopWatch.ElapsedMilliseconds);
-				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
+				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTickets", stopWatch.ElapsedMilliseconds);
+
+				//Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
+				if (stopWatch.ElapsedMilliseconds > 500)
+				{
+					NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.OrganizationID);
+					NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-Term", searchTerm);
+				}
 
 				List<AutocompleteItem> items = new List<AutocompleteItem>();
 
-				stopWatch = Stopwatch.StartNew();
+				stopWatch.Restart();
 				for (int i = 0; i < results.Count; i++)
                 {
                     results.GetNthDoc(i);
@@ -826,7 +832,7 @@ namespace TSWebServices
                     items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
                 }
 				stopWatch.Stop();
-				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTicketsPullData_Metric", stopWatch.ElapsedMilliseconds);
+				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTicketsPullData", stopWatch.ElapsedMilliseconds);
 
 				return items.ToArray();
             }

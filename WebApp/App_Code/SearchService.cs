@@ -13,6 +13,8 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+using NewRelic.Api;
 
 namespace TSWebServices
 {
@@ -1339,35 +1341,47 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active)
-    {      
-      LoginUser loginUser = TSAuthentication.GetLoginUser();
-      List<string> resultItems = new List<string>();
-      if (string.IsNullOrWhiteSpace(searchTerm))
-      {
-        return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active);
-      }
+	public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active)
+	{      
+		LoginUser loginUser = TSAuthentication.GetLoginUser();
+		List<string> resultItems = new List<string>();
+		if (string.IsNullOrWhiteSpace(searchTerm))
+		{
+			return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active);
+		}
 
-      if (searchCompanies || searchContacts)
-      {
-          SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active);
-          int topLimit = from + count;
-          if (topLimit > results.Count)
-          {
-            topLimit = results.Count;
-          }
+		if (searchCompanies || searchContacts)
+		{
+			Stopwatch stopWatch = Stopwatch.StartNew();
+			SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active);
+			stopWatch.Stop();
+			NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
+			//Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
+			if (stopWatch.ElapsedMilliseconds > 500)
+			{
+				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
+				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-Term", searchTerm);
+			}
 
-          for (int i = from; i < topLimit; i++)
-          {
-            results.GetNthDoc(i);
-            if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
-              resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
-          }
-        
-      }
+				int topLimit = from + count;
+			if (topLimit > results.Count)
+			{
+				topLimit = results.Count;
+			}
 
-      return resultItems.ToArray();
-    }
+			stopWatch.Restart();
+			for (int i = from; i < topLimit; i++)
+			{
+				results.GetNthDoc(i);
+				if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
+				resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+			}
+			stopWatch.Stop();
+			NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContactsPullData", stopWatch.ElapsedMilliseconds);
+		}
+
+		return resultItems.ToArray();
+	}
 
     private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active)
     {
