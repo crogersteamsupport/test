@@ -2666,11 +2666,17 @@ ORDER BY
 		 {
 			 command.CommandText = @"
 			 UPDATE
-				OrganizationTickets 
+				l 
 			 SET
-				OrganizationID = @winningOrganizationID 
-			 WHERE
-				OrganizationID = @losingOrganizationID";
+				l.OrganizationID = @winningOrganizationID
+			FROM
+				OrganizationTickets l
+				LEFT JOIN OrganizationTickets w
+					ON l.TicketID = w.TicketID	
+					AND w.OrganizationID = @winningOrganizationID
+			WHERE
+				l.OrganizationID = @losingOrganizationID
+				AND w.TicketID IS NULL";
 			 command.CommandType = CommandType.Text;
 			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
 			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
@@ -2742,11 +2748,18 @@ ORDER BY
 		 {
 			 command.CommandText = @"
 			 UPDATE
-				OrganizationProducts 
+				l 
 			 SET
-				OrganizationID = @winningOrganizationID 
+				l.OrganizationID = @winningOrganizationID 
+			 FROM
+				OrganizationProducts l
+				LEFT JOIN OrganizationProducts w
+					ON l.ProductID = w.ProductID
+					AND l.ProductVersionID = w.ProductVersionID
+					AND w.OrganizationID = @winningOrganizationID
 			 WHERE
-				OrganizationID = @losingOrganizationID";
+				l.OrganizationID = @losingOrganizationID
+				AND w.ProductID IS NULL";
 			 command.CommandType = CommandType.Text;
 			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
 			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);

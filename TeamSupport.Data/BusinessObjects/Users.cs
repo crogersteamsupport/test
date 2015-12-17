@@ -1807,11 +1807,18 @@ SET IDENTITY_INSERT Users Off
 			  {
 				  command.CommandText = @"
 			 UPDATE
-				UserProducts 
+				l 
 			 SET
-				UserID = @winningUserID 
+				l.UserID = @winningUserID 
+			 FROM
+				UserProducts l
+				LEFT JOIN UserProducts w
+					ON l.ProductID = w.ProductID
+					AND l.ProductVersionID = w.ProductVersionID
+					AND w.UserID = @winningUserID 
 			 WHERE
-				UserID = @losingUserID";
+				l.UserID = @losingUserID
+				AND w.ProductID IS NULL";
 				  command.CommandType = CommandType.Text;
 				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
 				  command.Parameters.AddWithValue("@losingUserID", losingUserID);
