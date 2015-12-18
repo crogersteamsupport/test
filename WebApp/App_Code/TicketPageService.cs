@@ -313,6 +313,22 @@ namespace TSWebServices
             return GetUserOrOrganizationFiltered(searchTerm, !user.AllowAnyTicketCustomer);
         }
 
+		  [WebMethod]
+		  public bool CheckContactEmails(int ticketid)
+		  {
+				LoginUser loginUser = TSAuthentication.GetLoginUser();
+				SqlCommand command = new SqlCommand();
+				command.CommandText = "select COUNT(*) from UserTickets as ut, Users as u where ut.TicketID=@TicketID and u.UserID = ut.UserID and u.Email = ''";
+				command.Parameters.AddWithValue("@TicketID", ticketid.ToString());
+
+				DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+				if(table.Rows.Count > 0)
+					return false;
+				else
+					return true;
+
+		  }
+
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {

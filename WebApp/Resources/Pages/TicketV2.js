@@ -550,31 +550,35 @@ function CreateNewActionLI() {
   		_oldActionID = self.data('actionid');
   		isFormValid(function (isValid) {
   			if (isValid) {
-  				SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
-  					if (result) {
-  						_isCreatingAction = true;
-  						$('#action-new-editor').parent().fadeOut('normal', function () {
-  							tinymce.activeEditor.destroy();
-  						});
-  						if ($('.upload-queue li').length > 0) {
-  							UploadAttachments(result);
-  						}
-  						else {
-  							_newAction = null;
-  							if (_oldActionID === -1) {
-  								_actionTotal = _actionTotal + 1;
-  								var actionElement = CreateActionElement(result, false);
-  								actionElement.find('.ticket-action-number').text(_actionTotal);
+  				top.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (result) {
+  					if (!result)
+  						alert("At least one of the contacts associated with this ticket does not have an email address and will not be notified when you add this public action.");
+  					SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
+  						if (result) {
+  							_isCreatingAction = true;
+  							$('#action-new-editor').parent().fadeOut('normal', function () {
+  								tinymce.activeEditor.destroy();
+  							});
+  							if ($('.upload-queue li').length > 0) {
+  								UploadAttachments(result);
   							}
   							else {
-  								UpdateActionElement(result, false);
+  								_newAction = null;
+  								if (_oldActionID === -1) {
+  									_actionTotal = _actionTotal + 1;
+  									var actionElement = CreateActionElement(result, false);
+  									actionElement.find('.ticket-action-number').text(_actionTotal);
+  								}
+  								else {
+  									UpdateActionElement(result, false);
+  								}
   							}
   						}
-  					}
-  					else {
-  					    alert("There was a error creating your action.  Please try again.");
-  					    EnableCreateBtns();
-  					}
+  						else {
+  							alert("There was a error creating your action.  Please try again.");
+  							EnableCreateBtns();
+  						}
+  					});
   				});
   			}
   			else {
