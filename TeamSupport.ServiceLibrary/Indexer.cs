@@ -319,20 +319,7 @@ namespace TeamSupport.ServiceLibrary
                 //if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
                 //job.TempFileDir = tempPath;
 
-                if (organization.OrganizationID == 1078)
-                {
-                    job.IndexingFlags = IndexingFlags.dtsAlwaysAdd;
-                }
-                else
-                {
-                    //per Radomir the dtSearch consultant. replace below with next line
-                    job.IndexingFlags =
-                    	IndexingFlags.dtsAlwaysAdd |
-                    	IndexingFlags.dtsIndexCacheOriginalFile |
-                    	IndexingFlags.dtsIndexCacheText |
-                    	IndexingFlags.dtsIndexCacheTextWithoutFields;
-                    //per Radomir the dtSearch consultant, use this only
-                }
+                job.IndexingFlags = IndexingFlags.dtsAlwaysAdd;
 
                 try
                 {
