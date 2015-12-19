@@ -1814,7 +1814,11 @@ SET IDENTITY_INSERT Users Off
 				UserProducts l
 				LEFT JOIN UserProducts w
 					ON l.ProductID = w.ProductID
-					AND l.ProductVersionID = w.ProductVersionID
+					AND 
+					(
+						(l.ProductVersionID IS NULL AND w.ProductVersionID IS NULL)
+						OR	l.ProductVersionID = w.ProductVersionID
+					)
 					AND w.UserID = @winningUserID 
 			 WHERE
 				l.UserID = @losingUserID

@@ -2755,7 +2755,11 @@ ORDER BY
 				OrganizationProducts l
 				LEFT JOIN OrganizationProducts w
 					ON l.ProductID = w.ProductID
-					AND l.ProductVersionID = w.ProductVersionID
+					AND 
+					(
+						(l.ProductVersionID IS NULL AND w.ProductVersionID IS NULL)
+						OR	l.ProductVersionID = w.ProductVersionID
+					)
 					AND w.OrganizationID = @winningOrganizationID
 			 WHERE
 				l.OrganizationID = @losingOrganizationID
@@ -2817,12 +2821,18 @@ ORDER BY
 		 {
 			 command.CommandText = @"
 			 UPDATE
-				WatercoolerAttachments 
+				l 
 			 SET
-				AttachmentID = @winningOrganizationID 
+				l.AttachmentID = @winningOrganizationID
+			 FROM
+				WatercoolerAttachments l
+				LEFT JOIN WatercoolerAttachments w
+					ON l.MessageID = w.MessageID
+					AND w.AttachmentID = @winningOrganizationID
 			 WHERE
-				AttachmentID = @losingOrganizationID
-				AND RefType = 2";
+				l.AttachmentID = @losingOrganizationID
+				AND l.RefType = 2
+				AND w.MessageID IS NULL";
 			 command.CommandType = CommandType.Text;
 			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
 			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
@@ -2862,9 +2872,28 @@ ORDER BY
 		 {
 			 command.CommandText = @"
 			 UPDATE
-				CalendarRef 
+				l 
 			 SET
-				RefID = @winningOrganizationID 
+				l.RefID = @winningOrganizationID 
+			 FROM
+				CalendarRef l
+				LEFT JOIN CalendarRef w
+					ON l.CalendarID = w.CalendarID
+					AND w.RefID = @winningOrganizationID  
+			 WHERE
+				l.RefID = @losingOrganizationID
+				AND l.RefType = 2
+				AND w.CalendarID IS NULL";
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+			 command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+			 ExecuteNonQuery(command, "CalendarRef");
+		 }
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText = @"
+			 DELETE
+				CalendarRef
 			 WHERE
 				RefID = @losingOrganizationID
 				AND RefType = 2";

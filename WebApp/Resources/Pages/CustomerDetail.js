@@ -1332,12 +1332,17 @@ $(document).ready(function () {
     			top.Ts.Services.Organizations.GetOrganization(ui.item.id, function (info) {
     				var descriptionString = info.Description;
 
-    				if (ellipseString(info.Description, 30).indexOf("<img src") !== -1)
+    				if (descriptionString == null)
+    				{
+    					descriptionString = "";
+    				}
+
+    				if (ellipseString(descriptionString, 30).indexOf("<img src") !== -1)
     					descriptionString = "This company description starts off with an embedded/linked image. We have disabled this for the preview.";
-    				else if (ellipseString(info.Description, 30).indexOf(".viewscreencast.com") !== -1)
+    				else if (ellipseString(descriptionString, 30).indexOf(".viewscreencast.com") !== -1)
     					descriptionString = "This company description starts off with an embedded recorded video.  We have disabled this for the preview.";
     				else
-    					descriptionString = ellipseString(info.Description, 30);
+    					descriptionString = ellipseString(descriptionString, 30);
 
     				var companyPreviewName = "<div><strong>Company Name:</strong> " + info.Name + "</div>";
     				var companyPreviewWebsite = "<div><strong>Company Website:</strong> " + info.Website + "</div>";
@@ -1370,7 +1375,9 @@ $(document).ready(function () {
     		//var winningCompanyName = $('#Company-Merge-search').data('organizationname');
     		var JSTop = top;
     		//var window = window;
+    		$('.merge-processing').show();
     		top.Ts.Services.Customers.MergeCompanies(winningID, organizationID, function (result) {
+    			$('.merge-processing').hide();
     			$('#company-merge-complete').removeAttr('disabled');
     			if (result != "")
     				alert(result);
