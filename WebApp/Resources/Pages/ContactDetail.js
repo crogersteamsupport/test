@@ -215,7 +215,9 @@ $(document).ready(function () {
     		//var winningContactName = $('#Contact-Merge-search').data('username');
     		var JSTop = top;
     		//var window = window;
+    		$('.merge-processing').show();
     		top.Ts.Services.Customers.MergeContacts(winningID, userID, function (result) {
+    			$('.merge-processing').hide();
     			$('#contact-merge-complete').removeAttr('disabled');
     			if (result != "")
     				alert(result);
