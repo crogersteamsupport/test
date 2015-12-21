@@ -9,14 +9,14 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(CustomValuProxy))]
-  public class CustomValuProxy
+  [KnownType(typeof(CustomValueProxy))]
+  public class CustomValueProxy
   {
-    public CustomValuProxy() {}
+    public CustomValueProxy() {}
     [DataMember] public int CustomValueID { get; set; }
     [DataMember] public int CustomFieldID { get; set; }
     [DataMember] public int RefID { get; set; }
-    [DataMember] public string CustomValue { get; set; }
+    [DataMember] public string Value { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
@@ -25,16 +25,15 @@ namespace TeamSupport.Data
           
   }
   
-  public partial class CustomValu : BaseItem
+  public partial class CustomValue : BaseItem
   {
-    public CustomValuProxy GetProxy()
+    public CustomValueProxy GetProxy()
     {
-      CustomValuProxy result = new CustomValuProxy();
-      result.ImportFileID = this.ImportFileID;
+      CustomValueProxy result = new CustomValueProxy();
       result.ImportFileID = this.ImportFileID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
-      result.CustomValue = this.CustomValue;
+      result.Value = this.Value;
       result.RefID = this.RefID;
       result.CustomFieldID = this.CustomFieldID;
       result.CustomValueID = this.CustomValueID;

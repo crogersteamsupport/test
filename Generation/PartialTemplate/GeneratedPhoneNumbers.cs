@@ -72,15 +72,15 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
-    public string PhoneNumber
+    public string Number
     {
       get { return (string)Row["PhoneNumber"]; }
       set { Row["PhoneNumber"] = CheckValue("PhoneNumber", value); }
     }
     
-    public int RefType
+    public ReferenceType RefType
     {
-      get { return (int)Row["RefType"]; }
+      get { return (ReferenceType)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     

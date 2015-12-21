@@ -16,8 +16,8 @@ namespace TeamSupport.Data
     [DataMember] public int PhoneID { get; set; }
     [DataMember] public int? PhoneTypeID { get; set; }
     [DataMember] public int RefID { get; set; }
-    [DataMember] public int RefType { get; set; }
-    [DataMember] public string PhoneNumber { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public string Number { get; set; }
     [DataMember] public string Extension { get; set; }
     [DataMember] public string OtherTypeName { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
@@ -38,7 +38,7 @@ namespace TeamSupport.Data
       result.CreatorID = this.CreatorID;
       result.OtherTypeName = this.OtherTypeName;
       result.Extension = this.Extension;
-      result.PhoneNumber = this.PhoneNumber;
+      result.Number = this.Number;
       result.RefType = this.RefType;
       result.RefID = this.RefID;
       result.PhoneTypeID = this.PhoneTypeID;

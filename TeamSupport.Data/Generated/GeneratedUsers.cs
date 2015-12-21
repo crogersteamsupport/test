@@ -130,6 +130,8 @@ namespace TeamSupport.Data
       set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
     }
     
+
+    
     public bool PortalViewOnly
     {
       get { return (bool)Row["PortalViewOnly"]; }
@@ -698,7 +700,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [ApprovedTerms] = @ApprovedTerms,    [ShowWelcomePage] = @ShowWelcomePage,    [UserInformation] = @UserInformation,    [PortalAutoReg] = @PortalAutoReg,    [AppChatID] = @AppChatID,    [AppChatStatus] = @AppChatStatus,    [MenuItems] = @MenuItems,    [TicketRights] = @TicketRights,    [Signature] = @Signature,    [LinkedIn] = @LinkedIn,    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,    [BlockInboundEmail] = @BlockInboundEmail,    [SalesForceID] = @SalesForceID,    [ChangeTicketVisibility] = @ChangeTicketVisibility,    [ChangeKBVisibility] = @ChangeKBVisibility,    [EnforceSingleSession] = @EnforceSingleSession,    [NeedsIndexing] = @NeedsIndexing,    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,    [FontFamily] = @FontFamily,    [FontSize] = @FontSize,    [CanCreateCompany] = @CanCreateCompany,    [CanEditCompany] = @CanEditCompany,    [CanCreateContact] = @CanCreateContact,    [CanEditContact] = @CanEditContact,    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,    [UserCanPinAction] = @UserCanPinAction,    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,    [CanCreateAsset] = @CanCreateAsset,    [CanEditAsset] = @CanEditAsset,    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,    [FilterInactive] = @FilterInactive,    [DisableExporting] = @DisableExporting,    [CanCreateProducts] = @CanCreateProducts,    [CanEditProducts] = @CanEditProducts,    [CanCreateVersions] = @CanCreateVersions,    [CanEditVersions] = @CanEditVersions,    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,    [ProductFamiliesRights] = @ProductFamiliesRights,    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,    [CalGUID] = @CalGUID,    [PortalViewOnly] = @PortalViewOnly,    [verificationPhoneNumber] = @verificationPhoneNumber,    [verificationCode] = @verificationCode,    [verificationCodeExpiration] = @verificationCodeExpiration,    [PasswordCreatedUtc] = @PasswordCreatedUtc,    [ImportFileID] = @ImportFileID    WHERE ([UserID] = @UserID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [ApprovedTerms] = @ApprovedTerms,    [ShowWelcomePage] = @ShowWelcomePage,    [UserInformation] = @UserInformation,    [PortalAutoReg] = @PortalAutoReg,    [AppChatID] = @AppChatID,    [AppChatStatus] = @AppChatStatus,    [MenuItems] = @MenuItems,    [TicketRights] = @TicketRights,    [Signature] = @Signature,    [LinkedIn] = @LinkedIn,    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,    [BlockInboundEmail] = @BlockInboundEmail,    [SalesForceID] = @SalesForceID,    [ChangeTicketVisibility] = @ChangeTicketVisibility,    [ChangeKBVisibility] = @ChangeKBVisibility,    [EnforceSingleSession] = @EnforceSingleSession,    [NeedsIndexing] = @NeedsIndexing,    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,    [FontFamily] = @FontFamily,    [FontSize] = @FontSize,    [CanCreateCompany] = @CanCreateCompany,    [CanEditCompany] = @CanEditCompany,    [CanCreateContact] = @CanCreateContact,    [CanEditContact] = @CanEditContact,    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,    [UserCanPinAction] = @UserCanPinAction,    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,    [CanCreateAsset] = @CanCreateAsset,    [CanEditAsset] = @CanEditAsset,    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,    [FilterInactive] = @FilterInactive,    [DisableExporting] = @DisableExporting,    [CanCreateProducts] = @CanCreateProducts,    [CanEditProducts] = @CanEditProducts,    [CanCreateVersions] = @CanCreateVersions,    [CanEditVersions] = @CanEditVersions,    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,    [ProductFamiliesRights] = @ProductFamiliesRights,    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,    [CalGUID] = @CalGUID,    [PortalViewOnly] = @PortalViewOnly,    [verificationPhoneNumber] = @verificationPhoneNumber,    [verificationCode] = @verificationCode,    [verificationCodeExpiration] = @verificationCodeExpiration,    [PasswordCreatedUtc] = @PasswordCreatedUtc,    [ImportFileID] = @ImportFileID  WHERE ([UserID] = @UserID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
@@ -708,35 +710,35 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Email", SqlDbType.VarChar, 1024);
+		tempParameter = updateCommand.Parameters.Add("Email", SqlDbType.NVarChar, 2500);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("FirstName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("FirstName", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("MiddleName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("MiddleName", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("LastName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("LastName", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Title", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("Title", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1023,7 +1025,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Signature", SqlDbType.VarChar, -1);
+		tempParameter = updateCommand.Parameters.Add("Signature", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1311,7 +1313,6 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		
 		tempParameter = insertCommand.Parameters.Add("PasswordCreatedUtc", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -1571,7 +1572,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Signature", SqlDbType.VarChar, -1);
+		tempParameter = insertCommand.Parameters.Add("Signature", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1872,35 +1873,35 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Title", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("Title", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("LastName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("LastName", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("MiddleName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("MiddleName", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("FirstName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("FirstName", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Email", SqlDbType.VarChar, 1024);
+		tempParameter = insertCommand.Parameters.Add("Email", SqlDbType.NVarChar, 2500);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

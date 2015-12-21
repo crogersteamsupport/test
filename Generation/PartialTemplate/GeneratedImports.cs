@@ -90,9 +90,9 @@ namespace TeamSupport.Data
       set { Row["IsDone"] = CheckValue("IsDone", value); }
     }
     
-    public int RefType
+    public ReferenceType RefType
     {
-      get { return (int)Row["RefType"]; }
+      get { return (ReferenceType)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     

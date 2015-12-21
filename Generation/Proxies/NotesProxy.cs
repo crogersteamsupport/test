@@ -9,12 +9,12 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(NotProxy))]
-  public class NotProxy
+  [KnownType(typeof(NoteProxy))]
+  public class NoteProxy
   {
-    public NotProxy() {}
+    public NoteProxy() {}
     [DataMember] public int NoteID { get; set; }
-    [DataMember] public int RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public string Title { get; set; }
     [DataMember] public string Description { get; set; }
@@ -28,11 +28,11 @@ namespace TeamSupport.Data
           
   }
   
-  public partial class Not : BaseItem
+  public partial class Note : BaseItem
   {
-    public NotProxy GetProxy()
+    public NoteProxy GetProxy()
     {
-      NotProxy result = new NotProxy();
+      NoteProxy result = new NoteProxy();
       result.ImportFileID = this.ImportFileID;
       result.IsAlert = this.IsAlert;
       result.NeedsIndexing = this.NeedsIndexing;

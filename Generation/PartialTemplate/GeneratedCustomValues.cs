@@ -8,11 +8,11 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class CustomValu : BaseItem
+  public partial class CustomValue : BaseItem
   {
     private CustomValues _customValues;
     
-    public CustomValu(DataRow row, CustomValues customValues): base(row, customValues)
+    public CustomValue(DataRow row, CustomValues customValues): base(row, customValues)
     {
       _customValues = customValues;
     }
@@ -54,7 +54,7 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
-    public string CustomValue
+    public string Value
     {
       get { return (string)Row["CustomValue"]; }
       set { Row["CustomValue"] = CheckValue("CustomValue", value); }
@@ -109,7 +109,7 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class CustomValues : BaseCollection, IEnumerable<CustomValu>
+  public partial class CustomValues : BaseCollection, IEnumerable<CustomValue>
   {
     public CustomValues(LoginUser loginUser): base (loginUser)
     {
@@ -129,9 +129,9 @@ namespace TeamSupport.Data
 
 
 
-    public CustomValu this[int index]
+    public CustomValue this[int index]
     {
-      get { return new CustomValu(Table.Rows[index], this); }
+      get { return new CustomValue(Table.Rows[index], this); }
     }
     
 
@@ -139,10 +139,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(CustomValu customValu);
-    partial void AfterRowInsert(CustomValu customValu);
-    partial void BeforeRowEdit(CustomValu customValu);
-    partial void AfterRowEdit(CustomValu customValu);
+    partial void BeforeRowInsert(CustomValue customValue);
+    partial void AfterRowInsert(CustomValue customValue);
+    partial void BeforeRowEdit(CustomValue customValue);
+    partial void AfterRowEdit(CustomValue customValue);
     partial void BeforeRowDelete(int customValueID);
     partial void AfterRowDelete(int customValueID);    
 
@@ -153,11 +153,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public CustomValuProxy[] GetCustomValuProxies()
+    public CustomValueProxy[] GetCustomValueProxies()
     {
-      List<CustomValuProxy> list = new List<CustomValuProxy>();
+      List<CustomValueProxy> list = new List<CustomValueProxy>();
 
-      foreach (CustomValu item in this)
+      foreach (CustomValue item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -324,17 +324,17 @@ namespace TeamSupport.Data
 
 		try
 		{
-		  foreach (CustomValu customValu in this)
+		  foreach (CustomValue customValue in this)
 		  {
-			if (customValu.Row.RowState == DataRowState.Added)
+			if (customValue.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(customValu);
+			  BeforeRowInsert(customValue);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = customValu.Row[parameter.ParameterName];
+				  parameter.Value = customValue.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -345,26 +345,26 @@ namespace TeamSupport.Data
 			  Table.Columns["CustomValueID"].AutoIncrement = false;
 			  Table.Columns["CustomValueID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				customValu.Row["CustomValueID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(customValu);
+				customValue.Row["CustomValueID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(customValue);
 			}
-			else if (customValu.Row.RowState == DataRowState.Modified)
+			else if (customValue.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(customValu);
+			  BeforeRowEdit(customValue);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = customValu.Row[parameter.ParameterName];
+				parameter.Value = customValue.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(customValu);
+			  AfterRowEdit(customValue);
 			}
-			else if (customValu.Row.RowState == DataRowState.Deleted)
+			else if (customValue.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)customValu.Row["CustomValueID", DataRowVersion.Original];
+			  int id = (int)customValue.Row["CustomValueID", DataRowVersion.Original];
 			  deleteCommand.Parameters["CustomValueID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -385,10 +385,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (CustomValu customValu in this)
+      foreach (CustomValue customValue in this)
       {
-        if (customValu.Row.Table.Columns.Contains("CreatorID") && (int)customValu.Row["CreatorID"] == 0) customValu.Row["CreatorID"] = LoginUser.UserID;
-        if (customValu.Row.Table.Columns.Contains("ModifierID")) customValu.Row["ModifierID"] = LoginUser.UserID;
+        if (customValue.Row.Table.Columns.Contains("CreatorID") && (int)customValue.Row["CreatorID"] == 0) customValue.Row["CreatorID"] = LoginUser.UserID;
+        if (customValue.Row.Table.Columns.Contains("ModifierID")) customValue.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -401,24 +401,24 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public CustomValu FindByCustomValueID(int customValueID)
+    public CustomValue FindByCustomValueID(int customValueID)
     {
-      foreach (CustomValu customValu in this)
+      foreach (CustomValue customValue in this)
       {
-        if (customValu.CustomValueID == customValueID)
+        if (customValue.CustomValueID == customValueID)
         {
-          return customValu;
+          return customValue;
         }
       }
       return null;
     }
 
-    public virtual CustomValu AddNewCustomValu()
+    public virtual CustomValue AddNewCustomValue()
     {
       if (Table.Columns.Count < 1) LoadColumns("CustomValues");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new CustomValu(row, this);
+      return new CustomValue(row, this);
     }
     
     public virtual void LoadByCustomValueID(int customValueID)
@@ -432,7 +432,7 @@ namespace TeamSupport.Data
       }
     }
     
-    public static CustomValu GetCustomValu(LoginUser loginUser, int customValueID)
+    public static CustomValue GetCustomValue(LoginUser loginUser, int customValueID)
     {
       CustomValues customValues = new CustomValues(loginUser);
       customValues.LoadByCustomValueID(customValueID);
@@ -447,13 +447,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<CustomValu> Members
+    #region IEnumerable<CustomValue> Members
 
-    public IEnumerator<CustomValu> GetEnumerator()
+    public IEnumerator<CustomValue> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new CustomValu(row, this);
+        yield return new CustomValue(row, this);
       }
     }
 

@@ -8,11 +8,11 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class Not : BaseItem
+  public partial class Note : BaseItem
   {
     private Notes _notes;
     
-    public Not(DataRow row, Notes notes): base(row, notes)
+    public Note(DataRow row, Notes notes): base(row, notes)
     {
       _notes = notes;
     }
@@ -84,9 +84,9 @@ namespace TeamSupport.Data
       set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
-    public int RefType
+    public ReferenceType RefType
     {
-      get { return (int)Row["RefType"]; }
+      get { return (ReferenceType)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
@@ -127,7 +127,7 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class Notes : BaseCollection, IEnumerable<Not>
+  public partial class Notes : BaseCollection, IEnumerable<Note>
   {
     public Notes(LoginUser loginUser): base (loginUser)
     {
@@ -147,9 +147,9 @@ namespace TeamSupport.Data
 
 
 
-    public Not this[int index]
+    public Note this[int index]
     {
-      get { return new Not(Table.Rows[index], this); }
+      get { return new Note(Table.Rows[index], this); }
     }
     
 
@@ -157,10 +157,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(Not not);
-    partial void AfterRowInsert(Not not);
-    partial void BeforeRowEdit(Not not);
-    partial void AfterRowEdit(Not not);
+    partial void BeforeRowInsert(Note note);
+    partial void AfterRowInsert(Note note);
+    partial void BeforeRowEdit(Note note);
+    partial void AfterRowEdit(Note note);
     partial void BeforeRowDelete(int noteID);
     partial void AfterRowDelete(int noteID);    
 
@@ -171,11 +171,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public NotProxy[] GetNotProxies()
+    public NoteProxy[] GetNoteProxies()
     {
-      List<NotProxy> list = new List<NotProxy>();
+      List<NoteProxy> list = new List<NoteProxy>();
 
-      foreach (Not item in this)
+      foreach (Note item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -384,17 +384,17 @@ namespace TeamSupport.Data
 
 		try
 		{
-		  foreach (Not not in this)
+		  foreach (Note note in this)
 		  {
-			if (not.Row.RowState == DataRowState.Added)
+			if (note.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(not);
+			  BeforeRowInsert(note);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = not.Row[parameter.ParameterName];
+				  parameter.Value = note.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -405,26 +405,26 @@ namespace TeamSupport.Data
 			  Table.Columns["NoteID"].AutoIncrement = false;
 			  Table.Columns["NoteID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				not.Row["NoteID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(not);
+				note.Row["NoteID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(note);
 			}
-			else if (not.Row.RowState == DataRowState.Modified)
+			else if (note.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(not);
+			  BeforeRowEdit(note);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = not.Row[parameter.ParameterName];
+				parameter.Value = note.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(not);
+			  AfterRowEdit(note);
 			}
-			else if (not.Row.RowState == DataRowState.Deleted)
+			else if (note.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)not.Row["NoteID", DataRowVersion.Original];
+			  int id = (int)note.Row["NoteID", DataRowVersion.Original];
 			  deleteCommand.Parameters["NoteID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -445,10 +445,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (Not not in this)
+      foreach (Note note in this)
       {
-        if (not.Row.Table.Columns.Contains("CreatorID") && (int)not.Row["CreatorID"] == 0) not.Row["CreatorID"] = LoginUser.UserID;
-        if (not.Row.Table.Columns.Contains("ModifierID")) not.Row["ModifierID"] = LoginUser.UserID;
+        if (note.Row.Table.Columns.Contains("CreatorID") && (int)note.Row["CreatorID"] == 0) note.Row["CreatorID"] = LoginUser.UserID;
+        if (note.Row.Table.Columns.Contains("ModifierID")) note.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -461,24 +461,24 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public Not FindByNoteID(int noteID)
+    public Note FindByNoteID(int noteID)
     {
-      foreach (Not not in this)
+      foreach (Note note in this)
       {
-        if (not.NoteID == noteID)
+        if (note.NoteID == noteID)
         {
-          return not;
+          return note;
         }
       }
       return null;
     }
 
-    public virtual Not AddNewNot()
+    public virtual Note AddNewNote()
     {
       if (Table.Columns.Count < 1) LoadColumns("Notes");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new Not(row, this);
+      return new Note(row, this);
     }
     
     public virtual void LoadByNoteID(int noteID)
@@ -492,7 +492,7 @@ namespace TeamSupport.Data
       }
     }
     
-    public static Not GetNot(LoginUser loginUser, int noteID)
+    public static Note GetNote(LoginUser loginUser, int noteID)
     {
       Notes notes = new Notes(loginUser);
       notes.LoadByNoteID(noteID);
@@ -507,13 +507,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<Not> Members
+    #region IEnumerable<Note> Members
 
-    public IEnumerator<Not> GetEnumerator()
+    public IEnumerator<Note> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new Not(row, this);
+        yield return new Note(row, this);
       }
     }
 

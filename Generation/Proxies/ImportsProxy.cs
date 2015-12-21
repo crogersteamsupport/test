@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     [DataMember] public string FileName { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public Guid ImportGUID { get; set; }
-    [DataMember] public int RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
     [DataMember] public int? AuxID { get; set; }
     [DataMember] public bool IsDone { get; set; }
     [DataMember] public bool IsRunning { get; set; }

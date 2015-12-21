@@ -89,6 +89,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("JiraStatus", "JiraStatus", false, false, false);
       _fieldMap.AddMap("EmailReplyToAddress", "EmailReplyToAddress", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
+      _fieldMap.AddMap("ProductFamily", "ProductFamily", false, false, false);
             
     }
   }

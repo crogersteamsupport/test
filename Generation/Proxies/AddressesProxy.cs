@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public AddressProxy() {}
     [DataMember] public int AddressID { get; set; }
     [DataMember] public int RefID { get; set; }
-    [DataMember] public int RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public string Addr1 { get; set; }
     [DataMember] public string Addr2 { get; set; }

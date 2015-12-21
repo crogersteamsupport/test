@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public ActionProxy() {}
     [DataMember] public int ActionID { get; set; }
     [DataMember] public int? ActionTypeID { get; set; }
-    [DataMember] public int SystemActionTypeID { get; set; }
+    [DataMember] public SystemActionType SystemActionTypeID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public int? TimeSpent { get; set; }
     [DataMember] public DateTime? DateStarted { get; set; }
