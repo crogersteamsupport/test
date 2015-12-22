@@ -158,56 +158,66 @@ namespace TeamSupport.Data
       return this;
     }
 
-    public EmailTemplate ReplaceFields(string objectName, DataRow row)
-    {
-      if (row != null)
-      {
-        int orgID = BaseCollection.LoginUser.UserID < 1 ? _organizationID : BaseCollection.LoginUser.OrganizationID;
-        LoginUser loginUser = new LoginUser(BaseCollection.LoginUser.ConnectionString, BaseCollection.LoginUser.UserID, orgID, null);
+	public EmailTemplate ReplaceFields(string objectName, DataRow row)
+	{
+		if (row != null)
+		{
+			int orgID = BaseCollection.LoginUser.UserID < 1 ? _organizationID : BaseCollection.LoginUser.OrganizationID;
+			LoginUser loginUser = new LoginUser(BaseCollection.LoginUser.ConnectionString, BaseCollection.LoginUser.UserID, orgID, null);
 
-        foreach (DataColumn column in row.Table.Columns)
-        {
-          if (column.DataType == System.Type.GetType("System.DateTime") && row[column] != DBNull.Value)
-            try 
-	          {
-              ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g", loginUser.OrganizationCulture));
-            }
-	          catch (Exception ex)
-	          {
-              ExceptionLogs.LogException(BaseCollection.LoginUser, ex, "EmailTemplates");
-              ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g"));
-            }
-          else if (objectName == "Ticket" && column.ColumnName.ToString().ToLower() == "hoursspent")
-          {
-            try
-            {
-              //Tickets save the time spent in hours (decimal value), so we need to convert it to minutes (*60)
-              double timeSpentInDecimal = double.Parse(row[column].ToString()) * 60;
-              string dateTimeValue = ConvertToTimeText(timeSpentInDecimal.ToString());
-              ReplaceField(objectName, column.ColumnName, dateTimeValue);
-            }
-            catch (Exception ex)
-            {
-              ReplaceField(objectName, column.ColumnName, row[column].ToString());
-            }
-          }
-          else if (objectName == "Action" && column.ColumnName.ToString().ToLower() == "timespent")
-          {
-            //Actions save the time spent in minutes pass it as it is.
-            string dateTimeValue = ConvertToTimeText(row[column].ToString());
-            ReplaceField(objectName, column.ColumnName, dateTimeValue);
-          }
-          else
-            ReplaceField(objectName, column.ColumnName, row[column].ToString());
-        }
-      }
-      else
-      {
-        Subject = ClearFieldPlaceHolders(objectName, Subject);
-        Body = ClearFieldPlaceHolders(objectName, Body);
-      }
-      return this;
-    }
+			foreach (DataColumn column in row.Table.Columns)
+			{
+				if (column.DataType == System.Type.GetType("System.DateTime") && row[column] != DBNull.Value)
+
+				try
+				{
+					ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g", loginUser.OrganizationCulture));
+				}
+				catch (Exception ex)
+				{
+					ExceptionLogs.LogException(BaseCollection.LoginUser, ex, "EmailTemplates");
+					ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g"));
+				}
+				else if (objectName == "Ticket" && column.ColumnName.ToString().ToLower() == "hoursspent")
+				{
+					try
+					{
+						//Tickets save the time spent in hours (decimal value), so we need to convert it to minutes (*60)
+						double timeSpentInDecimal = double.Parse(row[column].ToString()) * 60;
+						string dateTimeValue = ConvertToTimeText(timeSpentInDecimal.ToString());
+						ReplaceField(objectName, column.ColumnName, dateTimeValue);
+					}
+					catch (Exception ex)
+					{
+						ReplaceField(objectName, column.ColumnName, row[column].ToString());
+					}
+				}
+				else if (objectName == "Action" && column.ColumnName.ToString().ToLower() == "timespent")
+				{
+					//Actions save the time spent in minutes pass it as it is.
+					string dateTimeValue = ConvertToTimeText(row[column].ToString());
+					ReplaceField(objectName, column.ColumnName, dateTimeValue);
+				}
+				else if (objectName == "Action" && column.ColumnName.ToString().ToLower() == "description")
+				{
+					string actionDescriptionClean = row[column].ToString();
+					actionDescriptionClean = Regex.Replace(actionDescriptionClean, @"\r\n", "");
+						actionDescriptionClean = Regex.Replace(actionDescriptionClean, @"<p>", "");
+						actionDescriptionClean = Regex.Replace(actionDescriptionClean, @"</p>", "<br />");
+						ReplaceField(objectName, column.ColumnName, actionDescriptionClean);
+				}
+				else
+					ReplaceField(objectName, column.ColumnName, row[column].ToString());
+			}
+		}
+		else
+		{
+			Subject = ClearFieldPlaceHolders(objectName, Subject);
+			Body = ClearFieldPlaceHolders(objectName, Body);
+		}
+
+		return this;
+	}
 
     public static void ReplaceMessageFields(LoginUser loginUser, string objectName, BaseItem baseItem, MailMessage message, int localUserID, int localOrgID) 
     {
