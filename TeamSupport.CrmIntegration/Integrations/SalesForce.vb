@@ -21,18 +21,21 @@ Namespace TeamSupport
             Private SiteAccountTypeString As String
             Private LastUpdateSFFormat  As String
 
-
-
-            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.SalesForce)
 
                 Log.Write("Binding to SF object")
-                Binding = New SforceService()
-                'GridPoint-Sandbox	614460
-                'gridpointtest		  614521
-                'Axcient            674464
-                'CiRBA              741865
-                If CRMLinkRow.UseSandBoxServer Then
+				Binding = New SforceService()
+
+				If (Not Binding.Url Is Nothing) Then
+					Log.Write(String.Format("Url:{0}", Binding.Url.ToString()))
+				End If
+
+				'GridPoint-Sandbox	614460
+				'gridpointtest		  614521
+				'Axcient            674464
+				'CiRBA              741865
+				If CRMLinkRow.UseSandBoxServer Then
                   Binding.Url = "https://test.salesforce.com/services/Soap/u/16.0"
                 End If
 
@@ -66,8 +69,7 @@ Namespace TeamSupport
                 Dim LoginReturn As String = login(Trim(CompanyName), Trim(Password), Trim(SecurityToken))
 
                 If LoginReturn = "OK" Then
-
-                    Log.Write("Logged in OK")
+					Log.Write("Logged in OK")
 
                     'The results will be placed in a list of objects named queryResults
                     'This list has a limit (BatchSize: default value 500 can be set up to 2,000 top) 
@@ -99,7 +101,6 @@ Namespace TeamSupport
                     Log.Write("LastUpdate (last time CRM Sync Ran, in the organization's local timezone) = " + CRMLinkRow.LastLink.ToString())
 
                     Try
-
                         'This code should let us support multiple account types separated by a comma
                         Dim TypeString As String = ""
                         AccountTypeString = String.Empty
@@ -270,7 +271,7 @@ Namespace TeamSupport
 														  Dim LastModifiedDateTime As DateTime
 
 														  Dim records As sObject() = qr.records
-														  Dim contact As sObject = records(i)
+														  'Dim contact As sObject = records(i)
 
 														  With thisCompany
 																.AccountID = records(i).Any(0).InnerText
@@ -1218,19 +1219,29 @@ Namespace TeamSupport
                 Return teamSupportValue
             End Function
 
-            Private Function TranslateDateTimeFieldValue(ByVal salesForceValue As String) As String
-                Dim result As String
+			Private Function TranslateDateTimeFieldValue(ByVal salesForceValue As String) As String
+				Dim result As String
 
-                Try
-                    result = Convert.ToDateTime(salesForceValue).ToString()
-                Catch ex As Exception
-                    result = salesForceValue
-                End Try
+				Try
+					Dim organization As New Organizations(User)
+					organization.LoadByOrganizationID(CRMLinkRow.OrganizationID)
 
-                Return result
-            End Function
+					If (organization.Count > 0) Then
+						Dim organizationTimeZone As TimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(organization(0).TimeZoneID)
+						Log.Write("Organizaton TimeZone: " + organizationTimeZone.DisplayName)
+						Dim convertedToUtc As Date = TimeZoneInfo.ConvertTimeToUtc(Convert.ToDateTime(salesForceValue), organizationTimeZone)
+						result = convertedToUtc.ToString()
+					Else
+						result = Convert.ToDateTime(salesForceValue).ToString()
+					End If
+				Catch ex As Exception
+					result = salesForceValue
+				End Try
 
-            Private Function GetTableColumnName(ByRef viewColumnName) As String
+				Return result
+			End Function
+
+			Private Function GetTableColumnName(ByRef viewColumnName) As String
                 Dim tableColumnName As String
 
                 Select Case viewColumnName.ToLower()
