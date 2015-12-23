@@ -340,7 +340,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Attachments", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("Attachments", SqlDbType.NVarChar, 4000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -502,7 +502,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Attachments", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("Attachments", SqlDbType.NVarChar, 4000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
