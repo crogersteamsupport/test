@@ -121,7 +121,6 @@
  
    getDateString: function(date, showDate, showTime, isUTC)
    {
-	debugger
      if (!date) return "";
      var msDate = date;
      if (!msDate.localeFormat)
