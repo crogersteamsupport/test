@@ -76,6 +76,12 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
+    public int? CrmLinkID
+    {
+      get { return Row["CrmLinkID"] != DBNull.Value ? (int?)Row["CrmLinkID"] : null; }
+      set { Row["CrmLinkID"] = CheckValue("CrmLinkID", value); }
+    }
+    
 
     
 
@@ -192,7 +198,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketLinkToJira] SET     [TicketID] = @TicketID,    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,    [SyncWithJira] = @SyncWithJira,    [JiraID] = @JiraID,    [JiraKey] = @JiraKey,    [JiraLinkURL] = @JiraLinkURL,    [JiraStatus] = @JiraStatus  WHERE ([id] = @id);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketLinkToJira] SET     [TicketID] = @TicketID,    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,    [SyncWithJira] = @SyncWithJira,    [JiraID] = @JiraID,    [JiraKey] = @JiraKey,    [JiraLinkURL] = @JiraLinkURL,    [JiraStatus] = @JiraStatus,    [CrmLinkID] = @CrmLinkID  WHERE ([id] = @id);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("id", SqlDbType.Int, 4);
@@ -251,13 +257,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("CrmLinkID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketLinkToJira] (    [TicketID],    [DateModifiedByJiraSync],    [SyncWithJira],    [JiraID],    [JiraKey],    [JiraLinkURL],    [JiraStatus],    [CreatorID]) VALUES ( @TicketID, @DateModifiedByJiraSync, @SyncWithJira, @JiraID, @JiraKey, @JiraLinkURL, @JiraStatus, @CreatorID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketLinkToJira] (    [TicketID],    [DateModifiedByJiraSync],    [SyncWithJira],    [JiraID],    [JiraKey],    [JiraLinkURL],    [JiraStatus],    [CreatorID],    [CrmLinkID]) VALUES ( @TicketID, @DateModifiedByJiraSync, @SyncWithJira, @JiraID, @JiraKey, @JiraLinkURL, @JiraStatus, @CreatorID, @CrmLinkID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("CrmLinkID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -427,7 +447,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [id], [TicketID], [DateModifiedByJiraSync], [SyncWithJira], [JiraID], [JiraKey], [JiraLinkURL], [JiraStatus], [CreatorID] FROM [dbo].[TicketLinkToJira] WHERE ([id] = @id);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [id], [TicketID], [DateModifiedByJiraSync], [SyncWithJira], [JiraID], [JiraKey], [JiraLinkURL], [JiraStatus], [CreatorID], [CrmLinkID] FROM [dbo].[TicketLinkToJira] WHERE ([id] = @id);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("id", id);
         Fill(command);

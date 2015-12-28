@@ -14,6 +14,7 @@ using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Globalization;
+using System.Linq;
 
 namespace TSWebServices
 {
@@ -101,27 +102,38 @@ namespace TSWebServices
     [WebMethod]
     public ProdProp GetProperties(int productID)
     {
-        LoginUser loginUser = TSAuthentication.GetLoginUser();
-        Products products = new Products(loginUser);
-        products.LoadByProductID(productID);
-        ProductFamilies productFamilies = new ProductFamilies(loginUser);
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Products products = new Products(loginUser);
+      products.LoadByProductID(productID);
+      ProductFamilies productFamilies = new ProductFamilies(loginUser);
 
-        ProdProp prodProp = new ProdProp();
+      ProdProp prodProp = new ProdProp();
 
-        if (products.IsEmpty) return null;
+      if (products.IsEmpty) return null;
 
-        string productFamily = "Empty";
-        if (products[0].ProductFamilyID != null)
-        {
-            productFamilies.LoadByProductFamilyID((int)products[0].ProductFamilyID);
-            productFamily = productFamilies.IsEmpty ? "" : productFamilies[0].Name;
-        }
-        prodProp.ProductFamily = productFamily;
-        prodProp.prodproxy = products[0].GetProxy();
-        prodProp.JiraProjectKey = products[0].JiraProjectKey;
-
-        return prodProp;
-
+      string productFamily = "Empty";
+      if (products[0].ProductFamilyID != null)
+      {
+          productFamilies.LoadByProductFamilyID((int)products[0].ProductFamilyID);
+          productFamily = productFamilies.IsEmpty ? "" : productFamilies[0].Name;
+      }
+      prodProp.ProductFamily = productFamily;
+      prodProp.prodproxy = products[0].GetProxy();
+      prodProp.JiraProjectKey = products[0].JiraProjectKey;
+      prodProp.JiraInstance = "None";
+      JiraInstanceProducts jiraInstanceProducts = new JiraInstanceProducts(loginUser);
+      jiraInstanceProducts.LoadByProductAndOrganization(productID, products[0].OrganizationID, "Jira");
+      JiraInstanceProduct jiraInstanceProduct = jiraInstanceProducts.FirstOrDefault();
+		  
+      if (jiraInstanceProduct != null && jiraInstanceProduct.CrmLinkId > 0)
+      {
+	      CRMLinkTable links = new CRMLinkTable(loginUser);
+	      links.LoadByCRMLinkID(jiraInstanceProduct.CrmLinkId);
+	      prodProp.JiraInstance = links.Where(p => p.CRMLinkID == jiraInstanceProduct.CrmLinkId).Select(p => p.InstanceName).FirstOrDefault();
+	      prodProp.CrmLinkId = jiraInstanceProduct.CrmLinkId;
+      }
+		  
+      return prodProp;
     }
 
     [WebMethod]
@@ -1198,6 +1210,56 @@ namespace TSWebServices
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.ProductVersions, productVersionID, description.ToString());
       return value.ToString() != "" ? value.ToString() : null;
     }
+
+	 [WebMethod]
+	 public bool SetJiraInstance(int productId, int crmLinkId, string instance)
+	 {
+		 bool result = false;
+		 LoginUser loginUser = TSAuthentication.GetLoginUser();
+		 JiraInstanceProducts jiraInstanceProducts = new JiraInstanceProducts(loginUser);
+		 JiraInstanceProduct jiraInstanceProduct = null;
+		 string description  = string.Empty;
+
+		 jiraInstanceProducts.LoadByProductAndOrganization(productId, loginUser.OrganizationID, "Jira");
+
+		 foreach (JiraInstanceProduct existing in jiraInstanceProducts.Where(p => p.CrmLinkId != crmLinkId).ToList())
+		 {
+			 jiraInstanceProducts.DeleteFromDB(existing.JiraInstanceProductsId);
+		 }
+
+		 jiraInstanceProduct = jiraInstanceProducts.Where(p => p.CrmLinkId == crmLinkId).FirstOrDefault();
+
+		 if (crmLinkId > 0)
+		 {
+			 if (jiraInstanceProduct == null || jiraInstanceProduct.JiraInstanceProductsId == 0)
+			 {
+				 jiraInstanceProducts = new JiraInstanceProducts(loginUser);
+				 JiraInstanceProduct newJiraInstanceProduct = jiraInstanceProducts.AddNewJiraInstanceProduct();
+				 newJiraInstanceProduct.CrmLinkId = crmLinkId;
+				 newJiraInstanceProduct.ProductId = productId;
+				 newJiraInstanceProduct.Collection.Save();
+
+				 if (newJiraInstanceProduct.CrmLinkId > 0 && newJiraInstanceProduct.CrmLinkId == crmLinkId)
+				 {
+					 result = true;
+					 description = String.Format("{0} associated product to jira instance {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, instance);
+					 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, productId, description);
+				 }
+			 }
+			 else
+			 {
+				 result = jiraInstanceProduct.CrmLinkId > 0 && jiraInstanceProduct.CrmLinkId == crmLinkId;
+			 }
+		 }
+		 else
+		 {
+			 result = true;
+			 description = String.Format("{0} removed jira instance {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, instance);
+			 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, productId, description);
+		 }
+
+		 return result;
+	 }
   }
 
   [DataContract]
@@ -1287,11 +1349,15 @@ namespace TSWebServices
 
   public class ProdProp
   {
-      [DataMember]
-      public ProductProxy prodproxy { get; set; }
-      [DataMember]
-      public string ProductFamily { get; set; }
-      [DataMember]
-      public string JiraProjectKey { get; set; }
+    [DataMember]
+    public ProductProxy prodproxy { get; set; }
+    [DataMember]
+    public string ProductFamily { get; set; }
+    [DataMember]
+    public string JiraProjectKey { get; set; }
+    [DataMember]
+    public string JiraInstance { get; set; }
+    [DataMember]
+    public int CrmLinkId { get; set; }
   }
 }

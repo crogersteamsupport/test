@@ -19,16 +19,16 @@ namespace TeamSupport.Data
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText =
-        @"
-          SELECT 
+        @"SELECT 
             j.* 
           FROM 
-            TicketsView t
-            JOIN TicketLinkToJira j
-              ON t.TicketID = j.TicketID
+            TicketLinkToJira j
+            JOIN Tickets t
+              ON j.TicketID = t.TicketID
           WHERE 
             j.SyncWithJira = 1
             AND t.OrganizationID = @OrgID 
+			AND j.CrmLinkID = @CrmLinkId
             AND 
             (
               j.DateModifiedByJiraSync IS NULL
@@ -41,10 +41,12 @@ namespace TeamSupport.Data
           ORDER BY 
             t.DateCreated DESC
         ";
+
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
         command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
-        command.CommandTimeout = 60;
+		command.Parameters.AddWithValue("@CrmLinkId", item.CRMLinkID);
+        command.CommandTimeout = 90;
         Fill(command);
       }
     }

@@ -139,12 +139,14 @@ Namespace TeamSupport
 
 			 Dim isDebug As Boolean = Settings.ReadBool("Debug", False)
 
-			 If isDebug Then
+			If isDebug Then
 				Log.Write("Running as Debug. Processing only TeamSupport Sandbox account (13679)")
-			 End If
+			End If
 
-			 If (CRM IsNot Nothing AndAlso Not isDebug) OrElse (CRM IsNot Nothing AndAlso isDebug AndAlso CRMLinkTableItem.OrganizationID = 13679) Then
-				Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
+			If (CRM IsNot Nothing AndAlso Not isDebug) OrElse (CRM IsNot Nothing AndAlso isDebug AndAlso CRMLinkTableItem.OrganizationID = 13679) Then
+						Log.Write(String.Format("Begin processing {0} sync. {1}",
+									CRMType.ToString(),
+									If(String.IsNullOrEmpty(CRMLinkTableItem.InstanceName), "", String.Format("Instance: {0}", CRMLinkTableItem.InstanceName))))
 
 				Try
 				  'if sync processed successfully, log that message. otherwise log an error

@@ -123,6 +123,51 @@ WHERE organizationId = @organizationId AND crmType = 'Jira' AND DefaultProject I
 
       return jiraProjectKeys.ToList();
     }
+
+	 public static int? GetIdBy(int organizationId, string type, int? productId, LoginUser login)
+	 {
+		 int? crmLinkId = null;
+
+		 using (SqlCommand command = new SqlCommand())
+		 {
+			 command.CommandText =
+		  @"
+          SELECT 
+            CrmLinkTable.CrmLinkId
+          FROM 
+            CrmLinkTable
+            JOIN JiraInstanceProducts
+              ON CrmLinkTable.CrmLinkID = JiraInstanceProducts.CrmLinkId
+          WHERE 
+				CrmLinkTable.OrganizationID = @OrganizationId
+				AND CrmLinkTable.CRMType = @CrmType
+				AND (JiraInstanceProducts.ProductId = @ProductId
+						OR (@ProductId IS NULL AND JiraInstanceProducts.ProductId IS NULL))
+        ";
+
+			 command.CommandType = CommandType.Text;
+			 command.Parameters.AddWithValue("@OrganizationId", organizationId);
+			 command.Parameters.AddWithValue("@CrmType", type);
+			 command.Parameters.AddWithValue("@ProductId", (object)productId ?? DBNull.Value);
+
+			 using (SqlConnection connection = new SqlConnection(login.ConnectionString))
+			 {
+				 connection.Open();
+				 SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+				 command.Connection = connection;
+				 command.Transaction = transaction;
+				 command.CommandTimeout = 300;
+				 SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+				 while (reader.Read())
+				 {
+					 crmLinkId = (int?)reader["CrmLinkId"];
+				 }
+			 }
+		 }
+
+		 return crmLinkId;
+	 }
   }
   
 }
