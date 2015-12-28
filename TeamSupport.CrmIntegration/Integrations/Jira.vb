@@ -1,9 +1,7 @@
 ﻿Imports Newtonsoft.Json.Linq
-Imports System.Collections.Generic
 Imports System.IO
 Imports System.Net
 Imports System.Text
-Imports System.Xml
 Imports TeamSupport.Data
 Imports Newtonsoft.Json
 Imports TeamSupport.JIRA
@@ -29,7 +27,7 @@ Namespace TeamSupport
           Success = False
         End If
 
-        Return Success      
+        Return Success
       End Function
 
       Private Function ValidateSyncData() As Boolean
@@ -1695,8 +1693,21 @@ Namespace TeamSupport
                           Log.Write("The author displayName was not found for the comment.")
                         End Try
 
-                        firstLine = String.Format(firstLine, If(String.IsNullOrEmpty(author), "", "by "), If(String.IsNullOrEmpty(author), "", author))
-                        commentDescription = firstLine + commentDescription
+                        Dim addedOnJiraString As String = String.Empty
+						Try
+							Dim addedOnJira As Date = Convert.ToDateTime(newComments(i)("created"))
+
+							If (DateDiff(DateInterval.Day, Today.Date, addedOnJira.Date) <> 0) Then
+								addedOnJiraString = addedOnJira.ToString()
+							End If
+						Catch ex As Exception
+							Log.Write("The created date was not found for the comment.")
+						End Try
+
+						firstLine = String.Format(firstLine,
+												  If(String.IsNullOrEmpty(author), "", "by " + author),
+												  If(String.IsNullOrEmpty(addedOnJiraString), "", " on " + addedOnJiraString))
+						commentDescription = firstLine + commentDescription
                         updateActions(0).Description = commentDescription
 
                         Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
