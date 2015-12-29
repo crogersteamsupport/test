@@ -25,7 +25,7 @@ using System.Linq;
 using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
-using NewRelic.Api;
+using NR = NewRelic.Api;
 
 namespace TSWebServices
 {
@@ -813,13 +813,13 @@ namespace TSWebServices
 				Stopwatch stopWatch = Stopwatch.StartNew();
 				SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, loginUser, filter);
 				stopWatch.Stop();
-				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTickets", stopWatch.ElapsedMilliseconds);
+				NR.Agent.NewRelic.RecordMetric("Custom/SearchTickets", stopWatch.ElapsedMilliseconds);
 
 				//Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
 				if (stopWatch.ElapsedMilliseconds > 500)
 				{
-					NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.OrganizationID);
-					NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchTickets-Term", searchTerm);
+					NR.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.OrganizationID);
+					NR.Agent.NewRelic.AddCustomParameter("SearchTickets-Term", searchTerm);
 				}
 
 				List<AutocompleteItem> items = new List<AutocompleteItem>();
@@ -832,7 +832,7 @@ namespace TSWebServices
                     items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
                 }
 				stopWatch.Stop();
-				NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchTicketsPullData", stopWatch.ElapsedMilliseconds);
+				NR.Agent.NewRelic.RecordMetric("Custom/SearchTicketsPullData", stopWatch.ElapsedMilliseconds);
 
 				return items.ToArray();
             }
@@ -3866,7 +3866,10 @@ WHERE t.TicketID = @TicketID
         {
             bool result = false;
 
-            TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
+			NR.Agent.NewRelic.AddCustomParameter("TicketId", ticketId);
+			NR.Agent.NewRelic.AddCustomParameter("JiraIssueKey", jiraIssueKey);
+
+			TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
             ticketLinkToJira.LoadByTicketID(ticketId);
 
             if (ticketLinkToJira.Count == 0)
@@ -3882,11 +3885,14 @@ WHERE t.TicketID = @TicketID
                     TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
                     ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, "jira", ticket.ProductID, loginUser);
 
-                    if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
+					NR.Agent.NewRelic.AddCustomParameter("CrmLinkIDToUse", ticketLinkToJiraItem.CrmLinkID);
+
+					if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
                     {
                         ticketLinkToJiraItem.Collection.Save();
                         result = true;
-                    }
+						NR.Agent.NewRelic.AddCustomParameter("TicketLinkToJiraId", ticketLinkToJiraItem.id);
+					}
                 }
                 catch (Exception ex)
                 {
