@@ -203,7 +203,7 @@ namespace TeamSupport.ServiceLibrary
       Actions actions = new Actions(LoginUser);
       actions.LoadLatestByTicket(ticket.TicketID, false);
 
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, violationType + " SLA violation occurred");
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, violationType + " SLA " + (isWarning ? "warning" : "violation") + " occurred");
 
       MailMessage message = EmailTemplates.GetSlaEmail(LoginUser, ticket, violationType, isWarning);
 
