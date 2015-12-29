@@ -1818,9 +1818,9 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool SetJiraIssueKey(int ticketID, string jiraIssueKey)
+        public string SetJiraIssueKey(int ticketID, string jiraIssueKey)
         {
-            bool result = false;
+            string result = false.ToString();
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
             result = SetSyncWithJira(loginUser, ticketID, jiraIssueKey);
@@ -1829,9 +1829,9 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool SetSyncWithJira(int ticketID)
+        public string SetSyncWithJira(int ticketID)
         {
-            bool result = false;
+            string result = false.ToString();
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
             result = SetSyncWithJira(loginUser, ticketID, null);
@@ -3862,17 +3862,18 @@ WHERE t.TicketID = @TicketID
             return true;
         }
 
-        private bool SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
+        private string SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
         {
-            bool result = false;
-
+            string result = false.ToString();
+			result = string.Format("TicketId: {0}, jiraIssueKey: {1}", ticketId, jiraIssueKey) + Environment.NewLine;
 			NR.Agent.NewRelic.AddCustomParameter("TicketId", ticketId);
 			NR.Agent.NewRelic.AddCustomParameter("JiraIssueKey", jiraIssueKey);
-
+			result += "Calling ticketLinkToJira.LoadByTicketID" + Environment.NewLine;
 			TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
             ticketLinkToJira.LoadByTicketID(ticketId);
-
-            if (ticketLinkToJira.Count == 0)
+			result += "Done ticketLinkToJira.LoadByTicketID" + Environment.NewLine;
+			result += string.Format("ticketLinkToJira.Count: {0}", ticketLinkToJira.Count) + Environment.NewLine;
+			if (ticketLinkToJira.Count == 0)
             {
                 try
                 {
@@ -3884,19 +3885,20 @@ WHERE t.TicketID = @TicketID
 
                     TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
                     ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, "jira", ticket.ProductID, loginUser);
-
+					result += string.Format("ticketLinkToJiraItem.CrmLinkID: {0}", ticketLinkToJiraItem.CrmLinkID) + Environment.NewLine;
 					NR.Agent.NewRelic.AddCustomParameter("CrmLinkIDToUse", ticketLinkToJiraItem.CrmLinkID);
 
 					if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
                     {
                         ticketLinkToJiraItem.Collection.Save();
-                        result = true;
+						result += "ticketLinkToJiraItem.Collection.Save" + Environment.NewLine;
+						result = true.ToString();
 						NR.Agent.NewRelic.AddCustomParameter("TicketLinkToJiraId", ticketLinkToJiraItem.id);
 					}
                 }
                 catch (Exception ex)
                 {
-                    result = false;
+                    result = false.ToString();
                     ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
                 }
             }
