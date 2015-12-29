@@ -3180,7 +3180,6 @@ var SetupJiraFields = function () {
     e.preventDefault();
     $('.ts-jira-buttons-container').hide();
     top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
-    	alert(result);
       if (result === true) {
         $('#issueKeyValue').text('Pending...');
         $('#issueKey').show();

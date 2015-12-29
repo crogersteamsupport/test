@@ -1818,9 +1818,9 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string SetJiraIssueKey(int ticketID, string jiraIssueKey)
+        public bool SetJiraIssueKey(int ticketID, string jiraIssueKey)
         {
-            string result = false.ToString();
+            bool result = false;
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
             result = SetSyncWithJira(loginUser, ticketID, jiraIssueKey);
@@ -1829,9 +1829,9 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string SetSyncWithJira(int ticketID)
+        public bool SetSyncWithJira(int ticketID)
         {
-            string result = false.ToString();
+            bool result = false;
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
             result = SetSyncWithJira(loginUser, ticketID, null);
@@ -3862,18 +3862,14 @@ WHERE t.TicketID = @TicketID
             return true;
         }
 
-        private string SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
+        private bool SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
         {
-            string result = false.ToString();
-			result = string.Format("TicketId: {0}, jiraIssueKey: {1}", ticketId, jiraIssueKey) + Environment.NewLine;
-			NR.Agent.NewRelic.AddCustomParameter("TicketId", ticketId);
-			NR.Agent.NewRelic.AddCustomParameter("JiraIssueKey", jiraIssueKey);
-			result += "Calling ticketLinkToJira.LoadByTicketID" + Environment.NewLine;
-			TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
+            bool result = false;
+
+            TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
             ticketLinkToJira.LoadByTicketID(ticketId);
-			result += "Done ticketLinkToJira.LoadByTicketID" + Environment.NewLine;
-			result += string.Format("ticketLinkToJira.Count: {0}", ticketLinkToJira.Count) + Environment.NewLine;
-			if (ticketLinkToJira.Count == 0)
+
+            if (ticketLinkToJira.Count == 0)
             {
                 try
                 {
@@ -3884,21 +3880,28 @@ WHERE t.TicketID = @TicketID
                     ticketLinkToJiraItem.CreatorID = loginUser.UserID;
 
                     TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
-                    ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, "jira", ticket.ProductID, loginUser);
-					result += string.Format("ticketLinkToJiraItem.CrmLinkID: {0}", ticketLinkToJiraItem.CrmLinkID) + Environment.NewLine;
-					NR.Agent.NewRelic.AddCustomParameter("CrmLinkIDToUse", ticketLinkToJiraItem.CrmLinkID);
+                    ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, loginUser);
 
-					if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
+					//If product is not associated to an instance then get the 'default' instance
+					if (ticketLinkToJiraItem.CrmLinkID == null || ticketLinkToJiraItem.CrmLinkID <= 0)
+					{
+						CRMLinkTable crmlink = new CRMLinkTable(loginUser);
+						crmlink.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+						ticketLinkToJiraItem.CrmLinkID = crmlink.Where(p => p.InstanceName == "Default"
+																			&& p.CRMType.ToLower() == IntegrationType.Jira.ToString().ToLower())
+																			.Select(p => p.CRMLinkID).FirstOrDefault();
+					}
+
+                    if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
                     {
                         ticketLinkToJiraItem.Collection.Save();
-						result += "ticketLinkToJiraItem.Collection.Save" + Environment.NewLine;
-						result = true.ToString();
-						NR.Agent.NewRelic.AddCustomParameter("TicketLinkToJiraId", ticketLinkToJiraItem.id);
-					}
+                        result = true;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    result = false.ToString();
+                    result = false;
                     ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
                 }
             }
