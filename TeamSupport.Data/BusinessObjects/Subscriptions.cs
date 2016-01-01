@@ -119,5 +119,46 @@ namespace TeamSupport.Data
       ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
     }
 
-  }
+		public static List<int> GetByOrganizationId(LoginUser loginUser, int organizationId)
+		{
+			List<int> subscriptionIds = new List<int>();
+
+			using (SqlCommand command = new SqlCommand())
+			using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+			{
+				command.CommandText = "SELECT RefID FROM Subscriptions WHERE RefID = @RefID AND RefType = @RefType";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@RefID", organizationId);
+				command.Parameters.AddWithValue("@RefType", (int)ReferenceType.Organizations);
+
+				connection.Open();
+				SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+				command.Connection = connection;
+				command.Transaction = transaction;
+				SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+				while (reader.Read())
+				{
+					int refId = (int)reader["RefID"];
+					subscriptionIds.Add(refId);
+				}
+			}
+
+			return subscriptionIds;
+		}
+
+		public static void SetByOrganizationId(LoginUser loginUser, int organizationId, int loserOrganizationId)
+		{
+			Subscriptions subscriptions = new Subscriptions(loginUser);
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "UPDATE Subscriptions SET RefID = @RefID WHERE RefType = @RefType AND RefID = @LoserRefID";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@RefID", organizationId);
+				command.Parameters.AddWithValue("@RefType", (int)ReferenceType.Organizations);
+				command.Parameters.AddWithValue("@LoserRefID", loserOrganizationId);
+				subscriptions.ExecuteNonQuery(command, "Subscriptions");
+			}
+		}
+	}
 }
