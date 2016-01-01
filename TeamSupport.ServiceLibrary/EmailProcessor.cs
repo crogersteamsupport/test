@@ -763,8 +763,32 @@ namespace TeamSupport.ServiceLibrary
             }
 
             TicketStatus status = TicketStatuses.GetTicketStatus(LoginUser, ticket.TicketStatusID);
-            RemoveUser(userList, modifierID);
-            Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
+
+			//If is IsClosedEmail and modifier is Portal user then do not exclude on email
+			bool removeModifier = true;
+
+			if (status.IsClosedEmail && modifierID > 0)
+			{
+				ContactsView contacts = new ContactsView(LoginUser);
+				contacts.LoadByUserID(modifierID);
+				ContactsViewItem contact = contacts.Where(p => p.OrganizationParentID == ticketOrganization.OrganizationID).FirstOrDefault();
+
+				if (contact != null)
+				{
+					removeModifier = !contacts[0].IsPortalUser;
+				}
+			}
+
+			if (removeModifier)
+			{
+				RemoveUser(userList, modifierID);
+				Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
+			}
+			else
+			{
+				Logs.WriteEvent(string.Format("Modifier ({0}) is a Portal user so it won't be removed, so he/she can receive the closed email.", modifierName));
+			}
+            
 
             if (userList.Count < 1)
             {
