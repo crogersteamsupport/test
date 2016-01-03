@@ -301,7 +301,9 @@ namespace TSWebServices
 			TicketLinkToJira ticketLink = new TicketLinkToJira(loginUser);
 			ticketLink.LoadByTicketID(ticketId);
 
-			if (ticketLink != null && ticketLink.Any())
+			if (ticketLink != null
+					&& ticketLink.Any()
+					&& organizationJiraLinks.Where(p => p.CRMLinkID == ticketLink[0].CrmLinkID && p.Active).Any())
 			{
 				result = true;
 			}
@@ -321,8 +323,8 @@ namespace TSWebServices
 					}
 				}
 
-				//if ticket has Product then check if it's associated to Jira instance and get it, if not get default instance, even if it's inactive
-				if (ticketJiraInstance == null)
+				//if ticket does not have Product then use the default instance if it's active
+				if (ticketJiraInstance == null && ticket.ProductID == null)
 				{
 					ticketJiraInstance = organizationJiraLinks.Where(p => p.InstanceName.Trim().ToLower() == "default" && p.Active).SingleOrDefault();
 				}
