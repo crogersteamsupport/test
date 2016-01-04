@@ -864,6 +864,9 @@ AdminInt = function () {
 	function loadPanelNewJiraInstance() {
 		var element = $('.jira .int-panel');
 		element.find('.int-crm-instancename').val("");
+  		element.find('.int-crm-instancename').removeAttr('disabled');
+		_isDefaultJiraInstance = false;
+
 		element.find('.int-crm-host').val("");
 		element.find('.int-crm-user').val("");
 		element.find('.int-crm-password').val("");
