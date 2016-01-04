@@ -18,6 +18,7 @@ using System.Net;
 using System.IO;
 using Newtonsoft.Json;
 using LumenWorks.Framework.IO.Csv;
+using System.Linq;
 
 namespace TSWebServices
 {
@@ -357,7 +358,7 @@ namespace TSWebServices
 
       CRMLinkTable table = new CRMLinkTable(TSAuthentication.GetLoginUser());
       table.LoadByOrganizationID(organizationID);
-      return table.GetCRMLinkTableItemProxies();
+      return table.GetCRMLinkTableItemProxies().OrderBy(p => p.CRMType).Select(p => p).ToArray();
     }
 
     [WebMethod]
