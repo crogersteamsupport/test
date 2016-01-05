@@ -3137,8 +3137,10 @@ namespace TSWebServices
 				Addresses loserOrganizationAddresses = new Addresses(loginUser);
 				loserOrganizationAddresses.LoadByID(losingOrganizationID, ReferenceType.Organizations);
 
-				if ((winnerOrganizationAddresses.Count > 0
-						&& winnerOrganizationAddresses.Count(p => p.Description != null && !string.IsNullOrEmpty(p.Description)) == 0)
+				if (((winnerOrganizationAddresses.Count > 0
+						&& winnerOrganizationAddresses.Count(p => p.Description != null
+																	&& !string.IsNullOrEmpty(p.Description)) == 0)
+						|| winnerOrganizationAddresses.Count == 0)
 					&& loserOrganizationAddresses.Count > 0)
 				{
 					for (int i = 0; i < loserOrganizationAddresses.Count; i++)
