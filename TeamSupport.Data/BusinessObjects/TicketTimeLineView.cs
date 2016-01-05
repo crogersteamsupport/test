@@ -18,7 +18,7 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"WITH BaseQuery AS(
-                                        SELECT *, ROW_NUMBER() OVER (ORDER BY DateCreated, isPinned DESC) AS 'RowNum'
+                                        SELECT *, ROW_NUMBER() OVER (ORDER BY isPinned DESC ,DateCreated  DESC) AS 'RowNum'
 	                                    FROM TicketTimelineView
 	                                    WHERE TicketID = @TicketID
                                     )
