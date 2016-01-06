@@ -124,6 +124,10 @@ $(document).ready(function () {
         $(".userProperties #fieldCompany").toggleClass("link");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
+        if ($(this).hasClass("btn-primary"))
+        	$(this).html('<i class="fa fa-pencil"></i> Edit');
+        else
+        	$(this).html('<i class="fa fa-pencil"></i> Save');
         //$('#contactName').toggleClass("editable");
         $('#contactTabs a:first').tab('show');
     });

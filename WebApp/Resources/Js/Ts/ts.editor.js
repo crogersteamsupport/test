@@ -26,7 +26,7 @@
             moxiemanager_fullscreen: false,
             moxiemanager_title: top.Ts.System.Organization.Name,
             moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
-            paste_data_images: false,
+            paste_data_images: true,
             moxiemanager_image_settings: {
                 moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
                 extensions: 'gif,jpg,jpeg,png'
