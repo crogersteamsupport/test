@@ -9,7 +9,7 @@ namespace TeamSupport.Data
 {
   public partial class CustomerHubAuthenticationItem
   {
-  }
+	}
   
   public partial class CustomerHubAuthentication
   {

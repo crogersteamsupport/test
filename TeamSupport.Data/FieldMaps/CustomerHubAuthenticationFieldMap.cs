@@ -18,6 +18,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableSelfRegister", "EnableSelfRegister", false, false, false);
       _fieldMap.AddMap("EnableRequestAccess", "EnableRequestAccess", false, false, false);
       _fieldMap.AddMap("EnableSSO", "EnableSSO", false, false, false);
+      _fieldMap.AddMap("RequestTicketType", "RequestTicketType", false, false, false);
             
     }
   }

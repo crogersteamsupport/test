@@ -18,6 +18,7 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableSelfRegister { get; set; }
     [DataMember] public bool EnableRequestAccess { get; set; }
     [DataMember] public bool EnableSSO { get; set; }
+    [DataMember] public int RequestTicketType { get; set; }
           
   }
   
@@ -26,6 +27,7 @@ namespace TeamSupport.Data
     public CustomerHubAuthenticationItemProxy GetProxy()
     {
       CustomerHubAuthenticationItemProxy result = new CustomerHubAuthenticationItemProxy();
+      result.RequestTicketType = this.RequestTicketType;
       result.EnableSSO = this.EnableSSO;
       result.EnableRequestAccess = this.EnableRequestAccess;
       result.EnableSelfRegister = this.EnableSelfRegister;
