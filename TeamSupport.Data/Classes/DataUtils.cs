@@ -284,7 +284,7 @@ namespace TeamSupport.Data
 					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS BIT");
 					break;
 				case CustomFieldType.Number:
-					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
+					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS decimal");
 					break;
 				default:
 					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
