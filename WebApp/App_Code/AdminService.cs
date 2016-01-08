@@ -286,10 +286,18 @@ namespace TSWebServices
     /// Checks if the ticket type is allowed to be linked to Jira in the Integration Admin settings. Link should be active in account too.
     /// </summary>
     /// <returns>True or False</returns>
-    [WebMethod]
-    public bool GetIsJiraLinkActiveForTicket(int ticketId)
-    {
+	[WebMethod]
+	public bool GetIsJiraLinkActiveForTicket(int ticketId)
+	{
 		bool result = false;
+		result = !string.IsNullOrEmpty(GetJiraInstanceNameForTicket(ticketId));
+		return result;
+	}
+
+	[WebMethod]
+	public string GetJiraInstanceNameForTicket(int ticketId)
+	{
+		string jiraInstanceName = string.Empty;
 		LoginUser loginUser = TSAuthentication.GetLoginUser();
 		CRMLinkTable organizationLinks = new CRMLinkTable(loginUser);
 		organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
@@ -305,14 +313,19 @@ namespace TSWebServices
 					&& ticketLink.Any()
 					&& organizationJiraLinks.Where(p => p.CRMLinkID == ticketLink[0].CrmLinkID && p.Active).Any())
 			{
-				result = true;
+				CRMLinkTableItem crmJiraInstance = CRMLinkTable.GetCRMLinkTableItem(loginUser, (int)ticketLink[0].CrmLinkID);
+
+				if (crmJiraInstance != null && !string.IsNullOrEmpty(crmJiraInstance.InstanceName))
+				{
+					jiraInstanceName = crmJiraInstance.InstanceName;
+				}
 			}
 			else
 			{
 				TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
 				CRMLinkTableItem ticketJiraInstance = organizationJiraLinks.Where(p => p.Active).FirstOrDefault();
 
-                if (ticket.ProductID != null)
+				if (ticket.ProductID != null)
 				{
 					JiraInstanceProducts jiraInstanceProduct = new JiraInstanceProducts(loginUser);
 					jiraInstanceProduct.LoadByProductAndOrganization((int)ticket.ProductID, ticket.OrganizationID, "Jira");
@@ -333,16 +346,15 @@ namespace TSWebServices
 				{
 					if (string.IsNullOrEmpty(ticketJiraInstance.RestrictedToTicketTypes))
 					{
-						result = true;
+						jiraInstanceName = ticketJiraInstance.InstanceName;
 					}
 					else
 					{
 						foreach (string allowedTicketType in ticketJiraInstance.RestrictedToTicketTypes.Split(','))
 						{
-							result = ticket.TicketTypeID.ToString() == allowedTicketType;
-
-							if (result)
+							if (ticket.TicketTypeID.ToString() == allowedTicketType)
 							{
+								jiraInstanceName = ticketJiraInstance.InstanceName;
 								break;
 							}
 						}
@@ -351,14 +363,14 @@ namespace TSWebServices
 			}
 		}
 
-      return result;
-    }
+		return jiraInstanceName;
+	}
 
-    /// <summary>
-    /// Checks if the Jira Integration is active.
-    /// </summary>
-    /// <returns>True or False</returns>
-    [WebMethod]
+	/// <summary>
+	/// Checks if the Jira Integration is active.
+	/// </summary>
+	/// <returns>True or False</returns>
+		[WebMethod]
     public bool GetIsJiraLinkActiveForOrganization()
     {
       bool result = false;
@@ -811,14 +823,5 @@ namespace TSWebServices
     public int? ParentID { get; set; }
     [DataMember]
     public List<int> CategoryIDs { get; set; }
-  }
-
-  [DataContract]
-  public class JiraInstance
-  {
-    [DataMember]
-    public int CrmLinkId { get; set; }
-    [DataMember]
-    public string Name { get; set; }
   }
 }

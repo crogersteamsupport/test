@@ -3218,7 +3218,7 @@ var SetupJiraFields = function () {
       $('#issueKeyValue').text($.trim($('#issueKeyInput').val()));
       $('#enterIssueKey').hide();
       $('#issueKey').show();
-      //$('#savingIssueKeyImg').show();
+
       top.Ts.Services.Tickets.SetJiraIssueKey(_ticketID, $.trim($('#issueKeyInput').val()), function (result) {
         if (result === false) {
           $('.ts-jira-buttons-container').show();
@@ -3263,43 +3263,52 @@ var SetupJiraFields = function () {
 
 //Load and display the proper fields/values
 var SetupJiraFieldValues = function () {
-  top.Ts.Services.Admin.GetIsJiraLinkActiveForTicket(_ticketID, function (result) {
-    if(result) {
-      if (_ticketInfo.LinkToJira != null) {
-        if (!_ticketInfo.LinkToJira.JiraKey) {
-          $('#issueKeyValue').text('Pending...');
-        }
-        else if (!_ticketInfo.LinkToJira.JiraLinkURL) {
-          $('#issueKeyValue').text(_ticketInfo.LinkToJira.JiraKey);
-          if (_ticketInfo.LinkToJira.JiraKey.indexOf('Error') > -1) {
-            $('#issueKeyValue').closest('.form-group').addClass('fieldError');
-          }
-          else {
-            $('#issueKeyValue').closest('.form-group').addClass('fieldError');
-          }
-        }
-        else {
-          var jiraLink = $('<a>')
-            .attr('href', _ticketInfo.LinkToJira.JiraLinkURL)
-            .attr('target', '_blank')
-            .text(_ticketInfo.LinkToJira.JiraKey)
-            .addClass('jiraLink control-label ticket-anchor ')
-            .prependTo($('#ticket-jirakey-container'));
-        }
+	top.Ts.Services.Admin.GetJiraInstanceNameForTicket(_ticketID, function (result) {
+		if (result.length > 0) {
+			$('#ticket-jirafields').show();
 
-        $('#issueKey').show();
-        $('.ts-jira-buttons-container').hide();
-      }
-      else {
-        $('#issueKey').hide();
-        $('.ts-jira-buttons-container').show();
-      }
-    }
-    else
-    {
-      $('#ticket-jirafields').remove();
-    }
-  });
+		  if (_ticketInfo.LinkToJira != null) {
+			if (!_ticketInfo.LinkToJira.JiraKey) {
+			  $('#issueKeyValue').text('Pending...');
+			}
+			else if (!_ticketInfo.LinkToJira.JiraLinkURL) {
+			  $('#issueKeyValue').text(_ticketInfo.LinkToJira.JiraKey);
+			  if (_ticketInfo.LinkToJira.JiraKey.indexOf('Error') > -1) {
+				$('#issueKeyValue').closest('.form-group').addClass('fieldError');
+			  }
+			  else {
+				$('#issueKeyValue').closest('.form-group').addClass('fieldError');
+			  }
+			}
+			else {
+				if ($(".jiraLink").length) {
+					$(".jiraLink").remove();
+				}
+
+				var jiraLink = $('<a>')
+					  .attr('href', _ticketInfo.LinkToJira.JiraLinkURL)
+					  .attr('target', '_blank')
+					  .attr('title', result + ' instance')
+					  .text(_ticketInfo.LinkToJira.JiraKey)
+					  .addClass('jiraLink control-label ticket-anchor ')
+					  .prependTo($('#ticket-jirakey-container'));
+			}
+
+			$('#issueKey').show();
+			$('.ts-jira-buttons-container').hide();
+		  }
+		  else {
+		  	$('#ticket-jirafields').show();
+		  	$('#issueKey').hide();
+			$('.ts-jira-buttons-container').show();
+			$('#newJiraIssue').attr('title', result + ' instance');
+		  }
+		}
+		else
+		{
+			$('#ticket-jirafields').hide();
+		}
+	});
 };
 
 var getUrls = function (input) {
