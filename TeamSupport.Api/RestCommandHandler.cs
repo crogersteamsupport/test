@@ -27,30 +27,18 @@ namespace TeamSupport.Api
         public void ProcessRequest(HttpContext context)
         {
             int organizationID = int.Parse(context.Request.Headers["OrganizationID"]);
-
-
             try
-
             {
-                string s = System.Web.Configuration.WebConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
-                var start = s.IndexOf('=');
-                var end = s.IndexOf(';');
-                var subStr = s.Substring(start + 1, end - (start + 1));
-
-                string connection = s.Replace(subStr, "API");
-
-                _loginUser = new LoginUser(connection, (int)SystemUser.API, organizationID, null);
+                _loginUser = new LoginUser(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString, (int)SystemUser.API, organizationID, null);
                 _organization = Organizations.GetOrganization(_loginUser, organizationID);
             }
             catch (Exception ex)
             {
                 ExceptionLogs.LogException(_loginUser, ex, "OrgID: " + organizationID.ToString());
-              throw new RestException(HttpStatusCode.Unauthorized);
-
+                throw new RestException(HttpStatusCode.Unauthorized);
             }
 
             ApiLog log = new ApiLogs(_loginUser).AddNewApiLog();
-
 
             context.Response.StatusCode = (int)HttpStatusCode.OK;
             context.Response.ContentType = "text/plain";
