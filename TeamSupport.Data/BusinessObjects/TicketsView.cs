@@ -551,7 +551,24 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadOneByOrganizationId(int organizationId)
+		public void LoadPortalUserTickets(int userID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT *
+																FROM [TeamSupport].[dbo].TicketsView AS UT
+																WHERE CreatorID = @UserID
+																AND IsVisibleOnPortal = 1
+																AND UT.TicketID NOT IN ( SELECT TicketID FROM ForumTickets )
+																ORDER BY TicketNumber DESC
+																";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@UserID", userID);
+				Fill(command);
+			}
+		}
+
+		public void LoadOneByOrganizationId(int organizationId)
     {
       using (SqlCommand command = new SqlCommand())
       {

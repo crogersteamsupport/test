@@ -94,6 +94,22 @@ namespace TeamSupport.Data
     {
       LoadByTicketID(ticketID, false, limitNumber);
     }
-  }
+
+		public void LoadPortalActionsByTicketID(int ticketID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandType = CommandType.Text;
+				command.CommandText = @"SELECT * 
+																FROM ActionsView
+																WHERE TicketID = @TicketID
+																AND IsVisibleOnPortal = 1
+																ORDER BY DateCreated ASC";
+				command.Parameters.AddWithValue("@TicketID", ticketID);
+				Fill(command);
+			}
+
+		}
+	}
   
 }
