@@ -75,8 +75,21 @@ namespace TeamSupport.Data
 
     }
 
+		public void LoadVisibleKBByTicketID(int ticketID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandType = CommandType.Text;
+				command.CommandText = "SELECT * FROM ActionsView WHERE TicketID = @TicketID AND IsKnowledgeBase=1 and IsVisibleOnPortal = 1 ORDER BY DateCreated ASC";
+				command.Parameters.AddWithValue("@TicketID", ticketID);
+				Fill(command);
+			}
 
-    public void LoadLatestByTicket(int ticketID, bool onlyPublic)
+		}
+
+
+
+		public void LoadLatestByTicket(int ticketID, bool onlyPublic)
     {
       using (SqlCommand command = new SqlCommand())
       {

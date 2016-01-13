@@ -36,7 +36,18 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByOrganizationID(int organizationID, ProductType productType)
+		public void LoadPortalTypesByOrganizationID(int organizationID, string orderBy = "Position")
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "SELECT * FROM TicketTypes WHERE OrganizationID = @OrganizationID AND isVisibleOnPortal = 1 ORDER BY " + orderBy;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("OrganizationID", organizationID);
+				Fill(command);
+			}
+		}
+
+		public void LoadByOrganizationID(int organizationID, ProductType productType)
     {
       LoadByOrganizationID(organizationID);
     }

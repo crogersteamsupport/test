@@ -860,6 +860,7 @@ AND ts.IsClosed = 0";
 																WHERE 
 																	OrganizationID              = @OrganizationID 
 																	AND IsKnowledgeBase         = 1
+																	AND IsVisibleOnPortal         = 1
 																	AND KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
 																ORDER BY 
 																	DateModified desc";
