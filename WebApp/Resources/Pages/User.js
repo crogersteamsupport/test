@@ -153,7 +153,7 @@ UserPage = function () {
     $('#activatedOn').text(user.ActivatedOn.toDateString());
     $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
     $('#userTicketPageVersion').text((user.IsClassicView == true ? 'Yes' : 'No'));
-    $('#userTwoFactorCell').text(user.verificationPhoneNumber);
+    if (user.verificationPhoneNumber !== null && user.verificationPhoneNumber !== "") $('#userTwoFactorCell').text(user.verificationPhoneNumber);
 
     if (user.LinkedIn == '')
       $('#userWebsite').html('None');
@@ -324,8 +324,11 @@ UserPage = function () {
          $(this).parent().show().find('img').show();
          var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
         top.Ts.Services.Login.SetupVerificationPhoneNumber(userID, phoneNumb, false, function (result) {
-           $('#twoStepInputDiv').hide();
-           $('#userTwoFactorCell').text(phoneNumb).parent().show();
+				$('#twoStepInputDiv').hide();
+				if (phoneNumb !== null && phoneNumb !== "") {
+        			$('#userTwoFactorCell').text(phoneNumb).parent().show();
+				}
+				else $('#userTwoFactorCell').parent().show();
          },
         function (error) {
           alert('There was an error updating your record.  Please try again.');
