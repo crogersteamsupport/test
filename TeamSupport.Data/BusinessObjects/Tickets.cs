@@ -2083,7 +2083,24 @@ AND u.OrganizationID = @OrganizationID
       }
     }
 
-    public void LoadByTicketNumber(int organizationID, int ticketNumber)
+		public void LoadByPopularKnowledgeBase(int organizationID, int top)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "SELECT TOP " + top.ToString() + @" tickets.*
+																FROM tickets
+																LEFT OUTER JOIN ticketratings ON tickets.ticketid = ticketratings.ticketid
+																WHERE tickets.organizationid = @OrganizationID
+																	AND tickets.isknowledgebase = 1
+																	AND tickets.isvisibleonportal = 1
+																ORDER BY ticketratings.VIEWS DESC";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				Fill(command);
+			}
+		}
+
+		public void LoadByTicketNumber(int organizationID, int ticketNumber)
     {
       using (SqlCommand command = new SqlCommand())
       {
