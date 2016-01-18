@@ -47,6 +47,29 @@
     top.Ts.MainPage.openUser(userid);
   })
 
+	$("body").on("mouseenter", ".ProductAnchor", function (event) {
+		var e = $(this);
+		e.unbind('hover');
+		var ticketid = e.data('ticketid');
+		var productid = e.data('productid');
+		var b = e.closest("label");
+		e.popover({
+			html: true,
+			container: 'body',
+			trigger: 'manual',
+			delay: { "show": 1, "hide": 1000 },
+			content: function () {
+				return $.ajax({
+					url: '../../../Tips/Product.aspx?ProductID=' + productid + '&TicketID=' + ticketid,
+					dataType: 'html',
+					async: false
+				}).responseText;
+			}
+		}).popover('show');
+	});
+
+
+
 	$("body").on("mouseenter", ".AssetAnchor", function (event) {
 	  var e = $(this);
 	  e.unbind('hover');
@@ -140,23 +163,14 @@
     top.Ts.MainPage.openTicketByID(ticketid, true);
   })
 
-	$("body").on("mouseenter", ".ProductAnchor", function (event) {
-	  var e = $(this);
-	  e.unbind('hover');
-	  var ticketid = e.data('ticketid');
-	  var productid = e.data('productid');
-	  e.popover({
-	    html: true,
-	    container: 'body',
-	    trigger: 'hover',
-	    delay: { "show": 1, "hide": 1000 },
-	    content: function () {
-	      return $.ajax({
-	        url: '../../../Tips/Product.aspx?ProductID=' + productid + '&TicketID=' + ticketid,
-	        dataType: 'html',
-	        async: false
-	      }).responseText;
-	    }
-	  }).popover('show');
-	});
+$('body').on('click', function (e) {
+	$('.ProductAnchor').each(function () {
+        //the 'is' for buttons that trigger popups
+        //the 'has' for icons within a button that triggers a popup
+        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+            $(this).popover('hide');
+        }
+    });
+});
+
 });

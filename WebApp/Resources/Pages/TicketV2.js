@@ -271,6 +271,7 @@ $(document).ready(function () {
 
   //Setup WC Area
   SetupWCArea();
+
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -552,7 +553,7 @@ function CreateNewActionLI() {
   			if (isValid) {
   				top.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (result) {
   					if (!result)
-  						alert("At least one of the contacts associated with this ticket does not have an email address and will not be notified when you add this public action.");
+  						alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
   					SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
   						if (result) {
   							_isCreatingAction = true;
@@ -1010,8 +1011,11 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   action.IsVisibleOnPortal = !isPrivate;
 
   action.Description = $('#action-new-editor').html();
-
-  //action.Description = tinymce.activeEditor.getContent();
+  if (action.Description == "") {
+  	action.Description = tinymce.activeEditor.getContent();
+  	if(action.Description = "" && tinymce.activeEditor == null)
+  		top.Ts.Services.System.LogException("TinyMCE Error", "TinyMCE Active Editor is null after trying to capture the text for the ticket action");
+  }
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
   top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
@@ -1250,10 +1254,9 @@ function LoadTicketControls() {
   }
   else {
     $('#ticket-KBInfo').remove();
-    $('#ticket-isKB-RO').text('Visible');
-    $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
+    $('#ticket-isKB-RO').text(_ticketInfo.Ticket.IsKnowledgeBase ?  "True" : "False");
+    $('#ticket-isKB').closest('.form-horizontal').remove();
     $('#ticket-KBVisible-RO').show();
-    $('#ticket-KBCat-RO').show();
   }
 
   $('#ticket-TimeSpent').text(top.Ts.Utils.getTimeSpentText(_ticketInfo.Ticket.HoursSpent));
@@ -3700,7 +3703,8 @@ function CreateTimeLineDelegates() {
         badgeDiv.empty();
 
         if (result) {
-          badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
+        	badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
+        	alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
         }
         else {
           badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
