@@ -81,6 +81,22 @@ namespace TeamSupport.Data
 			}
 		}
 
+		public void LoadPublicSubArticlesByParentID(int parentID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT * 
+																FROM WikiArticles 
+																WHERE [ParentID] = @ParentID
+																	AND IsNull(IsDeleted,0)=0
+																	AND PortalView = 1
+																ORDER BY ArticleName";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ParentID", parentID);
+				Fill(command);
+			}
+		}
+
 		public void LoadSubArticlesByParentID(int parentID)
     {
         using (SqlCommand command = new SqlCommand())
