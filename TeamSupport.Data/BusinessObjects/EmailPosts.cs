@@ -101,6 +101,27 @@ WHERE EmailPostID IN (
         return emails[0];
     }
 
+	 public static void DeleteImportEmailsWithRetryOnDeadLock(LoginUser loginUser)
+	 {
+		 short retryCount = 0;
+
+		 while (retryCount < 5)
+		 {
+			 try
+			 {
+				 DeleteImportEmails(loginUser);
+				 retryCount = 5;
+			 }
+			 catch (System.Data.SqlClient.SqlException ex)
+			 {
+				 if (ex.Number == 1205)// Deadlock                         
+					 retryCount++;
+				 else
+					 throw;
+			 }
+		 } 
+	 }
+
     public static void DeleteImportEmails(LoginUser loginUser)
     {
       EmailPosts emailPosts = new EmailPosts(loginUser);

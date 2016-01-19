@@ -1665,7 +1665,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         company.SupportHoursMonth = ReadInt("SupportHoursPerMonth", company.SupportHoursMonth);
-        company.IsActive = ReadBool("Active", company.IsActive.ToString());
+        company.IsActive = ReadBool("Active", "1");
         company.HasPortalAccess = ReadBool("PortalAccess", company.HasPortalAccess.ToString());
         company.IsApiEnabled = ReadBool("APIEnabled", company.IsApiEnabled.ToString());
         company.IsApiActive = ReadBool("APIEnabled", company.IsApiActive.ToString());
@@ -1936,7 +1936,7 @@ namespace TeamSupport.ServiceLibrary
         string isActive = ReadString("IsActive", string.Empty);
         if (!string.IsNullOrEmpty(isActive))
         {
-          user.IsActive = ReadBool("IsActive", user.IsActive.ToString());
+          user.IsActive = ReadBool("IsActive", "1");
         }
         else
         {
@@ -3433,7 +3433,7 @@ namespace TeamSupport.ServiceLibrary
           tickets.Save();
           _importLog.Write(messagePrefix + "Ticket: '" + ticket.Name + "' was created with TicketID: " + ticket.TicketID.ToString());
         //}
-        EmailPosts.DeleteImportEmails(_importUser);
+        EmailPosts.DeleteImportEmailsWithRetryOnDeadLock(_importUser);
         count++;
 
         //if (count % BULK_LIMIT == 0)
@@ -3502,7 +3502,7 @@ namespace TeamSupport.ServiceLibrary
 			 }
           actions.Save();
         //}
-        EmailPosts.DeleteImportEmails(_importUser);
+        EmailPosts.DeleteImportEmailsWithRetryOnDeadLock(_importUser);
 
       }
       //tickets.BulkSave();
@@ -5566,7 +5566,7 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
-        EmailPosts.DeleteImportEmails(_importUser);
+        EmailPosts.DeleteImportEmailsWithRetryOnDeadLock(_importUser);
 
       }
       catch (Exception)
