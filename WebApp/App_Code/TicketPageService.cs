@@ -18,6 +18,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Diagnostics;
+using ImageResizer;
+using System.Net;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace TSWebServices
 {
@@ -920,6 +924,19 @@ namespace TSWebServices
             };
 
             item.item = itemProxy;
+
+				if (SystemSettings.ReadString(loginUser, "KillScreenR", false.ToString()).ToLower().IndexOf("t") > 0)
+				{
+					if (action.Description != item.item.Message)
+					{
+						ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+						log.ExceptionName = "TinyMCE Error";
+						log.Message = "The original message and the saved message are different and could be trimmed.";
+						log.Collection.Save();
+			
+						return null;
+					}
+				}
 
             Attachments attachments = new Attachments(loginUser);
             attachments.LoadByActionID(item.item.RefID);

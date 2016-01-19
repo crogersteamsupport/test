@@ -15,6 +15,10 @@ using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
 using System.Globalization;
 using System.Linq;
+using ImageResizer;
+using System.Net;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace TSWebServices
 {
@@ -63,6 +67,63 @@ namespace TSWebServices
           user.MenuItems = values;
           user.Collection.Save();
         }
+
+		  public class result
+		  {
+			  public string location;
+		  }
+
+		  [WebMethod]
+		  public void SaveTinyMCEPasteImage()
+		  {
+			  string image = "";
+			  try
+			  {
+
+				  String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
+				  string path = AttachmentPath.GetPath(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, AttachmentPath.Folder.Images);
+				  string filename = Guid.NewGuid().ToString();
+				  HttpFileCollection tinymceImage  = HttpContext.Current.Request.Files;
+				  string domain = Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com");
+
+				  string filepath = String.Format("{0}/dc/{1}/images/{2}.png", domain, TSAuthentication.OrganizationID, filename);
+
+				  tinymceImage[0].SaveAs(path + '\\' + filename + ".png");
+
+				  //byte[] imgbytes = Convert.FromBase64String(image);
+				  //File.WriteAllBytes(temppath + "temp_" + filename + ".png", imgbytes);
+
+				  var lst = new List<result> 
+                          {
+                             new result { location =  "dc/" + TSAuthentication.OrganizationID + "/images/" + filename + ".png"}
+                          };
+								  JavaScriptSerializer serialize = new JavaScriptSerializer();
+								  this.Context.Response.ContentType = "application/json; charset=utf-8";
+								  this.Context.Response.Write("{\"location\": \"" + filepath + "\"}");
+				 
+				  //if (image != "")
+				  //{
+				  //	ImageBuilder.Current.Build(temppath + "temp_" + filename + ".png", path + '\\' + filename + ".png", new ResizeSettings(image));
+				  //	File.Delete(temppath + "temp_" + filename + ".png");
+
+				  //	var lst = new List<result> 
+				  //				{
+				  //					new result { location = TSAuthentication.OrganizationID + "/images/" + filename + ".png"}
+				  //				};
+
+				  //	return JsonConvert.SerializeObject(lst);
+				  //}
+			  }
+			  catch (Exception ex)
+			  {
+				  ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Save Paste Image", image);
+
+
+			  }
+
+
+			  //return "";
+		  }
 
       //tells us whether the logged in user can edit the specified user's account
         [WebMethod]
