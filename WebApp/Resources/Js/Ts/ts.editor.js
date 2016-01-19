@@ -6,8 +6,8 @@
             resizePluginCode = 'autoresize';
         }
         var editorOptions = {
-            plugins: "paste link code textcolor image moxiemanager table " + resizePluginCode,
-            toolbar1: "insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        	plugins: "paste link code textcolor image imagetools moxiemanager table " + resizePluginCode,
+        	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
             toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote | code | table",
             statusbar: true,
             gecko_spellcheck: true,
@@ -58,9 +58,9 @@
                     
                 });
 
-                ed.on('paste', function (ed, e) {
-                    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
-                });
+                //ed.on('paste', function (ed, e) {
+                //    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                //});
 
                 ed.addButton('insertTicket', {
                     title: 'Insert Ticket',
@@ -92,29 +92,29 @@
                     }
                 });
 
-                //ed.addButton('insertPasteImage', {
-                //  title: 'Insert Image from Clipboard',
-                //    //image: '../images/nav/16/imagepaste.png',
-                //    icon: 'awesome fa fa-paste',
-                //    onclick: function () {
+                ed.addButton('insertPasteImage', {
+                  title: 'Insert Image from Clipboard',
+                    //image: '../images/nav/16/imagepaste.png',
+                    icon: 'awesome fa fa-paste',
+                    onclick: function () {
 
-                //      if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer' || (BrowserDetect.browser == 'Mozilla' && BrowserDetect.version < 20)) {
-                //            alert("Sorry, this feature is not supported by your browser");
-                //        }
-                //        else {
-                //            top.Ts.MainPage.pasteImage(null, function (result) {
-                //                ed.focus();
-                //                if (result != "") {
-                //                    var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
-                //                    ed.selection.setContent(html);
-                //                    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
-                //                    ed.execCommand('mceAutoResize');
-                //                    ed.focus();
-                //                }
-                //            });
-                //        }
-                //    }
-                //});
+                      if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer' || (BrowserDetect.browser == 'Mozilla' && BrowserDetect.version < 20)) {
+                            alert("Sorry, this feature is not supported by your browser");
+                        }
+                        else {
+                            top.Ts.MainPage.pasteImage(null, function (result) {
+                                ed.focus();
+                                if (result != "") {
+                                    var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                                    ed.selection.setContent(html);
+                                    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                                    ed.execCommand('mceAutoResize');
+                                    ed.focus();
+                                }
+                            });
+                        }
+                    }
+                });
 
                 ed.addButton('insertUser', {
                     title: 'Insert Userstamp',
