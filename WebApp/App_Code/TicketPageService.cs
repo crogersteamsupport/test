@@ -322,7 +322,7 @@ namespace TSWebServices
 		  {
 				LoginUser loginUser = TSAuthentication.GetLoginUser();
 				SqlCommand command = new SqlCommand();
-				command.CommandText = "select COUNT(*) from UserTickets as ut, Users as u where ut.TicketID=@TicketID and u.UserID = ut.UserID and u.Email = ''";
+				command.CommandText = "select u.FirstName from UserTickets as ut, Users as u where ut.TicketID=@TicketID and u.UserID = ut.UserID and u.Email = ''";
 				command.Parameters.AddWithValue("@TicketID", ticketid.ToString());
 
 				DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
