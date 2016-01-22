@@ -2065,9 +2065,11 @@ AND (
   )
 )
 
-ORDER BY DateLastIndexed";
-//        command.CommandText = "SELECT * FROM Organizations WHERE OrganizationID = 9733";
-        command.CommandType = CommandType.Text;
+ORDER BY DateLastIndexed
+";
+                command.CommandText = "IndexerQuery";
+                //command.CommandType = CommandType.Text;
+                command.CommandType = CommandType.StoredProcedure;
         Fill(command);
       }
     }
@@ -2085,7 +2087,9 @@ ORDER BY DateLastIndexed";
     AND ISNULL((SELECT MAX(u.LastActivity) FROM Users u WHERE u.OrganizationID = o.OrganizationID),'1999-01-01 00:00:00.000') < DATEADD(minute, @LastActive, GETUTCDATE())
     ORDER BY o.LastIndexRebuilt ASC";
 
-        command.CommandType = CommandType.Text;
+        command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "IndexerQuery_Organizations";
+
         command.Parameters.AddWithValue("@DaysOld", daysSinceLastRebuild);
         command.Parameters.AddWithValue("@LastActive", (minutesSinceLastActive * -1));
         Fill(command);

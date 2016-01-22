@@ -2175,46 +2175,49 @@ FROM Tickets t
 LEFT JOIN SlaNotifications sn ON t.TicketID = sn.TicketID
 WHERE  
 (
-( 
+  ( 
     t.SlaViolationTimeClosed IS NOT NULL AND
-    ABS(DATEDIFF(day, t.SlaViolationTimeClosed, GETUTCDATE())) < 1 AND
-    DATEDIFF(minute,  t.SlaViolationTimeClosed, ISNULL(sn.TimeClosedViolationDate, '1/1/1980')) < 10 
+    t.SlaViolationTimeClosed < DATEADD(DAY, 1, GETUTCDATE()) AND 
+	t.SlaViolationTimeClosed > DATEADD(DAY, -1, GETUTCDATE()) AND
+    t.SlaViolationTimeClosed > DATEADD(MINUTE, 10, ISNULL(sn.TimeClosedViolationDate, '1/1/1980')) 
   )
   OR
   (
     t.SlaWarningTimeClosed IS NOT NULL AND
-    ABS(DATEDIFF(day, t.SlaWarningTimeClosed, GETUTCDATE())) < 1 AND
-    DATEDIFF(minute,  t.SlaWarningTimeClosed, ISNULL(sn.TimeClosedWarningDate, '1/1/1980')) < 10 
+    t.SlaWarningTimeClosed < DATEADD(DAY, 1, GETUTCDATE()) AND 
+	t.SlaWarningTimeClosed > DATEADD(DAY, -1, GETUTCDATE()) AND
+    t.SlaWarningTimeClosed > DATEADD(MINUTE, 10, ISNULL(sn.TimeClosedWarningDate, '1/1/1980')) 
   )
   OR
   (
     t.SlaViolationLastAction IS NOT NULL AND
-    ABS(DATEDIFF(day, t.SlaViolationLastAction, GETUTCDATE())) < 1 AND
-    DATEDIFF(minute,  t.SlaViolationLastAction, ISNULL(sn.LastActionViolationDate, '1/1/1980')) < 10 
+    t.SlaViolationLastAction < DATEADD(DAY, 1, GETUTCDATE()) AND 
+	t.SlaViolationLastAction > DATEADD(DAY, -1, GETUTCDATE()) AND
+    t.SlaViolationLastAction > DATEADD(MINUTE, 10, ISNULL(sn.LastActionViolationDate, '1/1/1980')) 
   )
   OR
   (
     t.SlaWarningLastAction IS NOT NULL AND
-    ABS(DATEDIFF(day, t.SlaWarningLastAction, GETUTCDATE())) < 1 AND
-    DATEDIFF(minute,  t.SlaWarningLastAction, ISNULL(sn.LastActionWarningDate, '1/1/1980')) < 10 
+    t.SlaWarningLastAction < DATEADD(DAY, 1, GETUTCDATE()) AND 
+	t.SlaWarningLastAction > DATEADD(DAY, -1, GETUTCDATE()) AND
+    t.SlaWarningLastAction > DATEADD(MINUTE, 10, ISNULL(sn.LastActionWarningDate, '1/1/1980')) 
   )
   OR
   (
     t.SlaViolationInitialResponse IS NOT NULL AND
-    ABS(DATEDIFF(day, t.SlaViolationInitialResponse, GETUTCDATE())) < 1 AND
-    DATEDIFF(minute,  t.SlaViolationInitialResponse, ISNULL(sn.InitialResponseViolationDate, '1/1/1980')) < 10 
+    t.SlaViolationInitialResponse < DATEADD(DAY, 1, GETUTCDATE()) AND 
+	t.SlaViolationInitialResponse > DATEADD(DAY, -1, GETUTCDATE()) AND
+    t.SlaViolationInitialResponse > DATEADD(MINUTE, 10, ISNULL(sn.InitialResponseViolationDate, '1/1/1980')) 
   )
   OR
   (
     t.SlaWarningInitialResponse IS NOT NULL AND
-    ABS(DATEDIFF(day, t.SlaWarningInitialResponse, GETUTCDATE())) < 1 AND
-    DATEDIFF(minute,  t.SlaWarningInitialResponse, ISNULL(sn.InitialResponseWarningDate, '1/1/1980')) < 10 
+    t.SlaWarningInitialResponse < DATEADD(DAY, 1, GETUTCDATE()) AND 
+	t.SlaWarningInitialResponse > DATEADD(DAY, -1, GETUTCDATE()) AND
+    t.SlaWarningInitialResponse > DATEADD(MINUTE, 10, ISNULL(sn.InitialResponseWarningDate, '1/1/1980')) 
   )
-
-)";
-
-
-
+)
+";
 
         command.CommandType = CommandType.Text;
         Fill(command);
