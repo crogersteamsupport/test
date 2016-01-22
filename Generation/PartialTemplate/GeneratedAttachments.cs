@@ -250,7 +250,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("FileName", SqlDbType.NVarChar, 2000);
+		tempParameter = updateCommand.Parameters.Add("FileName", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -271,7 +271,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 19;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Path", SqlDbType.NVarChar, 2000);
+		tempParameter = updateCommand.Parameters.Add("Path", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -398,7 +398,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Path", SqlDbType.NVarChar, 2000);
+		tempParameter = insertCommand.Parameters.Add("Path", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -419,7 +419,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("FileName", SqlDbType.NVarChar, 2000);
+		tempParameter = insertCommand.Parameters.Add("FileName", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

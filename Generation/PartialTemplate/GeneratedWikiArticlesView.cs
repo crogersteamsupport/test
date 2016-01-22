@@ -384,14 +384,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Creator", SqlDbType.NVarChar, 402);
+		tempParameter = updateCommand.Parameters.Add("Creator", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Modifier", SqlDbType.NVarChar, 402);
+		tempParameter = updateCommand.Parameters.Add("Modifier", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -420,14 +420,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Modifier", SqlDbType.NVarChar, 402);
+		tempParameter = insertCommand.Parameters.Add("Modifier", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Creator", SqlDbType.NVarChar, 402);
+		tempParameter = insertCommand.Parameters.Add("Creator", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

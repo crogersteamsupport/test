@@ -111,8 +111,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("UseProductFamilies", "UseProductFamilies", false, false, false);
       _fieldMap.AddMap("IsCustomerInsightsActive", "IsCustomerInsightsActive", false, false, false);
       _fieldMap.AddMap("TwoStepVerificationEnabled", "TwoStepVerificationEnabled", false, false, false);
-      _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
       _fieldMap.AddMap("DaysBeforePasswordExpire", "DaysBeforePasswordExpire", false, false, false);
+      _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
       _fieldMap.AddMap("NoAttachmentsInOutboundEmail", "NoAttachmentsInOutboundEmail", false, false, false);
             
     }

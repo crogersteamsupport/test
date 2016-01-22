@@ -159,10 +159,10 @@ namespace TeamSupport.Data
       set { Row["TicketTypeName"] = CheckValue("TicketTypeName", value); }
     }
     
-    public string Status
+    public string STATUS
     {
-      get { return Row["Status"] != DBNull.Value ? (string)Row["Status"] : null; }
-      set { Row["Status"] = CheckValue("Status", value); }
+      get { return Row["STATUS"] != DBNull.Value ? (string)Row["STATUS"] : null; }
+      set { Row["STATUS"] = CheckValue("STATUS", value); }
     }
     
     public int? StatusPosition
@@ -309,12 +309,6 @@ namespace TeamSupport.Data
       set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
     }
     
-    public string ProductFamily
-    {
-      get { return Row["ProductFamily"] != DBNull.Value ? (string)Row["ProductFamily"] : null; }
-      set { Row["ProductFamily"] = CheckValue("ProductFamily", value); }
-    }
-    
 
     
     public bool NeedsIndexing
@@ -335,10 +329,10 @@ namespace TeamSupport.Data
       set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
-    public string Name
+    public string NAME
     {
-      get { return (string)Row["Name"]; }
-      set { Row["Name"] = CheckValue("Name", value); }
+      get { return (string)Row["NAME"]; }
+      set { Row["NAME"] = CheckValue("NAME", value); }
     }
     
     public int OrganizationID
@@ -644,7 +638,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketsView] SET     [ProductName] = @ProductName,    [ReportedVersion] = @ReportedVersion,    [SolvedVersion] = @SolvedVersion,    [GroupName] = @GroupName,    [TicketTypeName] = @TicketTypeName,    [UserName] = @UserName,    [Status] = @Status,    [StatusPosition] = @StatusPosition,    [SeverityPosition] = @SeverityPosition,    [IsClosed] = @IsClosed,    [Severity] = @Severity,    [TicketNumber] = @TicketNumber,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ParentID] = @ParentID,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [DaysClosed] = @DaysClosed,    [DaysOpened] = @DaysOpened,    [CloserName] = @CloserName,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [HoursSpent] = @HoursSpent,    [Tags] = @Tags,    [SlaViolationTime] = @SlaViolationTime,    [SlaWarningTime] = @SlaWarningTime,    [SlaViolationHours] = @SlaViolationHours,    [SlaWarningHours] = @SlaWarningHours,    [MinsSinceCreated] = @MinsSinceCreated,    [DaysSinceCreated] = @DaysSinceCreated,    [MinsSinceModified] = @MinsSinceModified,    [DaysSinceModified] = @DaysSinceModified,    [Contacts] = @Contacts,    [Customers] = @Customers,    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,    [SlaViolationLastAction] = @SlaViolationLastAction,    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,    [SlaWarningLastAction] = @SlaWarningLastAction,    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,    [NeedsIndexing] = @NeedsIndexing,    [SlaViolationDate] = @SlaViolationDate,    [SlaWarningDate] = @SlaWarningDate,    [TicketSource] = @TicketSource,    [ForumCategory] = @ForumCategory,    [CategoryName] = @CategoryName,    [CreatorEmail] = @CreatorEmail,    [ModifierEmail] = @ModifierEmail,    [KnowledgeBaseCategoryID] = @KnowledgeBaseCategoryID,    [KnowledgeBaseCategoryName] = @KnowledgeBaseCategoryName,    [DueDate] = @DueDate,    [SalesForceID] = @SalesForceID,    [DateModifiedBySalesForceSync] = @DateModifiedBySalesForceSync,    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,    [JiraID] = @JiraID,    [SyncWithJira] = @SyncWithJira,    [JiraKey] = @JiraKey,    [JiraLinkURL] = @JiraLinkURL,    [JiraStatus] = @JiraStatus,    [EmailReplyToAddress] = @EmailReplyToAddress,    [ProductFamilyID] = @ProductFamilyID,    [ProductFamily] = @ProductFamily  WHERE ([TicketID] = @TicketID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketsView] SET     [ProductName] = @ProductName,    [ReportedVersion] = @ReportedVersion,    [SolvedVersion] = @SolvedVersion,    [GroupName] = @GroupName,    [TicketTypeName] = @TicketTypeName,    [UserName] = @UserName,    [STATUS] = @STATUS,    [StatusPosition] = @StatusPosition,    [SeverityPosition] = @SeverityPosition,    [IsClosed] = @IsClosed,    [Severity] = @Severity,    [TicketNumber] = @TicketNumber,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [NAME] = @NAME,    [ParentID] = @ParentID,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [DaysClosed] = @DaysClosed,    [DaysOpened] = @DaysOpened,    [CloserName] = @CloserName,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [HoursSpent] = @HoursSpent,    [Tags] = @Tags,    [SlaViolationTime] = @SlaViolationTime,    [SlaWarningTime] = @SlaWarningTime,    [SlaViolationHours] = @SlaViolationHours,    [SlaWarningHours] = @SlaWarningHours,    [MinsSinceCreated] = @MinsSinceCreated,    [DaysSinceCreated] = @DaysSinceCreated,    [MinsSinceModified] = @MinsSinceModified,    [DaysSinceModified] = @DaysSinceModified,    [Contacts] = @Contacts,    [Customers] = @Customers,    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,    [SlaViolationLastAction] = @SlaViolationLastAction,    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,    [SlaWarningLastAction] = @SlaWarningLastAction,    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,    [NeedsIndexing] = @NeedsIndexing,    [SlaViolationDate] = @SlaViolationDate,    [SlaWarningDate] = @SlaWarningDate,    [TicketSource] = @TicketSource,    [ForumCategory] = @ForumCategory,    [CategoryName] = @CategoryName,    [CreatorEmail] = @CreatorEmail,    [ModifierEmail] = @ModifierEmail,    [KnowledgeBaseCategoryID] = @KnowledgeBaseCategoryID,    [KnowledgeBaseCategoryName] = @KnowledgeBaseCategoryName,    [DueDate] = @DueDate,    [SalesForceID] = @SalesForceID,    [DateModifiedBySalesForceSync] = @DateModifiedBySalesForceSync,    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,    [JiraID] = @JiraID,    [SyncWithJira] = @SyncWithJira,    [JiraKey] = @JiraKey,    [JiraLinkURL] = @JiraLinkURL,    [JiraStatus] = @JiraStatus,    [EmailReplyToAddress] = @EmailReplyToAddress,    [ProductFamilyID] = @ProductFamilyID  WHERE ([TicketID] = @TicketID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
@@ -689,14 +683,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("UserName", SqlDbType.NVarChar, 401);
+		tempParameter = updateCommand.Parameters.Add("UserName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Status", SqlDbType.VarChar, 255);
+		tempParameter = updateCommand.Parameters.Add("STATUS", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -815,7 +809,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.NVarChar, 255);
+		tempParameter = updateCommand.Parameters.Add("NAME", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -871,21 +865,21 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CloserName", SqlDbType.NVarChar, 401);
+		tempParameter = updateCommand.Parameters.Add("CloserName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.NVarChar, 401);
+		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.NVarChar, 401);
+		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1060,14 +1054,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CreatorEmail", SqlDbType.NVarChar, 2500);
+		tempParameter = updateCommand.Parameters.Add("CreatorEmail", SqlDbType.VarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ModifierEmail", SqlDbType.NVarChar, 2500);
+		tempParameter = updateCommand.Parameters.Add("ModifierEmail", SqlDbType.VarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1165,27 +1159,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ProductFamily", SqlDbType.NVarChar, -1);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketsView] (    [TicketID],    [ProductName],    [ReportedVersion],    [SolvedVersion],    [GroupName],    [TicketTypeName],    [UserName],    [Status],    [StatusPosition],    [SeverityPosition],    [IsClosed],    [Severity],    [TicketNumber],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [Name],    [ParentID],    [ModifierID],    [CreatorID],    [DateModified],    [DateCreated],    [DateClosed],    [CloserID],    [DaysClosed],    [DaysOpened],    [CloserName],    [CreatorName],    [ModifierName],    [HoursSpent],    [Tags],    [SlaViolationTime],    [SlaWarningTime],    [SlaViolationHours],    [SlaWarningHours],    [MinsSinceCreated],    [DaysSinceCreated],    [MinsSinceModified],    [DaysSinceModified],    [Contacts],    [Customers],    [SlaViolationTimeClosed],    [SlaViolationLastAction],    [SlaViolationInitialResponse],    [SlaWarningTimeClosed],    [SlaWarningLastAction],    [SlaWarningInitialResponse],    [NeedsIndexing],    [SlaViolationDate],    [SlaWarningDate],    [TicketSource],    [ForumCategory],    [CategoryName],    [CreatorEmail],    [ModifierEmail],    [KnowledgeBaseCategoryID],    [KnowledgeBaseCategoryName],    [DueDate],    [SalesForceID],    [DateModifiedBySalesForceSync],    [DateModifiedByJiraSync],    [JiraID],    [SyncWithJira],    [JiraKey],    [JiraLinkURL],    [JiraStatus],    [EmailReplyToAddress],    [ProductFamilyID],    [ProductFamily]) VALUES ( @TicketID, @ProductName, @ReportedVersion, @SolvedVersion, @GroupName, @TicketTypeName, @UserName, @Status, @StatusPosition, @SeverityPosition, @IsClosed, @Severity, @TicketNumber, @IsVisibleOnPortal, @IsKnowledgeBase, @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @Name, @ParentID, @ModifierID, @CreatorID, @DateModified, @DateCreated, @DateClosed, @CloserID, @DaysClosed, @DaysOpened, @CloserName, @CreatorName, @ModifierName, @HoursSpent, @Tags, @SlaViolationTime, @SlaWarningTime, @SlaViolationHours, @SlaWarningHours, @MinsSinceCreated, @DaysSinceCreated, @MinsSinceModified, @DaysSinceModified, @Contacts, @Customers, @SlaViolationTimeClosed, @SlaViolationLastAction, @SlaViolationInitialResponse, @SlaWarningTimeClosed, @SlaWarningLastAction, @SlaWarningInitialResponse, @NeedsIndexing, @SlaViolationDate, @SlaWarningDate, @TicketSource, @ForumCategory, @CategoryName, @CreatorEmail, @ModifierEmail, @KnowledgeBaseCategoryID, @KnowledgeBaseCategoryName, @DueDate, @SalesForceID, @DateModifiedBySalesForceSync, @DateModifiedByJiraSync, @JiraID, @SyncWithJira, @JiraKey, @JiraLinkURL, @JiraStatus, @EmailReplyToAddress, @ProductFamilyID, @ProductFamily); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketsView] (    [TicketID],    [ProductName],    [ReportedVersion],    [SolvedVersion],    [GroupName],    [TicketTypeName],    [UserName],    [STATUS],    [StatusPosition],    [SeverityPosition],    [IsClosed],    [Severity],    [TicketNumber],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [NAME],    [ParentID],    [ModifierID],    [CreatorID],    [DateModified],    [DateCreated],    [DateClosed],    [CloserID],    [DaysClosed],    [DaysOpened],    [CloserName],    [CreatorName],    [ModifierName],    [HoursSpent],    [Tags],    [SlaViolationTime],    [SlaWarningTime],    [SlaViolationHours],    [SlaWarningHours],    [MinsSinceCreated],    [DaysSinceCreated],    [MinsSinceModified],    [DaysSinceModified],    [Contacts],    [Customers],    [SlaViolationTimeClosed],    [SlaViolationLastAction],    [SlaViolationInitialResponse],    [SlaWarningTimeClosed],    [SlaWarningLastAction],    [SlaWarningInitialResponse],    [NeedsIndexing],    [SlaViolationDate],    [SlaWarningDate],    [TicketSource],    [ForumCategory],    [CategoryName],    [CreatorEmail],    [ModifierEmail],    [KnowledgeBaseCategoryID],    [KnowledgeBaseCategoryName],    [DueDate],    [SalesForceID],    [DateModifiedBySalesForceSync],    [DateModifiedByJiraSync],    [JiraID],    [SyncWithJira],    [JiraKey],    [JiraLinkURL],    [JiraStatus],    [EmailReplyToAddress],    [ProductFamilyID]) VALUES ( @TicketID, @ProductName, @ReportedVersion, @SolvedVersion, @GroupName, @TicketTypeName, @UserName, @STATUS, @StatusPosition, @SeverityPosition, @IsClosed, @Severity, @TicketNumber, @IsVisibleOnPortal, @IsKnowledgeBase, @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @NAME, @ParentID, @ModifierID, @CreatorID, @DateModified, @DateCreated, @DateClosed, @CloserID, @DaysClosed, @DaysOpened, @CloserName, @CreatorName, @ModifierName, @HoursSpent, @Tags, @SlaViolationTime, @SlaWarningTime, @SlaViolationHours, @SlaWarningHours, @MinsSinceCreated, @DaysSinceCreated, @MinsSinceModified, @DaysSinceModified, @Contacts, @Customers, @SlaViolationTimeClosed, @SlaViolationLastAction, @SlaViolationInitialResponse, @SlaWarningTimeClosed, @SlaWarningLastAction, @SlaWarningInitialResponse, @NeedsIndexing, @SlaViolationDate, @SlaWarningDate, @TicketSource, @ForumCategory, @CategoryName, @CreatorEmail, @ModifierEmail, @KnowledgeBaseCategoryID, @KnowledgeBaseCategoryName, @DueDate, @SalesForceID, @DateModifiedBySalesForceSync, @DateModifiedByJiraSync, @JiraID, @SyncWithJira, @JiraKey, @JiraLinkURL, @JiraStatus, @EmailReplyToAddress, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("ProductFamily", SqlDbType.NVarChar, -1);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -1278,14 +1258,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ModifierEmail", SqlDbType.NVarChar, 2500);
+		tempParameter = insertCommand.Parameters.Add("ModifierEmail", SqlDbType.VarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("CreatorEmail", SqlDbType.NVarChar, 2500);
+		tempParameter = insertCommand.Parameters.Add("CreatorEmail", SqlDbType.VarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1460,21 +1440,21 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 24;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.NVarChar, 401);
+		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.NVarChar, 401);
+		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("CloserName", SqlDbType.NVarChar, 401);
+		tempParameter = insertCommand.Parameters.Add("CloserName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1544,7 +1524,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.NVarChar, 255);
+		tempParameter = insertCommand.Parameters.Add("NAME", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1663,14 +1643,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Status", SqlDbType.VarChar, 255);
+		tempParameter = insertCommand.Parameters.Add("STATUS", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("UserName", SqlDbType.NVarChar, 401);
+		tempParameter = insertCommand.Parameters.Add("UserName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1831,7 +1811,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [ProductName], [ReportedVersion], [SolvedVersion], [GroupName], [TicketTypeName], [UserName], [Status], [StatusPosition], [SeverityPosition], [IsClosed], [Severity], [TicketNumber], [IsVisibleOnPortal], [IsKnowledgeBase], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [Name], [ParentID], [ModifierID], [CreatorID], [DateModified], [DateCreated], [DateClosed], [CloserID], [DaysClosed], [DaysOpened], [CloserName], [CreatorName], [ModifierName], [HoursSpent], [Tags], [SlaViolationTime], [SlaWarningTime], [SlaViolationHours], [SlaWarningHours], [MinsSinceCreated], [DaysSinceCreated], [MinsSinceModified], [DaysSinceModified], [Contacts], [Customers], [SlaViolationTimeClosed], [SlaViolationLastAction], [SlaViolationInitialResponse], [SlaWarningTimeClosed], [SlaWarningLastAction], [SlaWarningInitialResponse], [NeedsIndexing], [SlaViolationDate], [SlaWarningDate], [TicketSource], [ForumCategory], [CategoryName], [CreatorEmail], [ModifierEmail], [KnowledgeBaseCategoryID], [KnowledgeBaseCategoryName], [DueDate], [SalesForceID], [DateModifiedBySalesForceSync], [DateModifiedByJiraSync], [JiraID], [SyncWithJira], [JiraKey], [JiraLinkURL], [JiraStatus], [EmailReplyToAddress], [ProductFamilyID], [ProductFamily] FROM [dbo].[TicketsView] WHERE ([TicketID] = @TicketID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [ProductName], [ReportedVersion], [SolvedVersion], [GroupName], [TicketTypeName], [UserName], [STATUS], [StatusPosition], [SeverityPosition], [IsClosed], [Severity], [TicketNumber], [IsVisibleOnPortal], [IsKnowledgeBase], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [NAME], [ParentID], [ModifierID], [CreatorID], [DateModified], [DateCreated], [DateClosed], [CloserID], [DaysClosed], [DaysOpened], [CloserName], [CreatorName], [ModifierName], [HoursSpent], [Tags], [SlaViolationTime], [SlaWarningTime], [SlaViolationHours], [SlaWarningHours], [MinsSinceCreated], [DaysSinceCreated], [MinsSinceModified], [DaysSinceModified], [Contacts], [Customers], [SlaViolationTimeClosed], [SlaViolationLastAction], [SlaViolationInitialResponse], [SlaWarningTimeClosed], [SlaWarningLastAction], [SlaWarningInitialResponse], [NeedsIndexing], [SlaViolationDate], [SlaWarningDate], [TicketSource], [ForumCategory], [CategoryName], [CreatorEmail], [ModifierEmail], [KnowledgeBaseCategoryID], [KnowledgeBaseCategoryName], [DueDate], [SalesForceID], [DateModifiedBySalesForceSync], [DateModifiedByJiraSync], [JiraID], [SyncWithJira], [JiraKey], [JiraLinkURL], [JiraStatus], [EmailReplyToAddress], [ProductFamilyID] FROM [dbo].[TicketsView] WHERE ([TicketID] = @TicketID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketID", ticketID);
         Fill(command);

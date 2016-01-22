@@ -404,14 +404,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("PrimaryContactEmail", SqlDbType.NVarChar, 2500);
+		tempParameter = updateCommand.Parameters.Add("PrimaryContactEmail", SqlDbType.VarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("PrimaryContact", SqlDbType.NVarChar, 402);
+		tempParameter = updateCommand.Parameters.Add("PrimaryContact", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -446,14 +446,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CreatedBy", SqlDbType.NVarChar, 402);
+		tempParameter = updateCommand.Parameters.Add("CreatedBy", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("LastModifiedBy", SqlDbType.NVarChar, 402);
+		tempParameter = updateCommand.Parameters.Add("LastModifiedBy", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -516,7 +516,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("DefaultSupportUser", SqlDbType.NVarChar, 402);
+		tempParameter = updateCommand.Parameters.Add("DefaultSupportUser", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -657,7 +657,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("DefaultSupportUser", SqlDbType.NVarChar, 402);
+		tempParameter = insertCommand.Parameters.Add("DefaultSupportUser", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -720,14 +720,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("LastModifiedBy", SqlDbType.NVarChar, 402);
+		tempParameter = insertCommand.Parameters.Add("LastModifiedBy", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("CreatedBy", SqlDbType.NVarChar, 402);
+		tempParameter = insertCommand.Parameters.Add("CreatedBy", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -776,14 +776,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("PrimaryContact", SqlDbType.NVarChar, 402);
+		tempParameter = insertCommand.Parameters.Add("PrimaryContact", SqlDbType.VarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("PrimaryContactEmail", SqlDbType.NVarChar, 2500);
+		tempParameter = insertCommand.Parameters.Add("PrimaryContactEmail", SqlDbType.VarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
