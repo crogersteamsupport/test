@@ -66,6 +66,7 @@ namespace TeamSupport.Data
         ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TicketID", ticketID);
+		  command.CommandTimeout = 60;
 
         Fill(command);
       }

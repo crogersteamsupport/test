@@ -195,6 +195,7 @@ Namespace TeamSupport
 					 End If
 				  End If
 				Catch ex As Exception
+				  Log.Write(String.Format("Sync Error: {0}", ex.Message))
 				  Log.Write(String.Format("Sync Error: {0}", ex.StackTrace))
 				  Throw ex
 				End Try

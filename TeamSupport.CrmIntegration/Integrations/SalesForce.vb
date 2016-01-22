@@ -2648,10 +2648,10 @@ Namespace TeamSupport
                       End If
                     ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
                       Try
-								'TicketNumber should not be updatable, if it is mapped (a project to remove non updatable fields off the mappings coming soon) then skip it.
-								If cRMLinkField.TSFieldName.Trim().ToLower() = "ticketnumber" Then
-									Throw New Exception
-								End If
+						'TicketNumber should not be updatable, if it is mapped (a project to remove non updatable fields off the mappings coming soon) then skip it.
+						If cRMLinkField.TSFieldName.Trim().ToLower() = "ticketnumber" Then
+							Throw New Exception
+						End If
 
                       If ticket.Row(cRMLinkField.TSFieldName) <> TranslateFieldValue(value, ticket.Row(cRMLinkField.TSFieldName).GetType().Name) Then
                         ticket.Row(cRMLinkField.TSFieldName) = TranslateFieldValue(value, ticket.Row(cRMLinkField.TSFieldName).GetType().Name)

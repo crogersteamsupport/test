@@ -1569,7 +1569,7 @@ namespace TeamSupport.Data
 
         using (SqlCommand command = new SqlCommand())
         {
-			theString.AppendFormat(@"
+				theString.AppendFormat(@"
             WITH TicketIDs 
             AS 
             (
@@ -1639,10 +1639,14 @@ namespace TeamSupport.Data
                 ON TicketIDs.TicketID = tv.TicketID
             ORDER BY
               TicketNumber", SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com"));
-            command.CommandText = theString.ToString();
-            command.CommandType = CommandType.Text;
+				command.CommandText = theString.ToString();
+				command.CommandType = CommandType.Text;
+
+			//command.CommandText = "CRMQuery";
+			//command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
             command.Parameters.AddWithValue("@LastMod", lastModified.HasValue ? lastModified.Value.AddMinutes(-15) : new DateTime(1900,1,1));
+			//command.Parameters.AddWithValue("@url", SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com"));
             Fill(command);
         }
     }
@@ -2002,6 +2006,7 @@ WHERE tgv.OrganizationID = @OrganizationID"
 			command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
 			command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
 			command.Parameters.AddWithValue("@CrmLinkId", item.CRMLinkID);
+			command.CommandTimeout = 90;
 
 			Fill(command);
 		}
