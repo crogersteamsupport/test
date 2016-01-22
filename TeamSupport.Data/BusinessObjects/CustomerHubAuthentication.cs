@@ -7,12 +7,12 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  public partial class CustomerHubAuthenticationItem
-  {
+	public partial class CustomerHubAuthenticationItem
+	{
 	}
-  
-  public partial class CustomerHubAuthentication
-  {
+
+	public partial class CustomerHubAuthentication
+	{
 		public void LoadByCustomerHubID(int customerHubID)
 		{
 			using (SqlCommand command = new SqlCommand())
@@ -24,5 +24,4 @@ namespace TeamSupport.Data
 			}
 		}
 	}
-  
 }
