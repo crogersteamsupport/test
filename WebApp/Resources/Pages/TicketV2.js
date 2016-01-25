@@ -1010,10 +1010,10 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
-  action.Description = $('#action-new-editor').html();
-  if (action.Description == "") {
-  	action.Description = tinymce.activeEditor.getContent();
-  	if(action.Description = "" && tinymce.activeEditor == null)
+  action.Description = tinymce.activeEditor.getContent(); 
+  if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  	action.Description = $('#action-new-editor').html();
+  	if (action.Description = "<p><span></span></p> <p>&nbsp;</p>" && tinymce.activeEditor == null)
   		top.Ts.Services.System.LogException("TinyMCE Error", "TinyMCE Active Editor is null after trying to capture the text for the ticket action");
   }
 
@@ -3704,7 +3704,10 @@ function CreateTimeLineDelegates() {
 
         if (result) {
         	badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
-        	alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
+        	top.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
+        		if (!isInvalid)
+        			alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
+        	});
         }
         else {
           badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
