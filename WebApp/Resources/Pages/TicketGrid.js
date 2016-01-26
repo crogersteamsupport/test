@@ -687,12 +687,18 @@ TicketGrid = function (options) {
     var loader = this._loader;
 
     function getData(from, to, sortcol, isdesc, callback) {
-        ticketLoadFilter.SortColumn = sortcol;
-        ticketLoadFilter.SortAsc = isdesc === false;
+    	if (ticketLoadFilter.IsEnqueued) {
+    		ticketLoadFilter.SortColumn = "QueuePosition";
+    		ticketLoadFilter.SortAsc = true;
+    	}
+    	else {
+    		ticketLoadFilter.SortColumn = sortcol;
+    		ticketLoadFilter.SortAsc = isdesc === false;
+    	}
 
-        req = top.Ts.Services.Tickets.GetTicketRange(from, to, ticketLoadFilter, callback);
+    	req = top.Ts.Services.Tickets.GetTicketRange(from, to, ticketLoadFilter, callback);
 
-        return req;
+    	return req;
     }
 
     function getItemMetadata(index, data) {
