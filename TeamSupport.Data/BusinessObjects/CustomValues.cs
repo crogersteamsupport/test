@@ -300,9 +300,54 @@ ORDER BY cf.Position";
       }
     }
 
-	 // The LoadByReferenceType causes invalid cast exception on cv properties of fields without values.
-	 // This new method only loads fields with existing values to prevent the invalid cast exception.
-	 public void LoadExistingOnlyByReferenceType(int organizationID, ReferenceType refType, int refID)
+		public void LoadByReferenceTypeForPortal(int organizationID, ReferenceType refType, int? auxID, int refID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"
+SELECT 
+cv.CustomValueID, 
+cv.RefID, 
+cv.CustomValue, 
+cv.DateCreated, 
+cv.DateModified, 
+cv.CreatorID, 
+cv.ModifierID, 
+cv.ImportFileID,
+cf.Name, 
+cf.ApiFieldName, 
+cf.FieldType, 
+cf.ListValues, 
+cf.Description, 
+cf.RefType, 
+cf.AuxID, 
+cf.Position, 
+cf.IsVisibleOnPortal, 
+cf.IsFirstIndexSelect,
+cf.IsRequired,
+cf.OrganizationID, 
+cf.CustomFieldID,
+cf.IsRequiredToClose,
+cf.Mask,
+cf.CustomFieldCategoryID
+FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID AND cv.RefID=@RefID
+WHERE cf.OrganizationID = @OrganizationID
+AND cf.IsVisibleOnPortal = 1
+AND cf.RefType=@RefType
+AND (cf.AuxID = @AuxID OR @AuxID < 0)
+ORDER BY cf.Position";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@RefID", refID);
+				command.Parameters.AddWithValue("@RefType", (int)refType);
+				command.Parameters.AddWithValue("@AuxID", auxID ?? -1);
+				Fill(command, "CustomFields, CustomValues");
+			}
+		}
+
+		// The LoadByReferenceType causes invalid cast exception on cv properties of fields without values.
+		// This new method only loads fields with existing values to prevent the invalid cast exception.
+		public void LoadExistingOnlyByReferenceType(int organizationID, ReferenceType refType, int refID)
 	 {
 		 using (SqlCommand command = new SqlCommand())
 		 {
