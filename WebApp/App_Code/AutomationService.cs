@@ -214,24 +214,24 @@ namespace TSWebServices
       afiAssignedUserIsBusy.OtherTrigger = "ticketsview.assignedusernotavailable";
       fieldItems.Add(afiAssignedUserIsBusy);
 
-      AutoFieldItem afiAgentRatings = new AutoFieldItem();
-      afiCurrentDayOfWeek.Alias = "Agent Rating";
-      afiCurrentDayOfWeek.DataType = "list";
-      afiCurrentDayOfWeek.FieldID = 999;
-      afiCurrentDayOfWeek.FieldName = "AgentRating";
-      afiCurrentDayOfWeek.IsCustom = false;
-      afiCurrentDayOfWeek.IsVisible = true;
-      afiCurrentDayOfWeek.ListValues = new string[] { "Positive", "Negative", "Neutral" };
-      afiCurrentDayOfWeek.LookupTableID = null;
-      afiCurrentDayOfWeek.Size = 0;
-      afiCurrentDayOfWeek.Description = "";
-      afiCurrentDayOfWeek.TableID = -2;
-      afiCurrentDayOfWeek.RefType = ReferenceType.Tickets;
-      afiCurrentDayOfWeek.AuxID = null;
-      afiCurrentDayOfWeek.OtherTrigger = "ticketsview.AgentRating";
-      fieldItems.Add(afiAgentRatings);
+			AutoFieldItem afiAgentRatings = new AutoFieldItem();
+			afiAgentRatings.Alias = "Agent Rating";
+			afiAgentRatings.DataType = "list";
+			afiAgentRatings.FieldID = 999;
+			afiAgentRatings.FieldName = "AgentRating";
+			afiAgentRatings.IsCustom = false;
+			afiAgentRatings.IsVisible = true;
+			afiAgentRatings.ListValues = new string[] { "Positive", "Negative", "Neutral" };
+			afiAgentRatings.LookupTableID = null;
+			afiAgentRatings.Size = 0;
+			afiAgentRatings.Description = "";
+			afiAgentRatings.TableID = -2;
+			afiAgentRatings.RefType = ReferenceType.Tickets;
+			afiAgentRatings.AuxID = null;
+			afiAgentRatings.OtherTrigger = "ticketsview.AgentRating";
+			fieldItems.Add(afiAgentRatings);
 
-      result.Fields = fieldItems.ToArray();
+			result.Fields = fieldItems.ToArray();
 
       Users users = new Users(UserSession.LoginUser);
       users.LoadByOrganizationID(UserSession.LoginUser.OrganizationID, true);
