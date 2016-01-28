@@ -415,22 +415,27 @@ $(document).ready(function () {
       $('#productVersionEdit').addClass("disabled");
   });
 
-  initEditor($('#fieldDesc'), function (ed) {
-      $('#fieldDesc').tinymce().focus();
-  });
+  //initEditor($('#fieldDesc'), function (ed) {
+  //    $('#fieldDesc').tinymce().focus();
+  //});
 
   $('#fieldDescription').click(function (e) {
       e.preventDefault();
       if (!$(this).hasClass('editable'))
           return false;
       var header = $(this).hide();
+
+
       top.Ts.System.logAction('Product Version Detail - Edit Description');
       top.Ts.Services.Products.GetVersion(_productVersionID, function (productVersion) {
           var desc = productVersion.Description;
           desc = desc.replace(/<br\s?\/?>/g, "\n");
+          initEditor($('#fieldDesc'), function (ed) {
+          	$('#fieldDesc').tinymce().setContent(desc);
+          	$('#fieldDesc').tinymce().focus();
 
-        $('#fieldDesc').tinymce().setContent(desc);
-        $('#fieldDesc').tinymce().focus();
+          });
+
         //$('#fieldDesc').html(desc);
         $('#descriptionContent').hide();
         $('#descriptionForm').show();

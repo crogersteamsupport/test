@@ -365,6 +365,10 @@ function SetupTicketPage() {
     SetupTicketProperties();
   });
 
+  if (top.Ts.System.Organization.SetNewActionsVisibleToCustomers == false) {
+  	$('#action-add-private').insertBefore('#action-add-public');
+  }
+
   top.Ts.Services.Customers.GetDateFormat(false, function (format) {
     dateFormat = format.replace("yyyy", "yy");
     if (dateFormat.length < 8) {
