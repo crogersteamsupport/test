@@ -34,7 +34,7 @@ namespace TeamSupport.ServiceLibrary
       {
         if (!imports.IsEmpty)
         {
-          _importUser = new Data.LoginUser(LoginUser.ConnectionString, -2, imports[0].OrganizationID, null);
+          _importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, imports[0].OrganizationID, null);
           string path = AttachmentPath.GetPath(_importUser, imports[0].OrganizationID, AttachmentPath.Folder.ImportLogs);
           //string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
           //logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
@@ -369,13 +369,13 @@ namespace TeamSupport.ServiceLibrary
         action.SystemActionTypeID = GetSystemActionTypeID(actionType);
         action.ActionTypeID = GetActionTypeID(actionTypes, actionType);
 
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", action.CreatorID.ToString()), out creatorID)) {
           if (!userList.ContainsValue(creatorID)){
-            creatorID = -2;
+            creatorID = -5;
           }
         }
-        action.CreatorID = creatorID;
+        action.CreatorID = -5;
 
         string desc = ConvertHtmlLineBreaks(ReadString("Description", string.Empty));
         action.Description = desc;
@@ -389,7 +389,7 @@ namespace TeamSupport.ServiceLibrary
         action.DateStarted = ReadDateNull("DateStarted", action.DateStarted.ToString());
         action.ActionSource = "Import";
         action.IsVisibleOnPortal = ReadBool("Visible", action.IsVisibleOnPortal.ToString());
-        action.ModifierID = -2;
+        action.ModifierID = -5;
         action.Name = "";
         action.TicketID = ticketID;
 		  action.ImportID = ReadString("ActionImportID", string.Empty);
@@ -561,16 +561,16 @@ namespace TeamSupport.ServiceLibrary
         }
         asset.DateModified = DateTime.UtcNow;
 
-        int creatorID = -2;
-        if (Int32.TryParse(ReadString("CreatorID", "-2"), out creatorID))
+        int creatorID = -5;
+        if (Int32.TryParse(ReadString("CreatorID", "-5"), out creatorID))
         {
           if (!userList.ContainsValue(creatorID))
           {
-            creatorID = -2;
+            creatorID = -5;
           }
         }
-        asset.CreatorID = creatorID;
-        asset.ModifierID = -2;
+        asset.CreatorID = -5;
+        asset.ModifierID = -5;
         asset.SubPartOf = null;
         //asset.Status = this is a deprecated field
         asset.ImportID = importID;
@@ -669,10 +669,10 @@ namespace TeamSupport.ServiceLibrary
 						 assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
 
 						 assetHistoryItem.DateCreated = now;
-						 assetHistoryItem.Actor = -2;
+						 assetHistoryItem.Actor = -5;
 						 assetHistoryItem.RefType = (int)ReferenceType.Organizations;
 						 assetHistoryItem.DateModified = now;
-						 assetHistoryItem.ModifierID = -2;
+						 assetHistoryItem.ModifierID = -5;
 						 assetHistoryItem.ImportFileID = import.ImportID;
 
 						 assetHistory.Save();
@@ -754,10 +754,10 @@ namespace TeamSupport.ServiceLibrary
 							 assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
 
 							 assetHistoryItem.DateCreated = now;
-							 assetHistoryItem.Actor = -2;
+							 assetHistoryItem.Actor = -5;
 							 assetHistoryItem.RefType = (int)ReferenceType.Organizations;
 							 assetHistoryItem.DateModified = now;
-							 assetHistoryItem.ModifierID = -2;
+							 assetHistoryItem.ModifierID = -5;
 							 assetHistoryItem.ImportFileID = import.ImportID;
 
 							 assetHistory.Save();
@@ -842,10 +842,10 @@ namespace TeamSupport.ServiceLibrary
 					 assetHistoryItem.Comments = ReadString("Comments", assetHistoryItem.Comments);
 
 					 assetHistoryItem.DateCreated = now;
-					 assetHistoryItem.Actor = -2;
+					 assetHistoryItem.Actor = -5;
 					 assetHistoryItem.RefType = (int)ReferenceType.Contacts;
 					 assetHistoryItem.DateModified = now;
-					 assetHistoryItem.ModifierID = -2;
+					 assetHistoryItem.ModifierID = -5;
 					 assetHistoryItem.ImportFileID = import.ImportID;
 
 					 assetHistory.Save();
@@ -1451,12 +1451,12 @@ namespace TeamSupport.ServiceLibrary
           continue;
         }
 
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
         {
           if (!userList.ContainsValue(creatorID))
           {
-            creatorID = -2;
+            creatorID = -5;
           }
         }
         DateTime? dateCreated = ReadDateNull("DateCreated", string.Empty);
@@ -1476,7 +1476,7 @@ namespace TeamSupport.ServiceLibrary
               //if (existingCustomValue.Count > 0)
               //{
               //  existingCustomValue[0].Value = value;
-              //  existingCustomValue[0].ModifierID = -2;
+              //  existingCustomValue[0].ModifierID = -5;
               //  existingCustomValue.Save();
               //  _importLog.Write(messagePrefix + "Updated custom value of field: " + field.FieldName);
               //}
@@ -1491,8 +1491,8 @@ namespace TeamSupport.ServiceLibrary
                 {
                   customValue.DateCreated = (DateTime)dateCreated;
                 }
-                customValue.CreatorID = creatorID;
-                customValue.ModifierID = -2;
+                customValue.CreatorID = -5;
+                customValue.ModifierID = -5;
 					 customValue.ImportFileID = importFileID;
 
                 try
@@ -1691,16 +1691,16 @@ namespace TeamSupport.ServiceLibrary
           company.DateCreated = (DateTime)dateCreated;
         }
 
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
         {
           if (!userList.ContainsValue(creatorID))
           {
-            creatorID = -2;
+            creatorID = -5;
           }
         }
-        company.CreatorID = creatorID;
-        company.ModifierID = -2;
+        company.CreatorID = -5;
+        company.ModifierID = -5;
 		  company.ImportFileID = import.ImportID;
 
         //if (isUpdate)
@@ -1805,12 +1805,12 @@ namespace TeamSupport.ServiceLibrary
         {
           user.DateCreated = (DateTime)dateCreated;
         }
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
         {
           if (!userList.ContainsValue(creatorID))
           {
-            creatorID = -2;
+            creatorID = -5;
           }
         }
 
@@ -1905,8 +1905,8 @@ namespace TeamSupport.ServiceLibrary
               {
                 newCompany.DateCreated = (DateTime)dateCreated;
               }
-              newCompany.CreatorID = creatorID;
-              newCompany.ModifierID = -2;
+              newCompany.CreatorID = -5;
+              newCompany.ModifierID = -5;
 				  newCompany.ImportFileID = import.ImportID;
 
               newCompanies.Save();
@@ -1954,8 +1954,8 @@ namespace TeamSupport.ServiceLibrary
         user.LastLogin = DateTime.UtcNow;
         user.NeedsIndexing = true;
         user.PrimaryGroupID = null;
-        user.CreatorID = creatorID;
-        user.ModifierID = -2;
+        user.CreatorID = -5;
+        user.ModifierID = -5;
 		  user.ImportFileID = import.ImportID;
 
         //if (isUpdate)
@@ -2039,16 +2039,16 @@ namespace TeamSupport.ServiceLibrary
           newAddress.DateCreated = (DateTime)dateCreated;
         }
 
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
         {
           if (!userList.ContainsValue(creatorID))
           {
-            creatorID = -2;
+            creatorID = -5;
           }
         }
-        newAddress.CreatorID = creatorID;
-        newAddress.ModifierID = -2;
+        newAddress.CreatorID = -5;
+        newAddress.ModifierID = -5;
 		  newAddress.ImportFileID = import.ImportID;
 
         int orgID = 0;
@@ -2117,8 +2117,8 @@ namespace TeamSupport.ServiceLibrary
               {
                 newCompany.DateCreated = (DateTime)dateCreated;
               }
-              newCompany.CreatorID = creatorID;
-              newCompany.ModifierID = -2;
+              newCompany.CreatorID = -5;
+              newCompany.ModifierID = -5;
 				  newCompany.ImportFileID = import.ImportID;
 
               newCompanies.Save();
@@ -2208,8 +2208,8 @@ namespace TeamSupport.ServiceLibrary
 						 {
 							newContact.DateCreated = (DateTime)dateCreated;
 						 }
-						 newContact.CreatorID = creatorID;
-						 newContact.ModifierID = -2;
+						 newContact.CreatorID = -5;
+						 newContact.ModifierID = -5;
 						 newContact.ImportFileID = import.ImportID;
 
 						 newContacts.Save();
@@ -2291,8 +2291,8 @@ namespace TeamSupport.ServiceLibrary
           Address address = addresses.AddNewAddress();
           address.RefType = newAddress.RefType;
           address.DateCreated = newAddress.DateCreated;
-          address.CreatorID = newAddress.CreatorID;
-          address.ModifierID = newAddress.ModifierID;
+          address.CreatorID = -5;
+          address.ModifierID = -5;
           address.RefID = newAddress.RefID;
           address.Description = newAddress.Description;
           address.Addr1 = newAddress.Addr1;
@@ -2365,21 +2365,21 @@ namespace TeamSupport.ServiceLibrary
           newPhoneNumber3.DateCreated = (DateTime)dateCreated;
         }
 
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
         {
           if (!userList.ContainsValue(creatorID))
           {
-            creatorID = -2;
+            creatorID = -5;
           }
         }
-        newPhoneNumber.CreatorID = creatorID;
-        newPhoneNumber2.CreatorID = creatorID;
-        newPhoneNumber3.CreatorID = creatorID;
+        newPhoneNumber.CreatorID = -5;
+        newPhoneNumber2.CreatorID = -5;
+        newPhoneNumber3.CreatorID = -5;
         
-        newPhoneNumber.ModifierID = -2;
-        newPhoneNumber2.ModifierID = -2;
-        newPhoneNumber3.ModifierID = -2;
+        newPhoneNumber.ModifierID = -5;
+        newPhoneNumber2.ModifierID = -5;
+        newPhoneNumber3.ModifierID = -5;
 
         int orgID = 0;
         string companyName = string.Empty;
@@ -2447,10 +2447,10 @@ namespace TeamSupport.ServiceLibrary
               {
                 newCompany.DateCreated = (DateTime)dateCreated;
               }
-              newCompany.CreatorID = creatorID;
+              newCompany.CreatorID = -5;
 				  newCompany.ImportFileID = import.ImportID;
 
-              newCompany.ModifierID = -2;
+              newCompany.ModifierID = -5;
               newCompanies.Save();
               orgID = newCompany.OrganizationID;
             }
@@ -2543,8 +2543,8 @@ namespace TeamSupport.ServiceLibrary
 						 {
 							newContact.DateCreated = (DateTime)dateCreated;
 						 }
-						 newContact.CreatorID = creatorID;
-						 newContact.ModifierID = -2;
+						 newContact.CreatorID = -5;
+						 newContact.ModifierID = -5;
 						 newContact.ImportFileID = import.ImportID;
 
 						 newContacts.Save();
@@ -2636,7 +2636,7 @@ namespace TeamSupport.ServiceLibrary
           {
             newPhoneType.DateCreated = (DateTime)dateCreated;
           }
-          newPhoneType.CreatorID = creatorID;
+          newPhoneType.CreatorID = -5;
           newPhoneTypes.Save();
           phoneTypeID = newPhoneType.PhoneTypeID;
 
@@ -2662,7 +2662,7 @@ namespace TeamSupport.ServiceLibrary
             {
               newPhoneType.DateCreated = (DateTime)dateCreated;
             }
-            newPhoneType.CreatorID = creatorID;
+            newPhoneType.CreatorID = -5;
             newPhoneTypes.Save();
             phoneTypeID = newPhoneType.PhoneTypeID;
 
@@ -2689,7 +2689,7 @@ namespace TeamSupport.ServiceLibrary
             {
               newPhoneType.DateCreated = (DateTime)dateCreated;
             }
-            newPhoneType.CreatorID = creatorID;
+            newPhoneType.CreatorID = -5;
             newPhoneTypes.Save();
             phoneTypeID = newPhoneType.PhoneTypeID;
 
@@ -2738,8 +2738,8 @@ namespace TeamSupport.ServiceLibrary
           PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
           phoneNumber.RefType = newPhoneNumber.RefType;
           phoneNumber.DateCreated = newPhoneNumber.DateCreated;
-          phoneNumber.CreatorID = newPhoneNumber.CreatorID;
-          phoneNumber.ModifierID = newPhoneNumber.ModifierID;
+          phoneNumber.CreatorID = -5;
+          phoneNumber.ModifierID = -5;
           phoneNumber.RefID = newPhoneNumber.RefID;
           phoneNumber.Number = newPhoneNumber.Number;
           phoneNumber.Extension = newPhoneNumber.Extension;
@@ -2774,8 +2774,8 @@ namespace TeamSupport.ServiceLibrary
             PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
             phoneNumber.RefType = newPhoneNumber2.RefType;
             phoneNumber.DateCreated = newPhoneNumber2.DateCreated;
-            phoneNumber.CreatorID = newPhoneNumber2.CreatorID;
-            phoneNumber.ModifierID = newPhoneNumber2.ModifierID;
+            phoneNumber.CreatorID = -5;
+            phoneNumber.ModifierID = -5;
             phoneNumber.RefID = newPhoneNumber2.RefID;
             phoneNumber.Number = newPhoneNumber2.Number;
             phoneNumber.Extension = newPhoneNumber2.Extension;
@@ -2811,8 +2811,8 @@ namespace TeamSupport.ServiceLibrary
             PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
             phoneNumber.RefType = newPhoneNumber3.RefType;
             phoneNumber.DateCreated = newPhoneNumber3.DateCreated;
-            phoneNumber.CreatorID = newPhoneNumber3.CreatorID;
-            phoneNumber.ModifierID = newPhoneNumber3.ModifierID;
+            phoneNumber.CreatorID = -5;
+            phoneNumber.ModifierID = -5;
             phoneNumber.RefID = newPhoneNumber3.RefID;
             phoneNumber.Number = newPhoneNumber3.Number;
             phoneNumber.Extension = newPhoneNumber3.Extension;
@@ -2994,10 +2994,10 @@ namespace TeamSupport.ServiceLibrary
           ticket.Name = name;
         }
 
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID)) {
           if (!userList.ContainsValue(creatorID)){
-            creatorID = -2;
+            creatorID = -5;
           }
         }
 
@@ -3024,8 +3024,8 @@ namespace TeamSupport.ServiceLibrary
             ticketType.Description = ticketTypeString;
             ticketType.Position = newTicketTypes.GetMaxPosition(_organizationID) + 1;
             ticketType.OrganizationID = _organizationID;
-            ticketType.CreatorID = creatorID;
-            ticketType.ModifierID = -2;
+            ticketType.CreatorID = -5;
+            ticketType.ModifierID = -5;
             ticketType.DateCreated = now;
             ticketType.DateModified = now;
             newTicketTypes.Save();
@@ -3042,9 +3042,9 @@ namespace TeamSupport.ServiceLibrary
             newTicketStatus.TicketTypeID = ticketType.TicketTypeID;
             newTicketStatus.IsClosed = false;
             newTicketStatus.IsClosedEmail = false;
-            newTicketStatus.CreatorID = creatorID;
+            newTicketStatus.CreatorID = -5;
             newTicketStatus.DateCreated = now;
-            newTicketStatus.ModifierID = -2;
+            newTicketStatus.ModifierID = -5;
             newTicketStatus.DateModified = now;
 
             newTicketStatus = newTicketStatuses.AddNewTicketStatus();
@@ -3055,9 +3055,9 @@ namespace TeamSupport.ServiceLibrary
             newTicketStatus.TicketTypeID = ticketType.TicketTypeID;
             newTicketStatus.IsClosed = true;
             newTicketStatus.IsClosedEmail = false;
-            newTicketStatus.CreatorID = creatorID;
+            newTicketStatus.CreatorID = -5;
             newTicketStatus.DateCreated = now;
-            newTicketStatus.ModifierID = -2;
+            newTicketStatus.ModifierID = -5;
             newTicketStatus.DateModified = now;
             newTicketStatus.Collection.Save();
             newTicketStatus.Collection.ValidatePositions(_organizationID);
@@ -3092,9 +3092,9 @@ namespace TeamSupport.ServiceLibrary
             ticketStatus.TicketTypeID = ticketType.TicketTypeID;
             ticketStatus.IsClosed = false;
             ticketStatus.IsClosedEmail = false;
-            ticketStatus.CreatorID = creatorID;
+            ticketStatus.CreatorID = -5;
             ticketStatus.DateCreated = now;
-            ticketStatus.ModifierID = -2;
+            ticketStatus.ModifierID = -5;
             ticketStatus.DateModified = now;
             newTicketStatuses.Save();
             newTicketStatuses.ValidatePositions(_organizationID);
@@ -3126,9 +3126,9 @@ namespace TeamSupport.ServiceLibrary
             ticketSeverity.Description = ticketSeverityString;
             ticketSeverity.Position = newTicketSeverities.GetMaxPosition(_organizationID) + 1;
             ticketSeverity.OrganizationID = _organizationID;
-            ticketSeverity.CreatorID = creatorID;
+            ticketSeverity.CreatorID = -5;
             ticketSeverity.DateCreated = now;
-            ticketSeverity.ModifierID = -2;
+            ticketSeverity.ModifierID = -5;
             ticketSeverity.DateModified = now;
             newTicketSeverities.Save();
             newTicketSeverities.ValidatePositions(_organizationID);
@@ -3160,8 +3160,8 @@ namespace TeamSupport.ServiceLibrary
             group.Name = groupName;
             group.Description = groupName;
             group.OrganizationID = _organizationID;
-            group.CreatorID = creatorID;
-            group.ModifierID = -2;
+            group.CreatorID = -5;
+            group.ModifierID = -5;
             group.DateCreated = now;
             group.DateModified = now;
             newGroups.Save();
@@ -3217,8 +3217,8 @@ namespace TeamSupport.ServiceLibrary
 					product.Name = productName;
 					product.Description = productName;
 					product.OrganizationID = _organizationID;
-					product.CreatorID = creatorID;
-					product.ModifierID = -2;
+					product.CreatorID = -5;
+					product.ModifierID = -5;
 					product.DateCreated = now;
 					product.DateModified = now;
 					product.ImportFileID = import.ImportID;
@@ -3288,8 +3288,8 @@ namespace TeamSupport.ServiceLibrary
             reportedVersion.ProductID = (int)ticket.ProductID;
             reportedVersion.ProductVersionStatusID = productVersionStatuses[0].ProductVersionStatusID;
             reportedVersion.IsReleased = true;
-            reportedVersion.CreatorID = creatorID;
-            reportedVersion.ModifierID = -2;
+            reportedVersion.CreatorID = -5;
+            reportedVersion.ModifierID = -5;
             reportedVersion.DateCreated = now;
             reportedVersion.DateModified = now;
 				reportedVersion.ImportFileID = import.ImportID;
@@ -3350,8 +3350,8 @@ namespace TeamSupport.ServiceLibrary
             resolvedVersion.ProductID = (int)ticket.ProductID;
             resolvedVersion.ProductVersionStatusID = productVersionStatuses[0].ProductVersionStatusID;
             resolvedVersion.IsReleased = true;
-            resolvedVersion.CreatorID = creatorID;
-            resolvedVersion.ModifierID = -2;
+            resolvedVersion.CreatorID = -5;
+            resolvedVersion.ModifierID = -5;
             resolvedVersion.DateCreated = now;
             resolvedVersion.DateModified = now;
 				resolvedVersion.ImportFileID = import.ImportID;
@@ -3418,9 +3418,9 @@ namespace TeamSupport.ServiceLibrary
         {
           ticket.DateCreated = now;
         }
-        ticket.CreatorID = creatorID;
+        ticket.CreatorID = -5;
         ticket.DateModified = now;
-        ticket.ModifierID = -2;
+        ticket.ModifierID = -5;
 		  ticket.ImportFileID = import.ImportID;
 
         //if (isUpdate)
@@ -3475,7 +3475,7 @@ namespace TeamSupport.ServiceLibrary
           action.ActionSource = ticket.TicketSource;
           action.Description = ReadString("Description", string.Empty);
 
-          if (creatorID != -2 || creatorID != 0)
+          if (creatorID != -5 || creatorID != 0)
           {
             User user = Users.GetUser(_importUser, creatorID);
             if (user != null)
@@ -4730,16 +4730,16 @@ namespace TeamSupport.ServiceLibrary
           product.DateCreated = (DateTime)dateCreated;
         }
 
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
         {
           if (!userList.ContainsValue(creatorID))
           {
-            creatorID = -2;
+            creatorID = -5;
           }
         }
-        product.CreatorID = creatorID;
-        product.ModifierID = -2;
+        product.CreatorID = -5;
+        product.ModifierID = -5;
         product.OrganizationID = _organizationID;
 		  product.ImportFileID = import.ImportID;
 
@@ -4917,16 +4917,16 @@ namespace TeamSupport.ServiceLibrary
           productVersion.DateCreated = (DateTime)dateCreated;
         }
 
-        int creatorID = -2;
+        int creatorID = -5;
         if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
         {
           if (!userList.ContainsValue(creatorID))
           {
-            creatorID = -2;
+            creatorID = -5;
           }
         }
-        productVersion.CreatorID = creatorID;
-        productVersion.ModifierID = -2;
+        productVersion.CreatorID = -5;
+        productVersion.ModifierID = -5;
 		  productVersion.ImportFileID = import.ImportID;
 
         int productVersionStatusID = productVersionStatuses[0].ProductVersionStatusID;
@@ -4942,8 +4942,8 @@ namespace TeamSupport.ServiceLibrary
             productVersionStatus.Description = status;
             productVersionStatus.OrganizationID = _organizationID;
             productVersionStatus.Position = newProductVersionStatuses.GetMaxPosition(_organizationID) + 1;
-            productVersionStatus.CreatorID = creatorID;
-            productVersionStatus.ModifierID = -2;
+            productVersionStatus.CreatorID = -5;
+            productVersionStatus.ModifierID = -5;
             newProductVersionStatuses.Save();
             newProductVersionStatuses.ValidatePositions(_organizationID);
           }
@@ -5057,12 +5057,12 @@ namespace TeamSupport.ServiceLibrary
 			 {
 				 user.DateCreated = (DateTime)dateCreated;
 			 }
-			 int creatorID = -2;
+			 int creatorID = -5;
 			 if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
 			 {
 				 if (!userList.ContainsValue(creatorID))
 				 {
-					 creatorID = -2;
+					 creatorID = -5;
 				 }
 			 }
 			 
@@ -5118,8 +5118,8 @@ namespace TeamSupport.ServiceLibrary
 			 user.SubscribeToNewTickets = false;
 			 user.ReceiveTicketNotifications = true;
 			 user.EnforceSingleSession = true;
-			 user.CreatorID = creatorID;
-			 user.ModifierID = -2;
+			 user.CreatorID = -5;
+			 user.ModifierID = -5;
 			 user.ImportFileID = import.ImportID;
 
 			 _importLog.Write(messagePrefix + "User " + importID + " added to bulk insert.");
@@ -5326,16 +5326,16 @@ namespace TeamSupport.ServiceLibrary
 			 {
 				 organizationProduct.DateCreated = (DateTime)dateCreated;
 			 }
-			 int creatorID = -2;
+			 int creatorID = -5;
 			 if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
 			 {
 				 if (!userList.ContainsValue(creatorID))
 				 {
-					 creatorID = -2;
+					 creatorID = -5;
 				 }
 			 }
-			 organizationProduct.CreatorID = creatorID;
-			 organizationProduct.ModifierID = -2;
+			 organizationProduct.CreatorID = -5;
+			 organizationProduct.ModifierID = -5;
 			 organizationProduct.ImportFileID = import.ImportID;
 
 			 _importLog.Write(messagePrefix + "Organization " + companyID.ToString() + " - Product " + productID.ToString() + " added to bulk insert.");
@@ -5489,7 +5489,7 @@ namespace TeamSupport.ServiceLibrary
 			 {
 				 note.DateCreated = (DateTime)dateCreated;
 			 }
-			 int creatorID = -2;
+			 int creatorID = -5;
 			 if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
 			 {
 				 User creator = users.FindByUserID(creatorID);
@@ -5498,12 +5498,12 @@ namespace TeamSupport.ServiceLibrary
 					 creatorID = creator.UserID;
 				 }
 			 }
-			 note.CreatorID = creatorID;
+			 note.CreatorID = -5;
 			 note.Description = ConvertHtmlLineBreaks(ReadString("Description", string.Empty));
 			 note.RefID = companyID;
 			 note.RefType = ReferenceType.Organizations;
 			 note.Title = ReadString("Title", string.Empty).Trim();
-			 note.ModifierID = -2;
+			 note.ModifierID = -5;
 			 note.ImportFileID = import.ImportID;
 
 			 _importLog.Write(messagePrefix + "Organization " + companyID.ToString() + " - Note added to bulk insert.");
