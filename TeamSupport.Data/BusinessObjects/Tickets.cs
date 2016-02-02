@@ -877,7 +877,28 @@ AND ts.IsClosed = 0";
             }
         }
 
-        public void LoadPortalUserTickets(int userID, bool isClosed)
+		public void LoadTopXKBByCategoryID(int categoryID, int organizationID, int limit)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT TOP @Limit TicketID, NAME
+																FROM Tickets
+																WHERE 
+																	OrganizationID              = @OrganizationID 
+																	AND IsKnowledgeBase         = 1
+																	AND IsVisibleOnPortal         = 1
+																	AND KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
+																ORDER BY 
+																	DateModified desc";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
+				command.Parameters.AddWithValue("@Limit", limit);
+				Fill(command, "Tickets");
+			}
+		}
+
+		public void LoadPortalUserTickets(int userID, bool isClosed)
         {
             using (SqlCommand command = new SqlCommand())
             {
