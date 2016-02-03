@@ -24,67 +24,67 @@ namespace TeamSupport.Api
       return ticket.GetXml("Ticket", true);
     }
 
-    public static string GetTickets(RestCommand command)
-    {
-      string xml = "";
+	public static string GetTickets(RestCommand command)
+	{
+		string xml = "";
 
-      if (command.Filters["TicketTypeID"] != null)
-      { 
-        try 
-	      {	        
-          TicketsView tickets = new TicketsView(command.LoginUser);
-          int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
-          TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
-          if (ticketType.OrganizationID != command.Organization.OrganizationID) throw new Exception();
+		if (command.Filters["TicketTypeID"] != null)
+		{ 
+			try 
+			{	        
+				TicketsView tickets = new TicketsView(command.LoginUser);
+				int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
+				TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
+				if (ticketType.OrganizationID != command.Organization.OrganizationID) throw new Exception();
           
-          try
-          {
-            tickets.LoadByTicketTypeID(ticketTypeID, command.Organization.OrganizationID, command.Filters);
-          }
-          catch (Exception ex)
-          {
-            //if something fails use the old method
-            tickets.LoadByTicketTypeID(ticketTypeID);
-          }
+				try
+				{
+					tickets.LoadByTicketTypeID(ticketTypeID, command.Organization.OrganizationID, command.Filters);
+				}
+				catch (Exception ex)
+				{
+					//if something fails use the old method
+					tickets.LoadByTicketTypeID(ticketTypeID);
+				}
           
-          xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
-	      }
-	      catch (Exception ex)
-	      {
-		      throw new RestException(HttpStatusCode.NotAcceptable, "Invalid TicketTypeID to filter.", ex);
-	      }
-      }
-      else
-	    {
-        TicketTypes ticketTypes = new TicketTypes(command.LoginUser);
-        ticketTypes.LoadByOrganizationID(command.Organization.OrganizationID);
+				xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
+			}
+			catch (Exception ex)
+			{
+				throw new RestException(HttpStatusCode.NotAcceptable, "Invalid TicketTypeID to filter.", ex);
+			}
+		}
+		else
+		{
+			TicketTypes ticketTypes = new TicketTypes(command.LoginUser);
+			ticketTypes.LoadByOrganizationID(command.Organization.OrganizationID);
 
-        TicketsView tickets = new TicketsView(command.LoginUser);
-        XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
+			TicketsView tickets = new TicketsView(command.LoginUser);
+			XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
 
-        foreach (TicketType ticketType in ticketTypes)
-        {
-          try
-		      {
-            tickets.LoadByTicketTypeID(ticketType.TicketTypeID, command.Organization.OrganizationID, command.Filters);
-          }
-          catch (Exception ex)
-          {
-            //if something fails use the old method
-            tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
-          }
-          
-          foreach (DataRow row in tickets.Table.Rows)
-          {
-            tickets.WriteXml(writer, row, "Ticket", true, command.Filters);
-          }
-        }
-        
-        xml = Tickets.EndXmlWrite(writer);
-	    }
+			foreach (TicketType ticketType in ticketTypes)
+			{
+				try
+				{
+					tickets.LoadByTicketTypeID(ticketType.TicketTypeID, command.Organization.OrganizationID, command.Filters);
+				}
+				catch (Exception ex)
+				{
+					//if something fails use the old method
+					tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
+				}
 
-      return xml;
-    }
+					foreach (DataRow row in tickets.Table.Rows)
+					{
+						tickets.WriteXml(writer, row, "Ticket", true, command.Filters);
+					}
+				}
+
+			xml = Tickets.EndXmlWrite(writer);
+		}
+
+		return xml;
+	}
 
     public static string GetZapierTickets(RestCommand command, int limitNumber)
     {
@@ -209,33 +209,32 @@ namespace TeamSupport.Api
       return ticket.GetXml("Ticket", true);
     }
 
-    public static string GetCustomerTickets(RestCommand command)
-    {
+	public static string GetCustomerTickets(RestCommand command)
+	{
+		TicketsView tickets = new TicketsView(command.LoginUser);
 
-      TicketsView tickets = new TicketsView(command.LoginUser);
+		if (command.Filters["TicketTypeID"] != null)
+		{
+			try
+			{
+				int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
+				TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
+				if (ticketType.OrganizationID != command.Organization.ParentID) throw new Exception();
+				tickets.LoadByCustomerTicketTypeID(command.Organization.OrganizationID, ticketTypeID);
+			}
+			catch (Exception ex)
+			{
+				throw new RestException(HttpStatusCode.NotAcceptable, ex.Message);
+				throw new RestException(HttpStatusCode.NotAcceptable, "Invalid TicketTypeID to filter.", ex);
+			}
+		}
+		else
+		{
+			tickets.LoadByCustomerID(command.Organization.OrganizationID);
+		}
 
-      if (command.Filters["TicketTypeID"] != null)
-      {
-        try
-        {
-          int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
-          TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
-          if (ticketType.OrganizationID != command.Organization.ParentID) throw new Exception();
-          tickets.LoadByCustomerTicketTypeID(command.Organization.OrganizationID, ticketTypeID);
-        }
-        catch (Exception ex)
-        {
-          throw new RestException(HttpStatusCode.NotAcceptable, ex.Message);
-          throw new RestException(HttpStatusCode.NotAcceptable, "Invalid TicketTypeID to filter.", ex);
-        }
-      }
-      else
-      {
-        tickets.LoadByCustomerID(command.Organization.OrganizationID);
-      }
-
-      return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
-    }
+		return tickets.GetXml("Tickets", "Ticket", true, command.Filters);
+	}
 
     public static string CreateCustomerTicket(RestCommand command)
     {

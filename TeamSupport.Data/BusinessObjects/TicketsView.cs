@@ -579,8 +579,8 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByTicketTypeID(int ticketTypeID, int organizationId, NameValueCollection filters)
-    {
+	public void LoadByTicketTypeID(int ticketTypeID, int organizationId, NameValueCollection filters)
+	{
       //Get the column names, this row will be deleted before getting the actual data
       this.LoadOneByOrganizationId(organizationId);
 
@@ -595,7 +595,7 @@ namespace TeamSupport.Data
 
         if (!hasTickeTypeIdParameter)
         {
-        command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+			command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
         }
         
         this.DeleteAll();
