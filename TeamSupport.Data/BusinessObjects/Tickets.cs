@@ -881,7 +881,7 @@ AND ts.IsClosed = 0";
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = @"SELECT TOP @Limit TicketID, NAME
+				command.CommandText = @"SELECT TOP (@Limit) TicketID, NAME
 																FROM Tickets
 																WHERE 
 																	OrganizationID              = @OrganizationID 
@@ -894,6 +894,26 @@ AND ts.IsClosed = 0";
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
 				command.Parameters.AddWithValue("@Limit", limit);
+				Fill(command, "Tickets");
+			}
+		}
+
+		public void LoadKBByCategoryID(int categoryID, int organizationID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT TicketID, NAME
+																FROM Tickets
+																WHERE 
+																	OrganizationID              = @OrganizationID 
+																	AND IsKnowledgeBase         = 1
+																	AND IsVisibleOnPortal         = 1
+																	AND KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
+																ORDER BY 
+																	DateModified desc";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
 				Fill(command, "Tickets");
 			}
 		}
