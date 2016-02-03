@@ -7,6 +7,7 @@ var orgId = null;
 
 $(document).ready(function () {
 	returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
+	if (returnURL == null) returnURL = '/default.aspx';
 	emailAddress = top.Ts.Utils.getQueryValue("Email", window);
 	orgId = top.Ts.Utils.getQueryValue("OrgID", window);
 	$('#email').text(emailAddress);
