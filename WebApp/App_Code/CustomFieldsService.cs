@@ -14,6 +14,7 @@ using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace TSWebServices
 {
@@ -38,40 +39,46 @@ namespace TSWebServices
     }
 
 
-    [WebMethod]
-    public FieldItem[] GetAllFields(ReferenceType refType, int? auxID, bool isReadOnly)
-    {
-      List<FieldItem> items = new List<FieldItem>();
+	[WebMethod]
+	public FieldItem[] GetAllFields(ReferenceType refType, int? auxID, bool isReadOnly)
+	{
+		List<FieldItem> items = new List<FieldItem>();
+		int tableID;
 
-      int tableID;
-      switch (refType)
-      {
-        case ReferenceType.Organizations: tableID = 6; break;
-        case ReferenceType.Tickets: tableID = 10; break;
-        case ReferenceType.Users: tableID = 11; break;
-        case ReferenceType.Contacts: tableID = 12; break;
-        default: return null;
-      }
+		switch (refType)
+		{
+			case ReferenceType.Organizations: tableID = 6; break;
+			case ReferenceType.Tickets: tableID = 10; break;
+			case ReferenceType.Users: tableID = 11; break;
+			case ReferenceType.Contacts: tableID = 12; break;
+			default: return null;
+		}
 
+		TicketTypes ticketTypes = new TicketTypes(TSAuthentication.GetLoginUser());
+		ticketTypes.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
-      ReportTableFields fields = new ReportTableFields(TSAuthentication.GetLoginUser());
-      fields.LoadByReportTableID(tableID, isReadOnly);
+		ReportTableFields fields = new ReportTableFields(TSAuthentication.GetLoginUser());
+		fields.LoadByReportTableID(tableID, isReadOnly);
 
-      CustomFields customs = new CustomFields(fields.LoginUser);
-      customs.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
+		CustomFields customs = new CustomFields(fields.LoginUser);
+		customs.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
 
-      foreach (ReportTableField field in fields)
-      {
-        items.Add(new FieldItem(field.ReportTableFieldID, false, field.FieldName));
-      }
+		foreach (ReportTableField field in fields)
+		{
+			items.Add(new FieldItem(field.ReportTableFieldID, false, field.FieldName));
+		}
 
-      foreach (CustomField custom in customs)
-      {
-        items.Add(new FieldItem(custom.CustomFieldID, true, custom.Name));
-      }
+		foreach (CustomField custom in customs)
+		{
+			string ticketTypeName = ticketTypes.Where(p => p.TicketTypeID == custom.AuxID).Select(t => t.Name).SingleOrDefault();
+			items.Add(new FieldItem(custom.CustomFieldID,
+									true,
+									string.Format("{0}{1}", custom.Name,
+									string.IsNullOrEmpty(ticketTypeName) ? "" : " (" + ticketTypeName + ")")));
+		}
 
-      return items.ToArray();
-    }
+		return items.ToArray();
+	}
 
     [WebMethod]
     public CustomFieldsViewItemProxy[] GetCustomFields(ReferenceType refType, int? auxID)

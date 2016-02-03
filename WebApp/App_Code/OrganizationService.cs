@@ -510,13 +510,38 @@ namespace TSWebServices
     }
 
 
-    [WebMethod]
-    public CRMLinkFieldProxy[] GetCrmLinkFields(int crmLinkID)
-    {
-      CRMLinkFields fields = new CRMLinkFields(TSAuthentication.GetLoginUser());
-      fields.LoadByCrmLinkID(crmLinkID);
-      return fields.GetCRMLinkFieldProxies();
-    }
+	[WebMethod]
+	public CRMLinkFieldProxy[] GetCrmLinkFields(int crmLinkID)
+	{
+		CRMLinkFields fields = new CRMLinkFields(TSAuthentication.GetLoginUser());
+		fields.LoadByCrmLinkID(crmLinkID);
+		CRMLinkFieldProxy[] crmLinkFieldMappings = fields.GetCRMLinkFieldProxies();
+		CustomFields customFields = new CustomFields(TSAuthentication.GetLoginUser());
+		customFields.LoadByOrganization(TSAuthentication.OrganizationID);
+		List<TicketType> ticketTypeList = new List<TicketType>();
+		TicketType ticketType;
+
+        foreach (CRMLinkFieldProxy field in crmLinkFieldMappings)
+		{
+			int ticketTypeId = field.CustomFieldID != null ? customFields.Where(p => p.CustomFieldID == (int)field.CustomFieldID).Select(t => t.AuxID).SingleOrDefault() : 0;
+			
+			if (ticketTypeId > 0 && (ticketTypeList.Count == 0 || !ticketTypeList.Where(p => p.TicketTypeID == ticketTypeId).Any()))
+			{
+				ticketType = TicketTypes.GetTicketType(TSAuthentication.GetLoginUser(), ticketTypeId);
+				ticketTypeList.Add(ticketType);
+			}
+			else
+			{
+				ticketType = ticketTypeList.Where(p => p.TicketTypeID == ticketTypeId).SingleOrDefault();
+			}
+			
+			
+			field.TSFieldName = string.Format("{0}{1}", field.TSFieldName,
+														ticketType != null && !string.IsNullOrEmpty(ticketType.Name) ? " (" + ticketType.Name + ")" : "");
+		}
+
+		return crmLinkFieldMappings;
+	}
 
     [WebMethod]
     public CRMLinkFieldProxy[] SaveCrmLinkField(int crmLinkID, int tsFieldID, bool isCustom, string crmName, ReferenceType refType)
