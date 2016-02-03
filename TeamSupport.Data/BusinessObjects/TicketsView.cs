@@ -1565,90 +1565,95 @@ namespace TeamSupport.Data
 
     public void LoadForZoho(int organizationID, DateTime? lastModified)
     {
-			StringBuilder theString = new StringBuilder();
-
         using (SqlCommand command = new SqlCommand())
         {
+			try
+			{
+				command.CommandText = "TicketsForZohoGet";
+				command.CommandType = CommandType.StoredProcedure;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@LastMod", lastModified.HasValue ? lastModified.Value.AddMinutes(-15) : new DateTime(1900, 1, 1));
+				Fill(command);
+			}
+			catch (Exception ex)
+			{
+				StringBuilder theString = new StringBuilder();
 				theString.AppendFormat(@"
-            WITH TicketIDs 
-            AS 
-            (
-              SELECT
-                t.TicketID 
-              FROM 
-                Tickets t 
-              WHERE
-                OrganizationID = @OrganizationID 
-                AND DateModified > @LastMod
-            )              
-            SELECT
-              TicketNumber,
-              '{0}?ticketid=' + CONVERT(VARCHAR,tv.TicketID) AS 'TicketURL',
-              Name,
-              TicketTypeName,
-              TicketSource,
-              Status,
-              Severity,
-              UserName AS 'AssignedTo',
-              Customers,
-              Contacts,
-              ProductName,
-              ReportedVersion,
-              SolvedVersion,
-              GroupName,
-              DateModified,
-              DateCreated,
-              DaysOpened,
-              IsClosed,
-              CloserName,
-              SlaViolationTime,
-              StatusPosition,
-              SeverityPosition,
-              IsVisibleOnPortal,
-              IsKnowledgeBase,
-              DateClosed,
-              DaysClosed,
-              CreatorName,
-              ModifierName,
-              HoursSpent,
-              Tags,
-              SlaWarningTime,
-              SlaViolationHours,
-              SlaWarningHours,
-              MinsSinceCreated,
-              DaysSinceCreated,
-              DATEDIFF(
-                mi,
-                '1900-01-01',
-                (
-                  SELECT
-                    TOP 1 
-                    timeinoldstatus 
-                  FROM
-                    statushistory
-                  WHERE
-                    ticketid = tv.ticketid
-                    AND ISNULL(timeinoldstatus,-99) <> -99 
-                  ORDER BY
-                    statuschangetime
-                )
-              ) as MinutesToFirstResponse
-            FROM
-              TicketsView tv
-              INNER JOIN TicketIDs
-                ON TicketIDs.TicketID = tv.TicketID
-            ORDER BY
-              TicketNumber", SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com"));
+					    WITH TicketIDs 
+					    AS 
+					    (
+					        SELECT
+					        t.TicketID 
+					        FROM 
+					        Tickets t 
+					        WHERE
+					        OrganizationID = @OrganizationID 
+					        AND DateModified > @LastMod
+					    )              
+					    SELECT
+					        TicketNumber,
+					        tv.TicketID AS [TicketURL],
+					        Name,
+					        TicketTypeName,
+					        TicketSource,
+					        Status,
+					        Severity,
+					        UserName AS 'AssignedTo',
+					        Customers,
+					        Contacts,
+					        ProductName,
+					        ReportedVersion,
+					        SolvedVersion,
+					        GroupName,
+					        DateModified,
+					        DateCreated,
+					        DaysOpened,
+					        IsClosed,
+					        CloserName,
+					        SlaViolationTime,
+					        StatusPosition,
+					        SeverityPosition,
+					        IsVisibleOnPortal,
+					        IsKnowledgeBase,
+					        DateClosed,
+					        DaysClosed,
+					        CreatorName,
+					        ModifierName,
+					        HoursSpent,
+					        Tags,
+					        SlaWarningTime,
+					        SlaViolationHours,
+					        SlaWarningHours,
+					        MinsSinceCreated,
+					        DaysSinceCreated,
+					        DATEDIFF(
+					        mi,
+					        '1900-01-01',
+					        (
+					            SELECT
+					            TOP 1 
+					            timeinoldstatus 
+					            FROM
+					            statushistory
+					            WHERE
+					            ticketid = tv.ticketid
+					            AND ISNULL(timeinoldstatus,-99) <> -99 
+					            ORDER BY
+					            statuschangetime
+					        )
+					        ) as MinutesToFirstResponse
+					    FROM
+					        TicketsView tv
+					        INNER JOIN TicketIDs
+					        ON TicketIDs.TicketID = tv.TicketID
+					    ORDER BY
+					        TicketNumber", SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com"));
 				command.CommandText = theString.ToString();
 				command.CommandType = CommandType.Text;
-
-			//command.CommandText = "CRMQuery";
-			//command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@OrganizationID", organizationID);
-            command.Parameters.AddWithValue("@LastMod", lastModified.HasValue ? lastModified.Value.AddMinutes(-15) : new DateTime(1900,1,1));
-			//command.Parameters.AddWithValue("@url", SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com"));
-            Fill(command);
-        }
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@LastMod", lastModified.HasValue ? lastModified.Value.AddMinutes(-15) : new DateTime(1900, 1, 1));
+			}
+		}
     }
 
     public void LoadForTags(string tags)

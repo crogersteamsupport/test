@@ -31,28 +31,51 @@ Namespace TeamSupport
       End Function
 
 		Private Function ValidateSyncData() As Boolean
-			Dim result As Boolean = True
+        Dim result As Boolean = True
+        
+        If CRMLinkRow.HostName Is Nothing Then
+          result = False
+          Log.Write("HostName is missing and it is required to sync.")
+        Else
+          Dim protocol As String = String.Empty
+          If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
+            protocol = "https://"
+          End If
+          _baseURI = protocol + CRMLinkRow.HostName + "/rest/api/latest"
+        End If
 
-			If CRMLinkRow.HostName Is Nothing Then
+        If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+          result = False
+          Log.Write("Username and or Password are missing and they are required to sync.")
+        Else
+          _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
+        End If
+
+		'Make sure credentials are good
+		If (result) Then
+			Try
+				Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password)
+				Dim serverInfo As ServerInfo = jiraClient.GetServerInfo()
+			Catch ex As JiraClientException
+				Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+				Dim crmLinkError As CRMLinkError = Nothing
+				crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+				crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+				crmLinkError.CRMType = CRMLinkRow.CRMType
+				crmLinkError.Orientation = "out"
+				crmLinkError.ObjectType = "Credentials"
+				crmLinkError.ObjectFieldName = String.Empty
+				crmLinkError.ObjectID = CRMLinkRow.OrganizationID.ToString()
+				crmLinkError.Exception = ex.InnerException.Message
+				crmLinkError.OperationType = "Login"
+				newCrmLinkError.Save()
+				Log.Write("Invalid Credentials.")
 				result = False
-				Log.Write("HostName is missing and it is required to sync.")
-			Else
-				Dim protocol As String = String.Empty
-				If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
-					protocol = "https://"
-				End If
-				_baseURI = protocol + CRMLinkRow.HostName + "/rest/api/latest"
-			End If
+			End Try
+		End If
 
-			If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
-				result = False
-				Log.Write("Username and or Password are missing and they are required to sync.")
-			Else
-				_encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
-			End If
-
-			Return result
-		End Function
+        Return result
+      End Function
 
       Private Function SyncTickets() As Boolean
         Dim ticketsLinksToJiraToPushAsIssues As TicketLinkToJira = Nothing
@@ -106,50 +129,50 @@ Namespace TeamSupport
         'Include the Project(s) in the jql clause to pull just issues that should/might be linked to TS instead of ALL.
         'Adding this due to ticket 24174, so only for the account HERE (869700) and HERE - Sandbox (794765) for the moment. If it works as expected we will do this for all accounts.
         Dim projectClause As String = String.Empty
-				If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 Then
-					Log.Write(String.Format("Ticket: 24174. Org HERE (869700, 794765) having trouble pulling all issues from Jira, we'll get only those for their jira project keys instead. {0},{1},{2}", CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password))
+				'If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 Then
+				'	Log.Write(String.Format("Ticket: 24174. Org HERE (869700, 794765) having trouble pulling all issues from Jira, we'll get only those for their jira project keys instead. {0},{1},{2}", CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password))
 
-					Dim projects As IEnumerable(Of Project)
+				'	Dim projects As IEnumerable(Of Project)
 
-					Try
-						Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
-						projects = jiraClient.GetProjects()
-					Catch ex As Exception
-						Log.Write(String.Format("Using JArray because: {0}{1}{0}{2}", Environment.NewLine, ex.Message, ex.InnerException))
-						Dim projectsList As List(Of Project) = New List(Of Project)
-						Dim projectsJArray As JArray = GetAPIJArray(_baseURI + "/project", "GET", String.Empty)
+				'	Try
+				'		Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
+				'		projects = jiraClient.GetProjects()
+				'	Catch ex As Exception
+				'		Log.Write(String.Format("Using JArray because: {0}{1}{0}{2}", Environment.NewLine, ex.Message, ex.InnerException))
+				'		Dim projectsList As List(Of Project) = New List(Of Project)
+				'		Dim projectsJArray As JArray = GetAPIJArray(_baseURI + "/project", "GET", String.Empty)
 
-						For item As Integer = 0 To projectsJArray.Count - 1
-							Dim project As Project = New Project With {.id = projectsJArray(item)("id"), .key = projectsJArray(item)("key").ToString(), .name = projectsJArray(item)("name").ToString()}
-							projectsList.Add(project)
-						Next
+				'		For item As Integer = 0 To projectsJArray.Count - 1
+				'			Dim project As Project = New Project With {.id = projectsJArray(item)("id"), .key = projectsJArray(item)("key").ToString(), .name = projectsJArray(item)("name").ToString()}
+				'			projectsList.Add(project)
+				'		Next
 
-						projects = projectsList.ToList()
-					End Try
+				'		projects = projectsList.ToList()
+				'	End Try
 
-					If CRMLinkRow.AlwaysUseDefaultProjectKey Then
-						Dim defaultProjectFound As Boolean = projects.Where(Function(c) c.key = CRMLinkRow.DefaultProject).Any()
+				'	If CRMLinkRow.AlwaysUseDefaultProjectKey Then
+				'		Dim defaultProjectFound As Boolean = projects.Where(Function(c) c.key = CRMLinkRow.DefaultProject).Any()
 
-						If defaultProjectFound Then
-							projectClause = String.Format("AND+project={0}+", CRMLinkRow.DefaultProject)
-						End If
-					Else
-						Dim jiraProjectKeys As List(Of String) = New List(Of String)()
+				'		If defaultProjectFound Then
+				'			projectClause = String.Format("AND+project={0}+", CRMLinkRow.DefaultProject)
+				'		End If
+				'	Else
+				'		Dim jiraProjectKeys As List(Of String) = New List(Of String)()
 
-						For Each projectKey As String In CRMLinkTable.GetOrganizationJiraProjectKeys(CRMLinkRow.OrganizationID, User)
-							jiraProjectKeys.Add(projectKey)
-						Next
+				'		For Each projectKey As String In CRMLinkTable.GetOrganizationJiraProjectKeys(CRMLinkRow.OrganizationID, User)
+				'			jiraProjectKeys.Add(projectKey)
+				'		Next
 
-						If jiraProjectKeys.Count > 0 Then
-							Dim projectsFound As List(Of String) = projects.Where(Function(c) jiraProjectKeys.Contains(c.key.ToString())).Select(Function(c) c.key).ToList()
+				'		If jiraProjectKeys.Count > 0 Then
+				'			Dim projectsFound As List(Of String) = projects.Where(Function(c) jiraProjectKeys.Contains(c.key.ToString())).Select(Function(c) c.key).ToList()
 
-							If projectsFound IsNot Nothing AndAlso projectsFound.Count > 0 Then
-								projectClause = String.Format("AND+project+IN+({0})+", String.Join(",", projectsFound))
-							End If
-						End If
-					End If
+				'			If projectsFound IsNot Nothing AndAlso projectsFound.Count > 0 Then
+				'				projectClause = String.Format("AND+project+IN+({0})+", String.Join(",", projectsFound))
+				'			End If
+				'		End If
+				'	End If
 
-				End If
+				'End If
 
 		Dim needToGetMore As Boolean = True
 		Dim startAt As String = String.Empty

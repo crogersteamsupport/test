@@ -796,6 +796,7 @@ Namespace TeamSupport
                 Dim csvContent As StringBuilder = Nothing
                 Dim csvHeader As New StringBuilder()
                 Dim rowIndex As Integer = 0
+				Dim ticketUrlHeader As String = "ticketurl"
 
                 'column names in first row
                 For i As Integer = 0 To thisTable.Columns.Count - 1
@@ -805,7 +806,7 @@ Namespace TeamSupport
 
                 'append a dummy row so zoho knows what data type each column is--in case this is the first import
                 For Each thisCol As DataColumn In thisTable.Columns
-                    If thisCol.ColumnName = "TicketURL" Then
+                    If thisCol.ColumnName.ToLower() = ticketUrlHeader Then
                         csvHeader.Append("""http://www.teamsupport.com""")
                     ElseIf thisCol.DataType Is GetType(String) Then
                         csvHeader.Append("""String""")
@@ -835,10 +836,12 @@ Namespace TeamSupport
 
                     For i As Integer = 0 To thisTable.Columns.Count - 1
                         If thisTable.Columns(i).DataType Is GetType(String) Then
-                            csvContent.Append("""" & thisRow(i).ToString().Replace("""", "'") & """")
+							csvContent.Append("""" & thisRow(i).ToString().Replace("""", "'") & """")
                         ElseIf thisTable.Columns(i).DataType Is GetType(DateTime) AndAlso Not IsDBNull(thisRow(i)) Then 'translate dates to org's local timezone
                             csvContent.Append("""" & TimeZoneInfo.ConvertTimeFromUtc(CType(thisRow(i).ToString(), DateTime), TimeZoneInfo.FindSystemTimeZoneById(organization(0).TimeZoneID)).ToString("M/d/yyyy H:mm:ss") & """")
-                        Else
+                        ElseIf thisTable.Columns(i).ColumnName.ToLower() = ticketUrlHeader Then
+							csvContent.Append("""" & SystemSettings.ReadString(User, "AppDomain", "https://app.teamsupport.com") & "?ticketid=" & thisRow(i).ToString() & """")
+						Else
                             csvContent.Append(thisRow(i).ToString())
                         End If
                         csvContent.Append(If(i < thisTable.Columns.Count - 1, ",", Environment.NewLine))

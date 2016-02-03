@@ -144,7 +144,7 @@ Namespace TeamSupport
 			End If
 
 			If (CRM IsNot Nothing AndAlso Not isDebug) OrElse (CRM IsNot Nothing AndAlso isDebug AndAlso CRMLinkTableItem.OrganizationID = 13679) Then
-						Log.Write(String.Format("Begin processing {0} sync. {1}",
+						Log.Write(String.Format("Begin processing {0} sync, sprocs implemented 01/27/16 try-catch for them. {1}",
 									CRMType.ToString(),
 									If(String.IsNullOrEmpty(CRMLinkTableItem.InstanceName), "", String.Format("Instance: {0}", CRMLinkTableItem.InstanceName))))
 

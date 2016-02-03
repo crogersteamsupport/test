@@ -1149,16 +1149,28 @@ Namespace TeamSupport
                 End Try
             End Sub
 
-            Private Sub AddCustomFieldToList(ByRef fieldName As String, ByRef list As String)
-              If list Is Nothing Then
-                  list = fieldName
-              'Any duplicate will raise an exception.
-              ElseIf Not list.Contains(fieldName) Then
-                  list &= ", " & fieldName
-              Else
-                  Log.Write("Custom field " & fieldName & " is mapped more than one time.")
-              End If
-            End Sub
+			Private Sub AddCustomFieldToList(ByRef fieldName As String, ByRef list As String)
+				If list Is Nothing Then
+					list = fieldName
+				Else
+					'Any duplicate will raise an exception.
+					Dim MatchArray As String() = Array.ConvertAll(list.Split(","), Function(p As String) p.Trim())
+					Dim isFoundInList = False
+
+					For Each field As String In MatchArray
+						If field = fieldName Then
+							isFoundInList = True
+							Exit For
+						End If
+					Next
+
+					If Not isFoundInList Then
+						list &= ", " & fieldName
+					Else
+						Log.Write("Custom field " & fieldName & " is mapped more than one time. Included only once in the SF query.")
+					End If
+				End If
+			End Sub
 
             Private Function TestRelationshipField(ByVal fieldName As String, ByVal tableName As String) As Boolean
               Dim result As Boolean = True
