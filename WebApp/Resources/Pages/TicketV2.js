@@ -993,7 +993,8 @@ function convertToValidDate(val) {
 }
 
 function SaveAction(_oldActionID, isPrivate, callback) {
-  var action = new top.TeamSupport.Data.ActionProxy();
+	var action = new top.TeamSupport.Data.ActionProxy();
+	var saveError = 0;
   action.ActionID = _oldActionID;
   action.TicketID = _ticketID;
   action.SystemActionTypeID = 0;
@@ -1014,11 +1015,56 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
+  // Get Content Grab and Check
   action.Description = tinymce.activeEditor.getContent(); 
+  if (action.Description == "")
+  {
+  	saveError = 1;
+  	top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
+  }
+
   if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  	saveError = 2;
+  	top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
+  }
+
+	// HTML Grab Check
+  if (saveError != 0) {
   	action.Description = $('#action-new-editor').html();
-  	if (action.Description = "<p><span></span></p> <p>&nbsp;</p>" && tinymce.activeEditor == null)
-  		top.Ts.Services.System.LogException("TinyMCE Error", "TinyMCE Active Editor is null after trying to capture the text for the ticket action");
+  	if (action.Description == "") {
+  		saveError = 1;
+  		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
+  	}
+
+  	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  		saveError = 2;
+  		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
+  	}
+  }
+
+   // Text Grab Check
+  	if ($('#action-new-editor').text().trim().length < 1) {
+  		top.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
+  }
+
+  // TINYMCE ACTIVE EDITOR CHECK
+  if(tinymce.activeEditor == null)
+  {
+  	saveError = 2;
+  	top.Ts.Services.System.LogException("TinyMCE active editor is null", "TinyMCE Error");
+  }
+
+  if (saveError == 1)
+  {
+  	alert("The action you tried to save is empty, please try again or cancel");
+  	EnableCreateBtns();
+  	return;
+  }
+
+  if (saveError == 2) {
+  	alert("We’re very sorry, but there was an error saving your action.  We’ve logged this error for review, please notify support@teamsupport.com and please include the ticket number.");
+  	EnableCreateBtns();
+  	return;
   }
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
