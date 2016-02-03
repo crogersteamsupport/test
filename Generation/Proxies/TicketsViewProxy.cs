@@ -20,7 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public string GroupName { get; set; }
     [DataMember] public string TicketTypeName { get; set; }
     [DataMember] public string UserName { get; set; }
-    [DataMember] public string STATUS { get; set; }
+    [DataMember] public string Status { get; set; }
     [DataMember] public int? StatusPosition { get; set; }
     [DataMember] public int? SeverityPosition { get; set; }
     [DataMember] public bool IsClosed { get; set; }
@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     [DataMember] public int TicketTypeID { get; set; }
     [DataMember] public int TicketSeverityID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public string NAME { get; set; }
+    [DataMember] public string Name { get; set; }
     [DataMember] public int? ParentID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public int CreatorID { get; set; }
@@ -134,7 +134,7 @@ namespace TeamSupport.Data
       result.CreatorID = this.CreatorID;
       result.ModifierID = this.ModifierID;
       result.ParentID = this.ParentID;
-      result.NAME = this.NAME;
+      result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
       result.TicketSeverityID = this.TicketSeverityID;
       result.TicketTypeID = this.TicketTypeID;
@@ -151,7 +151,7 @@ namespace TeamSupport.Data
       result.IsClosed = this.IsClosed;
       result.SeverityPosition = this.SeverityPosition;
       result.StatusPosition = this.StatusPosition;
-      result.STATUS = this.STATUS;
+      result.Status = this.Status;
       result.UserName = this.UserName;
       result.TicketTypeName = this.TicketTypeName;
       result.GroupName = this.GroupName;

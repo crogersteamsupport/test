@@ -384,21 +384,21 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Creator", SqlDbType.VarChar, 202);
+		tempParameter = updateCommand.Parameters.Add("Creator", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Modifier", SqlDbType.VarChar, 202);
+		tempParameter = updateCommand.Parameters.Add("Modifier", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Organization", SqlDbType.VarChar, 255);
+		tempParameter = updateCommand.Parameters.Add("Organization", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -413,21 +413,21 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WikiArticlesView] (    [ArticleID],    [ParentID],    [OrganizationID],    [ArticleName],    [Body],    [Version],    [PublicView],    [PublicEdit],    [PortalView],    [PortalEdit],    [Private],    [IsDeleted],    [CreatedBy],    [CreatedDate],    [ModifiedBy],    [ModifiedDate],    [NeedsIndexing],    [Creator],    [Modifier],    [Organization]) VALUES ( @ArticleID, @ParentID, @OrganizationID, @ArticleName, @Body, @Version, @PublicView, @PublicEdit, @PortalView, @PortalEdit, @Private, @IsDeleted, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate, @NeedsIndexing, @Creator, @Modifier, @Organization); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("Organization", SqlDbType.VarChar, 255);
+		tempParameter = insertCommand.Parameters.Add("Organization", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Modifier", SqlDbType.VarChar, 202);
+		tempParameter = insertCommand.Parameters.Add("Modifier", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Creator", SqlDbType.VarChar, 202);
+		tempParameter = insertCommand.Parameters.Add("Creator", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

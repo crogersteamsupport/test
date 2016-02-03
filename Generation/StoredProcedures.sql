@@ -565,581 +565,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [UserID],
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID]
-  FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertUser
-
-(
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Users]
-  (
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID])
-  VALUES (
-    @Email,
-    @FirstName,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @CryptedPassword,
-    @IsActive,
-    @MarkDeleted,
-    @TimeZoneID,
-    @CultureName,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @LastWaterCoolerID,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @IsChatUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ReceiveTicketNotifications,
-    @ReceiveAllGroupNotifications,
-    @SubscribeToNewTickets,
-    @ActivatedOn,
-    @DeactivatedOn,
-    @OrganizationID,
-    @LastVersion,
-    @SessionID,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe,
-    @IsClassicView,
-    @SubscribeToNewActions,
-    @ApprovedTerms,
-    @ShowWelcomePage,
-    @UserInformation,
-    @PortalAutoReg,
-    @AppChatID,
-    @AppChatStatus,
-    @MenuItems,
-    @TicketRights,
-    @Signature,
-    @LinkedIn,
-    @OnlyEmailAfterHours,
-    @BlockInboundEmail,
-    @SalesForceID,
-    @ChangeTicketVisibility,
-    @ChangeKBVisibility,
-    @EnforceSingleSession,
-    @NeedsIndexing,
-    @AllowAnyTicketCustomer,
-    @FontFamily,
-    @FontSize,
-    @CanCreateCompany,
-    @CanEditCompany,
-    @CanCreateContact,
-    @CanEditContact,
-    @RestrictUserFromEditingAnyActions,
-    @AllowUserToEditAnyAction,
-    @UserCanPinAction,
-    @PortalLimitOrgTickets,
-    @CanCreateAsset,
-    @CanEditAsset,
-    @CanChangeCommunityVisibility,
-    @FilterInactive,
-    @DisableExporting,
-    @CanCreateProducts,
-    @CanEditProducts,
-    @CanCreateVersions,
-    @CanEditVersions,
-    @ReceiveUnassignedGroupEmails,
-    @ProductFamiliesRights,
-    @BlockEmailFromCreatingOnly,
-    @CalGUID,
-    @PortalViewOnly,
-    @verificationPhoneNumber,
-    @verificationCode,
-    @verificationCodeExpiration,
-    @PasswordCreatedUtc,
-    @ImportFileID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateUser
-
-(
-  @UserID int,
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateModified datetime,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Users]
-  SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [CryptedPassword] = @CryptedPassword,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [TimeZoneID] = @TimeZoneID,
-    [CultureName] = @CultureName,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [LastWaterCoolerID] = @LastWaterCoolerID,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [IsChatUser] = @IsChatUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
-    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
-    [SubscribeToNewTickets] = @SubscribeToNewTickets,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
-    [OrganizationID] = @OrganizationID,
-    [LastVersion] = @LastVersion,
-    [SessionID] = @SessionID,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [ApprovedTerms] = @ApprovedTerms,
-    [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg,
-    [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [MenuItems] = @MenuItems,
-    [TicketRights] = @TicketRights,
-    [Signature] = @Signature,
-    [LinkedIn] = @LinkedIn,
-    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
-    [BlockInboundEmail] = @BlockInboundEmail,
-    [SalesForceID] = @SalesForceID,
-    [ChangeTicketVisibility] = @ChangeTicketVisibility,
-    [ChangeKBVisibility] = @ChangeKBVisibility,
-    [EnforceSingleSession] = @EnforceSingleSession,
-    [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
-    [FontFamily] = @FontFamily,
-    [FontSize] = @FontSize,
-    [CanCreateCompany] = @CanCreateCompany,
-    [CanEditCompany] = @CanEditCompany,
-    [CanCreateContact] = @CanCreateContact,
-    [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
-    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
-    [UserCanPinAction] = @UserCanPinAction,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [CanCreateAsset] = @CanCreateAsset,
-    [CanEditAsset] = @CanEditAsset,
-    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
-    [FilterInactive] = @FilterInactive,
-    [DisableExporting] = @DisableExporting,
-    [CanCreateProducts] = @CanCreateProducts,
-    [CanEditProducts] = @CanEditProducts,
-    [CanCreateVersions] = @CanCreateVersions,
-    [CanEditVersions] = @CanEditVersions,
-    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
-    [ProductFamiliesRights] = @ProductFamiliesRights,
-    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
-    [CalGUID] = @CalGUID,
-    [PortalViewOnly] = @PortalViewOnly,
-    [verificationPhoneNumber] = @verificationPhoneNumber,
-    [verificationCode] = @verificationCode,
-    [verificationCodeExpiration] = @verificationCodeExpiration,
-    [PasswordCreatedUtc] = @PasswordCreatedUtc,
-    [ImportFileID] = @ImportFileID
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkField
 GO
 
@@ -1962,7 +1387,7 @@ GO
 CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
 
 (
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -2280,7 +1705,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
 
 (
   @OrganizationID int,
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -4767,6 +4192,581 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [UserID],
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID]
+  FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertUser
+
+(
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Users]
+  (
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID])
+  VALUES (
+    @Email,
+    @FirstName,
+    @MiddleName,
+    @LastName,
+    @Title,
+    @CryptedPassword,
+    @IsActive,
+    @MarkDeleted,
+    @TimeZoneID,
+    @CultureName,
+    @LastLogin,
+    @LastActivity,
+    @LastPing,
+    @LastWaterCoolerID,
+    @IsSystemAdmin,
+    @IsFinanceAdmin,
+    @IsPasswordExpired,
+    @IsPortalUser,
+    @IsChatUser,
+    @PrimaryGroupID,
+    @InOffice,
+    @InOfficeComment,
+    @ReceiveTicketNotifications,
+    @ReceiveAllGroupNotifications,
+    @SubscribeToNewTickets,
+    @ActivatedOn,
+    @DeactivatedOn,
+    @OrganizationID,
+    @LastVersion,
+    @SessionID,
+    @ImportID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @OrgsUserCanSeeOnPortal,
+    @DoNotAutoSubscribe,
+    @IsClassicView,
+    @SubscribeToNewActions,
+    @ApprovedTerms,
+    @ShowWelcomePage,
+    @UserInformation,
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @MenuItems,
+    @TicketRights,
+    @Signature,
+    @LinkedIn,
+    @OnlyEmailAfterHours,
+    @BlockInboundEmail,
+    @SalesForceID,
+    @ChangeTicketVisibility,
+    @ChangeKBVisibility,
+    @EnforceSingleSession,
+    @NeedsIndexing,
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize,
+    @CanCreateCompany,
+    @CanEditCompany,
+    @CanCreateContact,
+    @CanEditContact,
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction,
+    @UserCanPinAction,
+    @PortalLimitOrgTickets,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive,
+    @DisableExporting,
+    @CanCreateProducts,
+    @CanEditProducts,
+    @CanCreateVersions,
+    @CanEditVersions,
+    @ReceiveUnassignedGroupEmails,
+    @ProductFamiliesRights,
+    @BlockEmailFromCreatingOnly,
+    @CalGUID,
+    @PortalViewOnly,
+    @verificationPhoneNumber,
+    @verificationCode,
+    @verificationCodeExpiration,
+    @PasswordCreatedUtc,
+    @ImportFileID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateUser
+
+(
+  @UserID int,
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateModified datetime,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Users]
+  SET
+    [Email] = @Email,
+    [FirstName] = @FirstName,
+    [MiddleName] = @MiddleName,
+    [LastName] = @LastName,
+    [Title] = @Title,
+    [CryptedPassword] = @CryptedPassword,
+    [IsActive] = @IsActive,
+    [MarkDeleted] = @MarkDeleted,
+    [TimeZoneID] = @TimeZoneID,
+    [CultureName] = @CultureName,
+    [LastLogin] = @LastLogin,
+    [LastActivity] = @LastActivity,
+    [LastPing] = @LastPing,
+    [LastWaterCoolerID] = @LastWaterCoolerID,
+    [IsSystemAdmin] = @IsSystemAdmin,
+    [IsFinanceAdmin] = @IsFinanceAdmin,
+    [IsPasswordExpired] = @IsPasswordExpired,
+    [IsPortalUser] = @IsPortalUser,
+    [IsChatUser] = @IsChatUser,
+    [PrimaryGroupID] = @PrimaryGroupID,
+    [InOffice] = @InOffice,
+    [InOfficeComment] = @InOfficeComment,
+    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
+    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
+    [SubscribeToNewTickets] = @SubscribeToNewTickets,
+    [ActivatedOn] = @ActivatedOn,
+    [DeactivatedOn] = @DeactivatedOn,
+    [OrganizationID] = @OrganizationID,
+    [LastVersion] = @LastVersion,
+    [SessionID] = @SessionID,
+    [ImportID] = @ImportID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [ApprovedTerms] = @ApprovedTerms,
+    [ShowWelcomePage] = @ShowWelcomePage,
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [MenuItems] = @MenuItems,
+    [TicketRights] = @TicketRights,
+    [Signature] = @Signature,
+    [LinkedIn] = @LinkedIn,
+    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
+    [BlockInboundEmail] = @BlockInboundEmail,
+    [SalesForceID] = @SalesForceID,
+    [ChangeTicketVisibility] = @ChangeTicketVisibility,
+    [ChangeKBVisibility] = @ChangeKBVisibility,
+    [EnforceSingleSession] = @EnforceSingleSession,
+    [NeedsIndexing] = @NeedsIndexing,
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize,
+    [CanCreateCompany] = @CanCreateCompany,
+    [CanEditCompany] = @CanEditCompany,
+    [CanCreateContact] = @CanCreateContact,
+    [CanEditContact] = @CanEditContact,
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
+    [UserCanPinAction] = @UserCanPinAction,
+    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive,
+    [DisableExporting] = @DisableExporting,
+    [CanCreateProducts] = @CanCreateProducts,
+    [CanEditProducts] = @CanEditProducts,
+    [CanCreateVersions] = @CanCreateVersions,
+    [CanEditVersions] = @CanEditVersions,
+    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
+    [ProductFamiliesRights] = @ProductFamiliesRights,
+    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
+    [CalGUID] = @CalGUID,
+    [PortalViewOnly] = @PortalViewOnly,
+    [verificationPhoneNumber] = @verificationPhoneNumber,
+    [verificationCode] = @verificationCode,
+    [verificationCodeExpiration] = @verificationCodeExpiration,
+    [PasswordCreatedUtc] = @PasswordCreatedUtc,
+    [ImportFileID] = @ImportFileID
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSourceCommitLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSourceCommitLog
 GO
 
@@ -6132,149 +6132,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
-
-(
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
-  (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID])
-  VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
-
-(
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionsViewItem
 GO
 
@@ -7165,7 +7022,7 @@ AS
     [GroupName],
     [TicketTypeName],
     [UserName],
-    [STATUS],
+    [Status],
     [StatusPosition],
     [SeverityPosition],
     [IsClosed],
@@ -7182,7 +7039,7 @@ AS
     [TicketTypeID],
     [TicketSeverityID],
     [OrganizationID],
-    [NAME],
+    [Name],
     [ParentID],
     [ModifierID],
     [CreatorID],
@@ -9693,7 +9550,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType]
+    [UpdateTicketType],
+    [InstanceName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -9730,6 +9588,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
   @UpdateTicketType bit,
+  @InstanceName varchar(255),
   @Identity int OUT
 )
 AS
@@ -9761,7 +9620,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType])
+    [UpdateTicketType],
+    [InstanceName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -9788,7 +9648,8 @@ AS
     @UseSandBoxServer,
     @AlwaysUseDefaultProjectKey,
     @RestrictedToTicketTypes,
-    @UpdateTicketType)
+    @UpdateTicketType,
+    @InstanceName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -9825,7 +9686,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UseSandBoxServer bit,
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit
+  @UpdateTicketType bit,
+  @InstanceName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -9856,7 +9718,8 @@ AS
     [UseSandBoxServer] = @UseSandBoxServer,
     [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
     [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -9872,6 +9735,149 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+
+(
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Attachments]
+  (
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID])
+  VALUES (
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+
+(
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Attachments]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
@@ -10314,7 +10320,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertActionLogsViewItem
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @Actor varchar(201),
+  @Actor nvarchar(201),
   @Identity int OUT
 )
 AS
@@ -10362,7 +10368,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateActionLogsViewItem
   @Description varchar(1000),
   @DateModified datetime,
   @ModifierID int,
-  @Actor varchar(201)
+  @Actor nvarchar(201)
 )
 AS
   SET NOCOUNT OFF;
@@ -11028,6 +11034,187 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @LockProcessID varchar(250),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated,
+    @LockProcessID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @LockProcessID varchar(250)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID,
+    [LockProcessID] = @LockProcessID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -11500,187 +11687,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @DateCreated datetime,
-  @LockProcessID varchar(250),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @EmailPostID,
-    @DateCreated,
-    @LockProcessID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @LockProcessID varchar(250)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason,
-    [EmailPostID] = @EmailPostID,
-    [LockProcessID] = @LockProcessID
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiArticlesViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiArticlesViewItem
 GO
 
@@ -11739,9 +11745,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255),
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255),
   @Identity int OUT
 )
 AS
@@ -11816,9 +11822,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255)
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -15231,581 +15237,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [UserID],
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID]
-  FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertUser
-
-(
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Users]
-  (
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID])
-  VALUES (
-    @Email,
-    @FirstName,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @CryptedPassword,
-    @IsActive,
-    @MarkDeleted,
-    @TimeZoneID,
-    @CultureName,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @LastWaterCoolerID,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @IsChatUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ReceiveTicketNotifications,
-    @ReceiveAllGroupNotifications,
-    @SubscribeToNewTickets,
-    @ActivatedOn,
-    @DeactivatedOn,
-    @OrganizationID,
-    @LastVersion,
-    @SessionID,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe,
-    @IsClassicView,
-    @SubscribeToNewActions,
-    @ApprovedTerms,
-    @ShowWelcomePage,
-    @UserInformation,
-    @PortalAutoReg,
-    @AppChatID,
-    @AppChatStatus,
-    @MenuItems,
-    @TicketRights,
-    @Signature,
-    @LinkedIn,
-    @OnlyEmailAfterHours,
-    @BlockInboundEmail,
-    @SalesForceID,
-    @ChangeTicketVisibility,
-    @ChangeKBVisibility,
-    @EnforceSingleSession,
-    @NeedsIndexing,
-    @AllowAnyTicketCustomer,
-    @FontFamily,
-    @FontSize,
-    @CanCreateCompany,
-    @CanEditCompany,
-    @CanCreateContact,
-    @CanEditContact,
-    @RestrictUserFromEditingAnyActions,
-    @AllowUserToEditAnyAction,
-    @UserCanPinAction,
-    @PortalLimitOrgTickets,
-    @CanCreateAsset,
-    @CanEditAsset,
-    @CanChangeCommunityVisibility,
-    @FilterInactive,
-    @DisableExporting,
-    @CanCreateProducts,
-    @CanEditProducts,
-    @CanCreateVersions,
-    @CanEditVersions,
-    @ReceiveUnassignedGroupEmails,
-    @ProductFamiliesRights,
-    @BlockEmailFromCreatingOnly,
-    @CalGUID,
-    @PortalViewOnly,
-    @verificationPhoneNumber,
-    @verificationCode,
-    @verificationCodeExpiration,
-    @PasswordCreatedUtc,
-    @ImportFileID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateUser
-
-(
-  @UserID int,
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateModified datetime,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Users]
-  SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [CryptedPassword] = @CryptedPassword,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [TimeZoneID] = @TimeZoneID,
-    [CultureName] = @CultureName,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [LastWaterCoolerID] = @LastWaterCoolerID,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [IsChatUser] = @IsChatUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
-    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
-    [SubscribeToNewTickets] = @SubscribeToNewTickets,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
-    [OrganizationID] = @OrganizationID,
-    [LastVersion] = @LastVersion,
-    [SessionID] = @SessionID,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [ApprovedTerms] = @ApprovedTerms,
-    [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg,
-    [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [MenuItems] = @MenuItems,
-    [TicketRights] = @TicketRights,
-    [Signature] = @Signature,
-    [LinkedIn] = @LinkedIn,
-    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
-    [BlockInboundEmail] = @BlockInboundEmail,
-    [SalesForceID] = @SalesForceID,
-    [ChangeTicketVisibility] = @ChangeTicketVisibility,
-    [ChangeKBVisibility] = @ChangeKBVisibility,
-    [EnforceSingleSession] = @EnforceSingleSession,
-    [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
-    [FontFamily] = @FontFamily,
-    [FontSize] = @FontSize,
-    [CanCreateCompany] = @CanCreateCompany,
-    [CanEditCompany] = @CanEditCompany,
-    [CanCreateContact] = @CanCreateContact,
-    [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
-    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
-    [UserCanPinAction] = @UserCanPinAction,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [CanCreateAsset] = @CanCreateAsset,
-    [CanEditAsset] = @CanEditAsset,
-    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
-    [FilterInactive] = @FilterInactive,
-    [DisableExporting] = @DisableExporting,
-    [CanCreateProducts] = @CanCreateProducts,
-    [CanEditProducts] = @CanEditProducts,
-    [CanCreateVersions] = @CanCreateVersions,
-    [CanEditVersions] = @CanEditVersions,
-    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
-    [ProductFamiliesRights] = @ProductFamiliesRights,
-    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
-    [CalGUID] = @CalGUID,
-    [PortalViewOnly] = @PortalViewOnly,
-    [verificationPhoneNumber] = @verificationPhoneNumber,
-    [verificationCode] = @verificationCode,
-    [verificationCodeExpiration] = @verificationCodeExpiration,
-    [PasswordCreatedUtc] = @PasswordCreatedUtc,
-    [ImportFileID] = @ImportFileID
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkField
 GO
 
@@ -16628,7 +16059,7 @@ GO
 CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
 
 (
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -16946,7 +16377,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
 
 (
   @OrganizationID int,
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -19433,6 +18864,581 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [UserID],
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID]
+  FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertUser
+
+(
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Users]
+  (
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID])
+  VALUES (
+    @Email,
+    @FirstName,
+    @MiddleName,
+    @LastName,
+    @Title,
+    @CryptedPassword,
+    @IsActive,
+    @MarkDeleted,
+    @TimeZoneID,
+    @CultureName,
+    @LastLogin,
+    @LastActivity,
+    @LastPing,
+    @LastWaterCoolerID,
+    @IsSystemAdmin,
+    @IsFinanceAdmin,
+    @IsPasswordExpired,
+    @IsPortalUser,
+    @IsChatUser,
+    @PrimaryGroupID,
+    @InOffice,
+    @InOfficeComment,
+    @ReceiveTicketNotifications,
+    @ReceiveAllGroupNotifications,
+    @SubscribeToNewTickets,
+    @ActivatedOn,
+    @DeactivatedOn,
+    @OrganizationID,
+    @LastVersion,
+    @SessionID,
+    @ImportID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @OrgsUserCanSeeOnPortal,
+    @DoNotAutoSubscribe,
+    @IsClassicView,
+    @SubscribeToNewActions,
+    @ApprovedTerms,
+    @ShowWelcomePage,
+    @UserInformation,
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @MenuItems,
+    @TicketRights,
+    @Signature,
+    @LinkedIn,
+    @OnlyEmailAfterHours,
+    @BlockInboundEmail,
+    @SalesForceID,
+    @ChangeTicketVisibility,
+    @ChangeKBVisibility,
+    @EnforceSingleSession,
+    @NeedsIndexing,
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize,
+    @CanCreateCompany,
+    @CanEditCompany,
+    @CanCreateContact,
+    @CanEditContact,
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction,
+    @UserCanPinAction,
+    @PortalLimitOrgTickets,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive,
+    @DisableExporting,
+    @CanCreateProducts,
+    @CanEditProducts,
+    @CanCreateVersions,
+    @CanEditVersions,
+    @ReceiveUnassignedGroupEmails,
+    @ProductFamiliesRights,
+    @BlockEmailFromCreatingOnly,
+    @CalGUID,
+    @PortalViewOnly,
+    @verificationPhoneNumber,
+    @verificationCode,
+    @verificationCodeExpiration,
+    @PasswordCreatedUtc,
+    @ImportFileID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateUser
+
+(
+  @UserID int,
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateModified datetime,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Users]
+  SET
+    [Email] = @Email,
+    [FirstName] = @FirstName,
+    [MiddleName] = @MiddleName,
+    [LastName] = @LastName,
+    [Title] = @Title,
+    [CryptedPassword] = @CryptedPassword,
+    [IsActive] = @IsActive,
+    [MarkDeleted] = @MarkDeleted,
+    [TimeZoneID] = @TimeZoneID,
+    [CultureName] = @CultureName,
+    [LastLogin] = @LastLogin,
+    [LastActivity] = @LastActivity,
+    [LastPing] = @LastPing,
+    [LastWaterCoolerID] = @LastWaterCoolerID,
+    [IsSystemAdmin] = @IsSystemAdmin,
+    [IsFinanceAdmin] = @IsFinanceAdmin,
+    [IsPasswordExpired] = @IsPasswordExpired,
+    [IsPortalUser] = @IsPortalUser,
+    [IsChatUser] = @IsChatUser,
+    [PrimaryGroupID] = @PrimaryGroupID,
+    [InOffice] = @InOffice,
+    [InOfficeComment] = @InOfficeComment,
+    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
+    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
+    [SubscribeToNewTickets] = @SubscribeToNewTickets,
+    [ActivatedOn] = @ActivatedOn,
+    [DeactivatedOn] = @DeactivatedOn,
+    [OrganizationID] = @OrganizationID,
+    [LastVersion] = @LastVersion,
+    [SessionID] = @SessionID,
+    [ImportID] = @ImportID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [ApprovedTerms] = @ApprovedTerms,
+    [ShowWelcomePage] = @ShowWelcomePage,
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [MenuItems] = @MenuItems,
+    [TicketRights] = @TicketRights,
+    [Signature] = @Signature,
+    [LinkedIn] = @LinkedIn,
+    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
+    [BlockInboundEmail] = @BlockInboundEmail,
+    [SalesForceID] = @SalesForceID,
+    [ChangeTicketVisibility] = @ChangeTicketVisibility,
+    [ChangeKBVisibility] = @ChangeKBVisibility,
+    [EnforceSingleSession] = @EnforceSingleSession,
+    [NeedsIndexing] = @NeedsIndexing,
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize,
+    [CanCreateCompany] = @CanCreateCompany,
+    [CanEditCompany] = @CanEditCompany,
+    [CanCreateContact] = @CanCreateContact,
+    [CanEditContact] = @CanEditContact,
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
+    [UserCanPinAction] = @UserCanPinAction,
+    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive,
+    [DisableExporting] = @DisableExporting,
+    [CanCreateProducts] = @CanCreateProducts,
+    [CanEditProducts] = @CanEditProducts,
+    [CanCreateVersions] = @CanCreateVersions,
+    [CanEditVersions] = @CanEditVersions,
+    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
+    [ProductFamiliesRights] = @ProductFamiliesRights,
+    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
+    [CalGUID] = @CalGUID,
+    [PortalViewOnly] = @PortalViewOnly,
+    [verificationPhoneNumber] = @verificationPhoneNumber,
+    [verificationCode] = @verificationCode,
+    [verificationCodeExpiration] = @verificationCodeExpiration,
+    [PasswordCreatedUtc] = @PasswordCreatedUtc,
+    [ImportFileID] = @ImportFileID
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSourceCommitLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSourceCommitLog
 GO
 
@@ -20798,149 +20804,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
-
-(
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
-  (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID])
-  VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
-
-(
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionsViewItem
 GO
 
@@ -21831,7 +21694,7 @@ AS
     [GroupName],
     [TicketTypeName],
     [UserName],
-    [STATUS],
+    [Status],
     [StatusPosition],
     [SeverityPosition],
     [IsClosed],
@@ -21848,7 +21711,7 @@ AS
     [TicketTypeID],
     [TicketSeverityID],
     [OrganizationID],
-    [NAME],
+    [Name],
     [ParentID],
     [ModifierID],
     [CreatorID],
@@ -24359,7 +24222,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType]
+    [UpdateTicketType],
+    [InstanceName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -24396,6 +24260,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
   @UpdateTicketType bit,
+  @InstanceName varchar(255),
   @Identity int OUT
 )
 AS
@@ -24427,7 +24292,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType])
+    [UpdateTicketType],
+    [InstanceName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -24454,7 +24320,8 @@ AS
     @UseSandBoxServer,
     @AlwaysUseDefaultProjectKey,
     @RestrictedToTicketTypes,
-    @UpdateTicketType)
+    @UpdateTicketType,
+    @InstanceName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -24491,7 +24358,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UseSandBoxServer bit,
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit
+  @UpdateTicketType bit,
+  @InstanceName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -24522,7 +24390,8 @@ AS
     [UseSandBoxServer] = @UseSandBoxServer,
     [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
     [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -24538,6 +24407,149 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+
+(
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Attachments]
+  (
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID])
+  VALUES (
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+
+(
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Attachments]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
@@ -24980,7 +24992,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertActionLogsViewItem
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @Actor varchar(201),
+  @Actor nvarchar(201),
   @Identity int OUT
 )
 AS
@@ -25028,7 +25040,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateActionLogsViewItem
   @Description varchar(1000),
   @DateModified datetime,
   @ModifierID int,
-  @Actor varchar(201)
+  @Actor nvarchar(201)
 )
 AS
   SET NOCOUNT OFF;
@@ -25694,6 +25706,187 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @LockProcessID varchar(250),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated,
+    @LockProcessID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @LockProcessID varchar(250)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID,
+    [LockProcessID] = @LockProcessID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -26166,187 +26359,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @DateCreated datetime,
-  @LockProcessID varchar(250),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @EmailPostID,
-    @DateCreated,
-    @LockProcessID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @LockProcessID varchar(250)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason,
-    [EmailPostID] = @EmailPostID,
-    [LockProcessID] = @LockProcessID
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiArticlesViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiArticlesViewItem
 GO
 
@@ -26405,9 +26417,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255),
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255),
   @Identity int OUT
 )
 AS
@@ -26482,9 +26494,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255)
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -29897,581 +29909,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [UserID],
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID]
-  FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertUser
-
-(
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Users]
-  (
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID])
-  VALUES (
-    @Email,
-    @FirstName,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @CryptedPassword,
-    @IsActive,
-    @MarkDeleted,
-    @TimeZoneID,
-    @CultureName,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @LastWaterCoolerID,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @IsChatUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ReceiveTicketNotifications,
-    @ReceiveAllGroupNotifications,
-    @SubscribeToNewTickets,
-    @ActivatedOn,
-    @DeactivatedOn,
-    @OrganizationID,
-    @LastVersion,
-    @SessionID,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe,
-    @IsClassicView,
-    @SubscribeToNewActions,
-    @ApprovedTerms,
-    @ShowWelcomePage,
-    @UserInformation,
-    @PortalAutoReg,
-    @AppChatID,
-    @AppChatStatus,
-    @MenuItems,
-    @TicketRights,
-    @Signature,
-    @LinkedIn,
-    @OnlyEmailAfterHours,
-    @BlockInboundEmail,
-    @SalesForceID,
-    @ChangeTicketVisibility,
-    @ChangeKBVisibility,
-    @EnforceSingleSession,
-    @NeedsIndexing,
-    @AllowAnyTicketCustomer,
-    @FontFamily,
-    @FontSize,
-    @CanCreateCompany,
-    @CanEditCompany,
-    @CanCreateContact,
-    @CanEditContact,
-    @RestrictUserFromEditingAnyActions,
-    @AllowUserToEditAnyAction,
-    @UserCanPinAction,
-    @PortalLimitOrgTickets,
-    @CanCreateAsset,
-    @CanEditAsset,
-    @CanChangeCommunityVisibility,
-    @FilterInactive,
-    @DisableExporting,
-    @CanCreateProducts,
-    @CanEditProducts,
-    @CanCreateVersions,
-    @CanEditVersions,
-    @ReceiveUnassignedGroupEmails,
-    @ProductFamiliesRights,
-    @BlockEmailFromCreatingOnly,
-    @CalGUID,
-    @PortalViewOnly,
-    @verificationPhoneNumber,
-    @verificationCode,
-    @verificationCodeExpiration,
-    @PasswordCreatedUtc,
-    @ImportFileID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateUser
-
-(
-  @UserID int,
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateModified datetime,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Users]
-  SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [CryptedPassword] = @CryptedPassword,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [TimeZoneID] = @TimeZoneID,
-    [CultureName] = @CultureName,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [LastWaterCoolerID] = @LastWaterCoolerID,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [IsChatUser] = @IsChatUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
-    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
-    [SubscribeToNewTickets] = @SubscribeToNewTickets,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
-    [OrganizationID] = @OrganizationID,
-    [LastVersion] = @LastVersion,
-    [SessionID] = @SessionID,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [ApprovedTerms] = @ApprovedTerms,
-    [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg,
-    [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [MenuItems] = @MenuItems,
-    [TicketRights] = @TicketRights,
-    [Signature] = @Signature,
-    [LinkedIn] = @LinkedIn,
-    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
-    [BlockInboundEmail] = @BlockInboundEmail,
-    [SalesForceID] = @SalesForceID,
-    [ChangeTicketVisibility] = @ChangeTicketVisibility,
-    [ChangeKBVisibility] = @ChangeKBVisibility,
-    [EnforceSingleSession] = @EnforceSingleSession,
-    [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
-    [FontFamily] = @FontFamily,
-    [FontSize] = @FontSize,
-    [CanCreateCompany] = @CanCreateCompany,
-    [CanEditCompany] = @CanEditCompany,
-    [CanCreateContact] = @CanCreateContact,
-    [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
-    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
-    [UserCanPinAction] = @UserCanPinAction,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [CanCreateAsset] = @CanCreateAsset,
-    [CanEditAsset] = @CanEditAsset,
-    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
-    [FilterInactive] = @FilterInactive,
-    [DisableExporting] = @DisableExporting,
-    [CanCreateProducts] = @CanCreateProducts,
-    [CanEditProducts] = @CanEditProducts,
-    [CanCreateVersions] = @CanCreateVersions,
-    [CanEditVersions] = @CanEditVersions,
-    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
-    [ProductFamiliesRights] = @ProductFamiliesRights,
-    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
-    [CalGUID] = @CalGUID,
-    [PortalViewOnly] = @PortalViewOnly,
-    [verificationPhoneNumber] = @verificationPhoneNumber,
-    [verificationCode] = @verificationCode,
-    [verificationCodeExpiration] = @verificationCodeExpiration,
-    [PasswordCreatedUtc] = @PasswordCreatedUtc,
-    [ImportFileID] = @ImportFileID
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkField
 GO
 
@@ -31294,7 +30731,7 @@ GO
 CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
 
 (
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -31612,7 +31049,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
 
 (
   @OrganizationID int,
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -34099,6 +33536,581 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [UserID],
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID]
+  FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertUser
+
+(
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Users]
+  (
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID])
+  VALUES (
+    @Email,
+    @FirstName,
+    @MiddleName,
+    @LastName,
+    @Title,
+    @CryptedPassword,
+    @IsActive,
+    @MarkDeleted,
+    @TimeZoneID,
+    @CultureName,
+    @LastLogin,
+    @LastActivity,
+    @LastPing,
+    @LastWaterCoolerID,
+    @IsSystemAdmin,
+    @IsFinanceAdmin,
+    @IsPasswordExpired,
+    @IsPortalUser,
+    @IsChatUser,
+    @PrimaryGroupID,
+    @InOffice,
+    @InOfficeComment,
+    @ReceiveTicketNotifications,
+    @ReceiveAllGroupNotifications,
+    @SubscribeToNewTickets,
+    @ActivatedOn,
+    @DeactivatedOn,
+    @OrganizationID,
+    @LastVersion,
+    @SessionID,
+    @ImportID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @OrgsUserCanSeeOnPortal,
+    @DoNotAutoSubscribe,
+    @IsClassicView,
+    @SubscribeToNewActions,
+    @ApprovedTerms,
+    @ShowWelcomePage,
+    @UserInformation,
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @MenuItems,
+    @TicketRights,
+    @Signature,
+    @LinkedIn,
+    @OnlyEmailAfterHours,
+    @BlockInboundEmail,
+    @SalesForceID,
+    @ChangeTicketVisibility,
+    @ChangeKBVisibility,
+    @EnforceSingleSession,
+    @NeedsIndexing,
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize,
+    @CanCreateCompany,
+    @CanEditCompany,
+    @CanCreateContact,
+    @CanEditContact,
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction,
+    @UserCanPinAction,
+    @PortalLimitOrgTickets,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive,
+    @DisableExporting,
+    @CanCreateProducts,
+    @CanEditProducts,
+    @CanCreateVersions,
+    @CanEditVersions,
+    @ReceiveUnassignedGroupEmails,
+    @ProductFamiliesRights,
+    @BlockEmailFromCreatingOnly,
+    @CalGUID,
+    @PortalViewOnly,
+    @verificationPhoneNumber,
+    @verificationCode,
+    @verificationCodeExpiration,
+    @PasswordCreatedUtc,
+    @ImportFileID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateUser
+
+(
+  @UserID int,
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateModified datetime,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Users]
+  SET
+    [Email] = @Email,
+    [FirstName] = @FirstName,
+    [MiddleName] = @MiddleName,
+    [LastName] = @LastName,
+    [Title] = @Title,
+    [CryptedPassword] = @CryptedPassword,
+    [IsActive] = @IsActive,
+    [MarkDeleted] = @MarkDeleted,
+    [TimeZoneID] = @TimeZoneID,
+    [CultureName] = @CultureName,
+    [LastLogin] = @LastLogin,
+    [LastActivity] = @LastActivity,
+    [LastPing] = @LastPing,
+    [LastWaterCoolerID] = @LastWaterCoolerID,
+    [IsSystemAdmin] = @IsSystemAdmin,
+    [IsFinanceAdmin] = @IsFinanceAdmin,
+    [IsPasswordExpired] = @IsPasswordExpired,
+    [IsPortalUser] = @IsPortalUser,
+    [IsChatUser] = @IsChatUser,
+    [PrimaryGroupID] = @PrimaryGroupID,
+    [InOffice] = @InOffice,
+    [InOfficeComment] = @InOfficeComment,
+    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
+    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
+    [SubscribeToNewTickets] = @SubscribeToNewTickets,
+    [ActivatedOn] = @ActivatedOn,
+    [DeactivatedOn] = @DeactivatedOn,
+    [OrganizationID] = @OrganizationID,
+    [LastVersion] = @LastVersion,
+    [SessionID] = @SessionID,
+    [ImportID] = @ImportID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [ApprovedTerms] = @ApprovedTerms,
+    [ShowWelcomePage] = @ShowWelcomePage,
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [MenuItems] = @MenuItems,
+    [TicketRights] = @TicketRights,
+    [Signature] = @Signature,
+    [LinkedIn] = @LinkedIn,
+    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
+    [BlockInboundEmail] = @BlockInboundEmail,
+    [SalesForceID] = @SalesForceID,
+    [ChangeTicketVisibility] = @ChangeTicketVisibility,
+    [ChangeKBVisibility] = @ChangeKBVisibility,
+    [EnforceSingleSession] = @EnforceSingleSession,
+    [NeedsIndexing] = @NeedsIndexing,
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize,
+    [CanCreateCompany] = @CanCreateCompany,
+    [CanEditCompany] = @CanEditCompany,
+    [CanCreateContact] = @CanCreateContact,
+    [CanEditContact] = @CanEditContact,
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
+    [UserCanPinAction] = @UserCanPinAction,
+    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive,
+    [DisableExporting] = @DisableExporting,
+    [CanCreateProducts] = @CanCreateProducts,
+    [CanEditProducts] = @CanEditProducts,
+    [CanCreateVersions] = @CanCreateVersions,
+    [CanEditVersions] = @CanEditVersions,
+    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
+    [ProductFamiliesRights] = @ProductFamiliesRights,
+    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
+    [CalGUID] = @CalGUID,
+    [PortalViewOnly] = @PortalViewOnly,
+    [verificationPhoneNumber] = @verificationPhoneNumber,
+    [verificationCode] = @verificationCode,
+    [verificationCodeExpiration] = @verificationCodeExpiration,
+    [PasswordCreatedUtc] = @PasswordCreatedUtc,
+    [ImportFileID] = @ImportFileID
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSourceCommitLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSourceCommitLog
 GO
 
@@ -35464,149 +35476,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
-
-(
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
-  (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID])
-  VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
-
-(
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionsViewItem
 GO
 
@@ -36497,7 +36366,7 @@ AS
     [GroupName],
     [TicketTypeName],
     [UserName],
-    [STATUS],
+    [Status],
     [StatusPosition],
     [SeverityPosition],
     [IsClosed],
@@ -36514,7 +36383,7 @@ AS
     [TicketTypeID],
     [TicketSeverityID],
     [OrganizationID],
-    [NAME],
+    [Name],
     [ParentID],
     [ModifierID],
     [CreatorID],
@@ -39025,7 +38894,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType]
+    [UpdateTicketType],
+    [InstanceName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -39062,6 +38932,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
   @UpdateTicketType bit,
+  @InstanceName varchar(255),
   @Identity int OUT
 )
 AS
@@ -39093,7 +38964,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType])
+    [UpdateTicketType],
+    [InstanceName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -39120,7 +38992,8 @@ AS
     @UseSandBoxServer,
     @AlwaysUseDefaultProjectKey,
     @RestrictedToTicketTypes,
-    @UpdateTicketType)
+    @UpdateTicketType,
+    @InstanceName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -39157,7 +39030,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UseSandBoxServer bit,
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit
+  @UpdateTicketType bit,
+  @InstanceName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -39188,7 +39062,8 @@ AS
     [UseSandBoxServer] = @UseSandBoxServer,
     [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
     [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -39204,6 +39079,149 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+
+(
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Attachments]
+  (
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID])
+  VALUES (
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+
+(
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Attachments]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
@@ -39646,7 +39664,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertActionLogsViewItem
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @Actor varchar(201),
+  @Actor nvarchar(201),
   @Identity int OUT
 )
 AS
@@ -39694,7 +39712,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateActionLogsViewItem
   @Description varchar(1000),
   @DateModified datetime,
   @ModifierID int,
-  @Actor varchar(201)
+  @Actor nvarchar(201)
 )
 AS
   SET NOCOUNT OFF;
@@ -40360,6 +40378,187 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @LockProcessID varchar(250),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated,
+    @LockProcessID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @LockProcessID varchar(250)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID,
+    [LockProcessID] = @LockProcessID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -40832,187 +41031,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @DateCreated datetime,
-  @LockProcessID varchar(250),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @EmailPostID,
-    @DateCreated,
-    @LockProcessID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @LockProcessID varchar(250)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason,
-    [EmailPostID] = @EmailPostID,
-    [LockProcessID] = @LockProcessID
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiArticlesViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiArticlesViewItem
 GO
 
@@ -41071,9 +41089,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255),
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255),
   @Identity int OUT
 )
 AS
@@ -41148,9 +41166,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255)
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -44563,581 +44581,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [UserID],
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID]
-  FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertUser
-
-(
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Users]
-  (
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID])
-  VALUES (
-    @Email,
-    @FirstName,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @CryptedPassword,
-    @IsActive,
-    @MarkDeleted,
-    @TimeZoneID,
-    @CultureName,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @LastWaterCoolerID,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @IsChatUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ReceiveTicketNotifications,
-    @ReceiveAllGroupNotifications,
-    @SubscribeToNewTickets,
-    @ActivatedOn,
-    @DeactivatedOn,
-    @OrganizationID,
-    @LastVersion,
-    @SessionID,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe,
-    @IsClassicView,
-    @SubscribeToNewActions,
-    @ApprovedTerms,
-    @ShowWelcomePage,
-    @UserInformation,
-    @PortalAutoReg,
-    @AppChatID,
-    @AppChatStatus,
-    @MenuItems,
-    @TicketRights,
-    @Signature,
-    @LinkedIn,
-    @OnlyEmailAfterHours,
-    @BlockInboundEmail,
-    @SalesForceID,
-    @ChangeTicketVisibility,
-    @ChangeKBVisibility,
-    @EnforceSingleSession,
-    @NeedsIndexing,
-    @AllowAnyTicketCustomer,
-    @FontFamily,
-    @FontSize,
-    @CanCreateCompany,
-    @CanEditCompany,
-    @CanCreateContact,
-    @CanEditContact,
-    @RestrictUserFromEditingAnyActions,
-    @AllowUserToEditAnyAction,
-    @UserCanPinAction,
-    @PortalLimitOrgTickets,
-    @CanCreateAsset,
-    @CanEditAsset,
-    @CanChangeCommunityVisibility,
-    @FilterInactive,
-    @DisableExporting,
-    @CanCreateProducts,
-    @CanEditProducts,
-    @CanCreateVersions,
-    @CanEditVersions,
-    @ReceiveUnassignedGroupEmails,
-    @ProductFamiliesRights,
-    @BlockEmailFromCreatingOnly,
-    @CalGUID,
-    @PortalViewOnly,
-    @verificationPhoneNumber,
-    @verificationCode,
-    @verificationCodeExpiration,
-    @PasswordCreatedUtc,
-    @ImportFileID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateUser
-
-(
-  @UserID int,
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateModified datetime,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Users]
-  SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [CryptedPassword] = @CryptedPassword,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [TimeZoneID] = @TimeZoneID,
-    [CultureName] = @CultureName,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [LastWaterCoolerID] = @LastWaterCoolerID,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [IsChatUser] = @IsChatUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
-    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
-    [SubscribeToNewTickets] = @SubscribeToNewTickets,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
-    [OrganizationID] = @OrganizationID,
-    [LastVersion] = @LastVersion,
-    [SessionID] = @SessionID,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [ApprovedTerms] = @ApprovedTerms,
-    [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg,
-    [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [MenuItems] = @MenuItems,
-    [TicketRights] = @TicketRights,
-    [Signature] = @Signature,
-    [LinkedIn] = @LinkedIn,
-    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
-    [BlockInboundEmail] = @BlockInboundEmail,
-    [SalesForceID] = @SalesForceID,
-    [ChangeTicketVisibility] = @ChangeTicketVisibility,
-    [ChangeKBVisibility] = @ChangeKBVisibility,
-    [EnforceSingleSession] = @EnforceSingleSession,
-    [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
-    [FontFamily] = @FontFamily,
-    [FontSize] = @FontSize,
-    [CanCreateCompany] = @CanCreateCompany,
-    [CanEditCompany] = @CanEditCompany,
-    [CanCreateContact] = @CanCreateContact,
-    [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
-    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
-    [UserCanPinAction] = @UserCanPinAction,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [CanCreateAsset] = @CanCreateAsset,
-    [CanEditAsset] = @CanEditAsset,
-    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
-    [FilterInactive] = @FilterInactive,
-    [DisableExporting] = @DisableExporting,
-    [CanCreateProducts] = @CanCreateProducts,
-    [CanEditProducts] = @CanEditProducts,
-    [CanCreateVersions] = @CanCreateVersions,
-    [CanEditVersions] = @CanEditVersions,
-    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
-    [ProductFamiliesRights] = @ProductFamiliesRights,
-    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
-    [CalGUID] = @CalGUID,
-    [PortalViewOnly] = @PortalViewOnly,
-    [verificationPhoneNumber] = @verificationPhoneNumber,
-    [verificationCode] = @verificationCode,
-    [verificationCodeExpiration] = @verificationCodeExpiration,
-    [PasswordCreatedUtc] = @PasswordCreatedUtc,
-    [ImportFileID] = @ImportFileID
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkField
 GO
 
@@ -45960,7 +45403,7 @@ GO
 CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
 
 (
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -46278,7 +45721,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
 
 (
   @OrganizationID int,
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -48765,6 +48208,581 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [UserID],
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID]
+  FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertUser
+
+(
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Users]
+  (
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID])
+  VALUES (
+    @Email,
+    @FirstName,
+    @MiddleName,
+    @LastName,
+    @Title,
+    @CryptedPassword,
+    @IsActive,
+    @MarkDeleted,
+    @TimeZoneID,
+    @CultureName,
+    @LastLogin,
+    @LastActivity,
+    @LastPing,
+    @LastWaterCoolerID,
+    @IsSystemAdmin,
+    @IsFinanceAdmin,
+    @IsPasswordExpired,
+    @IsPortalUser,
+    @IsChatUser,
+    @PrimaryGroupID,
+    @InOffice,
+    @InOfficeComment,
+    @ReceiveTicketNotifications,
+    @ReceiveAllGroupNotifications,
+    @SubscribeToNewTickets,
+    @ActivatedOn,
+    @DeactivatedOn,
+    @OrganizationID,
+    @LastVersion,
+    @SessionID,
+    @ImportID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @OrgsUserCanSeeOnPortal,
+    @DoNotAutoSubscribe,
+    @IsClassicView,
+    @SubscribeToNewActions,
+    @ApprovedTerms,
+    @ShowWelcomePage,
+    @UserInformation,
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @MenuItems,
+    @TicketRights,
+    @Signature,
+    @LinkedIn,
+    @OnlyEmailAfterHours,
+    @BlockInboundEmail,
+    @SalesForceID,
+    @ChangeTicketVisibility,
+    @ChangeKBVisibility,
+    @EnforceSingleSession,
+    @NeedsIndexing,
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize,
+    @CanCreateCompany,
+    @CanEditCompany,
+    @CanCreateContact,
+    @CanEditContact,
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction,
+    @UserCanPinAction,
+    @PortalLimitOrgTickets,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive,
+    @DisableExporting,
+    @CanCreateProducts,
+    @CanEditProducts,
+    @CanCreateVersions,
+    @CanEditVersions,
+    @ReceiveUnassignedGroupEmails,
+    @ProductFamiliesRights,
+    @BlockEmailFromCreatingOnly,
+    @CalGUID,
+    @PortalViewOnly,
+    @verificationPhoneNumber,
+    @verificationCode,
+    @verificationCodeExpiration,
+    @PasswordCreatedUtc,
+    @ImportFileID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateUser
+
+(
+  @UserID int,
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateModified datetime,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Users]
+  SET
+    [Email] = @Email,
+    [FirstName] = @FirstName,
+    [MiddleName] = @MiddleName,
+    [LastName] = @LastName,
+    [Title] = @Title,
+    [CryptedPassword] = @CryptedPassword,
+    [IsActive] = @IsActive,
+    [MarkDeleted] = @MarkDeleted,
+    [TimeZoneID] = @TimeZoneID,
+    [CultureName] = @CultureName,
+    [LastLogin] = @LastLogin,
+    [LastActivity] = @LastActivity,
+    [LastPing] = @LastPing,
+    [LastWaterCoolerID] = @LastWaterCoolerID,
+    [IsSystemAdmin] = @IsSystemAdmin,
+    [IsFinanceAdmin] = @IsFinanceAdmin,
+    [IsPasswordExpired] = @IsPasswordExpired,
+    [IsPortalUser] = @IsPortalUser,
+    [IsChatUser] = @IsChatUser,
+    [PrimaryGroupID] = @PrimaryGroupID,
+    [InOffice] = @InOffice,
+    [InOfficeComment] = @InOfficeComment,
+    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
+    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
+    [SubscribeToNewTickets] = @SubscribeToNewTickets,
+    [ActivatedOn] = @ActivatedOn,
+    [DeactivatedOn] = @DeactivatedOn,
+    [OrganizationID] = @OrganizationID,
+    [LastVersion] = @LastVersion,
+    [SessionID] = @SessionID,
+    [ImportID] = @ImportID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [ApprovedTerms] = @ApprovedTerms,
+    [ShowWelcomePage] = @ShowWelcomePage,
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [MenuItems] = @MenuItems,
+    [TicketRights] = @TicketRights,
+    [Signature] = @Signature,
+    [LinkedIn] = @LinkedIn,
+    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
+    [BlockInboundEmail] = @BlockInboundEmail,
+    [SalesForceID] = @SalesForceID,
+    [ChangeTicketVisibility] = @ChangeTicketVisibility,
+    [ChangeKBVisibility] = @ChangeKBVisibility,
+    [EnforceSingleSession] = @EnforceSingleSession,
+    [NeedsIndexing] = @NeedsIndexing,
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize,
+    [CanCreateCompany] = @CanCreateCompany,
+    [CanEditCompany] = @CanEditCompany,
+    [CanCreateContact] = @CanCreateContact,
+    [CanEditContact] = @CanEditContact,
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
+    [UserCanPinAction] = @UserCanPinAction,
+    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive,
+    [DisableExporting] = @DisableExporting,
+    [CanCreateProducts] = @CanCreateProducts,
+    [CanEditProducts] = @CanEditProducts,
+    [CanCreateVersions] = @CanCreateVersions,
+    [CanEditVersions] = @CanEditVersions,
+    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
+    [ProductFamiliesRights] = @ProductFamiliesRights,
+    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
+    [CalGUID] = @CalGUID,
+    [PortalViewOnly] = @PortalViewOnly,
+    [verificationPhoneNumber] = @verificationPhoneNumber,
+    [verificationCode] = @verificationCode,
+    [verificationCodeExpiration] = @verificationCodeExpiration,
+    [PasswordCreatedUtc] = @PasswordCreatedUtc,
+    [ImportFileID] = @ImportFileID
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSourceCommitLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSourceCommitLog
 GO
 
@@ -50130,149 +50148,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
-
-(
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
-  (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID])
-  VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
-
-(
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionsViewItem
 GO
 
@@ -51163,7 +51038,7 @@ AS
     [GroupName],
     [TicketTypeName],
     [UserName],
-    [STATUS],
+    [Status],
     [StatusPosition],
     [SeverityPosition],
     [IsClosed],
@@ -51180,7 +51055,7 @@ AS
     [TicketTypeID],
     [TicketSeverityID],
     [OrganizationID],
-    [NAME],
+    [Name],
     [ParentID],
     [ModifierID],
     [CreatorID],
@@ -53691,7 +53566,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType]
+    [UpdateTicketType],
+    [InstanceName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -53728,6 +53604,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
   @UpdateTicketType bit,
+  @InstanceName varchar(255),
   @Identity int OUT
 )
 AS
@@ -53759,7 +53636,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType])
+    [UpdateTicketType],
+    [InstanceName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -53786,7 +53664,8 @@ AS
     @UseSandBoxServer,
     @AlwaysUseDefaultProjectKey,
     @RestrictedToTicketTypes,
-    @UpdateTicketType)
+    @UpdateTicketType,
+    @InstanceName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -53823,7 +53702,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UseSandBoxServer bit,
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit
+  @UpdateTicketType bit,
+  @InstanceName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -53854,7 +53734,8 @@ AS
     [UseSandBoxServer] = @UseSandBoxServer,
     [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
     [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -53870,6 +53751,149 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+
+(
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Attachments]
+  (
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID])
+  VALUES (
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+
+(
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Attachments]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
@@ -54312,7 +54336,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertActionLogsViewItem
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @Actor varchar(201),
+  @Actor nvarchar(201),
   @Identity int OUT
 )
 AS
@@ -54360,7 +54384,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateActionLogsViewItem
   @Description varchar(1000),
   @DateModified datetime,
   @ModifierID int,
-  @Actor varchar(201)
+  @Actor nvarchar(201)
 )
 AS
   SET NOCOUNT OFF;
@@ -55026,6 +55050,187 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @LockProcessID varchar(250),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated,
+    @LockProcessID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @LockProcessID varchar(250)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID,
+    [LockProcessID] = @LockProcessID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -55498,187 +55703,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @DateCreated datetime,
-  @LockProcessID varchar(250),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @EmailPostID,
-    @DateCreated,
-    @LockProcessID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @LockProcessID varchar(250)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason,
-    [EmailPostID] = @EmailPostID,
-    [LockProcessID] = @LockProcessID
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiArticlesViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiArticlesViewItem
 GO
 
@@ -55737,9 +55761,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255),
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255),
   @Identity int OUT
 )
 AS
@@ -55814,9 +55838,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255)
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -59229,581 +59253,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [UserID],
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID]
-  FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertUser
-
-(
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Users]
-  (
-    [Email],
-    [FirstName],
-    [MiddleName],
-    [LastName],
-    [Title],
-    [CryptedPassword],
-    [IsActive],
-    [MarkDeleted],
-    [TimeZoneID],
-    [CultureName],
-    [LastLogin],
-    [LastActivity],
-    [LastPing],
-    [LastWaterCoolerID],
-    [IsSystemAdmin],
-    [IsFinanceAdmin],
-    [IsPasswordExpired],
-    [IsPortalUser],
-    [IsChatUser],
-    [PrimaryGroupID],
-    [InOffice],
-    [InOfficeComment],
-    [ReceiveTicketNotifications],
-    [ReceiveAllGroupNotifications],
-    [SubscribeToNewTickets],
-    [ActivatedOn],
-    [DeactivatedOn],
-    [OrganizationID],
-    [LastVersion],
-    [SessionID],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe],
-    [IsClassicView],
-    [SubscribeToNewActions],
-    [ApprovedTerms],
-    [ShowWelcomePage],
-    [UserInformation],
-    [PortalAutoReg],
-    [AppChatID],
-    [AppChatStatus],
-    [MenuItems],
-    [TicketRights],
-    [Signature],
-    [LinkedIn],
-    [OnlyEmailAfterHours],
-    [BlockInboundEmail],
-    [SalesForceID],
-    [ChangeTicketVisibility],
-    [ChangeKBVisibility],
-    [EnforceSingleSession],
-    [NeedsIndexing],
-    [AllowAnyTicketCustomer],
-    [FontFamily],
-    [FontSize],
-    [CanCreateCompany],
-    [CanEditCompany],
-    [CanCreateContact],
-    [CanEditContact],
-    [RestrictUserFromEditingAnyActions],
-    [AllowUserToEditAnyAction],
-    [UserCanPinAction],
-    [PortalLimitOrgTickets],
-    [CanCreateAsset],
-    [CanEditAsset],
-    [CanChangeCommunityVisibility],
-    [FilterInactive],
-    [DisableExporting],
-    [CanCreateProducts],
-    [CanEditProducts],
-    [CanCreateVersions],
-    [CanEditVersions],
-    [ReceiveUnassignedGroupEmails],
-    [ProductFamiliesRights],
-    [BlockEmailFromCreatingOnly],
-    [CalGUID],
-    [PortalViewOnly],
-    [verificationPhoneNumber],
-    [verificationCode],
-    [verificationCodeExpiration],
-    [PasswordCreatedUtc],
-    [ImportFileID])
-  VALUES (
-    @Email,
-    @FirstName,
-    @MiddleName,
-    @LastName,
-    @Title,
-    @CryptedPassword,
-    @IsActive,
-    @MarkDeleted,
-    @TimeZoneID,
-    @CultureName,
-    @LastLogin,
-    @LastActivity,
-    @LastPing,
-    @LastWaterCoolerID,
-    @IsSystemAdmin,
-    @IsFinanceAdmin,
-    @IsPasswordExpired,
-    @IsPortalUser,
-    @IsChatUser,
-    @PrimaryGroupID,
-    @InOffice,
-    @InOfficeComment,
-    @ReceiveTicketNotifications,
-    @ReceiveAllGroupNotifications,
-    @SubscribeToNewTickets,
-    @ActivatedOn,
-    @DeactivatedOn,
-    @OrganizationID,
-    @LastVersion,
-    @SessionID,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe,
-    @IsClassicView,
-    @SubscribeToNewActions,
-    @ApprovedTerms,
-    @ShowWelcomePage,
-    @UserInformation,
-    @PortalAutoReg,
-    @AppChatID,
-    @AppChatStatus,
-    @MenuItems,
-    @TicketRights,
-    @Signature,
-    @LinkedIn,
-    @OnlyEmailAfterHours,
-    @BlockInboundEmail,
-    @SalesForceID,
-    @ChangeTicketVisibility,
-    @ChangeKBVisibility,
-    @EnforceSingleSession,
-    @NeedsIndexing,
-    @AllowAnyTicketCustomer,
-    @FontFamily,
-    @FontSize,
-    @CanCreateCompany,
-    @CanEditCompany,
-    @CanCreateContact,
-    @CanEditContact,
-    @RestrictUserFromEditingAnyActions,
-    @AllowUserToEditAnyAction,
-    @UserCanPinAction,
-    @PortalLimitOrgTickets,
-    @CanCreateAsset,
-    @CanEditAsset,
-    @CanChangeCommunityVisibility,
-    @FilterInactive,
-    @DisableExporting,
-    @CanCreateProducts,
-    @CanEditProducts,
-    @CanCreateVersions,
-    @CanEditVersions,
-    @ReceiveUnassignedGroupEmails,
-    @ProductFamiliesRights,
-    @BlockEmailFromCreatingOnly,
-    @CalGUID,
-    @PortalViewOnly,
-    @verificationPhoneNumber,
-    @verificationCode,
-    @verificationCodeExpiration,
-    @PasswordCreatedUtc,
-    @ImportFileID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateUser
-
-(
-  @UserID int,
-  @Email varchar(1024),
-  @FirstName varchar(100),
-  @MiddleName varchar(100),
-  @LastName varchar(100),
-  @Title varchar(100),
-  @CryptedPassword varchar(255),
-  @IsActive bit,
-  @MarkDeleted bit,
-  @TimeZoneID varchar(300),
-  @CultureName varchar(50),
-  @LastLogin datetime,
-  @LastActivity datetime,
-  @LastPing datetime,
-  @LastWaterCoolerID int,
-  @IsSystemAdmin bit,
-  @IsFinanceAdmin bit,
-  @IsPasswordExpired bit,
-  @IsPortalUser bit,
-  @IsChatUser bit,
-  @PrimaryGroupID int,
-  @InOffice bit,
-  @InOfficeComment varchar(200),
-  @ReceiveTicketNotifications bit,
-  @ReceiveAllGroupNotifications bit,
-  @SubscribeToNewTickets bit,
-  @ActivatedOn datetime,
-  @DeactivatedOn datetime,
-  @OrganizationID int,
-  @LastVersion varchar(50),
-  @SessionID uniqueidentifier,
-  @ImportID varchar(500),
-  @DateModified datetime,
-  @ModifierID int,
-  @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit,
-  @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @ApprovedTerms bit,
-  @ShowWelcomePage bit,
-  @UserInformation varchar(MAX),
-  @PortalAutoReg bit,
-  @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @MenuItems varchar(1000),
-  @TicketRights int,
-  @Signature varchar(MAX),
-  @LinkedIn varchar(200),
-  @OnlyEmailAfterHours bit,
-  @BlockInboundEmail bit,
-  @SalesForceID varchar(8000),
-  @ChangeTicketVisibility bit,
-  @ChangeKBVisibility bit,
-  @EnforceSingleSession bit,
-  @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit,
-  @FontFamily int,
-  @FontSize int,
-  @CanCreateCompany bit,
-  @CanEditCompany bit,
-  @CanCreateContact bit,
-  @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit,
-  @AllowUserToEditAnyAction bit,
-  @UserCanPinAction bit,
-  @PortalLimitOrgTickets bit,
-  @CanCreateAsset bit,
-  @CanEditAsset bit,
-  @CanChangeCommunityVisibility bit,
-  @FilterInactive bit,
-  @DisableExporting bit,
-  @CanCreateProducts bit,
-  @CanEditProducts bit,
-  @CanCreateVersions bit,
-  @CanEditVersions bit,
-  @ReceiveUnassignedGroupEmails bit,
-  @ProductFamiliesRights int,
-  @BlockEmailFromCreatingOnly bit,
-  @CalGUID uniqueidentifier,
-  @PortalViewOnly bit,
-  @verificationPhoneNumber varchar(50),
-  @verificationCode varchar(9),
-  @verificationCodeExpiration datetime,
-  @PasswordCreatedUtc datetime,
-  @ImportFileID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Users]
-  SET
-    [Email] = @Email,
-    [FirstName] = @FirstName,
-    [MiddleName] = @MiddleName,
-    [LastName] = @LastName,
-    [Title] = @Title,
-    [CryptedPassword] = @CryptedPassword,
-    [IsActive] = @IsActive,
-    [MarkDeleted] = @MarkDeleted,
-    [TimeZoneID] = @TimeZoneID,
-    [CultureName] = @CultureName,
-    [LastLogin] = @LastLogin,
-    [LastActivity] = @LastActivity,
-    [LastPing] = @LastPing,
-    [LastWaterCoolerID] = @LastWaterCoolerID,
-    [IsSystemAdmin] = @IsSystemAdmin,
-    [IsFinanceAdmin] = @IsFinanceAdmin,
-    [IsPasswordExpired] = @IsPasswordExpired,
-    [IsPortalUser] = @IsPortalUser,
-    [IsChatUser] = @IsChatUser,
-    [PrimaryGroupID] = @PrimaryGroupID,
-    [InOffice] = @InOffice,
-    [InOfficeComment] = @InOfficeComment,
-    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
-    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
-    [SubscribeToNewTickets] = @SubscribeToNewTickets,
-    [ActivatedOn] = @ActivatedOn,
-    [DeactivatedOn] = @DeactivatedOn,
-    [OrganizationID] = @OrganizationID,
-    [LastVersion] = @LastVersion,
-    [SessionID] = @SessionID,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [ApprovedTerms] = @ApprovedTerms,
-    [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg,
-    [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [MenuItems] = @MenuItems,
-    [TicketRights] = @TicketRights,
-    [Signature] = @Signature,
-    [LinkedIn] = @LinkedIn,
-    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
-    [BlockInboundEmail] = @BlockInboundEmail,
-    [SalesForceID] = @SalesForceID,
-    [ChangeTicketVisibility] = @ChangeTicketVisibility,
-    [ChangeKBVisibility] = @ChangeKBVisibility,
-    [EnforceSingleSession] = @EnforceSingleSession,
-    [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
-    [FontFamily] = @FontFamily,
-    [FontSize] = @FontSize,
-    [CanCreateCompany] = @CanCreateCompany,
-    [CanEditCompany] = @CanEditCompany,
-    [CanCreateContact] = @CanCreateContact,
-    [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
-    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
-    [UserCanPinAction] = @UserCanPinAction,
-    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [CanCreateAsset] = @CanCreateAsset,
-    [CanEditAsset] = @CanEditAsset,
-    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
-    [FilterInactive] = @FilterInactive,
-    [DisableExporting] = @DisableExporting,
-    [CanCreateProducts] = @CanCreateProducts,
-    [CanEditProducts] = @CanEditProducts,
-    [CanCreateVersions] = @CanCreateVersions,
-    [CanEditVersions] = @CanEditVersions,
-    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
-    [ProductFamiliesRights] = @ProductFamiliesRights,
-    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
-    [CalGUID] = @CalGUID,
-    [PortalViewOnly] = @PortalViewOnly,
-    [verificationPhoneNumber] = @verificationPhoneNumber,
-    [verificationCode] = @verificationCode,
-    [verificationCodeExpiration] = @verificationCodeExpiration,
-    [PasswordCreatedUtc] = @PasswordCreatedUtc,
-    [ImportFileID] = @ImportFileID
-  WHERE ([UserID] = @UserID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteUser
-
-(
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Users]
-  WHERE ([UserID] = @UserID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkField
 GO
 
@@ -60626,7 +60075,7 @@ GO
 CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
 
 (
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -60944,7 +60393,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
 
 (
   @OrganizationID int,
-  @Name varchar(255),
+  @Name nvarchar(255),
   @Description varchar(1024),
   @Website varchar(1000),
   @WhereHeard varchar(300),
@@ -63431,6 +62880,581 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [UserID],
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID]
+  FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertUser
+
+(
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Users]
+  (
+    [Email],
+    [FirstName],
+    [MiddleName],
+    [LastName],
+    [Title],
+    [CryptedPassword],
+    [IsActive],
+    [MarkDeleted],
+    [TimeZoneID],
+    [CultureName],
+    [LastLogin],
+    [LastActivity],
+    [LastPing],
+    [LastWaterCoolerID],
+    [IsSystemAdmin],
+    [IsFinanceAdmin],
+    [IsPasswordExpired],
+    [IsPortalUser],
+    [IsChatUser],
+    [PrimaryGroupID],
+    [InOffice],
+    [InOfficeComment],
+    [ReceiveTicketNotifications],
+    [ReceiveAllGroupNotifications],
+    [SubscribeToNewTickets],
+    [ActivatedOn],
+    [DeactivatedOn],
+    [OrganizationID],
+    [LastVersion],
+    [SessionID],
+    [ImportID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [OrgsUserCanSeeOnPortal],
+    [DoNotAutoSubscribe],
+    [IsClassicView],
+    [SubscribeToNewActions],
+    [ApprovedTerms],
+    [ShowWelcomePage],
+    [UserInformation],
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [MenuItems],
+    [TicketRights],
+    [Signature],
+    [LinkedIn],
+    [OnlyEmailAfterHours],
+    [BlockInboundEmail],
+    [SalesForceID],
+    [ChangeTicketVisibility],
+    [ChangeKBVisibility],
+    [EnforceSingleSession],
+    [NeedsIndexing],
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize],
+    [CanCreateCompany],
+    [CanEditCompany],
+    [CanCreateContact],
+    [CanEditContact],
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction],
+    [UserCanPinAction],
+    [PortalLimitOrgTickets],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive],
+    [DisableExporting],
+    [CanCreateProducts],
+    [CanEditProducts],
+    [CanCreateVersions],
+    [CanEditVersions],
+    [ReceiveUnassignedGroupEmails],
+    [ProductFamiliesRights],
+    [BlockEmailFromCreatingOnly],
+    [CalGUID],
+    [PortalViewOnly],
+    [verificationPhoneNumber],
+    [verificationCode],
+    [verificationCodeExpiration],
+    [PasswordCreatedUtc],
+    [ImportFileID])
+  VALUES (
+    @Email,
+    @FirstName,
+    @MiddleName,
+    @LastName,
+    @Title,
+    @CryptedPassword,
+    @IsActive,
+    @MarkDeleted,
+    @TimeZoneID,
+    @CultureName,
+    @LastLogin,
+    @LastActivity,
+    @LastPing,
+    @LastWaterCoolerID,
+    @IsSystemAdmin,
+    @IsFinanceAdmin,
+    @IsPasswordExpired,
+    @IsPortalUser,
+    @IsChatUser,
+    @PrimaryGroupID,
+    @InOffice,
+    @InOfficeComment,
+    @ReceiveTicketNotifications,
+    @ReceiveAllGroupNotifications,
+    @SubscribeToNewTickets,
+    @ActivatedOn,
+    @DeactivatedOn,
+    @OrganizationID,
+    @LastVersion,
+    @SessionID,
+    @ImportID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @OrgsUserCanSeeOnPortal,
+    @DoNotAutoSubscribe,
+    @IsClassicView,
+    @SubscribeToNewActions,
+    @ApprovedTerms,
+    @ShowWelcomePage,
+    @UserInformation,
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @MenuItems,
+    @TicketRights,
+    @Signature,
+    @LinkedIn,
+    @OnlyEmailAfterHours,
+    @BlockInboundEmail,
+    @SalesForceID,
+    @ChangeTicketVisibility,
+    @ChangeKBVisibility,
+    @EnforceSingleSession,
+    @NeedsIndexing,
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize,
+    @CanCreateCompany,
+    @CanEditCompany,
+    @CanCreateContact,
+    @CanEditContact,
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction,
+    @UserCanPinAction,
+    @PortalLimitOrgTickets,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive,
+    @DisableExporting,
+    @CanCreateProducts,
+    @CanEditProducts,
+    @CanCreateVersions,
+    @CanEditVersions,
+    @ReceiveUnassignedGroupEmails,
+    @ProductFamiliesRights,
+    @BlockEmailFromCreatingOnly,
+    @CalGUID,
+    @PortalViewOnly,
+    @verificationPhoneNumber,
+    @verificationCode,
+    @verificationCodeExpiration,
+    @PasswordCreatedUtc,
+    @ImportFileID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateUser
+
+(
+  @UserID int,
+  @Email nvarchar(1024),
+  @FirstName nvarchar(100),
+  @MiddleName nvarchar(100),
+  @LastName nvarchar(100),
+  @Title nvarchar(100),
+  @CryptedPassword varchar(255),
+  @IsActive bit,
+  @MarkDeleted bit,
+  @TimeZoneID varchar(300),
+  @CultureName varchar(50),
+  @LastLogin datetime,
+  @LastActivity datetime,
+  @LastPing datetime,
+  @LastWaterCoolerID int,
+  @IsSystemAdmin bit,
+  @IsFinanceAdmin bit,
+  @IsPasswordExpired bit,
+  @IsPortalUser bit,
+  @IsChatUser bit,
+  @PrimaryGroupID int,
+  @InOffice bit,
+  @InOfficeComment varchar(200),
+  @ReceiveTicketNotifications bit,
+  @ReceiveAllGroupNotifications bit,
+  @SubscribeToNewTickets bit,
+  @ActivatedOn datetime,
+  @DeactivatedOn datetime,
+  @OrganizationID int,
+  @LastVersion varchar(50),
+  @SessionID uniqueidentifier,
+  @ImportID varchar(500),
+  @DateModified datetime,
+  @ModifierID int,
+  @OrgsUserCanSeeOnPortal varchar(200),
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
+  @SubscribeToNewActions bit,
+  @ApprovedTerms bit,
+  @ShowWelcomePage bit,
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @MenuItems varchar(1000),
+  @TicketRights int,
+  @Signature nvarchar(MAX),
+  @LinkedIn varchar(200),
+  @OnlyEmailAfterHours bit,
+  @BlockInboundEmail bit,
+  @SalesForceID varchar(8000),
+  @ChangeTicketVisibility bit,
+  @ChangeKBVisibility bit,
+  @EnforceSingleSession bit,
+  @NeedsIndexing bit,
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
+  @CanCreateCompany bit,
+  @CanEditCompany bit,
+  @CanCreateContact bit,
+  @CanEditContact bit,
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
+  @UserCanPinAction bit,
+  @PortalLimitOrgTickets bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
+  @DisableExporting bit,
+  @CanCreateProducts bit,
+  @CanEditProducts bit,
+  @CanCreateVersions bit,
+  @CanEditVersions bit,
+  @ReceiveUnassignedGroupEmails bit,
+  @ProductFamiliesRights int,
+  @BlockEmailFromCreatingOnly bit,
+  @CalGUID uniqueidentifier,
+  @PortalViewOnly bit,
+  @verificationPhoneNumber varchar(50),
+  @verificationCode varchar(9),
+  @verificationCodeExpiration datetime,
+  @PasswordCreatedUtc datetime,
+  @ImportFileID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Users]
+  SET
+    [Email] = @Email,
+    [FirstName] = @FirstName,
+    [MiddleName] = @MiddleName,
+    [LastName] = @LastName,
+    [Title] = @Title,
+    [CryptedPassword] = @CryptedPassword,
+    [IsActive] = @IsActive,
+    [MarkDeleted] = @MarkDeleted,
+    [TimeZoneID] = @TimeZoneID,
+    [CultureName] = @CultureName,
+    [LastLogin] = @LastLogin,
+    [LastActivity] = @LastActivity,
+    [LastPing] = @LastPing,
+    [LastWaterCoolerID] = @LastWaterCoolerID,
+    [IsSystemAdmin] = @IsSystemAdmin,
+    [IsFinanceAdmin] = @IsFinanceAdmin,
+    [IsPasswordExpired] = @IsPasswordExpired,
+    [IsPortalUser] = @IsPortalUser,
+    [IsChatUser] = @IsChatUser,
+    [PrimaryGroupID] = @PrimaryGroupID,
+    [InOffice] = @InOffice,
+    [InOfficeComment] = @InOfficeComment,
+    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,
+    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,
+    [SubscribeToNewTickets] = @SubscribeToNewTickets,
+    [ActivatedOn] = @ActivatedOn,
+    [DeactivatedOn] = @DeactivatedOn,
+    [OrganizationID] = @OrganizationID,
+    [LastVersion] = @LastVersion,
+    [SessionID] = @SessionID,
+    [ImportID] = @ImportID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [ApprovedTerms] = @ApprovedTerms,
+    [ShowWelcomePage] = @ShowWelcomePage,
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [MenuItems] = @MenuItems,
+    [TicketRights] = @TicketRights,
+    [Signature] = @Signature,
+    [LinkedIn] = @LinkedIn,
+    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,
+    [BlockInboundEmail] = @BlockInboundEmail,
+    [SalesForceID] = @SalesForceID,
+    [ChangeTicketVisibility] = @ChangeTicketVisibility,
+    [ChangeKBVisibility] = @ChangeKBVisibility,
+    [EnforceSingleSession] = @EnforceSingleSession,
+    [NeedsIndexing] = @NeedsIndexing,
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize,
+    [CanCreateCompany] = @CanCreateCompany,
+    [CanEditCompany] = @CanEditCompany,
+    [CanCreateContact] = @CanCreateContact,
+    [CanEditContact] = @CanEditContact,
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
+    [UserCanPinAction] = @UserCanPinAction,
+    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive,
+    [DisableExporting] = @DisableExporting,
+    [CanCreateProducts] = @CanCreateProducts,
+    [CanEditProducts] = @CanEditProducts,
+    [CanCreateVersions] = @CanCreateVersions,
+    [CanEditVersions] = @CanEditVersions,
+    [ReceiveUnassignedGroupEmails] = @ReceiveUnassignedGroupEmails,
+    [ProductFamiliesRights] = @ProductFamiliesRights,
+    [BlockEmailFromCreatingOnly] = @BlockEmailFromCreatingOnly,
+    [CalGUID] = @CalGUID,
+    [PortalViewOnly] = @PortalViewOnly,
+    [verificationPhoneNumber] = @verificationPhoneNumber,
+    [verificationCode] = @verificationCode,
+    [verificationCodeExpiration] = @verificationCodeExpiration,
+    [PasswordCreatedUtc] = @PasswordCreatedUtc,
+    [ImportFileID] = @ImportFileID
+  WHERE ([UserID] = @UserID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteUser' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteUser
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteUser
+
+(
+  @UserID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Users]
+  WHERE ([UserID] = @UserID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSourceCommitLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSourceCommitLog
 GO
 
@@ -64796,149 +64820,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
-
-(
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
-  (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID])
-  VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
-
-(
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
-
-(
-  @AttachmentID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionsViewItem
 GO
 
@@ -65829,7 +65710,7 @@ AS
     [GroupName],
     [TicketTypeName],
     [UserName],
-    [STATUS],
+    [Status],
     [StatusPosition],
     [SeverityPosition],
     [IsClosed],
@@ -65846,7 +65727,7 @@ AS
     [TicketTypeID],
     [TicketSeverityID],
     [OrganizationID],
-    [NAME],
+    [Name],
     [ParentID],
     [ModifierID],
     [CreatorID],
@@ -68357,7 +68238,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType]
+    [UpdateTicketType],
+    [InstanceName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -68394,6 +68276,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
   @UpdateTicketType bit,
+  @InstanceName varchar(255),
   @Identity int OUT
 )
 AS
@@ -68425,7 +68308,8 @@ AS
     [UseSandBoxServer],
     [AlwaysUseDefaultProjectKey],
     [RestrictedToTicketTypes],
-    [UpdateTicketType])
+    [UpdateTicketType],
+    [InstanceName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -68452,7 +68336,8 @@ AS
     @UseSandBoxServer,
     @AlwaysUseDefaultProjectKey,
     @RestrictedToTicketTypes,
-    @UpdateTicketType)
+    @UpdateTicketType,
+    @InstanceName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -68489,7 +68374,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UseSandBoxServer bit,
   @AlwaysUseDefaultProjectKey bit,
   @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit
+  @UpdateTicketType bit,
+  @InstanceName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
@@ -68520,7 +68406,8 @@ AS
     [UseSandBoxServer] = @UseSandBoxServer,
     [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
     [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -68536,6 +68423,149 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+
+(
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Attachments]
+  (
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID])
+  VALUES (
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+
+(
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Attachments]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID
+  WHERE ([AttachmentID] = @AttachmentID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+
+(
+  @AttachmentID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
@@ -68978,7 +69008,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertActionLogsViewItem
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @Actor varchar(201),
+  @Actor nvarchar(201),
   @Identity int OUT
 )
 AS
@@ -69026,7 +69056,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateActionLogsViewItem
   @Description varchar(1000),
   @DateModified datetime,
   @ModifierID int,
-  @Actor varchar(201)
+  @Actor nvarchar(201)
 )
 AS
   SET NOCOUNT OFF;
@@ -69692,6 +69722,187 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @LockProcessID varchar(250),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated],
+    [LockProcessID])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated,
+    @LockProcessID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(MAX),
+  @CCAddress varchar(MAX),
+  @BCCAddress varchar(MAX),
+  @Subject nvarchar(MAX),
+  @Body nvarchar(MAX),
+  @Attachments nvarchar(MAX),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(MAX),
+  @EmailPostID int,
+  @LockProcessID varchar(250)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID,
+    [LockProcessID] = @LockProcessID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -70164,187 +70375,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @DateCreated datetime,
-  @LockProcessID varchar(250),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [EmailPostID],
-    [DateCreated],
-    [LockProcessID])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @EmailPostID,
-    @DateCreated,
-    @LockProcessID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject nvarchar(4000),
-  @Body nvarchar(MAX),
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @EmailPostID int,
-  @LockProcessID varchar(250)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason,
-    [EmailPostID] = @EmailPostID,
-    [LockProcessID] = @LockProcessID
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiArticlesViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiArticlesViewItem
 GO
 
@@ -70403,9 +70433,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255),
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255),
   @Identity int OUT
 )
 AS
@@ -70480,9 +70510,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @ModifiedBy int,
   @ModifiedDate datetime,
   @NeedsIndexing bit,
-  @Creator varchar(202),
-  @Modifier varchar(202),
-  @Organization varchar(255)
+  @Creator nvarchar(202),
+  @Modifier nvarchar(202),
+  @Organization nvarchar(255)
 )
 AS
   SET NOCOUNT OFF;

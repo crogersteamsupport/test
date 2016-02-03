@@ -710,35 +710,35 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Email", SqlDbType.VarChar, 1024);
+		tempParameter = updateCommand.Parameters.Add("Email", SqlDbType.NVarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("FirstName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("FirstName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("MiddleName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("MiddleName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("LastName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("LastName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Title", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("Title", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1025,7 +1025,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Signature", SqlDbType.VarChar, -1);
+		tempParameter = updateCommand.Parameters.Add("Signature", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1572,7 +1572,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Signature", SqlDbType.VarChar, -1);
+		tempParameter = insertCommand.Parameters.Add("Signature", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1873,35 +1873,35 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Title", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("Title", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("LastName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("LastName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("MiddleName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("MiddleName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("FirstName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("FirstName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Email", SqlDbType.VarChar, 1024);
+		tempParameter = insertCommand.Parameters.Add("Email", SqlDbType.NVarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

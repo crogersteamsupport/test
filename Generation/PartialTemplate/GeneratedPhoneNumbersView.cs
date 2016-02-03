@@ -299,14 +299,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -321,14 +321,14 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PhoneNumbersView] (    [PhoneID],    [PhoneTypeID],    [RefID],    [RefType],    [PhoneNumber],    [Extension],    [OtherTypeName],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [PhoneType],    [CreatorName],    [ModifierName]) VALUES ( @PhoneID, @PhoneTypeID, @RefID, @RefType, @PhoneNumber, @Extension, @OtherTypeName, @DateCreated, @DateModified, @CreatorID, @ModifierID, @PhoneType, @CreatorName, @ModifierName); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

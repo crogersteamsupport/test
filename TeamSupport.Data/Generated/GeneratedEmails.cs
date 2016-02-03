@@ -305,28 +305,28 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ToAddress", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("ToAddress", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CCAddress", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("CCAddress", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("BCCAddress", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("BCCAddress", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Subject", SqlDbType.NVarChar, 4000);
+		tempParameter = updateCommand.Parameters.Add("Subject", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -340,7 +340,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Attachments", SqlDbType.NVarChar, 4000);
+		tempParameter = updateCommand.Parameters.Add("Attachments", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -396,7 +396,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("LastFailedReason", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("LastFailedReason", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -446,7 +446,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("LastFailedReason", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("LastFailedReason", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -502,7 +502,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Attachments", SqlDbType.NVarChar, 4000);
+		tempParameter = insertCommand.Parameters.Add("Attachments", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -516,28 +516,28 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Subject", SqlDbType.NVarChar, 4000);
+		tempParameter = insertCommand.Parameters.Add("Subject", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("BCCAddress", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("BCCAddress", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("CCAddress", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("CCAddress", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ToAddress", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("ToAddress", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

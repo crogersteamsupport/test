@@ -250,21 +250,21 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("FirstName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("FirstName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("LastName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("LastName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
+		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -279,21 +279,21 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ExceptionLogView] (    [ExceptionLogID],    [URL],    [PageInfo],    [ExceptionName],    [Message],    [StackTrace],    [CreatorID],    [DateCreated],    [FirstName],    [LastName],    [Name]) VALUES ( @ExceptionLogID, @URL, @PageInfo, @ExceptionName, @Message, @StackTrace, @CreatorID, @DateCreated, @FirstName, @LastName, @Name); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
+		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("LastName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("LastName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("FirstName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("FirstName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

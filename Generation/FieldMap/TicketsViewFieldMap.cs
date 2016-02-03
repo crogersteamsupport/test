@@ -20,7 +20,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("GroupName", "GroupName", false, false, false);
       _fieldMap.AddMap("TicketTypeName", "TicketTypeName", false, false, false);
       _fieldMap.AddMap("UserName", "UserName", false, false, false);
-      _fieldMap.AddMap("STATUS", "STATUS", false, false, false);
+      _fieldMap.AddMap("Status", "Status", false, false, false);
       _fieldMap.AddMap("StatusPosition", "StatusPosition", false, false, false);
       _fieldMap.AddMap("SeverityPosition", "SeverityPosition", false, false, false);
       _fieldMap.AddMap("IsClosed", "IsClosed", false, false, false);
@@ -37,7 +37,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TicketTypeID", "TicketTypeID", false, false, false);
       _fieldMap.AddMap("TicketSeverityID", "TicketSeverityID", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
-      _fieldMap.AddMap("NAME", "NAME", false, false, false);
+      _fieldMap.AddMap("Name", "Name", false, false, false);
       _fieldMap.AddMap("ParentID", "ParentID", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);

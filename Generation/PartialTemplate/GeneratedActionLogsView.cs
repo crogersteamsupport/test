@@ -268,7 +268,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Actor", SqlDbType.VarChar, 201);
+		tempParameter = updateCommand.Parameters.Add("Actor", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -283,7 +283,7 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ActionLogsView] (    [ActionLogID],    [OrganizationID],    [RefType],    [RefID],    [ActionLogType],    [Description],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [Actor]) VALUES ( @ActionLogID, @OrganizationID, @RefType, @RefID, @ActionLogType, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @Actor); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("Actor", SqlDbType.VarChar, 201);
+		tempParameter = insertCommand.Parameters.Add("Actor", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

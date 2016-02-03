@@ -290,14 +290,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -311,14 +311,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("OrganizationName", SqlDbType.VarChar, 255);
+		tempParameter = updateCommand.Parameters.Add("OrganizationName", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ContactName", SqlDbType.VarChar, 201);
+		tempParameter = updateCommand.Parameters.Add("ContactName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -333,14 +333,14 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NotesView] (    [NoteID],    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateModified],    [DateCreated],    [NeedsIndexing],    [CreatorName],    [ModifierName],    [ParentOrganizationID],    [OrganizationName],    [ContactName]) VALUES ( @NoteID, @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateModified, @DateCreated, @NeedsIndexing, @CreatorName, @ModifierName, @ParentOrganizationID, @OrganizationName, @ContactName); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("ContactName", SqlDbType.VarChar, 201);
+		tempParameter = insertCommand.Parameters.Add("ContactName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("OrganizationName", SqlDbType.VarChar, 255);
+		tempParameter = insertCommand.Parameters.Add("OrganizationName", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -354,14 +354,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
