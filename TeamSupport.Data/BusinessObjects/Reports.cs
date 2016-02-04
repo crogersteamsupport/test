@@ -331,13 +331,55 @@ namespace TeamSupport.Data
       AddCommandParameters(command, Collection.LoginUser);
     }
 
-    private static void AddCommandParameters(SqlCommand command, LoginUser loginUser)
+		public static DataTable GetPortalTicketsTablePage(LoginUser loginUser, int from, int to, string sortField, TabularReport tabReport)
+		{
+			from++;
+			to++;
+
+			SqlCommand command = new SqlCommand();
+			GetPortalTicketsSQL(loginUser, command, tabReport, true, false);
+
+			command.Parameters.AddWithValue("@From", from);
+			command.Parameters.AddWithValue("@To", to);
+
+			AddCommandParameters(command, loginUser);
+
+			DataTable table = new DataTable();
+			using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+			{
+				connection.Open();
+				SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+				command.Connection = connection;
+				command.Transaction = transaction;
+				try
+				{
+					using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+					{
+						adapter.Fill(table);
+					}
+					transaction.Commit();
+					table = DataUtils.DecodeDataTable(table);
+				}
+				catch (Exception ex)
+				{
+					transaction.Rollback();
+					ExceptionLogs.LogException(loginUser, ex, "Portal Tickets Data", DataUtils.GetCommandTextSql(command));
+					throw;
+				}
+				connection.Close();
+			}
+
+			return table;
+		}
+
+		private static void AddCommandParameters(SqlCommand command, LoginUser loginUser)
     {
       User user = loginUser.GetUser();
 
       if (command.CommandText.IndexOf("@OrganizationID") > -1)
       {
-        command.Parameters.AddWithValue("OrganizationID", user.OrganizationID);
+        command.Parameters.AddWithValue("OrganizationID", 875029);
         command.Parameters.AddWithValue("Self", user.FirstLastName);
         command.Parameters.AddWithValue("SelfID", user.UserID);
         command.Parameters.AddWithValue("UserID", user.UserID);
@@ -435,7 +477,32 @@ namespace TeamSupport.Data
       }
     }
 
-    private static void GetTabluarSelectClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, TabularReport tabularReport, bool includeHiddenFields, bool isSchemaOnly)
+		private static void GetPortalTicketsSQL(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly)
+		{
+			StringBuilder builder = new StringBuilder();
+			GetTabluarSelectClause(loginUser, command, builder, tabularReport, inlcudeHiddenFields, isSchemaOnly);
+			if (isSchemaOnly)
+			{
+				command.CommandText = builder.ToString();
+			}
+			else
+			{
+
+				string primaryTableKeyFieldName = null;
+				if (tabularReport.Subcategory == 70)
+				{
+					primaryTableKeyFieldName = "UserTicketsView.TicketID";
+				}
+				else if(tabularReport.Subcategory == 74) primaryTableKeyFieldName = "TicketsView.TicketID";
+
+
+				GetWhereClause(loginUser, command, builder, tabularReport.Filters, primaryTableKeyFieldName);
+
+				command.CommandText = builder.ToString();
+			}
+		}
+
+		private static void GetTabluarSelectClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, TabularReport tabularReport, bool includeHiddenFields, bool isSchemaOnly)
     {
       ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(loginUser, tabularReport.Subcategory);
 
@@ -463,9 +530,10 @@ namespace TeamSupport.Data
             {
                 fieldName = "UserTicketsView.TicketID";
             }
+						else if (tabularReport.Subcategory == 74) fieldName = "TicketsView.TicketID";
 
 
-            fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
+						fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
 
             if (customField.FieldType == CustomFieldType.DateTime)
             {
@@ -1975,7 +2043,7 @@ namespace TeamSupport.Data
       return result;
     }
 
-    private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
+		private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
     {
       DataTable table = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, true);
       GridResult result = new GridResult();
