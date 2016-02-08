@@ -216,12 +216,11 @@
                 					// publish a stream using the camera and microphone:
                 					var pubOptions = { publishAudio: true, publishVideo: false };
                 					publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
-                					publisher.on('mediaStopped', function (event) {
-                						alert("stopped");
-                						// The user clicked stop.
-                					});
-
                 					session.publish(publisher);
+                				});
+                				publisher.on('mediaStopped', function (event) {
+                					alert("stopped");
+                					// The user clicked stop.
                 				});
                 			});
 
