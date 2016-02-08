@@ -214,8 +214,13 @@
                 				session = OT.initSession(apiKey, sessionId);
                 				session.connect(token, function (error) {
                 					// publish a stream using the camera and microphone:
-                					var pubOptions = { videoSource: null };
+                					var pubOptions = { videoSource: null, showControls: false };
                 					var publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
+                					publisher.on('mediaStopped', function (event) {
+                						alert("stopped");
+                						// The user clicked stop.
+                					});
+
                 					session.publish(publisher);
                 				});
                 			});
@@ -232,6 +237,7 @@
                 	//image: '../images/icons/Symbol_Record.png',
                 	icon: 'awesome fa fa-video-camera',
                 	onclick: function () {
+                		OT.registerScreenSharingExtension('chrome', 'nnhgoadkmbnidijafokjmmonbnmlnchj', 2);
                 		OT.checkScreenSharingCapability(function (response) {
                 			if (!response.supported || response.extensionRegistered === false) {
                 				alert('This browser does not support screen sharing.');
