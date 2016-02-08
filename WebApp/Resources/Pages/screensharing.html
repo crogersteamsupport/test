@@ -21,8 +21,9 @@
     var session = OT.initSession(apiKey, sessionId);
 
     session.connect(token, function(error) {
-      // publish a stream using the camera and microphone:
-      var publisher = OT.initPublisher('camera-publisher');
+    	// publish a stream using the camera and microphone:
+    	var pubOptions = { videoSource: null };
+    	var publisher = OT.initPublisher('camera-publisher', pubOptions);
       session.publish(publisher);
       document.getElementById('shareBtn').disabled = false;
     });
