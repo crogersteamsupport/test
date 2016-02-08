@@ -603,7 +603,114 @@ namespace TeamSupport.Data
       }
     }
 
-    private string BuildWhereClausesFromFilters(int organizationId, NameValueCollection filters, ref SqlParameterCollection filterParameters)
+		public void LoadHubtickets(LoginUser loginUser, int organizationID, TicketLoadFilter filter, List<CustomPortalColumnProxy> portalColumns, int from = 0, int to = 100000000)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				StringBuilder builder = new StringBuilder();
+
+				string sort = filter.SortColumn.Trim();
+				string sortFields;
+				switch (sort)
+				{
+					case "Severity":
+						sortFields = "[SeverityPosition]";
+						sort = string.Format("[SeverityPosition] {0}", (filter.SortAsc ? "ASC" : "DESC"));
+						break;
+					case "Status":
+						sortFields = "[StatusPosition], [Status], [TicketTypeName]";
+						sort = string.Format("[StatusPosition] {0}, [Status] {0}, [TicketTypeName] {0}", (filter.SortAsc ? "ASC" : "DESC"));
+						break;
+					default:
+						sortFields = string.Format("[{0}]", sort);
+						sort = string.Format("[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
+						break;
+				}
+
+				string fields = BuildCustomPortalColumns(loginUser, portalColumns);
+
+				StringBuilder where = new StringBuilder();
+				GetHubFilterWhereClause(loginUser, organizationID, filter, command, where);
+
+				string query = @"
+
+        WITH
+        BaseQuery AS(
+          SELECT tv.TicketID, {1} {0}
+        ),
+
+        RowQuery AS (
+          SELECT BaseQuery.*, ROW_NUMBER() OVER (ORDER BY {2}) AS 'hiddenRowNum' FROM BaseQuery
+        ),
+
+        PageQuery AS (
+          SELECT  * FROM RowQuery WHERE hiddenRowNum BETWEEN  @FromIndex AND @ToIndex
+        )
+
+        SELECT [hiddenRowNum], {3}
+        FROM PageQuery
+        INNER JOIN TicketsView tv ON tv.TicketID = PageQuery.TicketID 
+        ORDER BY PageQuery.hiddenRowNum ASC
+        ";
+
+				command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@FromIndex", from + 1);
+				command.Parameters.AddWithValue("@ToIndex", to + 1);
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+
+				Fill(command);
+			}
+		}
+
+		private string BuildCustomPortalColumns(LoginUser loginUser, List<CustomPortalColumnProxy> columns)
+		{
+			StringBuilder builder = new StringBuilder();
+      TimeSpan offset = loginUser.Offset;
+			TicketTypes ticketTypes = new TicketTypes(loginUser);
+			ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
+			ReportTableFields tableFields = new ReportTableFields(loginUser);
+			tableFields.LoadAll();
+			string fieldName = "tv.TicketID";
+			string customFieldNameTemplate = ",( SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = tv.TicketID))";
+
+			builder.Append("tv.[TicketID] as hiddenTicketID, tv.[TicketNumber] as hiddenTicketNumber");
+
+			foreach(CustomPortalColumnProxy column in columns.OrderBy(c => c.Position))
+			{
+				if(column.CustomFieldID != null)
+				{
+					CustomField customField = (CustomField)CustomFields.GetCustomField(loginUser, (int)column.CustomFieldID);
+					fieldName = string.Format(customFieldNameTemplate, column.CustomFieldID);
+
+					if (customField.AuxID > 0)
+					{
+						TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
+						if (ticketType != null && ticketType.OrganizationID == customField.OrganizationID)
+						{
+							builder.Append(string.Format("{0} AS [{1} ({2})]", fieldName, customField.Name, ticketType.Name));
+						}
+						else
+						{
+							builder.Append(string.Format("{0} AS [{1}]", fieldName, customField.Name));
+						}
+					}
+					else
+					{
+						builder.Append(string.Format("{0} AS [{1}]", fieldName, customField.Name));
+					}
+				}
+				else 
+				{
+					ReportTableField tableField = tableFields.FindByReportTableFieldID((int)column.StockFieldID);
+					builder.Append(string.Format(", tv.{0} as [{1}]", tableField.FieldName, tableField.Alias));
+				}
+			}
+
+			return builder.ToString();
+		}
+
+		private string BuildWhereClausesFromFilters(int organizationId, NameValueCollection filters, ref SqlParameterCollection filterParameters)
     {
       StringBuilder result = new StringBuilder();
       CustomFields customFields = new CustomFields(this.LoginUser);
@@ -1336,7 +1443,180 @@ namespace TeamSupport.Data
       }
     }
 
-    public static SearchResults GetQuickSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
+		private static void GetHubFilterWhereClause(LoginUser loginUser, int OrganizationID, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
+		{
+			builder.Append(" FROM TicketsView tv WHERE (tv.OrganizationID = @OrganizationID)");
+			AddTicketParameter("TicketTypeID", filter.TicketTypeID, false, builder, command);
+			if (filter.TicketStatusID != null) AddTicketParameter("TicketStatusID", filter.TicketStatusID, false, builder, command);
+			else AddTicketParameter("IsClosed", filter.IsClosed, false, builder, command);
+			AddTicketParameter("TicketSeverityID", filter.TicketSeverityID, false, builder, command);
+			AddTicketParameter("ProductID", filter.ProductID, true, builder, command);
+			AddTicketParameter("ReportedVersionID", filter.ReportedVersionID, true, builder, command);
+			AddTicketParameter("SolvedVersionID", filter.SolvedVersionID, true, builder, command);
+			AddTicketParameter("IsVisibleOnPortal", filter.IsVisibleOnPortal, false, builder, command);
+			AddTicketParameter("IsKnowledgeBase", filter.IsKnowledgeBase, false, builder, command);
+			AddTicketParameter("KnowledgeBaseCategoryID", filter.KnowledgeBaseCategoryID, false, builder, command);
+			AddTicketParameter("IsSubscribed", filter.IsSubscribed, false, builder, command);
+			AddTicketParameter("IsFlagged", filter.IsFlagged, false, builder, command);
+			AddTicketParameter("IsEnqueued", filter.IsEnqueued, false, builder, command);
+			AddTicketParameter("DateCreated", "DateCreatedBegin", filter.DateCreatedBegin, ">=", builder, command);
+			AddTicketParameter("DateCreated", "DateCreatedEnd", filter.DateCreatedEnd, "<=", builder, command);
+			AddTicketParameter("DateModified", "DateModifiedBegin", filter.DateModifiedBegin, ">=", builder, command);
+			AddTicketParameter("DateModified", "DateModifiedEnd", filter.DateModifiedEnd, "<=", builder, command);
+
+			if (filter.ForumCategoryID != null && filter.ForumCategoryID == -1)
+			{
+				builder.Append(" AND (tv.ForumCategory IS NOT NULL)");
+			}
+
+			if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)
+			{
+				//User's all groups all tickets
+				builder.Append(" AND (tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+				command.Parameters.AddWithValue("UserID", filter.UserID);
+			}
+			else if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -2)
+			{
+				//Users's all groups, unassigned tickets
+				builder.Append(" AND ((tv.UserID IS NULL OR tv.UserID < 0) AND tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+				command.Parameters.AddWithValue("UserID", filter.UserID);
+			}
+			else if (filter.GroupID != null && filter.UserID != null && filter.UserID == -2)
+			{
+				//Group's unassigned tickets
+				builder.Append(" AND ((tv.UserID IS NULL OR tv.UserID < 0) AND tv.GroupID = @GroupID)");
+				command.Parameters.AddWithValue("GroupID", filter.GroupID);
+			}
+			else if (filter.GroupID == null && filter.UserID != null && filter.UserID == -2)
+			{
+				//All unassigned tickets
+				builder.Append(" AND (tv.UserID IS NULL OR tv.UserID < 0) ");
+			}
+			else
+			{
+				AddTicketParameter("UserID", filter.UserID, true, builder, command);
+				AddTicketParameter("GroupID", filter.GroupID, true, builder, command);
+			}
+
+			if (filter.CustomerID != null)
+			{
+				builder.Append(" AND (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID) AND (ot.TicketID = tv.TicketID)))");
+				command.Parameters.AddWithValue("CustomerID", filter.CustomerID);
+			}
+
+			if (filter.ContactID != null)
+			{
+				builder.Append(" AND (EXISTS(SELECT * FROM UserTickets ut WHERE (ut.UserID = @ContactID) AND (ut.TicketID = tv.TicketID)))");
+				command.Parameters.AddWithValue("ContactID", filter.ContactID);
+			}
+
+			if (filter.AssetID != null)
+			{
+				builder.Append(" AND (EXISTS(SELECT * FROM AssetTickets asst WHERE (asst.AssetID = @AssetID) AND (asst.TicketID = tv.TicketID)))");
+				command.Parameters.AddWithValue("AssetID", filter.AssetID);
+			}
+
+			if (filter.ProductVersionID != null)
+			{
+				builder.Append(" AND (tv.ReportedVersionID = @ProductVersionID OR tv.SolvedVersionID = @ProductVersionID)");
+				command.Parameters.AddWithValue("ProductVersionID", filter.ProductVersionID);
+			}
+
+			if (!String.IsNullOrEmpty(filter.SearchText.Trim()))
+			{
+				int[] list = GetTicketIDs(filter.SearchText, loginUser);
+				if (list.Length > 0)
+				{
+					string ids = string.Join(",", Array.ConvertAll<int, string>(list, Convert.ToString));
+					builder.Append(string.Format(" AND (tv.TicketID IN ({0})) ", ids));
+				}
+				else
+				{
+					builder.Append(" AND (tv.TicketID IN (-1)) ");
+				}
+			}
+
+			if (filter.Tags != null && filter.Tags.Length > 0)
+			{
+				for (int i = 0; i < filter.Tags.Length; i++)
+				{
+					builder.Append(" AND EXISTS (SELECT * FROM TagLinks WHERE TagLinks.RefID=tv.TicketID AND TagLinks.RefType=17 AND TagLinks.TagID = @TagID" + i.ToString() + ")");
+					command.Parameters.AddWithValue("@TagID" + i.ToString(), filter.Tags[i]);
+				}
+			}
+
+			string rightsClause = "";
+
+			User user = Users.GetUser(loginUser, loginUser.UserID);
+			switch (user.TicketRights)
+			{
+				case TicketRightType.All:
+					break;
+				case TicketRightType.Assigned:
+					builder.Append(" AND (tv.UserID=" + loginUser.UserID.ToString() + " OR tv.IsKnowledgeBase=1) ");
+					break;
+				case TicketRightType.Groups:
+					rightsClause = @" AND ({0}
+              (tv.UserID = {1}) OR
+              (tv.IsKnowledgeBase = 1) OR
+              (tv.UserID IS NULL AND tv.GroupID IS NULL)) ";
+					Groups groups = new Groups(loginUser);
+					groups.LoadByUserID(loginUser.UserID);
+					List<int> groupList = new List<int>();
+					foreach (Group group in groups)
+					{
+						groupList.Add(group.GroupID);
+					}
+					string groupString = groupList.Count < 1 ? "" : string.Format("(tv.GroupID IN ({0})) OR ", DataUtils.IntArrayToCommaString(groupList.ToArray()));
+					builder.Append(string.Format(rightsClause, groupString, loginUser.UserID.ToString()));
+					break;
+				case TicketRightType.Customers:
+					rightsClause = @" AND (TicketID in (
+            SELECT ot.TicketID FROM OrganizationTickets ot
+            INNER JOIN UserRightsOrganizations uro ON ot.OrganizationID = uro.OrganizationID 
+            WHERE uro.UserID={0}) OR
+            tv.UserID = {0} OR
+            tv.IsKnowledgeBase = 1)";
+					builder.Append(string.Format(rightsClause, loginUser.UserID.ToString()));
+					break;
+				default:
+					break;
+			}
+
+			Organizations organization = new Organizations(loginUser);
+			organization.LoadByOrganizationID(loginUser.OrganizationID);
+			if (organization.Count > 0 && organization[0].UseProductFamilies)
+			{
+				switch ((ProductFamiliesRightType)user.ProductFamiliesRights)
+				{
+					case ProductFamiliesRightType.AllFamilies:
+						break;
+					case ProductFamiliesRightType.SomeFamilies:
+						rightsClause = @" AND (
+                    TicketID IN 
+                    (
+                        SELECT 
+                            t.TicketID 
+                        FROM 
+                            Tickets t
+                            JOIN Products p
+                                ON t.ProductID = p.ProductID
+                            JOIN UserRightsProductFamilies urpf
+                                ON p.ProductFamilyID = urpf.ProductFamilyID 
+                        WHERE 
+                            urpf.UserID = {0}
+                    ) 
+                    OR tv.UserID = {0} 
+                  )";
+						builder.Append(string.Format(rightsClause, loginUser.UserID.ToString()));
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		public static SearchResults GetQuickSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
     { 
         Options options = new Options();
         options.TextFlags = TextFlags.dtsoTfRecognizeDates;
