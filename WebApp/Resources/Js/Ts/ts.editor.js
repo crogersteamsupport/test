@@ -7,7 +7,7 @@
         }
         var editorOptions = {
         	plugins: "paste link code textcolor image imagetools moxiemanager table " + resizePluginCode,
-        	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo recordScreenTest startSSTest stopSSTest | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote | code | table",
             statusbar: true,
             gecko_spellcheck: true,
@@ -189,6 +189,86 @@
                             alert("Your client does not support video recording.")
                         }
                     }
+                });
+
+                ed.addButton('recordScreenTest', {
+                	title: 'Record Screen Share Test',
+                	//image: '../images/icons/Symbol_Record.png',
+                	icon: 'awesome fa fa-video-camera',
+                	onclick: function () {
+                		top.Ts.System.logAction('Ticket - Video Screen Test Button Clicked');
+                		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
+                			var dynamicPub = element.parent().find("#screenShare");
+                			element.parent().find("#recordScreenContainer").show();
+                			dynamicPub.show();
+
+
+                			if (dynamicPub.length == 0)
+                				dynamicPub = element.parent().find("#tempContainer");
+
+
+
+                			top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                				sessionId = resultID[0];
+                				token = resultID[1];
+                				session = OT.initSession(apiKey, sessionId);
+                				session.connect(token, function (error) {
+                					// publish a stream using the camera and microphone:
+                					var pubOptions = { videoSource: null };
+                					var publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
+                					session.publish(publisher);
+                				});
+                			});
+
+                		}
+                		else {
+                			alert("Your client does not support video recording.")
+                		}
+                	}
+                });
+
+                ed.addButton('startSSTest', {
+                	title: 'Record Screen Start',
+                	//image: '../images/icons/Symbol_Record.png',
+                	icon: 'awesome fa fa-video-camera',
+                	onclick: function () {
+                		OT.checkScreenSharingCapability(function (response) {
+                			if (!response.supported || response.extensionRegistered === false) {
+                				alert('This browser does not support screen sharing.');
+                			} else if (response.extensionInstalled === false) {
+                				alert('Please install the screen sharing extension and load this page over HTTPS.');
+                			} else {
+                				// Screen sharing is available. Publish the screen.
+                				// Create an element, but do not display it in the HTML DOM:
+                				var screenContainerElement = document.createElement('div');
+                				var screenSharingPublisher = OT.initPublisher(
+									  screenContainerElement,
+									  { videoSource: 'screen' },
+									  function (error) {
+									  	if (error) {
+									  		alert('Something went wrong: ' + error.message);
+									  	} else {
+									  		session.publish(
+											  screenSharingPublisher,
+											  function (error) {
+											  	if (error) {
+											  		alert('Something went wrong: ' + error.message);
+											  	}
+											  });
+									  	}
+									  });
+                			}
+                		});
+                	}
+                });
+
+                ed.addButton('stopSSTest', {
+                	title: 'Record Screen stop',
+                	//image: '../images/icons/Symbol_Record.png',
+                	icon: 'awesome fa fa-video-camera',
+                	onclick: function () {
+
+                	}
                 });
 
                 ed.addButton('insertKb', {
