@@ -1823,7 +1823,9 @@ function SetupTagsSection() {
       var tag = $(this).parent()[0];
       if (tag) {
         top.Ts.Services.Tickets.RemoveTag(_ticketID, tag.id, function (tags) {
-          tag.remove();
+        	
+        	//tag.parentNode.removeChild(tag);
+        	$(tag).remove();
           window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removetag", userFullName);
         }, function () {
           alert('There was a problem removing the tag from the ticket.');
@@ -2434,7 +2436,7 @@ function SetupRemindersSection() {
     	var currentUserID = $(reminder).data().tag.CreatorID;
     	if (reminder && currentUserID == top.Ts.System.User.UserID) {
         top.Ts.Services.System.DismissReminder(reminder.id, function () {
-          reminder.remove();
+          $(reminder).remove();
           window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removereminder", userFullName);
         }, function () {
           alert('There was a problem removing the reminder from the ticket.');
