@@ -199,7 +199,7 @@
                 		top.Ts.System.logAction('Ticket - Video Screen Test Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                 			var dynamicPub = element.parent().find("#screenShare");
-                			element.parent().find("#recordScreenContainer").show();
+                			element.parent().find("#recordScreenContainer").hide();
                 			dynamicPub.show();
 
 
@@ -214,8 +214,8 @@
                 				session = OT.initSession(apiKey, sessionId);
                 				session.connect(token, function (error) {
                 					// publish a stream using the camera and microphone:
-                					var pubOptions = { videoSource: null, showControls: false };
-                					var publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
+                					var pubOptions = { publishAudio: true, publishVideo: false };
+                					publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
                 					publisher.on('mediaStopped', function (event) {
                 						alert("stopped");
                 						// The user clicked stop.
@@ -273,7 +273,7 @@
                 	//image: '../images/icons/Symbol_Record.png',
                 	icon: 'awesome fa fa-video-camera',
                 	onclick: function () {
-
+                		publisher.publishAudio(false);
                 	}
                 });
 
