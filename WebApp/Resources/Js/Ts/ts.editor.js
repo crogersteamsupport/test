@@ -218,10 +218,40 @@
                 					publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
                 					session.publish(publisher);
                 				});
-                				publisher.on('mediaStopped', function (event) {
-                					alert("stopped");
-                					// The user clicked stop.
+
+                				OT.registerScreenSharingExtension('chrome', 'nnhgoadkmbnidijafokjmmonbnmlnchj', 2);
+                				OT.checkScreenSharingCapability(function (response) {
+                					if (!response.supported || response.extensionRegistered === false) {
+                						alert('This browser does not support screen sharing.');
+                					} else if (response.extensionInstalled === false) {
+                						alert('Please install the screen sharing extension and load this page over HTTPS.');
+                					} else {
+                						// Screen sharing is available. Publish the screen.
+                						// Create an element, but do not display it in the HTML DOM:
+                						var screenContainerElement = document.createElement('div');
+                						var screenSharingPublisher = OT.initPublisher(
+											  screenContainerElement,
+											  { videoSource: 'screen' },
+											  function (error) {
+											  	if (error) {
+											  		alert('Something went wrong: ' + error.message);
+											  	} else {
+											  		session.publish(
+													  screenSharingPublisher,
+													  function (error) {
+													  	if (error) {
+													  		alert('Something went wrong: ' + error.message);
+													  	}
+													  });
+											  	}
+											  });
+                					}
                 				});
+                			});
+
+                			publisher.on('mediaStopped', function (event) {
+                				alert("stopped");
+                				// The user clicked stop.
                 			});
 
                 		}
@@ -236,33 +266,8 @@
                 	//image: '../images/icons/Symbol_Record.png',
                 	icon: 'awesome fa fa-video-camera',
                 	onclick: function () {
-                		OT.registerScreenSharingExtension('chrome', 'nnhgoadkmbnidijafokjmmonbnmlnchj', 2);
-                		OT.checkScreenSharingCapability(function (response) {
-                			if (!response.supported || response.extensionRegistered === false) {
-                				alert('This browser does not support screen sharing.');
-                			} else if (response.extensionInstalled === false) {
-                				alert('Please install the screen sharing extension and load this page over HTTPS.');
-                			} else {
-                				// Screen sharing is available. Publish the screen.
-                				// Create an element, but do not display it in the HTML DOM:
-                				var screenContainerElement = document.createElement('div');
-                				var screenSharingPublisher = OT.initPublisher(
-									  screenContainerElement,
-									  { videoSource: 'screen' },
-									  function (error) {
-									  	if (error) {
-									  		alert('Something went wrong: ' + error.message);
-									  	} else {
-									  		session.publish(
-											  screenSharingPublisher,
-											  function (error) {
-											  	if (error) {
-											  		alert('Something went wrong: ' + error.message);
-											  	}
-											  });
-									  	}
-									  });
-                			}
+                		top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+                			recordingID = resultID;
                 		});
                 	}
                 });
@@ -272,7 +277,10 @@
                 	//image: '../images/icons/Symbol_Record.png',
                 	icon: 'awesome fa fa-video-camera',
                 	onclick: function () {
-                		publisher.publishAudio(false);
+                		top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+                			tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+                			alert(tokurl);
+                		});
                 	}
                 });
 
