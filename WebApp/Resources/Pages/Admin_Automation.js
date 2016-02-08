@@ -289,6 +289,15 @@ AdminAuto = function () {
     return select;
   }
 
+  function loadComboCustomFields(select) {
+      select.html('');
+      //$('<option>').attr('value', '-1').text('-- Select a Field --').appendTo(select).attr('selected', 'selected');
+      for (var i = 0; i < _data.CustomFields.length; i++) {
+          $('<option>').attr('value', _data.CustomFields[i].FieldID).text(_data.CustomFields[i].Alias).appendTo(select).data('field', _data.CustomFields[i]);
+      }
+      return select;
+  }
+
   function loadTriggers(triggerID) {
     top.Ts.Services.Automation.GetTriggers(function (result) {
       if (result.length > 0) {
@@ -528,7 +537,7 @@ AdminAuto = function () {
     function onEditorInit(ed) {
       if (actionID) actions.combobox('setValue', actionID);
       var selectedAction = getAction(actions.val());
-      setActionValues(div, selectedAction, value1);
+      setActionValues(div, selectedAction, value1, value2);
       if (value2) { ed.setContent(value2); }
       if (value1 && values.data('combobox')) {
         values.combobox('setValue', value1);
@@ -549,7 +558,12 @@ AdminAuto = function () {
       var action = getAction(proxy.ActionID);
       var actionValue = $(this).find('.action-value');
       proxy.ActionValue = action.ValueList ? (actionValue.data('itemID') ? actionValue.data('itemID') : actionValue.val()) : null;
-      proxy.ActionValue2 = action.ValueList2 && action.ValueList2.toLowerCase() === "text" ? getEditor($(this).find('.action-editor')).getContent() : null;
+
+      var actionValue2 = null;
+      if (action.ValueList2 && action.ValueList2.toLowerCase() === "textbox") {
+          actionValue2 = $(this).find('.action-value2').val();
+      }
+      proxy.ActionValue2 = action.ValueList2 && action.ValueList2.toLowerCase() === "text" ? getEditor($(this).find('.action-editor')).getContent() : actionValue2;
       items[items.length] = proxy;
     });
 
@@ -562,7 +576,7 @@ AdminAuto = function () {
     return element.find('textarea').tinymce();
   }
 
-  function setActionValues(element, action, value1) {
+  function setActionValues(element, action, value1, value2) {
     var select = element.find('.action-value');
     var actionEditor = element.find('.action-editor');
     if (action.ValueList2 && action.ValueList2.toLowerCase() === "text") {
@@ -580,6 +594,7 @@ AdminAuto = function () {
       select.next().hide();
     }
 
+    $('.action-value2').remove();
 
     switch (action.ValueList) {
       case 'TicketStatuses':
@@ -647,6 +662,14 @@ AdminAuto = function () {
             input.val((value1 ? value1 : ''))
         }
 
+        break;
+      case 'CustomFieldList':
+        loadComboCustomFields(select).combobox('update');
+        var input = $('<input type="text">')
+          .addClass('action-value2 ui-widget-content ui-corner-all text')
+          .width('250px')
+          .val(value2)
+          .insertAfter(select.next());
         break;
       default:
     }

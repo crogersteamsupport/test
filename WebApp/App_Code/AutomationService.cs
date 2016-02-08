@@ -55,18 +55,22 @@ namespace TSWebServices
         fieldItems.Add(new AutoFieldItem(field));
       }
 
+      List<AutoFieldItem> customFieldsItems = new List<AutoFieldItem>();
       foreach (CustomField custom in customs)
       {
         TicketType ticketType = ticketTypes.FindByTicketTypeID(custom.AuxID);
         if (ticketType == null)
         {
           fieldItems.Add(new AutoFieldItem(custom));
+          customFieldsItems.Add(new AutoFieldItem(custom));
         }
         else
         {
           fieldItems.Add(new AutoFieldItem(custom, string.Format("{0} ({1})", custom.Name, ticketType.Name)));
+          customFieldsItems.Add(new AutoFieldItem(custom, string.Format("{0} ({1})", custom.Name, ticketType.Name)));
         }
       }
+      result.CustomFields = customFieldsItems.ToArray();
 
       ReportTableField actionsViewDescription = ReportTableFields.GetReportTableField(fields.LoginUser, 6);
       actionsViewDescription.Alias = "Action Text";
@@ -452,6 +456,8 @@ namespace TSWebServices
     public AutocompleteItem[] Groups { get; set; }
     [DataMember]
     public AutoFieldItem[] Fields { get; set; }
+    [DataMember]
+    public AutoFieldItem[] CustomFields { get; set; }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]
