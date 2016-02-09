@@ -194,7 +194,7 @@
                 ed.addButton('recordScreenTest', {
                 	title: 'Record Screen Share Test',
                 	//image: '../images/icons/Symbol_Record.png',
-                	icon: 'awesome fa fa-television',
+                	icon: 'awesome fa fa-desktop',
                 	onclick: function () {
                 		top.Ts.System.logAction('Ticket - Video Screen Test Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
