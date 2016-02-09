@@ -194,7 +194,7 @@
                 ed.addButton('recordScreenTest', {
                 	title: 'Record Screen Share Test',
                 	//image: '../images/icons/Symbol_Record.png',
-                	icon: 'awesome fa fa-video-camera',
+                	icon: 'awesome fa fa-television',
                 	onclick: function () {
                 		top.Ts.System.logAction('Ticket - Video Screen Test Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
@@ -264,7 +264,7 @@
                 ed.addButton('startSSTest', {
                 	title: 'Record Screen Start',
                 	//image: '../images/icons/Symbol_Record.png',
-                	icon: 'awesome fa fa-video-camera',
+                	icon: 'awesome fa fa-check',
                 	onclick: function () {
                 		top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
                 			recordingID = resultID;
@@ -275,7 +275,7 @@
                 ed.addButton('stopSSTest', {
                 	title: 'Record Screen stop',
                 	//image: '../images/icons/Symbol_Record.png',
-                	icon: 'awesome fa fa-video-camera',
+                	icon: 'awesome fa fa-times',
                 	onclick: function () {
                 		top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
                 			tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
