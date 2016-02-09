@@ -1,3 +1,3 @@
-rem regsvr32 dten600.dll
-regsvr32 dtengine64.dll
+regsvr32 D:\Development\main\trunk\dtSearch\engine\dten600.dll
+rem regsvr32 dtengine64.dll
 pause
