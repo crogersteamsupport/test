@@ -836,7 +836,7 @@ function SetupActionEditor(elem, action) {
   	});
   });
 
-
+  element.find('#stoptokScreen').hide();
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
   	top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
