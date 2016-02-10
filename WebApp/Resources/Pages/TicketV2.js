@@ -824,8 +824,8 @@ function SetupActionEditor(elem, action) {
     }
   });
 
-  element.find('#ssDiv').hide();
-  element.find('#rcdtokScreen').hide();
+  element.find('#recordScreenContainer').hide();
+  element.find('#ssDiv').hide(); 
   element.find('#rcdtokScreen').click(function (e) {
   	top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
   		element.find('#rcdtokScreen').hide();
@@ -836,7 +836,6 @@ function SetupActionEditor(elem, action) {
   	});
   });
 
-  element.find('#stoptokScreen').hide();
 
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
@@ -887,7 +886,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#statusText').text("");
   });
 
-  element.find('#canceltokScreen').hide();
+
   element.find('#canceltokScreen').click(function (e) {
   	if (recordingID) {
   		element.find('#statusTextScreen').text("Cancelling Recording ...");
