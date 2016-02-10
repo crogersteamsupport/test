@@ -199,7 +199,7 @@
                 		top.Ts.System.logAction('Ticket - Video Screen Test Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                 			var dynamicPub = element.parent().find("#screenShare");
-                			element.parent().find("#recordScreenContainer").hide();
+                			element.parent().find("#recordScreenContainer").show();
                 			dynamicPub.show();
 
 

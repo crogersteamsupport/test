@@ -824,6 +824,30 @@ function SetupActionEditor(elem, action) {
     }
   });
 
+  element.find('#rcdtokScreen').click(function (e) {
+  	top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+  		element.find('#rcdtokScreen').hide();
+  		element.find('#stoptokScreen').show();
+  		element.find('#deletetokScreen').hide();
+  		recordingID = resultID;
+  		element.find('#statusTextScreen').text("Currently Recording Screen...");
+  	});
+  });
+
+  element.find('#stoptokScreen').hide();
+
+  element.find('#stoptokScreen').click(function (e) {
+  	element.find('#statusTextScreen').text("Processing...");
+  	top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+  		element.find('#rcdtokScreen').show();
+  		element.find('#stoptokScreen').hide();
+  		element.find('#canceltokScreen').show();
+  		tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+  		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+  		element.find('#statusTextScreen').text("Recording Stopped");
+  	});
+  });
+
   element.find('#rcdtok').click(function (e) {
       top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
           element.find('#rcdtok').hide();
@@ -861,7 +885,23 @@ function SetupActionEditor(elem, action) {
   		element.find('#statusText').text("");
   });
 
-  element.find('#deletetok').hide();
+  element.find('#canceltokScreen').click(function (e) {
+  	if (recordingID) {
+  		element.find('#statusTextScreen').text("Cancelling Recording ...");
+  		top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+  			element.find('#rcdtokScreen').show();
+  			element.find('#stoptokScreen').hide();
+  			session.unpublish(publisher);
+  			element.find('#recordScreenContainer').hide();
+  			element.find('#statusTextScreen').text("");
+  		});
+  	}
+  	else {
+  		session.unpublish(publisher);
+  		element.find('#recordScreenContainer').hide();
+  	}
+  	element.find('#statusText').text("");
+  });
 
   element.find('#canceltok').click(function (e) {
       if (recordingID) {
@@ -1281,6 +1321,8 @@ function LoadTicketControls() {
     else {
       $('#ticket-isKB').prop("checked", false);
       $('#ticket-group-KBCat').hide();
+      $('#ticket-KBVisible-RO').hide();
+
     }
 
     var categories = top.Ts.Cache.getKnowledgeBaseCategories();
