@@ -1583,37 +1583,27 @@ namespace TeamSupport.Data
 					break;
 			}
 
-			Organizations organization = new Organizations(loginUser);
-			organization.LoadByOrganizationID(loginUser.OrganizationID);
-			if (organization.Count > 0 && organization[0].UseProductFamilies)
-			{
-				switch ((ProductFamiliesRightType)user.ProductFamiliesRights)
-				{
-					case ProductFamiliesRightType.AllFamilies:
-						break;
-					case ProductFamiliesRightType.SomeFamilies:
-						rightsClause = @" AND (
-                    TicketID IN 
-                    (
-                        SELECT 
-                            t.TicketID 
-                        FROM 
-                            Tickets t
-                            JOIN Products p
-                                ON t.ProductID = p.ProductID
-                            JOIN UserRightsProductFamilies urpf
-                                ON p.ProductFamilyID = urpf.ProductFamilyID 
-                        WHERE 
-                            urpf.UserID = {0}
-                    ) 
-                    OR tv.UserID = {0} 
-                  )";
-						builder.Append(string.Format(rightsClause, loginUser.UserID.ToString()));
-						break;
-					default:
-						break;
-				}
-			}
+			//TODO: Now check for product families for this user. 
+			//Organizations organization = new Organizations(loginUser);
+			//organization.LoadByOrganizationID(OrganizationID);
+			//if (organization.Count > 0 && organization[0].UseProductFamilies)
+			//{
+			//	rightsClause = @"AND
+			//										( 
+			//												ProductID IS NULL
+			//												OR ProductID IN 
+			//												(
+			//														SELECT 
+			//																ProductID 
+			//														FROM 
+			//																UserProducts 
+			//														WHERE 
+			//																UserID = {0}
+			//												)
+			//										)";
+			//	builder.Append(string.Format(rightsClause, loginUser.UserID.ToString()));
+			
+			//}
 		}
 
 		public static SearchResults GetQuickSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
@@ -1704,7 +1694,38 @@ namespace TeamSupport.Data
 
     }
 
-    private static void AppendTicketRightsConditions(LoginUser loginUser, StringBuilder conditions)
+		public static SearchResults GetHubSearchKBResults(string searchTerm, LoginUser loginUser, int parentOrgID)
+		{
+			Options options = new Options();
+			options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+			using (SearchJob job = new SearchJob())
+			{
+				StringBuilder conditions = new StringBuilder();
+				conditions.Append(" ((IsKnowledgeBase::True) AND (IsVisibleOnPortal::True))");
+
+				job.Request = searchTerm;
+				job.FieldWeights = "Name: 1000";
+				job.BooleanConditions = conditions.ToString();
+				job.TimeoutSeconds = 30;
+				job.SearchFlags = SearchFlags.dtsSearchDelayDocInfo;
+
+				int num = 0;
+				if (!int.TryParse(searchTerm, out num))
+				{
+					job.SearchFlags = job.SearchFlags |
+						SearchFlags.dtsSearchPositionalScoring |
+						SearchFlags.dtsSearchAutoTermWeight;
+				}
+
+				if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+				job.IndexesToSearch.Add(DataUtils.GetPortalTicketsIndexPath(loginUser, parentOrgID));
+				job.Execute();
+
+				return job.Results;
+			}
+		}
+
+		private static void AppendTicketRightsConditions(LoginUser loginUser, StringBuilder conditions)
     {
 
       User user = Users.GetUser(loginUser, loginUser.UserID);

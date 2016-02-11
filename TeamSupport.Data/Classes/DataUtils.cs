@@ -1797,7 +1797,24 @@ namespace TeamSupport.Data
             return GetIndexPath(loginUser) + "\\Contacts";
         }
 
-        public static bool GetIsColumnInBaseCollection(BaseCollection baseCollection, string columnName)
+				public static string GetPortalTicketsIndexPath(LoginUser loginUser, int parentOrganizationID)
+				{
+					return GetPortalIndexPath(loginUser, parentOrganizationID) + "\\Tickets";
+				}
+
+				public static string GetPortalWikiIndexPath(LoginUser loginUser, int parentOrganizationID)
+				{
+					return GetPortalIndexPath(loginUser, parentOrganizationID) + "\\Wikis";
+				}
+
+		public static string GetPortalIndexPath(LoginUser loginUser, int parentOrganizationID)
+				{
+					string path = System.Web.Configuration.WebConfigurationManager.AppSettings["IndexerPath"];
+					path = string.IsNullOrWhiteSpace(path) ? SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\") : path;
+					return Path.Combine(path, parentOrganizationID.ToString());
+				}
+
+		public static bool GetIsColumnInBaseCollection(BaseCollection baseCollection, string columnName)
         {
             bool result = false;
             foreach (DataColumn column in baseCollection.Table.Columns)

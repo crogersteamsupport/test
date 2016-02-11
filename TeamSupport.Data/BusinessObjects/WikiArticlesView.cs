@@ -223,6 +223,37 @@ namespace TeamSupport.Data
       }
 
     }
-  }
+
+		public static SearchResults GetPortalSearchWikiResults(string searchTerm, LoginUser loginUser, int parentOrgID)
+		{
+			Options options = new Options();
+			options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+			using (SearchJob job = new SearchJob())
+			{
+				StringBuilder conditions = new StringBuilder();
+				conditions.Append(" ((PortalView::True))");
+
+				job.Request = searchTerm;
+				job.FieldWeights = "ArticleName: 1000";
+				job.BooleanConditions = conditions.ToString();
+				job.TimeoutSeconds = 30;
+				job.SearchFlags = SearchFlags.dtsSearchDelayDocInfo;
+
+				int num = 0;
+				if (!int.TryParse(searchTerm, out num))
+				{
+					job.SearchFlags = job.SearchFlags |
+						SearchFlags.dtsSearchPositionalScoring |
+						SearchFlags.dtsSearchAutoTermWeight;
+				}
+
+				if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+				job.IndexesToSearch.Add(DataUtils.GetPortalWikiIndexPath(loginUser, parentOrgID));
+				job.Execute();
+
+				return job.Results;
+			}
+		}
+	}
   
 }
