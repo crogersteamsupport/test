@@ -534,7 +534,18 @@ namespace TeamSupport.Data
         }
     }
 
-    public void LoadByContactID(int userID)
+		public void LoadXMostRecentByContactID(int userID, int top)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "SELECT TOP " + top.ToString() + @" tv.* FROM TicketsView tv LEFT JOIN UserTickets ut ON ut.TicketID = tv.TicketID WHERE ut.UserID = @UserID and tv.IsClosed = 'False'  ORDER BY tv.DateCreated ";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@UserID", userID);
+				Fill(command);
+			}
+		}
+
+		public void LoadByContactID(int userID)
     {
       LoadByContactID(userID, "TicketNumber");
     }
