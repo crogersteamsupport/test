@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Net;
 using Newtonsoft.Json;
+using System.Dynamic;
 
 
 namespace TSWebServices
@@ -49,9 +50,13 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string GetAppDomain()
+    public string GetDomains()
     {
-      return Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com");
+            dynamic payload = new ExpandoObject();
+            payload.AppUrl = SystemSettings.GetAppUrl();
+            payload.PortalUrl = SystemSettings.GetPortalUrl();
+            payload.DomainName = SystemSettings.GetDomain();
+            return JsonConvert.SerializeObject(payload);
     }
 
 

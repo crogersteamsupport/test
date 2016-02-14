@@ -110,7 +110,6 @@
         
         //create an object and set some custom properties to it      
         workLink.href = top.Ts.System.AppDomain + '?TicketNumber=' + num;
-        //workLink.href = 'https://app.teamsupport.com?TicketNumber=' + num;
         workLink.onclick = 'top.Ts.MainPage.openTicket(' + num + ',true); return false;'
         workLink.target = '_blank';
         workLink.className = '';

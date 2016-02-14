@@ -194,9 +194,12 @@ var _startDate = new Date();
             self.Culture = result;
             Ts.Services.System.GetCurrentUserChatSettings(function (result) {
               self.ChatUserSettings = result;
-              Ts.Services.System.GetAppDomain(function(result) { 
-                self.AppDomain = result;
-                if (callback) { callback(self.User); }
+              Ts.Services.System.GetDomains(function (result) {
+                  var domains = JSON.parse(result);
+                  self.AppDomain = domains.AppUrl;
+                  self.PortalDomain = domains.PortalUrl;
+                  self.Domain = domains.DomainName;
+                  if (callback) { callback(self.User); }
               });
             });
           });

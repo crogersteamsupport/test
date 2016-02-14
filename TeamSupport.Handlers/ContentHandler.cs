@@ -449,7 +449,7 @@ namespace TeamSupport.Handlers
 
 		}
 
-		//https://app.teamsupport.com/dc/{OrganizationID}/CompanyLogo/{orgIdLogo}/{Size}/{page}
+		//https://app.ts.com/dc/{OrganizationID}/CompanyLogo/{orgIdLogo}/{Size}/{page}
 		private void ProcessCompanyLogo(HttpContext context, string[] segments, int organizationID)
 		{
 			int logoOrganizationId = int.Parse(segments[2]);
@@ -518,7 +518,7 @@ namespace TeamSupport.Handlers
 			return;
 		}
 
-		//https://app.teamsupport.com/dc/{OrganizationID}/contactavatar/{userId}/{Size}/{page}
+		//https://app.ts.com/dc/{OrganizationID}/contactavatar/{userId}/{Size}/{page}
 		private void ProcessContactAvatar(HttpContext context, string[] segments, int organizationID)
 		{
 			int organizationParentId = (int)Organizations.GetOrganization(LoginUser.Anonymous, organizationID).ParentID;
@@ -770,7 +770,7 @@ namespace TeamSupport.Handlers
 		private void ProcessAttachment(HttpContext context, string attachmentID)
 		{
 			//http://127.0.0.1/tsdev/dc/attachments/7401
-			//https://app.teamsupport.com/dc/attachments/{AttachmentID}
+			//https://app.ts.com/dc/attachments/{AttachmentID}
 
 			System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
 			if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
@@ -966,7 +966,7 @@ namespace TeamSupport.Handlers
 			if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
 			//http://127.0.0.1/tsdev/dc/attachments/7401
-			//https://app.teamsupport.com/dc/attachments/{AttachmentID}
+			//https://app.ts.com/dc/attachments/{AttachmentID}
 			Import import = Imports.GetImport(LoginUser.Anonymous, importID);
 			Organization organization = Organizations.GetOrganization(import.Collection.LoginUser, import.OrganizationID);
 			User user = null;

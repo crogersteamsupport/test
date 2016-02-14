@@ -107,7 +107,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     /*
     if (UserSession.CurrentUser.HasPortalRights)
     {
-      string portalLink = "http://portal.teamsupport.com?OrganizationID=" + organization.OrganizationID.ToString();
+      string portalLink = "http://portal.ts.com?OrganizationID=" + organization.OrganizationID.ToString();
       portalLink = @"<a href=""" + portalLink + @""" target=""PortalLink"" onclick=""window.open('" + portalLink + @"', 'PortalLink')"">" + portalLink + "</a>";
       table.Rows.Add(new string[] { "Portal Link:", portalLink });
       table.Rows.Add(new string[] { "Default Portal Group:", defaultGroup });
@@ -195,9 +195,9 @@ public partial class Frames_AdminCompany : BaseFramePage
     //builder.Append("<td>Available Image:</td>");
     builder.Append("<div><strong>Customer Chat Link:</strong></div>");
     builder.Append("<div>");
-    string script = string.Format("window.open('{1}/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;", organization.ChatID.ToString(), Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com"));
+    string script = string.Format("window.open('{1}/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;", organization.ChatID.ToString(), SystemSettings.GetAppUrl());
 
-    string link = string.Format("<a href=\"#\" onclick=\"{0}\"><img src=\"{2}/dc/{1}/chat/image\" border=\"0\" /></a>", script, organization.OrganizationID, Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com"));
+    string link = string.Format("<a href=\"#\" onclick=\"{0}\"><img src=\"{2}/dc/{1}/chat/image\" border=\"0\" /></a>", script, organization.OrganizationID, SystemSettings.GetAppUrl());
     textChatCode.Text = link;
     builder.Append(string.Format("<a href=\"#\" onclick=\"{0}\">Test</a>", script));
     builder.Append("</div>");

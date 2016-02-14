@@ -173,7 +173,7 @@ public partial class Frames_AccountInformation : BaseFramePage
       string email = organization.SystemEmailID + "@teamsupport.com";
       builder.Append("<tr><td><strong>System Email: </strong></td><td>");
       builder.Append("<a href=\"mailto:" + email + "\">" + email + "</a>" + "</td></tr>");
-      string portalLink = "http://portal.teamsupport.com?OrganizationID=" + organization.OrganizationID.ToString();
+      string portalLink = SystemSettings.GetPortalUrl()+"?OrganizationID=" + organization.OrganizationID.ToString();
       portalLink = @"<a href=""" + portalLink + @""" target=""PortalLink"" onclick=""window.open('" + portalLink + @"', 'PortalLink')"">" + portalLink + "</a>";
       builder.Append("<tr><td><strong>Portal Link: </strong></td><td>");
       builder.Append(portalLink + "</td></tr>");

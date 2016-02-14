@@ -970,7 +970,7 @@ namespace TSWebServices
                 {
                     job.Fuzziness = 1;
                     job.Request = job.Request + "*";
-                    job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
+                    //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
                     //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
                 }
 

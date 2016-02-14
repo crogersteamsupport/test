@@ -15,13 +15,13 @@
     <add key="SessionTimeOut" value="28800" />
     <add key="Telerik.Skin" value="Office2007" />
     <add key="Telerik.Web.UI.DialogParametersEncryptionKey" value="MUROC_encryption_key_for TeamSupport.........." />
-    <add key="NewRelic.AppName" value="app.teamsupport.com" />
+    <add key="NewRelic.AppName" value="App" />
     <add key="owin:AutomaticAppStartup" value="false" />
   </appSettings>
   <connectionStrings>
-    <add name="MainConnection" connectionString="Application Name=app.teamsupport.com;Data Source=10.42.42.101; Failover Partner=10.42.42.102;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500" providerName="System.Data.SqlClient" />
-    <add name="ReportConnectionX" connectionString="Application Name=app.teamsupport.com;Data Source=10.42.42.103; Initial Catalog=TeamSupport_Reporting;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500" providerName="System.Data.SqlClient" />
-    <add connectionString="Application Name=app.teamsupport.com;Data Source=10.42.42.101; Failover Partner=10.42.42.102;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500" name="ReportConnection" providerName="System.Data.SqlClient" />
+    <add name="MainConnection" connectionString="Application Name=App;Data Source=10.42.42.101; Failover Partner=10.42.42.102;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500" providerName="System.Data.SqlClient" />
+    <add name="ReportConnectionX" connectionString="Application Name=App;Data Source=10.42.42.103; Initial Catalog=TeamSupport_Reporting;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500" providerName="System.Data.SqlClient" />
+    <add connectionString="Application Name=App;Data Source=10.42.42.101; Failover Partner=10.42.42.102;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29;Connect Timeout=500" name="ReportConnection" providerName="System.Data.SqlClient" />
     <add connectionString="Application Name=WaterCooler;Data Source=10.42.42.101; Failover Partner=10.42.42.102;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29" name="TeamSupportConnectionString" providerName="System.Data.SqlClient" />
     <remove name="LocalSQLServer" />
     <add connectionString="Application Name=WaterCooler;Data Source=10.42.42.101; Failover Partner=10.42.42.102;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=webuser;Password=3209u@j#*29" name="LocalSQLServer" providerName="System.Data.SqlClient" />

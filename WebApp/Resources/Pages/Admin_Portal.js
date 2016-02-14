@@ -251,7 +251,7 @@ AdminPortal = function () {
     $('#portal_twocolumn').prop('checked', portalOption.TwoColumnFields);
     $('#portal_poweredby').prop('checked', portalOption.DisplayFooter);
 
-    $('#portal_adv_url').text('https://portal.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://portal.teamsupport.com/' + portalOption.PortalName);
+    $('#portal_adv_url').text(top.Ts.System.PortalDomain + '/' + portalOption.PortalName).attr('href', top.Ts.System.PortalDomain + '/' + portalOption.PortalName);
     $('#portal_landing_enabled').prop('checked', portalOption.DisplayLandingPage);
     $('#portal_landing_html').val(portalOption.LandingPageHtml);
     $('#portal_external_link').val(externalLink);
@@ -275,17 +275,19 @@ AdminPortal = function () {
     $('#portal_captcha').prop('checked', portalOption.UseRecaptcha == null ? false : portalOption.UseRecaptcha);
     $('#portal_basic_header').val(portalOption.BasicPortalDirections);
     $('#portal_basic_width').val(portalOption.BasicPortalColumnWidth);
-    $('#portal_ticket_url').text('https://ticket.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://ticket.teamsupport.com/' + portalOption.PortalName);
+    var domain = top.Ts.System.Domain;
+    function buildDomain(zone) { return 'https://' + zone + '.' + domain + '/'; }
+    $('#portal_ticket_url').text(buildDomain('ticket') + portalOption.PortalName).attr('href', buildDomain('ticket') + portalOption.PortalName);
     $('#portal_use_company').prop('checked', portalOption.UseCompanyInBasic == null ? false : portalOption.UseCompanyInBasic);
     $('#portal_company_required').prop('checked', portalOption.CompanyRequiredInBasic == null ? false : portalOption.CompanyRequiredInBasic);
-    $('#portal_kb_url').text('https://kb.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://kb.teamsupport.com/' + portalOption.PortalName);
+    $('#portal_kb_url').text(buildDomain('kb') + portalOption.PortalName).attr('href', buildDomain('kb') + portalOption.PortalName);
     $('#portal_allow_kb').prop('checked', portalOption.KBAccess == null ? false : portalOption.KBAccess);
     $('#portal_allow_mytickets').prop('checked', !portalOption.DisablePublicMyTickets);
-    $('#portal_wiki_url').text('https://articles.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://articles.teamsupport.com/' + portalOption.PortalName);
+    $('#portal_wiki_url').text(buildDomain('articles') + portalOption.PortalName).attr('href', buildDomain('articles') + portalOption.PortalName);
     $('#portal_allow_wiki').prop('checked', organization.IsPublicArticles);
     $('#portal_display_fb_article').prop('checked', portalOption.DisplayFbArticles);
     $('#portal_display_fb_kb').prop('checked', portalOption.DisplayFbKB);
-    $('#portal_landing_url').text('https://publicportal.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://publicportal.teamsupport.com/' + portalOption.PortalName);
+    $('#portal_landing_url').text(buildDomain('publicportal') + portalOption.PortalName).attr('href', buildDomain('publicportal') + portalOption.PortalName);
     $('#portal_public_landing_body').val(portalOption.PublicLandingPageBody);
     $('#portal_public_landing_header').val(portalOption.PublicLandingPageHeader);
 

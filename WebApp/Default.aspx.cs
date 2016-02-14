@@ -43,6 +43,7 @@ public partial class _Default : BasePage
     fieldSID.Value = TSAuthentication.SessionID;
     string signalRUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["SignalRUrl"];
     SignalRUrl.Value = string.IsNullOrWhiteSpace(signalRUrl) ? "signalr/signalr" : signalRUrl;
+        Evergage.Value = SystemSettings.GetEverageDataset();
 
     ChatUserSetting setting = ChatUserSettings.GetSetting(UserSession.LoginUser, UserSession.LoginUser.UserID);
     setting.CurrentChatID = -1;

@@ -30,6 +30,7 @@
       var _organizationUseProductFamily = false;
       var _productFamilyID = -1;
 
+
     $(function() {
       $('button').button();
       $('#divSettings input').change(function() { $('#divSettingsButtons').show(); }).keydown(function() { $('#divSettingsButtons').show(); });
@@ -41,11 +42,16 @@
     function pageLoad() {
       loadSettings();
       loadAltEmails();
-  }
+    }
+    
+    function getDomain()
+    {
+        return "@" + top.Ts.System.Domain;
+    }
 
     function loadSettings() {
       PageMethods.GetOrganization(function (result) {
-        $('#lnkSystem').text(result.SystemEmailID + '@teamsupport.com').attr('href', 'mailto:' + result.SystemEmailID + '@teamsupport.com');
+          $('#lnkSystem').text(result.SystemEmailID + getDomain()).attr('href', 'mailto:' + result.SystemEmailID + getDomain());
         $find('textReply').set_value(result.OrganizationReplyToAddress);
         $('#cbRequireNew')[0].checked = result.RequireNewKeyword;
         $('#cbRequireKnown')[0].checked = result.RequireKnownUserForNewEmail;
@@ -77,7 +83,7 @@
           var item = result[i];
           html = html + '<tr><td class="headImage"><img src="../images/icons/Edit.png" alt="Edit" onclick="showAltEmailDialog(\'' + item.Email + '\');" /></td>' +
           '<td class="headImage"><img src="../images/icons/Trash.png" alt="Delete" onclick="deleteAltEmail(\'' + item.Email + '\');" /></td><td>' +
-          '<a href="mailto:' + item.Email + '@teamsupport.com">' + item.Email + '@teamsupport.com</a></td><td>' +
+          '<a href="mailto:' + item.Email + getDomain()+'">' + item.Email + getDomain() +'</a></td><td>' +
           item.Description + '</td><td>' +
           item.Group + '</td><td>' +
           item.TicketType + '</td><td>' +
@@ -414,7 +420,7 @@
   
   <script type="text/javascript" language="javascript">
     function deleteAltEmail(id) {
-      if (!confirm('Are you sure you would like to delete ' + id + '@teamsupport.com?')) return;
+        if (!confirm('Are you sure you would like to delete ' + id + getDomain()+'?')) return;
       PageMethods.DeleteAltEmail(id, function() {
         loadAltEmails();
         top.Ts.System.logAction('Admin Email - Alternate Email Deleted');

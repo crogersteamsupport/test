@@ -23,7 +23,7 @@ public partial class Tips_User : System.Web.UI.Page
         }
       }
 
-		string domain = Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com");
+		string domain = SystemSettings.GetAppUrl();
       int userID = int.Parse(Request["UserID"]);
       User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
       if (user == null) EndResponse("Invalid User");

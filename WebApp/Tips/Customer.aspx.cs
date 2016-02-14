@@ -12,7 +12,7 @@ public partial class Tips_Customer : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        string domain = Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com");
+        string domain = SystemSettings.GetAppUrl();
       if (Request["CustomerID"] == null) EndResponse("Invalid Customer");
 
       int organizationID = int.Parse(Request["CustomerID"]);

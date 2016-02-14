@@ -84,7 +84,7 @@ namespace TSWebServices
 				  string path = AttachmentPath.GetPath(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, AttachmentPath.Folder.Images);
 				  string filename = Guid.NewGuid().ToString();
 				  HttpFileCollection tinymceImage  = HttpContext.Current.Request.Files;
-				  string domain = Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com");
+                string domain = SystemSettings.GetAppUrl();
 
 				  string filepath = String.Format("{0}/dc/{1}/images/{2}.png", domain, TSAuthentication.OrganizationID, filename);
 

@@ -1010,11 +1010,11 @@ namespace TeamSupport.Data
             int id = -1;
             while (true)
             {
-                id = FindTicketID(text, "https://app.teamsupport.com/ticket.aspx?ticketid=");
-                text = RemoveTicketTarget(text, "https://app.teamsupport.com/ticket.aspx?ticketid=");
+                id = FindTicketID(text, SystemSettings.GetAppUrl() + "/ticket.aspx?ticketid=");
+                text = RemoveTicketTarget(text, SystemSettings.GetAppUrl() + "/ticket.aspx?ticketid=");
                 if (id < 0) break;
                 string s = id.ToString();
-                text = Regex.Replace(text, Regex.Escape("https://app.teamsupport.com/ticket.aspx?ticketid=" + s), "javascript:top.Ts.MainPage.openTicket(" + s + ",true);", RegexOptions.IgnoreCase);
+                text = Regex.Replace(text, Regex.Escape(SystemSettings.GetAppUrl() + "/ticket.aspx?ticketid=" + s), "javascript:top.Ts.MainPage.openTicket(" + s + ",true);", RegexOptions.IgnoreCase);
             }
 
             while (true)

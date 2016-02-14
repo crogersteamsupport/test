@@ -36,12 +36,8 @@
   <!-- Start Apptegic Code -->
   <script type="text/javascript">
     var _aaq = _aaq || [];
-    var _evergageDataset = '';
     var _evergageAccount = 'teamsupport';
-    if (window.location.hostname.indexOf('beta.teamsupport') > -1) { _evergageDataset = 'MainAppBeta' }
-    else if (window.location.hostname.indexOf('alpha.teamsupport') > -1) { _evergageDataset = 'MainAppAlpha' }
-    else if (window.location.hostname.indexOf('app.teamsupport') > -1) { _evergageDataset = 'MainApp' }
-    else if (window.location.hostname.indexOf('tsdev') > -1) { _evergageDataset = 'MainApp_Dev' }
+    var _evergageDataset = $("#Evergage").val();
     if (_evergageDataset != '') {
       (function () {
         var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
@@ -148,6 +144,7 @@
   </asp:ScriptManager>
   <asp:HiddenField ID="fieldSID" runat="server" Value="1234"></asp:HiddenField>
   <asp:HiddenField ID="SignalRUrl" runat="server" Value=""></asp:HiddenField>
+      <asp:HiddenField ID="Evergage" runat="server" Value=""></asp:HiddenField>
   <div id="jquery_jplayer_1"></div>
   <div class="main-loading ts-loading">
   </div>

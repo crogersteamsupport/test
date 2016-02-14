@@ -55,7 +55,7 @@ WelcomePage = function () {
   //top.Ts.Services.Organizations.GetPortalOption(top.Ts.System.Organization.OrganizationID, function (portalOption) { });
   //$('.welcome-view-portal').click(function (e) { });
 
-  $('.welcome-view-portal').attr('href', 'https://portal.teamsupport.com/?OrganizationID=' + top.Ts.System.Organization.OrganizationID);
+  $('.welcome-view-portal').attr('href', top.Ts.System.PoratlDomain + '?OrganizationID=' + top.Ts.System.Organization.OrganizationID);
 
   $('.welcome-test-chat').click(function (e) {
     e.preventDefault();
@@ -78,7 +78,7 @@ WelcomePage = function () {
   });
 
 
-  var sysEmail = top.Ts.System.Organization.SystemEmailID + '@teamsupport.com';
+  var sysEmail = top.Ts.System.Organization.SystemEmailID + '@' + top.Ts.System.Domain;
 
   $('.welcome-sysemail')
     .text(sysEmail)

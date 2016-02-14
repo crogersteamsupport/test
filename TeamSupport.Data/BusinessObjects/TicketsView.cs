@@ -62,14 +62,14 @@ namespace TeamSupport.Data
 
   public partial class TicketsViewItem
   {
-    public string TicketUrl { get { return SystemSettings.ReadString(Collection.LoginUser, "AppDomain", "https://app.teamsupport.com") + "?TicketID=" + TicketID.ToString(); } }
+    public string TicketUrl { get { return SystemSettings.GetAppUrl() + "?TicketID=" + TicketID.ToString(); } }
 
     public string PortalUrl
     {
       get 
       {
         string portalLink = OrganizationSettings.ReadString(BaseCollection.LoginUser, OrganizationID, "ExternalPortalLink", "");
-        if (portalLink == "") portalLink = "http://portal.teamsupport.com/protected/ticketdetail.aspx";
+        if (portalLink == "") portalLink = SystemSettings.GetPortalUrl() +  "/protected/ticketdetail.aspx";
         portalLink = portalLink + "?OrganizationID=" + OrganizationID.ToString() + "&TicketNumber=" + TicketNumber.ToString();
         return portalLink;
       }
@@ -1959,7 +1959,7 @@ namespace TeamSupport.Data
 					        INNER JOIN TicketIDs
 					        ON TicketIDs.TicketID = tv.TicketID
 					    ORDER BY
-					        TicketNumber", SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com"));
+					        TicketNumber", SystemSettings.GetAppUrl());
 				command.CommandText = theString.ToString();
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);

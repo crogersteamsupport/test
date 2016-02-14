@@ -53,7 +53,6 @@ namespace TeamSupport.Data
     {
       string result = System.Web.Configuration.WebConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
       return result;
-      //return result.Replace("app.teamsupport.com", "app.teamsupport.com (user: " + userID.ToString() + ")");
     }
     
     private string _connectionString;
