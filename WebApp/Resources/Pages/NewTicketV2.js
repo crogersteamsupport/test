@@ -531,6 +531,7 @@ function SaveTicket() {
             return;
           }
           _ticketID = result[0];
+          
           top.Ts.System.logAction('Ticket Created');
           if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
@@ -541,8 +542,14 @@ function SaveTicket() {
             });
           }
           else {
-            if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
-            top.Ts.MainPage.closeNewTicketTab();
+          	top.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
+          		if (!isInvalid)
+          			alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
+
+          		if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
+          		top.Ts.MainPage.closeNewTicketTab();
+          	});
+
           }
         });
       }

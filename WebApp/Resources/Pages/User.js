@@ -1801,7 +1801,8 @@ UserPage = function () {
       moxiemanager_fullscreen: false,
       moxiemanager_title: top.Ts.System.Organization.Name,
       moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
-      paste_data_images: false,
+      paste_data_images: true,
+      images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
 
       setup: function (ed) {
         ed.on('init', function (e) {

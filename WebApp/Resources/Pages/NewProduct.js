@@ -305,6 +305,8 @@ var initEditor = function (element, init) {
           moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
           extensions: 'gif,jpg,jpeg,png'
       },
+      paste_data_images: true,
+      images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
       setup: function (ed) {
         ed.on('init', function (e) {
           top.Ts.System.refreshUser(function () {
