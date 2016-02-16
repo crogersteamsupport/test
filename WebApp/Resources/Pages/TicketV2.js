@@ -1057,6 +1057,19 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
+	// Get Content Grab and Check with .Get MEthod
+  action.Description = tinymce.get('action-new-editor').getContent();
+  if (action.Description == "") {
+  	saveError = 1;
+  	top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with Get Function. ticket " + _ticketID, "TinyMCE Error");
+  }
+
+  if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  	saveError = 2;
+  	top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with Get Fucntion. ticket " + _ticketID, "TinyMCE Error");
+  }
+
+
   // Get Content Grab and Check
   action.Description = tinymce.activeEditor.getContent(); 
   if (action.Description == "")
