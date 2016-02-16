@@ -4124,7 +4124,10 @@ WHERE t.TicketID = @TicketID
             this.LastPing = user.LastPing == null ? user.LastPing : DateTime.SpecifyKind((DateTime)user.LastPing, DateTimeKind.Local);
         }
 
-		  private UserInfo();
+		  public UserInfo()
+		  {
+
+		  }
     }
 
     [DataContract]
