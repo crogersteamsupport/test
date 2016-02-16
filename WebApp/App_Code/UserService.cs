@@ -1712,7 +1712,7 @@ namespace TSWebServices
         {
             CalendarEvent c = CalendarEvents.GetCalendarEvent(TSAuthentication.GetLoginUser(), eventid);
             if (c.OrganizationID != TSAuthentication.OrganizationID) return;
-            if (!TSAuthentication.IsSystemAdmin) return;
+            //if (!TSAuthentication.IsSystemAdmin) return;
             c.Delete();
             c.Collection.Save();
         }
