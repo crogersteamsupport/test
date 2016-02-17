@@ -94,7 +94,7 @@ namespace TeamSupport.ServiceLibrary
           currentApiCallCount++;
           settings.WriteInt(apiCallCountKey, currentApiCallCount);
           
-          using (var reader = new System.IO.StreamReader(response.GetResponseStream(), ASCIIEncoding.ASCII))
+          using (var reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.ASCII))
           {
             responseText = reader.ReadToEnd();
           }
@@ -107,18 +107,30 @@ namespace TeamSupport.ServiceLibrary
 
           // Get the headers associated with the response.
           WebHeaderCollection headerCollection = response.Headers;
-          RateLimitHeaders remainingHeader = RateLimitHeaders.Remaining;
-          String[] remaining = headerCollection.GetValues(remainingHeader.GetDescription());
+          String[] remaining = headerCollection.GetValues(RateLimitHeaders.Remaining.GetDescription());
+          String[] reset = headerCollection.GetValues(RateLimitHeaders.Reset.GetDescription());
+          String[] limit = headerCollection.GetValues(RateLimitHeaders.Limit.GetDescription());
+		  string rateLimitHeadersString = string.Empty;
+
+		  if (limit.Any() && limit.Length > 0)
+		  {
+			rateLimitHeadersString = string.Format("{0}: {1}", RateLimitHeaders.Limit.GetDescription(), limit[0]);
+		  }
+
+		  if (reset.Any() && reset.Length > 0)
+		  {
+			rateLimitHeadersString += string.Format("\t{0}: {1}", RateLimitHeaders.Reset.GetDescription(), reset[0]);
+		  }
 
           if (remaining.Any() && remaining.Length > 0)
           {
+			rateLimitHeadersString += string.Format("\t{0}: {1}", RateLimitHeaders.Remaining.GetDescription(), remaining[0]);
+			log.WriteEvent(rateLimitHeadersString);
             int remainingCount = int.Parse(remaining[0]);
 
             if (remainingCount == 1)
             {
               //wait
-              RateLimitHeaders resetHeader = RateLimitHeaders.Reset;
-              String[] reset = headerCollection.GetValues(resetHeader.GetDescription());
               if (reset.Any() && reset.Length > 0)
               {
                 int resetSeconds = int.Parse(reset[0]);
@@ -128,9 +140,13 @@ namespace TeamSupport.ServiceLibrary
               }
             }
           }
+		  else
+		  {
+			log.WriteEvent(rateLimitHeadersString);
+		  }
         }
       }
-      catch (System.Net.WebException webEx)
+      catch (WebException webEx)
       {
         log.WriteEvent(requestUrl);
         log.WriteException(webEx);

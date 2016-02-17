@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TeamSupport.Data;
@@ -30,6 +30,8 @@ namespace TeamSupport.ServiceLibrary
     private int       _currentCompanyApiCalls     = 0;
     private int       _waitBeforeNewUpdate        = 0;
     private int       _maxToProcessByTicketCount  = 0;
+	private bool	_noMoreRemainingContactCalls = false;
+	private bool	_noMoreRemainingCompanyCalls = false;
 
     public override void Run()
     {
@@ -84,51 +86,169 @@ namespace TeamSupport.ServiceLibrary
       _maxToProcessByTicketCount = Settings.ReadInt(_maxToProcessByTicketCountKey, 100);
       Service service = Services.GetService(_loginUser, ServiceName);
       _lastProcessed  = DateTime.Parse(Settings.ReadString(_lastProcessedKey, DateTime.UtcNow.AddDays(-1).ToString()));
+	  SetValuesFromAccountStats();
     }
+
+	/// <summary>
+	/// We are keeping track of current api calls and the max. But we'll check directly from the FullContact Account Stats just to make sure.
+	/// </summary>
+	private void SetValuesFromAccountStats()
+	{
+		try
+		{
+			string responseText = string.Empty;
+			System.Net.HttpWebRequest request = System.Net.WebRequest.Create(string.Format("https://api.fullcontact.com/v2/stats.xml?period={0}-{1}", DateTime.Now.Year, DateTime.Now.Month)) as System.Net.HttpWebRequest;
+			request.Headers.Add(String.Format("X-FullContact-APIKey:{0}", _securityToken));
+
+			using (System.Net.HttpWebResponse response = request.GetResponse() as System.Net.HttpWebResponse)
+			{
+				if (response.StatusCode == System.Net.HttpStatusCode.OK)
+				{
+					using (var reader = new System.IO.StreamReader(response.GetResponseStream(), ASCIIEncoding.ASCII))
+					{
+						responseText = reader.ReadToEnd();
+						XmlDocument xmlDoc = new XmlDocument();
+						xmlDoc.LoadXml(responseText);
+
+						string xpath = "response/metrics/metrics";
+						var nodes = xmlDoc.SelectNodes(xpath);
+						string contactMetricId = "200";
+						string companyMetricId = "company_200";
+						int intOut = 0;
+
+						foreach (XmlNode childrenNode in nodes)
+						{
+							if (childrenNode.SelectSingleNode("metricId") != null && childrenNode.SelectSingleNode("metricId").InnerText == contactMetricId)
+							{
+								if (childrenNode.SelectSingleNode("usage") != null)
+								{
+									intOut = 0;
+									bool isSuccess = int.TryParse(childrenNode.SelectSingleNode("usage").InnerText, out intOut);
+
+									if (isSuccess)
+									{
+										_currentContactApiCalls = intOut;
+									}
+								}
+
+								if (childrenNode.SelectSingleNode("planLevel") != null)
+								{
+									intOut = 0;
+									bool isSuccess = int.TryParse(childrenNode.SelectSingleNode("planLevel").InnerText, out intOut);
+
+									if (isSuccess)
+									{
+										_maxContactApiCalls = intOut;
+									}
+								}
+
+								if (childrenNode.SelectSingleNode("remaining") != null)
+								{
+									intOut = 0;
+									bool isSuccess = int.TryParse(childrenNode.SelectSingleNode("remaining").InnerText, out intOut);
+
+									if (isSuccess)
+									{
+										_noMoreRemainingContactCalls = intOut == 0;
+									}
+								}
+							}
+
+							if (childrenNode.SelectSingleNode("metricId") != null && childrenNode.SelectSingleNode("metricId").InnerText == companyMetricId)
+							{
+								if (childrenNode.SelectSingleNode("usage") != null)
+								{
+									intOut = 0;
+									bool isSuccess = int.TryParse(childrenNode.SelectSingleNode("usage").InnerText, out intOut);
+
+									if (isSuccess)
+									{
+										_currentCompanyApiCalls = intOut;
+									}
+								}
+
+								if (childrenNode.SelectSingleNode("planLevel") != null)
+								{
+									intOut = 0;
+									bool isSuccess = int.TryParse(childrenNode.SelectSingleNode("planLevel").InnerText, out intOut);
+
+									if (isSuccess)
+									{
+										_maxCompanyApiCalls = intOut;
+									}
+								}
+
+								if (childrenNode.SelectSingleNode("remaining") != null)
+								{
+									intOut = 0;
+									bool isSuccess = int.TryParse(childrenNode.SelectSingleNode("remaining").InnerText, out intOut);
+
+									if (isSuccess)
+									{
+										_noMoreRemainingCompanyCalls = intOut == 0;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logs.WriteException(ex);
+		}
+	}
 
     private void ProcessCustomerInsights()
     {
       try
       {
         Logs.WriteEvent("********************** Starting Customer Insights Processor ***********************");
+		Logs.WriteEvent(string.Format("Current Api Calls: Contact ({0}) Company ({1})", _currentContactApiCalls, _currentCompanyApiCalls));
 
-        Organizations companies = new Organizations(LoginUser);
-        companies.LoadByCustomerInsightsNewOrModifiedByDate(_lastProcessed.AddMinutes(-10), _waitBeforeNewUpdate);
-        Logs.WriteEvent(string.Format("{0} companies recently updated or added since {1} were found on organizations with CustomerInsights active.", companies.Count, _lastProcessed.ToString()));
+		bool skipCompanyUpdates = (_currentCompanyApiCalls >= _maxCompanyApiCalls) || _noMoreRemainingCompanyCalls;
+        bool skipContactUpdates = (_currentContactApiCalls >= _maxContactApiCalls) || _noMoreRemainingContactCalls;
 
-        bool skipCompanyUpdates = false;
-        bool skipContactUpdates = false;
+		Organizations companies = new Organizations(LoginUser);
+		companies.LoadByCustomerInsightsNewOrModifiedByDate(_lastProcessed.AddMinutes(-10), _waitBeforeNewUpdate);
+		Logs.WriteEvent(string.Format("{0} companies recently updated or added since {1} were found on organizations with CustomerInsights active.", companies.Count, _lastProcessed.ToString()));
 
-        foreach (Organization company in companies)
-        {
-          if (_currentCompanyApiCalls < _maxCompanyApiCalls)
-          {
-            SyncOrganizationInformation(company);
-          }
-          else
-          {
-            skipCompanyUpdates = true;
-            break;
-          }
-        }
+		if (!skipCompanyUpdates)
+		{
+			foreach (Organization company in companies)
+			{
+			  if (_currentCompanyApiCalls < _maxCompanyApiCalls)
+			  {
+				SyncOrganizationInformation(company);
+			  }
+			  else
+			  {
+				skipCompanyUpdates = true;
+				break;
+			  }
+			}
+		}
 
-        ContactsView contacts = new ContactsView(LoginUser);
-        contacts.LoadByCustomerInsightsNewOrModifiedByDate(_lastProcessed.AddMinutes(-10), _waitBeforeNewUpdate);
-        Logs.WriteEvent(string.Format("{0} contacts recently updated or added since {1} were found on organizations with CustomerInsights active.", contacts.Count, _lastProcessed.ToString()));
+		ContactsView contacts = new ContactsView(LoginUser);
+		contacts.LoadByCustomerInsightsNewOrModifiedByDate(_lastProcessed.AddMinutes(-10), _waitBeforeNewUpdate);
+		Logs.WriteEvent(string.Format("{0} contacts recently updated or added since {1} were found on organizations with CustomerInsights active.", contacts.Count, _lastProcessed.ToString()));
 
-        foreach (ContactsViewItem contact in contacts)
-        {
-          if (_currentContactApiCalls < _maxContactApiCalls)
-          {
-            SyncContactInformation(contact);
-          }
-          else
-          {
-            skipContactUpdates = true;
-            break;
-          }
-        }
-        
+		if (!skipContactUpdates)
+		{
+			foreach (ContactsViewItem contact in contacts)
+			{
+			  if (_currentContactApiCalls < _maxContactApiCalls)
+			  {
+				SyncContactInformation(contact);
+			  }
+			  else
+			  {
+				skipContactUpdates = true;
+				break;
+			  }
+			}
+		}
 
         if (!skipCompanyUpdates)
         {
