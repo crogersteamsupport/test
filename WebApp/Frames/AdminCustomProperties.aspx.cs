@@ -442,8 +442,33 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         if (TicketTypes.GetTicketType(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
         (new Tickets(UserSession.LoginUser)).ReplaceTicketType(oldID, newID);
         TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
-        ticketTypes.DeleteFromDB(oldID);
+
+		CustomFields customFields = new CustomFields(UserSession.LoginUser);
+		customFields.LoadByTicketTypeID(UserSession.LoginUser.OrganizationID, oldID);
+
+		ticketTypes.DeleteFromDB(oldID);
         ticketTypes.ValidatePositions(UserSession.LoginUser.OrganizationID);
+
+		int? crmLinkFieldId = null;
+
+		foreach (CustomField customField in customFields)
+		{
+			try
+			{
+				crmLinkFieldId = CRMLinkFields.FindIdByCustomFieldId(customField.CustomFieldID, UserSession.LoginUser);
+			}
+			catch (Exception ex)
+			{
+				crmLinkFieldId = null;
+			}
+			
+			if (crmLinkFieldId != null && crmLinkFieldId > 0)
+			{
+				CRMLinkFields crmLinkFieldsDelete = new CRMLinkFields(UserSession.LoginUser);
+				crmLinkFieldsDelete.DeleteFromDB((int)crmLinkFieldId);
+			}
+		}
+		
         break;
       default:
         break;

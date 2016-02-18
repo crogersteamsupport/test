@@ -186,14 +186,34 @@ namespace TSWebServices
       cat.Collection.Save();
     }
 
-    [WebMethod]
-    public void DeleteCustomField(int fieldID)
-    {
-      if (!TSAuthentication.IsSystemAdmin) return;
-      CustomField field = CustomFields.GetCustomField(TSAuthentication.GetLoginUser(), fieldID);
-      field.Delete();
-      field.Collection.Save();
-    }
+	[WebMethod]
+	public void DeleteCustomField(int fieldID)
+	{
+		if (!TSAuthentication.IsSystemAdmin) return;
+
+		LoginUser login = TSAuthentication.GetLoginUser();
+        CustomField field = CustomFields.GetCustomField(login, fieldID);
+
+		int? crmLinkFieldId = null;
+
+		try
+		{
+			crmLinkFieldId = CRMLinkFields.FindIdByCustomFieldId(fieldID, login);
+		}
+		catch (Exception ex)
+		{
+			crmLinkFieldId = null;
+		}
+
+		field.Delete();
+		field.Collection.Save();
+
+		if (crmLinkFieldId != null && crmLinkFieldId > 0)
+		{
+			CRMLinkFields crmLinkFieldsDelete = new CRMLinkFields(UserSession.LoginUser);
+			crmLinkFieldsDelete.DeleteFromDB((int)crmLinkFieldId);
+		}
+	}
  
    [WebMethod]
    public CategoryOrder SaveOrder(string data)

@@ -72,6 +72,40 @@ namespace TeamSupport.Data
           }
           return null;
       }
-  }
+
+		public static int? FindIdByCustomFieldId(int customFieldId, LoginUser login)
+		{
+			int? crmLinkFieldId = null;
+
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT 
+											CrmFieldId
+										FROM 
+											CRMLinkFields
+										WHERE 
+											CustomFieldID = @customFieldId";
+
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@customFieldId", customFieldId);
+
+				using (SqlConnection connection = new SqlConnection(login.ConnectionString))
+				{
+					connection.Open();
+					SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+					command.Connection = connection;
+					command.Transaction = transaction;
+					SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+					while (reader.Read())
+					{
+						crmLinkFieldId = (int?)reader["CrmFieldId"];
+					}
+				}
+			}
+
+			return crmLinkFieldId;
+		}
+	}
   
 }
