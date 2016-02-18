@@ -524,11 +524,15 @@ namespace TSWebServices
         foreach (CRMLinkFieldProxy field in crmLinkFieldMappings)
 		{
 			int ticketTypeId = field.CustomFieldID != null ? customFields.Where(p => p.CustomFieldID == (int)field.CustomFieldID).Select(t => t.AuxID).SingleOrDefault() : 0;
-			
+
 			if (ticketTypeId > 0 && (ticketTypeList.Count == 0 || !ticketTypeList.Where(p => p.TicketTypeID == ticketTypeId).Any()))
 			{
 				ticketType = TicketTypes.GetTicketType(TSAuthentication.GetLoginUser(), ticketTypeId);
-				ticketTypeList.Add(ticketType);
+
+				if (ticketType != null)
+				{
+					ticketTypeList.Add(ticketType);
+				}
 			}
 			else
 			{
