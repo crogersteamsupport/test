@@ -206,7 +206,7 @@
                 			if (dynamicPub.length == 0)
                 				dynamicPub = element.parent().find("#tempContainer");
 
-                			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 1);
+                			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg');
 
                 			OT.checkScreenSharingCapability(function (response) {
                 				if (!response.supported || response.extensionRegistered === false) {
