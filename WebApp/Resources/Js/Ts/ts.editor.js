@@ -212,7 +212,7 @@
                 					alert("This browser does not support screen sharing");
                 				} else if (response.extensionInstalled === false) {
                 					// prompt to install the response.extensionRequired extension
-                					chrome.webstore.install("https://chrome.google.com/webstore/detail/teamsupport-screen-sharin/oggjhjncnpdjpkmgcpnpdmfjffiapidi?hl=en-US");
+                					top.Ts.MainPage.installChromePlugin();
                 				} else {
                 					// Screen sharing is available
                 					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {

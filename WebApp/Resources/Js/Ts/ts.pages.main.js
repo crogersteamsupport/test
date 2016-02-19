@@ -1394,6 +1394,10 @@ Ts.Pages.Main.prototype = {
             tab.setIsHighlighted(isHighlighted);
         }
     },
+    installChromePlugin: function()
+    {
+    	chrome.webstore.install("https://chrome.google.com/webstore/detail/teamsupport-screen-sharin/oggjhjncnpdjpkmgcpnpdmfjffiapidi?hl=en-US");
+    },
     openAttachment: function (attachmentID) {
         window.open('../Attachment.aspx?attachmentID=' + attachmentID, 'Attachment' + attachmentID);
     },
