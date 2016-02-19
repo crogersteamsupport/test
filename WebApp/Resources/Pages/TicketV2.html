@@ -335,7 +335,7 @@
                   </div>
                   <div class="timeline-header">
                     {{{UserImageTag}}}
-                    <span class="pull-left">
+                    <span class="pull-left" style="line-height: 15px;">
                       <a data-userid="{{item.CreatorID}}" data-ticketid="{{item.TicketID}}" data-name="{{item.CreatorName}}" class="TeamSupportBlue UserAnchor">{{item.CreatorName}}</a>
                       <br>
                       <small class="text-muted">
@@ -343,12 +343,14 @@
                         {{item.MessageType}}
                         on {{FormatDateTime item.DateCreated}}
                       </small>
-                      
+                      <br />
+                        <small class="text-muted">{{TimeSpent}}</small>
+                        <br />
                     </span>
-                    <span class="pull-right p50r">
+                    <!--<span class="pull-right p50r">
                       <br />
                       <small class="text-muted">{{TimeSpent}}</small>
-                    </span>
+                    </span>-->
                   </div>
                   <div class="timeline-body">
                     {{{item.Message}}}
