@@ -206,7 +206,8 @@
                 			if (dynamicPub.length == 0)
                 				dynamicPub = element.parent().find("#tempContainer");
 
-                			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
+                			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 1);
+
                 			OT.checkScreenSharingCapability(function (response) {
                 				if (!response.supported || response.extensionRegistered === false) {
                 					alert("This browser does not support screen sharing");
