@@ -357,19 +357,27 @@ Namespace TeamSupport
           'Create new issue
           If ticketLinkToJira.JiraKey Is Nothing OrElse ticketLinkToJira.JiraKey.IndexOf("Error") > -1 Then
             Try
-
               crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, "create")
-
               Log.Write("No JiraKey. Creating issue...")
               URI = _baseURI + "/issue"
+
+			  Dim actionDescriptionId As Integer
               ticketData = New StringBuilder()
-              ticketData.Append(GetTicketData(ticket, issueFields, jiraProjectKey))
+              ticketData.Append(GetTicketData(ticket, issueFields, jiraProjectKey, actionDescriptionId))
               issue = GetAPIJObject(URI, "POST", ticketData.ToString())
               'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
               URI = _baseURI + "/issue/" + issue("key").ToString()
               issue = GetAPIJObject(URI, "GET", String.Empty)
               updateTicketFlag = True
               sendCustomMappingFields = True
+
+				'//Check if Ticket Description Action has Attachment
+				If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
+					Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
+					'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
+					Dim actionPosition As Integer = 1
+					PushAttachments(actionDescriptionId, ticket.TicketNumber, issue, issue("key"), attachmentFileSizeLimit, actionPosition, crmLinkAttachmentErrors)
+				End If
 
               If crmLinkError IsNot Nothing Then
                 crmLinkError.Delete()
@@ -671,7 +679,7 @@ Namespace TeamSupport
           Return result
         End Function
 
-        Private Function GetTicketData(ByVal ticket As TicketsViewItem, ByRef fields As JObject, ByVal jiraProjectKey As String) As String
+        Private Function GetTicketData(ByVal ticket As TicketsViewItem, ByRef fields As JObject, ByVal jiraProjectKey As String, ByRef actionDescriptionId As Integer) As String
             Dim result As StringBuilder = New StringBuilder()
             Dim customField As StringBuilder = New StringBuilder()
             customField = BuildRequiredFields(ticket, fields)
@@ -684,7 +692,9 @@ Namespace TeamSupport
             End If
 
             result.Append("""project"":{""key"":""" + jiraProjectKey + """},")
-            Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(Actions.GetTicketDescription(User, ticket.TicketID).Description))
+			Dim actionDescription As Action = Actions.GetTicketDescription(User, ticket.TicketID)
+			actionDescriptionId = actionDescription.ActionID
+            Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription.Description))
             result.Append("""description"":""" + DataUtils.GetJsonCompatibleString(description) + """")
             result.Append("}")
             result.Append("}")
