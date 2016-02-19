@@ -224,7 +224,7 @@
     div.ticket-badge > div > a {
         -webkit-transition: opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
         transition: opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
-        padding: 0 10px;
+        padding: 0 7px;
         cursor: pointer;
         color:white;
         font-size:small; 

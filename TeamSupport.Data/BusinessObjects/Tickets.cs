@@ -898,21 +898,30 @@ AND ts.IsClosed = 0";
 			}
 		}
 
-		public void LoadKBByCategoryID(int categoryID, int organizationID)
+		public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID)
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = @"SELECT TicketID, NAME
-																FROM Tickets
+				command.CommandText = @"SELECT t.TicketID, NAME
+																FROM Tickets as T
 																WHERE 
-																	OrganizationID              = @OrganizationID 
-																	AND IsKnowledgeBase         = 1
-																	AND IsVisibleOnPortal         = 1
-																	AND KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
+																	t.OrganizationID              = @OrganizationID 
+																	AND t.IsKnowledgeBase         = 1
+																	AND t.IsVisibleOnPortal         = 1
+																	AND t.KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
+																  AND (
+																					T.ProductID IS NULL
+																					OR T.ProductID IN (
+																						SELECT productid
+																						FROM organizationproducts
+																						WHERE organizationid = @CustomerID
+																						)
+																				)
 																ORDER BY 
-																	DateModified desc";
+																	t.DateModified desc";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@CustomerID", customerID);
 				command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
 				Fill(command, "Tickets");
 			}
@@ -2130,20 +2139,29 @@ AND u.OrganizationID = @OrganizationID
             }
         }
 
-        public void LoadByPopularKnowledgeBase(int organizationID, int top)
+        public void LoadByPopularKnowledgeBase(int organizationID, int customerID, int top)
         {
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = "SELECT TOP " + top.ToString() + @" tickets.*
-																FROM tickets
+																FROM tickets as T
 																LEFT OUTER JOIN ticketratings ON tickets.ticketid = ticketratings.ticketid
 																WHERE tickets.organizationid = @OrganizationID
 																	AND tickets.isknowledgebase = 1
 																	AND tickets.isvisibleonportal = 1
+																	AND (
+																					T.ProductID IS NULL
+																					OR T.ProductID IN (
+																						SELECT productid
+																						FROM organizationproducts
+																						WHERE organizationid = @CustomerID
+																						)
+																				)
 																ORDER BY ticketratings.VIEWS DESC";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
-                Fill(command);
+								command.Parameters.AddWithValue("@CustomerID", customerID);
+				Fill(command);
             }
         }
 
