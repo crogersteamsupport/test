@@ -8,6 +8,7 @@
 <head id="Head1" runat="server">
   <title>Team Support</title>
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
+	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg">
   <link href="vcr/1_9_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />

@@ -206,13 +206,13 @@
                 			if (dynamicPub.length == 0)
                 				dynamicPub = element.parent().find("#tempContainer");
 
-                			OT.registerScreenSharingExtension('chrome', 'oggjhjncnpdjpkmgcpnpdmfjffiapidi', 2);
+                			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
                 			OT.checkScreenSharingCapability(function (response) {
                 				if (!response.supported || response.extensionRegistered === false) {
                 					alert("This browser does not support screen sharing");
                 				} else if (response.extensionInstalled === false) {
                 					// prompt to install the response.extensionRequired extension
-                					top.Ts.MainPage.installChromePlugin();
+                					$('#ChromeInstallModal').modal('show');
                 				} else {
                 					// Screen sharing is available
                 					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {

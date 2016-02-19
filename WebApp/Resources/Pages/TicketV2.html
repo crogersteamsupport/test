@@ -742,6 +742,27 @@
     <input type="hidden" id="alertType" />
     <input type="hidden" id="alertID" />
   </div>
+	<div id="ChromeInstallModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Chrome Extension Required</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<h4>Extension Required</h4>
+						<p>An Extension is required in order for Screen Sharing to fucntion property. Please select your browswer and install the extension</p>
+						<p><button type="button" class="btn btn-primary" onclick="top.Ts.MainPage.installChromePlugin();" id="install-button">Add to Chrome</button></p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button id="ticket-reminder-save" type="button" class="btn btn-primary">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
   <div id="RemindersModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="RemindersModalTitle" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
