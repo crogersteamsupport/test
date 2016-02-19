@@ -237,6 +237,7 @@
     <Compile Include="BusinessObjects\ImportMaps.cs" />
     <Compile Include="BusinessObjects\Imports.cs" />
     <Compile Include="BusinessObjects\JiraInstanceProducts.cs" />
+    <Compile Include="BusinessObjects\KBRatings.cs" />
     <Compile Include="BusinessObjects\KnowledgeBaseCategories.cs" />
     <Compile Include="BusinessObjects\MiscellaneousLog.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
@@ -343,6 +344,7 @@
     <Compile Include="FieldMaps\ImportMapsFieldMap.cs" />
     <Compile Include="FieldMaps\ImportsFieldMap.cs" />
     <Compile Include="FieldMaps\JiraInstanceProductsFieldMap.cs" />
+    <Compile Include="FieldMaps\KBRatingsFieldMap.cs" />
     <Compile Include="FieldMaps\KnowledgeBaseCategoriesFieldMap.cs" />
     <Compile Include="FieldMaps\MiscellaneousLogFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
@@ -597,6 +599,7 @@
     <Compile Include="Generated\GeneratedImports.cs" />
     <Compile Include="Generated\GeneratedInvoices.cs" />
     <Compile Include="Generated\GeneratedJiraInstanceProducts.cs" />
+    <Compile Include="Generated\GeneratedKBRatings.cs" />
     <Compile Include="Generated\GeneratedKBStats.cs" />
     <Compile Include="Generated\GeneratedKnowledgeBaseCategories.cs" />
     <Compile Include="Generated\GeneratedLoginAttempts.cs" />
@@ -707,6 +710,7 @@
     <Compile Include="Proxies\ImportMapsProxy.cs" />
     <Compile Include="Proxies\ImportsProxy.cs" />
     <Compile Include="Proxies\JiraInstanceProductsProxy.cs" />
+    <Compile Include="Proxies\KBRatingsProxy.cs" />
     <Compile Include="Proxies\ProductFamiliesProxy.cs" />
     <Compile Include="Proxies\SimpleImportFieldsViewProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />

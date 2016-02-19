@@ -21,6 +21,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RequestTicketType", "RequestTicketType", false, false, false);
       _fieldMap.AddMap("AnonymousWikiAccess", "AnonymousWikiAccess", false, false, false);
       _fieldMap.AddMap("AnonymousKBAccess", "AnonymousKBAccess", false, false, false);
+      _fieldMap.AddMap("AnonymousProductAccess", "AnonymousProductAccess", false, false, false);
+      _fieldMap.AddMap("AnonymousTicketAccess", "AnonymousTicketAccess", false, false, false);
             
     }
   }

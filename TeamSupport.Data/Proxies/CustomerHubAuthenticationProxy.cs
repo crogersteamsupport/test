@@ -21,6 +21,8 @@ namespace TeamSupport.Data
     [DataMember] public int RequestTicketType { get; set; }
     [DataMember] public bool AnonymousWikiAccess { get; set; }
     [DataMember] public bool AnonymousKBAccess { get; set; }
+    [DataMember] public bool AnonymousProductAccess { get; set; }
+    [DataMember] public bool AnonymousTicketAccess { get; set; }
           
   }
   
@@ -29,6 +31,8 @@ namespace TeamSupport.Data
     public CustomerHubAuthenticationItemProxy GetProxy()
     {
       CustomerHubAuthenticationItemProxy result = new CustomerHubAuthenticationItemProxy();
+      result.AnonymousTicketAccess = this.AnonymousTicketAccess;
+      result.AnonymousProductAccess = this.AnonymousProductAccess;
       result.AnonymousKBAccess = this.AnonymousKBAccess;
       result.AnonymousWikiAccess = this.AnonymousWikiAccess;
       result.RequestTicketType = this.RequestTicketType;
