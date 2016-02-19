@@ -206,7 +206,7 @@
                 			if (dynamicPub.length == 0)
                 				dynamicPub = element.parent().find("#tempContainer");
 
-
+                			OT.registerScreenSharingExtension('chrome', 'oggjhjncnpdjpkmgcpnpdmfjffiapidi', 2);
                 			OT.checkScreenSharingCapability(function (response) {
                 				if (!response.supported || response.extensionRegistered === false) {
                 					alert("This browser does not support screen sharing");
@@ -214,6 +214,7 @@
                 					// prompt to install the response.extensionRequired extension
                 					chrome.webstore.install("https://chrome.google.com/webstore/detail/teamsupport-screen-sharin/oggjhjncnpdjpkmgcpnpdmfjffiapidi?hl=en-US");
                 				} else {
+                					// Screen sharing is available
                 					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
                 						sessionId = resultID[0];
                 						token = resultID[1];
@@ -225,38 +226,31 @@
                 							session.publish(publisher);
                 						});
 
-                						OT.registerScreenSharingExtension('chrome', 'oggjhjncnpdjpkmgcpnpdmfjffiapidi', 2);
-                						OT.checkScreenSharingCapability(function (response) {
-                							if (!response.supported || response.extensionRegistered === false) {
-                								alert('This browser does not support screen sharing.');
-                							} else if (response.extensionInstalled === false) {
-                								alert('Please install the screen sharing extension and load this page over HTTPS.');
-                							} else {
-                								// Screen sharing is available. Publish the screen.
-                								// Create an element, but do not display it in the HTML DOM:
-                								var screenContainerElement = document.createElement('div');
-                								var screenSharingPublisher = OT.initPublisher(
-													  screenContainerElement,
-													  { videoSource: 'screen' },
+
+                						// Screen sharing is available. Publish the screen.
+                						// Create an element, but do not display it in the HTML DOM:
+                						var screenContainerElement = document.createElement('div');
+                						var screenSharingPublisher = OT.initPublisher(
+											  screenContainerElement,
+											  { videoSource: 'screen' },
+											  function (error) {
+											  	if (error) {
+											  		//alert('Something went wrong: ' + error.message);
+											  	} else {
+											  		session.publish(
+													  screenSharingPublisher,
 													  function (error) {
 													  	if (error) {
 													  		//alert('Something went wrong: ' + error.message);
-													  	} else {
-													  		session.publish(
-															  screenSharingPublisher,
-															  function (error) {
-															  	if (error) {
-															  		//alert('Something went wrong: ' + error.message);
-															  	}
-															  });
 													  	}
 													  });
-                							}
-                						});
+											  	}
+											  });
                 					});
                 				}
                 			});
-                		}
+
+               		}
                 		else {
                 			alert("Your client does not support video recording.")
                 		}
