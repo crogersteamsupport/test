@@ -76,6 +76,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
     [DataMember] public DateTime? DueDate { get; set; }          
     [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public string ProductFamily { get; set; }
+          
   }
   
   public partial class TicketsViewItem : BaseItem
@@ -83,6 +85,7 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.ProductFamily = this.ProductFamily;
       result.ProductFamilyID = this.ProductFamilyID;
       result.SalesForceID = this.SalesForceID;
       result.KnowledgeBaseCategoryName = this.KnowledgeBaseCategoryName;
