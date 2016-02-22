@@ -41,6 +41,12 @@ namespace TeamSupport.Data
       set { Row["IP"] = CheckValue("IP", value); }
     }
     
+    public bool? Rating
+    {
+      get { return Row["Rating"] != DBNull.Value ? (bool?)Row["Rating"] : null; }
+      set { Row["Rating"] = CheckValue("Rating", value); }
+    }
+    
     public string Comment
     {
       get { return Row["Comment"] != DBNull.Value ? (string)Row["Comment"] : null; }
@@ -48,12 +54,6 @@ namespace TeamSupport.Data
     }
     
 
-    
-    public bool Rating
-    {
-      get { return (bool)Row["Rating"]; }
-      set { Row["Rating"] = CheckValue("Rating", value); }
-    }
     
     public int TicketID
     {

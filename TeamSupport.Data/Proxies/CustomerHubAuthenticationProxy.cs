@@ -19,6 +19,7 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableRequestAccess { get; set; }
     [DataMember] public bool EnableSSO { get; set; }
     [DataMember] public int RequestTicketType { get; set; }
+    [DataMember] public bool AnonymousHubAccess { get; set; }
     [DataMember] public bool AnonymousWikiAccess { get; set; }
     [DataMember] public bool AnonymousKBAccess { get; set; }
     [DataMember] public bool AnonymousProductAccess { get; set; }
@@ -35,6 +36,7 @@ namespace TeamSupport.Data
       result.AnonymousProductAccess = this.AnonymousProductAccess;
       result.AnonymousKBAccess = this.AnonymousKBAccess;
       result.AnonymousWikiAccess = this.AnonymousWikiAccess;
+      result.AnonymousHubAccess = this.AnonymousHubAccess;
       result.RequestTicketType = this.RequestTicketType;
       result.EnableSSO = this.EnableSSO;
       result.EnableRequestAccess = this.EnableRequestAccess;

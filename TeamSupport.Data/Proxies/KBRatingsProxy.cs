@@ -16,7 +16,7 @@ namespace TeamSupport.Data
     [DataMember] public int TicketID { get; set; }
     [DataMember] public int? UserID { get; set; }
     [DataMember] public string IP { get; set; }
-    [DataMember] public bool Rating { get; set; }
+    [DataMember] public bool? Rating { get; set; }
     [DataMember] public DateTime? DateUpdated { get; set; }
     [DataMember] public string Comment { get; set; }
           
