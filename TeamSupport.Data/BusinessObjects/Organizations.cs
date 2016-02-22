@@ -1770,7 +1770,12 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT o.* FROM Organizations o WHERE ((o.ParentID = 1) OR (o.ParentID is null)) AND EXISTS(SELECT * FROM Users u WHERE (u.MarkDeleted = 0) AND (u.Email = @Email) AND u.OrganizationID = o.OrganizationID) ORDER BY o.Name";
+        command.CommandText = @"SELECT o.* 
+																FROM Organizations o 
+																WHERE ((o.ParentID = 1) OR (o.ParentID is null)) 
+																AND o.IsActive = 1
+																AND EXISTS(SELECT * FROM Users u WHERE (u.MarkDeleted = 0) AND (u.Email = @Email) AND u.OrganizationID = o.OrganizationID) 
+																ORDER BY o.Name";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@Email", email);
         Fill(command, "Organizations,Users");
