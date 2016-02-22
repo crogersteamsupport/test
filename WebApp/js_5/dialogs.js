@@ -334,7 +334,7 @@ function GetGroupDialog(groupID) {
     if (groupID != null) {
         url = url + '?GroupID=' + groupID;
     }
-    wnd.setSize(350, 300);
+    wnd.setSize(350, 350);
 
     wnd.setUrl(url);
     return wnd;
