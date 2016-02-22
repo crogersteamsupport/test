@@ -2144,14 +2144,14 @@ AND u.OrganizationID = @OrganizationID
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = "SELECT TOP " + top.ToString() + @" tickets.*
-																FROM tickets as T
+																FROM tickets as tickets
 																LEFT OUTER JOIN ticketratings ON tickets.ticketid = ticketratings.ticketid
 																WHERE tickets.organizationid = @OrganizationID
 																	AND tickets.isknowledgebase = 1
 																	AND tickets.isvisibleonportal = 1
 																	AND (
-																					T.ProductID IS NULL
-																					OR T.ProductID IN (
+																					tickets.ProductID IS NULL
+																					OR tickets.ProductID IN (
 																						SELECT productid
 																						FROM organizationproducts
 																						WHERE organizationid = @CustomerID
