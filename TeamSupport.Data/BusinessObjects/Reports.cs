@@ -1944,7 +1944,16 @@ namespace TeamSupport.Data
 
     public static GridResult GetReportData(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter)
     {
-      Report report = Reports.GetReport(loginUser, reportID, loginUser.UserID);
+			ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+			log.ExceptionName = "report connection";
+			log.URL = "report/data";
+			log.Browser = "";
+			log.Message = loginUser.ConnectionString;
+			log.PageInfo = "";
+			log.StackTrace = "";
+			log.Collection.Save();
+
+			Report report = Reports.GetReport(loginUser, reportID, loginUser.UserID);
       GridResult result;
       try
       {
