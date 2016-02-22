@@ -32,9 +32,13 @@ $(document).ready(function () {
 
     
 
-    top.Ts.Services.Organizations.GetGroups(function (html) {
+    top.Ts.Services.Organizations.GetGroups(function (groupsList) {
         $('.group-container').empty();
-        $('.group-container').append(html);
+        if (groupsList.HasProductFamilies)
+        {
+            $('.group-container').addClass('productFamily-container');
+        }
+        $('.group-container').append(groupsList.Html);
     });
     
     $('#infoIframe, #openIframe, #closedIframe, #allIframe, #queueIframe, #historyIframe, #watercoolerIframe, #calendarIframe').load(function () {
