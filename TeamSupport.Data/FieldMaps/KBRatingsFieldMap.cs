@@ -13,6 +13,7 @@ namespace TeamSupport.Data
     protected override void BuildFieldMap()
     {
       _fieldMap = new FieldMap();
+      _fieldMap.AddMap("KBRatingID", "KBRatingID", false, false, false);
       _fieldMap.AddMap("TicketID", "TicketID", false, false, false);
       _fieldMap.AddMap("UserID", "UserID", false, false, false);
       _fieldMap.AddMap("IP", "IP", false, false, false);

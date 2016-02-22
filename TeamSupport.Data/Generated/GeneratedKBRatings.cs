@@ -27,6 +27,11 @@ namespace TeamSupport.Data
     
     
     
+    public int KBRatingID
+    {
+      get { return (int)Row["KBRatingID"]; }
+    }
+    
 
     
     public int? UserID
@@ -102,7 +107,7 @@ namespace TeamSupport.Data
     
     public override string PrimaryKeyFieldName
     {
-      get { return "TicketID"; }
+      get { return "KBRatingID"; }
     }
 
 
@@ -121,11 +126,11 @@ namespace TeamSupport.Data
     partial void AfterRowInsert(KBRating kBRating);
     partial void BeforeRowEdit(KBRating kBRating);
     partial void AfterRowEdit(KBRating kBRating);
-    partial void BeforeRowDelete(int ticketID);
-    partial void AfterRowDelete(int ticketID);    
+    partial void BeforeRowDelete(int kBRatingID);
+    partial void AfterRowDelete(int kBRatingID);    
 
-    partial void BeforeDBDelete(int ticketID);
-    partial void AfterDBDelete(int ticketID);    
+    partial void BeforeDBDelete(int kBRatingID);
+    partial void AfterDBDelete(int kBRatingID);    
 
     #endregion
 
@@ -143,9 +148,9 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int ticketID)
+    public virtual void DeleteFromDB(int kBRatingID)
     {
-      BeforeDBDelete(ticketID);
+      BeforeDBDelete(kBRatingID);
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
         connection.Open();
@@ -154,17 +159,17 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[KBRatings] WHERE ([TicketID] = @TicketID);";
-        deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
-        deleteCommand.Parameters["TicketID"].Value = ticketID;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[KBRatings] WHERE ([KBRatingID] = @KBRatingID);";
+        deleteCommand.Parameters.Add("KBRatingID", SqlDbType.Int);
+        deleteCommand.Parameters["KBRatingID"].Value = kBRatingID;
 
-        BeforeRowDelete(ticketID);
+        BeforeRowDelete(kBRatingID);
         deleteCommand.ExecuteNonQuery();
 		connection.Close();
         if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
-        AfterRowDelete(ticketID);
+        AfterRowDelete(kBRatingID);
       }
-      AfterDBDelete(ticketID);
+      AfterDBDelete(kBRatingID);
       
     }
 
@@ -175,8 +180,15 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[KBRatings] SET     [UserID] = @UserID,    [IP] = @IP,    [Rating] = @Rating,    [DateUpdated] = @DateUpdated,    [Comment] = @Comment  WHERE ([TicketID] = @TicketID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[KBRatings] SET     [TicketID] = @TicketID,    [UserID] = @UserID,    [IP] = @IP,    [Rating] = @Rating,    [DateUpdated] = @DateUpdated,    [Comment] = @Comment  WHERE ([KBRatingID] = @KBRatingID);";
 
+		
+		tempParameter = updateCommand.Parameters.Add("KBRatingID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = updateCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -276,8 +288,8 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[KBRatings] WHERE ([TicketID] = @TicketID);";
-		deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[KBRatings] WHERE ([KBRatingID] = @KBRatingID);";
+		deleteCommand.Parameters.Add("KBRatingID", SqlDbType.Int);
 
 		try
 		{
@@ -299,10 +311,10 @@ namespace TeamSupport.Data
 			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
 
 			  insertCommand.ExecuteNonQuery();
-			  Table.Columns["TicketID"].AutoIncrement = false;
-			  Table.Columns["TicketID"].ReadOnly = false;
+			  Table.Columns["KBRatingID"].AutoIncrement = false;
+			  Table.Columns["KBRatingID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				kBRating.Row["TicketID"] = (int)insertCommand.Parameters["Identity"].Value;
+				kBRating.Row["KBRatingID"] = (int)insertCommand.Parameters["Identity"].Value;
 			  AfterRowInsert(kBRating);
 			}
 			else if (kBRating.Row.RowState == DataRowState.Modified)
@@ -321,8 +333,8 @@ namespace TeamSupport.Data
 			}
 			else if (kBRating.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)kBRating.Row["TicketID", DataRowVersion.Original];
-			  deleteCommand.Parameters["TicketID"].Value = id;
+			  int id = (int)kBRating.Row["KBRatingID", DataRowVersion.Original];
+			  deleteCommand.Parameters["KBRatingID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
@@ -358,11 +370,11 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public KBRating FindByTicketID(int ticketID)
+    public KBRating FindByKBRatingID(int kBRatingID)
     {
       foreach (KBRating kBRating in this)
       {
-        if (kBRating.TicketID == ticketID)
+        if (kBRating.KBRatingID == kBRatingID)
         {
           return kBRating;
         }
@@ -378,21 +390,21 @@ namespace TeamSupport.Data
       return new KBRating(row, this);
     }
     
-    public virtual void LoadByTicketID(int ticketID)
+    public virtual void LoadByKBRatingID(int kBRatingID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [UserID], [IP], [Rating], [DateUpdated], [Comment] FROM [dbo].[KBRatings] WHERE ([TicketID] = @TicketID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [KBRatingID], [TicketID], [UserID], [IP], [Rating], [DateUpdated], [Comment] FROM [dbo].[KBRatings] WHERE ([KBRatingID] = @KBRatingID);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("TicketID", ticketID);
+        command.Parameters.AddWithValue("KBRatingID", kBRatingID);
         Fill(command);
       }
     }
     
-    public static KBRating GetKBRating(LoginUser loginUser, int ticketID)
+    public static KBRating GetKBRating(LoginUser loginUser, int kBRatingID)
     {
       KBRatings kBRatings = new KBRatings(loginUser);
-      kBRatings.LoadByTicketID(ticketID);
+      kBRatings.LoadByKBRatingID(kBRatingID);
       if (kBRatings.IsEmpty)
         return null;
       else

@@ -13,6 +13,7 @@ namespace TeamSupport.Data
   public class KBRatingProxy
   {
     public KBRatingProxy() {}
+    [DataMember] public int KBRatingID { get; set; }
     [DataMember] public int TicketID { get; set; }
     [DataMember] public int? UserID { get; set; }
     [DataMember] public string IP { get; set; }
@@ -32,6 +33,7 @@ namespace TeamSupport.Data
       result.IP = this.IP;
       result.UserID = this.UserID;
       result.TicketID = this.TicketID;
+      result.KBRatingID = this.KBRatingID;
        
        
       result.DateUpdated = this.DateUpdatedUtc == null ? this.DateUpdatedUtc : DateTime.SpecifyKind((DateTime)this.DateUpdatedUtc, DateTimeKind.Utc); 
