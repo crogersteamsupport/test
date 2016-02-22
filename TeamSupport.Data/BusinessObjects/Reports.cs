@@ -379,7 +379,7 @@ namespace TeamSupport.Data
 
       if (command.CommandText.IndexOf("@OrganizationID") > -1)
       {
-        command.Parameters.AddWithValue("OrganizationID", 875029);
+        command.Parameters.AddWithValue("OrganizationID", user.OrganizationID);
         command.Parameters.AddWithValue("Self", user.FirstLastName);
         command.Parameters.AddWithValue("SelfID", user.UserID);
         command.Parameters.AddWithValue("UserID", user.UserID);
