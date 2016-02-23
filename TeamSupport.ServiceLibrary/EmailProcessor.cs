@@ -411,6 +411,11 @@ namespace TeamSupport.ServiceLibrary
 							}
 						}
 					}
+
+					if(ticket.TicketNumber == 8743)
+					{
+							SendSchemaUpdateToSlack(ticket.GetTicketView());
+					}
 				}
 			}
 			catch (Exception exHooks)
@@ -479,7 +484,28 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
-    private string GetOrganizationName(int organizationID)
+		private void SendSchemaUpdateToSlack(TicketsViewItem ticket)
+		{
+			try
+			{
+				SlackMessage message = new SlackMessage(LoginUser);
+				message.TextPlain = string.Format("{0} added a schema update to: {1}.", ticket.ModifierName, ticket.TicketNumber);
+				message.TextRich = string.Format("{0} added a schema update to: {1}.", ticket.ModifierName, ticket.TicketNumber);
+				message.Color = "#D00000";
+
+				// send to channel
+				message.Send("#schema-changes");
+			}
+			catch (Exception ex)
+			{
+				Logs.WriteEvent("Error sending schema update");
+				Logs.WriteException(ex);
+				ExceptionLogs.LogException(LoginUser, ex, "Webhooks", ticket.Row);
+			}
+		}
+
+
+		private string GetOrganizationName(int organizationID)
     {
       Organization org = Organizations.GetOrganization(LoginUser, organizationID);
       return org == null ? "" : org.Name;
