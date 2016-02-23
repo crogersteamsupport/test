@@ -309,6 +309,7 @@ namespace TeamSupport.Handlers
             payload.PodName = SystemSettings.GetPodName();
             */
             dynamic data = JObject.Parse(ReadJsonData(context));
+            if (data.Key != "81f4060c-2166-48c3-a126-b12c94f1fd9d") return;
             LoginUser loginUser = LoginUser.Anonymous;
             User tsUser = null;
             Organizations organizations = new Organizations(loginUser);
@@ -353,6 +354,8 @@ namespace TeamSupport.Handlers
               payload.PodName = SystemSettings.GetPodName();
             */
             dynamic data = JObject.Parse(ReadJsonData(context));
+            if (data.Key != "81f4060c-2166-48c3-a126-b12c94f1fd9d") return;
+
             LoginUser loginUser = LoginUser.Anonymous;
             Organization tsOrg = (new Organizations(loginUser)).AddNewOrganization();
             tsOrg.ParentID = 1078;
@@ -398,8 +401,8 @@ namespace TeamSupport.Handlers
             CustomFields customFields = new CustomFields(loginUser);
             customFields.LoadByOrganization(1078);
 
-            CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "Version", data.Version);
-            CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "PodName", data.PodName);
+            CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "Version", data.Version.ToString());
+            CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "PodName", data.PodName.ToString());
         }
 
         private static string ReadJsonData(HttpContext context)
