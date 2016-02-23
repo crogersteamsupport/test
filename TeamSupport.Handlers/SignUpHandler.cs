@@ -394,15 +394,26 @@ namespace TeamSupport.Handlers
                 op.IsVisibleOnPortal = true;
                 ops.Save();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ExceptionLogs.LogException(loginUser, ex, "signup");
             }
 
-            CustomFields customFields = new CustomFields(loginUser);
-            customFields.LoadByOrganization(1078);
+            try
+            {
+                CustomFields customFields = new CustomFields(loginUser);
+                customFields.LoadByOrganization(1078);
 
-            CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "Version", data.Version.ToString());
-            CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "PodName", data.PodName.ToString());
+                CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "Version", data.Version.ToString());
+                CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "PodName", data.PodName.ToString());
+                CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "TeamSupportOrganizationID", data.OrganizationID.ToString());
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(loginUser, ex, "signup");
+            }
+
+
         }
 
         private static string ReadJsonData(HttpContext context)
