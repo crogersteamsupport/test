@@ -265,8 +265,7 @@ namespace TeamSupport.ServiceLibrary
 
     public static LoginUser GetLoginUser(string appName)
     {
-      string constring = "Application Name=TeamSupport Service: " + appName + "; " + ConfigurationManager.AppSettings["ConnectionString"];
-      return new LoginUser(constring, -1, -1, null);
+      return new LoginUser(ConfigurationManager.AppSettings["ConnectionString"], -1, -1, null);
     }
     
   }
