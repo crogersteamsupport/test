@@ -21,9 +21,10 @@ namespace TeamSupport.Data
             payload.LastName = lastName;
             payload.Email = email;
             payload.PodName = SystemSettings.GetPodName();
+            payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
 
             string json = JsonConvert.SerializeObject(payload);
-            PostSyncData(BuildUrl("signup/syncUser"), json);
+            PostSyncData(BuildUrl("syncUser"), json);
 
         }
                                                
@@ -39,9 +40,10 @@ namespace TeamSupport.Data
             payload.PhoneNumber = phoneNumber;
             payload.Version = version;
             payload.PodName = SystemSettings.GetPodName();
+            payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
 
             string json = JsonConvert.SerializeObject(payload);
-            PostSyncData(BuildUrl("signup/syncOrg"), json);
+            PostSyncData(BuildUrl("syncOrg"), json);
         }
         private static void PostSyncData(string url, string json)
         {
@@ -57,7 +59,7 @@ namespace TeamSupport.Data
             }
             catch (Exception ex)
             {
-                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "TeamSupportSync", json);
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "TeamSupportSync", url + "->  " + json);
             }
 
 
@@ -65,8 +67,13 @@ namespace TeamSupport.Data
 
         private static string BuildUrl(string path)
         {
+            StringBuilder builder = new StringBuilder();
             string baseUrl = SystemSettings.GetUserSyncUrl();
-            return baseUrl.EndsWith("/") ? baseUrl + path : baseUrl + "/" + path;
+            builder.Append(baseUrl);
+            if (!baseUrl.EndsWith("/")) builder.Append("/");
+            builder.Append("signup/fn/");
+            builder.Append(path);
+            return builder.ToString();
         }
     }
 }
