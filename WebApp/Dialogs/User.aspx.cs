@@ -394,6 +394,8 @@ public partial class Dialogs_User : BaseDialogPage
     tsUser.LastName = user.LastName;
     tsUser.Email = user.Email;
     tsUser.Collection.Save();
+
+    TeamSupportSync.SyncUser(user.UserID, user.OrganizationID, organization.Name, user.FirstName, user.LastName, user.Email);
   }
 
   protected void btnReset_Click(object sender, EventArgs e)

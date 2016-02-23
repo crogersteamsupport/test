@@ -90,6 +90,16 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
             return ReadString("Domain", "app.teamsupport.com");
         }
 
+        public static string GetPodName()
+        {
+            return ReadString("PodName", "None");
+        }
+
+        public static string GetUserSyncUrl()
+        {
+            return ReadString("UserSyncUrl", "");
+        }
+
         public static string GetEverageDataset()
         {
             return ReadString("EvergageDataset", "MainApp_Dev");

@@ -760,7 +760,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
       CustomFields customFields = new CustomFields(loginUser);
       customFields.LoadByOrganization(1078);
-
+        
       if (signUpParams != null)
       {
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialSource", signUpParams.initialSource);
@@ -780,11 +780,12 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaCampaign", signUpParams.gaCampaign);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaVisits", signUpParams.gaVisits.ToString());
         //
-      }
+      }  
 
-      
-      CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "Version", productType == ProductType.HelpDesk ? "Support Desk" : "Enterprise");
 
+            string version = productType == ProductType.HelpDesk ? "Support Desk" : "Enterprise";
+            CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "Version", version);
+            TeamSupportSync.SyncOrg(tsOrg.OrganizationID, tsOrg.Name, tsUser.UserID, tsUser.FirstName, tsUser.LastName, tsUser.Email, phoneNumber, version);
       try
       {
         
