@@ -48,6 +48,7 @@ var apiKey;
 var sessionId;
 var tokurl;
 var publisher;
+var screenSharingPublisher;
 
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -836,6 +837,20 @@ function SetupActionEditor(elem, action) {
   	});
   });
 
+
+  element.find('#muteTokScreen').click(function (e) {
+  	screenSharingPublisher.publishAudio(false);
+  	element.find('#unmuteTokScreen').show();
+  	element.find('#muteTokScreen').hide();
+  });
+
+  element.find('#unmuteTokScreen').hide();
+  element.find('#unmuteTokScreen').click(function (e) {
+  	screenSharingPublisher.publishAudio(true);
+  	element.find('#muteTokScreen').show();
+  	element.find('#unmuteTokScreen').hide();
+  });
+
   element.find('#stoptokScreen').hide();
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
@@ -846,6 +861,8 @@ function SetupActionEditor(elem, action) {
   		tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
   		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
   		element.find('#statusTextScreen').text("Recording Stopped");
+  		session.unpublish(screenSharingPublisher);
+		
   	});
   });
 
@@ -893,13 +910,13 @@ function SetupActionEditor(elem, action) {
   		top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
   			element.find('#rcdtokScreen').show();
   			element.find('#stoptokScreen').hide();
-  			session.unpublish(publisher);
+  			session.unpublish(screenSharingPublisher);
   			element.find('#recordScreenContainer').hide();
   			element.find('#statusTextScreen').text("");
   		});
   	}
   	else {
-  		session.unpublish(publisher);
+  		session.unpublish(screenSharingPublisher);
   		element.find('#recordScreenContainer').hide();
   	}
   	element.find('#statusText').text("");
