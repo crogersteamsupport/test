@@ -218,58 +218,6 @@ function AddTicketProperty(item) {
   }
 };
 
-function UpdateTicketGroups() {
-    var selectizeGroup = $('#ticket-group')[0].selectize;
-    selectizeGroup.clear(true);
-    selectizeGroup.clearOptions();
-    selectizeGroup.addOption({ value: -1, text: 'Unassigned' });
-
-    var groups = top.Ts.Cache.getGroups();
-    if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
-        for (var i = 0; i < groups.length; i++) {
-            if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID) {
-                selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
-            }
-        }
-    }
-    else {
-        for (var i = 0; i < groups.length; i++) {
-            selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
-        }
-    }
-    selectizeGroup.addItem(-1);
-}
-
-function UpdateTicketTypes() {
-    var selectizeType = $('#ticket-type')[0].selectize;
-    selectizeType.clear(true);
-    selectizeType.clearOptions();
-
-    var firstTypeID = 0;
-    var types = top.Ts.Cache.getTicketTypes();
-    if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
-        for (var i = 0; i < types.length; i++) {
-            if (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID) {
-                selectizeType.addOption({ value: types[i].TicketTypeID, text: types[i].Name });
-                _lastTicketTypeID = types[i].TicketTypeID;
-                if (firstTypeID == 0) {
-                    firstTypeID = types[i].TicketTypeID;
-                }
-                  
-            }
-        }
-    }
-    else {
-        for (var i = 0; i < types.length; i++) {
-            selectizeType.addOption({ value: types[i].TicketTypeID, text: types[i].Name });
-            if (firstTypeID == 0) {
-                firstTypeID = types[i].TicketTypeID;
-            }
-        }
-    }
-    selectizeType.addItem(firstTypeID);
-}
-
 function SetupTicketProperties() {
   //Assigned To
   var users = top.Ts.Cache.getUsers();
@@ -1346,12 +1294,6 @@ function SetupProductSection() {
     loadVersions(product);
     AppendProductMatchingCustomFields();
     $('#ticket-Product').closest('.form-group').removeClass('hasError');
-    if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
-        _productFamilyID = product.ProductFamilyID;
-        UpdateTicketGroups();
-        UpdateTicketTypes();
-        alert('The new product belongs to a different line. Please update group and type.');
-    }
   });
 };
 
@@ -2380,11 +2322,6 @@ function setInitialValue() {
             else
               $('#ticket-Product').closest('.form-group').removeClass('hasError');
           });
-          if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
-              _productFamilyID = product.ProductFamilyID;
-              UpdateTicketGroups();
-              UpdateTicketTypes();
-          }
 
         }
       });

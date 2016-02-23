@@ -1092,108 +1092,27 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public GroupsList GetGroups()
+    public string GetGroups()
     {
-        GroupsList result = new GroupsList();
       StringBuilder html = new StringBuilder();
-        LoginUser loginUser = TSAuthentication.GetLoginUser();
-      Groups groups = new Groups(loginUser);
-      groups.LoadByOrganizationIDForGrid(TSAuthentication.OrganizationID, loginUser.UserID);
+      Groups groups = new Groups(TSAuthentication.GetLoginUser());
+      groups.LoadByOrganizationIDForGrid(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser().UserID);
 
-        Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
-        if (organization.UseProductFamilies)
-        {
-            ProductFamilies productFamilies = new ProductFamilies(loginUser);
-            productFamilies.LoadByOrganizationID(loginUser.OrganizationID);
-            if (productFamilies.Count > 0)
-            {
-                result.HasProductFamilies = true;
-
-                html.Append(@"<li>
+      foreach (GroupProxy group in groups.GetGroupProxies())
+      {
+        html.AppendFormat(@"<li>
                                 <div class='row'>
                                 <div class='col-xs-12'>
-                                    <strong>Without Product Line:</strong> 
+                                    <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
+                                    <div>{2}</div>
                                 </div>
                                 </div>
-                                <ul class='customList-group group-container'>");
+                                </li>
+                                ", group.GroupID, group.Name, group.Description, group.TicketCount);
+      }
 
-                bool hasGroupsWithoutProductFamilies = false;
-                foreach (GroupProxy group in groups.GetGroupProxies())
-                {
-                    if (group.ProductFamilyID == null)
-                    {
-                        hasGroupsWithoutProductFamilies = true;
 
-                        html.AppendFormat(@"<li>
-                                                <div class='row'>
-                                                <div class='col-xs-12'>
-                                                    <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
-                                                    <div>{2}</div>
-                                                </div>
-                                                </div>
-                                            </li>
-                                            ", group.GroupID, group.Name, group.Description, group.TicketCount);
-                    }
-                }
-
-                html.Append(@"</ul></li>");
-
-                if (!hasGroupsWithoutProductFamilies)
-                {
-                    html.Clear();
-                }
-
-                foreach (ProductFamily productFamily in productFamilies)
-                {
-                    html.AppendFormat(@"<li>
-                            <div class='row'>
-                            <div class='col-xs-12'>
-                                <strong>{0}:</strong> 
-                            </div>
-                            </div>
-                            <ul class='customList-group group-container'>", productFamily.Name);
-
-                    foreach (GroupProxy group in groups.GetGroupProxies())
-                    {
-                        if (group.ProductFamilyID == productFamily.ProductFamilyID)
-                        {
-                            hasGroupsWithoutProductFamilies = true;
-
-                            html.AppendFormat(@"<li>
-                                            <div class='row'>
-                                            <div class='col-xs-12'>
-                                                <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
-                                                <div>{2}</div>
-                                            </div>
-                                            </div>
-                                        </li>
-                                        ", group.GroupID, group.Name, group.Description, group.TicketCount);
-                        }
-                    }
-
-                    html.Append(@"</ul></li>");
-                }
-            }
-        }
-
-        if (!result.HasProductFamilies)
-        {
-            foreach (GroupProxy group in groups.GetGroupProxies())
-            {
-                html.AppendFormat(@"<li>
-                                        <div class='row'>
-                                        <div class='col-xs-12'>
-                                            <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
-                                            <div>{2}</div>
-                                        </div>
-                                        </div>
-                                        </li>
-                                        ", group.GroupID, group.Name, group.Description, group.TicketCount);
-            }
-        }
-
-            result.Html = html.ToString();
-      return result;
+      return html.ToString();
     }
 
 
@@ -1564,14 +1483,5 @@ namespace TSWebServices
     [DataMember]
     public ImportFieldMap[] ImportFieldMap { get; set; }
   }
-
-    [DataContract]
-    public class GroupsList
-    {
-        [DataMember]
-        public bool HasProductFamilies { get; set; }
-        [DataMember]
-        public string Html { get; set; }
-    }
 
 }

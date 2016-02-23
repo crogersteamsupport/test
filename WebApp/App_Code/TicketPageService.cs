@@ -159,8 +159,7 @@ namespace TSWebServices
                 {
                     ID = g.GroupID,
                     Name = g.Name,
-                    IsSelected = (g.GroupID == ticket[0].GroupID),
-                    ProductFamilyID = g.ProductFamilyID
+                    IsSelected = (g.GroupID == ticket[0].GroupID)
                 }).ToArray();
             }
             else
@@ -171,8 +170,7 @@ namespace TSWebServices
                 {
                     ID = g.GroupID,
                     Name = g.Name,
-                    IsSelected = (ticket[0].GroupID == g.GroupID),
-                    ProductFamilyID = g.ProductFamilyID
+                    IsSelected = (ticket[0].GroupID == g.GroupID)
                 }).ToArray();
             }
         }
@@ -727,8 +725,6 @@ namespace TSWebServices
             public string Name { get; set; }
             [DataMember]
             public bool IsSelected { get; set; }
-            [DataMember]
-            public int? ProductFamilyID { get; set; }
         }
 
         [DataContract]

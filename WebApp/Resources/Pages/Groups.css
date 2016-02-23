@@ -41,10 +41,3 @@
     overflow:hidden;
 }
 
-.productFamily-container > li {
-    border-bottom: none !important;
-}
-
-.customList-group {
-    padding-left: 0;
-}

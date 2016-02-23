@@ -22,7 +22,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DateModified", "DateModified", true, true, true);
       _fieldMap.AddMap("CreatorID", "CreatorID", true, true, true);
       _fieldMap.AddMap("ModifierID", "ModifierID", true, true, true);
-      _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
             
     }
   }

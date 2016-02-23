@@ -46,12 +46,6 @@ namespace TeamSupport.Data
       set { Row["ImportID"] = CheckValue("ImportID", value); }
     }
     
-    public int? ProductFamilyID
-    {
-      get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
-      set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
-    }
-    
 
     
     public int ModifierID
@@ -203,7 +197,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Groups] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ProductFamilyID] = @ProductFamilyID  WHERE ([GroupID] = @GroupID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Groups] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([GroupID] = @GroupID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("GroupID", SqlDbType.Int, 4);
@@ -255,27 +249,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Groups] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ProductFamilyID]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Groups] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -445,7 +425,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [GroupID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ProductFamilyID] FROM [dbo].[Groups] WHERE ([GroupID] = @GroupID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [GroupID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[Groups] WHERE ([GroupID] = @GroupID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("GroupID", groupID);
         Fill(command);
