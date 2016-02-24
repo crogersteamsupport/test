@@ -77,6 +77,16 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
             }
         }
 
+		  public static string GetTokApiKey()
+		  {
+			  return ReadString("TokApiKey", "");
+		  }
+
+		  public static string GetTokApiSecret()
+		  {
+			  return ReadString("TokApiSecret", "");
+		  }
+
         public static string GetAppUrl()
         {
             return ReadString("AppDomain", "https://app.teamsupport.com");
