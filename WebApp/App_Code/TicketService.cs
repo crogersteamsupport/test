@@ -3777,8 +3777,8 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public List<string> GetSessionInfo()
         {
-            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
-
+            //var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+				var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED, archiveMode: ArchiveMode.MANUAL);
             var token = OpenTok.GenerateToken(session.Id, Role.PUBLISHER);
