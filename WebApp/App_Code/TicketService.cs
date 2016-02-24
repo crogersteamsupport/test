@@ -3777,9 +3777,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public List<string> GetSessionInfo()
         {
-            const int ApiKey = 45228242; // YOUR API KEY
-            const string ApiSecret = "058e12ca5b9139d08c18f4fe1ece434635a4abfb";
-            var OpenTok = new OpenTok(ApiKey, ApiSecret);
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED, archiveMode: ArchiveMode.MANUAL);
@@ -3796,9 +3794,8 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public string StartArchiving(string sessionId)
         {
-            const int ApiKey = 45228242; // YOUR API KEY
-            const string ApiSecret = "058e12ca5b9139d08c18f4fe1ece434635a4abfb";
-            var OpenTok = new OpenTok(ApiKey, ApiSecret);
+			  var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
+				//var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
@@ -3812,9 +3809,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public string StopArchiving(string archiveId)
         {
-            int ApiKey = 45228242; // YOUR API KEY
-            string ApiSecret = "058e12ca5b9139d08c18f4fe1ece434635a4abfb";
-            var OpenTok = new OpenTok(ApiKey, ApiSecret);
+			  var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
@@ -3829,23 +3824,21 @@ WHERE t.TicketID = @TicketID
             while (OpenTok.GetArchive(archiveId).Status != ArchiveStatus.UPLOADED);
 
             TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
-            ts.AmazonPath = string.Format("https://s3.amazonaws.com/teamsupportvideos/45228242/{0}/archive.mp4", archive.Id);
+				ts.AmazonPath = string.Format("https://s3.amazonaws.com/teamsupportvideos/{0}/{1}/archive.mp4", 45228242, archive.Id);
             ts.CreatedDate = DateTime.Now;
             ts.CreatorID = TSAuthentication.GetLoginUser().UserID;
             ts.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
             ts.ArchiveID = archive.Id.ToString();
             ts.Collection.Save();
 
-            return archive.Id.ToString();
+				return string.Format("https://s3.amazonaws.com/teamsupportvideos/{0}/{1}/archive.mp4", 45228242, archive.Id.ToString());
 
         }
 
         [WebMethod]
         public bool DeleteArchive(string archiveId)
         {
-            int ApiKey = 45228242; // YOUR API KEY
-            string ApiSecret = "058e12ca5b9139d08c18f4fe1ece434635a4abfb";
-            var OpenTok = new OpenTok(ApiKey, ApiSecret);
+			  var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);

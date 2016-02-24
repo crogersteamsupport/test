@@ -223,29 +223,30 @@
                 						session.connect(token, function (error) {
                 							// publish a stream using the camera and microphone:
                 							var pubOptions = { publishAudio: true, publishVideo: false };
-                							// Screen sharing is available. Publish the screen.
-                							// Create an element, but do not display it in the HTML DOM:
-                							var screenContainerElement = document.createElement('div');
-                							screenSharingPublisher = OT.initPublisher(
-												  dynamicPub.attr('id'),
-												  { videoSource: 'screen' },
-												  function (error) {
-												  	if (error) {
-												  		//alert('Something went wrong: ' + error.message);
-												  	} else {
-												  		session.publish(
-														  screenSharingPublisher,
-														  function (error) {
-														  	if (error) {
-														  		//alert('Something went wrong: ' + error.message);
-														  	}
-														  });
-												  	}
-												  });
+                							publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
+                							session.publish(publisher);
                 						});
 
 
-
+                						// Screen sharing is available. Publish the screen.
+                						// Create an element, but do not display it in the HTML DOM:
+                						var screenContainerElement = document.createElement('div');
+                						var screenSharingPublisher = OT.initPublisher(
+											  dynamicPub.attr('id'),
+											  { videoSource: 'screen' },
+											  function (error) {
+											  	if (error) {
+											  		//alert('Something went wrong: ' + error.message);
+											  	} else {
+											  		session.publish(
+													  screenSharingPublisher,
+													  function (error) {
+													  	if (error) {
+													  		//alert('Something went wrong: ' + error.message);
+													  	}
+													  });
+											  	}
+											  });
                 					});
                 				}
                 			});

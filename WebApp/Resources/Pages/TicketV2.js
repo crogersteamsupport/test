@@ -854,11 +854,11 @@ function SetupActionEditor(elem, action) {
   element.find('#stoptokScreen').hide();
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
-  	top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+  	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
   		element.find('#canceltokScreen').show();
-  		tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+  		tokurl = result;
   		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
   		element.find('#statusTextScreen').text("Recording Stopped");
   		session.unpublish(screenSharingPublisher);
@@ -881,12 +881,12 @@ function SetupActionEditor(elem, action) {
 
   element.find('#stoptok').click(function (e) {
       element.find('#statusText').text("Processing...");
-      top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+      top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
           element.find('#rcdtok').show();
           element.find('#stoptok').hide();
           element.find('#inserttok').show();
           element.find('#canceltok').show();
-          tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+          tokurl = result;
           element.find('#statusText').text("Recording Stopped");
       });
   });
@@ -913,6 +913,7 @@ function SetupActionEditor(elem, action) {
   			session.unpublish(screenSharingPublisher);
   			element.find('#recordScreenContainer').hide();
   			element.find('#statusTextScreen').text("");
+  			recordingID = null;
   		});
   	}
   	else {
@@ -932,6 +933,7 @@ function SetupActionEditor(elem, action) {
               session.unpublish(publisher);
               element.find('#recordVideoContainer').hide();
               element.find('#statusText').text("");
+              recordingID = null;
           });
       }
       else {
