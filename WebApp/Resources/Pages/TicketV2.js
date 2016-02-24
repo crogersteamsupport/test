@@ -839,14 +839,14 @@ function SetupActionEditor(elem, action) {
 
 
   element.find('#muteTokScreen').click(function (e) {
-  	screenSharingPublisher.publishAudio(false);
+  	publisher.publishAudio(false);
   	element.find('#unmuteTokScreen').show();
   	element.find('#muteTokScreen').hide();
   });
 
   element.find('#unmuteTokScreen').hide();
   element.find('#unmuteTokScreen').click(function (e) {
-  	screenSharingPublisher.publishAudio(true);
+  	publisher.publishAudio(true);
   	element.find('#muteTokScreen').show();
   	element.find('#unmuteTokScreen').hide();
   });
@@ -862,6 +862,7 @@ function SetupActionEditor(elem, action) {
   		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
   		element.find('#statusTextScreen').text("Recording Stopped");
   		session.unpublish(screenSharingPublisher);
+  		session.unpublish(publisher);
 		
   	});
   });
@@ -914,10 +915,13 @@ function SetupActionEditor(elem, action) {
   			element.find('#recordScreenContainer').hide();
   			element.find('#statusTextScreen').text("");
   			recordingID = null;
+  			session.unpublish(screenSharingPublisher);
+  			session.unpublish(publisher);
   		});
   	}
   	else {
   		session.unpublish(screenSharingPublisher);
+  		session.unpublish(publisher);
   		element.find('#recordScreenContainer').hide();
   	}
   	element.find('#statusText').text("");
