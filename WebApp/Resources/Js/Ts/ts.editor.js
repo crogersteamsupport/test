@@ -211,7 +211,7 @@
                 			OT.checkScreenSharingCapability(function (response) {
                 				if (!response.supported || response.extensionRegistered === false) {
                 					alert("This browser does not support screen sharing");
-                				} else if (response.extensionInstalled === false || response.extensionInstalled == null) {
+                				} else if (response.extensionInstalled === false) {
                 					// prompt to install the response.extensionRequired extension
                 					$('#ChromeInstallModal').modal('show');
                 				} else {
