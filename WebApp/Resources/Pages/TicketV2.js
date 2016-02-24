@@ -825,19 +825,20 @@ function SetupActionEditor(elem, action) {
     }
   });
 
-  //element.find('#recordScreenContainer').hide();
+  element.find('#recordScreenContainer').hide();
   element.find('#ssDiv').hide(); 
   element.find('#rcdtokScreen').click(function (e) {
   	top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
   		element.find('#rcdtokScreen').hide();
   		element.find('#stoptokScreen').show();
   		element.find('#deletetokScreen').hide();
+  		element.find('#muteTokScreen').show();
   		recordingID = resultID;
   		element.find('#statusTextScreen').text("Currently Recording Screen...");
   	});
   });
 
-
+  element.find('#muteTokScreen').hide();
   element.find('#muteTokScreen').click(function (e) {
   	publisher.publishAudio(false);
   	element.find('#unmuteTokScreen').show();
@@ -858,6 +859,8 @@ function SetupActionEditor(elem, action) {
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
   		element.find('#canceltokScreen').show();
+  		element.find('#unmuteTokScreen').hide();
+  		element.find('#muteTokScreen').hide();
   		tokurl = result;
   		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
   		element.find('#statusTextScreen').text("Recording Stopped");
@@ -913,6 +916,10 @@ function SetupActionEditor(elem, action) {
   			element.find('#stoptokScreen').hide();
   			element.find('#recordScreenContainer').hide();
   			element.find('#statusTextScreen').text("");
+  			var editor = tinymce.get('action-new-editor'); 
+  			var content = editor.getContent();
+  			content = content.replace(tokurl, '');
+  			editor.setContent(content);
   			recordingID = null;
   			session.unpublish(publisher);
   		});
