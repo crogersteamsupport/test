@@ -62,7 +62,7 @@ namespace TeamSupport.Data
       result.ModifiedDate = this.ModifiedDateUtc == null ? this.ModifiedDateUtc : DateTime.SpecifyKind((DateTime)this.ModifiedDateUtc, DateTimeKind.Utc); 
       result.CreatedDate = this.CreatedDateUtc == null ? this.CreatedDateUtc : DateTime.SpecifyKind((DateTime)this.CreatedDateUtc, DateTimeKind.Utc);
       result.IsOwner = (BaseCollection.LoginUser.UserID == this.CreatedBy);
-      result.CanDelete = (BaseCollection.LoginUser.GetUser().IsSystemAdmin || result.IsOwner);
+			if(BaseCollection.LoginUser.UserID > 0) result.CanDelete = (BaseCollection.LoginUser.GetUser().IsSystemAdmin || result.IsOwner);
        
       return result;
     }
