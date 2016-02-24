@@ -911,26 +911,9 @@ function SetupActionEditor(elem, action) {
 
 
   element.find('#canceltokScreen').click(function (e) {
-  	if (recordingID) {
-  		element.find('#statusTextScreen').text("Cancelling Recording ...");
-  		top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
-  			element.find('#rcdtokScreen').show();
-  			element.find('#stoptokScreen').hide();
-  			element.find('#recordScreenContainer').hide();
-  			element.find('#statusTextScreen').text("");
-  			var editor = tinymce.get('action-new-editor'); 
-  			var content = editor.getContent();
-  			content = content.replace(videoURL, '');
-  			editor.setContent(content);
-  			recordingID = null;
-  			session.unpublish(publisher);
-  		});
-  	}
-  	else {
-  		session.unpublish(screenSharingPublisher);
-  		session.unpublish(publisher);
-  		element.find('#recordScreenContainer').hide();
-  	}
+  	session.unpublish(screenSharingPublisher);
+  	session.unpublish(publisher);
+  	element.find('#recordScreenContainer').hide();
   	element.find('#statusText').text("");
   });
 
