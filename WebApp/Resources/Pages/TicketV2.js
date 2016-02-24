@@ -49,6 +49,7 @@ var sessionId;
 var tokurl;
 var publisher;
 var screenSharingPublisher;
+var videoURL;
 
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -862,7 +863,8 @@ function SetupActionEditor(elem, action) {
   		element.find('#unmuteTokScreen').hide();
   		element.find('#muteTokScreen').hide();
   		tokurl = result;
-  		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+  		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+  		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
   		element.find('#statusTextScreen').text("Recording Stopped");
   		session.unpublish(screenSharingPublisher);
   		session.unpublish(publisher);
@@ -918,7 +920,7 @@ function SetupActionEditor(elem, action) {
   			element.find('#statusTextScreen').text("");
   			var editor = tinymce.get('action-new-editor'); 
   			var content = editor.getContent();
-  			content = content.replace(tokurl, '');
+  			content = content.replace(videoURL, '');
   			editor.setContent(content);
   			recordingID = null;
   			session.unpublish(publisher);
