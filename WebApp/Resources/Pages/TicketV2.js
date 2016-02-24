@@ -913,6 +913,8 @@ function SetupActionEditor(elem, action) {
   element.find('#canceltokScreen').click(function (e) {
   	session.unpublish(screenSharingPublisher);
   	session.unpublish(publisher);
+  	element.find('#rcdtokScreen').hide();
+  	element.find('#canceltokScreen').hide();
   	element.find('#recordScreenContainer').hide();
   	element.find('#statusText').text("");
   });

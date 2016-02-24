@@ -237,12 +237,16 @@
 											  function (error) {
 											  	if (error) {
 											  		//alert('Something went wrong: ' + error.message);
+											  		element.parent().find('#rcdtokScreen').hide();
+											  		element.parent().find('#canceltokScreen').hide();
 											  	} else {
 											  		session.publish(
 													  screenSharingPublisher,
 													  function (error) {
 													  	if (error) {
 													  		//alert('Something went wrong: ' + error.message);
+													  		element.parent().find('#rcdtokScreen').hide();
+													  		element.parent().find('#canceltokScreen').hide();
 													  	}
 													  });
 											  	}
