@@ -825,7 +825,7 @@ function SetupActionEditor(elem, action) {
     }
   });
 
-  element.find('#recordScreenContainer').hide();
+  //element.find('#recordScreenContainer').hide();
   element.find('#ssDiv').hide(); 
   element.find('#rcdtokScreen').click(function (e) {
   	top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
@@ -911,11 +911,9 @@ function SetupActionEditor(elem, action) {
   		top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
   			element.find('#rcdtokScreen').show();
   			element.find('#stoptokScreen').hide();
-  			session.unpublish(screenSharingPublisher);
   			element.find('#recordScreenContainer').hide();
   			element.find('#statusTextScreen').text("");
   			recordingID = null;
-  			session.unpublish(screenSharingPublisher);
   			session.unpublish(publisher);
   		});
   	}
