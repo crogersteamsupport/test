@@ -236,7 +236,7 @@
 											  { videoSource: 'screen' },
 											  function (error) {
 											  	if (error) {
-											  		//alert('Something went wrong: ' + error.message);
+											  		alert('Something went wrong: ' + error.message);
 											  		element.parent().find('#rcdtokScreen').hide();
 											  		element.parent().find('#canceltokScreen').hide();
 											  	} else {
@@ -244,7 +244,7 @@
 													  screenSharingPublisher,
 													  function (error) {
 													  	if (error) {
-													  		//alert('Something went wrong: ' + error.message);
+													  		alert('Something went wrong: ' + error.message);
 													  		element.parent().find('#rcdtokScreen').hide();
 													  		element.parent().find('#canceltokScreen').hide();
 													  	}
