@@ -7,7 +7,7 @@
         }
         var editorOptions = {
         	plugins: "paste link code textcolor image imagetools moxiemanager table " + resizePluginCode,
-        	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo recordScreenTest startSSTest stopSSTest | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo recordScreenTest | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote | code | table",
             statusbar: true,
             gecko_spellcheck: true,
@@ -236,7 +236,8 @@
 											  { videoSource: 'screen' },
 											  function (error) {
 											  	if (error) {
-											  		alert('Something went wrong: ' + error.message);
+											  		alert('Screen Recording will not statrt because, ' + error.message);
+											  		element.parent().find('#recordScreenContainer').hide();
 											  		element.parent().find('#rcdtokScreen').hide();
 											  		element.parent().find('#canceltokScreen').hide();
 											  	} else {
@@ -244,7 +245,8 @@
 													  screenSharingPublisher,
 													  function (error) {
 													  	if (error) {
-													  		alert('Something went wrong: ' + error.message);
+													  		alert('Screen Recording will not statrt because, ' + error.message);
+													  		element.parent().find('#recordScreenContainer').hide();
 													  		element.parent().find('#rcdtokScreen').hide();
 													  		element.parent().find('#canceltokScreen').hide();
 													  	}
