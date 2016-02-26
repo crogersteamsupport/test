@@ -12,11 +12,16 @@
     }
 
     var getUniqueFieldClass = function (field) {
-        var id = field.ID ? field.ID : field.FieldID;
-        if (field.IsCustom)
-            return 'report-field-id-c' + id;
-        else
-            return 'report-field-id-s' + id;
+    	//var id = field.ID ? field.ID : field.FieldID;
+    	var id;
+    	if (field.ID) id = field.ID;
+    	else if (field.FieldID > 0) id = field.FieldID;
+    	else id = field.FieldName;
+
+    	if (field.IsCustom)
+    		return 'report-field-id-c' + id;
+    	else
+    		return 'report-field-id-s' + id;
     }
 
 
@@ -301,6 +306,7 @@
                     for (var j = 0; j < filter.Conditions.length; j++) {
                         var condition = filter.Conditions[j];
                         var li = self.addGroupCondition(group.find('.filter-conds:first'));
+                        var test = '.filter-field option.' + getUniqueFieldClass(condition);
                         li.find('.filter-field option.' + getUniqueFieldClass(condition)).prop('selected', true).closest('select').trigger('change');
                         li.find('.filter-comp').val(condition.Comparator.toUpperCase()).trigger('change');
                         if (condition.Value1) li.find('.filter-value').val(condition.Value1);
