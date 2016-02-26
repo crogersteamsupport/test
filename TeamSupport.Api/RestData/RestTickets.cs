@@ -117,7 +117,7 @@ namespace TeamSupport.Api
         tickets.LoadByCustomerID(customerID);
       }
 
-      return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
+      return tickets.GetXml("Tickets", "Ticket", true, command.Filters);
     }
 
     public static string GetTicketsByContactID(RestCommand command, int contactID, bool orderByDateCreated = false)
