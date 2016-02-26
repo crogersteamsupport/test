@@ -198,16 +198,16 @@ namespace TeamSupport.Api
 
     // Customer Only Methods
     
-    public static string GetCustomerTicket(RestCommand command, int ticketID)
-    {
-      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(command.LoginUser, ticketID);
-      if (ticket.OrganizationID != command.Organization.ParentID || !ticket.GetIsCustomer(command.Organization.OrganizationID)) 
-      {
-        throw new RestException(HttpStatusCode.Unauthorized);
-      }
+	public static string GetCustomerTicket(RestCommand command, int ticketID)
+	{
+		TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumberForCustomer(command.LoginUser, (int)command.Organization.ParentID, ticketID);
+		if (ticket.OrganizationID != command.Organization.ParentID || !ticket.GetIsCustomer(command.Organization.OrganizationID)) 
+		{
+			throw new RestException(HttpStatusCode.Unauthorized);
+		}
 
-      return ticket.GetXml("Ticket", true);
-    }
+		return ticket.GetXml("Ticket", true);
+	}
 
 	public static string GetCustomerTickets(RestCommand command)
 	{

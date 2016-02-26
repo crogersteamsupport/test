@@ -2374,7 +2374,24 @@ WHERE tgv.OrganizationID = @OrganizationID"
         return ticketsView[0];
     }
 
-    public void LoadNewCustomerResponded(LoginUser loginUser, int lastStatusHistoryID)
+	public static TicketsViewItem GetTicketsViewItemByIdOrNumberForCustomer(LoginUser loginUser, int organizationParentId, int ticketIDOrTicketNumber)
+	{
+		TicketsView ticketsView = new TicketsView(loginUser);
+		ticketsView.LoadByTicketIDAndOrganizationID(organizationParentId, ticketIDOrTicketNumber);
+
+		if (ticketsView.IsEmpty)
+		{
+			ticketsView = new TicketsView(loginUser);
+			ticketsView.LoadByTicketNumberFromTicketsView(ticketIDOrTicketNumber, organizationParentId);	
+		}
+
+		if (ticketsView.IsEmpty)
+			return null;
+		else
+			return ticketsView[0];
+	}
+
+		public void LoadNewCustomerResponded(LoginUser loginUser, int lastStatusHistoryID)
     {
       using (SqlCommand command = new SqlCommand())
       {
