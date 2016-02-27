@@ -236,7 +236,8 @@
 											  { videoSource: 'screen' },
 											  function (error) {
 											  	if (error) {
-											  		alert('Screen Recording will not statrt because, ' + error.message);
+											  		$('#ChromeInstallModal').modal('show');
+											  		//alert('Screen Recording will not statrt because, ' + error.message);
 											  		element.parent().find('#recordScreenContainer').hide();
 											  		element.parent().find('#rcdtokScreen').hide();
 											  		element.parent().find('#canceltokScreen').hide();

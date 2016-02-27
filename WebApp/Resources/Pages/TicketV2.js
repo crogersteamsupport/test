@@ -1084,18 +1084,18 @@ function SaveAction(_oldActionID, isPrivate, callback) {
 
 
   // Get Content Grab and Check
-  action.Description = tinymce.activeEditor.getContent(); 
-  if (action.Description == "")
-  {
-  	saveError = 1;
-  	top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
-  }
+  if (saveError != 0) {
+  	action.Description = tinymce.activeEditor.getContent();
+  	if (action.Description == "") {
+  		saveError = 1;
+  		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
+  	}
 
-  if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-  	saveError = 2;
-  	top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
+  	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  		saveError = 2;
+  		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
+  	}
   }
-
 	// HTML Grab Check
   if (saveError != 0) {
   	action.Description = $('#action-new-editor').html();
@@ -1115,12 +1115,13 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   		top.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
   }
 
-  // TINYMCE ACTIVE EDITOR CHECK
-  if(tinymce.activeEditor == null)
-  {
-  	saveError = 2;
-  	top.Ts.Services.System.LogException("TinyMCE active editor is null", "TinyMCE Error");
-  }
+	// TINYMCE ACTIVE EDITOR CHECK
+  	if (saveError != 0) {
+  		if (tinymce.activeEditor == null) {
+  			saveError = 2;
+  			top.Ts.Services.System.LogException("TinyMCE active editor is null", "TinyMCE Error");
+  		}
+  	}
 
   if (saveError == 1)
   {
