@@ -1952,7 +1952,12 @@ namespace TeamSupport.Data
 				parameter.Value = user.Row[parameter.ParameterName];
                             if (parameter.ParameterName.ToLower() == "signature" && parameter.Value.ToString().IndexOf("kjunicode") > -1)
                             {
-                                ExceptionLogs.AddLog(LoginUser, "sig debug", parameter.Value.ToString(), "", Environment.StackTrace, "", "");
+                                SqlCommand cmd = new SqlCommand();
+                                cmd.CommandText = "INSERT INTO ExceptionLogs (Message, StackTrace, DateModified, DateCreated, ModifierID, CreatorID) VALUES (@val, @trace, GETUTCDATE(), GETUTCDATE(), -1, -1)";
+                                cmd.Parameters.AddWithValue("val", parameter.Value.ToString());
+                                cmd.Parameters.AddWithValue("trace", Environment.StackTrace);
+                                SqlExecutor.ExecuteNonQuery(LoginUser, cmd);
+                                //ExceptionLogs.AddLog(LoginUser, "sig debug", parameter.Value.ToString(), "", Environment.StackTrace, "", "");
                             }
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
