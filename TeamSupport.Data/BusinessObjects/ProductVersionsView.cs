@@ -79,7 +79,27 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
+		public void LoadByProductAndCustomerReleased(int productID, int organizationID, string orderBy = "VersionNumber")
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT pv.* 
+																FROM ProductVersionsView pv 
+																WHERE pv.ProductID = @ProductID 
+																	AND IsReleased = 1
+																	AND pv.ProductVersionID IN 
+																	(SELECT DISTINCT op.ProductVersionID 
+																		FROM OrganizationProducts op 
+																		WHERE op.OrganizationID = @OrganizationID) 
+																	ORDER BY pv." + orderBy;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ProductID", productID);
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				Fill(command);
+			}
+		}
+
+		public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
     {
       using (SqlCommand command = new SqlCommand())
       {
