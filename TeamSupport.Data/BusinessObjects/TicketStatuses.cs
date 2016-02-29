@@ -120,7 +120,18 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByTicketTypeIDAndName(int ticketTypeID, string name)
+		public void LoadClosedByTicketTypeID(int ticketTypeID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "SELECT * FROM TicketStatuses WHERE TicketTypeID = @TicketTypeID AND IsClosed = 1  ORDER BY Position";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("TicketTypeID", ticketTypeID);
+				Fill(command);
+			}
+		}
+
+		public void LoadByTicketTypeIDAndName(int ticketTypeID, string name)
     {
       using (SqlCommand command = new SqlCommand())
       {
