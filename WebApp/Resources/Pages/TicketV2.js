@@ -1310,8 +1310,20 @@ function LoadTicketControls() {
   if ($('#ticket-group').length) {
     top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
       AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
-      for (var i = 0; i < groups.length; i++) {
-        AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
+      if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+          for (var i = 0; i < groups.length; i++) {
+              if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID || _ticketInfo.Ticket.GroupID === groups[i].ID) {
+                  AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
+                  if (groups[i].ProductFamilyID != null && _productFamilyID != groups[i].ProductFamilyID) {
+                      alert('This ticket group belongs to a different product line. Please set the correct ticket group.');
+                  }
+              }
+          }
+      }
+      else {
+          for (var i = 0; i < groups.length; i++) {
+              AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
+          }
       }
       $('#ticket-group').selectize({
         onDropdownClose: function ($dropdown) {
@@ -1325,8 +1337,26 @@ function LoadTicketControls() {
 
   _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
   var types = top.Ts.Cache.getTicketTypes();
-  for (var i = 0; i < types.length; i++) {
-    AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+  if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+      for (var i = 0; i < types.length; i++) {
+          if (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID) {
+              AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+              if (types[i].ProductFamilyID != null && _productFamilyID != types[i].ProductFamilyID) {
+                  alert('This ticket type belongs to a different product line. Please set the correct ticket type.');
+              }
+          }
+      }
+
+      if ($('#ticket-type')[0].childElementCount == 0) {
+          //parent.show().find('img').hide();
+          //container.remove();
+          alert('There are no ticket types available for this product line. Please contact your TeamSupport administrator.');
+      }
+  }
+  else {
+      for (var i = 0; i < types.length; i++) {
+          AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+      }
   }
 
   SetupStatusField(_ticketInfo.Ticket.TicketStatusID);
@@ -1928,6 +1958,58 @@ function PrependTag(parent, id, value, data, cssclass) {
   return $(tagHTML).prependTo(parent).data('tag', data);
 }
 
+function UpdateTicketGroups() {
+    var selectizeGroup = $('#ticket-group')[0].selectize;
+    selectizeGroup.clear(true);
+    selectizeGroup.clearOptions();
+    selectizeGroup.addOption({ value: -1, text: 'Unassigned' });
+
+    var groups = top.Ts.Cache.getGroups();
+    if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+        for (var i = 0; i < groups.length; i++) {
+            if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID) {
+                selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
+            }
+        }
+    }
+    else {
+        for (var i = 0; i < groups.length; i++) {
+            selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
+        }
+    }
+    selectizeGroup.addItem(-1);
+}
+
+function UpdateTicketTypes() {
+    var selectizeType = $('#ticket-type')[0].selectize;
+    selectizeType.clear(true);
+    selectizeType.clearOptions();
+
+    var firstTypeID = 0;
+    var types = top.Ts.Cache.getTicketTypes();
+    if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+        for (var i = 0; i < types.length; i++) {
+            if (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID) {
+                selectizeType.addOption({ value: types[i].TicketTypeID, text: types[i].Name });
+                _lastTicketTypeID = types[i].TicketTypeID;
+                if (firstTypeID == 0) {
+                    firstTypeID = types[i].TicketTypeID;
+                }
+
+            }
+        }
+    }
+    else {
+        for (var i = 0; i < types.length; i++) {
+            selectizeType.addOption({ value: types[i].TicketTypeID, text: types[i].Name });
+            if (firstTypeID == 0) {
+                firstTypeID = types[i].TicketTypeID;
+            }
+        }
+    }
+    selectizeType.addItem(firstTypeID);
+}
+
 function SetupProductSection() {
   top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
     if (showOnlyCustomers == "True") {
@@ -1956,7 +2038,6 @@ function SetupProductSection() {
       top.Ts.Services.Tickets.SetProduct(_ticketID, self.val(), function (result) {
         if (result !== null) {
           var name = result.label;
-          _productFamilyID = result.data;
           var product = top.Ts.Cache.getProduct(self.val());
 
           top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
@@ -1968,7 +2049,13 @@ function SetupProductSection() {
 
           SetupProductVersionsControl(product);
           SetProductVersionAndResolved(null, null);
-        }
+          if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != result.data) {
+              _productFamilyID = result.data;
+              UpdateTicketGroups();
+              UpdateTicketTypes();
+              alert('The new product belongs to a different line. Please update group and type.');
+          }
+      }
 
         top.Ts.Services.Tickets.GetParentValues(_ticketID, function (fields) {
           AppenCustomValues(fields);

@@ -76,6 +76,10 @@ namespace TSWebServices
         basicProduct.ProductID = product.ProductID;
         basicProduct.Name = product.Name;
         basicProduct.Versions = basicVersions.ToArray();
+        if (product.ProductFamilyID != null)
+        {
+            basicProduct.ProductFamilyID = product.ProductFamilyID;
+        }
 
         result.Add(basicProduct);
       }
@@ -1268,6 +1272,7 @@ namespace TSWebServices
     [DataMember] public int ProductID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public BasicVersion[] Versions { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
   }
 
   [DataContract]

@@ -27,10 +27,32 @@ public partial class Dialogs_Group : BaseDialogPage
       _groupID = int.Parse(Request["GroupID"]);
     }
 
-    if (!IsPostBack) if (_groupID > -1) LoadGroup(_groupID);
+    if (!IsPostBack)
+    {
+        Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+        if (organization.UseProductFamilies)
+        {
+            LoadProductFamilies();
+            divProductFamily.Style["display"] = "block";
+        }
+
+        if (_groupID > -1) LoadGroup(_groupID);
+    }
   }
 
-  private void LoadGroup(int groupID)
+    public void LoadProductFamilies()
+    {
+        ProductFamilies productFamilies = new ProductFamilies(UserSession.LoginUser);
+        productFamilies.LoadByOrganizationID(UserSession.LoginUser.OrganizationID);
+        cmbProductFamilies.Items.Add(new RadComboBoxItem("Without Product Line", "-1"));
+
+        foreach (ProductFamily productFamily in productFamilies)
+        {
+            cmbProductFamilies.Items.Add(new RadComboBoxItem(productFamily.Name, productFamily.ProductFamilyID.ToString()));
+        }
+    }
+
+    private void LoadGroup(int groupID)
   {
     Groups groups = new Groups(UserSession.LoginUser);
     groups.LoadByGroupID(groupID);
@@ -44,6 +66,10 @@ public partial class Dialogs_Group : BaseDialogPage
     }
     textName.Text = groups[0].Name;
     textDescription.Text = groups[0].Description;
+    if (groups[0].ProductFamilyID != null)
+    {
+        cmbProductFamilies.SelectedValue = ((int)groups[0].ProductFamilyID).ToString();
+    }
   }
 
   public override bool Save()
@@ -64,6 +90,10 @@ public partial class Dialogs_Group : BaseDialogPage
 
     group.Name = textName.Text;
     group.Description = textDescription.Text;
+    if (cmbProductFamilies.Items.Count > 0 && cmbProductFamilies.SelectedValue != "-1")
+    {
+      group.ProductFamilyID = Convert.ToInt32(cmbProductFamilies.SelectedValue);
+    }
     group.Collection.Save();
     return true;
   }

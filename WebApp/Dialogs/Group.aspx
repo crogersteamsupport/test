@@ -17,5 +17,16 @@
       <telerik:RadTextBox ID="textDescription" runat="server" Height="100px" TextMode="MultiLine"
         Width="300px"></telerik:RadTextBox>
     </div>
+    <div id="divProductFamily" style="display: none" runat="server">
+        <div style="padding-bottom: 3px;margin-top: 10px;">
+        Product Line:</div>
+        <div>
+            <div style="margin-bottom: 10px;">
+                <telerik:RadComboBox ID="cmbProductFamilies" runat="server" Width="200px" ExpandAnimation-Type="None"
+                CollapseAnimation-Type="None">
+                </telerik:RadComboBox>
+            </div>
+        </div>
+    </div>
   </div>
 </asp:Content>
