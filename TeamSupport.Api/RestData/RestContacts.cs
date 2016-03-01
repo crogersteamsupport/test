@@ -22,43 +22,42 @@ namespace TeamSupport.Api
       return item.GetXml("Contact", true);
     }
 
-    public static string GetItems(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null)
-    {
-		  ContactsView items = new ContactsView(command.LoginUser);
+		public static string GetItems(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null, bool isCustomer = false)
+		{
+			ContactsView items = new ContactsView(command.LoginUser);
 
-		  try
-		  {
-			  if (orderByDateCreated)
-			  {
-				  items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, "DateCreated DESC", limitNumber);
-			  }
-			  else
-			  {
-				  items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters);
-			  }
+			try
+			{
+				if (orderByDateCreated)
+				{
+					items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, "DateCreated DESC", limitNumber, isCustomer);
+				}
+				else
+				{
+					items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, isCustomer: isCustomer);
+				}
 
-        //SQL filtering was done already, there's no need for .NET filtering thus the empty collection for the last parameter
-        return items.GetXml("Contacts", "Contact", true, new System.Collections.Specialized.NameValueCollection());
-		  }
-		  catch (Exception ex)
-		  {
-			  //if something fails use the old method
-			  items = new ContactsView(command.LoginUser);
+				//SQL filtering was done already, there's no need for .NET filtering thus the empty collection for the last parameter
+				return items.GetXml("Contacts", "Contact", true, new System.Collections.Specialized.NameValueCollection());
+			}
+			catch (Exception ex)
+			{
+				//if something fails use the old method
+				items = new ContactsView(command.LoginUser);
 
-			  if (orderByDateCreated)
-			  {
-				  items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC", limitNumber);
-			  }
-			  else
-			  {
-				  items.LoadByParentOrganizationID(command.Organization.OrganizationID);
-			  }
+				if (orderByDateCreated)
+				{
+					items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC", limitNumber);
+				}
+				else
+				{
+					items.LoadByParentOrganizationID(command.Organization.OrganizationID);
+				}
+			}
 
-		  }
-
-		  //If we get to this point then something went wrong with the sql filtering and an exception was thrown and caught, .NET filtering will need to be done
-		  return items.GetXml("Contacts", "Contact", true, command.Filters);
-    }
+			//If we get to this point then something went wrong with the sql filtering and an exception was thrown and caught, .NET filtering will need to be done
+			return items.GetXml("Contacts", "Contact", true, command.Filters);
+		}
 
     public static string GetItems(RestCommand command, int organizationID, bool orderByDateCreated = false)
     {

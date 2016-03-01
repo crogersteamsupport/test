@@ -242,7 +242,7 @@ namespace TeamSupport.Api
           //case "/customers/{id}/products/{id}/": data = RestProducts.GetProduct(_command, GetId(3)); break;
           //case "/customers/{id}/products/{id}/versions/": data = RestVersions.GetOrganizationVersions(_command, GetId(3), GetId(1)); break;
           //case "/customers/{id}/products/{id}/versions/{id}/": data = RestVersions.GetItem(_command, GetId(5)); break;
-          //case "/contacts/": data = RestContacts.GetItems(_command); break;
+          case "/contacts/": data = RestContacts.GetItems(_command, false, null, true); break;
           //case "/contacts/{id}/": data = RestContacts.GetItem(_command, GetId(1)); break;
           //case "/contacts/{id}/tickets/": data = RestTickets.GetTicketsByContactID(_command, GetId(1)); break;
           //case "/contacts/{id}/addresses/": data = RestAddresses.GetAddresses(_command, ReferenceType.Users, GetId(1)); break;

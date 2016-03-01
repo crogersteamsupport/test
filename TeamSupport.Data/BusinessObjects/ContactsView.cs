@@ -15,22 +15,24 @@ namespace TeamSupport.Data
   
   public partial class ContactsView
   {
-    public void LoadByParentOrganizationID(int organizationID, string orderBy = "LastName, FirstName", int? limitNumber = null)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        string limit = string.Empty;
-        if (limitNumber != null)
-        {
-          limit = "TOP " + limitNumber.ToString();
-        }
-        command.CommandText = "SELECT " + limit + " * FROM ContactsView WHERE OrganizationParentID = @OrganizationID AND (MarkDeleted = 0) ORDER BY " + orderBy;
-        command.CommandText = InjectCustomFields(command.CommandText, "UserID", ReferenceType.Contacts);
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        Fill(command);
-      }
-    }
+	public void LoadByParentOrganizationID(int organizationID, string orderBy = "LastName, FirstName", int? limitNumber = null, bool isCustomer = false)
+	{
+		using (SqlCommand command = new SqlCommand())
+		{
+			string limit = string.Empty;
+
+			if (limitNumber != null)
+			{
+				limit = "TOP " + limitNumber.ToString();
+			}
+
+			command.CommandText = "SELECT " + limit + " * FROM ContactsView WHERE " + (isCustomer ? "OrganizationID" : "OrganizationParentID") + " = @OrganizationID AND (MarkDeleted = 0) ORDER BY " + orderBy;
+			command.CommandText = InjectCustomFields(command.CommandText, "UserID", ReferenceType.Contacts);
+			command.CommandType = CommandType.Text;
+			command.Parameters.AddWithValue("@OrganizationID", organizationID);
+			Fill(command);
+		}
+	}
 
 	public void LoadOneByParentOrganizationID(int organizationParentId)
 	{
@@ -44,7 +46,7 @@ namespace TeamSupport.Data
 		}
 	}
 
-	public void LoadByParentOrganizationID(int organizationParentId, NameValueCollection filters, string orderBy = "LastName, FirstName", int? limitNumber = null)
+	public void LoadByParentOrganizationID(int organizationParentId, NameValueCollection filters, string orderBy = "LastName, FirstName", int? limitNumber = null, bool isCustomer = false)
 	{
 		//Get the column names, this row will be deleted before getting the actual data
 		this.LoadOneByParentOrganizationID(organizationParentId);
@@ -58,7 +60,7 @@ namespace TeamSupport.Data
 				limit = "TOP " + limitNumber.ToString();
 			}
 
-			string sql = BuildLoadByParentOrganizationIdSql(limit, organizationParentId, orderBy, filters, command.Parameters);
+			string sql = BuildLoadByParentOrganizationIdSql(limit, organizationParentId, orderBy, filters, command.Parameters, isCustomer);
 			sql = InjectCustomFields(sql, "UserID", ReferenceType.Contacts);
 			command.CommandType = CommandType.Text;
 			command.CommandText = sql;
@@ -90,7 +92,7 @@ namespace TeamSupport.Data
 	/// <param name="filters">Filters to be applied. Specified in the URL request.</param>
 	/// <param name="filterParameters">SqlParamenterCollection for the input parameters of the sql query.</param>
 	/// <returns>A string with the full sql statement.</returns>
-	public string BuildLoadByParentOrganizationIdSql(string limit, int organizationParentId, string orderBy, NameValueCollection filters, SqlParameterCollection filterParameters)
+	public string BuildLoadByParentOrganizationIdSql(string limit, int organizationParentId, string orderBy, NameValueCollection filters, SqlParameterCollection filterParameters, bool isCustomer = false)
 	{
 		StringBuilder result = new StringBuilder();
 
@@ -113,8 +115,8 @@ namespace TeamSupport.Data
 		{
 			result.Append("LEFT JOIN PhoneNumbers ON ContactsView.UserID = PhoneNumbers.RefID ");
 		}
-    
-		result.Append("WHERE OrganizationParentID = @OrganizationParentId AND (MarkDeleted = 0) " + BuildWhereClausesFromFilters(organizationParentId, filters, ref filterParameters) + " ");
+
+		result.Append("WHERE " + (isCustomer ? "OrganizationID" : "OrganizationParentID") + " = @OrganizationParentId AND (MarkDeleted = 0) " + BuildWhereClausesFromFilters(organizationParentId, filters, ref filterParameters) + " ");
 		result.Append("ORDER BY " + orderBy);
 
 		return result.ToString();
