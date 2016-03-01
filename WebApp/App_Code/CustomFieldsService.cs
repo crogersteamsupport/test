@@ -210,7 +210,7 @@ namespace TSWebServices
 
 		if (crmLinkFieldId != null && crmLinkFieldId > 0)
 		{
-			CRMLinkFields crmLinkFieldsDelete = new CRMLinkFields(UserSession.LoginUser);
+			CRMLinkFields crmLinkFieldsDelete = new CRMLinkFields(login);
 			crmLinkFieldsDelete.DeleteFromDB((int)crmLinkFieldId);
 		}
 	}
