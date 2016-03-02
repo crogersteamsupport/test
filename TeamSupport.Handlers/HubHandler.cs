@@ -3,33 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.ServiceModel.Activation;
-using System.Net;
-using System.Web.SessionState;
-using System.Drawing;
-using TeamSupport.Data;
-using TeamSupport.WebUtils;
-using System.IO;
-using System.Data;
-using System.Data.Sql;
-using System.Data.SqlClient;
-using System.IO.Compression;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Web.Script.Serialization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Web.Security;
-using OfficeOpenXml;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using DDay.iCal.Serialization;
-using DDay.iCal;
-using DDay.Collections;
-using System.Drawing.Text;
-using System.Collections.Specialized;
 using System.Dynamic;
 
 
@@ -75,41 +50,12 @@ namespace TeamSupport.Handlers
         #endregion
 
 
-        private string GetSegment(HttpContext context, int index)
-        {
 
-            for (int i = 0; i < context.Request.Url.Segments.Length; i++)
-            {
-                if (context.Request.Url.Segments[i].ToLower() == "hub/")
-                {
-                    return context.Request.Url.Segments[index + i + 2].TrimEnd('/');
-                }
-
-            }
-            return "";
-        }
-
-        private int GetParentID(HttpContext context)
-        {
-            return int.Parse(GetSegment(context, -1));
-        }
-
-		private void ProcessSearch(HttpContext context)
+        private void ProcessSearch(HttpContext context)
 		{
             string term = context.Request.QueryString["q"];
-            int userID = -1;
-
-
-            // the name of this cookie Hub_Session is set up on the hub, in the web.config.  
-            // The same value of the machineKey in the web.config must be the same in the main app and the hub
-            HttpCookie cookie = context.Request.Cookies["Hub_Session"];
-            if (cookie != null)
-            {
-                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
-                int.TryParse(authTicket.UserData.Split('|')[0], out userID);
-            }
+            int userID = GetUserID(context);
             //userid will be > -1 if authenticated
-
 
             switch (GetSegment(context, 1))
             {
@@ -148,6 +94,45 @@ namespace TeamSupport.Handlers
             WriteJson(context, result);
         }
 
+
+        #region Utility Methods
+        private string GetSegment(HttpContext context, int index)
+        {
+            for (int i = 0; i < context.Request.Url.Segments.Length; i++)
+            {
+                if (context.Request.Url.Segments[i].ToLower() == "hub/")
+                {
+                    return context.Request.Url.Segments[index + i + 2].TrimEnd('/');
+                }
+            }
+            return "";
+        }
+
+        private int GetParentID(HttpContext context)
+        {
+            return int.Parse(GetSegment(context, -1));
+        }
+
+        private int GetUserID(HttpContext context)
+        {
+            // the name of this cookie Hub_Session is set up on the hub, in the web.config.  
+            // The same value of the machineKey in the web.config must be the same in the main app and the hub
+            HttpCookie cookie = context.Request.Cookies["Hub_Session"];
+            if (cookie != null)
+            {
+                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
+                try
+                {
+                    return int.Parse(authTicket.UserData.Split('|')[0]);
+                }
+                catch (Exception)
+                {
+                    return -1;
+                }
+            }
+            return -1;
+        }
+
         private void WriteJson(HttpContext context, object payload)
         {
             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
@@ -156,6 +141,8 @@ namespace TeamSupport.Handlers
             context.Response.ContentType = "application/json; charset=utf-8";
             context.Response.Write(JsonConvert.SerializeObject(payload));
         }
+
+        #endregion
 
 
 
