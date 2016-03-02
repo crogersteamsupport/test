@@ -192,11 +192,11 @@
                 });
 
                 ed.addButton('recordScreenTest', {
-                	title: 'Record Screen Share Test',
+                	title: 'Screen Video Recording',
                 	//image: '../images/icons/Symbol_Record.png',
                 	icon: 'awesome fa fa-desktop',
                 	onclick: function () {
-                		top.Ts.System.logAction('Ticket - Video Screen Test Button Clicked');
+                		top.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                 			var dynamicPub = element.parent().find("#screenShare");
                 			element.parent().find("#recordScreenContainer").show();
@@ -213,7 +213,16 @@
                 					alert("This browser does not support screen sharing");
                 				} else if (response.extensionInstalled === false) {
                 					// prompt to install the response.extensionRequired extension
-                					$('#ChromeInstallModal').modal('show');
+                					
+                					if (BrowserDetect.browser == "Chrome") {
+                						$('#ChromeInstallModal').modal('show');
+                					}
+                					else if (BrowserDetect.browser == "Firefox") {
+                						$('#FireFoxInstallModal').modal('show');
+                					}
+											  		element.parent().find('#recordScreenContainer').hide();
+											  		element.parent().find('#rcdtokScreen').hide();
+											  		element.parent().find('#canceltokScreen').hide();
                 				} else {
                 					// Screen sharing is available
                 					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
@@ -236,7 +245,12 @@
 											  { videoSource: 'screen' },
 											  function (error) {
 											  	if (error) {
-											  		$('#ChromeInstallModal').modal('show');
+											  		if (BrowserDetect.browser == "Chrome") {
+											  			$('#ChromeInstallModal').modal('show');
+											  		}
+											  		else if (BrowserDetect.browser == "Firefox") {
+											  			$('#FireFoxInstallModal').modal('show');
+											  		}
 											  		//alert('Screen Recording will not statrt because, ' + error.message);
 											  		element.parent().find('#recordScreenContainer').hide();
 											  		element.parent().find('#rcdtokScreen').hide();
