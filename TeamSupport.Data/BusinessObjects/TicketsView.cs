@@ -674,6 +674,54 @@ namespace TeamSupport.Data
 			}
 		}
 
+		public void LoadForTagsHub(LoginUser loginUser, string text, int parentID)
+		{
+			string[] tagArray = text.Split(' ');
+
+			using (SqlCommand command = new SqlCommand())
+			{
+				StringBuilder builder = new StringBuilder();
+
+				builder.Append(
+													@"SELECT T.*
+													FROM TicketsView AS T
+													WHERE OrganizationID = @ParentID
+													AND T.IsKnowledgeBase = 1
+													AND T.IsVisibleOnPortal = 1
+													AND T.TicketID IN
+													(
+														SELECT RefID
+														FROM TagLinksView AS TLV
+														WHERE TLV.OrganizationID = @ParentID
+														AND RefType = 17
+														AND VALUE IN ("
+												);
+				for (int i = 0; i < tagArray.Length; i++)
+				{
+					if (i == 0) builder.Append("'" + tagArray[i] + "'");
+					else builder.Append(", '" + tagArray[i] + "'");
+				}
+
+				builder.Append(@"))
+														AND (
+												T.ProductID IS NULL
+												OR T.ProductID IN (
+													SELECT productid
+													FROM organizationproducts
+													WHERE organizationid = 875026
+													)
+											)
+									");
+
+				command.CommandText = builder.ToString();
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ParentID", parentID);
+				command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+
+				Fill(command, "TicketsView");
+			}
+		}
+
 		private string BuildCustomPortalColumns(LoginUser loginUser, List<CustomPortalColumnProxy> columns)
 		{
 			StringBuilder builder = new StringBuilder();
@@ -1095,8 +1143,7 @@ namespace TeamSupport.Data
       Fill(command);
     }
 
-
-    public static SqlCommand GetLoadExportCommand(LoginUser loginUser, TicketLoadFilter filter)
+		public static SqlCommand GetLoadExportCommand(LoginUser loginUser, TicketLoadFilter filter)
     {
       SqlCommand command = new SqlCommand();
       string sort = filter.SortColumn.Trim();
