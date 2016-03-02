@@ -649,6 +649,7 @@ namespace TeamSupport.ServiceLibrary
 
 						 DateTime validDateShipped = (DateTime)dateShipped;
 
+						 asset.AssignedTo = companyAssignedTo[0].OrganizationID;
 						 newAssignedAsset.Save();
 
 						 AssetHistory assetHistory = new AssetHistory(_importUser);
@@ -734,6 +735,7 @@ namespace TeamSupport.ServiceLibrary
 
 							 DateTime validDateShipped = (DateTime)dateShipped;
 
+							 asset.AssignedTo = companyAssignedTo[0].OrganizationID;
 							 newAssignedAsset.Save();
 
 							 AssetHistory assetHistory = new AssetHistory(_importUser);
@@ -822,6 +824,7 @@ namespace TeamSupport.ServiceLibrary
 
 					 DateTime validDateShipped = (DateTime)dateShipped;
 
+					 asset.AssignedTo = contactAssignedTo[0].UserID;
 					 newAssignedAsset.Save();
 
 					 AssetHistory assetHistory = new AssetHistory(_importUser);
