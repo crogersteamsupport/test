@@ -1318,8 +1318,34 @@ namespace TSWebServices
     {
       CustomPortalColumns cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
       cpc.LoadByOrganizationID(organizationID);
+		bool didDelete = false;
+		foreach (CustomPortalColumn c in cpc.ToList())
+		{
+			if (c.CustomFieldID != null)
+			{
+				CustomFields cf = new CustomFields(TSAuthentication.GetLoginUser());
+				cf.LoadByCustomFieldID((int)c.CustomFieldID);
+				if(cf.Count == 0)
+				{
+					didDelete = true;
+					RemoveCustomPortalColumn("c" + c.CustomFieldID.ToString());
+				}
+			}	
+		}
 
-      return cpc.GetCustomPortalColumnProxies();
+		if(didDelete)
+		{
+			CustomPortalColumns cpcFiltered = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+			cpcFiltered.LoadByOrganizationID(organizationID);
+			return cpcFiltered.GetCustomPortalColumnProxies();
+		}
+		else
+		{
+			return cpc.GetCustomPortalColumnProxies();
+		}
+
+
+      
     }
 
     [WebMethod]
