@@ -16,6 +16,7 @@ namespace TeamSupport.Data
     [DataMember] public int CustomerHubID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public string PortalName { get; set; }
+    [DataMember] public string CNameURL { get; set; }
     [DataMember] public bool IsActive { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
           
@@ -28,6 +29,7 @@ namespace TeamSupport.Data
       CustomerHubProxy result = new CustomerHubProxy();
       result.ProductFamilyID = this.ProductFamilyID;
       result.IsActive = this.IsActive;
+      result.CNameURL = this.CNameURL;
       result.PortalName = this.PortalName;
       result.OrganizationID = this.OrganizationID;
       result.CustomerHubID = this.CustomerHubID;

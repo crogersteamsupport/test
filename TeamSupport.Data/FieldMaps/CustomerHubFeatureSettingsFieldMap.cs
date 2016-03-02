@@ -15,8 +15,12 @@ namespace TeamSupport.Data
       _fieldMap = new FieldMap();
       _fieldMap.AddMap("CustomerHubFeatureSettingID", "CustomerHubFeatureSettingID", false, false, false);
       _fieldMap.AddMap("CustomerHubID", "CustomerHubID", false, false, false);
-      _fieldMap.AddMap("ShowKnowledgeBase", "ShowKnowledgeBase", false, false, false);
-      _fieldMap.AddMap("ShowProducts", "ShowProducts", false, false, false);
+      _fieldMap.AddMap("EnableKnowledgeBase", "EnableKnowledgeBase", false, false, false);
+      _fieldMap.AddMap("EnableProducts", "EnableProducts", false, false, false);
+      _fieldMap.AddMap("EnableTicketCreation", "EnableTicketCreation", false, false, false);
+      _fieldMap.AddMap("EnableMyTickets", "EnableMyTickets", false, false, false);
+      _fieldMap.AddMap("EnableOrganizationTickets", "EnableOrganizationTickets", false, false, false);
+      _fieldMap.AddMap("EnableWiki", "EnableWiki", false, false, false);
             
     }
   }

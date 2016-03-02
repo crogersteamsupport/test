@@ -36,16 +36,40 @@ namespace TeamSupport.Data
     
 
     
-    public bool ShowProducts
+    public bool EnableWiki
     {
-      get { return (bool)Row["ShowProducts"]; }
-      set { Row["ShowProducts"] = CheckValue("ShowProducts", value); }
+      get { return (bool)Row["EnableWiki"]; }
+      set { Row["EnableWiki"] = CheckValue("EnableWiki", value); }
     }
     
-    public bool ShowKnowledgeBase
+    public bool EnableOrganizationTickets
     {
-      get { return (bool)Row["ShowKnowledgeBase"]; }
-      set { Row["ShowKnowledgeBase"] = CheckValue("ShowKnowledgeBase", value); }
+      get { return (bool)Row["EnableOrganizationTickets"]; }
+      set { Row["EnableOrganizationTickets"] = CheckValue("EnableOrganizationTickets", value); }
+    }
+    
+    public bool EnableMyTickets
+    {
+      get { return (bool)Row["EnableMyTickets"]; }
+      set { Row["EnableMyTickets"] = CheckValue("EnableMyTickets", value); }
+    }
+    
+    public bool EnableTicketCreation
+    {
+      get { return (bool)Row["EnableTicketCreation"]; }
+      set { Row["EnableTicketCreation"] = CheckValue("EnableTicketCreation", value); }
+    }
+    
+    public bool EnableProducts
+    {
+      get { return (bool)Row["EnableProducts"]; }
+      set { Row["EnableProducts"] = CheckValue("EnableProducts", value); }
+    }
+    
+    public bool EnableKnowledgeBase
+    {
+      get { return (bool)Row["EnableKnowledgeBase"]; }
+      set { Row["EnableKnowledgeBase"] = CheckValue("EnableKnowledgeBase", value); }
     }
     
     public int CustomerHubID
@@ -157,7 +181,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubFeatureSettings] SET     [CustomerHubID] = @CustomerHubID,    [ShowKnowledgeBase] = @ShowKnowledgeBase,    [ShowProducts] = @ShowProducts  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubFeatureSettings] SET     [CustomerHubID] = @CustomerHubID,    [EnableKnowledgeBase] = @EnableKnowledgeBase,    [EnableProducts] = @EnableProducts,    [EnableTicketCreation] = @EnableTicketCreation,    [EnableMyTickets] = @EnableMyTickets,    [EnableOrganizationTickets] = @EnableOrganizationTickets,    [EnableWiki] = @EnableWiki  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomerHubFeatureSettingID", SqlDbType.Int, 4);
@@ -174,14 +198,42 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ShowKnowledgeBase", SqlDbType.Bit, 1);
+		tempParameter = updateCommand.Parameters.Add("EnableKnowledgeBase", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ShowProducts", SqlDbType.Bit, 1);
+		tempParameter = updateCommand.Parameters.Add("EnableProducts", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("EnableTicketCreation", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("EnableMyTickets", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("EnableOrganizationTickets", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("EnableWiki", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -193,17 +245,45 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubFeatureSettings] (    [CustomerHubID],    [ShowKnowledgeBase],    [ShowProducts]) VALUES ( @CustomerHubID, @ShowKnowledgeBase, @ShowProducts); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubFeatureSettings] (    [CustomerHubID],    [EnableKnowledgeBase],    [EnableProducts],    [EnableTicketCreation],    [EnableMyTickets],    [EnableOrganizationTickets],    [EnableWiki]) VALUES ( @CustomerHubID, @EnableKnowledgeBase, @EnableProducts, @EnableTicketCreation, @EnableMyTickets, @EnableOrganizationTickets, @EnableWiki); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("ShowProducts", SqlDbType.Bit, 1);
+		tempParameter = insertCommand.Parameters.Add("EnableWiki", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ShowKnowledgeBase", SqlDbType.Bit, 1);
+		tempParameter = insertCommand.Parameters.Add("EnableOrganizationTickets", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("EnableMyTickets", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("EnableTicketCreation", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("EnableProducts", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("EnableKnowledgeBase", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -329,7 +409,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubFeatureSettingID], [CustomerHubID], [ShowKnowledgeBase], [ShowProducts] FROM [dbo].[CustomerHubFeatureSettings] WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubFeatureSettingID], [CustomerHubID], [EnableKnowledgeBase], [EnableProducts], [EnableTicketCreation], [EnableMyTickets], [EnableOrganizationTickets], [EnableWiki] FROM [dbo].[CustomerHubFeatureSettings] WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomerHubFeatureSettingID", customerHubFeatureSettingID);
         Fill(command);

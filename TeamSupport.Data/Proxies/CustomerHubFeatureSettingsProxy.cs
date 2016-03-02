@@ -15,8 +15,12 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy() {}
     [DataMember] public int CustomerHubFeatureSettingID { get; set; }
     [DataMember] public int CustomerHubID { get; set; }
-    [DataMember] public bool ShowKnowledgeBase { get; set; }
-    [DataMember] public bool ShowProducts { get; set; }
+    [DataMember] public bool EnableKnowledgeBase { get; set; }
+    [DataMember] public bool EnableProducts { get; set; }
+    [DataMember] public bool EnableTicketCreation { get; set; }
+    [DataMember] public bool EnableMyTickets { get; set; }
+    [DataMember] public bool EnableOrganizationTickets { get; set; }
+    [DataMember] public bool EnableWiki { get; set; }
           
   }
   
@@ -25,8 +29,12 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
-      result.ShowProducts = this.ShowProducts;
-      result.ShowKnowledgeBase = this.ShowKnowledgeBase;
+      result.EnableWiki = this.EnableWiki;
+      result.EnableOrganizationTickets = this.EnableOrganizationTickets;
+      result.EnableMyTickets = this.EnableMyTickets;
+      result.EnableTicketCreation = this.EnableTicketCreation;
+      result.EnableProducts = this.EnableProducts;
+      result.EnableKnowledgeBase = this.EnableKnowledgeBase;
       result.CustomerHubID = this.CustomerHubID;
       result.CustomerHubFeatureSettingID = this.CustomerHubFeatureSettingID;
        

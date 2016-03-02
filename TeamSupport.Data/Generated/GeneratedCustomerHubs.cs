@@ -40,6 +40,12 @@ namespace TeamSupport.Data
       set { Row["PortalName"] = CheckValue("PortalName", value); }
     }
     
+    public string CNameURL
+    {
+      get { return Row["CNameURL"] != DBNull.Value ? (string)Row["CNameURL"] : null; }
+      set { Row["CNameURL"] = CheckValue("CNameURL", value); }
+    }
+    
     public int? ProductFamilyID
     {
       get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
@@ -163,7 +169,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubs] SET     [OrganizationID] = @OrganizationID,    [PortalName] = @PortalName,    [IsActive] = @IsActive,    [ProductFamilyID] = @ProductFamilyID  WHERE ([CustomerHubID] = @CustomerHubID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubs] SET     [OrganizationID] = @OrganizationID,    [PortalName] = @PortalName,    [CNameURL] = @CNameURL,    [IsActive] = @IsActive,    [ProductFamilyID] = @ProductFamilyID  WHERE ([CustomerHubID] = @CustomerHubID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomerHubID", SqlDbType.Int, 4);
@@ -180,7 +186,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("PortalName", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("PortalName", SqlDbType.NVarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("CNameURL", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -206,7 +219,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubs] (    [OrganizationID],    [PortalName],    [IsActive],    [ProductFamilyID]) VALUES ( @OrganizationID, @PortalName, @IsActive, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubs] (    [OrganizationID],    [PortalName],    [CNameURL],    [IsActive],    [ProductFamilyID]) VALUES ( @OrganizationID, @PortalName, @CNameURL, @IsActive, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
@@ -223,7 +236,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("PortalName", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("CNameURL", SqlDbType.NVarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("PortalName", SqlDbType.NVarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -349,7 +369,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubID], [OrganizationID], [PortalName], [IsActive], [ProductFamilyID] FROM [dbo].[CustomerHubs] WHERE ([CustomerHubID] = @CustomerHubID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubID], [OrganizationID], [PortalName], [CNameURL], [IsActive], [ProductFamilyID] FROM [dbo].[CustomerHubs] WHERE ([CustomerHubID] = @CustomerHubID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomerHubID", customerHubID);
         Fill(command);

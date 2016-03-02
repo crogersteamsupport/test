@@ -16,6 +16,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CustomerHubID", "CustomerHubID", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
       _fieldMap.AddMap("PortalName", "PortalName", false, false, false);
+      _fieldMap.AddMap("CNameURL", "CNameURL", false, false, false);
       _fieldMap.AddMap("IsActive", "IsActive", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
             
