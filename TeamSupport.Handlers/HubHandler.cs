@@ -49,7 +49,8 @@ namespace TeamSupport.Handlers
 		public void ProcessRequest(HttpContext context)
 		{
 
-            //SAMPLE: http://localhost/hub/search/kb?q=search%20term
+            //SAMPLE: http://localhost/hub/1078/search/kb?q=search%20term
+            //SAMPLE: http://localhost/hub/[PARENTID]/search/kb?q=[SEARCH_STRING]
             try
             {
 
@@ -81,17 +82,22 @@ namespace TeamSupport.Handlers
             {
                 if (context.Request.Url.Segments[i].ToLower() == "hub/")
                 {
-                    return context.Request.Url.Segments[index + ++i].TrimEnd('/');
+                    return context.Request.Url.Segments[index + i + 2].TrimEnd('/');
                 }
 
             }
             return "";
         }
+
+        private int GetParentID(HttpContext context)
+        {
+            return int.Parse(GetSegment(context, -1));
+        }
+
 		private void ProcessSearch(HttpContext context)
 		{
             string term = context.Request.QueryString["q"];
             int userID = -1;
-            int parentID = -1;
 
 
             // the name of this cookie Hub_Session is set up on the hub, in the web.config.  
@@ -100,17 +106,10 @@ namespace TeamSupport.Handlers
             if (cookie != null)
             {
                 FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
-                try
-                {
-                    userID = int.Parse(authTicket.UserData.Split('|')[0]);
-                    parentID = int.Parse(authTicket.UserData.Split('|')[1]);
-                }
-                catch (Exception)
-                {
-                    userID = -1;
-                    parentID = -1;
-                }
+                int.TryParse(authTicket.UserData.Split('|')[0], out userID);
             }
+            //userid will be > -1 if authenticated
+
 
             switch (GetSegment(context, 1))
             {
@@ -141,13 +140,21 @@ namespace TeamSupport.Handlers
 
             dynamic result = new ExpandoObject();
             result.term = term;
+            result.parentID = GetParentID(context);
             result.items = items.ToArray();
 
+
+            // build an object w/ the results and write it to jason
+            WriteJson(context, result);
+        }
+
+        private void WriteJson(HttpContext context, object payload)
+        {
             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             context.Response.AddHeader("Expires", "-1");
             context.Response.AddHeader("Pragma", "no-cache");
             context.Response.ContentType = "application/json; charset=utf-8";
-            context.Response.Write(JsonConvert.SerializeObject(result));
+            context.Response.Write(JsonConvert.SerializeObject(payload));
         }
 
 
