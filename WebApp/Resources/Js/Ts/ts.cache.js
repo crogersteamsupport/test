@@ -160,7 +160,7 @@
                           attempts += 1;
                       }
                   }
-              }, 500);
+              }, 250);
           }
           if (result.length < 2) return this.getTicketStatuses();
           return result;
@@ -196,7 +196,7 @@
                           attempts += 1;
                       }
                   }
-              }, 500);
+              }, 250);
           }
       },
       getTicketSeverities: function () {
