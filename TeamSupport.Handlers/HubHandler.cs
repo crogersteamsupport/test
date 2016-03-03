@@ -117,7 +117,7 @@ namespace TeamSupport.Handlers
         {
             // the name of this cookie Hub_Session is set up on the hub, in the web.config.  
             // The same value of the machineKey in the web.config must be the same in the main app and the hub
-            HttpCookie cookie = context.Request.Cookies["Hub_Session"];
+            HttpCookie cookie = context.Request.Cookies["Support_Hub_Teamsupport"];
             if (cookie != null)
             {
                 FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
