@@ -130,23 +130,74 @@
           var result = [];
           result.push(this.getTicketStatus(ticketStatusID));
 
-          for (var i = 0; i < next.length; i++) {
-              if (next[i].CurrentStatusID == ticketStatusID) {
-                  var status = this.getTicketStatus(next[i].NextStatusID);
-                  if (status !== null) result.push(status);
+          var self = this;
+          if (next) {
+              for (var i = 0; i < next.length; i++) {
+                  if (next[i].CurrentStatusID == ticketStatusID) {
+                      var status = this.getTicketStatus(next[i].NextStatusID);
+                      if (status !== null) result.push(status);
+                  }
               }
+          }
+          else {
+              var attempts = 0;
+              var intvl = setInterval(function () {
+                  if (self._ticketNextStatuses) {
+                      clearInterval(intvl);
+                      for (var i = 0; i < self._ticketNextStatuses.length; i++) {
+                          if (self._ticketNextStatuses[i].CurrentStatusID == ticketStatusID) {
+                              var status = this.getTicketStatus(self._ticketNextStatuse[i].NextStatusID);
+                              if (status !== null) result.push(status);
+                          }
+                      }
+                  }
+                  else {
+                      if (attempts == 3) {
+                          //alert('An error getting the ticket statuses has ocurred. Please try again later.');
+                          clearInterval(intvl);
+                      }
+                      else {
+                          attempts += 1;
+                      }
+                  }
+              }, 500);
           }
           if (result.length < 2) return this.getTicketStatuses();
           return result;
       },
       getTicketStatus: function (ticketStatusID) {
           var statuses = this.getTicketStatuses();
-          for (var i = 0; i < statuses.length; i++) {
-              if (statuses[i].TicketStatusID == ticketStatusID) {
-                  return statuses[i];
+          var self = this;
+          if (statuses) {
+              for (var i = 0; i < statuses.length; i++) {
+                  if (statuses[i].TicketStatusID == ticketStatusID) {
+                      return statuses[i];
+                  }
               }
           }
-          return null;
+          else {
+              var attempts = 0;
+              var intvl = setInterval(function () {
+                  if (self._ticketStatuses) {
+                      clearInterval(intvl);
+                      for (var i = 0; i < self._ticketStatuses.length; i++) {
+                          if (self._ticketStatuses[i].TicketStatusID == ticketStatusID) {
+                              return self._ticketStatuses[i];
+                          }
+                      }
+                  }
+                  else {
+                      if (attempts == 3) {
+                          //alert('An error getting the ticket statuses has ocurred. Please try again later.');
+                          clearInterval(intvl);
+                          return null;
+                      }
+                      else {
+                          attempts += 1;
+                      }
+                  }
+              }, 500);
+          }
       },
       getTicketSeverities: function () {
           var self = this;
