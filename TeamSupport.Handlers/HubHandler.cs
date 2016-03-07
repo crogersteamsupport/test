@@ -6,6 +6,8 @@ using System.Web;
 using Newtonsoft.Json;
 using System.Web.Security;
 using System.Dynamic;
+using TeamSupport.Data;
+using System.Data.SqlClient;
 
 
 
@@ -26,14 +28,37 @@ namespace TeamSupport.Handlers
 
             //SAMPLE: http://localhost/hub/1078/search/kb?q=search%20term
             //SAMPLE: http://localhost/hub/[PARENTID]/search/kb?q=[SEARCH_STRING]
+
+            int userID = GetUserID(context);
+            int parentID = -1;
+
+
+            //Parse the URL and get the route and ParentID
+            StringBuilder routeBuilder = new StringBuilder();
+            bool parentFlag = false;
+            bool routeFlag = false;
+            for (int i = 0; i < context.Request.Url.Segments.Length; i++)
+            {
+                if (parentFlag)
+                {
+                    parentID = int.Parse(context.Request.Url.Segments[i].TrimEnd('/'));
+                    routeFlag = true;
+                }
+                else if (routeFlag)
+                {
+                    routeBuilder.Append(context.Request.Url.Segments[i]);
+                }
+                parentFlag = context.Request.Url.Segments[i].ToLower() == "hub/";
+            }
+            string route = routeBuilder.ToString().ToLower().TrimEnd('/');
+
+            //Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
             try
             {
 
-                switch (GetSegment(context, 0))
+                switch (route)
                 {
-                    case "search":
-                        ProcessSearch(context);
-                        break;
+                    case "search/kb": ProcessKBSearch(context, parentID, userID); break;
                     default:
                         break;
                 }
@@ -49,69 +74,34 @@ namespace TeamSupport.Handlers
 
         #endregion
 
-
-
-        private void ProcessSearch(HttpContext context)
-		{
-            string term = context.Request.QueryString["q"];
-            int userID = GetUserID(context);
-            //userid will be > -1 if authenticated
-
-            switch (GetSegment(context, 1))
-            {
-                case "kb":
-                    ProcessKBSearch(context, term);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void ProcessKBSearch(HttpContext context, string term)
+        private void ProcessKBSearch(HttpContext context, int parentID, int userID)
         {
-            List<object> items = new List<object>();
-            dynamic item = new ExpandoObject();
+            string term = context.Request.QueryString["q"];
 
-            dynamic item1 = new ExpandoObject();
-            item1.id = 1;
-            item1.num = 100;
-            item1.name = "Sample Ticket 1";
-            items.Add(item1);
+            //Sample code to show you how to easily get SQL to JSON
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT Name, TicketNumber, TicketID FROM Tickets WHERE TicketID = @TicketID";
+            command.Parameters.AddWithValue("TicketID", 1637556);
+            ExpandoObject[] tickets = SqlExecutor.GetExpandoObject(LoginUser.Anonymous, command);
 
-            dynamic item2 = new ExpandoObject();
-            item2.id = 2;
-            item2.num = 200;
-            item2.name = "Sample Ticket 2";
-            items.Add(item2);
+            command = new SqlCommand();
+            command.CommandText = "SELECT Description FROM Actions WHERE TicketID = @TicketID";
+            command.Parameters.AddWithValue("TicketID", 1637556);
+            ExpandoObject[] actions = SqlExecutor.GetExpandoObject(LoginUser.Anonymous, command);
+
+            (tickets[0] as dynamic).Actions = actions;
 
             dynamic result = new ExpandoObject();
-            result.term = term;
-            result.parentID = GetParentID(context);
-            result.items = items.ToArray();
+            result.Term = term;
+            result.UserID = userID;
+            result.ParentID = parentID;
+            result.Tickets = tickets;
 
-
-            // build an object w/ the results and write it to jason
             WriteJson(context, result);
         }
 
 
         #region Utility Methods
-        private string GetSegment(HttpContext context, int index)
-        {
-            for (int i = 0; i < context.Request.Url.Segments.Length; i++)
-            {
-                if (context.Request.Url.Segments[i].ToLower() == "hub/")
-                {
-                    return context.Request.Url.Segments[index + i + 2].TrimEnd('/');
-                }
-            }
-            return "";
-        }
-
-        private int GetParentID(HttpContext context)
-        {
-            return int.Parse(GetSegment(context, -1));
-        }
 
         private int GetUserID(HttpContext context)
         {
@@ -123,7 +113,7 @@ namespace TeamSupport.Handlers
                 FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
                 try
                 {
-                    return int.Parse(authTicket.UserData.Split('|')[0]);
+                    if (!authTicket.Expired) return int.Parse(authTicket.UserData.Split('|')[0]);
                 }
                 catch (Exception)
                 {

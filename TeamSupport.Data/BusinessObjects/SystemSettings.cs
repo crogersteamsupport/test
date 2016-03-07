@@ -126,7 +126,7 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
         }
         public static string GetDomain()
         {
-            return ReadString("Domain", "app.teamsupport.com");
+            return ReadString("Domain", "teamsupport.com");
         }
 
         public static string GetPodName()
