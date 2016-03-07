@@ -674,6 +674,35 @@ namespace TeamSupport.Data
 			}
 		}
 
+		public void LoadHubKBByID(int ticketID, int organizationID, int customerID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT t.*
+																FROM TicketsView as T
+																WHERE 
+																			t.ticketid = @ticketID
+																	AND t.OrganizationID              = @OrganizationID 
+																	AND t.IsKnowledgeBase         = 1
+																	AND t.IsVisibleOnPortal         = 1
+																  AND (
+																					T.ProductID IS NULL
+																					OR T.ProductID IN (
+																						SELECT productid
+																						FROM organizationproducts
+																						WHERE organizationid = @CustomerID
+																						)
+																				)
+																ORDER BY 
+																	t.DateModified desc";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@CustomerID", customerID);
+				command.Parameters.AddWithValue("@ticketID", ticketID);
+				Fill(command, "TicketsView");
+			}
+		}
+
 		public void LoadForTagsHub(LoginUser loginUser, string text, int parentID)
 		{
 			string[] tagArray = text.Split(' ');
