@@ -262,7 +262,7 @@ Namespace TeamSupport
         request.ContentType = contentType
 		request.UserAgent = userAgent
 
-		If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 Then
+		If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 OrElse CRMLinkRow.OrganizationID = 881342 OrElse CRMLinkRow.OrganizationID = 1081853 Then
 			request.Timeout = 600000
 		Else
 			request.Timeout = 120000
@@ -864,7 +864,7 @@ Namespace TeamSupport
             End Function
 
         Private Sub AddRemoteLinkInJira(ByVal issueID As String, ByVal ticketID As String, ByVal ticketNumber As String, ByVal ticketName As String, ByVal creatorName As String)
-          Dim domain As String = SystemSettings.ReadString(User, "AppDomain", "https://app.teamsupport.com")
+          Dim domain As String = SystemSettings.ReadStringForCrmService(User, "AppDomain", "https://app.teamsupport.com")
           Dim remoteLinkData As StringBuilder = New StringBuilder()
           remoteLinkData.Append("{")
             'Global ID initialized as documentation examples in two parts separated by &. First part is the domain and the second one the id.

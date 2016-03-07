@@ -42,7 +42,36 @@ namespace TeamSupport.Data
 
             return result;
         }
-        public static void WriteString(LoginUser loginUser, string key, string value)
+
+		/// <summary>
+		/// This is only used by the CRM Service, needed to re-created with different name due to some updates to this class and original method that broke it for the CRM Service
+		/// </summary>
+		public static string ReadStringForCrmService(LoginUser loginUser, string key, string defaultValue)
+		{
+			string result = defaultValue;
+			using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+			{
+				connection.Open();
+
+				SqlCommand command = new SqlCommand();
+				command.Connection = connection;
+				command.CommandText = "SELECT SettingValue FROM SystemSettings WHERE (SettingKey=@SettingKey)";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@SettingKey", key);
+
+				SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow);
+				if (reader.Read())
+				{
+					result = (string)reader[0];
+				}
+				reader.Close();
+				connection.Close();
+			}
+
+			return result;
+		}
+
+		public static void WriteString(LoginUser loginUser, string key, string value)
         {
 
             using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))

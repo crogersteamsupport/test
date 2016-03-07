@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Web;
 using System.Web.Services;
-using System.Web.Services.Protocols;
 using System.Collections.Generic;
-using System.Collections;
-using System.Web.Script.Serialization;
 using System.Web.Script.Services;
 using System.Data;
 using System.Data.SqlClient;
-using System.Web.Security;
 using System.Text;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
-using System.Globalization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace TSWebServices
 {
-    [ScriptService]
+	[ScriptService]
     [WebService(Namespace = "http://teamsupport.com/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     public class ReportService : System.Web.Services.WebService
@@ -453,10 +447,20 @@ namespace TSWebServices
 
         ReportTableFields reportTableFields = new ReportTableFields(loginUser);
         reportTableFields.LoadByReportTableID(subCat.ReportCategoryTableID);
+
+		CRMLinkTable crmLink = new CRMLinkTable(loginUser);
+		crmLink.LoadByOrganizationID(loginUser.OrganizationID);
+		bool isJiraActive = crmLink.Where(p => p.CRMType.ToLower() == "jira" && p.Active).Any();
+		List<string> jiraFields = new List<string>() { "DateModifiedByJiraSync", "JiraID", "SyncWithJira", "JiraKey", "JiraLinkURL", "JiraStatus" };
+
         foreach (ReportTableField reportTableField in reportTableFields)
-	      {
-          result.Add(new ReportFieldItem(primaryTable.Alias, true, reportTableField));
-	      }
+	    {
+			if ((isJiraActive && jiraFields.Where(p => p == reportTableField.FieldName).Any() 
+				|| !jiraFields.Where(p => p == reportTableField.FieldName).Any()))
+			{
+				result.Add(new ReportFieldItem(primaryTable.Alias, true, reportTableField));
+			}
+	    }
 
         if (primaryTable.CustomFieldRefType != ReferenceType.None)
         {
