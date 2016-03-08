@@ -836,7 +836,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#deletetokScreen').hide();
   		element.find('#muteTokScreen').show();
   		recordingID = resultID;
-  		recordScreenTimer = setTimeout(function () { StopRecording(element); }, 1000);
+  		recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
   		element.find('#statusTextScreen').text("Currently Recording Screen...");
   	});
   });
