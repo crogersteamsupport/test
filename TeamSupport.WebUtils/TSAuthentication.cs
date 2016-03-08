@@ -106,7 +106,7 @@ namespace TeamSupport.WebUtils
       if (ticket == null) return;
       ticket = new FormsAuthenticationTicket(1, ticket.Name, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(TimeOut), false, ticket.UserData, FormsAuthentication.FormsCookiePath);
       HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));
-      if (FormsAuthentication.CookieDomain != "localhost") cookie.Domain = SystemSettings.GetDomain();
+      cookie.Domain = FormsAuthentication.CookieDomain;
       cookie.Expires = DateTime.UtcNow.AddYears(1);
       HttpContext.Current.Response.Cookies.Add(cookie);
     }
