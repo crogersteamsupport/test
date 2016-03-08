@@ -3810,6 +3810,7 @@ WHERE t.TicketID = @TicketID
         public string StopArchiving(string archiveId)
         {
 			  var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
+			  //var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
@@ -3824,21 +3825,21 @@ WHERE t.TicketID = @TicketID
             while (OpenTok.GetArchive(archiveId).Status != ArchiveStatus.UPLOADED);
 
             TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
-				ts.AmazonPath = string.Format("https://s3.amazonaws.com/teamsupportvideos/{0}/{1}/archive.mp4", 45228242, archive.Id);
+				ts.AmazonPath = string.Format("https://s3.amazonaws.com/teamsupportvideos/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id);
             ts.CreatedDate = DateTime.Now;
             ts.CreatorID = TSAuthentication.GetLoginUser().UserID;
             ts.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
             ts.ArchiveID = archive.Id.ToString();
             ts.Collection.Save();
 
-				return string.Format("https://s3.amazonaws.com/teamsupportvideos/{0}/{1}/archive.mp4", 45228242, archive.Id.ToString());
+				return string.Format("https://s3.amazonaws.com/teamsupportvideos/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString());
 
         }
 
         [WebMethod]
         public bool DeleteArchive(string archiveId)
         {
-			  var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
+			  var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);

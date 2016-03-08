@@ -50,6 +50,7 @@ var tokurl;
 var publisher;
 var screenSharingPublisher;
 var videoURL;
+var recordScreenTimer;
 
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -835,6 +836,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#deletetokScreen').hide();
   		element.find('#muteTokScreen').show();
   		recordingID = resultID;
+  		recordScreenTimer = setTimeout(function () { StopRecording(element); }, 1000);
   		element.find('#statusTextScreen').text("Currently Recording Screen...");
   	});
   });
@@ -857,6 +859,9 @@ function SetupActionEditor(elem, action) {
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
   	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+  		session.unpublish(screenSharingPublisher);
+  		session.unpublish(publisher);
+  		clearTimeout(recordScreenTimer);
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
   		element.find('#canceltokScreen').show();
@@ -866,9 +871,6 @@ function SetupActionEditor(elem, action) {
   		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
   		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
   		element.find('#statusTextScreen').text("Recording Stopped");
-  		session.unpublish(screenSharingPublisher);
-  		session.unpublish(publisher);
-		
   	});
   });
 
@@ -953,6 +955,26 @@ function SetupActionEditor(elem, action) {
     }
   }
 };
+
+function StopRecording(element)
+{
+	element.find('#statusTextScreen').text("Processing...");
+	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+		clearTimeout(recordScreenTimer);
+		element.find('#rcdtokScreen').show();
+		element.find('#stoptokScreen').hide();
+		element.find('#canceltokScreen').show();
+		element.find('#unmuteTokScreen').hide();
+		element.find('#muteTokScreen').hide();
+		tokurl = result;
+		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+		element.find('#statusTextScreen').text("Recording Stopped");
+		session.unpublish(screenSharingPublisher);
+		session.unpublish(publisher);
+
+	});
+}
 
 function SetupActionTimers() {
   //$('#action-new-date-started').datetimepicker({ useCurrent: true, format: dateFormat + ' hh:mm A', defaultDate: new Date() });
