@@ -836,6 +836,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#deletetokScreen').hide();
   		element.find('#muteTokScreen').show();
   		recordingID = resultID;
+  		countdown("tokScreenCountdown", 5, 0, element);
   		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
   		element.find('#statusTextScreen').text("Currently Recording Screen...");
   	});
@@ -859,7 +860,8 @@ function SetupActionEditor(elem, action) {
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
   	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
-  		//clearTimeout(recordScreenTimer);
+  		clearTimeout(recordScreenTimer);
+  		element.find('#tokScreenCountdown').hide();
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
   		element.find('#canceltokScreen').show();
@@ -961,7 +963,8 @@ function StopRecording(element)
 {
 	element.find('#statusTextScreen').text("Processing...");
 	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
-		//clearTimeout(recordScreenTimer);
+		clearTimeout(recordScreenTimer);
+		element.find('#tokScreenCountdown').hide();
 		element.find('#rcdtokScreen').show();
 		element.find('#stoptokScreen').hide();
 		element.find('#canceltokScreen').show();
@@ -975,6 +978,31 @@ function StopRecording(element)
 		session.unpublish(publisher);
 
 	});
+}
+
+function countdown(elementName, minutes, seconds, parentElement) {
+	var element, endTime, hours, mins, msLeft, time;
+
+	function twoDigits(n) {
+		return (n <= 9 ? "0" + n : n);
+	}
+
+	function updateTimer(parentElement) {
+		msLeft = endTime - (+new Date);
+		if (msLeft < 1000) {
+			StopRecording(parentElement);
+		} else {
+			time = new Date(msLeft);
+			hours = time.getUTCHours();
+			mins = time.getUTCMinutes();
+			element.innerHTML = (hours ? hours + ':' + twoDigits(mins) : mins) + ':' + twoDigits(time.getUTCSeconds());
+			recordScreenTimer = setTimeout(updateTimer, time.getUTCMilliseconds() + 500);
+		}
+	}
+
+	element = document.getElementById(elementName);
+	endTime = (+new Date) + 1000 * (60 * minutes + seconds) + 500;
+	updateTimer(parentElement);
 }
 
 function SetupActionTimers() {
