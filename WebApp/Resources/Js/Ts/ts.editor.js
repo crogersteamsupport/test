@@ -240,7 +240,7 @@
                 						// Screen sharing is available. Publish the screen.
                 						// Create an element, but do not display it in the HTML DOM:
                 						var screenContainerElement = document.createElement('div');
-                						screenSharingPublisher = OT.initPublisher(
+                						var screenSharingPublisher = OT.initPublisher(
 											  dynamicPub.attr('id'),
 											  { videoSource: 'screen' },
 											  function (error) {

@@ -859,9 +859,6 @@ function SetupActionEditor(elem, action) {
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
   	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
-  		session.unpublish(screenSharingPublisher);
-  		session.unpublish(publisher);
-  		clearTimeout(recordScreenTimer);
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
   		element.find('#canceltokScreen').show();
@@ -871,6 +868,9 @@ function SetupActionEditor(elem, action) {
   		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
   		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
   		element.find('#statusTextScreen').text("Recording Stopped");
+  		session.unpublish(screenSharingPublisher);
+  		session.unpublish(publisher);
+  		clearTimeout(recordScreenTimer);
   	});
   });
 
@@ -960,7 +960,6 @@ function StopRecording(element)
 {
 	element.find('#statusTextScreen').text("Processing...");
 	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
-		clearTimeout(recordScreenTimer);
 		element.find('#rcdtokScreen').show();
 		element.find('#stoptokScreen').hide();
 		element.find('#canceltokScreen').show();
@@ -972,7 +971,7 @@ function StopRecording(element)
 		element.find('#statusTextScreen').text("Recording Stopped");
 		session.unpublish(screenSharingPublisher);
 		session.unpublish(publisher);
-
+		clearTimeout(recordScreenTimer);
 	});
 }
 
