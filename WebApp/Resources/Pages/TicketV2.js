@@ -836,7 +836,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#deletetokScreen').hide();
   		element.find('#muteTokScreen').show();
   		recordingID = resultID;
-  		recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
+  		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
   		element.find('#statusTextScreen').text("Currently Recording Screen...");
   	});
   });
@@ -859,6 +859,7 @@ function SetupActionEditor(elem, action) {
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
   	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+  		//clearTimeout(recordScreenTimer);
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
   		element.find('#canceltokScreen').show();
@@ -870,7 +871,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#statusTextScreen').text("Recording Stopped");
   		session.unpublish(screenSharingPublisher);
   		session.unpublish(publisher);
-  		clearTimeout(recordScreenTimer);
+		
   	});
   });
 
@@ -960,6 +961,7 @@ function StopRecording(element)
 {
 	element.find('#statusTextScreen').text("Processing...");
 	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+		//clearTimeout(recordScreenTimer);
 		element.find('#rcdtokScreen').show();
 		element.find('#stoptokScreen').hide();
 		element.find('#canceltokScreen').show();
@@ -971,7 +973,7 @@ function StopRecording(element)
 		element.find('#statusTextScreen').text("Recording Stopped");
 		session.unpublish(screenSharingPublisher);
 		session.unpublish(publisher);
-		clearTimeout(recordScreenTimer);
+
 	});
 }
 
