@@ -997,7 +997,9 @@ function countdown(elementName, minutes, seconds, parentElement) {
 			hours = time.getUTCHours();
 			mins = time.getUTCMinutes();
 			element.innerHTML = (hours ? hours + ':' + twoDigits(mins) : mins) + ':' + twoDigits(time.getUTCSeconds());
-			recordScreenTimer = setTimeout(updateTimer(parentElement), time.getUTCMilliseconds() + 500);
+			recordScreenTimer = setTimeout(function() {
+				updateTimer(parentElement);
+			}, time.getUTCMilliseconds() + 500);
 		}
 	}
 
