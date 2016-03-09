@@ -217,22 +217,26 @@ Namespace TeamSupport
           Return result
         End Function
 
-			Private Function GetAPIJObject(ByVal URI As String, ByVal verb As String, ByVal body As String) As JObject
-				Log.Write("URI: " + URI)
-				Log.Write("verb: " + verb)
+		Private Function GetAPIJObject(ByVal URI As String, ByVal verb As String, ByVal body As String) As JObject
+			Log.Write("URI: " + URI)
+			Log.Write("verb: " + verb)
 
-				If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
-					Log.Write("body: " + body)
-				End If
+			If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
+				Log.Write("body: " + body)
+			End If
 
-				Dim response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
+			Dim result As JObject
+			Using response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
 				Dim responseReader As New StreamReader(response.GetResponseStream())
-				Dim result As JObject = JObject.Parse(responseReader.ReadToEnd)
+				result = JObject.Parse(responseReader.ReadToEnd)
 				responseReader.Close()
 				response.Close()
-				Log.Write("responseReader and response closed")
-				Return result
-			End Function
+
+				Log.Write("responseReader and response closed. Exiting Using.")
+			End Using
+
+			Return result
+		End Function
 
 		Private Function GetAPIJArray(ByVal URI As String, ByVal verb As String, ByVal body As String) As JArray
 			Log.Write("URI: " + URI)
@@ -736,6 +740,7 @@ Namespace TeamSupport
           Catch ex As Exception
             Log.Write("Exception rised attempting to get createmeta.")
             Log.Write(ex.Message)
+			Log.Write("StackTrace: " + ex.StackTrace)
             Log.Write("URI: " + URI)
             Log.Write("Type: " + issueTypeName)
             Throw New Exception("project mismatch")
