@@ -960,8 +960,8 @@ function SetupActionEditor(elem, action) {
 
 function StopRecording(element)
 {
-	alert("in stop recording");
 	element.find('#statusTextScreen').text("Processing...");
+	alert("in stop recording");
 	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
 		alert("archiving stopped");
 		clearTimeout(recordScreenTimer);
@@ -997,7 +997,7 @@ function countdown(elementName, minutes, seconds, parentElement) {
 			hours = time.getUTCHours();
 			mins = time.getUTCMinutes();
 			element.innerHTML = (hours ? hours + ':' + twoDigits(mins) : mins) + ':' + twoDigits(time.getUTCSeconds());
-			recordScreenTimer = setTimeout(updateTimer, time.getUTCMilliseconds() + 500);
+			recordScreenTimer = setTimeout(updateTimer(parentElement), time.getUTCMilliseconds() + 500);
 		}
 	}
 
