@@ -91,7 +91,6 @@ Namespace TeamSupport
         End If
 
         If numberOfIssuesToPullAsTickets > 0 Then
-          Dim domain As String = SystemSettings.ReadString(User, "AppDomain", "https://app.teamsupport.com")
           For Each batchOfIssuesToPullAsTicket As JObject In issuesToPullAsTickets
             PullIssuesAndCommentsAsTicketsAndActions(batchOfIssuesToPullAsTicket("issues"), allStatuses, newActionsTypeID)
           Next
@@ -246,9 +245,14 @@ Namespace TeamSupport
 				Log.Write("body: " + body)
 			End If
 
-			Dim response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
-			Dim responseReader As New StreamReader(response.GetResponseStream())
-			Return JArray.Parse(responseReader.ReadToEnd)
+			Dim result As JArray
+
+			Using response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
+				Dim responseReader As New StreamReader(response.GetResponseStream())
+				result = JArray.Parse(responseReader.ReadToEnd)
+			End Using
+          
+			Return result
 		End Function
 
 	Private Function MakeHTTPRequest(
@@ -739,7 +743,7 @@ Namespace TeamSupport
             End If
           Catch ex As Exception
             Log.Write("Exception rised attempting to get createmeta.")
-            Log.Write(ex.Message)
+            Log.Write("Message: " + ex.Message)
 			Log.Write("StackTrace: " + ex.StackTrace)
             Log.Write("URI: " + URI)
             Log.Write("Type: " + issueTypeName)

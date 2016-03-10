@@ -1569,7 +1569,12 @@ Namespace TeamSupport
                     Next
                 End If
 
-                File.AppendAllText(LogPath & "\" & FileName, Now.ToLongTimeString() + ": " & Text & Environment.NewLine)
+				Try
+					File.AppendAllText(LogPath & "\" & FileName, Now.ToLongTimeString() + ": " & Text & Environment.NewLine)
+				Catch ex As IOException
+					'unfortunately if the file cannot be accessed we'll just keep going. Need to revisit this.
+				End Try
+                
             End Sub
 
         End Class
