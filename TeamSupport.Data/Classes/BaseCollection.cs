@@ -726,6 +726,7 @@ namespace TeamSupport.Data
 
         public static void FixCommandParameters(SqlCommand command)
         {
+            return;
             foreach (SqlParameter parameter in command.Parameters)
             {
                 if (parameter.SqlDbType == SqlDbType.NVarChar)

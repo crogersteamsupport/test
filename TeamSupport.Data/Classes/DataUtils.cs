@@ -1148,7 +1148,7 @@ namespace TeamSupport.Data
 
         public static DataTable GetTable(LoginUser loginUser, SqlCommand command)
         {
-            FixCommandParameters(command);
+            BaseCollection.FixCommandParameters(command);
             DataTable table = new DataTable();
             using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
             {
@@ -1176,17 +1176,6 @@ namespace TeamSupport.Data
 
             return table;
 
-        }
-
-        public static void FixCommandParameters(SqlCommand command)
-        {
-            foreach (SqlParameter parameter in command.Parameters)
-            {
-                if (parameter.SqlDbType == SqlDbType.NVarChar)
-                {
-                    parameter.SqlDbType = SqlDbType.VarChar;
-                }
-            }
         }
 
         public static string ReplaceEx(string original, string pattern, string replacement)
