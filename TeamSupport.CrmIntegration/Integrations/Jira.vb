@@ -500,11 +500,15 @@ Namespace TeamSupport
 
             Try
               Dim creatorName As String = "TeamSupport"
-              If ticketLinkToJira.CreatorID IsNot Nothing Then
-                Dim creator As Users = New Users(User)
-                creator.LoadByUserID(ticketLinkToJira.CreatorID)
-                creatorName = creator(0).FirstName.Substring(0, 1) + ". " + creator(0).LastName + " linked"
-              End If
+              
+				If ticketLinkToJira.CreatorID IsNot Nothing Then
+					Dim creator As Users = New Users(User)
+					creator.LoadByUserID(ticketLinkToJira.CreatorID)
+					creatorName = String.Format("{0}.{1} {2} linked", creator(0).FirstName.Substring(0, 1), _
+																		If (String.IsNullOrEmpty(creator(0).MiddleName), "", " " + creator(0).MiddleName.Substring(0, 1) + "."), _
+																		creator(0).LastName)
+				End If
+
               AddRemoteLinkInJira(issue("id").ToString(), ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.Name, creatorName)
               Log.Write("Added remote link for ticket #" + ticket.TicketNumber.ToString())
 
