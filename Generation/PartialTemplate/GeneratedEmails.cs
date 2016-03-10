@@ -244,28 +244,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int emailID)
     {
-      BeforeDBDelete(emailID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Emails] WHERE ([EmailID] = @EmailID);";
         deleteCommand.Parameters.Add("EmailID", SqlDbType.Int);
         deleteCommand.Parameters["EmailID"].Value = emailID;
 
+        BeforeDBDelete(emailID);
         BeforeRowDelete(emailID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(emailID);
-      }
-      AfterDBDelete(emailID);
-      
-    }
+        AfterDBDelete(emailID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("EmailsSave");

@@ -161,28 +161,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int userSettingID)
     {
-      BeforeDBDelete(userSettingID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[UserSettings] WHERE ([UserSettingID] = @UserSettingID);";
         deleteCommand.Parameters.Add("UserSettingID", SqlDbType.Int);
         deleteCommand.Parameters["UserSettingID"].Value = userSettingID;
 
+        BeforeDBDelete(userSettingID);
         BeforeRowDelete(userSettingID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(userSettingID);
-      }
-      AfterDBDelete(userSettingID);
-      
-    }
+        AfterDBDelete(userSettingID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("UserSettingsSave");

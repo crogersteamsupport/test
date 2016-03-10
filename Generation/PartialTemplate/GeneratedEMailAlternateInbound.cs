@@ -146,28 +146,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int systemEMailID)
     {
-      BeforeDBDelete(systemEMailID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[EMailAlternateInbound] WHERE ([SystemEMailID] = @SystemEMailID);";
         deleteCommand.Parameters.Add("SystemEMailID", SqlDbType.Int);
         deleteCommand.Parameters["SystemEMailID"].Value = systemEMailID;
 
+        BeforeDBDelete(systemEMailID);
         BeforeRowDelete(systemEMailID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(systemEMailID);
-      }
-      AfterDBDelete(systemEMailID);
-      
-    }
+        AfterDBDelete(systemEMailID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("EMailAlternateInboundSave");

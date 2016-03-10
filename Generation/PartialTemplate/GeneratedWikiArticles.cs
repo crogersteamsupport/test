@@ -215,28 +215,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int articleID)
     {
-      BeforeDBDelete(articleID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID);";
         deleteCommand.Parameters.Add("ArticleID", SqlDbType.Int);
         deleteCommand.Parameters["ArticleID"].Value = articleID;
 
+        BeforeDBDelete(articleID);
         BeforeRowDelete(articleID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(articleID);
-      }
-      AfterDBDelete(articleID);
-      
-    }
+        AfterDBDelete(articleID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("WikiArticlesSave");

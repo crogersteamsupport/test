@@ -179,28 +179,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int exceptionLogID)
     {
-      BeforeDBDelete(exceptionLogID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ExceptionLogs] WHERE ([ExceptionLogID] = @ExceptionLogID);";
         deleteCommand.Parameters.Add("ExceptionLogID", SqlDbType.Int);
         deleteCommand.Parameters["ExceptionLogID"].Value = exceptionLogID;
 
+        BeforeDBDelete(exceptionLogID);
         BeforeRowDelete(exceptionLogID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(exceptionLogID);
-      }
-      AfterDBDelete(exceptionLogID);
-      
-    }
+        AfterDBDelete(exceptionLogID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ExceptionLogsSave");

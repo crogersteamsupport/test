@@ -133,28 +133,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int importMapID)
     {
-      BeforeDBDelete(importMapID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ImportMaps] WHERE ([ImportMapID] = @ImportMapID);";
         deleteCommand.Parameters.Add("ImportMapID", SqlDbType.Int);
         deleteCommand.Parameters["ImportMapID"].Value = importMapID;
 
+        BeforeDBDelete(importMapID);
         BeforeRowDelete(importMapID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(importMapID);
-      }
-      AfterDBDelete(importMapID);
-      
-    }
+        AfterDBDelete(importMapID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ImportMapsSave");

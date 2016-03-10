@@ -208,28 +208,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int productVersionID)
     {
-      BeforeDBDelete(productVersionID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ProductVersions] WHERE ([ProductVersionID] = @ProductVersionID);";
         deleteCommand.Parameters.Add("ProductVersionID", SqlDbType.Int);
         deleteCommand.Parameters["ProductVersionID"].Value = productVersionID;
 
+        BeforeDBDelete(productVersionID);
         BeforeRowDelete(productVersionID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(productVersionID);
-      }
-      AfterDBDelete(productVersionID);
-      
-    }
+        AfterDBDelete(productVersionID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ProductVersionsSave");

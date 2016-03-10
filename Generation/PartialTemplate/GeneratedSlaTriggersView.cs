@@ -212,28 +212,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int slaTriggerID)
     {
-      BeforeDBDelete(slaTriggerID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaTriggersView] WHERE ([SlaTriggerID] = @SlaTriggerID);";
         deleteCommand.Parameters.Add("SlaTriggerID", SqlDbType.Int);
         deleteCommand.Parameters["SlaTriggerID"].Value = slaTriggerID;
 
+        BeforeDBDelete(slaTriggerID);
         BeforeRowDelete(slaTriggerID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(slaTriggerID);
-      }
-      AfterDBDelete(slaTriggerID);
-      
-    }
+        AfterDBDelete(slaTriggerID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("SlaTriggersViewSave");

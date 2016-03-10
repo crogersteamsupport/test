@@ -144,28 +144,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int slaViolationHistoryID)
     {
-      BeforeDBDelete(slaViolationHistoryID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaViolationHistory] WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
         deleteCommand.Parameters.Add("SlaViolationHistoryID", SqlDbType.Int);
         deleteCommand.Parameters["SlaViolationHistoryID"].Value = slaViolationHistoryID;
 
+        BeforeDBDelete(slaViolationHistoryID);
         BeforeRowDelete(slaViolationHistoryID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(slaViolationHistoryID);
-      }
-      AfterDBDelete(slaViolationHistoryID);
-      
-    }
+        AfterDBDelete(slaViolationHistoryID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("SlaViolationHistorySave");

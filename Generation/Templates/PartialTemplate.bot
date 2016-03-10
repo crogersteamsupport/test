@@ -169,28 +169,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int <$primaryKey$>)
     {
-      BeforeDBDelete(<$primaryKey$>);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "<$QueryDelete$>";
         deleteCommand.Parameters.Add("<$PrimaryKey$>", SqlDbType.Int);
         deleteCommand.Parameters["<$PrimaryKey$>"].Value = <$primaryKey$>;
 
+        BeforeDBDelete(<$primaryKey$>);
         BeforeRowDelete(<$primaryKey$>);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(<$primaryKey$>);
-      }
-      AfterDBDelete(<$primaryKey$>);
-      
-    }
+        AfterDBDelete(<$primaryKey$>);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("<$CollectionName$>Save");

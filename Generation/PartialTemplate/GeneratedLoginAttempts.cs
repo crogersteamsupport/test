@@ -180,28 +180,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int loginAttemptID)
     {
-      BeforeDBDelete(loginAttemptID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[LoginAttempts] WHERE ([LoginAttemptID] = @LoginAttemptID);";
         deleteCommand.Parameters.Add("LoginAttemptID", SqlDbType.Int);
         deleteCommand.Parameters["LoginAttemptID"].Value = loginAttemptID;
 
+        BeforeDBDelete(loginAttemptID);
         BeforeRowDelete(loginAttemptID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(loginAttemptID);
-      }
-      AfterDBDelete(loginAttemptID);
-      
-    }
+        AfterDBDelete(loginAttemptID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("LoginAttemptsSave");

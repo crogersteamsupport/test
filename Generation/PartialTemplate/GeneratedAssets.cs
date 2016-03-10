@@ -232,28 +232,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int assetID)
     {
-      BeforeDBDelete(assetID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Assets] WHERE ([AssetID] = @AssetID);";
         deleteCommand.Parameters.Add("AssetID", SqlDbType.Int);
         deleteCommand.Parameters["AssetID"].Value = assetID;
 
+        BeforeDBDelete(assetID);
         BeforeRowDelete(assetID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(assetID);
-      }
-      AfterDBDelete(assetID);
-      
-    }
+        AfterDBDelete(assetID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("AssetsSave");

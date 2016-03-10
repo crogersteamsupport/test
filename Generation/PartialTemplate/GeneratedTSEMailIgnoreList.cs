@@ -121,28 +121,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int ignoreID)
     {
-      BeforeDBDelete(ignoreID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TSEMailIgnoreList] WHERE ([IgnoreID] = @IgnoreID);";
         deleteCommand.Parameters.Add("IgnoreID", SqlDbType.Int);
         deleteCommand.Parameters["IgnoreID"].Value = ignoreID;
 
+        BeforeDBDelete(ignoreID);
         BeforeRowDelete(ignoreID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(ignoreID);
-      }
-      AfterDBDelete(ignoreID);
-      
-    }
+        AfterDBDelete(ignoreID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("TSEMailIgnoreListSave");

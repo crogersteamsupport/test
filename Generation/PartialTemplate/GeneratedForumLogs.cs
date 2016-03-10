@@ -138,28 +138,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int forumLogID)
     {
-      BeforeDBDelete(forumLogID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ForumLogs] WHERE ([ForumLogID] = @ForumLogID);";
         deleteCommand.Parameters.Add("ForumLogID", SqlDbType.Int);
         deleteCommand.Parameters["ForumLogID"].Value = forumLogID;
 
+        BeforeDBDelete(forumLogID);
         BeforeRowDelete(forumLogID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(forumLogID);
-      }
-      AfterDBDelete(forumLogID);
-      
-    }
+        AfterDBDelete(forumLogID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ForumLogsSave");

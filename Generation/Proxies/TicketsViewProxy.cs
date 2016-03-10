@@ -89,6 +89,7 @@ namespace TeamSupport.Data
     [DataMember] public string JiraStatus { get; set; }
     [DataMember] public string EmailReplyToAddress { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public string ProductFamily { get; set; }
           
   }
   
@@ -97,6 +98,7 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.ProductFamily = this.ProductFamily;
       result.ProductFamilyID = this.ProductFamilyID;
       result.EmailReplyToAddress = this.EmailReplyToAddress;
       result.JiraStatus = this.JiraStatus;

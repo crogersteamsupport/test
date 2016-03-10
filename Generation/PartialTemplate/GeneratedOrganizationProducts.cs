@@ -190,28 +190,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int organizationProductID)
     {
-      BeforeDBDelete(organizationProductID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[OrganizationProducts] WHERE ([OrganizationProductID] = @OrganizationProductID);";
         deleteCommand.Parameters.Add("OrganizationProductID", SqlDbType.Int);
         deleteCommand.Parameters["OrganizationProductID"].Value = organizationProductID;
 
+        BeforeDBDelete(organizationProductID);
         BeforeRowDelete(organizationProductID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(organizationProductID);
-      }
-      AfterDBDelete(organizationProductID);
-      
-    }
+        AfterDBDelete(organizationProductID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("OrganizationProductsSave");

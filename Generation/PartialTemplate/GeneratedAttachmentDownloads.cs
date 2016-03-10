@@ -138,28 +138,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int attachmentDownloadID)
     {
-      BeforeDBDelete(attachmentDownloadID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AttachmentDownloads] WHERE ([AttachmentDownloadID] = @AttachmentDownloadID);";
         deleteCommand.Parameters.Add("AttachmentDownloadID", SqlDbType.Int);
         deleteCommand.Parameters["AttachmentDownloadID"].Value = attachmentDownloadID;
 
+        BeforeDBDelete(attachmentDownloadID);
         BeforeRowDelete(attachmentDownloadID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(attachmentDownloadID);
-      }
-      AfterDBDelete(attachmentDownloadID);
-      
-    }
+        AfterDBDelete(attachmentDownloadID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("AttachmentDownloadsSave");
