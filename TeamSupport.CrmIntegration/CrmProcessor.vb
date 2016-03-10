@@ -68,8 +68,6 @@ Namespace TeamSupport
 
           'set up log per crm link item
           Dim Log As SyncLog = Nothing
-
-
           Dim LogPath As String = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs")
 
           If Not Directory.Exists(LogPath) Then
@@ -144,7 +142,7 @@ Namespace TeamSupport
 			End If
 
 			If (CRM IsNot Nothing AndAlso Not isDebug) OrElse (CRM IsNot Nothing AndAlso isDebug AndAlso CRMLinkTableItem.OrganizationID = 13679) Then
-						Log.Write(String.Format("Begin processing {0} sync, hotfix 03/06/16. {1}",
+						Log.Write(String.Format("Begin processing {0} sync. {1}",
 									CRMType.ToString(),
 									If(String.IsNullOrEmpty(CRMLinkTableItem.InstanceName), "", String.Format("Instance: {0}", CRMLinkTableItem.InstanceName))))
 

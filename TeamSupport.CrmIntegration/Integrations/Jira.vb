@@ -263,25 +263,31 @@ Namespace TeamSupport
         ByVal userAgent As String,
         ByVal body As String) As HttpWebResponse
 
-        Dim bodyByteArray = UTF8Encoding.UTF8.GetBytes(body)
         Dim request As HttpWebRequest = WebRequest.Create(URI)
         request.Headers.Add("Authorization", "Basic " + encodedCredentials)
         request.Method = method
         request.ContentType = contentType
 		request.UserAgent = userAgent
 
-		If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 OrElse CRMLinkRow.OrganizationID = 881342 OrElse CRMLinkRow.OrganizationID = 1081853 Then
+		If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 OrElse CRMLinkRow.OrganizationID = 881342 Then
 			request.Timeout = 600000
+		ElseIf CRMLinkRow.OrganizationID = 1081853
+			request.Timeout = 180000
+			Log.Write(String.Format("request.ServicePoint.CurrentConnections: {0}", request.ServicePoint.CurrentConnections))
+			Log.Write(String.Format("request.ServicePoint.ConnectionLimit: {0}", request.ServicePoint.ConnectionLimit))
+			Log.Write(String.Format("request.ServicePoint.ConnectionLeaseTimeout: {0}", request.ServicePoint.ConnectionLeaseTimeout))
 		Else
 			request.Timeout = 120000
 		End If
 
 		If method.ToUpper = "POST" OrElse method.ToUpper = "PUT" Then
+			Dim bodyByteArray = UTF8Encoding.UTF8.GetBytes(body)
           request.ContentLength = bodyByteArray.Length
 
           Using requestStream As Stream = request.GetRequestStream()
             requestStream.Write(bodyByteArray, 0, bodyByteArray.Length)
             requestStream.Close()
+			Log.Write("requestStream closed. Exiting Using.")
           End Using
         End If
 
