@@ -515,6 +515,7 @@ namespace TeamSupport.Data
             int deadlockCount = 0;
             using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
             {
+                connection.Open();
                 while (deadlockCount < 5)
                 {
                     try
