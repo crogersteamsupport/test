@@ -230,7 +230,7 @@
                 						token = resultID[1];
                 						session = OT.initSession(apiKey, sessionId);
                 						var pubOptions = { publishAudio: true, publishVideo: false };
-                						publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
+                						publisher = OT.initPublisher('ourPubTest2', pubOptions);
 
                 						session.connect(token, function (error) {
                 							// publish a stream using the camera and microphone:
