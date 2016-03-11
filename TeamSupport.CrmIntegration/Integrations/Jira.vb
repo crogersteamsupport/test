@@ -250,6 +250,7 @@ Namespace TeamSupport
 			Using response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
 				Dim responseReader As New StreamReader(response.GetResponseStream())
 				result = JArray.Parse(responseReader.ReadToEnd)
+				response.Close()
 			End Using
           
 			Return result
@@ -1116,8 +1117,13 @@ Namespace TeamSupport
                     crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), String.Empty)
 
                     Try
-                      Dim response As HttpWebResponse = request.GetResponse()
-                      Log.Write("Attachment """ + attachment.FileName + """ sent.")
+						Using response As HttpWebResponse = request.GetResponse()
+							Log.Write("Attachment """ + attachment.FileName + """ sent.")
+							response.Close()
+						End Using
+							
+						content.Flush()
+						content.Close()
                       attachment.SentToJira = True
                       updateAttachments = True
 
