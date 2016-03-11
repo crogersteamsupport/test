@@ -513,11 +513,12 @@ namespace TeamSupport.Data
         protected bool TryDeleteFromDB(SqlCommand command)
         {
             int deadlockCount = 0;
-            using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+            while (deadlockCount < 5)
             {
-                connection.Open();
-                while (deadlockCount < 5)
+                using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
                 {
+                    connection.Open();
+                    command.Connection = connection;
                     try
                     {
                         command.ExecuteNonQuery();
@@ -539,13 +540,6 @@ namespace TeamSupport.Data
             }
             return false;
         }
-
-        private void DoDelete(SqlCommand command)
-        {
-
-
-        }
-
 
         public abstract void Save(SqlConnection connection);
 
