@@ -229,10 +229,11 @@
                 						sessionId = resultID[0];
                 						token = resultID[1];
                 						session = OT.initSession(apiKey, sessionId);
+                						var pubOptions = { publishAudio: true, publishVideo: false };
+                						publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
+
                 						session.connect(token, function (error) {
                 							// publish a stream using the camera and microphone:
-                							var pubOptions = { publishAudio: true, publishVideo: false };
-                							publisher = OT.initPublisher(dynamicPub.attr('id'), pubOptions);
                 							session.publish(publisher);
                 						});
 
@@ -241,7 +242,7 @@
                 						// Create an element, but do not display it in the HTML DOM:
                 						var screenContainerElement = document.createElement('div');
                 						screenSharingPublisher = OT.initPublisher(
-											  dynamicPub.attr('id'),
+											  'ourPubTest',
 											  { videoSource: 'screen' },
 											  function (error) {
 											  	if (error) {
@@ -251,7 +252,7 @@
 											  		else if (BrowserDetect.browser == "Firefox") {
 											  			$('#FireFoxInstallModal').modal('show');
 											  		}
-											  		//alert('Screen Recording will not statrt because, ' + error.message);
+											  		//alert('Screen Recording will not start because, ' + error.message);
 											  		element.parent().find('#recordScreenContainer').hide();
 											  		element.parent().find('#rcdtokScreen').hide();
 											  		element.parent().find('#canceltokScreen').hide();
