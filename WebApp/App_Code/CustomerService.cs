@@ -16,6 +16,7 @@ using System.Runtime.Serialization;
 using System.Globalization;
 using Ganss.XSS;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace TSWebServices
 {
@@ -306,7 +307,17 @@ namespace TSWebServices
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return value;
         }
-        
+        [WebMethod]
+        public bool SetContactPortalLimitOrgChildrenTickets(int userID, bool value)
+        {
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            u.PortalLimitOrgChildrenTickets = value;
+            u.Collection.Save();
+            string description = String.Format("{0} set contact Portal Limit Org Children Tickets to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
+            return value;
+        }
+
 
         [WebMethod]
         public int SetContactPortalUser(int userID, bool value)
@@ -439,6 +450,7 @@ namespace TSWebServices
             html.AppendLine(CreateFormElement("Prevent email from creating and updating tickets", user.BlockInboundEmail, "editable"));
             html.AppendLine(CreateFormElement("Prevent email from creating but allow updating tickets", user.BlockEmailFromCreatingOnly, "editable"));
             html.AppendLine(CreateFormElement("Disable Organization Tickets View on Portal", user.PortalLimitOrgTickets, "editable"));
+            html.AppendLine(CreateFormElement("Disable Organization Children Tickets View on Portal", user.PortalLimitOrgChildrenTickets, "editable"));
 
             if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)
             {
@@ -1044,6 +1056,14 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public NoteProxy[] LoadNotes2(int refID, ReferenceType refType, bool includeChildren)
+        {
+            Notes notes = new Notes(TSAuthentication.GetLoginUser());
+            notes.LoadByReferenceType(refType, refID, "DateCreated", includeChildren);
+            return notes.GetNoteProxies();
+        }
+
+        [WebMethod]
         public NoteProxy LoadNote(int noteID)
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
@@ -1231,6 +1251,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public AttachmentProxy[] LoadFiles2(int refID, ReferenceType refType, bool includeChildren)
+        {
+            Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
+            attachments.LoadByReference(refType, refID, "DateCreated desc", includeChildren);
+
+            return attachments.GetAttachmentProxies();
+        }
+
+        [WebMethod]
         public OrganizationCustomProduct[] LoadProducts(int organizationID, string sortColumn, string sortDirection)
         {
             OrganizationProducts organizationProducts = new OrganizationProducts(TSAuthentication.GetLoginUser());
@@ -1246,6 +1275,42 @@ namespace TSWebServices
                 test.ProductName = row["Product"].ToString();
                 test.VersionNumber = row["VersionNumber"].ToString();
                 test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(),(((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
+                test.VersionStatus = row["VersionStatus"].ToString();
+                test.IsReleased = row["IsReleased"].ToString();
+                test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+                test.DateCreated = row["DateCreated"].ToString() != "" ? ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal()) : "";
+                test.OrganizationProductID = (int)row["OrganizationProductID"];
+                test.CustomFields = new List<string>();
+                foreach (CustomField field in fields)
+                {
+                    CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.OrganizationProductID);
+                    test.CustomFields.Add(customValue.Value);
+                }
+
+
+                list.Add(test);
+            }
+
+
+            return list.ToArray();
+        }
+
+        [WebMethod]
+        public OrganizationCustomProduct[] LoadProducts2(int organizationID, string sortColumn, string sortDirection, bool includeChildren)
+        {
+            OrganizationProducts organizationProducts = new OrganizationProducts(TSAuthentication.GetLoginUser());
+            organizationProducts.LoadForCustomerProductGridSorting(organizationID, GetSortColumnTableName(sortColumn), sortDirection, includeChildren);
+            List<OrganizationCustomProduct> list = new List<OrganizationCustomProduct>();
+            CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+            fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.OrganizationProducts);
+
+
+            foreach (DataRow row in organizationProducts.Table.Rows)
+            {
+                OrganizationCustomProduct test = new OrganizationCustomProduct();
+                test.ProductName = row["Product"].ToString();
+                test.VersionNumber = row["VersionNumber"].ToString();
+                test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(), (((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
                 test.VersionStatus = row["VersionStatus"].ToString();
                 test.IsReleased = row["IsReleased"].ToString();
                 test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
@@ -1481,6 +1546,72 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string LoadAssets2(int refID, ReferenceType referenceType, bool includeChildren)
+        {
+            StringBuilder htmlresults = new StringBuilder("");
+            AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
+            assets.LoadByRefID(refID, referenceType, includeChildren);
+
+            StringBuilder productVersionNumberDisplayName;
+            StringBuilder serialNumberDisplayValue;
+            StringBuilder warrantyExpirationDisplayValue;
+
+            foreach (AssetsViewItem asset in assets)
+            {
+                productVersionNumberDisplayName = new StringBuilder();
+                serialNumberDisplayValue = new StringBuilder();
+                warrantyExpirationDisplayValue = new StringBuilder();
+
+                if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+                {
+                    productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
+                }
+
+                if (string.IsNullOrEmpty(asset.SerialNumber))
+                {
+                    serialNumberDisplayValue.Append("Empty");
+                }
+                else
+                {
+                    serialNumberDisplayValue.Append(asset.SerialNumber);
+                }
+
+                if (asset.WarrantyExpiration == null)
+                {
+                    warrantyExpirationDisplayValue.Append("Empty");
+                }
+                else
+                {
+                    warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
+                }
+
+                htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>{2}{3}</p>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>SN: {4} - Warr. Exp.: {5}</p>
+                                </div>
+                            </div>
+                            </div>
+                            </div>"
+
+                    , asset.AssetID
+                    , asset.DisplayName
+                    , asset.ProductName
+                    , productVersionNumberDisplayName
+                    , serialNumberDisplayValue
+                    , warrantyExpirationDisplayValue);
+            }
+
+            return htmlresults.ToString();
+        }
+
+        [WebMethod]
         public string LoadContactAssets(int organizationID)
         {
           StringBuilder htmlresults = new StringBuilder("");
@@ -1678,8 +1809,17 @@ namespace TSWebServices
                 orgProp.SupportGroup = "Empty";
             }
 
+            orgProp.Parents = GetParents(organizationID);
+
             return orgProp;
 
+        }
+
+        private CompanyParentsViewItemProxy[] GetParents(int childID)
+        {
+            CompanyParentsView result = new CompanyParentsView(TSAuthentication.GetLoginUser());
+            result.LoadByChildID(childID);
+            return result.GetCompanyParentsViewItemProxies();
         }
 
         [WebMethod]
@@ -1713,6 +1853,132 @@ namespace TSWebServices
           //also need support hours info
         }
 
+        [WebMethod]
+        public string[] LoadChildren(int organizationID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+            SqlCommand command = new SqlCommand();
+
+            string pageQuery = @"
+WITH 
+q AS ({0}),
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY 
+    CASE 
+        WHEN [NAME] IS NULL THEN 1 
+        WHEN [NAME] = ''    THEN 2 
+        ELSE 3 
+    END DESC, 
+    [NAME] ASC) AS 'RowNum' FROM q)
+SELECT * INTO #X FROM r
+--WHERE RowNum BETWEEN @From AND @To
+
+SELECT 
+	o.Name AS Organization, 
+	o.OrganizationID, 
+	o.Website, 
+	o.HasPortalAccess, 
+	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OrgOpenTickets
+FROM #X AS x
+LEFT JOIN Organizations o ON o.OrganizationID = x.OrganizationID";
+
+            string companyQuery = @"
+SELECT 
+  LTRIM(o.Name) AS Name, 
+  o.OrganizationID
+  FROM Organizations o
+  JOIN CustomerRelationships cr
+	ON o.OrganizationID = cr.CustomerID
+  WHERE cr.RelatedCustomerID = @OrganizationID
+";
+
+            User user = Users.GetUser(loginUser, loginUser.UserID);
+            if (user.TicketRights == TicketRightType.Customers)
+            {
+                companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+            }
+
+            //if (active != null)
+            //{
+            //    companyQuery = companyQuery + " AND o.IsActive = @IsActive";
+            //    command.Parameters.AddWithValue("@IsActive", (bool)active);
+            //}
+
+            //if (searchContacts && searchCompanies)
+            //{
+            //    command.CommandText = string.Format(pageQuery, companyQuery + " UNION ALL " + contactQuery);
+            //}
+            //else if (searchCompanies)
+            //{
+            command.CommandText = string.Format(pageQuery, companyQuery);
+            //}
+            //else if (searchContacts)
+            //{
+            //    command.CommandText = string.Format(pageQuery, contactQuery);
+            //}
+            //else
+            //{
+            //    return results.ToArray();
+            //}
+
+
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            //command.Parameters.AddWithValue("@From", from + 1);
+            //command.Parameters.AddWithValue("@To", from + count);
+
+            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+
+            foreach (DataRow row in table.Rows)
+            {
+                //if (row["UserID"] == DBNull.Value)
+                //{
+                CustomerSearchCompany company = new CustomerSearchCompany();
+                company.name = (string)row["Organization"];
+                company.organizationID = (int)row["OrganizationID"];
+                company.isPortal = (bool)row["HasPortalAccess"];
+                company.openTicketCount = (int)row["OrgOpenTickets"];
+                company.website = SearchService.GetDBString(row["Website"]);
+
+                List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                //phoneNumbers.LoadByID(company.organizationID, ReferenceType.Organizations);
+                foreach (PhoneNumber number in phoneNumbers)
+                {
+                    phones.Add(new CustomerSearchPhone(number));
+                }
+                company.phones = phones.ToArray();
+
+                results.Add(JsonConvert.SerializeObject(company));
+                //}
+                //else
+                //{
+                //CustomerSearchContact contact = new CustomerSearchContact();
+                //contact.organizationID = (int)row["OrganizationID"];
+                //contact.isPortal = (bool)row["IsPortalUser"];
+                //contact.openTicketCount = (int)row["ContactOpenTickets"];
+
+                //contact.userID = (int)row["UserID"];
+                //contact.fName = SearchService.GetDBString(row["FirstName"]);
+                //contact.lName = SearchService.GetDBString(row["LastName"]);
+                //contact.email = SearchService.GetDBString(row["Email"]);
+                //contact.title = SearchService.GetDBString(row["Title"]);
+                //contact.organization = SearchService.GetDBString(row["Organization"]);
+
+                //List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                //PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                ////phoneNumbers.LoadByID(contact.userID, ReferenceType.Contacts);
+                //foreach (PhoneNumber number in phoneNumbers)
+                //{
+                //    phones.Add(new CustomerSearchPhone(number));
+                //}
+                //contact.phones = phones.ToArray();
+                //results.Add(JsonConvert.SerializeObject(contact));
+                //}
+
+            }
+
+            return results.ToArray();
+        }
 
         [WebMethod]
         public string LoadContacts(int organizationID, bool isActive){
@@ -1733,6 +1999,58 @@ namespace TSWebServices
                 }
                 
                 var ts = DateTime.UtcNow - new DateTime(1970,1,1,0,0,0,DateTimeKind.Utc);
+
+                htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <div class='row'>
+                            <div class='col-xs-1'>
+                            <img class='user-avatar' src='/dc/{10}/UserAvatar/{7}/40/{11}'>
+                            </div>
+                            <div class='col-xs-11'>
+                            <span class='pull-right {0}'>{1}</span><a href='#' id='{7}' class='contactlink'><h4 class='list-group-item-heading'>{2}</h4></a>
+                            <div class='row'>
+                                <div class='col-xs-6'>
+                                    <p class='list-group-item-text'>{3}</p>
+                                    {9}
+                                    {6}
+                                    {8}
+                                </div>
+                                <div class='col-xs-6'>
+                                    <p class='list-group-item-text'>{4} Open Tickets</p>
+                                    <p class='list-group-item-text'>{5} Closed Tickets</p>                            
+                                </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>"
+
+                    , u.IsActive ? "user-active" : "user-inactive", u.IsActive ? "Active" : "Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:" + u.Email + "'>" + u.Email + "</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1), phoneResults, u.UserID, u.IsPortalUser == true ? "<p class='list-group-item-text'><span class=\"text-muted\">Has Portal Access</span>" : "", u.Title != "" ? u.Title : "", u.OrganizationID, (Int64)ts.TotalMilliseconds);
+
+                phoneResults.Clear();
+            }
+
+            return htmlresults.ToString();
+        }
+
+        [WebMethod]
+        public string LoadContacts2(int organizationID, bool isActive, bool includeChildren)
+        {
+            StringBuilder htmlresults = new StringBuilder("");
+            StringBuilder phoneResults = new StringBuilder("");
+            Users users = new Users(TSAuthentication.GetLoginUser());
+            users.LoadByOrganizationIDLastName(organizationID, isActive, includeChildren);
+
+            foreach (User u in users)
+            {
+
+                PhoneNumbers phoneNumbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+                phoneNumbers.LoadByID(u.UserID, ReferenceType.Users);
+
+                foreach (PhoneNumber p in phoneNumbers)
+                {
+                    phoneResults.AppendFormat("<p class='list-group-item-text'><span class=\"text-muted\">{0}</span>: <a href=\"tel:{1}\" target=\"_blank\">{1}</a> {2}</p>", p.PhoneTypeName, p.Number, string.IsNullOrWhiteSpace(p.Extension) ? "" : "Ext:" + p.Extension);
+                }
+
+                var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
                 htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <div class='row'>
@@ -2420,6 +2738,21 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public int LoadCDI2(int organizationID, bool includeChildren)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            if (includeChildren)
+            {
+                return Organizations.GetFamilyAverageCDI(loginUser, organizationID);
+            }
+            else
+            {
+                Organization organization = Organizations.GetOrganization(loginUser, organizationID);
+                return organization.CustDisIndex;
+            }
+        }
+
+        [WebMethod]
         public string LoadChartData(int organizationID, bool open)
         {
 
@@ -2444,6 +2777,40 @@ namespace TSWebServices
                 if (count > 0)
                     chartString.AppendFormat("{0},{1},", ticketType.Name.Replace(",", ""), count.ToString().Replace(",", ""));
                     //chartString.AppendFormat("['{0}',{1}],",ticketType.Name, count.ToString());
+            }
+            if (chartString.ToString().EndsWith(","))
+            {
+                chartString.Remove(chartString.Length - 1, 1);
+            }
+
+            return chartString.ToString();
+        }
+
+        [WebMethod]
+        public string LoadChartData2(int organizationID, bool open, bool includeChildren)
+        {
+
+            Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+            organizations.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+
+            TicketTypes ticketTypes = new TicketTypes(TSAuthentication.GetLoginUser());
+            ticketTypes.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID, organizations[0].ProductType);
+
+            int total = 0;
+            StringBuilder chartString = new StringBuilder("");
+
+            foreach (TicketType ticketType in ticketTypes)
+            {
+                int count;
+                if (open)
+                    count = Tickets.GetOrganizationOpenTicketCount(TSAuthentication.GetLoginUser(), organizationID, ticketType.TicketTypeID, includeChildren);
+                else
+                    count = Tickets.GetOrganizationClosedTicketCount(TSAuthentication.GetLoginUser(), organizationID, ticketType.TicketTypeID, includeChildren);
+                total += count;
+
+                if (count > 0)
+                    chartString.AppendFormat("{0},{1},", ticketType.Name.Replace(",", ""), count.ToString().Replace(",", ""));
+                //chartString.AppendFormat("['{0}',{1}],",ticketType.Name, count.ToString());
             }
             if (chartString.ToString().EndsWith(","))
             {
@@ -2705,6 +3072,14 @@ namespace TSWebServices
             TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
 
             return tickets.GetOrganizationTicketCount(organizationID, closed).ToString();
+        }
+
+        [WebMethod]
+        public string GetOrganizationTickets2(int organizationID, int closed, bool includeChildren)
+        {
+            TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+
+            return tickets.GetOrganizationTicketCount(organizationID, closed, includeChildren).ToString();
         }
 
         [WebMethod]
@@ -3624,6 +3999,52 @@ namespace TSWebServices
             return htmltest.ToString();
         }
 
+        [WebMethod]
+        public CompanyParentsViewItemProxy AddParent(int childID, int parentID)
+        {
+            if (childID != parentID)
+            {
+                LoginUser loginUser = TSAuthentication.GetLoginUser();
+                CompanyParentsView parentTest = new CompanyParentsView(loginUser);
+                parentTest.LoadByChildAndParentIDs(childID, parentID);
+                if (parentTest.Count == 0)
+                {
+                    CustomerRelationships customerRelationships = new CustomerRelationships(loginUser);
+                    CustomerRelationship customerRelationship = customerRelationships.AddNewCustomerRelationship();
+                    customerRelationship.CustomerID = childID;
+                    customerRelationship.RelatedCustomerID = parentID;
+                    customerRelationship.CreatorID = loginUser.UserID;
+                    customerRelationships.Save();
+
+                    CompanyParentsView parent = new CompanyParentsView(loginUser);
+                    parent.LoadByChildAndParentIDs(childID, parentID);
+
+                    string description = String.Format("{0} added {1} as parent", TSAuthentication.GetUser(loginUser).FirstLastName, parent[0].ParentName);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Organizations, childID, description);
+
+                    return parent.GetCompanyParentsViewItemProxies()[0];
+                }
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public void RemoveParent(int childID, int parentID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            CompanyParentsView parent = new CompanyParentsView(loginUser);
+            parent.LoadByChildAndParentIDs(childID, parentID);
+
+            CustomerRelationships customerRelationships = new CustomerRelationships(loginUser);
+            customerRelationships.LoadByCustomerAndRelatedCustomerIDs(childID, parentID);
+            customerRelationships[0].Delete();
+            customerRelationships.Save();
+
+            string description = String.Format("{0} removed {1} as parent", TSAuthentication.GetUser(loginUser).FirstLastName, parent[0].ParentName);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Delete, ReferenceType.Organizations, childID, description);
+        }
+
         public class NewCustomerSave
         {
             public NewCustomerSave() { }
@@ -3792,6 +4213,9 @@ namespace TSWebServices
             public string DefaultSupportUser { get; set; }
             [DataMember]
             public string SAED { get; set; }
+            [DataMember]
+            public CompanyParentsViewItemProxy[] Parents { get; set; }
+
         }
 
         public class CustomRatingClass

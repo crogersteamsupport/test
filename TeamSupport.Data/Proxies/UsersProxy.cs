@@ -102,6 +102,7 @@ namespace TeamSupport.Data
 	 [DataMember] public DateTime? verificationCodeExpiration { get; set; }
 	[DataMember] public DateTime? PasswordCreatedUtc { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
+    [DataMember] public bool PortalLimitOrgChildrenTickets { get; set; }
           
   }
   
@@ -111,7 +112,7 @@ namespace TeamSupport.Data
     {
 
       UserProxy result = new UserProxy();
-
+      result.PortalLimitOrgChildrenTickets = this.PortalLimitOrgChildrenTickets;
       result.ImportFileID = this.ImportFileID;
       result.verificationCode = this.verificationCode;
       result.verificationPhoneNumber = this.verificationPhoneNumber;

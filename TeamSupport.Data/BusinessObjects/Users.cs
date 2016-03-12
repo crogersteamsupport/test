@@ -571,14 +571,42 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
-        public void LoadByOrganizationIDLastName(int organizationID, bool loadOnlyActive)
+        public void LoadByOrganizationIDLastName(int organizationID, bool loadOnlyActive, bool includeChildren = false)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT *, LastName + ', ' + FirstName AS DisplayName FROM Users WHERE OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (MarkDeleted = 0) ORDER BY LastName, FirstName";
+                command.CommandText = @"
+                    SELECT 
+                        *
+                        , LastName + ', ' + FirstName AS DisplayName 
+                    FROM 
+                        Users 
+                    WHERE 
+                        (
+                            OrganizationID = @OrganizationID
+					        OR 
+					        (
+						        @IncludeChildren = 1
+						        AND OrganizationID IN
+						        (
+							        SELECT
+								        CustomerID
+							        FROM
+								        CustomerRelationships
+							        WHERE
+								        RelatedCustomerID = @OrganizationID
+						        )												
+					        )
+                        )
+                        AND (@ActiveOnly = 0 OR IsActive = 1) 
+                        AND (MarkDeleted = 0) 
+                    ORDER BY 
+                        LastName
+                        , FirstName";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+                command.Parameters.AddWithValue("@IncludeChildren", includeChildren);
                 Fill(command);
             }
         }

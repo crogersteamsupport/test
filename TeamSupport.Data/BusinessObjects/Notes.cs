@@ -31,19 +31,42 @@ namespace TeamSupport.Data
       LoadByReferenceType(ReferenceType.Organizations, organizationID);
     }
 
-    public void LoadByReferenceType(ReferenceType refType, int refID, string orderBy = "DateCreated")
+    public void LoadByReferenceType(ReferenceType refType, int refID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT n.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM Notes n 
-                                LEFT JOIN Users u ON n.CreatorID = u.UserID 
-                                WHERE (n.RefID = @ReferenceID)
-                                AND (n.RefType = @ReferenceType)
-                                ORDER BY n." + orderBy + " desc";
+        command.CommandText = @"
+            SELECT 
+                n.*
+                , u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+                Notes n 
+                LEFT JOIN Users u
+                    ON n.CreatorID = u.UserID 
+            WHERE 
+                (
+                    n.RefID = @ReferenceID
+					OR 
+					(
+						@IncludeCompanyChildren = 1
+						AND n.RefID IN
+						(
+							SELECT
+								CustomerID
+							FROM
+								CustomerRelationships
+							WHERE
+								RelatedCustomerID = @ReferenceID
+						)												
+					)
+                )
+                AND (n.RefType = @ReferenceType)
+            ORDER BY
+                n." + orderBy + " DESC";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ReferenceType", refType);
         command.Parameters.AddWithValue("@ReferenceID", refID);
+        command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
         Fill(command);
       }
     }

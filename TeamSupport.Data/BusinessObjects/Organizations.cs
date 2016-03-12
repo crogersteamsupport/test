@@ -3036,5 +3036,34 @@ ORDER BY
 			 ExecuteNonQuery(command, "RecentlyViewedItems");
 		 }
 	 }
-  }
+
+    public static int GetFamilyAverageCDI(LoginUser loginUser, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT 
+            AVG(CustDisIndex) 
+        FROM 
+            Organizations
+        WHERE 
+            OrganizationID = @OrganizationID
+			OR OrganizationID IN
+			(
+				SELECT
+					CustomerID
+				FROM
+					CustomerRelationships
+				WHERE
+					RelatedCustomerID = @OrganizationID
+			)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+
+        Organizations organizations = new Organizations(loginUser);
+        return (int)organizations.ExecuteScalar(command, "Organizations");
+      }
+    }
+
+    }
 }

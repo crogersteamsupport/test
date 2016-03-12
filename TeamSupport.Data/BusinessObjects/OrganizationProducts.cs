@@ -191,7 +191,7 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadForCustomerProductGridSorting(int organizationID, string sortColumn, string sortDirection)
+    public void LoadForCustomerProductGridSorting(int organizationID, string sortColumn, string sortDirection, bool includeCompanyChildren = false)
     {
         //int end = start + 20;
         using (SqlCommand command = new SqlCommand())
@@ -206,6 +206,19 @@ namespace TeamSupport.Data
 		        OrganizationProductsView 
 	        WHERE 
 		        OrganizationID = @OrganizationID 
+				OR 
+				(
+					@IncludeCompanyChildren = 1
+					AND OrganizationID IN
+					(
+						SELECT
+							CustomerID
+						FROM
+							CustomerRelationships
+						WHERE
+							RelatedCustomerID = @OrganizationID
+					)												
+				)
         ) 
         SELECT 
           v.*
@@ -217,6 +230,7 @@ namespace TeamSupport.Data
           v." + sortColumn + " " + sortDirection;
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
             //command.Parameters.AddWithValue("@start", start);
             //command.Parameters.AddWithValue("@end", end);
             Fill(command);

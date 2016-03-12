@@ -9,6 +9,7 @@
   <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
   <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
 	<link href="../Css/ts.editor.css" rel="stylesheet" />
+    <link href="../Css/selectize.bootstrap3.css" rel="stylesheet" />
   <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="customerdetail.css" rel="stylesheet" type="text/css" />
   <script src="../Js/jquery-1.11.0.min.js" type="text/javascript"></script>
@@ -26,6 +27,9 @@
   <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
   <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
   <script src="../Js/jquery.maskedinput.min.js" type="text/javascript"></script>
+    <script src="../Js/handlebars.js" type="text/javascript"></script>
+    <script src="../Js/selectize.min.js"></script>
+    <script src="../Js/Ts/ts.ui.hovers.js"></script>
   <script src="customerdetail.js" type="text/javascript"></script>
 </head>
 <body>
@@ -40,6 +44,8 @@
             </div>
             <div class="btn-group">
               <button class="btn btn-default customer-tooltip" type="button" title="Refresh this company" id="customerRefresh"><i class="fa fa-refresh"></i></button>
+              <button class="btn btn-default customer-tooltip" type="button" title="Switch to parent view" id="customerParentView"><i class="fa fa-male"></i></button>
+              <button style="display: none;" class="btn btn-default customer-tooltip" type="button" title="Switch to child view" id="customerNormalView"><i class="fa fa-child"></i></button>
 					<button id="Company-Merge" class="btn btn-default customer-tooltip" title="Merge this company" type="button" data-toggle="modal" data-target="#MergeModal">
 						<i class="fa fa-exchange"></i> Merge
 					</button>
@@ -54,6 +60,7 @@
       <div class="main-nav">
         <ul class="nav nav-tabs" id="companyTabs">
           <li><a href="#company-overview" data-toggle="tab">Details</a></li>
+          <li><a href="#company-children" data-toggle="tab" style="display: none;">Children</a></li>
           <li><a href="#company-contacts" data-toggle="tab">Contacts</a></li>
           <li><a href="#company-tickets" data-toggle="tab">Tickets</a></li>
           <li><a href="#company-notes" data-toggle="tab">Notes</a></li>
@@ -162,7 +169,7 @@
                 </div>
                 <div class="box-content">
                   <div>
-                      <div class="form-horizontal">
+                      <div id="company-properties-area" class="form-horizontal">
                         <div class="userProperties">
                         <img id="companyLogo" src="" />
                         <div class="form-group">
@@ -196,11 +203,25 @@
                           </div>
                         </div>
                         </div>
+                        <hr />
+                        <!--<script id="company-group-Parents" type="text/x-handlebars-template">-->
+                            <div class="form-group company-group">
+                                <div class="tagContainer">
+                                    <input id="company-Parents-Input" class="tagInput select" type="text" placeholder="Add Parent Company">
+                                    <span id="company-Parent" style="z-index:100;"></span>
+                                </div>
+                            </div>
+                        <!--</script>-->
+                        <script id="customer-tag" type="text/x-handlebars-template">
+                            <div id="{{id}}" data-tag="{{TagData}}" class="{{css}}">
+                                <span class="tagRemove" aria-hidden="true">&times;</span>
+                                {{{value}}}
+                            </div>
+                        </script>
                         <div id="phonePanel">
                         </div>
                         <div id="addressPanel">
                         </div>
-
                       </div>
                   </div>
                 </div>
@@ -302,6 +323,31 @@
                     </div>
                   </div>
                   </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="company-children">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="box">
+                <div class="box-header">
+                </div>
+                <div class="box-content">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <!--<button class="btn btn-primary contact-action-add">Add Contact</button>
+                        <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="cbActive"> Hide Inactive
+                        </label>
+                        </div>-->
+                      <div class="list-group">
+                          <table class="childrenList"></table>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

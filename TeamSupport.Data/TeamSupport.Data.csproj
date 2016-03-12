@@ -198,6 +198,7 @@
     <Compile Include="BusinessObjects\Chats.cs" />
     <Compile Include="BusinessObjects\ChatSettings.cs" />
     <Compile Include="BusinessObjects\ChatUserSettings.cs" />
+    <Compile Include="BusinessObjects\CompanyParentsView.cs" />
     <Compile Include="BusinessObjects\ContactsView.cs" />
     <Compile Include="BusinessObjects\CreditCards.cs" />
     <Compile Include="BusinessObjects\CRMLinkErrors.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="BusinessObjects\CustomerHubDisplaySettings.cs" />
     <Compile Include="BusinessObjects\CustomerHubFeatureSettings.cs" />
     <Compile Include="BusinessObjects\CustomerHubs.cs" />
+    <Compile Include="BusinessObjects\CustomerRelationships.cs" />
     <Compile Include="BusinessObjects\CustomFieldCategories.cs" />
     <Compile Include="BusinessObjects\CustomFields.cs" />
     <Compile Include="BusinessObjects\CustomFieldsView.cs" />
@@ -317,6 +319,7 @@
     <Compile Include="FieldMaps\CDI_SettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ChatClientsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ChatUserSettingsFieldMap.cs" />
+    <Compile Include="FieldMaps\CompanyParentsViewFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkErrorsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkFieldsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkSynchedOrganizationsFieldMap.cs" />
@@ -324,6 +327,7 @@
     <Compile Include="FieldMaps\CustomerHubDisplaySettingsFieldMap.cs" />
     <Compile Include="FieldMaps\CustomerHubFeatureSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\CustomerHubsFieldMap.cs" />
+    <Compile Include="FieldMaps\CustomerRelationshipsFieldMap.cs" />
     <Compile Include="FieldMaps\CustomFieldCategoriesFieldMap.cs" />
     <Compile Include="FieldMaps\CustomFieldsViewFieldMap.cs" />
     <Compile Include="FieldMaps\CustomPortalColumnsFieldMap.cs" />
@@ -559,6 +563,7 @@
     <Compile Include="Generated\GeneratedChatRequests.cs" />
     <Compile Include="Generated\GeneratedChats.cs" />
     <Compile Include="Generated\GeneratedChatSettings.cs" />
+    <Compile Include="Generated\GeneratedCompanyParentsView.cs" />
     <Compile Include="Generated\GeneratedContactsView.cs" />
     <Compile Include="Generated\GeneratedCreditCards.cs" />
     <Compile Include="Generated\GeneratedCRMLinkErrors.cs" />
@@ -570,6 +575,7 @@
     <Compile Include="Generated\GeneratedCustomerHubDisplaySettings.cs" />
     <Compile Include="Generated\GeneratedCustomerHubFeatureSettings.cs" />
     <Compile Include="Generated\GeneratedCustomerHubs.cs" />
+    <Compile Include="Generated\GeneratedCustomerRelationships.cs" />
     <Compile Include="Generated\GeneratedCustomFieldCategories.cs" />
     <Compile Include="Generated\GeneratedCustomFields.cs" />
     <Compile Include="Generated\GeneratedCustomFieldsView.cs" />
@@ -698,10 +704,12 @@
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
     <Compile Include="Proxies\CalendarRefProxy.cs" />
+    <Compile Include="Proxies\CompanyParentsViewProxy.cs" />
     <Compile Include="Proxies\CustomerHubAuthenticationProxy.cs" />
     <Compile Include="Proxies\CustomerHubDisplaySettingsProxy.cs" />
     <Compile Include="Proxies\CustomerHubFeatureSettingsProxy.cs" />
     <Compile Include="Proxies\CustomerHubsProxy.cs" />
+    <Compile Include="Proxies\CustomerRelationshipsProxy.cs" />
     <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
     <Compile Include="Proxies\CustomPortalColumnsProxy.cs" />
     <Compile Include="Proxies\FullContactUpdatesProxy.cs" />

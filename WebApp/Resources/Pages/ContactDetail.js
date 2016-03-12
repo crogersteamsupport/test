@@ -599,6 +599,20 @@ $(document).ready(function () {
             alert('There was an error saving the customer Portal Limit Org Tickets status.');
         });
     });
+
+    $('.userProperties').on('click', '#fieldDisableOrganizationChildrenTicketsViewonPortal', function (e) {
+        if (!$(this).hasClass('editable'))
+            return false;
+        top.Ts.Services.Customers.SetContactPortalLimitOrgChildrenTickets(userID, ($(this).text() !== 'Yes'), function (result) {
+            $('#fieldDisableOrganizationChildrenTicketsViewonPortal').text((result === true ? 'Yes' : 'No'));
+            top.Ts.System.logAction('Contact Detail - Edit Contact Portal Limit Org Children Tickets');
+        },
+        function (error) {
+            header.show();
+            alert('There was an error saving the customer Portal Limit Org Children Tickets status.');
+        });
+    });
+
     $('.userProperties').on('click', '#fieldCompany', function (e) {
         if ($(this).hasClass('link')) {
             top.Ts.System.logAction('Contact Detail - Open Contacts Company');

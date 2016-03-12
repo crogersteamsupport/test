@@ -36,7 +36,7 @@ namespace TeamSupport.Data
   
   public partial class AssetsView
   {
-    public void LoadByRefID(int refID, ReferenceType refType)
+    public void LoadByRefID(int refID, ReferenceType refType, bool includeCompanyChildren = false)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -57,7 +57,22 @@ namespace TeamSupport.Data
                   JOIN AssetAssignments aa
                     ON h.HistoryID = aa.HistoryID
               WHERE 
-                h.ShippedTo = @RefID
+                (
+                    h.ShippedTo = @RefID
+					OR 
+					(
+						@IncludeCompanyChildren = 1
+						AND h.ShippedTo IN
+						(
+							SELECT
+								CustomerID
+							FROM
+								CustomerRelationships
+							WHERE
+								RelatedCustomerID = @RefID
+						)												
+					)
+                )
                 AND h.RefType = @RefType
             )
           ORDER BY
@@ -66,6 +81,7 @@ namespace TeamSupport.Data
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefID", refID);
         command.Parameters.AddWithValue("@RefType", refType);
+        command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
         Fill(command);
       }
     }

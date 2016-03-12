@@ -17,6 +17,7 @@ var _execGetCustomer = null;
 var _productsSortColumn = 'Date Created';
 var _productsSortDirection = 'DESC';
 var _productHeadersAdded = false;
+var _isParentView = false;
 
 $(document).ready(function () {
     var _dateFormat;
@@ -47,6 +48,32 @@ $(document).ready(function () {
     });
 
     organizationID = top.Ts.Utils.getQueryValue("organizationid", window);
+    _isParentView = top.Ts.Utils.getQueryValue("parentView", window);
+    if (_isParentView) {
+        _isParentView = true;
+        $('#customerParentView').hide();
+        $('#customerNormalView').show();
+        
+        $('#customerEdit').hide();
+        $('#Company-Merge').hide();
+        $('#customerSubscribe').hide();
+        $('#customerReminder').hide();
+        $('#customerDelete').hide();
+
+        $('.contact-action-add').hide();
+        //$('.tickets-new').hide();
+        $('#noteToggle').hide();
+        $('#fileToggle').hide();
+        $('#productToggle').hide();
+        $('.asset-action-assign').hide();
+        $('#companyTabs a[href="#company-children"]').show();
+        $('#companyTabs a[href="#company-watercooler"]').hide();
+        $('#companyTabs a[href="#company-ratings"]').hide();
+        $('#companyTabs a[href="#company-calendar"]').hide();
+    }
+    else {
+        _isParentView = false;
+    }
     noteID = top.Ts.Utils.getQueryValue("noteid", window);
     var _isAdmin = top.Ts.System.User.IsSystemAdmin && (organizationID != top.Ts.System.User.OrganizationID);
     var historyLoaded = 0;
@@ -967,7 +994,14 @@ $(document).ready(function () {
     $('#productCustomer').val(organizationID);
 
     top.Ts.Services.Organizations.GetOrganization(organizationID, function (org) {
-      $('#companyName').text(org.Name);
+        if (_isParentView)
+        {
+            $('#companyName').text(org.Name + ' (Parent View)');
+        }
+        else
+        {
+            $('#companyName').text(org.Name);
+        }
 
       var hasCustomerInsights = top.Ts.System.Organization.IsCustomerInsightsActive;
 
@@ -1315,6 +1349,27 @@ $(document).ready(function () {
     $('#customerRefresh').click(function (e) {
         top.Ts.System.logAction('Customer Detail - Refresh Page');
         window.location = window.location;
+    });
+
+    $('#customerParentView').click(function (e) {
+        top.Ts.System.logAction('Customer Detail - Switch to parent view');
+        var href = window.location.href;
+        var i = window.location.href.indexOf('parentView');
+        if (i != -1)
+        {
+            href = href.substring(0, i - 1);
+        }
+        window.location.href = href + "&parentView=1";
+    });
+
+    $('#customerNormalView').click(function (e) {
+        top.Ts.System.logAction('Customer Detail - Switch to normal view');
+        var href = window.location.href;
+        var i = window.location.href.indexOf('parentView');
+        if (i != -1) {
+            href = href.substring(0, i - 1);
+        }
+        window.location.href = href;
     });
 
     var getCustomers = function (request, response) {
@@ -1743,12 +1798,6 @@ $(document).ready(function () {
         }
     });
 
-    var execGetCompany = null;
-    function getCompany(request, response) {
-        if (execGetCompany) { execGetCompany._executor.abort(); }
-        execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) { response(result); });
-    }
-
     $('#productCustomer').autocomplete({
         minLength: 2,
         source: getCompany,
@@ -1785,7 +1834,7 @@ $(document).ready(function () {
         $('#modalReminder input').val('');
     });
 
-    top.Ts.Services.Tickets.Load5MostRecentByOrgID(organizationID, function (tickets) {
+    top.Ts.Services.Tickets.Load5MostRecentByOrgID2(organizationID, _isParentView, function (tickets) {
         var max = 5;
         if (tickets.length < 5)
             max = tickets.length;
@@ -1877,7 +1926,7 @@ $(document).ready(function () {
                 $('#customerDelete').hide();
             }
 
-
+            SetupParentSection(result.Parents);
         });
     }
 
@@ -1909,7 +1958,7 @@ $(document).ready(function () {
     }
 
     function LoadNotes() {
-        top.Ts.Services.Customers.LoadNotes(organizationID,top.Ts.ReferenceTypes.Organizations, function (note) {
+        top.Ts.Services.Customers.LoadNotes2(organizationID,top.Ts.ReferenceTypes.Organizations, _isParentView, function (note) {
             $('#tblNotes tbody').empty();
             var html;
             for (var i = 0; i < note.length; i++) {
@@ -1934,7 +1983,7 @@ $(document).ready(function () {
 
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
-    top.Ts.Services.Customers.GetOrganizationTickets(organizationID, 0, function (e) {
+    top.Ts.Services.Customers.GetOrganizationTickets2(organizationID, 0, _isParentView, function (e) {
         $('#openTicketCount').text("Open Tickets: " + e);
     });
 
@@ -1961,7 +2010,7 @@ $(document).ready(function () {
 
     function LoadFiles() {
         $('#tblFiles tbody').empty();
-        top.Ts.Services.Customers.LoadFiles(organizationID,top.Ts.ReferenceTypes.Organizations, function (files) {
+        top.Ts.Services.Customers.LoadFiles2(organizationID,top.Ts.ReferenceTypes.Organizations, _isParentView, function (files) {
             for (var i = 0; i < files.length; i++) {
                 var tr = $('<tr>')
                 .attr('id', files[i].AttachmentID)
@@ -2089,8 +2138,17 @@ $(document).ready(function () {
         });
     }
 
+    function LoadChildren() {
+        top.Ts.Services.Customers.LoadChildren(organizationID, function (items) {
+            var container = $('.childrenList');
+            for (var i = 0; i < items.length; i++) {
+                appendItem(container, JSON.parse(items[i]));
+            }
+        });
+    }
+
     function LoadContacts() {
-        top.Ts.Services.Customers.LoadContacts(organizationID, $('#cbActive').prop('checked'), function (users) {
+        top.Ts.Services.Customers.LoadContacts2(organizationID, $('#cbActive').prop('checked'), _isParentView, function (users) {
             $('.userList').empty();
             $('.userList').append(users)
             //for (var i = 0; i < users.length; i++) {
@@ -2114,7 +2172,7 @@ $(document).ready(function () {
             }
 
         $('#tblProducts tbody').empty();
-        top.Ts.Services.Customers.LoadProducts(organizationID, _productsSortColumn, _productsSortDirection, function (product) {
+        top.Ts.Services.Customers.LoadProducts2(organizationID, _productsSortColumn, _productsSortDirection, _isParentView, function (product) {
             for (var i = 0; i < product.length; i++) {
                 var customfields = "";
                 for (var p = 0; p < product[i].CustomFields.length; p++)
@@ -2152,9 +2210,9 @@ $(document).ready(function () {
 
     function LoadInventory() {
         $('.assetList').empty();
-        top.Ts.Services.Customers.LoadAssets(organizationID, top.Ts.ReferenceTypes.Organizations, function (assets) {
+        top.Ts.Services.Customers.LoadAssets2(organizationID, top.Ts.ReferenceTypes.Organizations, _isParentView, function (assets) {
             $('.assetList').append(assets)
-            top.Ts.Services.Customers.LoadContactAssets(organizationID, function (assets) {
+            top.Ts.Services.Customers.LoadContactAssets2(organizationID, _isParentView, function (assets) {
                 $('.assetList').append(assets)
             });
         });
@@ -2192,7 +2250,7 @@ $(document).ready(function () {
     function createTestChart() {
         var greenLimit, yellowLimit;
 
-        top.Ts.Services.Customers.LoadChartData(organizationID, true, function (chartString) {
+        top.Ts.Services.Customers.LoadChartData2(organizationID, true, _isParentView, function (chartString) {
 
             var chartData = [];
             var dummy = chartString.split(",");
@@ -2256,7 +2314,7 @@ $(document).ready(function () {
             }
         });
 
-        top.Ts.Services.Customers.LoadChartData(organizationID, false, function (chartString) {
+        top.Ts.Services.Customers.LoadChartData2(organizationID, false, _isParentView, function (chartString) {
 
             var chartData = [];
             var dummy = chartString.split(",");
@@ -2331,7 +2389,7 @@ $(document).ready(function () {
             }
         });
 
-        top.Ts.Services.Customers.LoadCDI(organizationID, function (cdiValue) {
+        top.Ts.Services.Customers.LoadCDI2(organizationID, _isParentView, function (cdiValue) {
             var chartData = [];
             chartData.push(cdiValue);
             
@@ -2453,11 +2511,13 @@ $(document).ready(function () {
     $("[rel='tooltip']").tooltip();
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         if (e.target.innerHTML == "Tickets")
-            $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_CustomerID=" + organizationID);
+            $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_CustomerID=" + organizationID + "&tf_IncludeCompanyChildren=" + _isParentView);
         else if (e.target.innerHTML == "Watercooler")
             $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=2&pageid=" + organizationID);
         else if (e.target.innerHTML == "Details")
             createTestChart();
+        else if (e.target.innerHTML == "Children")
+            LoadChildren();
         else if (e.target.innerHTML == "Contacts")
             LoadContacts();
         else if (e.target.innerHTML == "Notes")
@@ -3308,3 +3368,344 @@ function GetTinyMCEFontName(fontFamily) {
   }
   return result;
 }
+
+function SetupParentSection(parents) {
+    AddParents(parents);
+    if ($('#company-Parents-Input').length) {
+        $('#company-Parents-Input').selectize({
+            valueField: 'id',
+            labelField: 'label',
+            searchField: 'label',
+            load: function (query, callback) {
+                this.clearOptions();        // clear the data
+                this.renderCache = {};      // clear the html template cache
+                getCompany(query, callback)
+            },
+            delimiter: null,
+            initData: true,
+            preload: false,
+            onLoad: function () {
+                if (this.settings.initData === true) {
+                    this.settings.initData = false;
+                }
+            },
+            //create: function (input, callback) {
+            //    $('#NewCustomerModal').modal('show');
+            //    callback(null);
+            //    $('#company-Parents-Input').closest('.form-group').removeClass('hasError');
+            //},
+            onItemAdd: function (value, $item) {
+                if (this.settings.initData === false) {
+                    $('#company-Parents-Input').closest('.form-group').removeClass('hasError');
+                    var parentData = $item.data();
+
+                    top.Ts.Services.Customers.AddParent(organizationID, value, function (parent) {
+                        AddParent(parent, $("#company-Parent"));
+
+                        //if (customerData.type == "u") {
+                        //    top.Ts.Services.Customers.LoadAlert(value, top.Ts.ReferenceTypes.Users, function (note) {
+                        //        LoadTicketNotes(note);
+                        //    });
+                        //}
+                        //else {
+                        //    top.Ts.Services.Customers.LoadAlert(value, top.Ts.ReferenceTypes.Organizations, function (note) {
+                        //        LoadTicketNotes(note);
+                        //    });
+                        //}
+
+                        //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addcustomer", userFullName);
+                        top.Ts.System.logAction('Customer Detail - Add Parent');
+                    }, function () {
+                        $(this).parent().remove();
+                        alert('There was an error adding the parent.');
+                    });
+                    this.removeItem(value, true);
+                }
+            },
+            //plugins: {
+            //    'sticky_placeholder': {},
+            //    'no_results': {}
+            //},
+            score: function (search) {
+                return function (option) {
+                    return 1;
+                }
+            },
+            render: {
+                item: function (item, escape) {
+                    return '<div data-value="' + item.value + '" data-type="' + item.data + '" data-selectable="" class="option">' + item.label + '</div>';
+                },
+                option: function (item, escape) {
+                    return '<div data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" class="option">' + item.label + '</div>';
+                },
+                option_create: function (data, escape) {
+                    return '<div class="create">Create <strong>' + escape(data.input) + '</strong></div>';
+                }
+            },
+            onDropdownClose: function ($dropdown) {
+                $($dropdown).prev().find('input').blur();
+            },
+            closeAfterSelect: true
+        });
+    }
+
+    //$('#customer-company-input').selectize({
+    //    valueField: 'label',
+    //    labelField: 'label',
+    //    searchField: 'label',
+    //    load: function (query, callback) {
+    //        this.clearOptions();        // clear the data
+    //        this.renderCache = {};      // clear the html template cache
+    //        getCompany(query, callback)
+    //    },
+    //    score: function (search) {
+    //        return function (option) {
+    //            return 1;
+    //        }
+    //    },
+    //    onDropdownClose: function ($dropdown) {
+    //        $($dropdown).prev().find('input').blur();
+    //    },
+    //    create: true,
+    //    closeAfterSelect: true,
+    //    plugins: {
+    //        'sticky_placeholder': {},
+    //        'no_results': {}
+    //    }
+    //});
+
+    //$('#Customer-Create').click(function (e) {
+    //    e.preventDefault();
+    //    e.stopPropagation();
+    //    top.Ts.System.logAction('Ticket - New Customer Added');
+    //    var email = $('#customer-email-input').val();
+    //    var firstName = $('#customer-fname-input').val();
+    //    var lastName = $('#customer-lname-input').val();
+    //    var phone = $('#customer-phone-input').val();;
+    //    var companyName = $('#customer-company-input').val();
+    //    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
+    //        if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
+    //            top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
+    //                AddCustomers(result);
+    //                $('.ticket-new-customer-email').val('');
+    //                $('.ticket-new-customer-first').val('');
+    //                $('.ticket-new-customer-last').val('');
+    //                $('.ticket-new-customer-company').val('');
+    //                $('.ticket-new-customer-phone').val('');
+    //                $('#NewCustomerModal').modal('hide');
+    //            });
+    //        }
+    //        else if (result.indexOf("The company you have specified is invalid") !== -1) {
+    //            if (top.Ts.System.User.CanCreateCompany || top.Ts.System.User.IsSystemAdmin) {
+    //                if (confirm('Unknown company, would you like to create it?')) {
+    //                    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
+    //                        top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
+    //                            AddCustomers(result);
+    //                            $('.ticket-new-customer-email').val('');
+    //                            $('.ticket-new-customer-first').val('');
+    //                            $('.ticket-new-customer-last').val('');
+    //                            $('.ticket-new-customer-company').val('');
+    //                            $('.ticket-new-customer-phone').val('');
+    //                            $('#NewCustomerModal').modal('hide');
+    //                        });
+    //                    });
+    //                }
+    //            }
+    //            else {
+    //                alert("We're sorry, but you do not have the rights to create a new company.");
+    //                $('.ticket-new-customer-email').val('');
+    //                $('.ticket-new-customer-first').val('');
+    //                $('.ticket-new-customer-last').val('');
+    //                $('.ticket-new-customer-company').val('');
+    //                $('.ticket-new-customer-phone').val('');
+    //                $('#NewCustomerModal').modal('hide');
+    //            }
+    //        }
+    //        else {
+    //            alert(result);
+    //        }
+    //    });
+    //});
+
+    $('#company-Parent').on('click', 'span.tagRemove', function (e) {
+        var self = $(this);
+        var data = self.parent().data().tag;
+
+        top.Ts.Services.Customers.RemoveParent(data.ChildID, data.ParentID, function () {
+            self.parent().remove();
+            top.Ts.System.logAction('Customer Detail - Remove Parent');
+        }, function () {
+            alert('There was a problem removing the parent from the company.');
+        });
+    });
+};
+
+function AddParent(parent, div) {
+    $("#company-Parents-Input").val('');
+    var cssClasses = "tag-item";
+
+    //if (parents[i].Flag) {
+    //    cssClasses = cssClasses + " tag-error"
+    //}
+    //if (parents[i].Contact !== null && parents[i].Company !== null) {
+    //    label = '<span class="UserAnchor" data-userid="' + parents[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + parents[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + parents[i].OrganizationID + '" data-placement="left">' + parents[i].Company + '</span>';
+    //    var newelement = PrependTag(parentsDiv, parents[i].UserID, label, parents[i], cssClasses);
+    //}
+    //else if (parents[i].Contact !== null) {
+    //    label = '<span class="UserAnchor" data-userid="' + parents[i].UserID + '" data-placement="left">' + parents[i].Contact + '</span>';
+    //    var newelement = PrependTag(parentsDiv, parents[i].UserID, label, parents[i], cssClasses);
+    //    newelement.data('userid', parents[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
+    //}
+    //else if (parents[i].Company !== null) {
+    var label = '<span class="OrgAnchor" data-orgid="' + parent.ParentID + '" data-placement="left">' + parent.ParentName + '</span>';
+    var newelement = PrependTag(div, parent.ParentID, label, parent, cssClasses);
+    //newelement.data('orgid', parents[i].OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
+    newelement.data('orgid', parent.ParentID).data('placement', 'left');
+    //}
+}
+
+function AddParents(parents) {
+    var parentsDiv = $("#company-Parent");
+    parentsDiv.empty();
+    for (var i = 0; i < parents.length; i++) {
+        AddParent(parents[i], parentsDiv);
+    };
+}
+
+function PrependTag(parent, id, value, data, cssclass) {
+    if (cssclass === undefined) cssclass = 'tag-item';
+    var _compiledTagTemplate = Handlebars.compile($("#customer-tag").html());
+    var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
+    return $(tagHTML).prependTo(parent).data('tag', data);
+}
+
+function appendItem(container, item) {
+    var hasCustomerInsights = top.Ts.System.Organization.IsCustomerInsightsActive;
+    var organizationId = top.Ts.System.Organization.OrganizationID;
+    var el = $('<tr>');
+
+    if (!hasCustomerInsights) {
+        var circle = $('<i>').addClass('fa fa-circle fa-stack-2x');
+        var icon = $('<i>').addClass('fa fa-stack-1x fa-inverse');
+
+        $('<td>').addClass('result-icon').append(
+          $('<span>').addClass('fa-stack fa-2x').append(circle).append(icon)
+        ).appendTo(el);
+
+        var div = $('<div>')
+          .addClass('peopleinfo')
+          .append(
+            $('<div>')
+              .addClass('pull-right')
+              .append($('<p>').text(item.openTicketCount + ' open tickets'))
+          );
+
+        $('<td>').append(div).appendTo(el);
+
+        if (item.userID) {
+            circle.addClass('color-orange');
+            icon.addClass('fa-user');
+            appendContact(div, item);
+        }
+        else {
+            circle.addClass('color-green');
+            icon.addClass('fa-building-o');
+            appendCompany(div, item);
+        }
+    }
+    else {
+        var image = $('<img>');
+        var imagePath;
+
+        if (item.userID) {
+            imagePath = "../../../dc/" + item.organizationID + "/contactavatar/" + item.userID + "/48/index";
+        }
+        else {
+            imagePath = "../../../dc/" + organizationId + "/companylogo/" + item.organizationID + "/48/index";
+        }
+
+        var imageObject = new Image();
+        imageObject.src = imagePath;
+        imageObject.className = "user-avatar";
+
+        $('<td>').addClass('result-icon').append(
+          $('<span>').addClass('fa-stack fa-2x').append(imageObject)
+        ).appendTo(el);
+
+        var div = $('<div>')
+          .addClass('peopleinfo')
+          .append(
+            $('<div>')
+              .addClass('pull-right')
+              .append($('<p>').text(item.openTicketCount + ' open tickets'))
+          );
+
+        $('<td>').append(div).appendTo(el);
+
+        if (item.userID) {
+            appendContact(div, item);
+        }
+        else {
+            appendCompany(div, item);
+        }
+    }
+
+
+    el.appendTo(container);
+}
+
+function appendCompany(el, item) {
+
+
+    $('<a>')
+      .attr('href', '#')
+      .addClass('companylink')
+      .data('organizationid', item.organizationID)
+      .text(!isNullOrWhiteSpace(item.name) ? item.name : 'Unnamed Company')
+      .appendTo($('<h4>').appendTo(el));
+
+    var list = $('<ul>').appendTo(el);
+
+    if (!isNullOrWhiteSpace(item.website)) {
+        var site = item.website.indexOf('http') != 0 ? 'http://' + item.website : item.website;
+        $('<a>')
+            .attr('target', '_blank')
+            .attr('href', site)
+            .text(item.website)
+            .appendTo($('<li>').appendTo(list));
+    }
+
+    var phones = $('<li>');
+    appendPhones(phones, item);
+    phones.appendTo(list);
+
+    $('<li>').text(item.isPortal ? 'Has portal access' : '').appendTo(list);
+}
+
+function isNullOrWhiteSpace(str) {
+    return str === null || str.match(/^ *$/) !== null;
+}
+
+function appendPhones(el, item) {
+    for (var i = 0; i < item.phones.length; i++) {
+        var phone = item.phones[i];
+        if (!isNullOrWhiteSpace(phone.number)) {
+            $('<span>').text(" " + phone.type + " ").appendTo(el);
+            $('<a>')
+                .attr('href', 'tel:' + phone.number)
+                .attr('target', '_blank')
+                .text(phone.number)
+                .appendTo(el);
+            if (!isNullOrWhiteSpace(phone.ext)) {
+                $('<span>').text(" Ext:" + phone.ext).appendTo(el);
+            }
+        }
+    }
+}
+
+var execGetCompany = null;
+function getCompany(request, response) {
+    if (execGetCompany) { execGetCompany._executor.abort(); }
+    execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request, function (result) { response(result); });
+}
+

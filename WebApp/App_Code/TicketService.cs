@@ -2609,6 +2609,14 @@ WHERE t.TicketID = @TicketID
         }
 
         [WebMethod]
+        public TicketsViewItemProxy[] Load5MostRecentByOrgID2(int orgID, bool includeChildren)
+        {
+            TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+            tickets.LoadLatest5Tickets(orgID, includeChildren);
+            return tickets.GetTicketsViewItemProxies();
+        }
+
+        [WebMethod]
         public TicketsViewItemProxy[] Load5MostRecentByProductID(int productID)
         {
             TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());

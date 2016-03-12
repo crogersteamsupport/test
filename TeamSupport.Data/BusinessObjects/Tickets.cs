@@ -1928,28 +1928,100 @@ AND u.OrganizationID = @OrganizationID
             }
         }
 
-        public static int GetOrganizationOpenTicketCount(LoginUser loginUser, int organizationID, int ticketTypeID)
+        public static int GetOrganizationOpenTicketCount(LoginUser loginUser, int organizationID, int ticketTypeID, bool includeChildren = false)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT COUNT(*) FROM Tickets t LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = t.TicketStatusID WHERE (t.TicketTypeID = @TicketTypeID) AND (ts.IsClosed = 0) AND EXISTS(SELECT * FROM OrganizationTickets ot WHERE (t.TicketID = ot.TicketID) AND (ot.OrganizationID = @OrganizationID))";
+                command.CommandText = @"
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        Tickets t 
+                        LEFT JOIN TicketStatuses ts 
+                            ON ts.TicketStatusID = t.TicketStatusID 
+                    WHERE 
+                        t.TicketTypeID = @TicketTypeID
+                        AND ts.IsClosed = 0
+                        AND EXISTS
+                        (
+                            SELECT 
+                                *
+                            FROM
+                                OrganizationTickets ot 
+                            WHERE 
+                                t.TicketID = ot.TicketID
+                                AND
+                                (
+                                    ot.OrganizationID = @OrganizationID
+									OR 
+									(
+										@IncludeChildren = 1
+										AND ot.OrganizationID IN
+										(
+											SELECT
+												CustomerID
+											FROM
+												CustomerRelationships
+											WHERE
+												RelatedCustomerID = @OrganizationID
+										)												
+									)
+                                )
+                        )";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+                command.Parameters.AddWithValue("@IncludeChildren", includeChildren);
 
                 Tickets tickets = new Tickets(loginUser);
                 return (int)tickets.ExecuteScalar(command, "Tickets");
             }
         }
 
-        public static int GetOrganizationClosedTicketCount(LoginUser loginUser, int organizationID, int ticketTypeID)
+        public static int GetOrganizationClosedTicketCount(LoginUser loginUser, int organizationID, int ticketTypeID, bool includeChildren = false)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT COUNT(*) FROM Tickets t LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = t.TicketStatusID WHERE (t.TicketTypeID = @TicketTypeID) AND (ts.IsClosed = 1) AND EXISTS(SELECT * FROM OrganizationTickets ot WHERE (t.TicketID = ot.TicketID) AND (ot.OrganizationID = @OrganizationID))";
+                command.CommandText = @"
+                    SELECT 
+                        COUNT(*) 
+                    FROM
+                        Tickets t
+                        LEFT JOIN TicketStatuses ts 
+                            ON ts.TicketStatusID = t.TicketStatusID 
+                    WHERE
+                        t.TicketTypeID = @TicketTypeID 
+                        AND ts.IsClosed = 1 
+                        AND EXISTS
+                        (
+                            SELECT
+                                *
+                            FROM
+                                OrganizationTickets ot 
+                            WHERE
+                                t.TicketID = ot.TicketID 
+                                AND 
+                                (
+                                    ot.OrganizationID = @OrganizationID
+									OR 
+									(
+										@IncludeChildren = 1
+										AND ot.OrganizationID IN
+										(
+											SELECT
+												CustomerID
+											FROM
+												CustomerRelationships
+											WHERE
+												RelatedCustomerID = @OrganizationID
+										)												
+									)
+                                )
+                        )";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+                command.Parameters.AddWithValue("@IncludeChildren", includeChildren);
 
                 Tickets tickets = new Tickets(loginUser);
                 return (int)tickets.ExecuteScalar(command, "Tickets");

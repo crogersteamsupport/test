@@ -1818,6 +1818,14 @@ function () { }, function (e) { console.log(e) });
         });
 
     },
+    openNewCustomerInParentView: function (customerID) {
+        var orgname;
+        var query = "?organizationid=" + customerID + "&parentView=1";
+        top.Ts.Services.Organizations.GetShortNameFromID(customerID, function (result) {
+            this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Company, customerID, result, true, true, false, null, null, query, null);
+        });
+
+    },
     openNewCustomerNote: function (customerID, noteID) {
         var orgname;
         var query = "?organizationid=" + customerID + "&noteid=" + noteID;
