@@ -1962,7 +1962,8 @@ var AddCustomFieldDate = function (field, parentContainer) {
 
     input.focusout(function (e) {
       var value = top.Ts.Utils.getMsDate(input.val());
-      this.remove();
+      $(this).datepicker("hide");
+      input.hide();
       dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDatePattern()))).show();
 
       if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -2025,8 +2026,9 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
                     .focus();
 
     input.focusout(function (e) {
-      var value = top.Ts.Utils.getMsDate(input.val());
-      this.remove();
+    	var value = top.Ts.Utils.getMsDate(input.val());
+    	$(this).datepicker("hide");
+    	input.hide();
       dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
 
       if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -2090,7 +2092,8 @@ var AddCustomFieldTime = function (field, parentContainer) {
 
     input.focusout(function (e) {
       var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
-      this.remove();
+      $(this).datepicker("hide");
+      input.hide();
       dateLink.text((value === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getTimePattern()))).show();
 
       if (field.IsRequired && (value === null || $.trim(value) === '')) {
