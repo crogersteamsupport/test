@@ -300,6 +300,11 @@ ORDER BY cf.Position";
       }
     }
 
+		public void LoadByReferenceTypeForPortal(int organizationID, ReferenceType refType, int refID)
+		{
+			LoadByReferenceTypeForPortal(organizationID, refType, null, refID);
+		}
+
 		public void LoadByReferenceTypeForPortal(int organizationID, ReferenceType refType, int? auxID, int refID)
 		{
 			using (SqlCommand command = new SqlCommand())

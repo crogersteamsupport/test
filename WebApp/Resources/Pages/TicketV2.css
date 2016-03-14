@@ -9,6 +9,12 @@
     .mce-i-awesome.fa-circle  { color: #D9534F !important}
     .mce-path {display:none !important;}
 
+    .note-btn > .fa-paste   { color: #5CB85C !important}
+    .note-btn > .fa-book    { color: #3276B1 !important}
+    .note-btn > .fa-ticket  { color: #FEC21E !important}
+    .note-btn > .fa-image{ color: #BA55D3 !important}
+    .note-btn > .fa-dropbox { color: #3d9ae8 !important}
+
     .popover-content h1 { padding: 0 0 .5em 0; line-height: inherit; font-size: 1.5em; margin:0;}
     .popover-content h2 { padding: 0 0 .5em 0; font-size: 1.2em; font-weight: normal; line-height: inherit; margin: 0; }
     .popover-content h3 { } 

@@ -539,7 +539,9 @@ function CreateNewActionLI() {
     e.preventDefault();
     e.stopPropagation();
     $('#action-new-editor').parent().fadeOut('normal', function () {
-      tinymce.activeEditor.destroy();
+    	if (top.Ts.System.User.OrganizationID !== 1078) {
+    		tinymce.activeEditor.destroy();
+    	}
     });
     top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
     $('#recorder').remove();
@@ -565,7 +567,9 @@ function CreateNewActionLI() {
   						if (result) {
   							_isCreatingAction = true;
   							$('#action-new-editor').parent().fadeOut('normal', function () {
-  								tinymce.activeEditor.destroy();
+  								if (top.Ts.System.User.OrganizationID !== 1078) {
+  									tinymce.activeEditor.destroy();
+  								}
   							});
   							if ($('.upload-queue li').length > 0) {
   								UploadAttachments(result);
@@ -586,6 +590,7 @@ function CreateNewActionLI() {
   							alert("There was a error creating your action.  Please try again.");
   							EnableCreateBtns();
   						}
+  						
   					});
   				});
   			}
@@ -611,7 +616,9 @@ function CreateNewActionLI() {
           if (result) {
             UploadAttachments(result);
             $('#action-new-editor').val('').parent().fadeOut('normal');
-            tinymce.activeEditor.destroy();
+            if (top.Ts.System.User.OrganizationID !== 1078) {
+            	tinymce.activeEditor.destroy();
+            }
 
             if ($('.upload-queue li').length > 0) {
               UploadAttachments(result);
@@ -672,9 +679,14 @@ function CreateNewActionLI() {
     var action = $(this).find(':selected').data('data');
     HideActionTimer(!action.IsTimed);
     top.Ts.Services.TicketPage.GetActionTicketTemplate(actionID, function (result) {
-      if (result != null && result != "" && result != "<br>") {
-        var currenttext = tinyMCE.activeEditor.getContent();
-        tinyMCE.activeEditor.setContent(currenttext + result);
+    	if (result != null && result != "" && result != "<br>") {
+    		if (top.Ts.System.User.OrganizationID !== 1078) {
+    			var currenttext = tinyMCE.activeEditor.getContent();
+    			tinyMCE.activeEditor.setContent(currenttext + result);
+    		}
+    		else {
+    			$('#action-new-editor').summernote('insertNode', result);
+    		}
       }
       elem.parent().fadeIn('normal');
     });
@@ -703,7 +715,6 @@ function SetupActionEditor(elem, action) {
   $('.watercooler-new-area').hide();
   if (action)
   {
-    //top.Ts.Utils.getMsDate(action.DateStarted)
     $('#action-new-date-started').val(moment(action.DateStarted).format(dateFormat + ' hh:mm A'));
   }
   else
@@ -714,37 +725,47 @@ function SetupActionEditor(elem, action) {
     $('#action-new-date-started').datetimepicker({ format: dateFormat + ' hh:mm A', defaultDate: new Date() });
 
   }
-  //$('#action-new-date-started').val(top.Ts.Utils.getMsDate(action.DateCreated));
-  top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
-  initEditor(elem, true, function (ed) {
-    $("#action-new-type").val($("#action-new-type option:first").val());
-    $('#action-new-editor').val('');
-    if (action) {
-    	$('#action-new-type').val(action.ActionTypeID);
-      if (action.TimeSpent) {
-        $('#action-new-hours').val(Math.floor(action.TimeSpent / 60));
-        $('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
-      }
-      tinyMCE.activeEditor.setContent(action.Message);
-      //elem.parent().fadeIn('normal');
-    }
-    else {
-      var actionTypeID = $('#action-new-type').val();
-      $('#action-new-hours').val(0);
-      $('#action-new-minutes').val(0);
-      top.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
-        if (result != null && result != "" && result != "<br>") {
-          var currenttext = tinyMCE.activeEditor.getContent();
-          tinyMCE.activeEditor.setContent(currenttext + result);
-        }
-      });
-    }
-    elem.parent().fadeIn('normal');
 
-    $('.frame-container').animate({
-      scrollTop: 0
-    }, 600);
-  });
+  top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
+
+  if (top.Ts.System.User.OrganizationID !== 1078) {
+  	initEditor(elem, true, function (ed) {
+  	  $("#action-new-type").val($("#action-new-type option:first").val());
+  	  $('#action-new-editor').val('');
+  	  if (action) {
+  	  	$('#action-new-type').val(action.ActionTypeID);
+  	    if (action.TimeSpent) {
+  	      $('#action-new-hours').val(Math.floor(action.TimeSpent / 60));
+  	      $('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
+  	    }
+  	    tinyMCE.activeEditor.setContent(action.Message);
+  	    //elem.parent().fadeIn('normal');
+  	  }
+  	  else {
+  	    var actionTypeID = $('#action-new-type').val();
+  	    $('#action-new-hours').val(0);
+  	    $('#action-new-minutes').val(0);
+  	    top.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
+  	      if (result != null && result != "" && result != "<br>") {
+  	        var currenttext = tinyMCE.activeEditor.getContent();
+  	        tinyMCE.activeEditor.setContent(currenttext + result);
+  	      }
+  	    });
+  	  }
+  	  elem.parent().fadeIn('normal');
+
+  	  $('.frame-container').animate({
+  	    scrollTop: 0
+  	  }, 600);
+  	});
+
+  }
+  else {
+  	initEditorV2(elem, function () {
+  		SetupNewAction(elem, action);
+  	});
+  }
+
 
   var element = $('.action-new-area');
   $('#action-file-upload').fileupload({
@@ -837,6 +858,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#muteTokScreen').show();
   		recordingID = resultID;
   		countdown("tokScreenCountdown", 5, 0, element);
+  		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
   		element.find('#statusTextScreen').text("Currently Recording Screen...");
   	});
   });
@@ -858,9 +880,9 @@ function SetupActionEditor(elem, action) {
   element.find('#stoptokScreen').hide();
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
-  	element.find('#tokScreenCountdown').hide();
   	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
   		clearTimeout(recordScreenTimer);
+  		element.find('#tokScreenCountdown').hide();
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
   		element.find('#canceltokScreen').show();
@@ -868,7 +890,13 @@ function SetupActionEditor(elem, action) {
   		element.find('#muteTokScreen').hide();
   		tokurl = result;
   		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-  		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+  		if (top.Ts.System.User.OrganizationID !== 1078) {
+  			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+  		}
+  		else
+  		{
+  			$('#action-new-editor').summernote('insertNode', videoURL);
+  		}
   		element.find('#statusTextScreen').text("Recording Stopped");
   		session.unpublish(screenSharingPublisher);
   		session.unpublish(publisher);
@@ -904,13 +932,21 @@ function SetupActionEditor(elem, action) {
   element.find('#inserttok').hide();
 
   element.find('#inserttok').click(function (e) {
-  	tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
-  		session.unpublish(publisher);
-  		element.find('#rcdtok').show();
-  		element.find('#stoptok').hide();
-  		element.find('#inserttok').hide();
-  		element.find('#recordVideoContainer').hide();
-  		element.find('#statusText').text("");
+  	if (top.Ts.System.User.OrganizationID !== 1078) {
+  		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+  	}
+  	else {
+  		$('#action-new-editor').summernote('insertNode', $('<br/>')[0]);
+  		var html = $('<video width="400" height="400" controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>')[0];
+  		$('#action-new-editor').summernote('insertNode', html);
+  	}
+
+  	session.unpublish(publisher);
+  	element.find('#rcdtok').show();
+  	element.find('#stoptok').hide();
+  	element.find('#inserttok').hide();
+  	element.find('#recordVideoContainer').hide();
+  	element.find('#statusText').text("");
   });
 
 
@@ -958,12 +994,41 @@ function SetupActionEditor(elem, action) {
   }
 };
 
+function SetupNewAction(elem, action) {
+	$("#action-new-type").val($("#action-new-type option:first").val());
+	$('#action-new-editor').val('');
+	if (action) {
+		$('#action-new-type').val(action.ActionTypeID);
+		if (action.TimeSpent) {
+			$('#action-new-hours').val(Math.floor(action.TimeSpent / 60));
+			$('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
+		}
+		elem.summernote('code', action.Message);
+	}
+	else {
+		var actionTypeID = $('#action-new-type').val();
+		$('#action-new-hours').val(0);
+		$('#action-new-minutes').val(0);
+		top.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
+			if (result != null && result != "" && result != "<br>") {
+				var currenttext = elem.summernote('code');
+				elem.summernote('code', currenttext +  result);
+			}
+		});
+	}
+	elem.parent().fadeIn('normal');
+
+	$('.frame-container').animate({
+		scrollTop: 0
+	}, 600);
+}
+
 function StopRecording(element)
 {
 	element.find('#statusTextScreen').text("Processing...");
-	element.find('#tokScreenCountdown').hide();
 	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
 		clearTimeout(recordScreenTimer);
+		element.find('#tokScreenCountdown').hide();
 		element.find('#rcdtokScreen').show();
 		element.find('#stoptokScreen').hide();
 		element.find('#canceltokScreen').show();
@@ -971,7 +1036,14 @@ function StopRecording(element)
 		element.find('#muteTokScreen').hide();
 		tokurl = result;
 		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+
+		if (top.Ts.System.User.OrganizationID !== 1078) {
+			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+		}
+		else {
+			$('#action-new-editor').summernote('insertNode', videoURL);
+		}
+
 		element.find('#statusTextScreen').text("Recording Stopped");
 		session.unpublish(screenSharingPublisher);
 		session.unpublish(publisher);
@@ -995,9 +1067,7 @@ function countdown(elementName, minutes, seconds, parentElement) {
 			hours = time.getUTCHours();
 			mins = time.getUTCMinutes();
 			element.innerHTML = (hours ? hours + ':' + twoDigits(mins) : mins) + ':' + twoDigits(time.getUTCSeconds());
-			recordScreenTimer = setTimeout(function() {
-				updateTimer(parentElement);
-			}, time.getUTCMilliseconds() + 500);
+			recordScreenTimer = setTimeout(updateTimer, time.getUTCMilliseconds() + 500);
 		}
 	}
 
@@ -1122,52 +1192,53 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
-	// Get Content Grab and Check with .Get MEthod
-  action.Description = tinymce.get('action-new-editor').getContent();
-  if (action.Description == "") {
-  	saveError = 1;
-  	top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with Get Function. ticket " + _ticketID, "TinyMCE Error");
-  }
-
-  if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-  	saveError = 2;
-  	top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with Get Fucntion. ticket " + _ticketID, "TinyMCE Error");
-  }
-
-
-  // Get Content Grab and Check
-  if (saveError != 0) {
-  	action.Description = tinymce.activeEditor.getContent();
+  if (top.Ts.System.User.OrganizationID !== 1078) {
+  	// Get Content Grab and Check with .Get MEthod
+  	action.Description = tinymce.get('action-new-editor').getContent();
   	if (action.Description == "") {
   		saveError = 1;
-  		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
+  		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with Get Function. ticket " + _ticketID, "TinyMCE Error");
   	}
 
   	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
   		saveError = 2;
-  		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
-  	}
-  }
-	// HTML Grab Check
-  if (saveError != 0) {
-  	action.Description = $('#action-new-editor').html();
-  	if (action.Description == "") {
-  		saveError = 1;
-  		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
+  		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with Get Fucntion. ticket " + _ticketID, "TinyMCE Error");
   	}
 
-  	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-  		saveError = 2;
-  		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
-  	}
-  }
 
-   // Text Grab Check
+  	// Get Content Grab and Check
+  	if (saveError != 0) {
+  		action.Description = tinymce.activeEditor.getContent();
+  		if (action.Description == "") {
+  			saveError = 1;
+  			top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
+  		}
+
+  		if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  			saveError = 2;
+  			top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
+  		}
+  	}
+  	// HTML Grab Check
+  	if (saveError != 0) {
+  		action.Description = $('#action-new-editor').html();
+  		if (action.Description == "") {
+  			saveError = 1;
+  			top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
+  		}
+
+  		if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  			saveError = 2;
+  			top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
+  		}
+  	}
+
+  	// Text Grab Check
   	if ($('#action-new-editor').text().trim().length < 1) {
   		top.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
-  }
+  	}
 
-	// TINYMCE ACTIVE EDITOR CHECK
+  	// TINYMCE ACTIVE EDITOR CHECK
   	if (saveError != 0) {
   		if (tinymce.activeEditor == null) {
   			saveError = 2;
@@ -1175,18 +1246,52 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   		}
   	}
 
-  if (saveError == 1)
-  {
-  	alert("The action you tried to save is empty, please try again or cancel");
-  	EnableCreateBtns();
-  	return;
+  	if (saveError == 1) {
+  		alert("The action you tried to save is empty, please try again or cancel");
+  		EnableCreateBtns();
+  		return;
+  	}
+
+  	if (saveError == 2) {
+  		alert("We’re very sorry, but there was an error saving your action.  We’ve logged this error for review, please notify support@teamsupport.com and please include the ticket number.");
+  		EnableCreateBtns();
+  		return;
+  	}
+  }
+  else {
+  	var fontSize;
+  	var fontFamily;
+  	var styleBlock;
+  	if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
+  		fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
+  	}
+  	else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+  		fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
+  	}
+
+  	if (top.Ts.System.User.FontSize != "0") {
+  		fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize);
+  	}
+  	else if (top.Ts.System.Organization.FontSize != "0") {
+  		fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize);
+  	}
+
+  	if (fontFamily !== undefined) styleBlock = 'font-family: ' + fontFamily;
+
+  	if (fontSize !== undefined) {
+  		if (styleBlock !== undefined) styleBlock += '; font-size: ' + fontSize;
+  		else styleBlock = 'font-size: ' + fontSize;
+  	}
+  
+  	var actionText = $('#action-new-editor').summernote('code');
+  	var actionHTML = $('<span />', {
+  		style: styleBlock,
+  		html: actionText
+  	});
+
+  	action.Description = actionHTML[0].outerHTML;
   }
 
-  if (saveError == 2) {
-  	alert("We’re very sorry, but there was an error saving your action.  We’ve logged this error for review, please notify support@teamsupport.com and please include the ticket number.");
-  	EnableCreateBtns();
-  	return;
-  }
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
   top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
