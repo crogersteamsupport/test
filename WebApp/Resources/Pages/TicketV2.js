@@ -24,6 +24,7 @@ var _workingActionNumer = 0;
 var _isLoading = false;
 var _isCreatingAction = false;
 var dateformat;
+var editorInit = false;
 
 var _timerid;
 var _timerElapsed = 0;
@@ -761,9 +762,16 @@ function SetupActionEditor(elem, action) {
 
   }
   else {
-  	initEditorV2(elem, function () {
+  	if (!editorInit) {
+  		initEditorV2(elem, function () {
+  			editorInit = true;
+  			SetupNewAction(elem, action);
+  		});
+  	}
+  	else {
+  		elem.summernote('reset');
   		SetupNewAction(elem, action);
-  	});
+  	}
   }
 
 

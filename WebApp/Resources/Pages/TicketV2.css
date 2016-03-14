@@ -315,6 +315,7 @@
     font-size: small;
     font-weight: bold;
   }
+    .note-editor { margin-bottom: 0px; }
 
     .attachrow{
     border-top:1px solid #ddd;
