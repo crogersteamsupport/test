@@ -867,7 +867,7 @@ function SetupActionEditor(elem, action) {
   		recordingID = resultID;
   		element.find('#tokScreenCountdown').show();
   		setTimeout(function () {
-  			update(parentElement);
+  			update(element);
   		}, 1000);
   		//countdown("tokScreenCountdown", 5, 0, element);
   		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
@@ -963,11 +963,10 @@ function SetupActionEditor(elem, action) {
 
 
   element.find('#canceltokScreen').click(function (e) {
+  	element.find('#statusText').text("");
   	session.unpublish(screenSharingPublisher);
   	session.unpublish(publisher);
-  	element.find('#statusText').text("");
   	element.find('#recordScreenContainer').hide();
-  	
   });
 
   element.find('#canceltok').click(function (e) {
@@ -1040,7 +1039,7 @@ function StopRecording(element)
 {
 	element.find('#statusTextScreen').text("Processing...");
 	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
-		clearTimeout(recordScreenTimer);
+		element.find('#statusText').text("");
 		element.find('#tokScreenCountdown').hide();
 		element.find('#rcdtokScreen').show();
 		element.find('#stoptokScreen').hide();
