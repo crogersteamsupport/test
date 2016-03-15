@@ -51,7 +51,7 @@ var tokurl;
 var publisher;
 var screenSharingPublisher;
 var videoURL;
-var recordScreenTimer;
+
 
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -893,7 +893,6 @@ function SetupActionEditor(elem, action) {
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
   	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
-  		clearTimeout(recordScreenTimer);
   		element.find('#tokScreenCountdown').hide();
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
@@ -963,7 +962,7 @@ function SetupActionEditor(elem, action) {
 
 
   element.find('#canceltokScreen').click(function (e) {
-  	element.find('#statusText').text("");
+  	element.find('#statusTextScreen').text("");
   	session.unpublish(screenSharingPublisher);
   	session.unpublish(publisher);
   	element.find('#recordScreenContainer').hide();
@@ -1056,7 +1055,7 @@ function StopRecording(element)
 			$('#action-new-editor').summernote('insertNode', videoURL);
 		}
 
-		element.find('#statusTextScreen').text("Recording Stopped");
+		element.find('#statusTextScreen').text("");
 		session.unpublish(screenSharingPublisher);
 		session.unpublish(publisher);
 

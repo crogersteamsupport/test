@@ -63,7 +63,22 @@
                 </div>
 
                 <textarea id="ticket-description"></textarea>
-                  <div style="text-align: center;" id="recordVideoContainer" class="action-new-toolbar">
+						<div id="screenRecordDiv">
+							<div id="ourPubTest" style="position: absolute !important; z-index: -99;"></div>
+							<div id="ourPubTest2" style="position: absolute; left: -9999px;"></div>
+						</div>
+						<div style="text-align: center;display: none;" id="recordScreenContainer" class="action-new-toolbar">
+							<div id="statusTextScreen"></div>
+
+							<div id="tokScreenCountdown">0:00</div>
+							<button id="rcdtokScreen" class="btn btn-primary" title="Record Screen"><i class="fa fa-video-camera"></i></button>
+							<button id="muteTokScreen" class="btn btn-primary" title="Mute Audio"><i class="fa fa-microphone"></i></button>
+							<button id="unmuteTokScreen" class="btn btn-danger" title="Record Audio"><i class="fa fa-microphone-slash"></i></button>
+							<button id="stoptokScreen" class="btn btn-danger" title="Stop Screen Recording"><i class="fa fa-stop"></i></button>
+							<button id="canceltokScreen" title="Cancel Screen Recording" class="btn btn-danger"><i class="fa fa-eject"></i></button>
+						</div>
+
+                  <div style="text-align: center;display: none;" id="recordVideoContainer" class="action-new-toolbar">
                       <div id="statusText"></div>
                       <div id="publisher">
                       </div>
@@ -356,6 +371,44 @@
     <input type="hidden" id="alertType" />
     <input type="hidden" id="alertID" />
   </div>
+	<div id="ChromeInstallModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Extension Required</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<p>An Extension is required in order for Screen Sharing to fucntion property. Please select your browswer and install the extension. Once the installation is complete close this dialog and click the Record Screen button again.</p>
+						<p id="chromemodalbutton"><button type="button" class="btn btn-primary" onclick="top.Ts.MainPage.installChromePlugin();" id="install-button">Add to Chrome</button></p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="FireFoxInstallModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Extension Required</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<p>An Extension is required in order for Screen Sharing to fucntion property. Please select your browswer and install the extension. Once the installation is complete you will need to refresh your browser for the installation to complete. Please save your ticket action text if any before proceeding.</p>
+						<p id="firefoxmodalbutton"><a href="../../../ScreenShare/ScreenSharing.xpi" class="btn btn-info" role="button">Add to Firefox</a></p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
   <div id="RemindersModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="RemindersModalTitle" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">

@@ -32,6 +32,8 @@ var apiKey;
 var sessionId;
 var tokurl;
 var publisher;
+var screenSharingPublisher;
+var videoURL;
 
 var defaultTemplateText = "";
 
@@ -784,6 +786,69 @@ function SetupDescriptionEditor() {
       }
       top.Ts.System.logAction('New Ticket - Canceled');
       $('#recorder').remove();
+    });
+
+    $('#rcdtokScreen').click(function (e) {
+    	top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+    		$('#rcdtokScreen').hide();
+    		$('#stoptokScreen').show();
+    		$('#deletetokScreen').hide();
+    		$('#muteTokScreen').show();
+    		recordingID = resultID;
+    		$('#tokScreenCountdown').show();
+    		setTimeout(function () {
+    			update(element);
+    		}, 1000);
+    		//countdown("tokScreenCountdown", 5, 0, element);
+    		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
+    		element.find('#statusTextScreen').text("Currently Recording Screen...");
+    	});
+    });
+
+    $('#muteTokScreen').hide();
+    $('#muteTokScreen').click(function (e) {
+    	publisher.publishAudio(false);
+    	$('#unmuteTokScreen').show();
+    	$('#muteTokScreen').hide();
+    });
+
+    $('#unmuteTokScreen').hide();
+    $('#unmuteTokScreen').click(function (e) {
+    	publisher.publishAudio(true);
+    	$('#muteTokScreen').show();
+    	$('#unmuteTokScreen').hide();
+    });
+
+    $('#stoptokScreen').hide();
+    $('#stoptokScreen').click(function (e) {
+    	$('#statusTextScreen').text("Processing...");
+    	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+    		$('#tokScreenCountdown').hide();
+    		$('#rcdtokScreen').show();
+    		$('#stoptokScreen').hide();
+    		$('#canceltokScreen').show();
+    		$('#unmuteTokScreen').hide();
+    		$('#muteTokScreen').hide();
+    		tokurl = result;
+    		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+    		if (top.Ts.System.User.OrganizationID !== 1078) {
+    			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+    		}
+    		else {
+    			$('#action-new-editor').summernote('insertNode', videoURL);
+    		}
+    		$('#statusTextScreen').text("Recording Stopped");
+    		session.unpublish(screenSharingPublisher);
+    		session.unpublish(publisher);
+
+    	});
+    });
+
+    $('#canceltokScreen').click(function (e) {
+    	$('#statusTextScreen').text("");
+    	session.unpublish(screenSharingPublisher);
+    	session.unpublish(publisher);
+    	$('#recordScreenContainer').hide();
     });
 
     $('#rcdtok').click(function (e) {
