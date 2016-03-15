@@ -4,7 +4,7 @@
 			height: 150,
 			focus: true,
 			toolbar: [
-				['media', ['InsertPastedImage', 'InsertDocuments', 'InsertTicket', 'InsertKB', 'InsertDropBox', 'InsertUser', 'InsertVideo', 'link']],
+				['media', ['InsertPastedImage', 'InsertDocuments', 'InsertTicket', 'InsertKB', 'InsertDropBox', 'InsertUser', 'InsertVideo', 'InsertScreenRecording', 'link']],
 				['style', ['bold', 'italic', 'strikethrough', 'underline', 'clear']],
 				['undo', ['undo', 'redo']],
 				['font', ['fontname', 'fontsize', 'color']],
@@ -18,7 +18,8 @@
 				InsertVideo: insertVideo,
 				InsertKB: insertKB,
 				InsertPastedImage: insertPastedImage,
-				InsertDocuments: insertDocuments
+				InsertDocuments: insertDocuments,
+				InsertScreenRecording: insertScreenRecording
 			},
 			callbacks: {
 				onInit: function () {
@@ -225,6 +226,99 @@
 					}
 				});
 
+			}
+		});
+		return button.render();
+	};
+
+	var insertScreenRecording = function (context) {
+		var ui = $.summernote.ui;
+		var button = ui.button({
+			contents: '<i class="fa fa-desktop"/>',
+			tooltip: 'Screen Video Recording',
+			click: function () {
+				top.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
+				if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
+					var dynamicPub = element.parent().find("#screenShare");
+					element.parent().find("#recordScreenContainer").show();
+					dynamicPub.show();
+
+
+					if (dynamicPub.length == 0)
+						dynamicPub = element.parent().find("#tempContainer");
+
+					OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
+
+					OT.checkScreenSharingCapability(function (response) {
+						if (!response.supported || response.extensionRegistered === false) {
+							alert("This browser does not support screen sharing");
+						} else if (response.extensionInstalled === false) {
+							// prompt to install the response.extensionRequired extension
+
+							if (BrowserDetect.browser == "Chrome") {
+								$('#ChromeInstallModal').modal('show');
+							}
+							else if (BrowserDetect.browser == "Firefox") {
+								$('#FireFoxInstallModal').modal('show');
+							}
+							element.parent().find('#recordScreenContainer').hide();
+							element.parent().find('#rcdtokScreen').hide();
+							element.parent().find('#canceltokScreen').hide();
+						} else {
+							// Screen sharing is available
+							top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+								sessionId = resultID[0];
+								token = resultID[1];
+								session = OT.initSession(apiKey, sessionId);
+								var pubOptions = { publishAudio: true, publishVideo: false };
+								publisher = OT.initPublisher('ourPubTest2', pubOptions);
+
+								session.connect(token, function (error) {
+									// publish a stream using the camera and microphone:
+									session.publish(publisher);
+								});
+
+
+								// Screen sharing is available. Publish the screen.
+								// Create an element, but do not display it in the HTML DOM:
+								var screenContainerElement = document.createElement('div');
+								screenSharingPublisher = OT.initPublisher(
+								  'ourPubTest',
+								  { videoSource: 'screen' },
+								  function (error) {
+								  	if (error) {
+								  		if (BrowserDetect.browser == "Chrome") {
+								  			$('#ChromeInstallModal').modal('show');
+								  		}
+								  		else if (BrowserDetect.browser == "Firefox") {
+								  			$('#FireFoxInstallModal').modal('show');
+								  		}
+								  		//alert('Screen Recording will not start because, ' + error.message);
+								  		element.parent().find('#recordScreenContainer').hide();
+								  		element.parent().find('#rcdtokScreen').hide();
+								  		element.parent().find('#canceltokScreen').hide();
+								  	} else {
+								  		session.publish(
+										  screenSharingPublisher,
+										  function (error) {
+										  	if (error) {
+										  		alert('Screen Recording will not statrt because, ' + error.message);
+										  		element.parent().find('#recordScreenContainer').hide();
+										  		element.parent().find('#rcdtokScreen').hide();
+										  		element.parent().find('#canceltokScreen').hide();
+										  	}
+										  });
+								  	}
+								  });
+							});
+						}
+					});
+
+				}
+				else {
+					alert("Your client does not support video recording.")
+				}
+				
 			}
 		});
 		return button.render();
