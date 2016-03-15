@@ -866,7 +866,10 @@ function SetupActionEditor(elem, action) {
   		element.find('#muteTokScreen').show();
   		recordingID = resultID;
   		element.find('#tokScreenCountdown').show();
-  		countdown("tokScreenCountdown", 5, 0, element);
+  		setTimeout(function () {
+  			update(parentElement);
+  		}, 1000);
+  		//countdown("tokScreenCountdown", 5, 0, element);
   		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
   		element.find('#statusTextScreen').text("Currently Recording Screen...");
   	});
@@ -1060,6 +1063,31 @@ function StopRecording(element)
 
 	});
 }
+
+function update(parentElement) {
+	var myTime = $("#tokScreenCountdown").html();
+	var ss = myTime.split(":");
+	var dt = new Date();
+	dt.setHours(0);
+	dt.setMinutes(ss[0]);
+	dt.setSeconds(ss[1]);
+
+	var dt2 = new Date(dt.valueOf() + 1000);
+	var temp = dt2.toTimeString().split(" ");
+	var ts = temp[0].split(":");
+
+	if (temp[0] == "05")
+	{
+		StopRecording(parentElement);
+		return;
+	}
+
+	$("#tokScreenCountdown").html(ts[1] + ":" + ts[2]);
+	setTimeout(function () {
+		update(parentElement);
+	}, 1000);
+}
+
 
 function countdown(elementName, minutes, seconds, parentElement) {
 	var element, endTime, hours, mins, msLeft, time;
