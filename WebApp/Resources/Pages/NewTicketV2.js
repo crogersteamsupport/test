@@ -801,7 +801,7 @@ function SetupDescriptionEditor() {
     		}, 1000);
     		//countdown("tokScreenCountdown", 5, 0, element);
     		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
-    		element.find('#statusTextScreen').text("Currently Recording Screen...");
+    		$('#statusTextScreen').text("Currently Recording Screen...");
     	});
     });
 
