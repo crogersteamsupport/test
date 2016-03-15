@@ -920,6 +920,29 @@ function SetupDescriptionEditor() {
   });
 };
 
+function update(parentElement) {
+	var myTime = $("#tokScreenCountdown").html();
+	var ss = myTime.split(":");
+	var dt = new Date();
+	dt.setHours(0);
+	dt.setMinutes(ss[0]);
+	dt.setSeconds(ss[1]);
+
+	var dt2 = new Date(dt.valueOf() + 1000);
+	var temp = dt2.toTimeString().split(" ");
+	var ts = temp[0].split(":");
+
+	if (temp[0] == "05") {
+		StopRecording(parentElement);
+		return;
+	}
+
+	$("#tokScreenCountdown").html(ts[1] + ":" + ts[2]);
+	setTimeout(function () {
+		update(parentElement);
+	}, 1000);
+}
+
 function SetupUploadQueue() {
   var element = $('.upload-area');
   $('.file-upload').fileupload({
