@@ -797,7 +797,7 @@ function SetupDescriptionEditor() {
     		recordingID = resultID;
     		$('#tokScreenCountdown').show();
     		setTimeout(function () {
-    			update(element);
+    			update();
     		}, 1000);
     		//countdown("tokScreenCountdown", 5, 0, element);
     		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
@@ -920,7 +920,34 @@ function SetupDescriptionEditor() {
   });
 };
 
-function update(parentElement) {
+function StopRecording() {
+	$('#statusTextScreen').text("Processing...");
+	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+		$('#statusText').text("");
+		$('#tokScreenCountdown').hide();
+		$('#rcdtokScreen').show();
+		$('#stoptokScreen').hide();
+		$('#canceltokScreen').show();
+		$('#unmuteTokScreen').hide();
+		$('#muteTokScreen').hide();
+		tokurl = result;
+		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+
+		if (top.Ts.System.User.OrganizationID !== 1078) {
+			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+		}
+		else {
+			$('#action-new-editor').summernote('insertNode', videoURL);
+		}
+
+		$('#statusTextScreen').text("");
+		session.unpublish(screenSharingPublisher);
+		session.unpublish(publisher);
+
+	});
+}
+
+function update() {
 	var myTime = $("#tokScreenCountdown").html();
 	var ss = myTime.split(":");
 	var dt = new Date();
@@ -933,13 +960,13 @@ function update(parentElement) {
 	var ts = temp[0].split(":");
 
 	if (temp[0] == "05") {
-		StopRecording(parentElement);
+		StopRecording();
 		return;
 	}
 
 	$("#tokScreenCountdown").html(ts[1] + ":" + ts[2]);
 	setTimeout(function () {
-		update(parentElement);
+		update();
 	}, 1000);
 }
 
