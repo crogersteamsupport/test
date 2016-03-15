@@ -865,6 +865,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#deletetokScreen').hide();
   		element.find('#muteTokScreen').show();
   		recordingID = resultID;
+  		element.find('#tokScreenCountdown').show();
   		countdown("tokScreenCountdown", 5, 0, element);
   		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
   		element.find('#statusTextScreen').text("Currently Recording Screen...");
@@ -961,8 +962,9 @@ function SetupActionEditor(elem, action) {
   element.find('#canceltokScreen').click(function (e) {
   	session.unpublish(screenSharingPublisher);
   	session.unpublish(publisher);
-  	element.find('#recordScreenContainer').hide();
   	element.find('#statusText').text("");
+  	element.find('#recordScreenContainer').hide();
+  	
   });
 
   element.find('#canceltok').click(function (e) {
