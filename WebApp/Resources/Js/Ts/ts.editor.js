@@ -266,10 +266,6 @@
 													  		element.parent().find('#rcdtokScreen').hide();
 													  		element.parent().find('#canceltokScreen').hide();
 													  	}
-													  	else {
-													  		$("#ourPubTest").prop("position", "absolute");
-													  		$("#ourPubTest").prop("left", "-999px");
-													  	}
 													  });
 											  	}
 											  });
