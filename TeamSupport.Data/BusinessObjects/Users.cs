@@ -483,6 +483,26 @@ namespace TeamSupport.Data
             }
         }
 
+		public void LoadHubAdminByEmail(int orgID, string email)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT u.*
+                                FROM Users u 
+                                LEFT JOIN Organizations o
+                                ON o.OrganizationID = u.OrganizationID
+                                WHERE (u.OrganizationID = @OrganizationID)
+                                AND (u.Email = @Email)
+                                AND (u.MarkDeleted = 0)";
+
+
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", orgID);
+				command.Parameters.AddWithValue("@Email", email.Trim());
+				Fill(command);
+			}
+		}
+
 		public void LoadByEmailOrderByActive(int parentID, string email)
 		{
 			using (SqlCommand command = new SqlCommand())
