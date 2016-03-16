@@ -51,7 +51,7 @@ var tokurl;
 var publisher;
 var screenSharingPublisher;
 var videoURL;
-
+var tokTimer;
 
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -892,6 +892,8 @@ function SetupActionEditor(elem, action) {
   element.find('#stoptokScreen').hide();
   element.find('#stoptokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("Processing...");
+  	clearTimeout(tokTimer);
+  	$("#tokScreenCountdown").html("0:00");
   	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
   		element.find('#tokScreenCountdown').hide();
   		element.find('#rcdtokScreen').show();
@@ -1037,6 +1039,8 @@ function SetupNewAction(elem, action) {
 function StopRecording(element)
 {
 	element.find('#statusTextScreen').text("Processing...");
+	clearTimeout(tokTimer);
+	$("#tokScreenCountdown").html("0:00");
 	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
 		element.find('#statusText').text("");
 		element.find('#tokScreenCountdown').hide();
@@ -1081,7 +1085,7 @@ function update(parentElement) {
 	}
 
 	$("#tokScreenCountdown").html(ts[1] + ":" + ts[2]);
-	setTimeout(function () {
+	 tokTimer = setTimeout(function () {
 		update(parentElement);
 	}, 1000);
 }
