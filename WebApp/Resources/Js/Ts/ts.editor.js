@@ -7,11 +7,11 @@
         }
         var editorOptions = {
         	plugins: "paste link code textcolor image imagetools moxiemanager table " + resizePluginCode,
-        	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser recordVideo recordScreenTest | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote | code | table",
             statusbar: true,
             gecko_spellcheck: true,
-            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1]",
+            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             convert_urls: true,
             autoresize_bottom_margin: 20,
@@ -191,10 +191,10 @@
                     }
                 });
 
-                ed.addButton('recordScreenTest', {
+                ed.addButton('recordScreenTok', {
                 	title: 'Screen Video Recording',
                 	//image: '../images/icons/Symbol_Record.png',
-                	icon: 'awesome fa fa-desktop',
+                	icon: 'awesome fa fa-circle',
                 	onclick: function () {
                 		top.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
