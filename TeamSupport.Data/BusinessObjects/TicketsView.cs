@@ -187,26 +187,16 @@ namespace TeamSupport.Data
                 COUNT(*)
             FROM
                 TicketsView tv
-                JOIN OrganizationTickets ot
-                    ON ot.TicketID = tv.TicketID 
             WHERE 
                 tv.IsClosed = @closed 
-                AND 
+                AND tv.TicketID IN
                 (
-                    ot.OrganizationID = @OrganizationID
-					OR 
-					(
-						@IncludeChildren = 1
-						AND ot.OrganizationID IN
-						(
-							SELECT
-								CustomerID
-							FROM
-								CustomerRelationships
-							WHERE
-								RelatedCustomerID = @OrganizationID
-						)												
-					)
+                    SELECT
+                        ot.TicketID
+                    FROM
+                        OrganizationTickets ot
+                        JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
+                            ON ot.OrganizationID = x.OrganizationID
                 )";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -318,41 +308,30 @@ namespace TeamSupport.Data
     {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = @"
-                SELECT
-                    * 
-                FROM 
-                    TicketsView
-                WHERE
-	                TicketID IN
-	                (
-		                SELECT
-			                TOP 5 ot.TicketID
-		                FROM
-			                OrganizationTickets ot
-		                WHERE
-			                ot.OrganizationID = @OrganizationID
-			                OR 
-			                (
-				                @IncludeChildren = 1
-				                AND ot.OrganizationID IN
-				                (
-					                SELECT
-						                CustomerID
-					                FROM
-						                CustomerRelationships
-					                WHERE
-						                RelatedCustomerID = @OrganizationID
-				                )												
-			                )
-		                ORDER BY
-			                TicketID DESC
-	                )
-                ORDER BY 
-                    TicketNumber DESC";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@OrganizationID", organizationID);
-            command.Parameters.AddWithValue("@IncludeChildren", includeChildren);
+                command.CommandText = @"
+                    SELECT
+                       *
+                    FROM
+                       TicketsView
+                    WHERE
+                        TicketID IN
+                        (
+                            SELECT
+                                TOP 5 ot.TicketID
+                            FROM
+                                OrganizationTickets ot
+                                JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
+                                    ON ot.OrganizationID = x.OrganizationID
+                            ORDER BY
+                                TicketID DESC
+                        )
+                    ORDER BY
+                       TicketNumber DESC;";
+                command.CommandType = CommandType.Text;
+                //command.CommandText = "GetTopCompanyTickets";
+                //command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("OrganizationID", organizationID);
+            command.Parameters.AddWithValue("IncludeChildren", includeChildren);
             Fill(command);
         }
     }
@@ -1482,21 +1461,10 @@ namespace TeamSupport.Data
                         * 
                     FROM 
                         OrganizationTickets ot 
+                        JOIN dbo.GetCompanyFamilyIDs(@CustomerID, 1) x 
+                            ON ot.OrganizationID = x.OrganizationID
                     WHERE 
                         ot.TicketID = tv.TicketID 
-                        AND 
-                        (
-                            ot.OrganizationID = @CustomerID
-                            OR ot.OrganizationID IN
-                            (
-							    SELECT
-								    CustomerID
-							    FROM
-								    CustomerRelationships
-							    WHERE
-								    RelatedCustomerID = @CustomerID
-                            )
-                        )
                 )");
             }
             else

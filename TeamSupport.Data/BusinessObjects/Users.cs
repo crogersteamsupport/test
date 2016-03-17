@@ -603,19 +603,12 @@ namespace TeamSupport.Data
                         Users 
                     WHERE 
                         (
-                            OrganizationID = @OrganizationID
-					        OR 
+                            OrganizationID IN
 					        (
-						        @IncludeChildren = 1
-						        AND OrganizationID IN
-						        (
-							        SELECT
-								        CustomerID
-							        FROM
-								        CustomerRelationships
-							        WHERE
-								        RelatedCustomerID = @OrganizationID
-						        )												
+                                SELECT
+                                    OrganizationID
+                                FROM
+                                    dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren)
 					        )
                         )
                         AND (@ActiveOnly = 0 OR IsActive = 1) 

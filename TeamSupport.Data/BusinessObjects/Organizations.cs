@@ -3045,18 +3045,9 @@ ORDER BY
         SELECT 
             AVG(CustDisIndex) 
         FROM 
-            Organizations
-        WHERE 
-            OrganizationID = @OrganizationID
-			OR OrganizationID IN
-			(
-				SELECT
-					CustomerID
-				FROM
-					CustomerRelationships
-				WHERE
-					RelatedCustomerID = @OrganizationID
-			)";
+            Organizations o
+            JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, 1) x 
+                ON o.OrganizationID = x.OrganizationID";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
 

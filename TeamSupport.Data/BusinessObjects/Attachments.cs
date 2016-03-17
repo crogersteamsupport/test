@@ -83,23 +83,8 @@ namespace TeamSupport.Data
                 LEFT JOIN Users u 
                     ON u.UserID = a.CreatorID 
             WHERE 
-                (
-                    RefID = @RefID
-					OR 
-					(
-						@IncludeCompanyChildren = 1
-						AND RefID IN
-						(
-							SELECT
-								CustomerID
-							FROM
-								CustomerRelationships
-							WHERE
-								RelatedCustomerID = @RefID
-						)												
-					)
-                )
-                AND (RefType = @RefType)";
+                RefID = @RefID
+                AND RefType = @RefType";
         if (orderBy != string.Empty)
         {
           command.CommandText += " ORDER BY " + orderBy;

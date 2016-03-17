@@ -1948,25 +1948,10 @@ AND u.OrganizationID = @OrganizationID
                                 *
                             FROM
                                 OrganizationTickets ot 
+                                JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
+                                    ON ot.OrganizationID = x.OrganizationID
                             WHERE 
                                 t.TicketID = ot.TicketID
-                                AND
-                                (
-                                    ot.OrganizationID = @OrganizationID
-									OR 
-									(
-										@IncludeChildren = 1
-										AND ot.OrganizationID IN
-										(
-											SELECT
-												CustomerID
-											FROM
-												CustomerRelationships
-											WHERE
-												RelatedCustomerID = @OrganizationID
-										)												
-									)
-                                )
                         )";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -1998,25 +1983,10 @@ AND u.OrganizationID = @OrganizationID
                                 *
                             FROM
                                 OrganizationTickets ot 
+                                JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
+                                    ON ot.OrganizationID = x.OrganizationID
                             WHERE
                                 t.TicketID = ot.TicketID 
-                                AND 
-                                (
-                                    ot.OrganizationID = @OrganizationID
-									OR 
-									(
-										@IncludeChildren = 1
-										AND ot.OrganizationID IN
-										(
-											SELECT
-												CustomerID
-											FROM
-												CustomerRelationships
-											WHERE
-												RelatedCustomerID = @OrganizationID
-										)												
-									)
-                                )
                         )";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
