@@ -34,7 +34,7 @@ var tokurl;
 var publisher;
 var screenSharingPublisher;
 var videoURL;
-
+var tokTimer;
 var defaultTemplateText = "";
 
 
@@ -822,6 +822,8 @@ function SetupDescriptionEditor() {
     $('#stoptokScreen').hide();
     $('#stoptokScreen').click(function (e) {
     	$('#statusTextScreen').text("Processing...");
+    	clearTimeout(tokTimer);
+    	$("#tokScreenCountdown").html("0:00");
     	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
     		$('#tokScreenCountdown').hide();
     		$('#rcdtokScreen').show();
@@ -922,6 +924,8 @@ function SetupDescriptionEditor() {
 
 function StopRecording() {
 	$('#statusTextScreen').text("Processing...");
+	clearTimeout(tokTimer);
+	$("#tokScreenCountdown").html("0:00");
 	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
 		$('#statusText').text("");
 		$('#tokScreenCountdown').hide();
@@ -965,7 +969,7 @@ function update() {
 	}
 
 	$("#tokScreenCountdown").html(ts[1] + ":" + ts[2]);
-	setTimeout(function () {
+	tokTimer = setTimeout(function () {
 		update();
 	}, 1000);
 }
