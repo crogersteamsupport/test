@@ -59,6 +59,7 @@ namespace TeamSupport.ServiceLibrary
       AddDocField("Website", organization.Website);
       AddDocField("IsActive", organization.IsActive);
       AddDocField("PrimaryContact", organization.PrimaryContact);
+      AddDocField("IsParent", Organizations.GetIsParent(_loginUser, organization.OrganizationID));
 
       CustomerSearchCompany companyItem = new CustomerSearchCompany(organization);
       companyItem.phones = phones.ToArray();

@@ -1130,7 +1130,7 @@ namespace TSWebServices
       }
     }
 
-    public SearchResults GetCustomerSearchResults(LoginUser loginUser, string searchTerm, bool searchCompanies, bool searchContacts, int max, bool? active)
+    public SearchResults GetCustomerSearchResults(LoginUser loginUser, string searchTerm, bool searchCompanies, bool searchContacts, int max, bool? active, bool? parentsOnly = false)
     { 
         Options options = new Options();
         options.TextFlags = TextFlags.dtsoTfRecognizeDates;
@@ -1185,6 +1185,24 @@ namespace TSWebServices
             else
             {
               job.BooleanConditions = activeCondition.ToString();
+            }
+          }
+
+          if (parentsOnly != null)
+          {
+            StringBuilder parentsOnlyCondition = new StringBuilder();
+            if ((bool)parentsOnly)
+            {
+              parentsOnlyCondition.Append("(IsParent::true) ");
+
+                if (job.BooleanConditions != null)
+                {
+                  job.BooleanConditions = job.BooleanConditions + " AND " + parentsOnlyCondition.ToString();
+                }
+                else
+                {
+                  job.BooleanConditions = parentsOnlyCondition.ToString();
+                }
             }
           }
 
@@ -1383,7 +1401,50 @@ namespace TSWebServices
 		return resultItems.ToArray();
 	}
 
-    private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active)
+    [WebMethod]
+	public string[] SearchCompaniesAndContacts2(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly)
+	{      
+		LoginUser loginUser = TSAuthentication.GetLoginUser();
+		List<string> resultItems = new List<string>();
+		if (string.IsNullOrWhiteSpace(searchTerm))
+		{
+			return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active, parentsOnly);
+		}
+
+		if (searchCompanies || searchContacts)
+		{
+			Stopwatch stopWatch = Stopwatch.StartNew();
+			SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active, parentsOnly);
+			stopWatch.Stop();
+			NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
+			//Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
+			if (stopWatch.ElapsedMilliseconds > 500)
+			{
+				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
+				NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
+			}
+
+				int topLimit = from + count;
+			if (topLimit > results.Count)
+			{
+				topLimit = results.Count;
+			}
+
+			stopWatch.Restart();
+			for (int i = from; i < topLimit; i++)
+			{
+				results.GetNthDoc(i);
+				if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
+				resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+			}
+			stopWatch.Stop();
+			NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContactsPullData", stopWatch.ElapsedMilliseconds);
+		}
+
+		return resultItems.ToArray();
+	}
+
+    private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       List<string> results = new List<string>();
@@ -1427,6 +1488,11 @@ SELECT
   FROM Organizations o WHERE o.ParentID = @OrganizationID
 ";
 
+        if (Convert.ToBoolean(parentsOnly))
+        {
+            companyQuery += " AND (1 < (SELECT COUNT(*) FROM GetCompanyFamilyIDs(o.OrganizationID, 1))) ";
+        }    
+                
       string contactQuery = @"
 SELECT 
   LTRIM(u.LastName + ' ' + u.FirstName) AS Name, 

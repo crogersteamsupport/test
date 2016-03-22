@@ -2348,6 +2348,19 @@ ORDER BY
       return organization.ExtraStorageUnits * 500;
     }
 
+    public static bool GetIsParent(LoginUser loginUser, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT COUNT(*) FROM dbo.GetCompanyFamilyIDs(@OrganizationID, 1)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+
+        Organizations organizations = new Organizations(loginUser);
+        return (int)organizations.ExecuteScalar(command, "CustomerRelationships") > 1;
+      }
+    }
+
     public static int GetBaseStorageAllowed(LoginUser loginUser, int organizationID)
     {
 

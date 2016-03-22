@@ -28,6 +28,7 @@
         var term = $('#searchString').val();
 
         var searchCompanies = false;
+        var parentsOnly = false;
         var searchContacts = false;
         if ($('.customers-filter-all').parent().hasClass('active')) {
             searchContacts = true;
@@ -36,9 +37,12 @@
             searchCompanies = true;
         } else if ($('.customers-filter-contacts').parent().hasClass('active')) {
             searchContacts = true;
+        } else if ($('.customers-filter-parents').parent().hasClass('active')) {
+            searchCompanies = true;
+            parentsOnly = true;
         }
         top.Ts.System.logAction('Customer Page - Search Executed');
-        top.Ts.Services.Search.SearchCompaniesAndContacts($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, function (items) {
+        top.Ts.Services.Search.SearchCompaniesAndContacts2($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, parentsOnly, function (items) {
             $('.searchresults').fadeTo(0, 1);
 
             if (start == 0) {
