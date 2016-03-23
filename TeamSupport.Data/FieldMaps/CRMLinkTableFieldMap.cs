@@ -41,6 +41,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RestrictedToTicketTypes", "RestrictedToTicketTypes", false, false, false);
       _fieldMap.AddMap("UpdateTicketType", "UpdateTicketType", false, false, false);
       _fieldMap.AddMap("InstanceName", "InstanceName", false, false, false);
+      _fieldMap.AddMap("ExcludedTicketStatusUpdate", "ExcludedTicketStatusUpdate", false, false, false);
+      _fieldMap.AddMap("IncludeIssueNonRequired", "IncludeIssueNonRequired", false, false, false);
             
     }
   }

@@ -41,6 +41,8 @@ namespace TeamSupport.Data
     [DataMember] public string RestrictedToTicketTypes { get; set; }
     [DataMember] public bool UpdateTicketType { get; set; }
     [DataMember] public string InstanceName { get; set; }
+    [DataMember] public string ExcludedTicketStatusUpdate { get; set; }
+    [DataMember] public bool IncludeIssueNonRequired { get; set; }
           
   }
   
@@ -49,6 +51,8 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.IncludeIssueNonRequired = this.IncludeIssueNonRequired;
+      result.ExcludedTicketStatusUpdate = this.ExcludedTicketStatusUpdate;
       result.InstanceName = this.InstanceName;
       result.UpdateTicketType = this.UpdateTicketType;
       result.RestrictedToTicketTypes = this.RestrictedToTicketTypes;

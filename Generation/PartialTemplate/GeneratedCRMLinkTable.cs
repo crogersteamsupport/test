@@ -112,7 +112,19 @@ namespace TeamSupport.Data
       set { Row["RestrictedToTicketTypes"] = CheckValue("RestrictedToTicketTypes", value); }
     }
     
+    public string ExcludedTicketStatusUpdate
+    {
+      get { return Row["ExcludedTicketStatusUpdate"] != DBNull.Value ? (string)Row["ExcludedTicketStatusUpdate"] : null; }
+      set { Row["ExcludedTicketStatusUpdate"] = CheckValue("ExcludedTicketStatusUpdate", value); }
+    }
+    
 
+    
+    public bool IncludeIssueNonRequired
+    {
+      get { return (bool)Row["IncludeIssueNonRequired"]; }
+      set { Row["IncludeIssueNonRequired"] = CheckValue("IncludeIssueNonRequired", value); }
+    }
     
     public string InstanceName
     {
@@ -281,18 +293,28 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int cRMLinkID)
     {
-        SqlCommand deleteCommand = new SqlCommand();
+      BeforeDBDelete(cRMLinkID);
+      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+      {
+        connection.Open();
+
+        SqlCommand deleteCommand = connection.CreateCommand();
+
+        deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
         deleteCommand.Parameters.Add("CRMLinkID", SqlDbType.Int);
         deleteCommand.Parameters["CRMLinkID"].Value = cRMLinkID;
 
-        BeforeDBDelete(cRMLinkID);
         BeforeRowDelete(cRMLinkID);
-        TryDeleteFromDB(deleteCommand);
+        deleteCommand.ExecuteNonQuery();
+		connection.Close();
+        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
         AfterRowDelete(cRMLinkID);
-        AfterDBDelete(cRMLinkID);
-	}
+      }
+      AfterDBDelete(cRMLinkID);
+      
+    }
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("CRMLinkTableSave");
@@ -301,7 +323,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID,    [AllowPortalAccess] = @AllowPortalAccess,    [SendWelcomeEmail] = @SendWelcomeEmail,    [DefaultSlaLevelID] = @DefaultSlaLevelID,    [PullCasesAsTickets] = @PullCasesAsTickets,    [PushTicketsAsCases] = @PushTicketsAsCases,    [PullCustomerProducts] = @PullCustomerProducts,    [UpdateStatus] = @UpdateStatus,    [ActionTypeIDToPush] = @ActionTypeIDToPush,    [HostName] = @HostName,    [DefaultProject] = @DefaultProject,    [MatchAccountsByName] = @MatchAccountsByName,    [UseSandBoxServer] = @UseSandBoxServer,    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,    [UpdateTicketType] = @UpdateTicketType,    [InstanceName] = @InstanceName  WHERE ([CRMLinkID] = @CRMLinkID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID,    [AllowPortalAccess] = @AllowPortalAccess,    [SendWelcomeEmail] = @SendWelcomeEmail,    [DefaultSlaLevelID] = @DefaultSlaLevelID,    [PullCasesAsTickets] = @PullCasesAsTickets,    [PushTicketsAsCases] = @PushTicketsAsCases,    [PullCustomerProducts] = @PullCustomerProducts,    [UpdateStatus] = @UpdateStatus,    [ActionTypeIDToPush] = @ActionTypeIDToPush,    [HostName] = @HostName,    [DefaultProject] = @DefaultProject,    [MatchAccountsByName] = @MatchAccountsByName,    [UseSandBoxServer] = @UseSandBoxServer,    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,    [UpdateTicketType] = @UpdateTicketType,    [InstanceName] = @InstanceName,    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,    [IncludeIssueNonRequired] = @IncludeIssueNonRequired  WHERE ([CRMLinkID] = @CRMLinkID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CRMLinkID", SqlDbType.Int, 4);
@@ -500,13 +522,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ExcludedTicketStatusUpdate", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IncludeIssueNonRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed],    [LastTicketID],    [AllowPortalAccess],    [SendWelcomeEmail],    [DefaultSlaLevelID],    [PullCasesAsTickets],    [PushTicketsAsCases],    [PullCustomerProducts],    [UpdateStatus],    [ActionTypeIDToPush],    [HostName],    [DefaultProject],    [MatchAccountsByName],    [UseSandBoxServer],    [AlwaysUseDefaultProjectKey],    [RestrictedToTicketTypes],    [UpdateTicketType],    [InstanceName]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed, @LastTicketID, @AllowPortalAccess, @SendWelcomeEmail, @DefaultSlaLevelID, @PullCasesAsTickets, @PushTicketsAsCases, @PullCustomerProducts, @UpdateStatus, @ActionTypeIDToPush, @HostName, @DefaultProject, @MatchAccountsByName, @UseSandBoxServer, @AlwaysUseDefaultProjectKey, @RestrictedToTicketTypes, @UpdateTicketType, @InstanceName); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed],    [LastTicketID],    [AllowPortalAccess],    [SendWelcomeEmail],    [DefaultSlaLevelID],    [PullCasesAsTickets],    [PushTicketsAsCases],    [PullCustomerProducts],    [UpdateStatus],    [ActionTypeIDToPush],    [HostName],    [DefaultProject],    [MatchAccountsByName],    [UseSandBoxServer],    [AlwaysUseDefaultProjectKey],    [RestrictedToTicketTypes],    [UpdateTicketType],    [InstanceName],    [ExcludedTicketStatusUpdate],    [IncludeIssueNonRequired]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed, @LastTicketID, @AllowPortalAccess, @SendWelcomeEmail, @DefaultSlaLevelID, @PullCasesAsTickets, @PushTicketsAsCases, @PullCustomerProducts, @UpdateStatus, @ActionTypeIDToPush, @HostName, @DefaultProject, @MatchAccountsByName, @UseSandBoxServer, @AlwaysUseDefaultProjectKey, @RestrictedToTicketTypes, @UpdateTicketType, @InstanceName, @ExcludedTicketStatusUpdate, @IncludeIssueNonRequired); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("IncludeIssueNonRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ExcludedTicketStatusUpdate", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("InstanceName", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -809,7 +859,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed], [LastTicketID], [AllowPortalAccess], [SendWelcomeEmail], [DefaultSlaLevelID], [PullCasesAsTickets], [PushTicketsAsCases], [PullCustomerProducts], [UpdateStatus], [ActionTypeIDToPush], [HostName], [DefaultProject], [MatchAccountsByName], [UseSandBoxServer], [AlwaysUseDefaultProjectKey], [RestrictedToTicketTypes], [UpdateTicketType], [InstanceName] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed], [LastTicketID], [AllowPortalAccess], [SendWelcomeEmail], [DefaultSlaLevelID], [PullCasesAsTickets], [PushTicketsAsCases], [PullCustomerProducts], [UpdateStatus], [ActionTypeIDToPush], [HostName], [DefaultProject], [MatchAccountsByName], [UseSandBoxServer], [AlwaysUseDefaultProjectKey], [RestrictedToTicketTypes], [UpdateTicketType], [InstanceName], [ExcludedTicketStatusUpdate], [IncludeIssueNonRequired] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CRMLinkID", cRMLinkID);
         Fill(command);

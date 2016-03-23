@@ -430,85 +430,88 @@ namespace TSWebServices
       return table.GetSlaLevelProxies();
     }
 
-    [WebMethod]
-    public CRMLinkTableItemProxy SaveCrmLink(
-      int crmLinkID,
-      bool isActive,
-      string crmType,
-      string password,
-      string token,
-      string tag,
-      string userName,
-      bool email,
-      bool portal,
-      int? defaultSlaLevelID,
-      bool pullCasesAsTickets,
-      bool pushTicketsAsCases,
-      bool pushTicketsAsAccountComments,
-      bool pullCustomerProducts,
-      int? actionTypeIDToPush,
-      string hostName,
-      string defaultProject,
-      bool? updateStatus,
-      bool updateTicketType,
-      bool matchAccountsByName,
-      bool useSandBoxServer,
-      bool alwaysUseDefaultProjectKey,
-      string restrictedToTicketTypes,
-      string jiraInstanceName
-    )
-    {
-      if (!TSAuthentication.IsSystemAdmin) return null;
-      CRMLinkTableItem item;
+	[WebMethod]
+	public CRMLinkTableItemProxy SaveCrmLink(
+		int crmLinkID,
+		bool isActive,
+		string crmType,
+		string password,
+		string token,
+		string tag,
+		string userName,
+		bool email,
+		bool portal,
+		int? defaultSlaLevelID,
+		bool pullCasesAsTickets,
+		bool pushTicketsAsCases,
+		bool pushTicketsAsAccountComments,
+		bool pullCustomerProducts,
+		int? actionTypeIDToPush,
+		string hostName,
+		string defaultProject,
+		bool? updateStatus,
+		bool updateTicketType,
+		bool matchAccountsByName,
+		bool useSandBoxServer,
+		bool alwaysUseDefaultProjectKey,
+		bool includeIssueNonRequired,
+        string restrictedToTicketTypes,
+		string excludedTicketStatuses,
+		string jiraInstanceName
+		)
+	{
+		if (!TSAuthentication.IsSystemAdmin) return null;
+		CRMLinkTableItem item;
 
-      if (crmLinkID < 0)
-      {
-        item = (new CRMLinkTable(TSAuthentication.GetLoginUser())).AddNewCRMLinkTableItem();
-        item.LastProcessed = DateTime.UtcNow;
-        item.LastTicketID = -1;
-        item.OrganizationID = TSAuthentication.OrganizationID;
-        item.SendBackTicketData = true;
-      }
-      else
-      {
-        item = CRMLinkTable.GetCRMLinkTableItem(TSAuthentication.GetLoginUser(), crmLinkID);
+		if (crmLinkID < 0)
+		{
+			item = (new CRMLinkTable(TSAuthentication.GetLoginUser())).AddNewCRMLinkTableItem();
+			item.LastProcessed = DateTime.UtcNow;
+			item.LastTicketID = -1;
+			item.OrganizationID = TSAuthentication.OrganizationID;
+			item.SendBackTicketData = true;
+		}
+		else
+		{
+			item = CRMLinkTable.GetCRMLinkTableItem(TSAuthentication.GetLoginUser(), crmLinkID);
 
-        if (item.TypeFieldMatch != tag && (crmType == "Batchbook" || crmType == "Highrise" || crmType == "Salesforce" || crmType == "ZohoCrm"))
-        {
-          item.LastLink = null;
-        }
-        if (item.OrganizationID != TSAuthentication.OrganizationID) return null;
-      }
+			if (item.TypeFieldMatch != tag && (crmType == "Batchbook" || crmType == "Highrise" || crmType == "Salesforce" || crmType == "ZohoCrm"))
+			{
+				item.LastLink = null;
+			}
 
-	  item.InstanceName = jiraInstanceName;
-      item.Active = isActive;
-      item.AllowPortalAccess = portal;
-      item.CRMType = crmType;
-      item.SendWelcomeEmail = email;
-      item.Password = password;
-      item.SecurityToken1 = token;
-      item.TypeFieldMatch = tag;
-      item.Username = userName;
-      item.DefaultSlaLevelID = defaultSlaLevelID;
-      item.PullCasesAsTickets = pullCasesAsTickets;
-      item.PushTicketsAsCases = pushTicketsAsCases;
-      item.SendBackTicketData = pushTicketsAsAccountComments;
-      item.PullCustomerProducts = pullCustomerProducts;
-      item.ActionTypeIDToPush = actionTypeIDToPush;
-      item.HostName = hostName;
-      item.DefaultProject = defaultProject;
-      item.UpdateStatus = updateStatus;
-      item.MatchAccountsByName = matchAccountsByName;
-      item.UpdateTicketType = updateTicketType;
-      item.UseSandBoxServer = useSandBoxServer;
-      item.AlwaysUseDefaultProjectKey = alwaysUseDefaultProjectKey;
-      item.RestrictedToTicketTypes = restrictedToTicketTypes;
+			if (item.OrganizationID != TSAuthentication.OrganizationID) return null;
+		}
 
-      item.Collection.Save();
-      return item.GetProxy();
+		item.InstanceName = jiraInstanceName;
+		item.Active = isActive;
+		item.AllowPortalAccess = portal;
+		item.CRMType = crmType;
+		item.SendWelcomeEmail = email;
+		item.Password = password;
+		item.SecurityToken1 = token;
+		item.TypeFieldMatch = tag;
+		item.Username = userName;
+		item.DefaultSlaLevelID = defaultSlaLevelID;
+		item.PullCasesAsTickets = pullCasesAsTickets;
+		item.PushTicketsAsCases = pushTicketsAsCases;
+		item.SendBackTicketData = pushTicketsAsAccountComments;
+		item.PullCustomerProducts = pullCustomerProducts;
+		item.ActionTypeIDToPush = actionTypeIDToPush;
+		item.HostName = hostName;
+		item.DefaultProject = defaultProject;
+		item.UpdateStatus = updateStatus;
+		item.MatchAccountsByName = matchAccountsByName;
+		item.UpdateTicketType = updateTicketType;
+		item.UseSandBoxServer = useSandBoxServer;
+		item.AlwaysUseDefaultProjectKey = alwaysUseDefaultProjectKey;
+		item.IncludeIssueNonRequired = includeIssueNonRequired; //vv
+		item.RestrictedToTicketTypes = restrictedToTicketTypes;
+		item.ExcludedTicketStatusUpdate = excludedTicketStatuses;//vv
 
-    }
-
+		item.Collection.Save();
+		return item.GetProxy();
+	}
 
 	[WebMethod]
 	public CRMLinkFieldProxy[] GetCrmLinkFields(int crmLinkID)

@@ -384,7 +384,7 @@ Namespace TeamSupport
               URI = _baseURI + "/issue/" + issue("key").ToString()
               issue = GetAPIJObject(URI, "GET", String.Empty)
               updateTicketFlag = True
-              sendCustomMappingFields = True
+              sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
 
 				'//Check if Ticket Description Action has Attachment
 				If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
@@ -1468,39 +1468,54 @@ Namespace TeamSupport
                                             ticketValuesChanged = True
                                         End If
                                     End If
-                                Case "status"
-                                    Dim currentStatus As TicketStatus = allStatuses.FindByTicketStatusID(updateTicket(0).TicketStatusID)
-                                    Dim newStatus As TicketStatus = allStatuses.FindByName(value, updateTicket(0).TicketTypeID)
+							Case "status"
+								Dim currentStatus As TicketStatus = allStatuses.FindByTicketStatusID(updateTicket(0).TicketStatusID)
+								Dim newStatus As TicketStatus = allStatuses.FindByName(value, updateTicket(0).TicketTypeID)
+								Dim isCurrentStatusExcluded As Boolean = False
+									
+								If (Not String.IsNullOrEmpty(CRMLinkRow.ExcludedTicketStatusUpdate)) Then
+									Dim exclusionStatusList As List(Of Integer) = New List(Of Integer)
 
-                                    If CRMLinkRow.UpdateStatus AndAlso newStatus IsNot Nothing AndAlso newStatus.TicketStatusID <> currentStatus.TicketStatusID Then
-                                        updateTicket(0).TicketStatusID = newStatus.TicketStatusID
-                                        ticketValuesChanged = True
-                                    ElseIf Not CRMLinkRow.UpdateStatus Then
-                                        If ticketLinkToJira.Count > 0 AndAlso (ticketLinkToJira(0).JiraStatus Is Nothing OrElse ticketLinkToJira(0).JiraStatus <> value) Then
-                                            Dim fromStatement As String = String.Empty
-                                            If ticketLinkToJira(0).JiraStatus IsNot Nothing Then
-                                                fromStatement = " from """ + ticketLinkToJira(0).JiraStatus + """"
-                                            End If
-                                            Dim newAction As Actions = New Actions(User)
-                                            newAction.AddNewAction()
-                                            newAction(0).ActionTypeID = newActionsTypeID
-                                            newAction(0).TicketID = updateTicket(0).TicketID
-                                            newAction(0).Description = "Jira's Issue " + issue("key").ToString() + "'s status changed" + fromStatement + " to """ + value + """."
+									For Each statusExcluded As String In CRMLinkRow.ExcludedTicketStatusUpdate.Split(",")
+										exclusionStatusList.Add(CInt(statusExcluded))
+									Next
 
-                                            Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
-                                            Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()
-                                            actionLinkToJiraItem.JiraID = -1
+									isCurrentStatusExcluded = exclusionStatusList.Where(Function(p) p = currentStatus.TicketStatusID).Any()
+								End If
 
-                                            actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow()
-                                            newAction.Save()
+								If CRMLinkRow.UpdateStatus _
+									AndAlso newStatus IsNot Nothing _
+									AndAlso newStatus.TicketStatusID <> currentStatus.TicketStatusID _
+									AndAlso Not isCurrentStatusExcluded Then
+									updateTicket(0).TicketStatusID = newStatus.TicketStatusID
+									ticketValuesChanged = True
+								ElseIf Not CRMLinkRow.UpdateStatus Then
+									If ticketLinkToJira.Count > 0 AndAlso (ticketLinkToJira(0).JiraStatus Is Nothing OrElse ticketLinkToJira(0).JiraStatus <> value) Then
+										Dim fromStatement As String = String.Empty
 
-                                            actionLinkToJiraItem.ActionID = newAction(0).ActionID
-                                            actionLinkToJira.Save()
+										If ticketLinkToJira(0).JiraStatus IsNot Nothing Then
+											fromStatement = " from """ + ticketLinkToJira(0).JiraStatus + """"
+										End If
 
-                                            ticketValuesChanged = True
-                                        End If
-                                    End If
-                                    ticketLinkToJira(0).JiraStatus = value
+										Dim newAction As Actions = New Actions(User)
+										newAction.AddNewAction()
+										newAction(0).ActionTypeID = newActionsTypeID
+										newAction(0).TicketID = updateTicket(0).TicketID
+										newAction(0).Description = "Jira's Issue " + issue("key").ToString() + "'s status changed" + fromStatement + " to """ + value + """."
+
+										Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
+										Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()
+										
+										actionLinkToJiraItem.JiraID = -1
+										actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow()
+										newAction.Save()
+										actionLinkToJiraItem.ActionID = newAction(0).ActionID
+										actionLinkToJira.Save()
+										ticketValuesChanged = True
+									End If
+								End If
+
+								ticketLinkToJira(0).JiraStatus = value
                             End Select
                         End If
                     Next

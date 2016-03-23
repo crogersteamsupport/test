@@ -158,25 +158,24 @@
       <li class="int-type jira">
         <h1 class="collapsable"><span class="ui-icon ui-icon-triangle-1-e"/></span><img src="../Images/party3/Jira.png" /><span>Jira</span></h1>
         <div class="int-panel">
+			<h3>TeamSupport has native integration with Jira.</h3>
+			<p>TeamSupport Tickets can be synced with new or existing Jira Issues.  This integration allows your company to use best of breed solutions for issues and bug tracking as well as customer service and support!</p>
+			<p><span style="font-weight: bold;color: Red;">Important:</span>  Before you setup your link to Jira, please <a href="http://www.teamsupport.com/documentation/1/en/topic/jira" target="_blank" style="font-weight: bold;text-decoration: underline;">read this important information</a> about how TeamSupport Tickets Types and Jira Issues Types are mapped, otherwise you may experience initial sync issues.</p>
 
-        <h3>TeamSupport has native integration with Jira.</h3>
-        <p>TeamSupport Tickets can be synced with new or existing Jira Issues.  This integration allows your company to use best of breed solutions for issues and bug tracking as well as customer service and support!</p>
-        <p><span style="font-weight: bold;color: Red;">Important:</span>  Before you setup your link to Jira, please <a href="http://www.teamsupport.com/documentation/1/en/topic/jira" target="_blank" style="font-weight: bold;text-decoration: underline;">read this important information</a> about how TeamSupport Tickets Types and Jira Issues Types are mapped, otherwise you may experience initial sync issues.</p>
-
-        <div class="int-content-wrapper">
-          <div>
-            <div class ="label-block jiraInstancesName">
-              <span id="InstancesLabel" class="label">Instances</span>
-              <div id="JiraInstacesListWrapper" class="ts-clearfix" style="float: left;">
-                <select id="JiraInstances" class="int-jiraInstances"></select>
-              </div>
-              <span id="AddingInstanceLabel" class="addingInstanceLabel">Adding new instance</span>
-            </div>
-            <div class="label-block">
-              <button type="button" id="NewInstance" class="btn btn-primary pull-right action-new" data-toggle="dropdown">New Instance</button>
-            </div>
-          </div>
-        </div>
+			<div class="int-content-wrapper">
+			  <div>
+				<div class ="label-block jiraInstancesName">
+				  <span id="InstancesLabel" class="label">Instances</span>
+				  <div id="JiraInstacesListWrapper" class="ts-clearfix" style="float: left;">
+					<select id="JiraInstances" class="int-jiraInstances"></select>
+				  </div>
+				  <span id="AddingInstanceLabel" class="addingInstanceLabel">Adding new instance</span>
+				</div>
+				<div class="label-block">
+				  <button type="button" id="NewInstance" class="btn btn-primary pull-right action-new" data-toggle="dropdown">New Instance</button>
+				</div>
+			  </div>
+			</div>
 		  	<div class="int-content-wrapper">
 		  		<div class="int-content-center">
 		  			<div class="mappings ui-helper-hidden">
@@ -208,10 +207,10 @@
 		  		</div>
 		  	</div>
 		  	<div class="int-content-left">
-          <label>Instance Name</label>
-          <input id="InstanceName" type="text" class="text ui-widget-content ui-corner-all int-crm-instancename" />
+				<label>Instance Name</label>
+				<input id="InstanceName" type="text" class="text ui-widget-content ui-corner-all int-crm-instancename" />
 		  		
-          <label>Jira Host Name</label>
+				<label>Jira Host Name</label>
 		  		<input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
 		  		<label>Jira User Name</label>
 		  		<input type="text" class="text ui-widget-content ui-corner-all int-crm-user" />
@@ -227,25 +226,33 @@
 		  		<div class="checkboxes">
 		  			<input id="Checkbox1" type="checkbox" class="checkbox int-crm-update-status" />
 		  			<label for="cb-jira-update-status" class="checkbox">Update TeamSupport Tickets Statuses</label>
-		  			<div class="clearfix"></div>
+		  			
+			  		<div class="clearfix"></div>
+			  		<span id="ticketStatusExceptionSpan" class="label">Except the following</span>
+			  		<select id="exclusionTicketStatusList" class="int-crm-ticketStatusToExclude" multiple=multiple size="5"></select>
+					
+					<div class="clearfix"></div>
 		  			<input id="Checkbox5" type="checkbox" class="checkbox int-crm-update-type" />
 		  			<label for="cb-jira-update-type" class="checkbox">Update TeamSupport Ticket Type</label>
 		  			<div class="clearfix"></div>
 		  			<input id="Checkbox2" type="checkbox" class="checkbox int-crm-active" />
-		  			<label for="cb-salesforce" class="checkbox">Synchronization Active</label>
+		  			<label for="cb-jira" class="checkbox">Synchronization Active</label>
 		  			<div class="clearfix"></div>
 		  			<input id="Checkbox3" type="checkbox" class="checkbox int-crm-always-use-default-project-key" />
-		  			<label for="cb-salesforce" class="checkbox">Always Use Default Project Key</label>
+		  			<label for="cb-jira" class="checkbox">Always Use Default Project Key</label>
 		  			<div class="clearfix"></div>
+			  		<input id="Checkbox5" type="checkbox" class="checkbox int-crm-IncludeIssueNonRequired" />
+			  		<label for="cb-jira" class="checkbox">Include Non-Required Fields On Issue Creation</label>
+			  		<div class="clearfix"></div>
 		  			<input id="Checkbox4" type="checkbox" class="checkbox int-crm-ticket-types" />
-		  			<label for="cb-salesforce" class="checkbox">Use All Ticket Types</label>
+		  			<label for="cb-jira" class="checkbox">Use All Ticket Types</label>
 		  			<div class="clearfix"></div>
 		  			<select id="restrictedTicketTypesList" class="int-ticketTypeToPush" multiple=multiple size="5"></select>
 		  			<div class="clearfix"></div>
 		  		</div>
 		  	</div>
-		  	<div style="clear:both;"></div>
-		  </div>
+			<div style="clear:both;"></div>
+		</div>
       </li>
       <li class="int-type mailchimp">
         <h1 class="collapsable"><span class="ui-icon ui-icon-triangle-1-e"/></span><img src="../Images/party3/mailchimp.png" /><span>MailChimp</span></h1>

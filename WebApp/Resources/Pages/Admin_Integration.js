@@ -9,6 +9,7 @@
 /// <reference path="~/Default.aspx" />
 var slaLevels;
 var actionTypes;
+var organizationStatuses;//vv
 var ticketTypes;
 var jiraInstances;
 var adminInt = null;
@@ -31,6 +32,7 @@ AdminInt = function () {
   });
 
   actionTypes = top.Ts.Cache.getActionTypes();
+  organizationStatuses = top.Ts.Cache.getTicketStatuses(); //vv
   ticketTypes = top.Ts.Cache.getTicketTypes();
 
   $('#btnRefresh')
@@ -128,9 +130,16 @@ AdminInt = function () {
   	}
   	if (item.UpdateStatus) {
   		element.find('.int-crm-update-status').prop('checked', true);
+		//vv
+  		loadOrganizationStatusesWithType(element);
+  		element.find('#exclusionTicketStatusList').show();
+  		element.find('#ticketStatusExceptionSpan').show();
   	}
   	else {
   		element.find('.int-crm-update-status').prop('checked', false);
+		//vv
+  		element.find('#exclusionTicketStatusList').hide();
+  		element.find('#ticketStatusExceptionSpan').hide();
   	}
 
   	element.find('.int-crm-update-type').prop('checked', item.UpdateTicketType);
@@ -152,6 +161,13 @@ AdminInt = function () {
   	}
   	else {
   		element.find('.int-crm-always-use-default-project-key').prop('checked', false);
+  	}
+
+  	if (item.IncludeIssueNonRequired) {
+  		element.find('.int-crm-IncludeIssueNonRequired').prop('checked', true);
+  	}
+  	else {
+  		element.find('.int-crm-IncludeIssueNonRequired').prop('checked', false);
   	}
 
   	if (item.RestrictedToTicketTypes) {
@@ -253,6 +269,7 @@ AdminInt = function () {
       loadSlaLevels($(this).next());
       loadActionTypes($(this).next());
       loadTicketTypes($(this).next());
+      loadOrganizationStatusesWithType($(this).next());//vv
 
       var crmTypeLabel = this.textContent;
 
@@ -421,6 +438,56 @@ AdminInt = function () {
       actionTypesList.attr('disabled', 'disabled');
     }
   }
+  //vv
+  function loadOrganizationStatusesWithType(panel) {
+  	var ticketStatusList = panel.find('.int-crm-ticketStatusToExclude');
+  	if (ticketStatusList == null) return;
+
+  	panel = $(panel);
+  	var item = panel.data('link');
+
+  	if (ticketStatusList.length > 0) {
+  		ticketStatusList.empty();
+
+  		if (typeof organizationStatuses == "undefined") {
+  			organizationStatuses = top.Ts.Cache.getTicketStatuses();
+  		}
+
+  		if (typeof ticketTypes == "undefined") {
+  			ticketTypes = top.Ts.Cache.getTicketTypes();
+  		}
+
+  		for (var i = 0; i < organizationStatuses.length; i++) {
+  			var selected = '">';
+  			if (item != null && item.ExcludedTicketStatusUpdate != null) {
+  				var excludeTicketStatusArray = item.ExcludedTicketStatusUpdate.split(',');//vv replace RestrictedToTicketTypes to the right column name
+  				var found = jQuery.inArray(organizationStatuses[i].TicketStatusID.toString(), excludeTicketStatusArray);
+
+  				if (found > -1) {
+  					selected = '" selected="selected">';
+  				}
+  			}
+
+  			var statusName = organizationStatuses[i].Name;
+
+  			for (var x = 0; x < ticketTypes.length; x++) {
+  				if (organizationStatuses[i].TicketTypeID == ticketTypes[x].TicketTypeID) {
+  					typeName = ticketTypes[x].Name;
+  					break;
+  				}
+  			}
+
+  			ticketStatusList.append('<option value="' + organizationStatuses[i].TicketStatusID + selected + typeName + ' - ' + statusName + '</option>');
+  		}
+
+  		$("#exclusionTicketStatusList").html($('#exclusionTicketStatusList option').sort(function (x, y) {
+  			return $(x).text() < $(y).text() ? -1 : 1;
+  		}))
+  	}
+  	else {
+  		ticketStatusList.attr('disabled', 'disabled');
+  	}
+  }
 
   function loadTicketTypes(panel) {
     var ticketTypesList = panel.find('.int-ticketTypeToPush');
@@ -430,26 +497,30 @@ AdminInt = function () {
     var item = panel.data('link');
 
     if (ticketTypesList.length > 0) {
-      ticketTypesList.empty();
+    	ticketTypesList.empty();
 
-      for (var i = 0; i < ticketTypes.length; i++) {
-        var selected = '">';
+    	if (typeof ticketTypes == "undefined") {
+    		ticketTypes = top.Ts.Cache.getTicketTypes();
+    	}
 
-        if (item != null && item.RestrictedToTicketTypes != null) {
-          var restrictedToTicketTypesArray = item.RestrictedToTicketTypes.split(',');
-          var found = jQuery.inArray(ticketTypes[i].TicketTypeID.toString(), restrictedToTicketTypesArray);
+		for (var i = 0; i < ticketTypes.length; i++) {
+			var selected = '">';
+
+			if (item != null && item.RestrictedToTicketTypes != null) {
+				var restrictedToTicketTypesArray = item.RestrictedToTicketTypes.split(',');
+				var found = jQuery.inArray(ticketTypes[i].TicketTypeID.toString(), restrictedToTicketTypesArray);
           
-          if (found > -1) {
-            selected = '" selected="selected">';
-          }
-        }
+				if (found > -1) {
+					selected = '" selected="selected">';
+				}
+			}
 
-        ticketTypesList.append('<option value="' + ticketTypes[i].TicketTypeID + selected + ticketTypes[i].Name + '</option>');
-      }
-    }
-    else {
-      ticketTypesList.attr('disabled', 'disabled');
-    }
+			ticketTypesList.append('<option value="' + ticketTypes[i].TicketTypeID + selected + ticketTypes[i].Name + '</option>');
+		}
+	}
+	else {
+		ticketTypesList.attr('disabled', 'disabled');
+	}
   }
 
   function appendMappedField(element, field) {
@@ -672,6 +743,48 @@ AdminInt = function () {
       alwaysUseDefaultProjectKey = false;
     }
 
+  	//vv
+    var includeIssueNonRequired = parent.find('.int-crm-IncludeIssueNonRequired').prop('checked');
+    if (typeof includeIssueNonRequired == 'undefined') {
+    	includeIssueNonRequired = false;
+    }
+
+  	//vv
+    var updateTicketStatus = parent.find('.int-crm-update-status').prop('checked');
+    if (typeof updateTicketStatus == 'undefined') {
+    	updateTicketStatus = false;
+    }
+	//vv
+    var excludedTicketStatuses = null;
+    if (!updateTicketStatus) {
+    	excludedTicketStatuses = null;
+    }
+    else {
+    	var exclusionTicketStatusList = parent.find('#exclusionTicketStatusList');
+    	if (typeof exclusionTicketStatusList == 'undefined') {
+    		excludedTicketStatuses = null;
+    	}
+    	else {
+    		excludedTicketStatuses = '';
+
+    		for (var x = 0; x < exclusionTicketStatusList[0].length; x++) {
+    			if (exclusionTicketStatusList[0][x].selected) {
+    				if (excludedTicketStatuses != '') {
+    					excludedTicketStatuses = excludedTicketStatuses + ','
+    				}
+
+    				excludedTicketStatuses = excludedTicketStatuses + exclusionTicketStatusList[0][x].value;
+    			}
+    		}
+
+    		if (excludedTicketStatuses === null || excludedTicketStatuses == '') {
+    			parent.find('.int-crm-update-status').prop('checked', false);
+    			parent.find('#restrictedTicketTypesList').hide();
+    			excludedTicketStatuses = null;
+    		}
+    	}
+    }
+
     var useAllTicketTypes = parent.find('.int-crm-ticket-types').prop('checked');
     if (typeof useAllTicketTypes == 'undefined') {
       useAllTicketTypes = true;
@@ -735,7 +848,9 @@ AdminInt = function () {
           matchAccountsByName,
           useSandBoxServer,
           alwaysUseDefaultProjectKey,
+		  includeIssueNonRequired, //vv
           restrictedToTicketTypes,
+		  excludedTicketStatuses, //vv
           jiraInstanceName,
           function (result) {
             parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
@@ -797,6 +912,17 @@ AdminInt = function () {
   $('.int-actionTypeToPush').change(onChange);
   $('.int-content-center input').unbind('change').unbind('keydown');
   $('.int-ticketTypeToPush').change(onChange);
+
+  $('.int-crm-update-status').click(function (e) {
+  	if ($(this).prop('checked')) {
+  		$('#exclusionTicketStatusList').show();
+  		$('#ticketStatusExceptionSpan').show();
+  	}
+  	else {
+  		$('#exclusionTicketStatusList').hide();
+  		$('#ticketStatusExceptionSpan').hide();
+  	}
+  });
 
   $('.int-crm-ticket-types').click(function (e) {
     if ($(this).prop('checked')) {
@@ -876,6 +1002,7 @@ AdminInt = function () {
 		element.find('.int-crm-update-type').prop('checked', false);
 		element.find('.int-crm-active').prop('checked', false);
 		element.find('.int-crm-always-use-default-project-key').prop('checked', false);
+		element.find('.int-crm-IncludeIssueNonRequired').prop('checked', false);
 		element.find('.int-crm-ticket-types').prop('checked', true);
 
 		$("#restrictedTicketTypesList option:selected").removeAttr("selected");
