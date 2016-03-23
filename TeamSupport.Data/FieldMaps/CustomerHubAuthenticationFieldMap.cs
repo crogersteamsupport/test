@@ -19,6 +19,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableRequestAccess", "EnableRequestAccess", false, false, false);
       _fieldMap.AddMap("EnableSSO", "EnableSSO", false, false, false);
       _fieldMap.AddMap("RequestTicketType", "RequestTicketType", false, false, false);
+      _fieldMap.AddMap("RequestGroupType", "RequestGroupType", false, false, false);
       _fieldMap.AddMap("AnonymousHubAccess", "AnonymousHubAccess", false, false, false);
       _fieldMap.AddMap("AnonymousWikiAccess", "AnonymousWikiAccess", false, false, false);
       _fieldMap.AddMap("AnonymousKBAccess", "AnonymousKBAccess", false, false, false);
