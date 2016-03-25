@@ -297,7 +297,12 @@
 
         var id = $(this).data('organizationid');
         top.Ts.System.logAction('Customer Page - View Recent Company');
-        top.Ts.MainPage.openNewCustomer(id);
+        if ($('.customers-filter-parents').parent().hasClass('active')) {
+            top.Ts.MainPage.openNewCustomerInParentView(id);
+        }
+        else {
+            top.Ts.MainPage.openNewCustomer(id);
+        }
 
         top.Ts.Services.Customers.UpdateRecentlyViewed('o'+id, function (resultHtml) {
             $('.recent-container').empty();

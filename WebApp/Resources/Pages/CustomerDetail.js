@@ -2139,6 +2139,8 @@ $(document).ready(function () {
     }
 
     function LoadChildren() {
+        $(".childrenList").empty();
+
         top.Ts.Services.Customers.LoadChildren(organizationID, function (items) {
             var container = $('.childrenList');
             for (var i = 0; i < items.length; i++) {
