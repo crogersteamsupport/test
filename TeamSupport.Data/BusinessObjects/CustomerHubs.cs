@@ -24,13 +24,15 @@ namespace TeamSupport.Data
 			}
 		}
 
-		public void LoadByHubName(string name)
+		public void LoadByHubName(string name, string cnameURL)
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = "SELECT * FROM [CustomerHubs] WHERE Lower(PortalName) = @Name";
+				command.CommandText = @"SELECT * FROM [CustomerHubs] WHERE Lower(PortalName) = @Name OR
+					Lower(CNameURL) = @cnameURL";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@Name", name);
+				command.Parameters.AddWithValue("@CNameURL", cnameURL);
 				Fill(command);
 			}
 		}
