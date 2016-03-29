@@ -309,24 +309,26 @@ namespace TeamSupport.Data
         using (SqlCommand command = new SqlCommand())
         {
                 command.CommandText = @"
-                    SELECT
-                       *
-                    FROM
-                       TicketsView
-                    WHERE
-                        TicketID IN
-                        (
-                            SELECT
-                                TOP 5 ot.TicketID
-                            FROM
-                                OrganizationTickets ot
-                                JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
-                                    ON ot.OrganizationID = x.OrganizationID
-                            ORDER BY
-                                TicketID DESC
-                        )
-                    ORDER BY
-                       TicketNumber DESC;";
+                    
+SELECT * FROM TicketsView
+WHERE
+    TicketID IN
+    (
+        SELECT
+            TOP 5 ot.TicketID
+        FROM
+            OrganizationTickets ot
+			WHERE (ot.OrganizationID IN (
+			     SELECT CustomerID FROM CustomerRelationships 
+			     WHERE RelatedCustomerID=@OrganizationID 
+			     AND @IncludeChildren = 1 
+			   UNION 
+			     SELECT @OrganizationID ))
+			
+        ORDER BY
+            TicketID DESC
+    )
+ORDER BY TicketNumber DESC";
                 command.CommandType = CommandType.Text;
                 //command.CommandText = "GetTopCompanyTickets";
                 //command.CommandType = CommandType.StoredProcedure;
