@@ -2149,6 +2149,19 @@ $(document).ready(function () {
         });
     }
 
+    $('.childrenList').on('click', '.companylink', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('organizationid');
+        top.Ts.System.logAction('Customer Detail - View Child Company');
+        top.Ts.MainPage.openNewCustomer(id);
+
+        top.Ts.Services.Customers.UpdateRecentlyViewed('o' + id, function (resultHtml) {
+  
+        });
+
+    });
+
     function LoadContacts() {
         top.Ts.Services.Customers.LoadContacts2(organizationID, $('#cbActive').prop('checked'), _isParentView, function (users) {
             $('.userList').empty();
