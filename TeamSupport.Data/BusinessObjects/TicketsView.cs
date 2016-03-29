@@ -55,7 +55,6 @@ namespace TeamSupport.Data
     [DataMember] public bool? IsEnqueued { get; set; }
     [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
     [DataMember] public int? ViewerID { get; set; }
-    [DataMember] public bool? IncludeCompanyChildren { get; set; }
     
   }
 
@@ -178,30 +177,14 @@ namespace TeamSupport.Data
         }
     }
 
-    public int GetOrganizationTicketCount(int organizationID, int closed, bool includeChildren = false)
+    public int GetOrganizationTicketCount(int organizationID, int closed)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"
-            SELECT
-                COUNT(*)
-            FROM
-                TicketsView tv
-            WHERE 
-                tv.IsClosed = @closed 
-                AND tv.TicketID IN
-                (
-                    SELECT
-                        ot.TicketID
-                    FROM
-                        OrganizationTickets ot
-                        JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
-                            ON ot.OrganizationID = x.OrganizationID
-                )";
+        command.CommandText = "SELECT COUNT(*) FROM TicketsView tv LEFT JOIN OrganizationTickets ot ON ot.TicketID = tv.TicketID WHERE ot.OrganizationID = @OrganizationID and tv.IsClosed = @closed";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@closed", closed);
-        command.Parameters.AddWithValue("@IncludeChildren", includeChildren);
         object o = ExecuteScalar(command);
         if (o == null || o == DBNull.Value) return 0;
         return (int)o;
@@ -304,34 +287,13 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadLatest5Tickets(int organizationID, bool includeChildren = false)
+    public void LoadLatest5Tickets(int organizationID)
     {
         using (SqlCommand command = new SqlCommand())
         {
-                command.CommandText = @"
-                    SELECT
-                       *
-                    FROM
-                       TicketsView
-                    WHERE
-                        TicketID IN
-                        (
-                            SELECT
-                                TOP 5 ot.TicketID
-                            FROM
-                                OrganizationTickets ot
-                                JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
-                                    ON ot.OrganizationID = x.OrganizationID
-                            ORDER BY
-                                TicketID DESC
-                        )
-                    ORDER BY
-                       TicketNumber DESC;";
-                command.CommandType = CommandType.Text;
-                //command.CommandText = "GetTopCompanyTickets";
-                //command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("OrganizationID", organizationID);
-            command.Parameters.AddWithValue("IncludeChildren", includeChildren);
+            command.CommandText = "SELECT top 5 tv.* FROM TicketsView tv LEFT JOIN OrganizationTickets ot ON ot.TicketID = tv.TicketID WHERE ot.OrganizationID = @OrganizationID ORDER BY TicketNumber desc";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
             Fill(command);
         }
     }
@@ -1452,25 +1414,7 @@ namespace TeamSupport.Data
 
       if (filter.CustomerID != null)
       {
-            if (filter.IncludeCompanyChildren == true)
-            {
-                builder.Append(@" 
-                AND EXISTS
-                (
-                    SELECT 
-                        * 
-                    FROM 
-                        OrganizationTickets ot 
-                        JOIN dbo.GetCompanyFamilyIDs(@CustomerID, 1) x 
-                            ON ot.OrganizationID = x.OrganizationID
-                    WHERE 
-                        ot.TicketID = tv.TicketID 
-                )");
-            }
-            else
-            {
-                builder.Append(" AND (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID) AND (ot.TicketID = tv.TicketID)))");
-            }
+        builder.Append(" AND (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID) AND (ot.TicketID = tv.TicketID)))");
         command.Parameters.AddWithValue("CustomerID", filter.CustomerID);
       }
 
