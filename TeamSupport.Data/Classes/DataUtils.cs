@@ -170,6 +170,11 @@ namespace TeamSupport.Data
             return text;
         }
 
+        public static string EllipseString(string text, int maxChars, string last = "...")
+        {
+            return text.Length <= maxChars ? text : text.Substring(0, maxChars + last.Length) + last;
+        }
+
         public static string ProductTypeString(ProductType type)
         {
             string result = "";

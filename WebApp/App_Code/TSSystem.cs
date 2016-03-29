@@ -310,7 +310,31 @@ namespace TSWebServices
     {
       string data = Settings.UserDB.ReadString("main-tabs", "");
       if (data == "") return null;
-      return data;
+            dynamic tabs = JsonConvert.DeserializeObject(data);
+
+            foreach (dynamic tab in tabs)
+            {
+                try
+                {
+                    if (tab.TabType == "company")
+                    {
+                        int id = int.Parse(tab.ID);
+                        Organization org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), id);
+                        tab.Caption = DataUtils.EllipseString(org.Name, 13);
+                    }
+                    else if (tab.TabType == "contact")
+                    {
+                        int id = int.Parse(tab.ID);
+                        User user = Users.GetUser(TSAuthentication.GetLoginUser(), id);
+                        tab.Caption = DataUtils.EllipseString(user.FirstLastName, 13);
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+            return JsonConvert.SerializeObject(tabs);
     }
 
     [WebMethod]
