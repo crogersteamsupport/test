@@ -228,6 +228,7 @@
                 					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
                 						sessionId = resultID[0];
                 						token = resultID[1];
+                						apiKey = resultID[2];
                 						session = OT.initSession(apiKey, sessionId);
                 						var pubOptions = { publishAudio: true, publishVideo: false };
                 						publisher = OT.initPublisher('ourPubTest2', pubOptions);
