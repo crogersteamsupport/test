@@ -1927,6 +1927,9 @@ $(document).ready(function () {
             }
 
             SetupParentSection(result.Parents);
+            if (result.IsParent == false) {
+                $('#customerParentView').hide();
+            }
         });
     }
 

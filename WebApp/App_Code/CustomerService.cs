@@ -1810,7 +1810,7 @@ namespace TSWebServices
             }
 
             orgProp.Parents = GetParents(organizationID);
-
+            orgProp.IsParent = Organizations.GetIsParent(TSAuthentication.GetLoginUser(), organizationID);
             return orgProp;
 
         }
@@ -4215,6 +4215,8 @@ SELECT
             public string SAED { get; set; }
             [DataMember]
             public CompanyParentsViewItemProxy[] Parents { get; set; }
+            [DataMember]
+            public bool IsParent { get; set; }
 
         }
 
