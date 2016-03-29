@@ -318,13 +318,13 @@ namespace TSWebServices
                 {
                     if (tab.TabType == "company")
                     {
-                        int id = int.Parse(tab.ID);
+                        int id = int.Parse(tab.ID.ToString());
                         Organization org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), id);
                         tab.Caption = DataUtils.EllipseString(org.Name, 13);
                     }
                     else if (tab.TabType == "contact")
                     {
-                        int id = int.Parse(tab.ID);
+                        int id = int.Parse(tab.ID.ToString());
                         User user = Users.GetUser(TSAuthentication.GetLoginUser(), id);
                         tab.Caption = DataUtils.EllipseString(user.FirstLastName, 13);
                     }
