@@ -29,7 +29,13 @@ Dashboard.prototype = {
                   top.Ts.Utils.webMethod("ReportService", "GetDashboardReports", {},
                       function (reports) {
                           _reports = reports;
-                          var dashboards = JSON.parse(result);
+                          var dashboards = [];
+                          try {
+                              dashboards = JSON.parse(result);
+                          }
+                          catch (e) {
+                              dashboards = [];
+                          }
                           function findReport(reportID) {
                               for (var i = 0; i < reports.length; i++) {
                                   if (reports[i].ReportID == reportID) return reports[i];
