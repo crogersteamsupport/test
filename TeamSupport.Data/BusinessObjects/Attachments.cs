@@ -83,8 +83,9 @@ namespace TeamSupport.Data
                 LEFT JOIN Users u 
                     ON u.UserID = a.CreatorID 
             WHERE 
-                RefID = @RefID
-                AND RefType = @RefType";
+                RefType = @RefType
+                AND RefID IN
+                (SELECT OrganizationID FROM GetCompanyFamilyIDs(@RefID, @IncludeCompanyChildren))";
         if (orderBy != string.Empty)
         {
           command.CommandText += " ORDER BY " + orderBy;
