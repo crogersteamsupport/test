@@ -3598,21 +3598,27 @@ var SetupJiraFields = function () {
   $('#newJiraIssue').click(function (e) {
     e.preventDefault();
     $('.ts-jira-buttons-container').hide();
+    var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
     top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
-      if (result === true) {
-        $('#issueKeyValue').text('Pending...');
-        $('#issueKey').show();
-      }
-      else {
-        $('.ts-jira-buttons-container').show();
-        $('#issueKey').hide();
-        alert('There was an error setting your Jira Issue Key.');
-      }
+    	if (result != null) {
+    		var syncResult = JSON.parse(result);
+    		if (syncResult.IsSuccessful === true) {
+    			$('#issueKeyValue').text('Pending...');
+    			$('#issueKey').show();
+    		}
+    		else {
+    			$('.ts-jira-buttons-container').show();
+    			$('#issueKey').hide();
+    			alert(syncResult.Error);
+    		}
+    	} else {
+    		alert(errorMessage);
+    	}
     },
     function (error) {
       $('.ts-jira-buttons-container').show();
       $('#issueKey').hide();
-      alert('There was an error setting your Jira Issue Key.');
+      alert(errorMessage);
     });
   });
 
@@ -3637,18 +3643,24 @@ var SetupJiraFields = function () {
       $('#issueKeyValue').text($.trim($('#issueKeyInput').val()));
       $('#enterIssueKey').hide();
       $('#issueKey').show();
+      var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
 
       top.Ts.Services.Tickets.SetJiraIssueKey(_ticketID, $.trim($('#issueKeyInput').val()), function (result) {
-        if (result === false) {
-          $('.ts-jira-buttons-container').show();
-          $('#issueKey').hide();
-          alert('There was an error setting your Jira Issue Key.');
-        }
+      	if (result != null) {
+      		var syncResult = JSON.parse(result);
+      		if (syncResult.IsSuccessful === false) {
+				$('.ts-jira-buttons-container').show();
+				$('#issueKey').hide();
+				alert(syncResult.Error);
+			}
+      	} else {
+      		alert(errorMessage);
+      	}
       },
     function (error) {
       $('.ts-jira-buttons-container').show();
       $('#issueKey').hide();
-      alert('There was an error setting your Jira Issue Key.');
+      alert(errorMessage);
     });
     }
   });

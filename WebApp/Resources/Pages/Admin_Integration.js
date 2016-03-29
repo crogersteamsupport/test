@@ -9,13 +9,14 @@
 /// <reference path="~/Default.aspx" />
 var slaLevels;
 var actionTypes;
-var organizationStatuses;//vv
+var organizationStatuses;
 var ticketTypes;
 var jiraInstances;
 var adminInt = null;
 var _selectedJiraInstance = "";
 var _isNewJiraInstance = false;
 var _isDefaultJiraInstance = false;
+var _allowDefaultNewInstanceForJira = false;
 
 $(document).ready(function () {
   adminInt = new AdminInt();
@@ -32,7 +33,7 @@ AdminInt = function () {
   });
 
   actionTypes = top.Ts.Cache.getActionTypes();
-  organizationStatuses = top.Ts.Cache.getTicketStatuses(); //vv
+  organizationStatuses = top.Ts.Cache.getTicketStatuses();
   ticketTypes = top.Ts.Cache.getTicketTypes();
 
   $('#btnRefresh')
@@ -51,7 +52,8 @@ AdminInt = function () {
   });
 
   top.Ts.Services.Organizations.GetCrmLinks(function (result) {
-    jiraInstances = result;
+  	jiraInstances = result;
+  	var anyJiraInstance = false;
 
     for (var i = 0; i < result.length; i++) {
       //On first load, just load the Default Jira instance.
@@ -59,6 +61,24 @@ AdminInt = function () {
         || result[i].CRMType.toLowerCase() != 'jira') {
         loadPanel($('.' + result[i].CRMType.toLowerCase() + ' .int-panel').data('link', result[i]));
       }
+
+      if (result[i].CRMType.toLowerCase() == 'jira') {
+      	_allowDefaultNewInstanceForJira = false;
+      	anyJiraInstance = true;
+      }
+    }
+
+    if (result.length == 0 || (result.length > 0 && !anyJiraInstance)) {
+    	loadPanelNewJiraInstance();
+    	var element = $('.jira .int-panel');
+    	element.find('.int-crm-instancename').val('Default');
+    	element.find('.int-crm-instancename').attr('disabled', 'disabled');
+    	_isNewJiraInstance = true;
+    	_allowDefaultNewInstanceForJira = true;
+    	$("#NewInstance").hide();
+    	$("#JiraInstacesListWrapper").hide();
+    	$("#AddingInstanceLabel").show();
+    	onNewInstanceClick(this);
     }
   });
 
@@ -130,14 +150,12 @@ AdminInt = function () {
   	}
   	if (item.UpdateStatus) {
   		element.find('.int-crm-update-status').prop('checked', true);
-		//vv
   		loadOrganizationStatusesWithType(element);
   		element.find('#exclusionTicketStatusList').show();
   		element.find('#ticketStatusExceptionSpan').show();
   	}
   	else {
   		element.find('.int-crm-update-status').prop('checked', false);
-		//vv
   		element.find('#exclusionTicketStatusList').hide();
   		element.find('#ticketStatusExceptionSpan').hide();
   	}
@@ -269,7 +287,7 @@ AdminInt = function () {
       loadSlaLevels($(this).next());
       loadActionTypes($(this).next());
       loadTicketTypes($(this).next());
-      loadOrganizationStatusesWithType($(this).next());//vv
+      loadOrganizationStatusesWithType($(this).next());
 
       var crmTypeLabel = this.textContent;
 
@@ -438,7 +456,7 @@ AdminInt = function () {
       actionTypesList.attr('disabled', 'disabled');
     }
   }
-  //vv
+
   function loadOrganizationStatusesWithType(panel) {
   	var ticketStatusList = panel.find('.int-crm-ticketStatusToExclude');
   	if (ticketStatusList == null) return;
@@ -460,7 +478,8 @@ AdminInt = function () {
   		for (var i = 0; i < organizationStatuses.length; i++) {
   			var selected = '">';
   			if (item != null && item.ExcludedTicketStatusUpdate != null) {
-  				var excludeTicketStatusArray = item.ExcludedTicketStatusUpdate.split(',');//vv replace RestrictedToTicketTypes to the right column name
+  				//replace RestrictedToTicketTypes to the right column name
+  				var excludeTicketStatusArray = item.ExcludedTicketStatusUpdate.split(',');
   				var found = jQuery.inArray(organizationStatuses[i].TicketStatusID.toString(), excludeTicketStatusArray);
 
   				if (found > -1) {
@@ -655,7 +674,7 @@ AdminInt = function () {
       if (jiraInstanceName == null || jiraInstanceName == "") {
         parent.find('.int-message').append('<div>Enter a Instance Name.</div>').show();
         flag = true;
-      } else if (jiraInstanceName.trim().toLowerCase() == 'default' && !_isDefaultJiraInstance) {
+      } else if (jiraInstanceName.trim().toLowerCase() == 'default' && !_isDefaultJiraInstance && !_allowDefaultNewInstanceForJira) {
       	parent.find('.int-message').append('<div>Please use a different Instance Name, "Default" is a reserved Instance Name.</div>').show();
       	flag = true;
       }
@@ -743,18 +762,16 @@ AdminInt = function () {
       alwaysUseDefaultProjectKey = false;
     }
 
-  	//vv
     var includeIssueNonRequired = parent.find('.int-crm-IncludeIssueNonRequired').prop('checked');
     if (typeof includeIssueNonRequired == 'undefined') {
     	includeIssueNonRequired = false;
     }
 
-  	//vv
     var updateTicketStatus = parent.find('.int-crm-update-status').prop('checked');
     if (typeof updateTicketStatus == 'undefined') {
     	updateTicketStatus = false;
     }
-	//vv
+
     var excludedTicketStatuses = null;
     if (!updateTicketStatus) {
     	excludedTicketStatuses = null;
@@ -848,9 +865,9 @@ AdminInt = function () {
           matchAccountsByName,
           useSandBoxServer,
           alwaysUseDefaultProjectKey,
-		  includeIssueNonRequired, //vv
+		  includeIssueNonRequired,
           restrictedToTicketTypes,
-		  excludedTicketStatuses, //vv
+		  excludedTicketStatuses,
           jiraInstanceName,
           function (result) {
             parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
@@ -1004,7 +1021,9 @@ AdminInt = function () {
 		element.find('.int-crm-always-use-default-project-key').prop('checked', false);
 		element.find('.int-crm-IncludeIssueNonRequired').prop('checked', false);
 		element.find('.int-crm-ticket-types').prop('checked', true);
-
+		$("#ticketStatusExceptionSpan").hide();
+		$("#exclusionTicketStatusList option:selected").removeAttr("selected");
+		$('#exclusionTicketStatusList').hide();
 		$("#restrictedTicketTypesList option:selected").removeAttr("selected");
 		$('#restrictedTicketTypesList').hide();
 		$('.map-ticket').empty();
@@ -1024,11 +1043,15 @@ AdminInt = function () {
 				var selected = '">';
 
 				if (jiraInstances[i].CRMType.toLowerCase() == 'jira') {
-					if (item != null && item.CRMLinkID > 0 && item.CRMLinkID == jiraInstances[i].CRMLinkID) {
+					if ((item != null && item.CRMLinkID > 0 && item.CRMLinkID == jiraInstances[i].CRMLinkID && item.CRMType == "Jira")
+						|| (_selectedJiraInstance == "" && item.InstanceName == "Default")) {
 						selected = '" selected="selected">';
+						_isDefaultJiraInstance = item.InstanceName == "Default";
+						_selectedJiraInstance = item.CRMLinkID;
 					}
 
 					instancesList.append('<option value="' + jiraInstances[i].CRMLinkID + selected + jiraInstances[i].InstanceName + '</option>');
+					_allowDefaultNewInstanceForJira = false;
 				}
 			}
 

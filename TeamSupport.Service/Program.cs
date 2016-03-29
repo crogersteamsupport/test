@@ -39,7 +39,7 @@ namespace TeamSupport.Service
         case "TSSlaProcessor": result = new SlaProcessor(); break;
         case "TSIndexer": result = new ServiceThreadPool<Indexer>("Indexer"); break;
         case "TSIndexRebuilder": result = new ServiceThreadPool<Indexer>("Indexer"); break;
-        case "TSCrmPool": result = new CrmPool(); break;
+        case "TSCrmPool": result = new CrmPool(SystemUser.CRM); break;
         case "TSReminderProcessor": result = new ReminderProcessor(); break;
         case "TSImportProcessor": result = new ImportProcessor(); break;
         case "TSWebHooks": result = new WebHooks(); break;

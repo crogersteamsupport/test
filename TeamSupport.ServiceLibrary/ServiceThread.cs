@@ -27,6 +27,13 @@ namespace TeamSupport.ServiceLibrary
       _settings = new Settings(_loginUser, ServiceName);
     }
 
+	public ServiceThread(SystemUser serviceUser)
+	{
+		_serviceUser = serviceUser;
+		_loginUser = GetLoginUser(ServiceName);
+		_settings = new Settings(_loginUser, ServiceName);
+	}
+
     private static object _staticLock = new object();
 
     private static bool _serviceStopped = false;
@@ -105,7 +112,9 @@ namespace TeamSupport.ServiceLibrary
       get { return _logs; }
     }
 
-    public virtual void Stop()
+	private static SystemUser _serviceUser = SystemUser.Unknown;
+
+	public virtual void Stop()
     {
       lock (this) { _isStopped = true; }
 
@@ -265,7 +274,7 @@ namespace TeamSupport.ServiceLibrary
 
     public static LoginUser GetLoginUser(string appName)
     {
-      return new LoginUser(ConfigurationManager.AppSettings["ConnectionString"], -1, -1, null);
+      return new LoginUser(ConfigurationManager.AppSettings["ConnectionString"], (int)_serviceUser, -1, null);
     }
     
   }

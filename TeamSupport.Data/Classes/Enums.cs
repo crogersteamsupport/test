@@ -181,19 +181,31 @@ namespace TeamSupport.Data
     Delete
   }
 
-  public enum IntegrationType
-  {
-      SalesForce,
-      Highrise,
-      Batchbook,
-      FreshBooks,
-      MailChimp,
-      ZohoCRM,
-      ZohoReports,
-      Jira,
-      Oracle,
-      HubSpot
-  }
+	public enum IntegrationType : byte
+	{
+		Unknown = 0,
+		SalesForce = 1,
+		Highrise = 2,
+		Batchbook = 3,
+		FreshBooks = 4,
+		MailChimp = 5,
+		ZohoCRM = 6,
+		ZohoReports = 7,
+		Jira = 8,
+		Oracle = 9,
+		HubSpot = 10
+	}
+
+	public enum IntegrationObject : byte
+	{
+		Unknown = 0,
+		Ticket = 1,
+		Company = 2,
+		Contact = 3,
+		Action = 4,
+		Attachment = 4,
+		Credentials = 5
+	}
 
   public enum ReportType
   {

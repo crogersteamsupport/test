@@ -26,6 +26,11 @@ Namespace TeamSupport
         RunHandlesStop = True
       End Sub
 
+	  Public Sub New(ByVal serviceUser As SystemUser) 
+	  : MyBase.New(serviceUser)
+        RunHandlesStop = True
+      End Sub
+
       Public Overrides Sub [Stop]()
         CrmPoolStopped = True
         MyBase.[Stop]()

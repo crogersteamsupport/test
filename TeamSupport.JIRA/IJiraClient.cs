@@ -6,8 +6,10 @@ namespace TeamSupport.JIRA
 {
     public interface IJiraClient<TIssueFields> where TIssueFields : IssueFields, new()
     {
-        /// <summary>Returns all issues for the given project</summary>
-        IEnumerable<Issue<TIssueFields>> GetIssues(String projectKey);
+		/// <summary>Returns the metadata for the given project+issuetype</summary>
+		IssueMetaData.RootObject GetIssueMetaData(string projectKey, string issueType);
+		/// <summary>Returns all issues for the given project</summary>
+		IEnumerable<Issue<TIssueFields>> GetIssues(String projectKey);
         /// <summary>Returns all issues of the specified type for the given project</summary>
         IEnumerable<Issue<TIssueFields>> GetIssues(String projectKey, String issueType);
         /// <summary>Enumerates through all issues for the given project</summary>
@@ -25,8 +27,15 @@ namespace TeamSupport.JIRA
         Issue<TIssueFields> CreateIssue(String projectKey, String issueType, TIssueFields issueFields);
         /// <summary>Updates the given issue on the remote system</summary>
         Issue<TIssueFields> UpdateIssue(Issue<TIssueFields> issue);
-        /// <summary>Deletes the given issue from the remote system</summary>
-        void DeleteIssue(IssueRef issue);
+		/// <summary>Updates the specified field of the issue. Only one field to update.</summary>
+		bool UpdateIssueField(int issueId, string fieldName, string fieldValue);
+
+		/// <summary>Updates the specified field of the issue. Only one field to update. Using json value.</summary>
+		bool UpdateIssueFieldByParameter(int issueId, string jsonBody);
+		/// <summary>Updates the specified fields of the issue.</summary>
+		bool UpdateIssueFields(int issueId, Dictionary<string, string> updateFields);
+		/// <summary>Deletes the given issue from the remote system</summary>
+		void DeleteIssue(IssueRef issue);
 
         /// <summary>Returns all transitions avilable to the given issue</summary>
         IEnumerable<Transition> GetTransitions(IssueRef issue);
@@ -40,8 +49,10 @@ namespace TeamSupport.JIRA
         IEnumerable<Comment> GetComments(IssueRef issue);
         /// <summary>Adds a comment to the given issue</summary>
         Comment CreateComment(IssueRef issue, String comment);
-        /// <summary>Deletes the given comment</summary>
-        void DeleteComment(IssueRef issue, Comment comment);
+		/// <summary>Updates a comment on the given issue</summary>
+		Comment UpdateComment(IssueRef issue, int commentId, String comment);
+		/// <summary>Deletes the given comment</summary>
+		void DeleteComment(IssueRef issue, Comment comment);
 
         /// <summary>Return all attachments for the given issue</summary>
         IEnumerable<Attachment> GetAttachments(IssueRef issue);
@@ -62,7 +73,7 @@ namespace TeamSupport.JIRA
         /// <summary>Returns all remote links (attached urls) for the given issue</summary>
         IEnumerable<RemoteLink> GetRemoteLinks(IssueRef issue);
         /// <summary>Creates a remote link (attached url) for the given issue</summary>
-        RemoteLink CreateRemoteLink(IssueRef issue, RemoteLink remoteLink);
+        RemoteLink CreateRemoteLink(IssueRef issue, RemoteLink remoteLink, string globalId);
         /// <summary>Updates the given remote link (attached url) of the specified issue</summary>
         RemoteLink UpdateRemoteLink(IssueRef issue, RemoteLink remoteLink);
         /// <summary>Removes the given remote link (attached url) of the specified issue</summary>
@@ -74,7 +85,16 @@ namespace TeamSupport.JIRA
         ///<summary>Returns all projects</summary>
         IEnumerable<Project> GetProjects();
 
-        /// <summary>Returns information about the JIRA server</summary>
-        ServerInfo GetServerInfo();
+		/// <summary>Returns the Sprint by searching its name</summary>
+		Sprint GetSprintById(int id);
+
+		/// <summary>Returns the Sprints in the specified board</summary>
+		IEnumerable<Sprint> GetSprintsByBoardId(int boardId);
+
+		/// <summary>Returns the Boards</summary>
+		IEnumerable<Board> GetBoards();
+
+		/// <summary>Returns information about the JIRA server</summary>
+		ServerInfo GetServerInfo();
     }
 }

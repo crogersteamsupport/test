@@ -46,7 +46,25 @@ namespace TeamSupport.Data
       set { Row["Exception"] = CheckValue("Exception", value); }
     }
     
+    public string ErrorMessage
+    {
+      get { return Row["ErrorMessage"] != DBNull.Value ? (string)Row["ErrorMessage"] : null; }
+      set { Row["ErrorMessage"] = CheckValue("ErrorMessage", value); }
+    }
+    
 
+    
+    public bool IsCleared
+    {
+      get { return (bool)Row["IsCleared"]; }
+      set { Row["IsCleared"] = CheckValue("IsCleared", value); }
+    }
+    
+    public int ErrorCount
+    {
+      get { return (int)Row["ErrorCount"]; }
+      set { Row["ErrorCount"] = CheckValue("ErrorCount", value); }
+    }
     
     public string OperationType
     {
@@ -215,7 +233,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkErrors] SET     [OrganizationID] = @OrganizationID,    [CRMType] = @CRMType,    [Orientation] = @Orientation,    [ObjectType] = @ObjectType,    [ObjectID] = @ObjectID,    [ObjectFieldName] = @ObjectFieldName,    [ObjectData] = @ObjectData,    [Exception] = @Exception,    [OperationType] = @OperationType,    [DateModified] = @DateModified  WHERE ([CRMLinkErrorID] = @CRMLinkErrorID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkErrors] SET     [OrganizationID] = @OrganizationID,    [CRMType] = @CRMType,    [Orientation] = @Orientation,    [ObjectType] = @ObjectType,    [ObjectID] = @ObjectID,    [ObjectFieldName] = @ObjectFieldName,    [ObjectData] = @ObjectData,    [Exception] = @Exception,    [OperationType] = @OperationType,    [DateModified] = @DateModified,    [ErrorMessage] = @ErrorMessage,    [ErrorCount] = @ErrorCount,    [IsCleared] = @IsCleared  WHERE ([CRMLinkErrorID] = @CRMLinkErrorID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CRMLinkErrorID", SqlDbType.Int, 4);
@@ -295,13 +313,55 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ErrorMessage", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ErrorCount", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsCleared", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkErrors] (    [OrganizationID],    [CRMType],    [Orientation],    [ObjectType],    [ObjectID],    [ObjectFieldName],    [ObjectData],    [Exception],    [OperationType],    [DateCreated],    [DateModified]) VALUES ( @OrganizationID, @CRMType, @Orientation, @ObjectType, @ObjectID, @ObjectFieldName, @ObjectData, @Exception, @OperationType, @DateCreated, @DateModified); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkErrors] (    [OrganizationID],    [CRMType],    [Orientation],    [ObjectType],    [ObjectID],    [ObjectFieldName],    [ObjectData],    [Exception],    [OperationType],    [DateCreated],    [DateModified],    [ErrorMessage],    [ErrorCount],    [IsCleared]) VALUES ( @OrganizationID, @CRMType, @Orientation, @ObjectType, @ObjectID, @ObjectFieldName, @ObjectData, @Exception, @OperationType, @DateCreated, @DateModified, @ErrorMessage, @ErrorCount, @IsCleared); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("IsCleared", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ErrorCount", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ErrorMessage", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -492,7 +552,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkErrorID], [OrganizationID], [CRMType], [Orientation], [ObjectType], [ObjectID], [ObjectFieldName], [ObjectData], [Exception], [OperationType], [DateCreated], [DateModified] FROM [dbo].[CRMLinkErrors] WHERE ([CRMLinkErrorID] = @CRMLinkErrorID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkErrorID], [OrganizationID], [CRMType], [Orientation], [ObjectType], [ObjectID], [ObjectFieldName], [ObjectData], [Exception], [OperationType], [DateCreated], [DateModified], [ErrorMessage], [ErrorCount], [IsCleared] FROM [dbo].[CRMLinkErrors] WHERE ([CRMLinkErrorID] = @CRMLinkErrorID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CRMLinkErrorID", cRMLinkErrorID);
         Fill(command);

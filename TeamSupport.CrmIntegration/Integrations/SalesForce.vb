@@ -64,7 +64,7 @@ Namespace TeamSupport
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
                 Dim TagsToMatch As String = CRMLinkRow.TypeFieldMatch
 
-                Log.Write("(Trunk Rev. 1151) Attempting to log in")
+                Log.Write("Attempting to log in")
 
                 Dim LoginReturn As String = login(Trim(CompanyName), Trim(Password), Trim(SecurityToken))
 
@@ -502,12 +502,23 @@ Namespace TeamSupport
                 ' Try logging in
                 Dim lr As LoginResult
                 Try
+					If (CRMLinkRow.OrganizationID = 1033290) Then
+						Log.Write(String.Format("Credentials: {0}	{1}	{2}", username, password, securitytoken))
+					End If
+					
                     lr = Binding.login(username, password + securitytoken)
                 Catch e As SoapException
-                    Return e.Message
-
+					If (CRMLinkRow.OrganizationID = 1033290) Then
+						Return String.Format("{1}{0}{2}{0}{3}", Environment.NewLine, e.Message, e.StackTrace, e.InnerException)
+					Else
+						Return e.Message
+					End If
                 Catch e As Exception
-                    Return e.Message
+                    If (CRMLinkRow.OrganizationID = 1033290) Then
+						Return String.Format("{1}{0}{2}{0}{3}", Environment.NewLine, e.Message, e.StackTrace, e.InnerException)
+					Else
+						Return e.Message
+					End If
                 End Try
 
                 ' Check if the password has expired

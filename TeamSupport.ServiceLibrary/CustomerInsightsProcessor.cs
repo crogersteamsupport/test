@@ -45,6 +45,7 @@ namespace TeamSupport.ServiceLibrary
 
           if (_lastProcessed.AddMinutes(customerInsightsInterval) < DateTime.UtcNow)
           {
+			SetValuesFromAccountStats();
             ProcessCustomerInsights();
             ResetCurrentApiCalls();
             Settings.WriteString(_lastProcessedKey, DateTime.UtcNow.ToString());
@@ -86,7 +87,6 @@ namespace TeamSupport.ServiceLibrary
       _maxToProcessByTicketCount = Settings.ReadInt(_maxToProcessByTicketCountKey, 100);
       Service service = Services.GetService(_loginUser, ServiceName);
       _lastProcessed  = DateTime.Parse(Settings.ReadString(_lastProcessedKey, DateTime.UtcNow.AddDays(-1).ToString()));
-	  SetValuesFromAccountStats();
     }
 
 	/// <summary>

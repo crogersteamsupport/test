@@ -1882,21 +1882,28 @@ $(document).ready(function () {
       $('#enterIssueKey').hide();
       $('#issueKey').show();
       $('#savingIssueKeyImg').show();
+      var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
+
       top.Ts.Services.Tickets.SetJiraIssueKey(_ticketID, $.trim($('#issueKeyInput').val()), function (result) {
-        if (result === true) {
-          $('#savingIssueKeyImg').hide();
-          $('#savedIssueKeyImg').show().delay(800).fadeOut(400);;
-        }
-        else {
-          $('.ts-jira-buttons-container').show();
-          $('#issueKey').hide();
-          alert('There was an error setting your Jira Issue Key.');
-        }
+      	if (result != null) {
+      		var syncResult = JSON.parse(result);
+      		if (syncResult.IsSuccessful === true) {
+				$('#savingIssueKeyImg').hide();
+				$('#savedIssueKeyImg').show().delay(800).fadeOut(400);;
+			}
+			else {
+				$('.ts-jira-buttons-container').show();
+				$('#issueKey').hide();
+				alert(syncResult.Error);
+			}
+      	} else {
+      		alert(errorMessage);
+      	}
       },
     function (error) {
       $('.ts-jira-buttons-container').show();
       $('#issueKey').hide();
-      alert('There was an error setting your Jira Issue Key.');
+      alert(errorMessage);
     });
     }
   });
@@ -1904,22 +1911,28 @@ $(document).ready(function () {
   $('#newJiraIssue').click(function (e) {
     e.preventDefault();
     var parent = $(this).parent().hide();
+    var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
     top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
-      if (result === true) {
-        $('#issueKeyValue').text('Pending...');
-        $('#issueKey').show();
-        $('#issueKey div:first-child').show();
-      }
-      else {
-        $('.ts-jira-buttons-container').show();
-        $('#issueKey').hide();
-        alert('There was an error setting your Jira Issue Key.');
-      }
+    	if (result != null) {
+    		var syncResult = JSON.parse(result);
+    		if (syncResult.IsSuccessful === true) {
+				$('#issueKeyValue').text('Pending...');
+				$('#issueKey').show();
+				$('#issueKey div:first-child').show();
+			}
+			else {
+				$('.ts-jira-buttons-container').show();
+				$('#issueKey').hide();
+				alert(syncResult.Error);
+			}
+    	} else {
+    		alert(errorMessage);
+    	}
     },
   function (error) {
     $('.ts-jira-buttons-container').show();
     $('#issueKey').hide();
-    alert('There was an error setting your Jira Issue Key.');
+    alert('There was an error setting your Jira Issue Key. Please contact TeamSupport.com');
   });
   });
 

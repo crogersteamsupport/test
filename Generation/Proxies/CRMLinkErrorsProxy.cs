@@ -25,6 +25,9 @@ namespace TeamSupport.Data
     [DataMember] public string OperationType { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public string ErrorMessage { get; set; }
+    [DataMember] public int ErrorCount { get; set; }
+    [DataMember] public bool IsCleared { get; set; }
           
   }
   
@@ -33,6 +36,9 @@ namespace TeamSupport.Data
     public CRMLinkErrorProxy GetProxy()
     {
       CRMLinkErrorProxy result = new CRMLinkErrorProxy();
+      result.IsCleared = this.IsCleared;
+      result.ErrorCount = this.ErrorCount;
+      result.ErrorMessage = this.ErrorMessage;
       result.OperationType = this.OperationType;
       result.Exception = this.Exception;
       result.ObjectData = this.ObjectData;

@@ -7,8 +7,11 @@ namespace TeamSupport.JIRA
 {
     public interface IJiraClient
     {
-        /// <summary>Returns all issues for the given project</summary>
-        IEnumerable<Issue> GetIssues(String projectKey);
+		/// <summary>Returns the metadata for the given project+issuetype</summary>
+		IssueMetaData.RootObject GetIssueMetaData(string projectKey, string issueType);
+
+		/// <summary>Returns all issues for the given project</summary>
+		IEnumerable<Issue> GetIssues(String projectKey);
         /// <summary>Returns all issues of the specified type for the given project</summary>
         IEnumerable<Issue> GetIssues(String projectKey, String issueType);
         /// <summary>Enumerates through all issues for the given project</summary>
@@ -26,8 +29,12 @@ namespace TeamSupport.JIRA
         Issue CreateIssue(String projectKey, String issueType, IssueFields issueFields);
         /// <summary>Updates the given issue on the remote system</summary>
         Issue UpdateIssue(Issue issue);
-        /// <summary>Deletes the given issue from the remote system</summary>
-        void DeleteIssue(IssueRef issue);
+		/// <summary>Updates the specific field on the given issue (by id)</summary>
+		bool UpdateIssueField(int issueId, string fieldName, string fieldValue);
+		/// <summary>Updates the specific field on the given issue (by id) with the json value already</summary>
+		bool UpdateIssueFieldByParameter(int issueId, string jsonBody);
+		/// <summary>Deletes the given issue from the remote system</summary>
+		void DeleteIssue(IssueRef issue);
 
         /// <summary>Returns all transitions avilable to the given issue</summary>
         IEnumerable<Transition> GetTransitions(IssueRef issue);
@@ -63,7 +70,7 @@ namespace TeamSupport.JIRA
         /// <summary>Returns all remote links (attached urls) for the given issue</summary>
         IEnumerable<RemoteLink> GetRemoteLinks(IssueRef issue);
         /// <summary>Creates a remote link (attached url) for the given issue</summary>
-        RemoteLink CreateRemoteLink(IssueRef issue, RemoteLink remoteLink);
+        RemoteLink CreateRemoteLink(IssueRef issue, RemoteLink remoteLink, string globalId);
         /// <summary>Updates the given remote link (attached url) of the specified issue</summary>
         RemoteLink UpdateRemoteLink(IssueRef issue, RemoteLink remoteLink);
         /// <summary>Removes the given remote link (attached url) of the specified issue</summary>
@@ -86,6 +93,16 @@ namespace TeamSupport.JIRA
         {
             client = new JiraClient<IssueFields>(baseUrl, username, password);
         }
+
+		public JiraClient(string baseUrl, string username, string password, string apiPath)
+		{
+			client = new JiraClient<IssueFields>(baseUrl, username, password, apiPath);
+		}
+
+		public IssueMetaData.RootObject GetIssueMetaData(string projectKey, string issueType)
+		{
+			return client.GetIssueMetaData(projectKey, issueType);
+		}
 
         public IEnumerable<Issue> GetIssues(String projectKey)
         {
@@ -132,7 +149,22 @@ namespace TeamSupport.JIRA
             return Issue.From(client.UpdateIssue(issue));
         }
 
-        public void DeleteIssue(IssueRef issue)
+		public bool UpdateIssueField(int issueId, string fieldName, string fieldValue)
+		{
+			return client.UpdateIssueField(issueId, fieldName, fieldValue);
+		}
+
+		public bool UpdateIssueFieldByParameter(int issueId, string jsonBody)
+		{
+			return client.UpdateIssueFieldByParameter(issueId, jsonBody);
+		}
+
+		public bool UpdateIssueFields(int issueId, Dictionary<string, string> updateFields)
+		{
+			return client.UpdateIssueFields(issueId, updateFields);
+		}
+
+		public void DeleteIssue(IssueRef issue)
         {
             client.DeleteIssue(issue);
         }
@@ -162,7 +194,12 @@ namespace TeamSupport.JIRA
             return client.CreateComment(issue, comment);
         }
 
-        public void DeleteComment(IssueRef issue, Comment comment)
+		public Comment UpdateComment(IssueRef issue, int commentId, string comment)
+		{
+			return client.UpdateComment(issue, commentId, comment);
+		}
+
+		public void DeleteComment(IssueRef issue, Comment comment)
         {
             client.DeleteComment(issue, comment);
         }
@@ -207,9 +244,9 @@ namespace TeamSupport.JIRA
             return client.GetRemoteLinks(issue);
         }
 
-        public RemoteLink CreateRemoteLink(IssueRef issue, RemoteLink remoteLink)
+        public RemoteLink CreateRemoteLink(IssueRef issue, RemoteLink remoteLink, string globalId)
         {
-            return client.CreateRemoteLink(issue, remoteLink);
+            return client.CreateRemoteLink(issue, remoteLink, globalId);
         }
 
         public RemoteLink UpdateRemoteLink(IssueRef issue, RemoteLink remoteLink)
@@ -232,7 +269,22 @@ namespace TeamSupport.JIRA
           return client.GetProjects();
         }
 
-        public ServerInfo GetServerInfo()
+		public Sprint GetSprintById(int id)
+		{
+			return client.GetSprintById(id);
+        }
+
+        public IEnumerable<Sprint> GetSprintsByBoardId(int boardId)
+		{
+			return client.GetSprintsByBoardId(boardId);
+		}
+
+		public IEnumerable<Board> GetBoards()
+		{
+			return client.GetBoards();
+        }
+
+		public ServerInfo GetServerInfo()
         {
             return client.GetServerInfo();
         }

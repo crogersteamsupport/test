@@ -39,8 +39,6 @@ Namespace TeamSupport
 
         Try
           ProcessCrmLink(CrmLinkRow)
-          'System.Threading.Thread.Sleep(5000)
-
         Catch ex As Exception
           ex.Data("CRMLinkID") = _crmLinkID
           ExceptionLogs.LogException(LoginUser, ex, "Service - " & ServiceName, CrmLinkRow.Row)
@@ -49,7 +47,6 @@ Namespace TeamSupport
         'update last processed date/time
         CrmLinkRow.LastProcessed = DateTime.UtcNow
         CrmLinkRow.Collection.Save()
-
       End Sub
 
       ''' <summary>

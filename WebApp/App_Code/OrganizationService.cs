@@ -505,9 +505,9 @@ namespace TSWebServices
 		item.UpdateTicketType = updateTicketType;
 		item.UseSandBoxServer = useSandBoxServer;
 		item.AlwaysUseDefaultProjectKey = alwaysUseDefaultProjectKey;
-		item.IncludeIssueNonRequired = includeIssueNonRequired; //vv
+		item.IncludeIssueNonRequired = includeIssueNonRequired;
 		item.RestrictedToTicketTypes = restrictedToTicketTypes;
-		item.ExcludedTicketStatusUpdate = excludedTicketStatuses;//vv
+		item.ExcludedTicketStatusUpdate = excludedTicketStatuses;
 
 		item.Collection.Save();
 		return item.GetProxy();

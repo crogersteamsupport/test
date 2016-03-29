@@ -11,6 +11,7 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Data;
 using System.Data.SqlClient;
+using System.Dynamic;
 using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
@@ -1818,26 +1819,22 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool SetJiraIssueKey(int ticketID, string jiraIssueKey)
+        public string SetJiraIssueKey(int ticketID, string jiraIssueKey)
         {
-            bool result = false;
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
+			LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string result = SetSyncWithJira(loginUser, ticketID, jiraIssueKey);
 
-            result = SetSyncWithJira(loginUser, ticketID, jiraIssueKey);
-
-            return result;
+			return result;
         }
 
         [WebMethod]
-        public bool SetSyncWithJira(int ticketID)
+        public string SetSyncWithJira(int ticketID)
         {
-            bool result = false;
             LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string result = SetSyncWithJira(loginUser, ticketID, null);
 
-            result = SetSyncWithJira(loginUser, ticketID, null);
-
-            return result;
-        }
+			return result;
+		}
 
         [WebMethod]
         public bool UnSetSyncWithJira(int ticketID)
@@ -2726,8 +2723,29 @@ WHERE t.TicketID = @TicketID
             ActionLogs logs = new ActionLogs(ticket.Collection.LoginUser);
 
             logs.LoadByTicketID(ticketID);
-            return logs.GetActionLogProxies();
-        }
+			List<ActionLogProxy> logsArray = logs.GetActionLogProxies().ToList();
+			
+			//hack: vv. only way right now to know if the actionlog was added by Jira. We'll need to do something about this (creating a user for each service or crm)
+			//		As of right now March 2016, this is the only error logged from Jira.vb UpdateTicketWithIssueData(), so we specifically check that text in the Description,
+			//		we need to update this as needed if something there (or other integrations are handled here) changes
+			foreach (var log in logsArray.Where(p => p.CreatorID == -4 && p.OrganizationID == null && p.Description.StartsWith("Updated Ticket with Jira Issue Key:")))
+			{
+				log.CreatorName = IntegrationType.Jira.ToString() + " Integration";
+			}
+
+			//TODO: vv. Right now we are only pulling and displaying in the Ticket history the Jira Integration changes. Later we'll have to add the others, here and for the Company/Contact pages.
+			CRMLinkErrors integrationErrors = new CRMLinkErrors(ticket.Collection.LoginUser);
+			integrationErrors.LoadByTicketID(ticketID, IntegrationType.Jira.ToString(), isCleared: false);
+
+			if (integrationErrors != null && integrationErrors.Any() && integrationErrors.Count > 0)
+			{
+				//Get the IntegrationLogs, then translate them to a List<ActionLogProxy>
+				List<ActionLogProxy> logsIntegrationArray = integrationErrors.TranslateToActionLog();
+				logsArray.AddRange(logsIntegrationArray);
+			}
+
+			return logsArray.OrderByDescending(o => o.DateCreated).ToArray();
+		}
 
         [WebMethod]
         public TicketInfo GetTicketInfo(int ticketNumber)
@@ -3864,9 +3882,9 @@ WHERE t.TicketID = @TicketID
             return true;
         }
 
-        private bool SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
+        private string SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
         {
-            bool result = false;
+			dynamic result = new ExpandoObject();
 
             TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
             ticketLinkToJira.LoadByTicketID(ticketId);
@@ -3898,17 +3916,24 @@ WHERE t.TicketID = @TicketID
                     if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
                     {
                         ticketLinkToJiraItem.Collection.Save();
-                        result = true;
+						result.IsSuccessful = true;
+						result.Error = null;
                     }
+					else
+					{
+						result.IsSuccessful = false;
+						result.Error = "A Jira Instance associated to this ticket's product or a Default Jira Instance was not found.";
+					}
                 }
                 catch (Exception ex)
                 {
-                    result = false;
-                    ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
+					result.IsSuccessful = false;
+					result.Error = ex.Message;
+					ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
                 }
             }
 
-            return result;
+			return JsonConvert.SerializeObject(result);
         }
     }
 
