@@ -23,7 +23,7 @@ namespace TeamSupport.Data
 					  ,[Route]
 					  ,[IsActive]
 					  ,[DateCreated]
-					FROM[TeamSupport].[dbo].[CustomerHubViews]";
+					FROM [dbo].[CustomerHubViews]";
 				command.CommandType = CommandType.Text;
 				Fill(command);
 			}
