@@ -474,7 +474,7 @@ Namespace TeamSupport
 						updateTicketFlag = True
 						sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
 
-						'//Check if Ticket Description Action has Attachment
+						'Check if Ticket Description Action has Attachment
 						If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
 							Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
 							'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
@@ -1639,6 +1639,8 @@ Namespace TeamSupport
 
 			Try
 				If (fields IsNot Nothing) Then
+					Dim requiredFields As List(Of String) = New List(Of String)()
+
 					For Each field As KeyValuePair(Of String, JToken) In fields
 						If field.Value("required") Then
 							If field.Key = "summary" OrElse field.Key = "issuetype" OrElse field.Key = "project" OrElse field.Key = "description" Then
@@ -1650,6 +1652,7 @@ Namespace TeamSupport
 							Dim notIncludedMessage As String = String.Empty
 							crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID.ToString(), fieldName)
 							Dim cRMLinkField As CRMLinkField = customMappingFields.FindByCRMFieldName(fieldName)
+							requiredFields.Add(fieldName)
 
 							If cRMLinkField IsNot Nothing Then
 								If cRMLinkField.CustomFieldID IsNot Nothing Then
@@ -1693,6 +1696,9 @@ Namespace TeamSupport
 							End If
 						End If
 					Next
+
+					'//Clear required fields errors that are not required anymore
+					crmLinkErrors.ClearRequiredFieldErrors(ticket.TicketID, requiredFields)
 				Else
 					AddLog("Cannot build the required fields because there is no fields returned from Jira for the project and issue type to check.")
 				End If

@@ -163,6 +163,30 @@ namespace TeamSupport.Data
 			return item;
 		}
 
+		/// <summary>
+		/// Used to clear all required field specific Errors not cleared yet, by TicketId. That are not required anymore in Jira.
+		/// </summary>
+		/// <param name="objectID">TicketId</param>
+		/// <param name="requiredFieldsErrorsToClear">List of fields required in Jira</param>
+		public void ClearRequiredFieldErrors(string objectID, List<string> requiredFieldsErrorsToClear)
+		{
+			List<CRMLinkError> fieldErrors = this.Where(p => p.ObjectID == objectID
+														&& p.Orientation.ToLower() == "out"
+														&& !p.IsCleared
+														&& !string.IsNullOrEmpty(p.ObjectFieldName)
+														&& !requiredFieldsErrorsToClear.Contains(p.ObjectFieldName)).ToList();
+
+			foreach (CRMLinkError fieldError in fieldErrors)
+			{
+				if (fieldError != null)
+				{
+					fieldError.IsCleared = true;
+					fieldError.DateModified = DateTime.UtcNow;
+					fieldError.Collection.Save();
+				}
+			}
+		}
+
 		public List<ActionLogProxy> TranslateToActionLog()
 		{
 			List<ActionLogProxy> actionLogProxyList = new List<ActionLogProxy>();
