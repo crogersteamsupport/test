@@ -24,8 +24,6 @@ Namespace TeamSupport
 
 		Public Overrides Function PerformSync() As Boolean
 			Dim Success As Boolean = True
-			'//vv delete next line. do NOT commit
-			'TestJira()
 
 			If ValidateSyncData() Then
 				Success = SyncTickets()
@@ -35,52 +33,6 @@ Namespace TeamSupport
 
 			Return Success
 		End Function
-
-		'//vv do not commit
-		Private Sub TestJira()
-			Dim hostname As String = CRMLinkRow.HostName
-			Dim username As String = CRMLinkRow.Username
-			Dim password As String = CRMLinkRow.Password
-			Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
-
-			Dim issues As IEnumerable(Of Issue) = jiraClient.GetIssues("CON")
-
-			Dim jiraClientAgile As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password, "agile")
-			Dim boards As List(Of Board) = jiraClientAgile.GetBoards()
-
-			For Each board As Board In boards
-				Dim sprints As List(Of Sprint) = jiraClientAgile.GetSprintsByBoardId(board.id)
-
-				If (sprints.Where(Function(p) p.name = "TeamSupp Sprint 1").Any()) Then
-					Dim sprint As Sprint = jiraClientAgile.GetSprintById(sprints.Where(Function(p) p.name = "TeamSupp Sprint 1").Select(Function(p) p.id).Single())
-					sprint = sprints.Where(Function(p) p.name = "TeamSupp Sprint 1").FirstOrDefault()
-					Exit For
-				End If
-			Next
-
-			Dim serverInfo As ServerInfo = jiraClient.GetServerInfo()
-			Dim issueMetaData As IssueMetaData.RootObject = jiraClient.GetIssueMetaData("CON", "Bugs")
-
-			'Dim test As IEnumerable(Of Issue) = jiraClient.GetIssues("CON")
-			'Dim testing As List(Of String) = CRMLinkTable.GetOrganizationJiraProjectKeys(CRMLinkRow.OrganizationID, User)
-
-			Dim issueRef As IssueRef = New IssueRef()
-			issueRef.id = 14300 'ticketLinktoJiraProxy.JiraID.ToString()
-			issueRef.key = "CON-122" 'ticketLinktoJiraProxy.JiraKey
-			Dim issue As Issue = jiraClient.LoadIssue(issueRef)
-			issue.fields.priority.name = "Minor"
-			
-			Dim updatedIssue As Issue = jiraClient.UpdateIssue(issue)
-
-			'Dim remoteLinks As IEnumerable(Of RemoteLink) = jiraClient.GetRemoteLinks(issueRef)
-
-			Dim filePath As String = "\\dev-sql\TSData\Organizations\13679\Actions\10198538\19604636971407100.docx"
-			Dim fileName As String = "19604636971407100.docx"
-
-			Using SourceStream As FileStream = File.Open(filePath, FileMode.Open)
-				Dim jiraAttachment As TeamSupport.JIRA.Attachment = jiraClient.CreateAttachment(issueRef, SourceStream, Path.GetFileName(filePath))
-			End Using
-		End Sub
 
 		Private Function ValidateSyncData() As Boolean
 			Dim result As Boolean = True
@@ -444,7 +396,7 @@ Namespace TeamSupport
 			Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(User)
 			Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
 
-			'//vv Get the errors only for the tickets to be processed
+			'Get the errors only for the tickets to be processed
 			crmLinkErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID, _
 														CRMLinkRow.CRMType, _
 														GetDescription(Orientation.OutToJira), _
@@ -719,15 +671,11 @@ Namespace TeamSupport
 
 				If sendCustomMappingFields Then
 					'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
-					'//vv Dim customMappingFields As New CRMLinkFields(User)
-					'//vv customMappingFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, ticket.TicketTypeID)
-
 					If issueFields IsNot Nothing Then
 						For Each field As KeyValuePair(Of String, JToken) In issueFields
 							If (field.Value("name").ToString().ToLower() = "time tracking")
 								UpdateIssueTimeTrackingFields(issue("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
 							Else
-								'//vv UpdateIssueField(issue("id"), customMappingFields, ticket, field, crmLinkError, crmLinkErrors, URI)
 								UpdateIssueField(issue("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
 							End If
 						Next
@@ -744,7 +692,6 @@ Namespace TeamSupport
 			ByRef field As KeyValuePair(Of String, JToken),
 			ByRef crmLinkErrors As CRMLinkErrors,
 			Optional ByRef URI As String = Nothing)
-			'//vv ByRef crmLinkError As CRMLinkError,
 
 			Dim updateFieldRequestBody As StringBuilder = New StringBuilder()
 			Dim fieldName = field.Value("name").ToString()
@@ -759,7 +706,6 @@ Namespace TeamSupport
 
 				If cRMLinkField.CustomFieldID IsNot Nothing Then
 					findCustom.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
-					'//vv crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, cRMLinkField.CustomFieldID.ToString())
 
 					If findCustom.Count > 0 Then
 						Dim customValue As String = findCustom(0).Value
@@ -805,7 +751,6 @@ Namespace TeamSupport
 						End If
 					End If
 				ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
-					'//vv crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, cRMLinkField.TSFieldName)
 					If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
 						value = GetDataLineValue(fieldKey, field.Value("schema")("custom"), ticket.Row(cRMLinkField.TSFieldName))
 					Else
@@ -1693,8 +1638,6 @@ Namespace TeamSupport
 			Dim crmLinkError As CRMLinkError
 
 			Try
-				'//vv Dim customMappingFields As New CRMLinkFields(User)
-				'//vv customMappingFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, ticket.TicketTypeID)
 				If (fields IsNot Nothing) Then
 					For Each field As KeyValuePair(Of String, JToken) In fields
 						If field.Value("required") Then
@@ -1819,7 +1762,7 @@ Namespace TeamSupport
 							crmLinkCustomFieldError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), field.Key)
 							value = GetFieldValue(field)
 						Else
-							'vv Uncomment this line in case more logging is needed to troubleshoot fields not synced
+							'Uncomment this line in case more logging is needed to troubleshoot fields not synced
 							'AddLog(String.Format("Issue field {0} is not mapped, so it was not processed.", field.Key))
 							Continue For
 						End If
@@ -1839,8 +1782,6 @@ Namespace TeamSupport
 						
 						Continue For
 					End Try
-
-					'//vv Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), issueFields))
 
 					If cRMLinkField IsNot Nothing Then
 						Try
