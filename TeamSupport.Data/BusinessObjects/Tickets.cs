@@ -902,23 +902,27 @@ AND ts.IsClosed = 0";
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = @"SELECT t.TicketID, NAME
+				StringBuilder builder = new StringBuilder();
+				builder.Append(@"SELECT t.TicketID, NAME
 																FROM Tickets as T
 																WHERE 
 																	t.OrganizationID              = @OrganizationID 
 																	AND t.IsKnowledgeBase         = 1
 																	AND t.IsVisibleOnPortal         = 1
-																	AND t.KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
-																  AND (
-																					T.ProductID IS NULL
-																					OR T.ProductID IN (
-																						SELECT productid
-																						FROM organizationproducts
-																						WHERE organizationid = @CustomerID
-																						)
-																				)
-																ORDER BY 
-																	t.DateModified desc";
+																	AND t.KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID");
+																	if (customerID > 0)
+																	{
+																		builder.Append(@" AND(
+																						T.ProductID IS NULL
+																																		OR T.ProductID IN(
+																							SELECT productid
+																																			FROM organizationproducts
+																																			WHERE organizationid = @CustomerID
+																							)
+																					)");
+																	}
+																	builder.Append(@" ORDER BY t.DateModified desc");
+				command.CommandText = builder.ToString();
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				command.Parameters.AddWithValue("@CustomerID", customerID);

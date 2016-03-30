@@ -718,23 +718,29 @@ ORDER BY TicketNumber DESC";
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = @"SELECT t.*
+				StringBuilder builder = new StringBuilder();
+				builder.Append(@"SELECT t.*
 																FROM TicketsView as T
 																WHERE 
-																			t.ticketid = @ticketID
+																	t.ticketid = @ticketID
 																	AND t.OrganizationID              = @OrganizationID 
 																	AND t.IsKnowledgeBase         = 1
-																	AND t.IsVisibleOnPortal         = 1
-																  AND (
-																					T.ProductID IS NULL
-																					OR T.ProductID IN (
-																						SELECT productid
-																						FROM organizationproducts
-																						WHERE organizationid = @CustomerID
-																						)
-																				)
-																ORDER BY 
-																	t.DateModified desc";
+																	AND t.IsVisibleOnPortal         = 1");
+																	if (customerID > 0)
+																	{
+																		builder.Append(@" AND(
+																														T.ProductID IS NULL
+																																										OR T.ProductID IN(
+																															SELECT productid
+																																											FROM organizationproducts
+																																											WHERE organizationid = @CustomerID
+																															)
+																														)");
+																	}
+																	builder.Append(@" ORDER BY t.DateModified desc");
+
+
+				command.CommandText = builder.ToString();
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				command.Parameters.AddWithValue("@CustomerID", customerID);
@@ -743,7 +749,7 @@ ORDER BY TicketNumber DESC";
 			}
 		}
 
-		public void LoadForTagsHub(LoginUser loginUser, string text, int parentID)
+		public void LoadForTagsHub(LoginUser loginUser, string text, int parentID, int customerID)
 		{
 			string[] tagArray = text.Split(' ');
 
@@ -771,21 +777,24 @@ ORDER BY TicketNumber DESC";
 					else builder.Append(", '" + tagArray[i] + "'");
 				}
 
-				builder.Append(@"))
-														AND (
-												T.ProductID IS NULL
+				builder.Append(@"))");
+				if (customerID > 0)
+				{
+					builder.Append(@" AND (T.ProductID IS NULL
 												OR T.ProductID IN (
 													SELECT productid
-													FROM organizationproducts
-													WHERE organizationid = 875026
+                          FROM organizationproducts
+                          WHERE organizationid = @CustomerID
 													)
 											)
+											
 									");
+				}
 
 				command.CommandText = builder.ToString();
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ParentID", parentID);
-				command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+				command.Parameters.AddWithValue("@CustomerID", customerID);
 
 				Fill(command, "TicketsView");
 			}
