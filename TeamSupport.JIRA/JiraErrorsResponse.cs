@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TeamSupport.JIRA
 {
@@ -23,7 +26,8 @@ namespace TeamSupport.JIRA
 				bool hasErrors = (ErrorMessages != null && ErrorMessages.Any())
 								|| !string.IsNullOrEmpty(Errors.Issuetype)
 								|| !string.IsNullOrEmpty(Errors.Project)
-								|| !string.IsNullOrEmpty(Errors.Priority);
+								|| !string.IsNullOrEmpty(Errors.Priority)
+								|| (Errors.CustomFields.Any() && Errors.CustomFields.Count > 0);
 				return hasErrors;
 			}
 		}
@@ -39,8 +43,9 @@ namespace TeamSupport.JIRA
 			StreamReader reader = new StreamReader(webException.Response.GetResponseStream());
 			string content = reader.ReadToEnd();
 			reader.Close();
-			
+
 			errorsResponse = JsonConvert.DeserializeObject<JiraErrorsResponse>(content);
+			errorsResponse.Errors.CustomFields = GetCustomFieldsErrors(content);
 
 			return errorsResponse;
 		}
@@ -71,17 +76,62 @@ namespace TeamSupport.JIRA
 						string propertyName = propertyInfo.Name;
 						string propertyValue = propertyInfo.GetValue(Errors, null).ToString();
 
-						if (result.Length > 0)
+						if (typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType)
+							&& propertyInfo.PropertyType.IsGenericType
+							&& propertyInfo.PropertyType.GetGenericArguments().Length > 0)
 						{
-							result.Append(Environment.NewLine);
-						}
+							if (propertyName.ToLower() == "customfields")
+							{
+								if (result.Length > 0)
+								{
+									result.Append(Environment.NewLine);
+								}
 
-						result.Append(string.Format("{0}: {1}", propertyName, propertyValue));
+								foreach(KeyValuePair<string, string> customFieldError in Errors.CustomFields)
+								{
+									result.Append(string.Format("{0}: {1}", customFieldError.Key, customFieldError.Value));
+								}
+							}
+						}
+						else
+						{
+							if (result.Length > 0)
+							{
+								result.Append(Environment.NewLine);
+							}
+
+							result.Append(string.Format("{0}: {1}", propertyName, propertyValue));
+						}
 					}
 				}
 			}
 
 			return result.ToString();
+		}
+
+		private static Dictionary<string, string> GetCustomFieldsErrors(string customFieldsJson)
+		{
+			Dictionary<string, string> customFieldErrors = new Dictionary<string, string>();
+
+			try
+			{
+				JObject jObject = JObject.Parse(customFieldsJson);
+                var msgProperty = jObject.Property("errors");
+
+				if (jObject != null && msgProperty != null)
+				{
+					foreach (KeyValuePair<string, JToken> field in jObject["errors"] as JObject)
+					{
+						customFieldErrors.Add(field.Key, field.Value.ToString());
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				//vv
+			}
+
+			return customFieldErrors;
 		}
 	}
 
@@ -96,5 +146,8 @@ namespace TeamSupport.JIRA
 
 		[JsonProperty("priority")]
 		public string Priority { get; set; }
+
+		[JsonProperty("errors")]
+		public Dictionary<string, string> CustomFields { get; set; }
 	}
 }

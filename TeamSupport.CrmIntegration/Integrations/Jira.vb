@@ -1683,7 +1683,7 @@ Namespace TeamSupport
 								AddLog("No value found for the required field " + fieldName, _
 									LogType.TextAndReport, _
 									crmLinkError, _
-									notIncludedMessage, _
+									If (String.IsNullOrEmpty(notIncludedMessage), "No value found for the required field " + fieldName, notIncludedMessage), _
 									Orientation.OutToJira, _
 									ObjectType.Ticket, _
 									ticket.TicketID, _
