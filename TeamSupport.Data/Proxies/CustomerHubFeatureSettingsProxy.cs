@@ -21,6 +21,9 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableMyTickets { get; set; }
     [DataMember] public bool EnableOrganizationTickets { get; set; }
     [DataMember] public bool EnableWiki { get; set; }
+    [DataMember] public bool EnableTicketGroupSelection { get; set; }
+    [DataMember] public bool EnableTicketProductSelection { get; set; }
+    [DataMember] public bool EnableTicketProductVersionSelection { get; set; }
           
   }
   
@@ -29,6 +32,9 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.EnableTicketProductVersionSelection = this.EnableTicketProductVersionSelection;
+      result.EnableTicketProductSelection = this.EnableTicketProductSelection;
+      result.EnableTicketGroupSelection = this.EnableTicketGroupSelection;
       result.EnableWiki = this.EnableWiki;
       result.EnableOrganizationTickets = this.EnableOrganizationTickets;
       result.EnableMyTickets = this.EnableMyTickets;
