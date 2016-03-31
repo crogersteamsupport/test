@@ -607,9 +607,15 @@ namespace TeamSupport.Data
                             OrganizationID IN
 					        (
                                 SELECT
-                                    OrganizationID
+                                    @OrganizationID
+                                UNION
+                                SELECT
+                                    CustomerID
                                 FROM
-                                    dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren)
+                                    CustomerRelationships
+                                WHERE
+                                    RelatedCustomerID = @OrganizationID
+                                    AND @IncludeChildren = 1
 					        )
                         )
                         AND (@ActiveOnly = 0 OR IsActive = 1) 

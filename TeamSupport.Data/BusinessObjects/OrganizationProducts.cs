@@ -204,8 +204,20 @@ namespace TeamSupport.Data
 		        ROW_NUMBER() OVER (ORDER BY " + sortColumn + " " + sortDirection + @") AS rownum
 	        FROM 
 		        OrganizationProductsView 
-                JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeCompanyChildren) x 
-                    ON OrganizationProductsView.OrganizationID = x.OrganizationID
+            WHERE
+                OrganizationID IN
+                (
+                    SELECT
+                        @OrganizationID
+                    UNION
+                    SELECT
+                        CustomerID
+                    FROM
+                        CustomerRelationships
+                    WHERE
+                        RelatedCustomerID = @OrganizationID
+                        AND @IncludeCompanyChildren = 1
+                )
         ) 
         SELECT 
           v.*

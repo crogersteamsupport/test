@@ -41,11 +41,23 @@ namespace TeamSupport.Data
                 , u.FirstName + ' ' + u.LastName AS CreatorName
             FROM
                 Notes n 
-                JOIN dbo.GetCompanyFamilyIDs(@ReferenceID, @IncludeCompanyChildren) x 
-                    ON n.RefType = @ReferenceType
-                    AND n.RefID = x.OrganizationID
                 LEFT JOIN Users u
                     ON n.CreatorID = u.UserID 
+            WHERE
+                n.RefType = @ReferenceType
+                AND n.RefID IN
+                (
+                    SELECT
+                        @ReferenceID
+                    UNION
+                    SELECT
+                        CustomerID
+                    FROM
+                        CustomerRelationships
+                    WHERE
+                        RelatedCustomerID = @ReferenceID
+                        AND @IncludeCompanyChildren = 1
+                )
             ORDER BY
                 n." + orderBy + " DESC";
         command.CommandType = CommandType.Text;

@@ -56,9 +56,21 @@ namespace TeamSupport.Data
                     ON a.AssetID = h.AssetID
                   JOIN AssetAssignments aa
                     ON h.HistoryID = aa.HistoryID
-                  JOIN dbo.GetCompanyFamilyIDs(@RefID, @IncludeCompanyChildren) c 
-                    ON h.RefType = @RefType
-                    AND h.ShippedTo = c.OrganizationID
+              WHERE
+                h.RefType = @RefType
+                AND h.ShippedTo IN
+                (
+                    SELECT
+                        @RefID
+                    UNION
+                    SELECT
+                        CustomerID
+                    FROM
+                        CustomerRelationships
+                    WHERE
+                        RelatedCustomerID = @RefID
+                        AND @IncludeCompanyChildren = 1
+                )
             )
           ORDER BY
             a.AssetID DESC

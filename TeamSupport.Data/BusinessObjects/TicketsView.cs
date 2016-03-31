@@ -195,8 +195,20 @@ namespace TeamSupport.Data
                         ot.TicketID
                     FROM
                         OrganizationTickets ot
-                        JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
-                            ON ot.OrganizationID = x.OrganizationID
+                    WHERE
+                        ot.OrganizationID IN
+                        (
+                            SELECT 
+                                @OrganizationID
+                            UNION
+                            SELECT
+                                CustomerID
+                            FROM
+                                CustomerRelationships
+                            WHERE
+                                RelatedCustomerID = @OrganizationID
+                                AND @IncludeChildren = 1
+                        )
                 )";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -1472,10 +1484,20 @@ ORDER BY TicketNumber DESC";
                         * 
                     FROM 
                         OrganizationTickets ot 
-                        JOIN dbo.GetCompanyFamilyIDs(@CustomerID, 1) x 
-                            ON ot.OrganizationID = x.OrganizationID
                     WHERE 
                         ot.TicketID = tv.TicketID 
+                        AND ot.OrganizationID IN
+                        (
+                            SELECT
+                                @CustomerID
+                            UNION
+                            SELECT
+                                CustomerID
+                            FROM
+                                CustomerRelationships
+                            WHERE
+                                RelatedCustomerID = @CustomerID
+                        )
                 )");
             }
             else

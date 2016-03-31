@@ -1984,10 +1984,21 @@ AND u.OrganizationID = @OrganizationID
                                 *
                             FROM
                                 OrganizationTickets ot 
-                                JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
-                                    ON ot.OrganizationID = x.OrganizationID
                             WHERE 
                                 t.TicketID = ot.TicketID
+                                AND ot.OrganizationID IN
+                                (
+                                    SELECT
+                                        @OrganizationID
+                                    UNION
+                                    SELECT
+                                        CustomerID
+                                    FROM
+                                        CustomerRelationships
+                                    WHERE
+                                        RelatedCustomerID = @OrganizationID
+                                        AND @IncludeChildren = 1
+                                )
                         )";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -2019,10 +2030,21 @@ AND u.OrganizationID = @OrganizationID
                                 *
                             FROM
                                 OrganizationTickets ot 
-                                JOIN dbo.GetCompanyFamilyIDs(@OrganizationID, @IncludeChildren) x 
-                                    ON ot.OrganizationID = x.OrganizationID
                             WHERE
                                 t.TicketID = ot.TicketID 
+                                AND ot.OrganizationID IN
+                                (
+                                    SELECT
+                                        @OrganizationID
+                                    UNION
+                                    SELECT
+                                        CustomerID
+                                    FROM
+                                        CustomerRelationships
+                                    WHERE
+                                        RelatedCustomerID = @OrganizationID
+                                        AND @IncludeChildren = 1
+                                )
                         )";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);

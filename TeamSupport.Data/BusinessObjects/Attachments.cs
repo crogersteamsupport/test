@@ -85,7 +85,18 @@ namespace TeamSupport.Data
             WHERE 
                 RefType = @RefType
                 AND RefID IN
-                (SELECT OrganizationID FROM GetCompanyFamilyIDs(@RefID, @IncludeCompanyChildren))";
+                (
+                    SELECT
+                        @RefID
+                    UNION
+                    SELECT
+                        CustomerID
+                    FROM
+                        CustomerRelationships
+                    WHERE
+                        RelatedCustomerID = @RefID
+                        AND @IncludeCompanyChildren = 1
+                )";
         if (orderBy != string.Empty)
         {
           command.CommandText += " ORDER BY " + orderBy;
