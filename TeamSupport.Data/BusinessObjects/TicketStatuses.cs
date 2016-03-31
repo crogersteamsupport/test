@@ -206,7 +206,18 @@ namespace TeamSupport.Data
       }
     }
 
-    public void ValidatePositions(int ticketTypeID)
+		public void LoadEmailResponseStatus(int ticketTypeID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "select top 1 ticketstatusid, name from ticketstatuses where TicketTypeID = @TicketTypeID and IsEMailResponse=1 order by position";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("TicketTypeID", ticketTypeID);
+				Fill(command);
+			}
+		}
+
+		public void ValidatePositions(int ticketTypeID)
     {
       TicketStatuses ticketStatuses = new TicketStatuses(LoginUser);
       ticketStatuses.LoadAllPositions(ticketTypeID);
