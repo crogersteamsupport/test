@@ -492,6 +492,7 @@ namespace TeamSupport.Data
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (u.OrganizationID = @OrganizationID)
+								AND (u.IsSystemAdmin = 1) 
                                 AND (u.Email = @Email)
                                 AND (u.MarkDeleted = 0)";
 
