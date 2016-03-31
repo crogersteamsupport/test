@@ -931,6 +931,38 @@ AND ts.IsClosed = 0";
 			}
 		}
 
+		public void LoadUncatogorizedKBs(int organizationID, int customerID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				StringBuilder builder = new StringBuilder();
+				builder.Append(@"SELECT t.TicketID, NAME
+																FROM Tickets as T
+																WHERE 
+																	t.OrganizationID              = @OrganizationID 
+																	AND t.IsKnowledgeBase         = 1
+																	AND t.IsVisibleOnPortal         = 1
+																	AND t.KnowledgeBaseCategoryID IS NULL");
+				if (customerID > 0)
+				{
+					builder.Append(@" AND(
+																						T.ProductID IS NULL
+																																		OR T.ProductID IN(
+																							SELECT productid
+																																			FROM organizationproducts
+																																			WHERE organizationid = @CustomerID
+																							)
+																					)");
+				}
+				builder.Append(@" ORDER BY t.DateModified desc");
+				command.CommandText = builder.ToString();
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@CustomerID", customerID);
+				Fill(command, "Tickets");
+			}
+		}
+
 		public void LoadPortalUserTickets(int userID, bool isClosed)
         {
             using (SqlCommand command = new SqlCommand())
