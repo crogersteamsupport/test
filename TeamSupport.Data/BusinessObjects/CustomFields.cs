@@ -294,6 +294,7 @@ namespace TeamSupport.Data
 								WHERE OrganizationID = @OrganizationID
 								AND RefType = 17
 								AND IsVisibleOnPortal = 1
+								AND ParentCustomFieldID IS NULL
 								AND ( (AuxID = @TicketTypeID AND ParentProductID IS Null) OR (AuxID = @TicketTypeID AND ParentProductID = @ProductID))
                 ORDER BY "
 								+ orderBy;
