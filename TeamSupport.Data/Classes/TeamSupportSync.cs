@@ -11,15 +11,15 @@ namespace TeamSupport.Data
     public class TeamSupportSync
     {
 
-        public static void SyncUser(int userID, int orgID, string company, string firstName, string lastName, string email)
+        public static void SyncUser(int userID, int orgID, string firstName, string lastName, string email, string title)
         {
             dynamic payload = new ExpandoObject();
             payload.UserID = userID;
             payload.OrganizationID = orgID;
-            payload.Company = company;
             payload.FirstName = firstName;
             payload.LastName = lastName;
             payload.Email = email;
+            payload.Title = title;
             payload.PodName = SystemSettings.GetPodName();
             payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
 
@@ -28,7 +28,7 @@ namespace TeamSupport.Data
 
         }
                                                
-        public static void SyncOrg(int orgID, string company, int userID, string firstName, string lastName, string email, string phoneNumber, string version)
+        public static void SyncNewOrg(int orgID, string company, int userID, string firstName, string lastName, string email, string phoneNumber, ProductType productType, string promo, string hubSpotUtk, string source, string campaign)
         {
             dynamic payload = new ExpandoObject();
             payload.OrganizationID = orgID;
@@ -38,12 +38,30 @@ namespace TeamSupport.Data
             payload.LastName = lastName;
             payload.Email = email;
             payload.PhoneNumber = phoneNumber;
-            payload.Version = version;
+            payload.ProductType = (int)productType;
+            payload.Promo = promo;
+            payload.HubSpotUtk = hubSpotUtk;
+            payload.Source = source;
+            payload.Campaign = campaign;
+
+             
             payload.PodName = SystemSettings.GetPodName();
             payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
 
             string json = JsonConvert.SerializeObject(payload);
-            PostSyncData(BuildUrl("syncOrg"), json);
+            PostSyncData(BuildUrl("syncNewOrg"), json);
+        }
+
+        public static void SyncOrg(int orgID, string company)
+        {
+            dynamic payload = new ExpandoObject();
+            payload.OrganizationID = orgID;
+            payload.Company = company;
+            payload.PodName = SystemSettings.GetPodName();
+            payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
+
+            string json = JsonConvert.SerializeObject(payload);
+            PostSyncData(BuildUrl("syncNewOrg"), json);
         }
         private static void PostSyncData(string url, string json)
         {
@@ -68,7 +86,7 @@ namespace TeamSupport.Data
         private static string BuildUrl(string path)
         {
             StringBuilder builder = new StringBuilder();
-            string baseUrl = SystemSettings.GetUserSyncUrl();
+            string baseUrl = "http://trunk.tsdev.com";// SystemSettings.GetUserSyncUrl();
             builder.Append(baseUrl);
             if (!baseUrl.EndsWith("/")) builder.Append("/");
             builder.Append("signup/fn/");

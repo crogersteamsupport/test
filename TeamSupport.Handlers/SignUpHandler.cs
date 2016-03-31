@@ -61,6 +61,10 @@ namespace TeamSupport.Handlers
                 {
                     SyncUser(context);
                 }
+                else if (segment == "syncneworg")
+                {
+                    SyncNewOrg(context);
+                }
                 else if (segment == "syncorg")
                 {
                     SyncOrg(context);
@@ -302,115 +306,211 @@ namespace TeamSupport.Handlers
             /*
             payload.UserID = userID;
             payload.OrganizationID = orgID;
-            payload.Company = company;
             payload.FirstName = firstName;
             payload.LastName = lastName;
             payload.Email = email;
+            payload.Title = title;
             payload.PodName = SystemSettings.GetPodName();
+            payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
             */
-            dynamic data = JObject.Parse(ReadJsonData(context));
-            if (data.Key != "81f4060c-2166-48c3-a126-b12c94f1fd9d") return;
-            LoginUser loginUser = LoginUser.Anonymous;
-            User tsUser = null;
-            Organizations organizations = new Organizations(loginUser);
-            organizations.LoadByImportID(data.PodName + "-" + data.OrganizationID.ToString(), 1078);
-            if (organizations.IsEmpty) return;
-            Organization tsOrg = organizations[0];
-
-            Users users = new Users(loginUser);
-            users.LoadByImportID(tsOrg.OrganizationID, data.UserID.ToString());
-            if (users.IsEmpty) users.LoadByEmail(data.Email, tsOrg.OrganizationID);
-
-            if (users.IsEmpty)
+            try
             {
-                tsUser = (new Users(loginUser)).AddNewUser();
+                dynamic data = JObject.Parse(ReadJsonData(context));
+                if (data.Key != "81f4060c-2166-48c3-a126-b12c94f1fd9d") return;
+                LoginUser loginUser = LoginUser.Anonymous;
+                User tsUser = null;
+                Organizations organizations = new Organizations(loginUser);
+                organizations.LoadByImportID(data.PodName.ToString() + "-" + data.OrganizationID.ToString(), 1078);
+                if (organizations.IsEmpty) return;
+                Organization tsOrg = organizations[0];
+
+                Users users = new Users(loginUser);
+                users.LoadByImportID(data.UserID.ToString(), tsOrg.OrganizationID);
+                if (users.IsEmpty) users.LoadByEmail(data.Email.ToString().Trim(), tsOrg.OrganizationID);
+
+                if (users.IsEmpty)
+                {
+                    tsUser = (new Users(loginUser)).AddNewUser();
+                    tsUser.OrganizationID = tsOrg.OrganizationID;
+                    tsUser.ImportID = data.UserID.ToString();
+                    tsUser.IsActive = true;
+                    tsUser.IsPortalUser = true;
+                }
+                else
+                {
+                    tsUser = users[0];
+                }
+                tsUser.FirstName = data.FirstName.ToString().Trim();
+                tsUser.LastName = data.LastName.ToString().Trim();
+                tsUser.Email = data.Email.ToString().Trim();
+                tsUser.Title = data.Title.ToString();
+                tsUser.Collection.Save();
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "SyncNewOrg");
+                throw;
+            }
+
+        }
+
+        private static void SyncNewOrg(HttpContext context)
+        {
+            /*
+            payload.OrganizationID = orgID;
+            payload.Company = company;
+            payload.UserID = userID;
+            payload.FirstName = firstName;
+            payload.LastName = lastName;
+            payload.Email = email;
+            payload.PhoneNumber = phoneNumber;
+            payload.ProductType = (int)productType;
+            payload.Promo = promo;
+            payload.HubSpotUtk = hubSpotUtk;
+            payload.Source = source;
+            payload.Campaign = campaign;
+            payload.PodName = SystemSettings.GetPodName();
+            payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
+
+            */
+            try
+            {
+                dynamic data = JObject.Parse(ReadJsonData(context));
+                if (data.Key != "81f4060c-2166-48c3-a126-b12c94f1fd9d") return;
+
+                LoginUser loginUser = LoginUser.Anonymous;
+                Organization tsOrg = (new Organizations(loginUser)).AddNewOrganization();
+                tsOrg.ParentID = 1078;
+                tsOrg.Name = data.Company;
+                tsOrg.ImportID = data.PodName.ToString() + "-" + data.OrganizationID.ToString();
+                tsOrg.HasPortalAccess = true;
+                tsOrg.IsActive = true;
+                tsOrg.Collection.Save();
+
+                User tsUser = (new Users(loginUser)).AddNewUser();
                 tsUser.OrganizationID = tsOrg.OrganizationID;
-                tsUser.ImportID = data.UserID.toString();
+                tsUser.FirstName = data.FirstName.ToString();
+                tsUser.LastName = data.LastName.ToString();
+                tsUser.Email = data.Email.ToString();
                 tsUser.IsActive = true;
                 tsUser.IsPortalUser = true;
+                tsUser.ImportID = data.UserID.ToString();
+                tsUser.Collection.Save();
+
+                tsOrg.PrimaryUserID = tsUser.UserID;
+                tsOrg.Collection.Save();
+
+                PhoneNumber phone = (new PhoneNumbers(loginUser)).AddNewPhoneNumber();
+                phone.RefID = tsOrg.OrganizationID;
+                phone.RefType = ReferenceType.Organizations;
+                phone.Number = data.PhoneNumber.ToString();
+                phone.Collection.Save();
+
+                OrganizationProducts ops = new OrganizationProducts(loginUser);
+                try
+                {
+                    OrganizationProduct op = ops.AddNewOrganizationProduct();
+                    op.OrganizationID = tsOrg.OrganizationID;
+                    op.ProductID = 219;
+                    op.ProductVersionID = null;
+                    op.IsVisibleOnPortal = true;
+                    ops.Save();
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(loginUser, ex, "signup");
+                }
+
+                string[] salesGuys = SystemSettings.ReadString(loginUser, "SalesGuys", "Jesus:1045957|Leon:1045958").Split('|');
+                int nextSalesGuy = int.Parse(SystemSettings.ReadString(loginUser, "NextSalesGuy", "0"));
+                if (nextSalesGuy >= salesGuys.Length || nextSalesGuy < 0) nextSalesGuy = 0;
+                string salesGuy = salesGuys[nextSalesGuy].Split(':')[0];
+                string salesGuyID = salesGuys[nextSalesGuy].Split(':')[1];
+                nextSalesGuy++;
+                if (nextSalesGuy >= salesGuys.Length) nextSalesGuy = 0;
+                SystemSettings.WriteString(loginUser, "NextSalesGuy", nextSalesGuy.ToString());
+
+                string promo = data.Promo.ToString();
+                string hubSpotUtk = data.HubSpotUtk.ToString();
+                string source = data.Source.ToString();
+                string campaign = data.Campaign.ToString();
+                ProductType productType = (ProductType)int.Parse(data.ProductType.ToString());
+                string version = productType == ProductType.HelpDesk ? "Support Desk" : "Enterprise";
+
+                try
+                {
+                    CustomFields customFields = new CustomFields(loginUser);
+                    customFields.LoadByOrganization(1078);
+
+                    CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "Version", version);
+                    CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "PodName", data.PodName.ToString());
+                    CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "TeamSupportOrganizationID", data.OrganizationID.ToString());
+                    CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "SalesRep", salesGuy);
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(loginUser, ex, "SyncOrg - Custom Fields");
+                }
+
+                try
+                {
+
+                    int hrCompanyID = TSHighrise.CreateCompany(tsOrg.Name, phone.Number, tsUser.Email, productType, "", source, campaign, "", new string[] { salesGuy, "trial" });
+                    int hrContactID = TSHighrise.CreatePerson(tsUser.FirstName, tsUser.LastName, tsOrg.Name, phone.Number, tsUser.Email, productType, "", source, campaign, "", new string[] { salesGuy });
+                    //1. New Trial Check In:1496359
+                    //3. End of trial: 1496361
+                    //Eric's ID 159931
+                    TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
+                    TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Company", hrCompanyID.ToString(), "159931", true, false);
+                    try
+                    {
+                        TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, source, hubSpotUtk, productType, salesGuy);
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionLogs.LogException(loginUser, ex, "Sign Up - HubSpot", "UserID: " + tsUser.UserID.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(loginUser, ex, "Sign Up - Highrise", "UserID: " + tsUser.UserID.ToString());
+                }
+
             }
-            else
+            catch (Exception ex)
             {
-                tsUser = users[0];
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "SyncUser");
+                throw;
             }
-            tsUser.FirstName = data.FirstName;
-            tsUser.LastName = data.LastName;
-            tsUser.Email = data.Email;
-            tsUser.Collection.Save();
+
 
         }
 
         private static void SyncOrg(HttpContext context)
         {
             /*
-              payload.OrganizationID = orgID;
-              payload.Company = company;
-              payload.UserID = userID;
-              payload.FirstName = firstName;
-              payload.LastName = lastName;
-              payload.Email = email;
-              payload.PhoneNumber = phoneNumber;
-              payload.Version = version;
-              payload.PodName = SystemSettings.GetPodName();
+            payload.OrganizationID = orgID;
+            payload.Company = company;
+            payload.PodName = SystemSettings.GetPodName();
+            payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
             */
-            dynamic data = JObject.Parse(ReadJsonData(context));
-            if (data.Key != "81f4060c-2166-48c3-a126-b12c94f1fd9d") return;
-
-            LoginUser loginUser = LoginUser.Anonymous;
-            Organization tsOrg = (new Organizations(loginUser)).AddNewOrganization();
-            tsOrg.ParentID = 1078;
-            tsOrg.Name = data.Company;
-            tsOrg.ImportID = data.PodName + "-" + data.OrganizationID.ToString();
-            tsOrg.HasPortalAccess = true;
-            tsOrg.IsActive = true;
-            tsOrg.Collection.Save();
-
-            User tsUser = (new Users(loginUser)).AddNewUser();
-            tsUser.OrganizationID = tsOrg.OrganizationID;
-            tsUser.FirstName = data.FirstName;
-            tsUser.LastName = data.LastName;
-            tsUser.Email = data.Email;
-            tsUser.IsActive = true;
-            tsUser.IsPortalUser = true;
-            tsUser.ImportID = data.UserID.ToString();
-            tsUser.Collection.Save();
-
-            tsOrg.PrimaryUserID = tsUser.UserID;
-            tsOrg.Collection.Save();
-
-            PhoneNumber phone = (new PhoneNumbers(loginUser)).AddNewPhoneNumber();
-            phone.RefID = tsOrg.OrganizationID;
-            phone.RefType = ReferenceType.Organizations;
-            phone.Number = data.PhoneNumber;
-            phone.Collection.Save();
-
-            OrganizationProducts ops = new OrganizationProducts(loginUser);
             try
             {
-                OrganizationProduct op = ops.AddNewOrganizationProduct();
-                op.OrganizationID = tsOrg.OrganizationID;
-                op.ProductID = 219;
-                op.ProductVersionID = null;
-                op.IsVisibleOnPortal = true;
-                ops.Save();
+                dynamic data = JObject.Parse(ReadJsonData(context));
+                if (data.Key != "81f4060c-2166-48c3-a126-b12c94f1fd9d") return;
+
+                LoginUser loginUser = LoginUser.Anonymous;
+                Organizations orgs = new Organizations(loginUser);
+                orgs.LoadByImportID(data.PodName.ToString() + "-" + data.OrganizationID.ToString(), 1078);
+                Organization tsOrg = orgs[0]; 
+                tsOrg.Name = data.Company;
+                tsOrg.Collection.Save();
+
             }
             catch (Exception ex)
             {
-                ExceptionLogs.LogException(loginUser, ex, "signup");
-            }
-
-            try
-            {
-                CustomFields customFields = new CustomFields(loginUser);
-                customFields.LoadByOrganization(1078);
-
-                CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "Version", data.Version.ToString());
-                CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "PodName", data.PodName.ToString());
-                CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "TeamSupportOrganizationID", data.OrganizationID.ToString());
-            }
-            catch (Exception ex)
-            {
-                ExceptionLogs.LogException(loginUser, ex, "signup");
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "SyncOrg");
+                throw;
             }
 
 

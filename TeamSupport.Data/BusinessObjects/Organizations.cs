@@ -715,129 +715,15 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
         EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, "");
         EmailPosts.SendSignUpNotification(loginUser, user.UserID);
-        AddToMuroc(organization, user, phoneNumber.Number, productType, signUpParams);
+        TeamSupportSync.SyncNewOrg(organization.OrganizationID, organization.Name, user.UserID, user.FirstName, user.LastName, user.Email, phoneNumber.Number, productType, signUpParams != null ? signUpParams.promo : "", signUpParams != null ? signUpParams.hubspotutk : "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "");
 
-        return user;
+                return user;
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(LoginUser.Anonymous, ex, "sign up");
       }
       return null;
-    }
-
-    private static void AddToMuroc(Organization tsOrg, User tsUser, string phoneNumber, ProductType productType, SignUpParams signUpParams = null)
-    {
-      LoginUser loginUser = tsOrg.Collection.LoginUser;
-      Organization mOrg = (new Organizations(loginUser)).AddNewOrganization();
-      mOrg.ParentID = 1078;
-      mOrg.Name = tsOrg.Name;
-      mOrg.ImportID = tsOrg.OrganizationID.ToString();
-      mOrg.HasPortalAccess = true;
-      mOrg.IsActive = true;
-      mOrg.Collection.Save();
-
-      User mUser = (new Users(loginUser)).AddNewUser();
-      mUser.OrganizationID = mOrg.OrganizationID;
-      mUser.FirstName = tsUser.FirstName;
-      mUser.LastName = tsUser.LastName;
-      mUser.Email = tsUser.Email;
-      mUser.IsActive = true;
-      mUser.IsPortalUser = true;
-      mUser.ImportID = tsUser.UserID.ToString();
-      mUser.Collection.Save();
-
-      mOrg.PrimaryUserID = mUser.UserID;
-      mOrg.Collection.Save();
-
-      PhoneNumber phone = (new PhoneNumbers(loginUser)).AddNewPhoneNumber();
-      phone.RefID = mOrg.OrganizationID;
-      phone.RefType = ReferenceType.Organizations;
-      phone.Number = phoneNumber;
-      phone.Collection.Save();
-
-      AddMurocProduct(loginUser, mOrg.OrganizationID, 219); //TeamSupport
-
-      CustomFields customFields = new CustomFields(loginUser);
-      customFields.LoadByOrganization(1078);
-        
-      if (signUpParams != null)
-      {
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialSource", signUpParams.initialSource);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialMedium", signUpParams.initialMedium);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialTerm", signUpParams.initialTerm);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialContent", signUpParams.initialContent);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialCampaign", signUpParams.initialCampaign);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmSource", signUpParams.utmSource);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmMedium", signUpParams.utmMedium);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmTerm", signUpParams.utmTerm);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmContent", signUpParams.utmContent);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmCampaign", signUpParams.utmCampaign);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaSource", signUpParams.gaSource);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaMedium", signUpParams.gaMedium);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaTerm", signUpParams.gaTerm);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaContent", signUpParams.gaContent);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaCampaign", signUpParams.gaCampaign);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaVisits", signUpParams.gaVisits.ToString());
-        //
-      }  
-
-
-            string version = productType == ProductType.HelpDesk ? "Support Desk" : "Enterprise";
-            CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "Version", version);
-            TeamSupportSync.SyncOrg(tsOrg.OrganizationID, tsOrg.Name, tsUser.UserID, tsUser.FirstName, tsUser.LastName, tsUser.Email, phoneNumber, version);
-      try
-      {
-        
-        string[] salesGuys = SystemSettings.ReadString(loginUser, "SalesGuys", "Jesus:1045957|Leon:1045958").Split('|');
-        int nextSalesGuy = int.Parse(SystemSettings.ReadString(loginUser, "NextSalesGuy", "0"));
-        if (nextSalesGuy >= salesGuys.Length || nextSalesGuy < 0) nextSalesGuy = 0;
-        string salesGuy = salesGuys[nextSalesGuy].Split(':')[0];
-        string salesGuyID = salesGuys[nextSalesGuy].Split(':')[1];
-        nextSalesGuy++;
-        if (nextSalesGuy >= salesGuys.Length) nextSalesGuy = 0;
-        SystemSettings.WriteString(loginUser, "NextSalesGuy", nextSalesGuy.ToString());
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "SalesRep", salesGuy);
-
-        int hrCompanyID = TSHighrise.CreateCompany(mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "", "", new string[] {salesGuy, "trial"});
-        int hrContactID = TSHighrise.CreatePerson(mUser.FirstName, mUser.LastName, mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "", "", new string[] { salesGuy});
-        //1. New Trial Check In:1496359
-        //3. End of trial: 1496361
-        //Eric's ID 159931
-        TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
-        TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Company", hrCompanyID.ToString(), "159931", true, false);
-        try
-        {
-            TSHubSpot.HubspotPost(mUser.FirstName, mUser.LastName, mUser.Email, mOrg.Name, phoneNumber, signUpParams.promo, signUpParams.source, signUpParams.hubspotutk, productType, salesGuy);
-        }
-        catch(Exception ex)
-        {
-            ExceptionLogs.LogException(loginUser, ex, "Sign Up - HubSpot", "UserID: " + tsUser.UserID.ToString());
-        }
-      }
-      catch (Exception ex)
-      {
-        ExceptionLogs.LogException(loginUser, ex, "Sign Up - Highrise", "UserID: " + tsUser.UserID.ToString());
-      }
-
-    }
-
-    private static void AddMurocProduct(LoginUser loginUser, int organizationID, int productID)
-    {
-      OrganizationProducts ops = new OrganizationProducts(loginUser);
-
-      try
-      {
-        OrganizationProduct op = ops.AddNewOrganizationProduct();
-        op.OrganizationID = organizationID;
-        op.ProductID = productID;
-        op.ProductVersionID = null;
-        op.IsVisibleOnPortal = true;
-        ops.Save();
-      }
-      catch (Exception)
-      {
-      }
     }
 
     public static void CreateStandardData(LoginUser loginUser, Organization organization, bool createTypes, bool createWorkflow)

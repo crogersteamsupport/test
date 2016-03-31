@@ -428,7 +428,9 @@ namespace TSWebServices
             user.MiddleName = middleName;
             user.LastName = lastName;
             user.Collection.Save();
+            TeamSupportSync.SyncUser(user.UserID, user.OrganizationID, user.FirstName, user.LastName, user.Email, user.Title);
             return firstName + ' ' + lastName;
+
         }
 
         [WebMethod]
@@ -458,6 +460,7 @@ namespace TSWebServices
             if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
             user.Title = title.Trim();
             user.Collection.Save();
+            TeamSupportSync.SyncUser(user.UserID, user.OrganizationID, user.FirstName, user.LastName, user.Email, user.Title);
             return title;
         }
 
@@ -473,6 +476,8 @@ namespace TSWebServices
 
             user.Email = email;
             user.Collection.Save();
+            TeamSupportSync.SyncUser(user.UserID, user.OrganizationID, user.FirstName, user.LastName, user.Email, user.Title);
+
             return user.Email;
         }
 
