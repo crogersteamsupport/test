@@ -306,6 +306,39 @@ namespace TeamSupport.Data
 			}
 		}
 
+		public void LoadPortalTicketCustomFields(int organizationID, int ticketTypeID, int? productID, int parentID, string parentValue, string orderBy = "Position")
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"
+                SELECT *
+								FROM CustomFields as cf
+								WHERE OrganizationID = @OrganizationID
+								AND RefType = 17
+								AND IsVisibleOnPortal = 1
+								AND cf.ParentCustomFieldID = @ParentID
+								AND 
+								(
+										cf.ParentCustomValue = @ParentValue
+										OR
+										(
+												@ParentValue IS NULL
+												AND cf.ParentCustomValue IS NULL
+										)
+								)
+								AND ( (AuxID = @TicketTypeID AND ParentProductID IS Null) OR (AuxID = @TicketTypeID AND ParentProductID = @ProductID))
+                ORDER BY "
+								+ orderBy;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+				command.Parameters.AddWithValue("@ParentID", parentID);
+				command.Parameters.AddWithValue("@ParentValue", parentValue);
+				command.Parameters.AddWithValue("@ProductID", productID);
+				Fill(command, "CustomFields");
+			}
+		}
+
 		public void LoadParentValueMatching(int organizationID, int parentCustomFieldID, string parentCustomValue, int productID)
     {
         using (SqlCommand command = new SqlCommand())
