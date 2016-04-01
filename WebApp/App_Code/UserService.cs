@@ -473,10 +473,10 @@ namespace TSWebServices
             if (email.Length < 1 || email.IndexOf('@') < 0 || email.IndexOf('.') < 0)
                 return "_error";
 
+            TeamSupportSync.SyncUserEmail(user.UserID, user.OrganizationID, email, user.Email);
 
             user.Email = email;
             user.Collection.Save();
-            TeamSupportSync.SyncUser(user.UserID, user.OrganizationID, user.FirstName, user.LastName, user.Email, user.Title);
 
             return user.Email;
         }

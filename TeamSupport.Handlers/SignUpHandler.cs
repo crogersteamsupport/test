@@ -61,6 +61,10 @@ namespace TeamSupport.Handlers
                 {
                     SyncUser(context);
                 }
+                else if (segment == "syncuseremail")
+                {
+                    SyncUserEmail(context);
+                }
                 else if (segment == "syncneworg")
                 {
                     SyncNewOrg(context);
@@ -332,7 +336,6 @@ namespace TeamSupport.Handlers
                 {
                     tsUser = (new Users(loginUser)).AddNewUser();
                     tsUser.OrganizationID = tsOrg.OrganizationID;
-                    tsUser.ImportID = data.UserID.ToString();
                     tsUser.IsActive = true;
                     tsUser.IsPortalUser = true;
                 }
@@ -340,6 +343,7 @@ namespace TeamSupport.Handlers
                 {
                     tsUser = users[0];
                 }
+                tsUser.ImportID = data.UserID.ToString();
                 tsUser.FirstName = data.FirstName.ToString().Trim();
                 tsUser.LastName = data.LastName.ToString().Trim();
                 tsUser.Email = data.Email.ToString().Trim();
@@ -348,7 +352,55 @@ namespace TeamSupport.Handlers
             }
             catch (Exception ex)
             {
-                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "SyncNewOrg");
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "SyncUser");
+                throw;
+            }
+
+        }
+
+        private static void SyncUserEmail(HttpContext context)
+        {
+            /*
+            payload.UserID = userID;
+            payload.OrganizationID = orgID;
+            payload.NewEmail = email;
+            payload.OldEmail = email;
+            payload.PodName = SystemSettings.GetPodName();
+            payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
+            */
+            try
+            {
+                dynamic data = JObject.Parse(ReadJsonData(context));
+                if (data.Key != "81f4060c-2166-48c3-a126-b12c94f1fd9d") return;
+                LoginUser loginUser = LoginUser.Anonymous;
+                User tsUser = null;
+                Organizations organizations = new Organizations(loginUser);
+                organizations.LoadByImportID(data.PodName.ToString() + "-" + data.OrganizationID.ToString(), 1078);
+                if (organizations.IsEmpty) return;
+                Organization tsOrg = organizations[0];
+
+                Users users = new Users(loginUser);
+                users.LoadByImportID(data.UserID.ToString(), tsOrg.OrganizationID);
+                if (users.IsEmpty) users.LoadByEmail(data.OldEmail.ToString().Trim(), tsOrg.OrganizationID);
+
+                if (users.IsEmpty)
+                {
+                    tsUser = (new Users(loginUser)).AddNewUser();
+                    tsUser.OrganizationID = tsOrg.OrganizationID;
+                    tsUser.IsActive = true;
+                    tsUser.IsPortalUser = true;
+                }
+                else
+                {
+                    tsUser = users[0];
+                }
+                tsUser.ImportID = data.UserID.ToString();
+                tsUser.Email = data.NewEmail.ToString().Trim();
+                tsUser.Collection.Save();
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "SyncUserEmail");
                 throw;
             }
 

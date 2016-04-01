@@ -27,7 +27,22 @@ namespace TeamSupport.Data
             PostSyncData(BuildUrl("syncUser"), json);
 
         }
-                                               
+
+        public static void SyncUserEmail(int userID, int orgID, string newEmail, string oldEmail)
+        {
+            dynamic payload = new ExpandoObject();
+            payload.UserID = userID;
+            payload.OrganizationID = orgID;
+            payload.NewEmail = newEmail;
+            payload.OldEmail = oldEmail;
+            payload.PodName = SystemSettings.GetPodName();
+            payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
+
+            string json = JsonConvert.SerializeObject(payload);
+            PostSyncData(BuildUrl("syncUserEmail"), json);
+
+        }
+
         public static void SyncNewOrg(int orgID, string company, int userID, string firstName, string lastName, string email, string phoneNumber, ProductType productType, string promo, string hubSpotUtk, string source, string campaign)
         {
             dynamic payload = new ExpandoObject();
@@ -86,7 +101,7 @@ namespace TeamSupport.Data
         private static string BuildUrl(string path)
         {
             StringBuilder builder = new StringBuilder();
-            string baseUrl = "http://trunk.tsdev.com";// SystemSettings.GetUserSyncUrl();
+            string baseUrl = SystemSettings.GetUserSyncUrl();
             builder.Append(baseUrl);
             if (!baseUrl.EndsWith("/")) builder.Append("/");
             builder.Append("signup/fn/");
