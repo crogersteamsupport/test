@@ -993,7 +993,10 @@ namespace TeamSupport.Data
         public static bool ResetPassword(LoginUser loginUser, User user, bool isPortalUser)
         {
             string password = GenerateRandomPassword();
-            user.IsPasswordExpired = true;
+						if (isPortalUser)
+							user.IsPasswordExpired = false;
+						else
+							user.IsPasswordExpired = true;
             user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
             try
             {
