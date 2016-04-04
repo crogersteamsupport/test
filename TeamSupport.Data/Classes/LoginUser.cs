@@ -242,5 +242,10 @@ namespace TeamSupport.Data
         {
             return Users.GetUser(this, this.UserID);
         }
+
+				public Organization GetOrganization()
+				{
+					return Organizations.GetOrganization(this, this.OrganizationID);
+				}
     }
 }
