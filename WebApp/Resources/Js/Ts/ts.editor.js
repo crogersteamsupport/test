@@ -203,11 +203,11 @@
                 			dynamicPub.show();
 
                 			var clonedScreen = $('#ourPubTest').clone();
-                			clonedDiv.attr("id", "ourPubTestClone");
-                			$('#ourPubTest').after(cloneDiv);
+                			clonedScreen.attr("id", "ourPubTestClone");
+                			$('#ourPubTest').after(clonedScreen);
                 			var clonedVid = $('#ourPubTest2').clone();
-                			clonedDiv.attr("id", "ourPubTest2Clone");
-                			$('#ourPubTest2').after(cloneDiv);
+                			clonedVid.attr("id", "ourPubTest2Clone");
+                			$('#ourPubTest2').after(clonedVid);
 
                 			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
 
