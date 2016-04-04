@@ -202,9 +202,12 @@
                 			element.parent().find("#recordScreenContainer").show();
                 			dynamicPub.show();
 
-
-                			if (dynamicPub.length == 0)
-                				dynamicPub = element.parent().find("#tempContainer");
+                			var clonedScreen = $('#ourPubTest').clone();
+                			clonedDiv.attr("id", "ourPubTestClone");
+                			$('#ourPubTest').after(cloneDiv);
+                			var clonedVid = $('#ourPubTest2').clone();
+                			clonedDiv.attr("id", "ourPubTest2Clone");
+                			$('#ourPubTest2').after(cloneDiv);
 
                 			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
 
@@ -231,7 +234,7 @@
                 						apiKey = resultID[2];
                 						session = OT.initSession(apiKey, sessionId);
                 						var pubOptions = { publishAudio: true, publishVideo: false };
-                						publisher = OT.initPublisher('ourPubTest2', pubOptions);
+                						publisher = OT.initPublisher('ourPubTest2Clone', pubOptions);
 
                 						session.connect(token, function (error) {
                 							// publish a stream using the camera and microphone:
@@ -243,7 +246,7 @@
                 						// Create an element, but do not display it in the HTML DOM:
                 						var screenContainerElement = document.createElement('div');
                 						screenSharingPublisher = OT.initPublisher(
-											  'ourPubTest',
+											  'ourPubTestClone',
 											  { videoSource: 'screen' },
 											  function (error) {
 											  	if (error) {
