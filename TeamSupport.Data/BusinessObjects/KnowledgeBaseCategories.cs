@@ -53,7 +53,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM KnowledgeBaseCategories WHERE OrganizationID = @OrganizationID AND ParentID < 0 ORDER BY Position";
+        command.CommandText = "SELECT * FROM KnowledgeBaseCategories WHERE OrganizationID = @OrganizationID AND VisibleOnPortal = 1 AND ParentID < 0 ORDER BY Position";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
@@ -64,7 +64,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM KnowledgeBaseCategories WHERE ParentID = @ParentID ORDER BY Position";
+        command.CommandText = "SELECT * FROM KnowledgeBaseCategories WHERE ParentID = @ParentID AND  VisibleOnPortal = 1 ORDER BY Position";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ParentID", categoryID);
         Fill(command);
