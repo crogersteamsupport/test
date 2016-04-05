@@ -94,6 +94,10 @@ public partial class Dialogs_Group : BaseDialogPage
     {
       group.ProductFamilyID = Convert.ToInt32(cmbProductFamilies.SelectedValue);
     }
+    else
+    {
+        group.ProductFamilyID = null;
+    }
     group.Collection.Save();
     return true;
   }
