@@ -132,10 +132,11 @@ namespace TeamSupport.Data
 		TicketSendEmail = 11, //PARAMS: UserID, TicketID, Addresses
 		NewDevice = 12,
 		TooManyAttempts = 13,
-		ResetCustomerHubPassword = 14//PARAMS: UserID, Password
-	}
+		ResetCustomerHubPassword = 14,//PARAMS: UserID, Password
+        ChangedCustomerHubPassword = 15 //PARAMS: UserID
+    }
 
-	public enum ProductType
+    public enum ProductType
 	{
 		Express = 0,
 		HelpDesk = 1,

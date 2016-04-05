@@ -203,8 +203,12 @@ WHERE EmailPostID IN (
 		{
 			PostEmail(loginUser, EmailPostType.ResetCustomerHubPassword, -1, userID.ToString(), password, null, null, null, null, null, null);
 		}
+        public static void SendChangedCustomerHubPassword(LoginUser loginUser, int userID, string password)
+        {
+            PostEmail(loginUser, EmailPostType.ChangedCustomerHubPassword, -1, userID.ToString(), password, null, null, null, null, null, null);
+        }
 
-		public static void SendChangedTSPassword(LoginUser loginUser, int userID)
+        public static void SendChangedTSPassword(LoginUser loginUser, int userID)
 		{
 			PostEmail(loginUser, EmailPostType.ChangedTSPassword, -1, userID.ToString(), null, null, null, null, null, null, null);
 		}
