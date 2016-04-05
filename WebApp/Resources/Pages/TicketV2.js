@@ -2164,34 +2164,50 @@ function PrependTag(parent, id, value, data, cssclass) {
   return $(tagHTML).prependTo(parent).data('tag', data);
 }
 
-function UpdateTicketGroups() {
+function UpdateTicketGroups(callback) {
     var selectizeGroup = $('#ticket-group')[0].selectize;
     selectizeGroup.clear(true);
     selectizeGroup.clearOptions();
     selectizeGroup.addOption({ value: -1, text: 'Unassigned' });
 
+    var persistedGroup = false;
     var groups = top.Ts.Cache.getGroups();
     if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
         for (var i = 0; i < groups.length; i++) {
             if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID) {
                 selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
+                if (_ticketGroupID == groups[i].GroupID) {
+                    selectizeGroup.addItem(groups[i].GroupID, false);
+                    persistedGroup = true;
+                }
             }
         }
     }
     else {
+        persistedGroup = true;
         for (var i = 0; i < groups.length; i++) {
             selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
+            if (_ticketGroupID == groups[i].GroupID) {
+                selectizeGroup.addItem(groups[i].GroupID, false);
+            }
         }
     }
-    selectizeGroup.addItem(-1);
+    if (!persistedGroup && _ticketGroupID != null) {
+        selectizeGroup.addItem(-1);
+        callback(false);
+    }
+    else {
+        callback(true);
+    }
 }
 
-function UpdateTicketTypes() {
+function UpdateTicketTypes(persistedGroup, callback) {
     var selectizeType = $('#ticket-type')[0].selectize;
     selectizeType.clear(true);
     selectizeType.clearOptions();
 
     var firstTypeID = 0;
+    var persistedType = false;
     var types = top.Ts.Cache.getTicketTypes();
     if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
         for (var i = 0; i < types.length; i++) {
@@ -2202,19 +2218,34 @@ function UpdateTicketTypes() {
                     firstTypeID = types[i].TicketTypeID;
                 }
 
+                if (_ticketTypeID == types[i].TicketTypeID) {
+                    selectizeType.addItem(types[i].TicketTypeID, false);
+                    persistedType = true;
+                }
             }
         }
     }
     else {
+        persistedType = true;
         for (var i = 0; i < types.length; i++) {
             selectizeType.addOption({ value: types[i].TicketTypeID, text: types[i].Name });
             if (firstTypeID == 0) {
                 firstTypeID = types[i].TicketTypeID;
             }
+
+            if (_ticketTypeID == types[i].TicketTypeID) {
+                selectize.addItem(types[i].TicketTypeID, false);
+            }
         }
     }
-    selectizeType.addItem(firstTypeID);
+
+    if (!persistedType) {
+        selectizeType.addItem(firstTypeID);
+    }
+
+    callback({Group: persistedGroup, Type: persistedType})
 }
+
 
 function SetupProductSection() {
   top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
@@ -2257,9 +2288,24 @@ function SetupProductSection() {
           SetProductVersionAndResolved(null, null);
           if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != result.data) {
               _productFamilyID = result.data;
-              UpdateTicketGroups();
-              UpdateTicketTypes();
-              alert('The new product belongs to a different line. Please update group and type.');
+              UpdateTicketGroups(function (persistedGroup) {
+                  UpdateTicketTypes(persistedGroup, function (persistedData) {
+                      if (!persistedData.Group || !persistedData.Type) {
+                          var message = 'The new product belongs to a different line. Please update ';
+                          if (!persistedData.Group) {
+                              message += 'Group';
+                              if (!persistedData.Type) {
+                                  message += ' and ';
+                              }
+                          }
+                          if (!persistedData.Type) {
+                              message += 'Type';
+                          }
+
+                          alert(message += '.');
+                      }
+                  });
+              });
           }
       }
 
