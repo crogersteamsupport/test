@@ -2219,7 +2219,7 @@ function UpdateTicketTypes(persistedGroup, callback) {
                 }
 
                 if (_ticketTypeID == types[i].TicketTypeID) {
-                    selectizeType.addItem(types[i].TicketTypeID, false);
+                    selectizeType.addItem(types[i].TicketTypeID, true);
                     persistedType = true;
                 }
             }
@@ -2234,7 +2234,7 @@ function UpdateTicketTypes(persistedGroup, callback) {
             }
 
             if (_ticketTypeID == types[i].TicketTypeID) {
-                selectize.addItem(types[i].TicketTypeID, false);
+                selectizeType.addItem(types[i].TicketTypeID, true);
             }
         }
     }
