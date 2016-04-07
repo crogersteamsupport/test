@@ -167,7 +167,7 @@ namespace TeamSupport.Data
 			{
 				command.CommandText = @"SELECT pv.* 
 																FROM ProductVersions pv 
-																WHERE pv.ProductID = 17331
+																WHERE pv.ProductID = @ProductID
 																AND IsReleased = 1";
 
 				command.CommandType = CommandType.Text;
