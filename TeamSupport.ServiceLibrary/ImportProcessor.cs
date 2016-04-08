@@ -3260,7 +3260,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (reportedVersionID != 0)
+        if (reportedVersionID == 0)
         {
           string reportedVersionImportID = ReadString("ReportedVersionImportID", string.Empty);
           if (reportedVersionImportID != string.Empty)
@@ -3279,7 +3279,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         string reportedVersionName = ReadString("ReportedVersion", string.Empty);
-        if (reportedVersionID != 0 && !string.IsNullOrEmpty(reportedVersionName) && ticket.ProductID != null)
+        if (reportedVersionID == 0 && !string.IsNullOrEmpty(reportedVersionName) && ticket.ProductID != null)
         {
           reportedVersion = productVersions.FindByVersionNumber(reportedVersionName, (int)ticket.ProductID);
           if (reportedVersion == null)
@@ -3322,7 +3322,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        if (resolvedVersionID != 0)
+        if (resolvedVersionID == 0)
         {
           string resolvedVersionImportID = ReadString("ResolvedVersionImportID", string.Empty);
           if (resolvedVersionImportID != string.Empty)
@@ -3341,7 +3341,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         string resolvedVersionName = ReadString("ResolvedVersion", string.Empty);
-        if (resolvedVersionID != 0 && !string.IsNullOrEmpty(resolvedVersionName) && ticket.ProductID != null)
+        if (resolvedVersionID == 0 && !string.IsNullOrEmpty(resolvedVersionName) && ticket.ProductID != null)
         {
           resolvedVersion = productVersions.FindByVersionNumber(resolvedVersionName, (int)ticket.ProductID);
           if (resolvedVersion == null)
