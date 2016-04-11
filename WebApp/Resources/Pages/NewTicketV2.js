@@ -227,17 +227,16 @@ function UpdateTicketGroups(callback) {
     selectizeGroup.addOption({ value: -1, text: 'Unassigned' });
 
     var persistedGroup = false;
-    var ticketGroupID = -1;
-    if ($('#ticket-group').length && $('#ticket-group').val() !== '') {
-        ticketGroupID = $('#ticket-group').val()
+    if (_ticketGroupID == null) {
+        selectizeGroup.addItem(-1, false);
+        persistedGroup = true;
     }
-
     var groups = top.Ts.Cache.getGroups();
     if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
         for (var i = 0; i < groups.length; i++) {
             if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID) {
                 selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
-                if (ticketGroupID == groups[i].GroupID) {
+                if (_ticketGroupID == groups[i].GroupID) {
                     selectizeGroup.addItem(groups[i].GroupID, false);
                     persistedGroup = true;
                 }
@@ -248,7 +247,7 @@ function UpdateTicketGroups(callback) {
         persistedGroup = true;
         for (var i = 0; i < groups.length; i++) {
             selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
-            if (ticketGroupID == groups[i].GroupID) {
+            if (_ticketGroupID == groups[i].GroupID) {
                 selectizeGroup.addItem(groups[i].GroupID, false);
             }
         }
@@ -366,6 +365,12 @@ function SetupTicketProperties() {
       closeAfterSelect: true
     });
   }
+
+  $('#ticket-group').change(function (e) {
+      var self = $(this);
+      _ticketGroupID = self.val();
+      if (_ticketGroupID == '-1') _ticketGroupID = null;
+  });
 
   //Type
   var types = top.Ts.Cache.getTicketTypes();
@@ -2671,6 +2676,7 @@ var SetGroup = function (GroupID) {
   if (selectField.length > 0) {
     var selectize = $('#ticket-group')[0].selectize;
     selectize.addItem(GroupID, false);
+    _ticketGroupID = GroupID;
   }
 };
 
