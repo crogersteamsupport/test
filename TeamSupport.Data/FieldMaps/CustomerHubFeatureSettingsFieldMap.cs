@@ -24,6 +24,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableTicketGroupSelection", "EnableTicketGroupSelection", false, false, false);
       _fieldMap.AddMap("EnableTicketProductSelection", "EnableTicketProductSelection", false, false, false);
       _fieldMap.AddMap("EnableTicketProductVersionSelection", "EnableTicketProductVersionSelection", false, false, false);
+      _fieldMap.AddMap("DefaultTicketTypeID", "DefaultTicketTypeID", false, false, false);
+      _fieldMap.AddMap("DefaultGroupTypeID", "DefaultGroupTypeID", false, false, false);
             
     }
   }
