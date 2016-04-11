@@ -161,18 +161,17 @@ namespace TeamSupport.Data
       }
     }
 
-		public void LoadByPortalProductAndCustomer(int productID, int organizationID)
+		public void LoadByPortalProductAndCustomer(int productID)
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = @"SELECT pv.* 
+				command.CommandText = @"SELECT * 
 																FROM ProductVersions pv 
 																WHERE pv.ProductID = @ProductID
 																AND IsReleased = 1";
 
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ProductID", productID);
-				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				Fill(command);
 			}
 		}
