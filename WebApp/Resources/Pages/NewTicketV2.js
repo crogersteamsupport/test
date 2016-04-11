@@ -868,7 +868,7 @@ function SetupDescriptionEditor() {
     		$('#muteTokScreen').hide();
     		tokurl = result;
     		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-    		if (top.Ts.System.User.OrganizationID !== 1078) {
+    		if (top.Ts.System.User.OrganizationID !== 13679) {
     			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
     		}
     		else {
@@ -883,6 +883,19 @@ function SetupDescriptionEditor() {
 
     $('#canceltokScreen').click(function (e) {
     	$('#statusTextScreen').text("");
+    	clearTimeout(tokTimer);
+    	$("#tokScreenCountdown").html("0:00");
+    	if (recordingID != null) {
+    		top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+    			$('#tokScreenCountdown').hide();
+    			$('#rcdtokScreen').show();
+    			$('#stoptokScreen').hide();
+    			$('#canceltokScreen').show();
+    			$('#unmuteTokScreen').hide();
+    			$('#muteTokScreen').hide();
+    			recordingID = null;
+    		});
+    	}
     	session.unpublish(screenSharingPublisher);
     	session.unpublish(publisher);
     	$('#recordScreenContainer').hide();
@@ -910,7 +923,7 @@ function SetupDescriptionEditor() {
             $('#stoptok').hide();
             $('#inserttok').show();
             $('#canceltok').show();
-            tokurl = "https://s3.amazonaws.com/teamsupportvideos/45228242/" + resultID + "/archive.mp4";
+            tokurl = resultID;
             $('#statusText').text("Recording Stopped");
         });
     });
@@ -972,7 +985,7 @@ function StopRecording() {
 		tokurl = result;
 		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
 
-		if (top.Ts.System.User.OrganizationID !== 1078) {
+		if (top.Ts.System.User.OrganizationID !== 13679) {
 			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
 		}
 		else {

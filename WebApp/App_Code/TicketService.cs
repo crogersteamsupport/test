@@ -3814,6 +3814,7 @@ WHERE t.TicketID = @TicketID
             //var archive = OpenTok.StartArchive(session.Id);
             values.Add(session.Id);
             values.Add(token);
+				values.Add(SystemSettings.GetTokApiKey());
             return values;
         }
 
@@ -3850,15 +3851,15 @@ WHERE t.TicketID = @TicketID
             }
             while (OpenTok.GetArchive(archiveId).Status != ArchiveStatus.UPLOADED);
 
-            TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
-				ts.AmazonPath = string.Format("https://s3.amazonaws.com/teamsupportvideos/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id);
-            ts.CreatedDate = DateTime.Now;
-            ts.CreatorID = TSAuthentication.GetLoginUser().UserID;
-            ts.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
-            ts.ArchiveID = archive.Id.ToString();
-            ts.Collection.Save();
+				TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
+				ts.AmazonPath = string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id, SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "AWS-VideoBucket", ""));
+				ts.CreatedDate = DateTime.Now;
+				ts.CreatorID = TSAuthentication.GetLoginUser().UserID;
+				ts.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+				ts.ArchiveID = archive.Id.ToString();
+				ts.Collection.Save();
 
-				return string.Format("https://s3.amazonaws.com/teamsupportvideos/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString());
+				return string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString(), SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "AWS-VideoBucket", ""));
 
         }
 

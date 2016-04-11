@@ -540,7 +540,7 @@ function CreateNewActionLI() {
     e.preventDefault();
     e.stopPropagation();
     $('#action-new-editor').parent().fadeOut('normal', function () {
-    	if (top.Ts.System.User.OrganizationID !== 1078) {
+    	if (top.Ts.System.User.OrganizationID !== 13679) {
     		tinymce.activeEditor.destroy();
     	}
     });
@@ -568,7 +568,7 @@ function CreateNewActionLI() {
   						if (result) {
   							_isCreatingAction = true;
   							$('#action-new-editor').parent().fadeOut('normal', function () {
-  								if (top.Ts.System.User.OrganizationID !== 1078) {
+  								if (top.Ts.System.User.OrganizationID !== 13679) {
   									tinymce.activeEditor.destroy();
   								}
   							});
@@ -617,7 +617,7 @@ function CreateNewActionLI() {
           if (result) {
             UploadAttachments(result);
             $('#action-new-editor').val('').parent().fadeOut('normal');
-            if (top.Ts.System.User.OrganizationID !== 1078) {
+            if (top.Ts.System.User.OrganizationID !== 13679) {
             	tinymce.activeEditor.destroy();
             }
 
@@ -681,7 +681,7 @@ function CreateNewActionLI() {
     HideActionTimer(!action.IsTimed);
     top.Ts.Services.TicketPage.GetActionTicketTemplate(actionID, function (result) {
     	if (result != null && result != "" && result != "<br>") {
-    		if (top.Ts.System.User.OrganizationID !== 1078) {
+    		if (top.Ts.System.User.OrganizationID !== 13679) {
     			var currenttext = tinyMCE.activeEditor.getContent();
     			tinyMCE.activeEditor.setContent(currenttext + result);
     		}
@@ -729,7 +729,7 @@ function SetupActionEditor(elem, action) {
 
   top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
 
-  if (top.Ts.System.User.OrganizationID !== 1078) {
+  if (top.Ts.System.User.OrganizationID !== 13679) {
   	initEditor(elem, true, function (ed) {
   	  $("#action-new-type").val($("#action-new-type option:first").val());
   	  $('#action-new-editor').val('');
@@ -903,7 +903,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#muteTokScreen').hide();
   		tokurl = result;
   		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-  		if (top.Ts.System.User.OrganizationID !== 1078) {
+  		if (top.Ts.System.User.OrganizationID !== 13679) {
   			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
   		}
   		else
@@ -913,7 +913,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#statusTextScreen').text("");
   		session.unpublish(screenSharingPublisher);
   		session.unpublish(publisher);
-		
+  		recordingID = null;
   	});
   });
 
@@ -945,7 +945,7 @@ function SetupActionEditor(elem, action) {
   element.find('#inserttok').hide();
 
   element.find('#inserttok').click(function (e) {
-  	if (top.Ts.System.User.OrganizationID !== 1078) {
+  	if (top.Ts.System.User.OrganizationID !== 13679) {
   		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
   	}
   	else {
@@ -965,8 +965,21 @@ function SetupActionEditor(elem, action) {
 
   element.find('#canceltokScreen').click(function (e) {
   	element.find('#statusTextScreen').text("");
-  	session.unpublish(screenSharingPublisher);
-  	session.unpublish(publisher);
+  	clearTimeout(tokTimer);
+  	$("#tokScreenCountdown").html("0:00");
+	if(recordingID != null){
+  	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+  		element.find('#tokScreenCountdown').hide();
+  		element.find('#rcdtokScreen').show();
+  		element.find('#stoptokScreen').hide();
+  		element.find('#canceltokScreen').show();
+  		element.find('#unmuteTokScreen').hide();
+  		element.find('#muteTokScreen').hide();
+  		recordingID = null;
+  	});
+	}
+	session.unpublish(screenSharingPublisher);
+	session.unpublish(publisher);
   	element.find('#recordScreenContainer').hide();
   });
 
@@ -1052,7 +1065,7 @@ function StopRecording(element)
 		tokurl = result;
 		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
 
-		if (top.Ts.System.User.OrganizationID !== 1078) {
+		if (top.Ts.System.User.OrganizationID !== 13679) {
 			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
 		}
 		else {
@@ -1233,79 +1246,82 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   action.IsVisibleOnPortal = !isPrivate;
 
   if (top.Ts.System.User.OrganizationID !== 1078) {
-  	// Get Content Grab and Check with .Get MEthod
-  	if (tinymce.get('action-new-editor')) {
-  		action.Description = tinymce.get('action-new-editor').getContent();
-  		if (action.Description == "" || action.Description == undefined) {
-  			saveError = 1;
-  			top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with Get Function. ticket " + _ticketID, "TinyMCE Error");
-  		}
-
-  		if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-  			saveError = 2;
-  			top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with Get Fucntion. ticket " + _ticketID, "TinyMCE Error");
-  		}
-
-
-  		// Get Content Grab and Check
-  		if (saveError != 0) {
-  			action.Description = tinymce.activeEditor.getContent();
-  			if (action.Description == "" || action.Description == undefined) {
+	// Get Content Grab and Check with .Get MEthod
+  if (tinymce.get('action-new-editor')) {
+			action.Description = tinymce.get('action-new-editor').getContent();
+			if (action.Description == "" || action.Description == undefined) {
   				saveError = 1;
-  				top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
-  			}
+  				top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with Get Function. ticket " + _ticketID, "TinyMCE Error");
+			}
 
-  			if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+			if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
   				saveError = 2;
-  				top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
-  			}
-  		}
-  		// HTML Grab Check
-  		if (saveError != 0) {
-  			action.Description = $('#action-new-editor').html();
-  			if (action.Description == "") {
-  				saveError = 1;
-  				top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
-  			}
+  				top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with Get Fucntion. ticket " + _ticketID, "TinyMCE Error");
+			}
 
-  			if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-  				saveError = 2;
-  				top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
-  			}
-  		}
 
-  		// Text Grab Check
-  		if ($('#action-new-editor').text().trim().length < 1) {
-  			top.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
-  		}
+			// Get Content Grab and Check
+			if (saveError != 0) {
+  				action.Description = tinymce.activeEditor.getContent();
+  				if (action.Description == "" || action.Description == undefined) {
+  					saveError = 1;
+  					top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
+  				}
+  				else
+  					saveError = 0;
 
-  		// TINYMCE ACTIVE EDITOR CHECK
-  		if (saveError != 0) {
-  			if (tinymce.activeEditor == null) {
-  				saveError = 2;
-  				top.Ts.Services.System.LogException("TinyMCE active editor is null", "TinyMCE Error");
-  			}
-  		}
+  				if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  					saveError = 2;
+  					top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
+  				}
+			}
+			// HTML Grab Check
+			if (saveError != 0) {
+  				action.Description = $('#action-new-editor').html();
+  				if (action.Description == "") {
+  					saveError = 1;
+  					top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
+  				}
+  				else
+  					saveError = 0;
 
-  		if (saveError == 1) {
-  			alert("The action you tried to save is empty, please try again or cancel");
-  			EnableCreateBtns();
-  			return;
-  		}
+  				if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  					saveError = 2;
+  					top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
+  				}
+			}
 
-  		if (saveError == 2) {
-  			alert("We’re very sorry, but there was an error saving your action.  We’ve logged this error for review, please notify support@teamsupport.com and please include the ticket number.");
-  			EnableCreateBtns();
-  			return;
-  		}
-  	}
-  	else
-  	{
-  		alert("We’re very sorry, but there was an error saving your action. Please copy and save your action text, refresh the ticket and try again. ");
-  		EnableCreateBtns();
-  		return;
+			// Text Grab Check
+			if ($('#action-new-editor').text().trim().length < 1) {
+  				top.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
+			}
 
-  	}
+			// TINYMCE ACTIVE EDITOR CHECK
+			if (saveError != 0) {
+  				if (tinymce.activeEditor == null) {
+  					saveError = 2;
+  					top.Ts.Services.System.LogException("TinyMCE active editor is null", "TinyMCE Error");
+  				}
+			}
+
+			if (saveError == 1) {
+  				alert("The action you tried to save is empty, please try again or cancel");
+  				EnableCreateBtns();
+  				return;
+			}
+
+			if (saveError == 2) {
+  				alert("We’re very sorry, but there was an error saving your action.  We’ve logged this error for review, please notify support@teamsupport.com and please include the ticket number.");
+  				EnableCreateBtns();
+  				return;
+			}
+		}
+		else {
+		alert("We’re very sorry, but there was an error saving your action. Please copy and save your action text, refresh the ticket and try again. ");
+		EnableCreateBtns();
+		return;
+
+		}
   }
   else {
   	var fontSize;
@@ -1331,7 +1347,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   		if (styleBlock !== undefined) styleBlock += '; font-size: ' + fontSize;
   		else styleBlock = 'font-size: ' + fontSize;
   	}
-  
+
   	var actionText = $('#action-new-editor').summernote('code');
   	var actionHTML = $('<span />', {
   		style: styleBlock,
@@ -1340,7 +1356,6 @@ function SaveAction(_oldActionID, isPrivate, callback) {
 
   	action.Description = actionHTML[0].outerHTML;
   }
-
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
   top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
