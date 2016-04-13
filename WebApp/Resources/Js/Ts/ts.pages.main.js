@@ -867,6 +867,9 @@ Ts.Pages.Main.prototype = {
                         $('<iframe>')
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
+				  .attr('webkitallowfullscreen', '')
+				  .attr('mozallowfullscreen', '')
+				  .attr('allowfullscreen','')
               .addClass('ticketIframe')
               .appendTo(div)
                       //.attr('src', 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
