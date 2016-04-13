@@ -118,7 +118,20 @@ AdminAuto = function () {
     top.Ts.System.logAction('Admin Automation - Started New Trigger');
   }
 
+  addToolbarButton('btnDuplicate', 'ts-icon-add', 'Duplicate Trigger', duplicateTrigger);
+  $('.trigger-duplicate').click(duplicateTrigger);
 
+  function duplicateTrigger(e) {
+  	if (e) e.preventDefault();
+  	isModified(true);
+  	_triggerID = -1;
+  	hideNoTrigger();
+
+  	$('#executionsCountLabel').html('');
+  	$('#lastModifiedLabel').html('');
+  	$('#cmbEnable').val(0);
+  	top.Ts.System.logAction('Admin Automation - Trigger Duplicated');
+  }
 
   addToolbarButton('btnDelete', 'ts-icon-delete', 'Delete Trigger', function (e) {
     e.preventDefault();
