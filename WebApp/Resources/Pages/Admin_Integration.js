@@ -17,6 +17,7 @@ var _selectedJiraInstance = "";
 var _isNewJiraInstance = false;
 var _isDefaultJiraInstance = false;
 var _allowDefaultNewInstanceForJira = false;
+var _anyJiraInstance = false;
 
 $(document).ready(function () {
   adminInt = new AdminInt();
@@ -53,7 +54,7 @@ AdminInt = function () {
 
   top.Ts.Services.Organizations.GetCrmLinks(function (result) {
   	jiraInstances = result;
-  	var anyJiraInstance = false;
+  	_anyJiraInstance = false;
 
     for (var i = 0; i < result.length; i++) {
       //On first load, just load the Default Jira instance.
@@ -64,21 +65,12 @@ AdminInt = function () {
 
       if (result[i].CRMType.toLowerCase() == 'jira') {
       	_allowDefaultNewInstanceForJira = false;
-      	anyJiraInstance = true;
+      	_anyJiraInstance = true;
       }
     }
 
-    if (result.length == 0 || (result.length > 0 && !anyJiraInstance)) {
-    	loadPanelNewJiraInstance();
-    	var element = $('.jira .int-panel');
-    	element.find('.int-crm-instancename').val('Default');
-    	element.find('.int-crm-instancename').attr('disabled', 'disabled');
-    	_isNewJiraInstance = true;
-    	_allowDefaultNewInstanceForJira = true;
-    	$("#NewInstance").hide();
-    	$("#JiraInstacesListWrapper").hide();
-    	$("#AddingInstanceLabel").show();
-    	onNewInstanceClick(this);
+    if (result.length == 0 || (result.length > 0 && !_anyJiraInstance)) {
+    	SetupInitialDefaultInstanceCreate();
     }
   });
 
@@ -892,7 +884,11 @@ AdminInt = function () {
     var type = $(this).parents('.int-type');
 
     if (type.hasClass('jira')) {
-    	ReLoadJiraInstances(panel);
+    	if (_anyJiraInstance) {
+    		ReLoadJiraInstances(panel);
+    	} else {
+    		SetupInitialDefaultInstanceCreate();
+    	}
     }
 
     _isNewJiraInstance = false;
@@ -1052,6 +1048,7 @@ AdminInt = function () {
 
 					instancesList.append('<option value="' + jiraInstances[i].CRMLinkID + selected + jiraInstances[i].InstanceName + '</option>');
 					_allowDefaultNewInstanceForJira = false;
+					_anyJiraInstance = true;
 				}
 			}
 
@@ -1084,6 +1081,19 @@ AdminInt = function () {
 
 			_isNewJiraInstance = false;
 		});
+	}
+
+	function SetupInitialDefaultInstanceCreate() {
+		loadPanelNewJiraInstance();
+		var element = $('.jira .int-panel');
+		element.find('.int-crm-instancename').val('Default');
+		element.find('.int-crm-instancename').attr('disabled', 'disabled');
+		_isNewJiraInstance = true;
+		_allowDefaultNewInstanceForJira = true;
+		$("#NewInstance").hide();
+		$("#JiraInstacesListWrapper").hide();
+		$("#AddingInstanceLabel").show();
+		onNewInstanceClick(this);
 	}
 };
 
