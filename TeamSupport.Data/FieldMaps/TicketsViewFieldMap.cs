@@ -62,6 +62,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductLineID", false, false, false);
       _fieldMap.AddMap("TicketSource", "TicketSource", false, false, true);
+	  _fieldMap.AddMap("JiraKey", "JiraKey", false, false, true);
             
     }
   }
