@@ -115,6 +115,8 @@ namespace TeamSupport.ServiceLibrary
             ImportAddresses(import, ReferenceType.Organizations);
             _csv = new CsvReader(new StreamReader(csvFile), true);
             ImportPhoneNumbers(import, ReferenceType.Organizations);
+            _csv = new CsvReader(new StreamReader(csvFile), true);
+            ImportParentCompanies(import);
             break;
           case ReferenceType.CompanyAddresses:
             ImportAddresses(import, ReferenceType.Organizations);
@@ -2847,6 +2849,229 @@ namespace TeamSupport.ServiceLibrary
       _importLog.Write("Import set with " + count.ToString() + " phone numbers inserted in database.");
     }
 
+    private void ImportParentCompanies(Import import)
+    {
+      SortedList<string, int> userList = GetUserList();
+      Organization unknownCompany = Organizations.GetUnknownCompany(_loginUser, _organizationID);
+      CustomerRelationships customerRelationships = new CustomerRelationships(_importUser);
+      int count = 0;
+      int bulkCount = 0;
+      while (_csv.ReadNextRecord())
+      {
+        long rowNumber = _csv.CurrentRecordIndex + 1;
+        string messagePrefix = "Row " + rowNumber.ToString() + ": ";
+
+        DateTime now = DateTime.UtcNow;
+        CustomerRelationships newCustomerRelationships = new CustomerRelationships(_importUser);
+
+        DateTime? dateCreated = ReadDateNull("DateCreated", string.Empty);
+
+        int creatorID = -5;
+        if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
+        {
+          if (!userList.ContainsValue(creatorID))
+          {
+            creatorID = -5;
+          }
+        }
+        
+        int orgID = 0;
+        string companyName = string.Empty;
+        int companyID = ReadInt("CompanyID");
+        if (companyID != 0)
+        {
+          Organizations existingCompany = new Organizations(_importUser);
+          existingCompany.LoadByOrganizationID(companyID);
+          if (existingCompany.Count == 1 && existingCompany[0].ParentID == _organizationID)
+          {
+            orgID = existingCompany[0].OrganizationID;
+            companyName = existingCompany[0].Name;
+          }
+          else
+          {
+            _importLog.Write(messagePrefix + "Skipped. No company matching CompanyID was found to set company parent.");
+            continue;
+          }
+        }
+
+        if (orgID == 0)
+        {
+          string importID = ReadString("CompanyImportID", string.Empty);
+          if (importID != string.Empty)
+          {
+            Organizations existingCompany = new Organizations(_importUser);
+            existingCompany.LoadByImportID(importID, _organizationID);
+            if (existingCompany.Count == 1)
+            {
+              orgID = existingCompany[0].OrganizationID;
+              companyName = existingCompany[0].Name;
+            }
+            else if (existingCompany.Count > 1)
+            {
+              _importLog.Write(messagePrefix + "Skipped. More than one company matching the importID was found.");
+              continue;
+            }
+          }
+        }
+
+        if (orgID == 0)
+        {
+          companyName = ReadString("CompanyName", string.Empty);
+          if (companyName != string.Empty && companyName.Trim().ToLower() != "_unknown company")
+          {
+            Organizations organizationsMatchingName = new Organizations(_importUser);
+            organizationsMatchingName.LoadByName(companyName, _organizationID);
+            if (organizationsMatchingName.Count == 0)
+            {
+              Organizations newCompanies = new Organizations(_importUser);
+              Organization newCompany = newCompanies.AddNewOrganization();
+              newCompany.Name = companyName;
+              newCompany.ParentID = _organizationID;
+              newCompany.IsActive = true;
+              newCompany.ExtraStorageUnits = 0;
+              newCompany.IsCustomerFree = false;
+              newCompany.PortalSeats = 0;
+              newCompany.PrimaryUserID = null;
+              newCompany.ProductType = ProductType.Express;
+              newCompany.UserSeats = 0;
+              newCompany.NeedsIndexing = true;
+              newCompany.SystemEmailID = Guid.NewGuid();
+              newCompany.WebServiceID = Guid.NewGuid();
+              if (dateCreated != null)
+              {
+                newCompany.DateCreated = (DateTime)dateCreated;
+              }
+              newCompany.CreatorID = -5;
+				  newCompany.ImportFileID = import.ImportID;
+
+              newCompany.ModifierID = -5;
+              newCompanies.Save();
+              orgID = newCompany.OrganizationID;
+            }
+            else
+            {
+              orgID = organizationsMatchingName[0].OrganizationID;
+            }
+          }
+          else
+          {
+            orgID = unknownCompany.OrganizationID;
+            companyName = "_unknown company";
+          }
+        }
+
+                string parentImportID = ReadString("ParentCompanyImportID", string.Empty);
+                if (parentImportID != string.Empty)
+                {
+                    Organizations parentCompany = new Organizations(_importUser);
+                    parentCompany.LoadByImportID(parentImportID, _organizationID);
+                    if (parentCompany.Count == 1)
+                    {
+                        CustomerRelationship newCustomerRelationship = newCustomerRelationships.AddNewCustomerRelationship();
+                        newCustomerRelationship.CustomerID = orgID;
+                        newCustomerRelationship.RelatedCustomerID = parentCompany[0].OrganizationID;
+                        newCustomerRelationship.CreatorID = -5;
+                        if (dateCreated != null)
+                        {
+                            newCustomerRelationship.DateCreated = (DateTime)dateCreated;
+                        }
+                    }
+                }
+
+                string parentImportID2 = ReadString("ParentCompanyImportID2", string.Empty);
+                if (parentImportID2 != string.Empty)
+                {
+                    Organizations parentCompany = new Organizations(_importUser);
+                    parentCompany.LoadByImportID(parentImportID2, _organizationID);
+                    if (parentCompany.Count == 1)
+                    {
+                        CustomerRelationship newCustomerRelationship2 = newCustomerRelationships.AddNewCustomerRelationship();
+                        newCustomerRelationship2.CustomerID = orgID;
+                        newCustomerRelationship2.RelatedCustomerID = parentCompany[0].OrganizationID;
+                        newCustomerRelationship2.CreatorID = -5;
+                        if (dateCreated != null)
+                        {
+                            newCustomerRelationship2.DateCreated = (DateTime)dateCreated;
+                        }
+                    }
+                }
+
+                string parentImportID3 = ReadString("ParentCompanyImportID3", string.Empty);
+                if (parentImportID3 != string.Empty)
+                {
+                    Organizations parentCompany = new Organizations(_importUser);
+                    parentCompany.LoadByImportID(parentImportID3, _organizationID);
+                    if (parentCompany.Count == 1)
+                    {
+                        CustomerRelationship newCustomerRelationship3 = newCustomerRelationships.AddNewCustomerRelationship();
+                        newCustomerRelationship3.CustomerID = orgID;
+                        newCustomerRelationship3.RelatedCustomerID = parentCompany[0].OrganizationID;
+                        newCustomerRelationship3.CreatorID = -5;
+                        if (dateCreated != null)
+                        {
+                            newCustomerRelationship3.DateCreated = (DateTime)dateCreated;
+                        }
+                    }
+                }
+
+        bool customerRelationshipAdded = false;
+
+        if (newCustomerRelationships.Count > 0)
+        {
+          customerRelationshipAdded = true;
+          bulkCount++;
+          CustomerRelationship customerRelationship = customerRelationships.AddNewCustomerRelationship();
+          customerRelationship.CustomerID = newCustomerRelationships[0].CustomerID;
+          customerRelationship.RelatedCustomerID = newCustomerRelationships[0].RelatedCustomerID;
+          customerRelationship.DateCreated = newCustomerRelationships[0].DateCreated;
+          customerRelationship.CreatorID = newCustomerRelationships[0].CreatorID;
+
+          _importLog.Write(messagePrefix + "Parent Company added to bulk insert.");
+
+            if (newCustomerRelationships.Count > 1)
+            {
+              bulkCount++;
+              CustomerRelationship customerRelationship2 = customerRelationships.AddNewCustomerRelationship();
+              customerRelationship2.CustomerID = newCustomerRelationships[1].CustomerID;
+              customerRelationship2.RelatedCustomerID = newCustomerRelationships[1].RelatedCustomerID;
+              customerRelationship2.DateCreated = newCustomerRelationships[1].DateCreated;
+              customerRelationship2.CreatorID = newCustomerRelationships[1].CreatorID;
+
+              _importLog.Write(messagePrefix + "Parent Company 2 added to bulk insert.");
+
+
+                if (newCustomerRelationships.Count > 2)
+                {
+                  bulkCount++;
+                  CustomerRelationship customerRelationship3 = customerRelationships.AddNewCustomerRelationship();
+                  customerRelationship3.CustomerID = newCustomerRelationships[2].CustomerID;
+                  customerRelationship3.RelatedCustomerID = newCustomerRelationships[2].RelatedCustomerID;
+                  customerRelationship3.DateCreated = newCustomerRelationships[2].DateCreated;
+                  customerRelationship3.CreatorID = newCustomerRelationships[2].CreatorID;
+
+                  _importLog.Write(messagePrefix + "Parent Company 3 added to bulk insert.");
+                }
+            }
+        }
+        if (customerRelationshipAdded)
+        {
+          count++;
+        }
+
+        if (bulkCount % BULK_LIMIT == 0)
+        {
+          customerRelationships.BulkSave();
+          customerRelationships = new CustomerRelationships(_importUser);
+          UpdateImportCount(import, count);
+          _importLog.Write("Import set with " + count.ToString() + " children companies inserted in database.");
+        }
+      }
+
+      customerRelationships.BulkSave();
+      UpdateImportCount(import, count);
+      _importLog.Write("Import set with " + count.ToString() + " children companies inserted in database.");
+    }
+
     private void ImportTickets(Import import)
     {
       SortedList<string, int> userList = GetUserAndContactList();
@@ -3152,6 +3377,16 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
+        string emailOfCloser = ReadString("EmailOfCloser", string.Empty);
+        if (!string.IsNullOrEmpty(emailOfCloser))
+        {
+          int userID;
+          if (userList.TryGetValue(emailOfCloser.ToUpper(), out userID))
+          {
+            ticket.CloserID = userID;
+          }
+        }
+
         string groupName = ReadString("Group", string.Empty);
         if (!string.IsNullOrEmpty(groupName))
         {
@@ -3425,6 +3660,12 @@ namespace TeamSupport.ServiceLibrary
         ticket.DateModified = now;
         ticket.ModifierID = -5;
 		  ticket.ImportFileID = import.ImportID;
+
+        DateTime? dateClosed = ReadDateNull("DateClosed", ticket.DateClosed.ToString());
+        if (dateClosed != null)
+        {
+          ticket.DateClosed = (DateTime)dateClosed;
+        }
 
         //if (isUpdate)
         //{
