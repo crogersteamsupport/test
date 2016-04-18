@@ -854,22 +854,30 @@ namespace TSWebServices
 
         foreach (Product product in products)
         {
+            //htmlresults.AppendFormat(@"<div class='list-group-item'>
+            //                <a href='#' id='{0}' class='productlink'>
+            //                  <h4 class='list-group-item-heading'>{1}</h4>
+            //                </a>
+            //                <div class='row'>
+            //                    <div class='col-xs-6'>
+            //                        <p class='list-group-item-text'>{2} Open Tickets</p>
+            //                        <p class='list-group-item-text'>{3} Closed Tickets</p>                            
+            //                    </div>
+            //                </div>
+            //                </div>"
+
+            //    , product.ProductID
+            //    , product.Name
+            //    , GetProductTickets(product.ProductID, 0)
+            //    , GetProductTickets(product.ProductID, 1));
             htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <a href='#' id='{0}' class='productlink'>
                               <h4 class='list-group-item-heading'>{1}</h4>
                             </a>
-                            <div class='row'>
-                                <div class='col-xs-6'>
-                                    <p class='list-group-item-text'>{2} Open Tickets</p>
-                                    <p class='list-group-item-text'>{3} Closed Tickets</p>                            
-                                </div>
-                            </div>
                             </div>"
 
                 , product.ProductID
-                , product.Name
-                , GetProductTickets(product.ProductID, 0)
-                , GetProductTickets(product.ProductID, 1));
+                , product.Name);
         }
 
         return htmlresults.ToString();
