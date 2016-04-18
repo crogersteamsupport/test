@@ -2038,7 +2038,7 @@ $(document).ready(function () {
             $('#tblNotes tbody').empty();
             var html;
             for (var i = 0; i < note.length; i++) {
-                if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditCompany)
+                if (!_isParentView && (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditCompany))
                     html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                 else
                     html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
@@ -2087,10 +2087,16 @@ $(document).ready(function () {
     function LoadFiles() {
         $('#tblFiles tbody').empty();
         top.Ts.Services.Customers.LoadFiles2(organizationID,top.Ts.ReferenceTypes.Organizations, _isParentView, function (files) {
+            var html;
             for (var i = 0; i < files.length; i++) {
+                if (!_isParentView)
+                    html = '<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+                else
+                    html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+
                 var tr = $('<tr>')
                 .attr('id', files[i].AttachmentID)
-                .html('<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>')
+                .html(html)
                 .appendTo('#tblFiles > tbody:last');
 
 
@@ -2273,7 +2279,7 @@ $(document).ready(function () {
 
                 var html;
 
-                if(top.Ts.System.User.CanEditCompany || _isAdmin)
+                if (!_isParentView && (top.Ts.System.User.CanEditCompany || _isAdmin))
                 {
                     html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
