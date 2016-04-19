@@ -3625,15 +3625,21 @@ function SetupParentSection(parents) {
     //});
 
     $('#company-Parent').on('click', 'span.tagRemove', function (e) {
-        var self = $(this);
-        var data = self.parent().data().tag;
+        if (confirm('Are you sure you would like to remove this parent company?'))
+        {
+            var self = $(this);
+            var data = self.parent().data().tag;
 
-        top.Ts.Services.Customers.RemoveParent(data.ChildID, data.ParentID, function () {
-            self.parent().remove();
-            top.Ts.System.logAction('Customer Detail - Remove Parent');
-        }, function () {
-            alert('There was a problem removing the parent from the company.');
-        });
+            top.Ts.Services.Customers.RemoveParent(data.ChildID, data.ParentID, function () {
+                self.parent().remove();
+                top.Ts.System.logAction('Customer Detail - Remove Parent');
+            }, function () {
+                alert('There was a problem removing the parent from the company.');
+            });
+        }
+        else {
+            top.Ts.System.logAction('Customer Detail - Remove Parent - Cancelled.');
+        }
     });
 };
 
