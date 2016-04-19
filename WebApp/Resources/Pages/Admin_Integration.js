@@ -675,7 +675,6 @@ AdminInt = function () {
     if (flag) return;
 
     parent.find('.int-action').hide();
-    var linkID = parent.data('link') == undefined || _isNewJiraInstance ? -1 : parent.data('link').CRMLinkID;
     var crmType = '';
     var type = parent.parents('.int-type');
 
@@ -833,6 +832,8 @@ AdminInt = function () {
     if (typeof updateTicketStatus == 'undefined') {
       updateTicketStatus = true;
     }
+
+    var linkID = parent.data('link') == undefined || (_isNewJiraInstance && crmType == 'Jira') ? -1 : parent.data('link').CRMLinkID;
 
     top.Ts.Services.Organizations.SaveCrmLink(
           linkID,
