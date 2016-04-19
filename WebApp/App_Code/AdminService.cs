@@ -519,7 +519,20 @@ namespace TSWebServices
 		}
 	 }
 
-	 private string GetRollbackActionsQuery()
+		[WebMethod]
+		public string GetHubURL()
+		{
+			CustomerHubs hubs = new CustomerHubs(TSAuthentication.GetLoginUser());
+			hubs.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+			if(hubs.Any())
+			{
+				return string.Format("{0}.{1}", hubs[0].PortalName, SystemSettings.GetHubURL());
+			}
+			return null;
+		}
+
+		private string GetRollbackActionsQuery()
 	 {
 		 return @"
 			DELETE
