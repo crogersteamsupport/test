@@ -490,6 +490,7 @@ Namespace TeamSupport
 
 
             Private Function login(ByVal username As String, ByVal password As String, ByVal securitytoken As String) As String
+				System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 Or System.Net.SecurityProtocolType.Tls11 Or System.Net.SecurityProtocolType.Tls
                 'Set the partner WSDL
 
                 Dim co As New CallOptions()
