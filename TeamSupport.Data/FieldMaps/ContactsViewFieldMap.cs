@@ -48,6 +48,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("OrganizationSAExpirationDate", "OrganizationSAExpirationDate", false, false, false);
       _fieldMap.AddMap("PortalLimitOrgTickets", "DisableOrganizationTicketsViewOnPortal", false, false, true);
       _fieldMap.AddMap("LinkedIn", "LinkedIn", false, false, false);
+      _fieldMap.AddMap("PortalViewOnly", "PortalViewOnly", false, false, true);
             
     }
   }
