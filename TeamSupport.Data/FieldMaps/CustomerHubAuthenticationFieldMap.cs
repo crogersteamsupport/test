@@ -25,6 +25,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AnonymousKBAccess", "AnonymousKBAccess", false, false, false);
       _fieldMap.AddMap("AnonymousProductAccess", "AnonymousProductAccess", false, false, false);
       _fieldMap.AddMap("AnonymousTicketAccess", "AnonymousTicketAccess", false, false, false);
+      _fieldMap.AddMap("HonorServiceAgreementExpirationDate", "HonorServiceAgreementExpirationDate", false, false, false);
+      _fieldMap.AddMap("HonorSupportExpiration", "HonorSupportExpiration", false, false, false);
             
     }
   }

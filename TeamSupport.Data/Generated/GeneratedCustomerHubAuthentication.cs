@@ -36,6 +36,18 @@ namespace TeamSupport.Data
     
 
     
+    public bool HonorSupportExpiration
+    {
+      get { return (bool)Row["HonorSupportExpiration"]; }
+      set { Row["HonorSupportExpiration"] = CheckValue("HonorSupportExpiration", value); }
+    }
+    
+    public bool HonorServiceAgreementExpirationDate
+    {
+      get { return (bool)Row["HonorServiceAgreementExpirationDate"]; }
+      set { Row["HonorServiceAgreementExpirationDate"] = CheckValue("HonorServiceAgreementExpirationDate", value); }
+    }
+    
     public bool AnonymousTicketAccess
     {
       get { return (bool)Row["AnonymousTicketAccess"]; }
@@ -195,7 +207,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubAuthentication] SET     [CustomerHubID] = @CustomerHubID,    [EnableSelfRegister] = @EnableSelfRegister,    [EnableRequestAccess] = @EnableRequestAccess,    [EnableSSO] = @EnableSSO,    [RequestTicketType] = @RequestTicketType,    [RequestGroupType] = @RequestGroupType,    [AnonymousHubAccess] = @AnonymousHubAccess,    [AnonymousWikiAccess] = @AnonymousWikiAccess,    [AnonymousKBAccess] = @AnonymousKBAccess,    [AnonymousProductAccess] = @AnonymousProductAccess,    [AnonymousTicketAccess] = @AnonymousTicketAccess  WHERE ([CustomerHubAuthenticationID] = @CustomerHubAuthenticationID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubAuthentication] SET     [CustomerHubID] = @CustomerHubID,    [EnableSelfRegister] = @EnableSelfRegister,    [EnableRequestAccess] = @EnableRequestAccess,    [EnableSSO] = @EnableSSO,    [RequestTicketType] = @RequestTicketType,    [RequestGroupType] = @RequestGroupType,    [AnonymousHubAccess] = @AnonymousHubAccess,    [AnonymousWikiAccess] = @AnonymousWikiAccess,    [AnonymousKBAccess] = @AnonymousKBAccess,    [AnonymousProductAccess] = @AnonymousProductAccess,    [AnonymousTicketAccess] = @AnonymousTicketAccess,    [HonorServiceAgreementExpirationDate] = @HonorServiceAgreementExpirationDate,    [HonorSupportExpiration] = @HonorSupportExpiration  WHERE ([CustomerHubAuthenticationID] = @CustomerHubAuthenticationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomerHubAuthenticationID", SqlDbType.Int, 4);
@@ -282,13 +294,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("HonorServiceAgreementExpirationDate", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("HonorSupportExpiration", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubAuthentication] (    [CustomerHubID],    [EnableSelfRegister],    [EnableRequestAccess],    [EnableSSO],    [RequestTicketType],    [RequestGroupType],    [AnonymousHubAccess],    [AnonymousWikiAccess],    [AnonymousKBAccess],    [AnonymousProductAccess],    [AnonymousTicketAccess]) VALUES ( @CustomerHubID, @EnableSelfRegister, @EnableRequestAccess, @EnableSSO, @RequestTicketType, @RequestGroupType, @AnonymousHubAccess, @AnonymousWikiAccess, @AnonymousKBAccess, @AnonymousProductAccess, @AnonymousTicketAccess); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubAuthentication] (    [CustomerHubID],    [EnableSelfRegister],    [EnableRequestAccess],    [EnableSSO],    [RequestTicketType],    [RequestGroupType],    [AnonymousHubAccess],    [AnonymousWikiAccess],    [AnonymousKBAccess],    [AnonymousProductAccess],    [AnonymousTicketAccess],    [HonorServiceAgreementExpirationDate],    [HonorSupportExpiration]) VALUES ( @CustomerHubID, @EnableSelfRegister, @EnableRequestAccess, @EnableSSO, @RequestTicketType, @RequestGroupType, @AnonymousHubAccess, @AnonymousWikiAccess, @AnonymousKBAccess, @AnonymousProductAccess, @AnonymousTicketAccess, @HonorServiceAgreementExpirationDate, @HonorSupportExpiration); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("HonorSupportExpiration", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("HonorServiceAgreementExpirationDate", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("AnonymousTicketAccess", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -479,7 +519,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubAuthenticationID], [CustomerHubID], [EnableSelfRegister], [EnableRequestAccess], [EnableSSO], [RequestTicketType], [RequestGroupType], [AnonymousHubAccess], [AnonymousWikiAccess], [AnonymousKBAccess], [AnonymousProductAccess], [AnonymousTicketAccess] FROM [dbo].[CustomerHubAuthentication] WHERE ([CustomerHubAuthenticationID] = @CustomerHubAuthenticationID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubAuthenticationID], [CustomerHubID], [EnableSelfRegister], [EnableRequestAccess], [EnableSSO], [RequestTicketType], [RequestGroupType], [AnonymousHubAccess], [AnonymousWikiAccess], [AnonymousKBAccess], [AnonymousProductAccess], [AnonymousTicketAccess], [HonorServiceAgreementExpirationDate], [HonorSupportExpiration] FROM [dbo].[CustomerHubAuthentication] WHERE ([CustomerHubAuthenticationID] = @CustomerHubAuthenticationID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomerHubAuthenticationID", customerHubAuthenticationID);
         Fill(command);

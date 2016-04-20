@@ -25,6 +25,8 @@ namespace TeamSupport.Data
     [DataMember] public bool AnonymousKBAccess { get; set; }
     [DataMember] public bool AnonymousProductAccess { get; set; }
     [DataMember] public bool AnonymousTicketAccess { get; set; }
+    [DataMember] public bool HonorServiceAgreementExpirationDate { get; set; }
+    [DataMember] public bool HonorSupportExpiration { get; set; }
           
   }
   
@@ -33,6 +35,8 @@ namespace TeamSupport.Data
     public CustomerHubAuthenticationItemProxy GetProxy()
     {
       CustomerHubAuthenticationItemProxy result = new CustomerHubAuthenticationItemProxy();
+      result.HonorSupportExpiration = this.HonorSupportExpiration;
+      result.HonorServiceAgreementExpirationDate = this.HonorServiceAgreementExpirationDate;
       result.AnonymousTicketAccess = this.AnonymousTicketAccess;
       result.AnonymousProductAccess = this.AnonymousProductAccess;
       result.AnonymousKBAccess = this.AnonymousKBAccess;
