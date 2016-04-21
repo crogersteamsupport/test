@@ -119,6 +119,14 @@ TicketGrid = function (options) {
 
     var layout = this._layout;
 
+    top.Ts.Services.Settings.ReadUserSetting('ShowTicketPreviewPane', '0', function (result) {
+    	if (result == '0') {
+    		$(".grid-ticket-preview").hide();
+    		$(".ui-layout-resizer").hide();
+    		layout.hide("south");
+    	}
+    });
+
     function resizeGrid(paneName, paneElement, paneState, paneOptions, layoutName) {
         if (loadingIndicator) {
             loadingIndicator.remove();
