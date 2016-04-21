@@ -631,6 +631,60 @@ namespace TeamSupport.Data
             }
         }
 
+        public void LoadPagedByOrganizationIDLastName(int organizationID, bool loadOnlyActive, bool includeChildren, int start)
+        {
+            int end = start + 10;
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    WITH OrderedContact AS
+                    (
+	                    SELECT 
+		                    UserID, 
+		                    ROW_NUMBER() OVER (ORDER BY LastName, FirstName ASC) AS rownum
+	                    FROM 
+		                    Users 
+	                    WHERE 
+                            (
+                                OrganizationID IN
+					            (
+                                    SELECT
+                                        @OrganizationID
+                                    UNION
+                                    SELECT
+                                        CustomerID
+                                    FROM
+                                        CustomerRelationships
+                                    WHERE
+                                        RelatedCustomerID = @OrganizationID
+                                        AND @IncludeChildren = 1
+					            )
+                            )
+                            AND (@ActiveOnly = 0 OR IsActive = 1) 
+                            AND (MarkDeleted = 0) 
+                    ) 
+                    SELECT 
+                        u.*
+                        , LastName + ', ' + FirstName AS DisplayName 
+                    FROM 
+                        Users u
+                        JOIN OrderedContact oc
+                            ON u.UserID = oc.UserID
+                    WHERE 
+	                    oc.rownum BETWEEN @start and @end
+                    ORDER BY 
+                        LastName
+                        , FirstName";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+                command.Parameters.AddWithValue("@IncludeChildren", includeChildren);
+                command.Parameters.AddWithValue("@start", start);
+                command.Parameters.AddWithValue("@end", end);
+                Fill(command);
+            }
+        }
+
         /// <summary>
         /// Get users by name
         /// </summary>

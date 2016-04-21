@@ -18,6 +18,8 @@ var _productsSortColumn = 'Date Created';
 var _productsSortDirection = 'DESC';
 var _productHeadersAdded = false;
 var _isParentView = false;
+var _isLoadingContacts = false;
+var _viewingContacts = false;
 
 Selectize.define('sticky_placeholder', function (options) {
     var self = this;
@@ -162,7 +164,7 @@ $(document).ready(function () {
     LoadAddresses();
     LoadProperties();
     LoadCustomProperties();
-    LoadContacts();
+    //LoadContacts();
     LoadProductTypes();
     LoadCustomControls(top.Ts.ReferenceTypes.OrganizationProducts);
     LoadReminderUsers();
@@ -2244,14 +2246,40 @@ $(document).ready(function () {
 
     });
 
-    function LoadContacts() {
-        top.Ts.Services.Customers.LoadContacts2(organizationID, $('#cbActive').prop('checked'), _isParentView, function (users) {
-            $('.userList').empty();
-            $('.userList').append(users)
+    function LoadContacts(start) {
+        start = start || 0;
+        showContactsLoadingIndicator();
+        $('.userList').fadeTo(200, 0.5);
+        top.Ts.Services.Customers.LoadContacts2(organizationID, $('#cbActive').prop('checked'), _isParentView, start, function (users) {
+            $('.userList').fadeTo(0, 1);
+            if (start == 0) {
+                $('.userList').empty();
+                if (users.length < 1) {
+                    $('.contacts-empty').show();
+                } else {
+                    $('.userList').append(users);
+                }
+            }
+            else {
+                if (users.length < 1) {
+                    $('.contacts-done').show();
+                } else {
+                    $('.userList').append(users);
+                }
+            }
+            //$('.userList').append(users);
+            $('.contacts-loading').hide();
+            _isLoadingContacts = false;
+
             //for (var i = 0; i < users.length; i++) {
             //    $('<a>').attr('class', 'list-group-item').text(users[i].FirstName + ' ' + users[i].LastName).appendTo('.userList');
             //}
         });
+    }
+
+    function showContactsLoadingIndicator() {
+        _isLoadingContacts = true;
+        $('.contacts-loading').show();
     }
 
     function LoadProducts() {
@@ -2607,29 +2635,50 @@ $(document).ready(function () {
     }
     $("[rel='tooltip']").tooltip();
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        if (e.target.innerHTML == "Tickets")
+        if (e.target.innerHTML == "Tickets") {
             $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_CustomerID=" + organizationID + "&tf_IncludeCompanyChildren=" + _isParentView);
-        else if (e.target.innerHTML == "Watercooler")
+            _viewingContacts = false;
+        }
+        else if (e.target.innerHTML == "Watercooler") {
             $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=2&pageid=" + organizationID);
-        else if (e.target.innerHTML == "Details")
+            _viewingContacts = false;
+        }
+        else if (e.target.innerHTML == "Details") {
             createTestChart();
-        else if (e.target.innerHTML == "Children")
+            _viewingContacts = false;
+        }
+        else if (e.target.innerHTML == "Children") {
             LoadChildren();
-        else if (e.target.innerHTML == "Contacts")
+            _viewingContacts = false;
+        }
+        else if (e.target.innerHTML == "Contacts") {
+            _viewingContacts = true;
             LoadContacts();
-        else if (e.target.innerHTML == "Notes")
+        }
+        else if (e.target.innerHTML == "Notes") {
             LoadNotes();
-        else if (e.target.innerHTML == "Files")
+            _viewingContacts = false;
+        }
+        else if (e.target.innerHTML == "Files") {
             LoadFiles();
+            _viewingContacts = false;
+        }
         else if (e.target.innerHTML == "Products") {
             LoadProducts();
+            _viewingContacts = false;
         }
-        else if (e.target.innerHTML == "Inventory")
+        else if (e.target.innerHTML == "Inventory") {
             LoadInventory();
-        else if (e.target.innerHTML == "Ratings")
+            _viewingContacts = false;
+        }
+        else if (e.target.innerHTML == "Ratings") {
+            _viewingContacts = false;
             LoadRatings('', 1);
-        else if (e.target.innerHTML == "Calendar")
+        }
+        else if (e.target.innerHTML == "Calendar") {
             $('#calendarIframe').attr("src", "Calendar.html?pagetype=2&pageid=" + organizationID);
+            _viewingContacts = false;
+        }
     })
 
     $("input[type=text], textarea").autoGrow();
@@ -2672,6 +2721,30 @@ $(document).ready(function () {
         top.Ts.Services.Customers.DismissAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
         top.Ts.System.logAction('Customer Detail - Dismiss Alert');
         $('#modalAlert').modal('hide');
+    });
+
+    $('.maincontainer').bind('scroll', function () {
+        if (_viewingContacts) {
+            if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                if (_isLoadingContacts == true) return;
+                if ($('.contacts-done').is(':visible')) return;
+
+                LoadContacts($('.list-group-item').length + 1);
+            }
+
+            if ($(this).scrollTop() > 100) {
+                $('.scrollup').fadeIn();
+            } else {
+                $('.scrollup').fadeOut();
+            }
+        }
+    });
+
+    $('.scrollup').click(function () {
+        $('.frame-container').animate({
+            scrollTop: 0
+        }, 600);
+        return false;
     });
 
     $('.tab-content').bind('scroll', function () {

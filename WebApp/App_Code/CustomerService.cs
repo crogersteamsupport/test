@@ -2032,17 +2032,18 @@ SELECT
         }
 
         [WebMethod]
-        public string LoadContacts2(int organizationID, bool isActive, bool includeChildren)
+        public string LoadContacts2(int organizationID, bool isActive, bool includeChildren, int start)
         {
             StringBuilder htmlresults = new StringBuilder("");
             StringBuilder phoneResults = new StringBuilder("");
-            Users users = new Users(TSAuthentication.GetLoginUser());
-            users.LoadByOrganizationIDLastName(organizationID, isActive, includeChildren);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Users users = new Users(loginUser);
+            users.LoadPagedByOrganizationIDLastName(organizationID, isActive, includeChildren, start);
 
             foreach (User u in users)
             {
 
-                PhoneNumbers phoneNumbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+                PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
                 phoneNumbers.LoadByID(u.UserID, ReferenceType.Users);
 
                 foreach (PhoneNumber p in phoneNumbers)
@@ -2051,6 +2052,17 @@ SELECT
                 }
 
                 var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+                string name;
+                if (includeChildren && (organizationID != u.OrganizationID))
+                {
+                    Organization company = Organizations.GetOrganization(loginUser, u.OrganizationID);
+                    name = company.Name + " - " + u.FirstLastName;
+                }
+                else
+                {
+                    name = u.FirstLastName;
+                }
 
                 htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <div class='row'>
@@ -2075,7 +2087,7 @@ SELECT
                             </div>
                             </div>"
 
-                    , u.IsActive ? "user-active" : "user-inactive", u.IsActive ? "Active" : "Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:" + u.Email + "'>" + u.Email + "</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1), phoneResults, u.UserID, u.IsPortalUser == true ? "<p class='list-group-item-text'><span class=\"text-muted\">Has Portal Access</span>" : "", u.Title != "" ? u.Title : "", u.OrganizationID, (Int64)ts.TotalMilliseconds);
+                    , u.IsActive ? "user-active" : "user-inactive", u.IsActive ? "Active" : "Inactive", name, u.Email != "" ? "<a href='mailto:" + u.Email + "'>" + u.Email + "</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1), phoneResults, u.UserID, u.IsPortalUser == true ? "<p class='list-group-item-text'><span class=\"text-muted\">Has Portal Access</span>" : "", u.Title != "" ? u.Title : "", u.OrganizationID, (Int64)ts.TotalMilliseconds);
 
                 phoneResults.Clear();
             }
