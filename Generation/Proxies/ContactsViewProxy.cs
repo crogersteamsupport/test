@@ -50,6 +50,7 @@ namespace TeamSupport.Data
     [DataMember] public bool PortalLimitOrgTickets { get; set; }
     [DataMember] public string LinkedIn { get; set; }
     [DataMember] public bool PortalViewOnly { get; set; }
+    [DataMember] public bool BlockInboundEmail { get; set; }
           
   }
   
@@ -58,6 +59,7 @@ namespace TeamSupport.Data
     public ContactsViewItemProxy GetProxy()
     {
       ContactsViewItemProxy result = new ContactsViewItemProxy();
+      result.BlockInboundEmail = this.BlockInboundEmail;
       result.PortalViewOnly = this.PortalViewOnly;
       result.LinkedIn = this.LinkedIn;
       result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;

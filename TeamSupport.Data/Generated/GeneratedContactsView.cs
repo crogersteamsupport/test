@@ -78,6 +78,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool BlockInboundEmail
+    {
+      get { return (bool)Row["BlockInboundEmail"]; }
+      set { Row["BlockInboundEmail"] = CheckValue("BlockInboundEmail", value); }
+    }
+    
     public bool PortalViewOnly
     {
       get { return (bool)Row["PortalViewOnly"]; }
@@ -395,7 +401,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ContactsView] SET     [Email] = @Email,    [FirstName] = @FirstName,    [Name] = @Name,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [Organization] = @Organization,    [LastVersion] = @LastVersion,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrganizationParentID] = @OrganizationParentID,    [CryptedPassword] = @CryptedPassword,    [SalesForceID] = @SalesForceID,    [NeedsIndexing] = @NeedsIndexing,    [OrganizationActive] = @OrganizationActive,    [OrganizationSAExpirationDate] = @OrganizationSAExpirationDate,    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,    [LinkedIn] = @LinkedIn,    [PortalViewOnly] = @PortalViewOnly  WHERE ([UserID] = @UserID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ContactsView] SET     [Email] = @Email,    [FirstName] = @FirstName,    [Name] = @Name,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [Organization] = @Organization,    [LastVersion] = @LastVersion,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrganizationParentID] = @OrganizationParentID,    [CryptedPassword] = @CryptedPassword,    [SalesForceID] = @SalesForceID,    [NeedsIndexing] = @NeedsIndexing,    [OrganizationActive] = @OrganizationActive,    [OrganizationSAExpirationDate] = @OrganizationSAExpirationDate,    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,    [LinkedIn] = @LinkedIn,    [PortalViewOnly] = @PortalViewOnly,    [BlockInboundEmail] = @BlockInboundEmail  WHERE ([UserID] = @UserID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("Email", SqlDbType.NVarChar, 1024);
@@ -643,13 +649,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("BlockInboundEmail", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ContactsView] (    [Email],    [FirstName],    [UserID],    [Name],    [MiddleName],    [LastName],    [Title],    [IsActive],    [MarkDeleted],    [LastLogin],    [LastActivity],    [LastPing],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [Organization],    [LastVersion],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrganizationParentID],    [CryptedPassword],    [SalesForceID],    [NeedsIndexing],    [OrganizationActive],    [OrganizationSAExpirationDate],    [PortalLimitOrgTickets],    [LinkedIn],    [PortalViewOnly]) VALUES ( @Email, @FirstName, @UserID, @Name, @MiddleName, @LastName, @Title, @IsActive, @MarkDeleted, @LastLogin, @LastActivity, @LastPing, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ActivatedOn, @DeactivatedOn, @OrganizationID, @Organization, @LastVersion, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrganizationParentID, @CryptedPassword, @SalesForceID, @NeedsIndexing, @OrganizationActive, @OrganizationSAExpirationDate, @PortalLimitOrgTickets, @LinkedIn, @PortalViewOnly); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ContactsView] (    [Email],    [FirstName],    [UserID],    [Name],    [MiddleName],    [LastName],    [Title],    [IsActive],    [MarkDeleted],    [LastLogin],    [LastActivity],    [LastPing],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [Organization],    [LastVersion],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrganizationParentID],    [CryptedPassword],    [SalesForceID],    [NeedsIndexing],    [OrganizationActive],    [OrganizationSAExpirationDate],    [PortalLimitOrgTickets],    [LinkedIn],    [PortalViewOnly],    [BlockInboundEmail]) VALUES ( @Email, @FirstName, @UserID, @Name, @MiddleName, @LastName, @Title, @IsActive, @MarkDeleted, @LastLogin, @LastActivity, @LastPing, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ActivatedOn, @DeactivatedOn, @OrganizationID, @Organization, @LastVersion, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrganizationParentID, @CryptedPassword, @SalesForceID, @NeedsIndexing, @OrganizationActive, @OrganizationSAExpirationDate, @PortalLimitOrgTickets, @LinkedIn, @PortalViewOnly, @BlockInboundEmail); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("BlockInboundEmail", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("PortalViewOnly", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -1022,7 +1042,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [Email], [FirstName], [UserID], [Name], [MiddleName], [LastName], [Title], [IsActive], [MarkDeleted], [LastLogin], [LastActivity], [LastPing], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ActivatedOn], [DeactivatedOn], [OrganizationID], [Organization], [LastVersion], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrganizationParentID], [CryptedPassword], [SalesForceID], [NeedsIndexing], [OrganizationActive], [OrganizationSAExpirationDate], [PortalLimitOrgTickets], [LinkedIn], [PortalViewOnly] FROM [dbo].[ContactsView] WHERE ([UserID] = @UserID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [Email], [FirstName], [UserID], [Name], [MiddleName], [LastName], [Title], [IsActive], [MarkDeleted], [LastLogin], [LastActivity], [LastPing], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ActivatedOn], [DeactivatedOn], [OrganizationID], [Organization], [LastVersion], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrganizationParentID], [CryptedPassword], [SalesForceID], [NeedsIndexing], [OrganizationActive], [OrganizationSAExpirationDate], [PortalLimitOrgTickets], [LinkedIn], [PortalViewOnly], [BlockInboundEmail] FROM [dbo].[ContactsView] WHERE ([UserID] = @UserID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("UserID", userID);
         Fill(command);

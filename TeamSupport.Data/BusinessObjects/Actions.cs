@@ -364,7 +364,19 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Actions a JOIN Tickets t ON a.TicketID = t.TicketID WHERE a.SalesForceID = @SalesForceID AND t.OrganizationID = @OrganizationID";
+		string sql = @"SELECT a.*
+FROM Actions a 
+JOIN
+	(SELECT TicketID FROM Tickets WHERE ticketId IN (SELECT TicketID
+													FROM Actions
+													WHERE SalesForceID = @SalesForceID
+													)
+										AND OrganizationID = @OrganizationID
+	) t ON a.TicketID = t.TicketID 
+WHERE a.SalesForceID = @SalesForceID";
+		command.CommandText = sql;
+
+        //command.CommandText = "SELECT * FROM Actions a JOIN Tickets t ON a.TicketID = t.TicketID WHERE a.SalesForceID = @SalesForceID AND t.OrganizationID = @OrganizationID";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@SalesForceID", salesForceID);
         command.Parameters.AddWithValue("@OrganizationID", organizationID);

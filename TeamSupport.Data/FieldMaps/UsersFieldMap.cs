@@ -60,6 +60,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("verificationCodeExpiration", "verificationCodeExpiration", false, false, false);
       _fieldMap.AddMap("PasswordCreatedUtc", "PasswordCreatedUtc", false, false, false);
       _fieldMap.AddMap("PortalLimitOrgChildrenTickets", "PortalLimitOrgChildrenTickets", false, false, false);
+	  _fieldMap.AddMap("BlockInboundEmail", "BlockInboundEmail", true, false, true);
             
     }
   }
