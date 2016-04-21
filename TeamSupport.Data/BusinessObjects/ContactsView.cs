@@ -335,6 +335,7 @@ namespace TeamSupport.Data
 
 	private string GetSqlOperator(Type filterFieldDataType, string rawOperator, string[] rawValues, ref List<string> filterValues)
 	{
+		rawOperator = rawOperator.ToLower();
 		StringBuilder result = new StringBuilder();
 
 		for (int i = 0; i < rawValues.Length; i++)
@@ -343,7 +344,7 @@ namespace TeamSupport.Data
 			{
 				if (i == 0)
 				{
-					if (rawOperator.ToLower() == "not")
+					if (rawOperator == "not")
 					{
 						result.Append("IS NOT");
 					}
@@ -455,6 +456,10 @@ namespace TeamSupport.Data
 						case "not":
 							if (i == 0) result.Append("<>");
 							filterValues.Add(rawValues[i]);
+							break;
+						case "doesnotcontain":
+							if (i == 0) result.Append("NOT LIKE");
+							filterValues.Add("%" + rawValues[i] + "%");
 							break;
 						default:
 							if (i == 0) result.Append("=");

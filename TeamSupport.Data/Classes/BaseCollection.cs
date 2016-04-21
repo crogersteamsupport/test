@@ -1039,6 +1039,7 @@ ORDER BY {3}
 
         private bool DoesValueMatch(Type dataType, object o, string value, string condition)
         {
+			condition = condition.ToLower();
             bool isNull = o == null || o == DBNull.Value || o.ToString().Trim() == "";
 
             if (value.ToLower() == "[null]") return condition == "not" ? !isNull : isNull;
@@ -1109,6 +1110,10 @@ ORDER BY {3}
                 {
                     return o.ToString().ToLower().Trim() != value.ToLower().Trim();
                 }
+				if (condition == "doesnotcontain")
+				{
+					return o.ToString().ToLower().Trim().IndexOf(value.ToLower().Trim()) < 0;
+				}
                 else
                 {
                     return o.ToString().ToLower().Trim() == value.ToLower().Trim();
