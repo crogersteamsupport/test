@@ -4,9 +4,8 @@ var ticketGrid = null;
 $(document).ready(function () {
     if (top.Ts.System.User.DisableExporting == true) { $('.tickets-export').remove(); }
    
-
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.grid-ticket-toolbar', animation: false });
-
+	
     top.Ts.Services.Settings.ReadUserSetting('TicketGrid-Settings', '', function (result) {
         var options = result == '' ? new Object() : JSON.parse(result);
         ticketGrid = new TicketGrid(options);
@@ -506,6 +505,19 @@ TicketGrid = function (options) {
         e.preventDefault();
         refreshGrid();
         top.Ts.System.logAction('Ticket Grid - Refreshed');
+    });
+
+    $('.tickets-hide-view-pane').click(function (e) {
+    	e.preventDefault();
+    	$(".grid-ticket-preview").toggle();
+    	$(".ui-layout-resizer").toggle();
+
+    	top.Ts.Services.Tickets.ShowTicketPreviewPane(false, function () {
+			alert('yay!')
+    	});
+    	//$(this).closest("div.navbar_top").next('div.window_content').children('iframe').attr("pane").hide();
+    	//refreshGrid();
+    	top.Ts.System.logAction('Ticket Grid - Hid View Pane');
     });
 
 

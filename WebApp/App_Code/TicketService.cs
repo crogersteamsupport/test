@@ -1240,7 +1240,33 @@ namespace TSWebServices
             ticket.Collection.Save();
         }
 
+		[WebMethod]
+		public void ShowTicketPreviewPane()
+		{
+			const string UserSettingsKey = "ShowTicketPreviewPane";
+			LoginUser user = TSAuthentication.GetLoginUser();
 
+			UserSettings settings = new UserSettings(user);
+			settings.LoadByUserSettingKey(user.UserID, UserSettingsKey);
+
+			if (settings.Any())
+			{
+				string newValue = settings[0].SettingValue == "0" ? "1" : "0";
+
+				settings[0].SettingValue = newValue;
+				settings.Save();
+			}
+			else
+			{
+				settings = new UserSettings(TSAuthentication.GetLoginUser());
+				UserSetting setting = settings.AddNewUserSetting();
+				setting.UserID = user.UserID;
+				setting.SettingKey = UserSettingsKey;
+				setting.SettingValue = "0";
+
+				settings.Save();
+			}
+		}
 
         [WebMethod]
         public void DeleteAction(int actionID)
