@@ -2724,13 +2724,24 @@ WHERE t.TicketID = @TicketID
 
             logs.LoadByTicketID(ticketID);
 			List<ActionLogProxy> logsArray = logs.GetActionLogProxies().ToList();
-			
-			//hack: vv. only way right now to know if the actionlog was added by Jira. We'll need to do something about this (creating a user for each service or crm)
-			//		As of right now March 2016, this is the only error logged from Jira.vb UpdateTicketWithIssueData(), so we specifically check that text in the Description,
-			//		we need to update this as needed if something there (or other integrations are handled here) changes
-			foreach (var log in logsArray.Where(p => p.CreatorID == -4 && p.OrganizationID == null && p.Description.StartsWith("Updated Ticket with Jira Issue Key:")))
+
+			foreach(var log in logsArray.Where(p => p.CreatorID < 0))
 			{
-				log.CreatorName = IntegrationType.Jira.ToString() + " Integration";
+				switch (log.CreatorID)
+				{
+					case (int)SystemUser.API:
+						log.CreatorName = SystemUser.API.ToString();
+						break;
+					case (int)SystemUser.CRM:
+						//hack: vv. only way right now to know if the actionlog was added by Jira. We'll need to do something about this (creating a user for each service or crm)
+						//		As of right now March 2016, this is the only error logged from Jira.vb UpdateTicketWithIssueData(), so we specifically check that text in the Description,
+						//		we need to update this as needed if something there (or other integrations are handled here) changes
+						if (log.OrganizationID == null && log.Description.ToLower().StartsWith("updated ticket with jira issue key:"))
+						{
+							log.CreatorName = IntegrationType.Jira.ToString() + " Integration";
+						}
+						break;
+				}
 			}
 
 			//TODO: vv. Right now we are only pulling and displaying in the Ticket history the Jira Integration changes. Later we'll have to add the others, here and for the Company/Contact pages.

@@ -173,17 +173,49 @@ namespace TeamSupport.Api
       return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
     }
 
-    public static string UpdateTicket(RestCommand command, int ticketIDOrNumber)
-    {
-      TicketsViewItem ticketViewItem = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketViewItem.TicketID);
-      if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
-      ticket.ReadFromXml(command.Data, false);
-      ticket.Collection.Save();
-      ticket.UpdateCustomFieldsFromXml(command.Data);
-      ticket = Tickets.GetTicket(command.LoginUser, ticket.TicketID);
-      return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
-    }
+	public static string UpdateTicket(RestCommand command, int ticketIDOrNumber)
+	{
+		TicketsViewItem ticketViewItem = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
+		Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketViewItem.TicketID);
+		if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+		ticket.ReadFromXml(command.Data, false);
+		ticket.Collection.Save();
+		ticket.UpdateCustomFieldsFromXml(command.Data);
+
+		ticket = Tickets.GetTicket(command.LoginUser, ticket.TicketID);
+
+		try 
+		{
+			XmlDocument xml = new XmlDocument();
+			xml.LoadXml(command.Data);
+			string query = "*[translate(local-name()," +
+					"'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']/*[translate(local-name()," +
+					"'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='jirakey']";
+			XmlNode nodeTest = xml.SelectSingleNode(query);
+
+			if (nodeTest != null) {
+				string jiraKey = nodeTest.InnerText;
+
+				TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(command.LoginUser);
+				ticketLinkToJira.LoadByTicketID(ticketViewItem.TicketID);
+					
+				if (ticketLinkToJira != null
+					&& ticketLinkToJira.Any())
+				{
+					string oldJiraKey = ticketLinkToJira[0].JiraKey;
+					ticketLinkToJira[0].JiraKey = jiraKey;
+					ticketLinkToJira.Save();
+					ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketViewItem.TicketID, string.Format("Changed JiraKey from '{0}' to '{1}'.", oldJiraKey, jiraKey));
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			ExceptionLogs.LogException(command.LoginUser, ex, "API", string.Format("OrgID: {0}{1}Verb: {2}{1}Url: {3}{1}Body: {4}", command.Organization.OrganizationID, Environment.NewLine, command.Method, command.Method, command.Data));
+		}
+
+		return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
+	}
 
     public static string DeleteTicket(RestCommand command, int ticketIDOrNumber)
     {
