@@ -21,6 +21,18 @@ namespace TeamSupport.Data
         else return "";
       }
     }
+
+    public string ProductFamily
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("ProductFamily") && Row["ProductFamily"] != DBNull.Value)
+        {
+          return (string)Row["ProductFamily"];
+        }
+        else return "";
+      }
+    }
   }
   
   public partial class Notes
@@ -42,7 +54,7 @@ namespace TeamSupport.Data
             FROM
                 Notes n 
                 LEFT JOIN Users u
-                    ON n.CreatorID = u.UserID 
+                    ON n.CreatorID = u.UserID
             WHERE
                 n.RefType = @ReferenceType
                 AND n.RefID IN
@@ -64,6 +76,61 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@ReferenceType", refType);
         command.Parameters.AddWithValue("@ReferenceID", refID);
         command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
+        Fill(command);
+      }
+    }
+
+    public void LoadByReferenceTypeByUserRights(ReferenceType refType, int refID, int viewerID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+            SELECT 
+                n.*
+                , u.FirstName + ' ' + u.LastName AS CreatorName
+                , f.Name AS ProductFamily
+            FROM
+                Notes n 
+                LEFT JOIN Users u
+                    ON n.CreatorID = u.UserID
+                LEFT JOIN ProductFamilies f
+                    ON n.ProductFamilyID = f.ProductFamilyID
+            WHERE
+                n.RefType = @ReferenceType
+                AND n.RefID IN
+                (
+                    SELECT
+                        @ReferenceID
+                    UNION
+                    SELECT
+                        CustomerID
+                    FROM
+                        CustomerRelationships
+                    WHERE
+                        RelatedCustomerID = @ReferenceID
+                        AND @IncludeCompanyChildren = 1
+                )
+                AND
+                (
+                    EXISTS (SELECT UserID FROM Users WHERE UserID = @ViewerID AND ProductFamiliesRights = 0)
+                    OR n.ProductFamilyID IS NULL
+                    OR n.ProductFamilyID IN
+                    (
+                        SELECT
+                            urpf.ProductFamilyID
+                        FROM
+                            UserRightsProductFamilies urpf
+                        WHERE
+                            urpf.UserID = @ViewerID
+                    )
+                )
+            ORDER BY
+                n." + orderBy + " DESC";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ReferenceType", refType);
+        command.Parameters.AddWithValue("@ReferenceID", refID);
+        command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
+        command.Parameters.AddWithValue("@ViewerID", viewerID);
         Fill(command);
       }
     }

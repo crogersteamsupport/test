@@ -1064,6 +1064,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public NoteProxy[] LoadNotesByUserRights(int refID, ReferenceType refType, bool includeChildren)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Notes notes = new Notes(loginUser);
+            notes.LoadByReferenceTypeByUserRights(refType, refID, loginUser.UserID, "DateCreated", includeChildren);
+            return notes.GetNoteProxies();
+        }
+
+        [WebMethod]
         public NoteProxy LoadNote(int noteID)
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
@@ -2408,7 +2417,7 @@ SELECT
         }
 
         [WebMethod]
-        public void SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType, bool isAlert = false)
+        public void SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType, bool isAlert = false, int productFamilyID = -1)
         {
             Note note = null;
             bool isNew = false;
@@ -2444,6 +2453,14 @@ SELECT
                 note.Description = noteText;
                 note.Title = title;
                 note.IsAlert = isAlert;
+                if (productFamilyID != -1)
+                {
+                    note.ProductFamilyID = productFamilyID;
+                }
+                else
+                {
+                    note.ProductFamilyID = null;
+                }
                 note.Collection.Save();
                 if (isNew)
                 {

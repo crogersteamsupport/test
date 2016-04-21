@@ -25,6 +25,7 @@ namespace TeamSupport.Data
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public bool IsAlert { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
           
   }
   
@@ -33,6 +34,7 @@ namespace TeamSupport.Data
     public NoteProxy GetProxy()
     {
       NoteProxy result = new NoteProxy();
+      result.ProductFamilyID = this.ProductFamilyID;
       result.ImportFileID = this.ImportFileID;
       result.IsAlert = this.IsAlert;
       result.NeedsIndexing = this.NeedsIndexing;

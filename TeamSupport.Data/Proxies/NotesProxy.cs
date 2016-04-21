@@ -28,6 +28,8 @@ namespace TeamSupport.Data
     [DataMember]
     public bool IsAlert { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public string ProductFamily { get; set; }
   }
   
   public partial class Note : BaseItem
@@ -35,6 +37,7 @@ namespace TeamSupport.Data
     public NoteProxy GetProxy()
     {
       NoteProxy result = new NoteProxy();
+      result.ProductFamilyID = this.ProductFamilyID;
       result.ImportFileID = this.ImportFileID;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
@@ -45,6 +48,7 @@ namespace TeamSupport.Data
       result.RefType = this.RefType;
       result.NoteID = this.NoteID;
       result.CreatorName = this.CreatorName;
+      result.ProductFamily = this.ProductFamily;
       result.IsAlert = this.IsAlert;
             
 
