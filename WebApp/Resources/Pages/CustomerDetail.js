@@ -1701,6 +1701,12 @@ $(document).ready(function () {
             $('#noteForm').show();
             $('#fieldNoteDesc').tinymce().setContent(desc);
             $('#fieldNoteDesc').tinymce().focus();
+            if (note.ProductFamilyID) {
+                $('#ddlProductFamily').val(note.ProductFamilyID);
+            }
+            else {
+                $('#ddlProductFamily').val(-1);
+            }
         });
     });
 
