@@ -183,36 +183,7 @@ namespace TeamSupport.Api
 		ticket.UpdateCustomFieldsFromXml(command.Data);
 
 		ticket = Tickets.GetTicket(command.LoginUser, ticket.TicketID);
-
-		try 
-		{
-			XmlDocument xml = new XmlDocument();
-			xml.LoadXml(command.Data);
-			string query = "*[translate(local-name()," +
-					"'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']/*[translate(local-name()," +
-					"'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='jirakey']";
-			XmlNode nodeTest = xml.SelectSingleNode(query);
-
-			if (nodeTest != null) {
-				string jiraKey = nodeTest.InnerText;
-
-				TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(command.LoginUser);
-				ticketLinkToJira.LoadByTicketID(ticketViewItem.TicketID);
-					
-				if (ticketLinkToJira != null
-					&& ticketLinkToJira.Any())
-				{
-					string oldJiraKey = ticketLinkToJira[0].JiraKey;
-					ticketLinkToJira[0].JiraKey = jiraKey;
-					ticketLinkToJira.Save();
-					ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketViewItem.TicketID, string.Format("Changed JiraKey from '{0}' to '{1}'.", oldJiraKey, jiraKey));
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			ExceptionLogs.LogException(command.LoginUser, ex, "API", string.Format("OrgID: {0}{1}Verb: {2}{1}Url: {3}{1}Body: {4}", command.Organization.OrganizationID, Environment.NewLine, command.Method, command.Method, command.Data));
-		}
+		UpdateFieldsOfSeparateTable(command, ticket.TicketID);
 
 		return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
 	}
@@ -331,5 +302,71 @@ namespace TeamSupport.Api
 
       return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
     }
-  }
+
+		/// <summary>
+		/// Update the Ticket related fields that live in their own table.
+		/// </summary>
+		/// <param name="command">Command received in the request to read and process the data in the request body.</param>
+		/// <param name="ticketId">TicketId to update its record.</param>
+		private static void UpdateFieldsOfSeparateTable(RestCommand command, int ticketId)
+		{
+			try
+			{
+				//Add as necessary to the list and then to the switch-case below for the work to update it.
+				List<string> fields = new List<string>() { "jirakey" };
+
+				foreach (string field in fields.Select(p => p.ToLower()).ToList())
+				{
+					XmlDocument xml = new XmlDocument();
+					xml.LoadXml(command.Data);
+					string query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']" +
+									"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
+					query = string.Format(query, field);
+					XmlNode node = xml.SelectSingleNode(query);
+
+					//If node not found and the request includes a top level of collection items then try again with it
+					if (node == null)
+					{
+						query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='tickets']" +
+								"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']" +
+								"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
+						query = string.Format(query, field);
+						XmlNodeList nodeList = xml.SelectNodes(query);
+
+						if (nodeList != null && nodeList.Count > 0)
+						{
+							node = nodeList[0];
+						}
+					}
+
+					if (node != null)
+					{
+						switch (field)
+						{
+							case "jirakey":
+								string jiraKey = node.InnerText;
+								TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(command.LoginUser);
+								ticketLinkToJira.LoadByTicketID(ticketId);
+
+								if (ticketLinkToJira != null
+									&& ticketLinkToJira.Any())
+								{
+									string oldJiraKey = ticketLinkToJira[0].JiraKey;
+									ticketLinkToJira[0].JiraKey = jiraKey;
+									ticketLinkToJira.Save();
+									ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketId, string.Format("Changed JiraKey from '{0}' to '{1}'.", oldJiraKey, jiraKey));
+								}
+								break;
+							default:
+								break;
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(command.LoginUser, ex, "API", string.Format("OrgID: {0}{1}Verb: {2}{1}Url: {3}{1}Body: {4}", command.Organization.OrganizationID, Environment.NewLine, command.Method, command.Method, command.Data));
+			}
+		}
+	}
 }
