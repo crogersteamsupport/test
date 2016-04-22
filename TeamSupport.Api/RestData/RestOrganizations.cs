@@ -93,6 +93,7 @@ namespace TeamSupport.Api
 
       organization.ReadFromXml(command.Data, false);
 	  SetFieldIdsByName(command, ref organization);
+	  
       organization.Collection.Save();
       organization.UpdateCustomFieldsFromXml(command.Data);
 
@@ -195,27 +196,7 @@ namespace TeamSupport.Api
 
 				foreach (string field in fields.Select(p => p.ToLower()).ToList())
 				{
-					XmlDocument xml = new XmlDocument();
-					xml.LoadXml(command.Data);
-					string query = "*[translate(local-name(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customer']" +
-									"/*[translate(local-name(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
-					query = string.Format(query, field);
-					XmlNode node = xml.SelectSingleNode(query);
-
-					//If node not found and the request includes a top level of collection items then try again with it
-					if (node == null)
-					{
-						query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customers']" +
-								"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customer']" +
-								"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
-						query = string.Format(query, field);
-						XmlNodeList nodeList = xml.SelectNodes(query);
-
-						if (nodeList != null && nodeList.Count > 0)
-						{
-							node = nodeList[0];
-						}
-					}
+					XmlNode node = GetNode(command, field);
 
 					if (node != null)
 					{
@@ -224,7 +205,49 @@ namespace TeamSupport.Api
 							case "slaname":
 								string slaName = node.InnerText;
 								int? slaLevelId = SlaLevel.GetIDByName(command.LoginUser, slaName, null);
-								organization.SlaLevelID = slaLevelId;
+								bool wasFoundByName = false;
+
+								if (slaLevelId != null)
+								{
+									//check if id belongs to org
+									SlaLevel slaLevel = SlaLevels.GetSlaLevel(command.LoginUser, (int)slaLevelId);
+
+									if (slaLevel.OrganizationID == organization.ParentID)
+									{
+										organization.SlaLevelID = slaLevel.SlaLevelID;
+										wasFoundByName = true;
+									}
+								}
+
+								if (!wasFoundByName)
+								{
+									//vv check if also the SlaLevelId was sent and it's different than current
+									string slaLevelIdField = "slalevelid";
+									XmlNode nodeSlaLevelId = GetNode(command, slaLevelIdField);
+
+									if (nodeSlaLevelId != null)
+									{
+										string slaLevelIdText = nodeSlaLevelId.InnerText;
+										int slaIdSent = 0;
+
+										if (int.TryParse(slaLevelIdText, out slaIdSent))
+										{
+											//check if id belongs to org
+											SlaLevel slaLevel = SlaLevels.GetSlaLevel(command.LoginUser, slaIdSent);
+
+											if (slaLevel != null && slaLevel.OrganizationID == organization.ParentID)
+											{
+												organization.SlaLevelID = slaLevel.SlaLevelID;
+											}
+											else
+											{
+												int? currentSlaLevelId = Organizations.GetOrganization(command.LoginUser, organization.OrganizationID).SlaLevelID;
+												organization.SlaLevelID = currentSlaLevelId;
+											}
+										}
+									}
+								}
+
 								break;
 							//ToDo: //vv DefaultSupportGroup, DefaultSupportUser
 							default:
@@ -237,6 +260,33 @@ namespace TeamSupport.Api
 			{
 				ExceptionLogs.LogException(command.LoginUser, ex, "API", string.Format("OrgID: {0}{1}Verb: {2}{1}Url: {3}{1}Body: {4}", command.Organization.OrganizationID, Environment.NewLine, command.Method, command.Method, command.Data));
 			}
+		}
+
+		private static XmlNode GetNode(RestCommand command, string field)
+		{
+			XmlDocument xml = new XmlDocument();
+			xml.LoadXml(command.Data);
+			string query = "*[translate(local-name(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customer']" +
+							"/*[translate(local-name(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
+			query = string.Format(query, field);
+			XmlNode node = xml.SelectSingleNode(query);
+
+			//If node not found and the request includes a top level of collection items then try again with it
+			if (node == null)
+			{
+				query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customers']" +
+						"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customer']" +
+						"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
+				query = string.Format(query, field);
+				XmlNodeList nodeList = xml.SelectNodes(query);
+
+				if (nodeList != null && nodeList.Count > 0)
+				{
+					node = nodeList[0];
+				}
+			}
+
+			return node;
 		}
 	}
 }
