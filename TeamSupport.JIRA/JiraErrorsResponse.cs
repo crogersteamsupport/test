@@ -24,10 +24,11 @@ namespace TeamSupport.JIRA
 			get
 			{
 				bool hasErrors = (ErrorMessages != null && ErrorMessages.Any())
-								|| !string.IsNullOrEmpty(Errors.Issuetype)
-								|| !string.IsNullOrEmpty(Errors.Project)
-								|| !string.IsNullOrEmpty(Errors.Priority)
-								|| (Errors.CustomFields.Any() && Errors.CustomFields.Count > 0);
+								|| (Errors != null &&
+									(!string.IsNullOrEmpty(Errors.Issuetype)
+									|| !string.IsNullOrEmpty(Errors.Project)
+									|| !string.IsNullOrEmpty(Errors.Priority)
+									|| (Errors.CustomFields.Any() && Errors.CustomFields.Count > 0)));
 				return hasErrors;
 			}
 		}
@@ -40,12 +41,15 @@ namespace TeamSupport.JIRA
 		{
 			JiraErrorsResponse errorsResponse = new JiraErrorsResponse();
 
-			StreamReader reader = new StreamReader(webException.Response.GetResponseStream());
-			string content = reader.ReadToEnd();
-			reader.Close();
+			if (webException != null && webException.Response != null)
+			{
+				StreamReader reader = new StreamReader(webException.Response.GetResponseStream());
+				string content = reader.ReadToEnd();
+				reader.Close();
 
-			errorsResponse = JsonConvert.DeserializeObject<JiraErrorsResponse>(content);
-			errorsResponse.Errors.CustomFields = GetCustomFieldsErrors(content);
+				errorsResponse = JsonConvert.DeserializeObject<JiraErrorsResponse>(content);
+				errorsResponse.Errors.CustomFields = GetCustomFieldsErrors(content);
+			}
 
 			return errorsResponse;
 		}
@@ -67,40 +71,43 @@ namespace TeamSupport.JIRA
 				}
 			}
 
-			foreach (PropertyInfo propertyInfo in Errors.GetType().GetProperties())
+			if (Errors != null)
 			{
-				if (propertyInfo.CanRead)
+				foreach (PropertyInfo propertyInfo in Errors.GetType().GetProperties())
 				{
-					if (propertyInfo.GetValue(Errors, null) != null)
+					if (propertyInfo.CanRead)
 					{
-						string propertyName = propertyInfo.Name;
-						string propertyValue = propertyInfo.GetValue(Errors, null).ToString();
-
-						if (typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType)
-							&& propertyInfo.PropertyType.IsGenericType
-							&& propertyInfo.PropertyType.GetGenericArguments().Length > 0)
+						if (propertyInfo.GetValue(Errors, null) != null)
 						{
-							if (propertyName.ToLower() == "customfields")
+							string propertyName = propertyInfo.Name;
+							string propertyValue = propertyInfo.GetValue(Errors, null).ToString();
+
+							if (typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType)
+								&& propertyInfo.PropertyType.IsGenericType
+								&& propertyInfo.PropertyType.GetGenericArguments().Length > 0)
+							{
+								if (propertyName.ToLower() == "customfields")
+								{
+									if (result.Length > 0)
+									{
+										result.Append(Environment.NewLine);
+									}
+
+									foreach (KeyValuePair<string, string> customFieldError in Errors.CustomFields)
+									{
+										result.Append(string.Format("{0}: {1}", customFieldError.Key, customFieldError.Value));
+									}
+								}
+							}
+							else
 							{
 								if (result.Length > 0)
 								{
 									result.Append(Environment.NewLine);
 								}
 
-								foreach(KeyValuePair<string, string> customFieldError in Errors.CustomFields)
-								{
-									result.Append(string.Format("{0}: {1}", customFieldError.Key, customFieldError.Value));
-								}
+								result.Append(string.Format("{0}: {1}", propertyName, propertyValue));
 							}
-						}
-						else
-						{
-							if (result.Length > 0)
-							{
-								result.Append(Environment.NewLine);
-							}
-
-							result.Append(string.Format("{0}: {1}", propertyName, propertyValue));
 						}
 					}
 				}
