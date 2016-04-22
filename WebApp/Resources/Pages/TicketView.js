@@ -103,6 +103,12 @@ TicketGrid = function (options) {
 
     var layout = this._layout;
 
+    top.Ts.Services.Settings.ReadUserSetting('ShowTicketPreviewPane', '0', function (result) {
+    	if (result == "0") {
+    		layout.hide("south");
+    	}
+    });
+
     function resizeGrid(paneName, paneElement, paneState, paneOptions, layoutName) {
         if (loadingIndicator) {
             loadingIndicator.remove();
@@ -491,6 +497,19 @@ TicketGrid = function (options) {
         top.Ts.System.logAction('Ticket Grid - Refreshed');
     });
 
+    $('.tickets-hide-view-pane').click(function (e) {
+    	e.preventDefault();
+    	top.Ts.Services.Tickets.ShowTicketPreviewPane(function () {
+    		if (layout.state.south.isHidden) {
+    			layout.show("south");
+    		}
+    		else {
+    			layout.hide("south");
+    		}
+
+    	});
+    	top.Ts.System.logAction('Ticket Grid - Hid View Pane');
+    });
 
     $('#dialog-columns').modal({ show: false });
     $('#dialog-user').modal({ show: false });
