@@ -92,8 +92,10 @@ namespace TeamSupport.Api
       if (organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
       organization.ReadFromXml(command.Data, false);
+	  SetFieldIdsByName(command, ref organization);
       organization.Collection.Save();
       organization.UpdateCustomFieldsFromXml(command.Data);
+
       return OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organization.OrganizationID).GetXml("Customer", true);
     }
 
@@ -179,5 +181,62 @@ namespace TeamSupport.Api
       return organizations.GetXml("Customers", "Customer", true, command.Filters);
     }
 
-  }
+		/// <summary>
+		/// Finds and sets the Organization fields ids by searching their name
+		/// </summary>
+		/// <param name="command">Command received in the request to read and process the data in the request body.</param>
+		/// <param name="organizationId">OrganizationId to update its record.</param>
+		private static void SetFieldIdsByName(RestCommand command, ref Organization organization)
+		{
+			try
+			{
+				//Add as necessary to the list and then to the switch-case below for the work to update it.
+				List<string> fields = new List<string>() { "slaname", "defaultsupportgroup", "defaultsupportuser" };
+
+				foreach (string field in fields.Select(p => p.ToLower()).ToList())
+				{
+					XmlDocument xml = new XmlDocument();
+					xml.LoadXml(command.Data);
+					string query = "*[translate(local-name(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customer']" +
+									"/*[translate(local-name(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
+					query = string.Format(query, field);
+					XmlNode node = xml.SelectSingleNode(query);
+
+					//If node not found and the request includes a top level of collection items then try again with it
+					if (node == null)
+					{
+						query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customers']" +
+								"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customer']" +
+								"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
+						query = string.Format(query, field);
+						XmlNodeList nodeList = xml.SelectNodes(query);
+
+						if (nodeList != null && nodeList.Count > 0)
+						{
+							node = nodeList[0];
+						}
+					}
+
+					if (node != null)
+					{
+						switch (field)
+						{
+							case "slaname":
+								string slaName = node.InnerText;
+								int? slaLevelId = SlaLevel.GetIDByName(command.LoginUser, slaName, null);
+								organization.SlaLevelID = slaLevelId;
+								break;
+							//ToDo: //vv DefaultSupportGroup, DefaultSupportUser
+							default:
+								break;
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(command.LoginUser, ex, "API", string.Format("OrgID: {0}{1}Verb: {2}{1}Url: {3}{1}Body: {4}", command.Organization.OrganizationID, Environment.NewLine, command.Method, command.Method, command.Data));
+			}
+		}
+	}
 }
