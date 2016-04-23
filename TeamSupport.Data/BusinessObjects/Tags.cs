@@ -69,13 +69,13 @@ namespace TeamSupport.Data
 
     }
 
-    public void LoadByReference(ReferenceType refType, int refID)
+    public void LoadByReference(ReferenceType refType, int refID, int? parentOrganizationId = null)
     {
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = "SELECT * FROM Tags t LEFT JOIN TagLinks tl ON tl.TagID = t.TagID WHERE t.OrganizationID = @OrganizationID AND tl.RefType = @RefType AND tl.RefID = @RefID ORDER BY tl.DateCreated";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("OrganizationID", LoginUser.OrganizationID);
+        command.Parameters.AddWithValue("OrganizationID", parentOrganizationId != null ? parentOrganizationId : LoginUser.OrganizationID);
         command.Parameters.AddWithValue("RefType", refType);
         command.Parameters.AddWithValue("RefID", refID);
         Fill(command);

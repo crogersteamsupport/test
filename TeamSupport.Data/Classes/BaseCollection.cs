@@ -120,7 +120,7 @@ namespace TeamSupport.Data
             return DataUtils.DateToUtc(_baseCollection.LoginUser, dateTime);
         }
 
-        public void WriteToXml(XmlWriter writer, bool includeCustomFields)
+        public void WriteToXml(XmlWriter writer, bool includeCustomFields, Tags tags = null)
         {
             foreach (FieldMapItem item in _baseCollection.FieldMap)
             {
@@ -195,6 +195,20 @@ namespace TeamSupport.Data
                     writer.WriteElementString(field.ApiFieldName, escape);
                 }
             }
+
+			if (tags != null)
+			{
+				writer.WriteStartElement("Tags");
+
+				foreach(Tag tag in tags)
+				{
+					writer.WriteStartElement("Tag");
+					writer.WriteElementString("Value", tag.Value);
+					writer.WriteEndElement();
+				}
+				
+				writer.WriteEndElement();
+			}
         }
 
         public void UpdateCustomFieldsFromXml(string data)
@@ -334,7 +348,7 @@ namespace TeamSupport.Data
         {
         }
 
-        public string GetXml(string elementName, bool includeCustomFields)
+        public string GetXml(string elementName, bool includeCustomFields, Tags tags = null)
         {
             MemoryStream stream = new MemoryStream();
             XmlTextWriter writer = new XmlTextWriter(stream, new UTF8Encoding(false));
@@ -342,7 +356,7 @@ namespace TeamSupport.Data
             writer.WriteStartDocument();
             writer.WriteStartElement(elementName);
 
-            WriteToXml(writer, includeCustomFields);
+            WriteToXml(writer, includeCustomFields, tags);
 
             writer.WriteFullEndElement();
             writer.WriteEndDocument();
@@ -895,17 +909,17 @@ namespace TeamSupport.Data
             return writer;
         }
 
-        public void WriteXml(XmlTextWriter writer, BaseItem item, string elementName, bool includeCustomFields, NameValueCollection filters)
+        public void WriteXml(XmlTextWriter writer, BaseItem item, string elementName, bool includeCustomFields, NameValueCollection filters, Tags tags = null)
         {
             if (IsItemFiltered(item, filters)) return;
             writer.WriteStartElement(elementName);
-            item.WriteToXml(writer, includeCustomFields);
+            item.WriteToXml(writer, includeCustomFields, tags);
             writer.WriteEndElement();
         }
 
-        public void WriteXml(XmlTextWriter writer, DataRow row, string elementName, bool includeCustomFields, NameValueCollection filters)
+        public void WriteXml(XmlTextWriter writer, DataRow row, string elementName, bool includeCustomFields, NameValueCollection filters, Tags tags = null)
         {
-            WriteXml(writer, new BaseItem(row, this), elementName, includeCustomFields, filters);
+            WriteXml(writer, new BaseItem(row, this), elementName, includeCustomFields, filters, tags);
         }
 
         public static string EndXmlWrite(XmlTextWriter writer)

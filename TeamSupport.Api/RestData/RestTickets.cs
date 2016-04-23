@@ -12,17 +12,19 @@ namespace TeamSupport.Api
 {
   public class RestTickets
   {
-
     public static string GetTicket(RestCommand command, int ticketID)
     {
-      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketID);
-      if (ticket.OrganizationID != command.Organization.OrganizationID)
-      {
-        throw new RestException(HttpStatusCode.Unauthorized);
-      }
+		TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketID);
+		if (ticket.OrganizationID != command.Organization.OrganizationID)
+		{
+			throw new RestException(HttpStatusCode.Unauthorized);
+		}
 
-      return ticket.GetXml("Ticket", true);
-    }
+		Tags tags = new Tags(command.LoginUser);
+        tags.LoadByReference(ReferenceType.Tickets, ticket.TicketID);
+		string ticketXmlString = ticket.GetXml("Ticket", true, tags);
+		return ticketXmlString;
+	}
 
 	public static string GetTickets(RestCommand command)
 	{
@@ -48,6 +50,7 @@ namespace TeamSupport.Api
 				}
           
 				xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
+				xml = AddTagsToTickets(xml, command);
 			}
 			catch (Exception ex)
 			{
@@ -74,11 +77,15 @@ namespace TeamSupport.Api
 					tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
 				}
 
-					foreach (DataRow row in tickets.Table.Rows)
-					{
-						tickets.WriteXml(writer, row, "Ticket", true, command.Filters);
-					}
+				foreach (DataRow row in tickets.Table.Rows)
+				{
+					int ticketId = (int)row["TicketID"];
+					Tags tags = new Tags(command.LoginUser);
+					tags.LoadByReference(ReferenceType.Tickets, ticketId);
+					tags = tags ?? new Tags(command.LoginUser);
+					tickets.WriteXml(writer, row, "Ticket", true, command.Filters, tags);
 				}
+			}
 
 			xml = Tickets.EndXmlWrite(writer);
 		}
@@ -105,20 +112,24 @@ namespace TeamSupport.Api
       return xml;
     }
 
-    public static string GetTicketsByCustomerID(RestCommand command, int customerID, bool orderByDateCreated = false)
-    {
-      TicketsView tickets = new TicketsView(command.LoginUser);
-      if (orderByDateCreated)
-      {
-        tickets.LoadByCustomerID(customerID, "ot.DateCreated DESC");
-      }
-      else
-      {
-        tickets.LoadByCustomerID(customerID);
-      }
+		public static string GetTicketsByCustomerID(RestCommand command, int customerID, bool orderByDateCreated = false)
+		{
+			TicketsView tickets = new TicketsView(command.LoginUser);
+			if (orderByDateCreated)
+			{
+				tickets.LoadByCustomerID(customerID, "ot.DateCreated DESC");
+			}
+			else
+			{
+				tickets.LoadByCustomerID(customerID);
+			}
 
-      return tickets.GetXml("Tickets", "Ticket", true, command.Filters);
-    }
+			string xml = "";
+			xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
+			xml = AddTagsToTickets(xml, command);
+
+			return xml;
+		}
 
     public static string GetTicketsByContactID(RestCommand command, int contactID, bool orderByDateCreated = false)
     {
@@ -199,45 +210,51 @@ namespace TeamSupport.Api
       return result;
     }
 
-    // Customer Only Methods
+		// Customer Only Methods
     
-	public static string GetCustomerTicket(RestCommand command, int ticketID)
-	{
-		TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumberForCustomer(command.LoginUser, (int)command.Organization.ParentID, ticketID);
-		if (ticket.OrganizationID != command.Organization.ParentID || !ticket.GetIsCustomer(command.Organization.OrganizationID)) 
+		public static string GetCustomerTicket(RestCommand command, int ticketID)
 		{
-			throw new RestException(HttpStatusCode.Unauthorized);
-		}
-
-		return ticket.GetXml("Ticket", true);
-	}
-
-	public static string GetCustomerTickets(RestCommand command)
-	{
-		TicketsView tickets = new TicketsView(command.LoginUser);
-
-		if (command.Filters["TicketTypeID"] != null)
-		{
-			try
+			TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumberForCustomer(command.LoginUser, (int)command.Organization.ParentID, ticketID);
+			if (ticket.OrganizationID != command.Organization.ParentID || !ticket.GetIsCustomer(command.Organization.OrganizationID)) 
 			{
-				int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
-				TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
-				if (ticketType.OrganizationID != command.Organization.ParentID) throw new Exception();
-				tickets.LoadByCustomerTicketTypeID(command.Organization.OrganizationID, ticketTypeID);
+				throw new RestException(HttpStatusCode.Unauthorized);
 			}
-			catch (Exception ex)
-			{
-				throw new RestException(HttpStatusCode.NotAcceptable, ex.Message);
-				throw new RestException(HttpStatusCode.NotAcceptable, "Invalid TicketTypeID to filter.", ex);
-			}
-		}
-		else
-		{
-			tickets.LoadByCustomerID(command.Organization.OrganizationID);
+
+			Tags tags = new Tags(command.LoginUser);
+			tags.LoadByReference(ReferenceType.Tickets, ticket.TicketID, command.Organization.ParentID);
+
+			return ticket.GetXml("Ticket", true, tags);
 		}
 
-		return tickets.GetXml("Tickets", "Ticket", true, command.Filters);
-	}
+		public static string GetCustomerTickets(RestCommand command)
+		{
+			TicketsView tickets = new TicketsView(command.LoginUser);
+
+			if (command.Filters["TicketTypeID"] != null)
+			{
+				try
+				{
+					int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
+					TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
+					if (ticketType.OrganizationID != command.Organization.ParentID) throw new Exception();
+					tickets.LoadByCustomerTicketTypeID(command.Organization.OrganizationID, ticketTypeID);
+				}
+				catch (Exception ex)
+				{
+					throw new RestException(HttpStatusCode.NotAcceptable, ex.Message);
+					throw new RestException(HttpStatusCode.NotAcceptable, "Invalid TicketTypeID to filter.", ex);
+				}
+			}
+			else
+			{
+				tickets.LoadByCustomerID(command.Organization.OrganizationID);
+			}
+
+			string xml = string.Empty;
+			xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
+			xml = AddTagsToTickets(xml, command, true);
+			return xml;
+		}
 
     public static string CreateCustomerTicket(RestCommand command)
     {
@@ -313,31 +330,11 @@ namespace TeamSupport.Api
 			try
 			{
 				//Add as necessary to the list and then to the switch-case below for the work to update it.
-				List<string> fields = new List<string>() { "jirakey" };
+				List<string> fields = new List<string>() { "jirakey", "tags" };
 
 				foreach (string field in fields.Select(p => p.ToLower()).ToList())
 				{
-					XmlDocument xml = new XmlDocument();
-					xml.LoadXml(command.Data);
-					string query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']" +
-									"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
-					query = string.Format(query, field);
-					XmlNode node = xml.SelectSingleNode(query);
-
-					//If node not found and the request includes a top level of collection items then try again with it
-					if (node == null)
-					{
-						query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='tickets']" +
-								"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']" +
-								"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
-						query = string.Format(query, field);
-						XmlNodeList nodeList = xml.SelectNodes(query);
-
-						if (nodeList != null && nodeList.Count > 0)
-						{
-							node = nodeList[0];
-						}
-					}
+					XmlNode node = GetNode(command, field);
 
 					if (node != null)
 					{
@@ -357,6 +354,53 @@ namespace TeamSupport.Api
 									ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketId, string.Format("Changed JiraKey from '{0}' to '{1}'.", oldJiraKey, jiraKey));
 								}
 								break;
+							case "tags":
+								TagLinks currentTagLinks = new TagLinks(command.LoginUser);
+								currentTagLinks.LoadByReference(ReferenceType.Tickets, ticketId);
+								XmlNodeList nodeList = node.ChildNodes;
+								List<int> newTags = new List<int>();
+
+								foreach (XmlNode tagNode in nodeList)
+								{
+									string tagValue = tagNode["Value"].InnerText;
+
+									Tag newTag = Tags.GetTag(command.LoginUser, tagValue);
+
+									if (newTag == null)
+									{
+										Tags tag = new Tags(command.LoginUser);
+										newTag = tag.AddNewTag();
+										newTag.OrganizationID = command.Organization.OrganizationID;
+										newTag.Value = tagValue;
+										tag.Save();
+									}
+
+									newTags.Add(newTag.TagID);
+								}
+
+								foreach(int tag in newTags)
+								{
+									TagLink newTagLink = currentTagLinks.Where(p => p.TagID == tag && p.RefID == ticketId).SingleOrDefault();
+									if (newTagLink == null)
+									{
+										TagLinks tagLink = new TagLinks(command.LoginUser);
+										newTagLink = tagLink.AddNewTagLink();
+										newTagLink.TagID = tag;
+										newTagLink.RefType = ReferenceType.Tickets;
+										newTagLink.RefID = ticketId;
+										tagLink.Save();
+									}
+								}
+
+								List<TagLink> deleteTagLinks = currentTagLinks.Where(p => !newTags.Contains(p.TagID)).ToList();
+
+								foreach(TagLink deleteTagLink in deleteTagLinks)
+								{
+									deleteTagLink.Delete();
+									deleteTagLink.Collection.Save();
+								}
+
+								break;
 							default:
 								break;
 						}
@@ -367,6 +411,85 @@ namespace TeamSupport.Api
 			{
 				ExceptionLogs.LogException(command.LoginUser, ex, "API", string.Format("OrgID: {0}{1}Verb: {2}{1}Url: {3}{1}Body: {4}", command.Organization.OrganizationID, Environment.NewLine, command.Method, command.Method, command.Data));
 			}
+		}
+
+		private static XmlNode GetNode(RestCommand command, string field)
+		{
+			XmlDocument xml = new XmlDocument();
+			xml.LoadXml(command.Data);
+			string query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']" +
+							"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
+			query = string.Format(query, field);
+			XmlNode node = xml.SelectSingleNode(query);
+
+			//If node not found and the request includes a top level of collection items then try again with it
+			if (node == null)
+			{
+				query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='tickets']" +
+						"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']" +
+						"/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
+				query = string.Format(query, field);
+				XmlNodeList nodeList = xml.SelectNodes(query);
+
+				if (nodeList != null && nodeList.Count > 0)
+				{
+					node = nodeList[0];
+				}
+			}
+
+			return node;
+		}
+
+		/// <summary>
+		/// Add the Tag tags to the final xml of the tickets
+		/// </summary>
+		/// <param name="ticketsXml">Tickets xml string.</param>
+		/// <returns>An xml string with the Tickets data and its tags.</returns>
+		private static string AddTagsToTickets(string ticketsXml, RestCommand command, bool isCustomerToken = false)
+		{
+			string xml = string.Empty;
+			//Add the tag nodes to each ticket object
+			XmlDocument xmlDoc = new XmlDocument();
+			xmlDoc.LoadXml(ticketsXml);
+
+			XmlNodeList nodeList = xmlDoc.SelectNodes("/Tickets/Ticket");
+			string xmlResultString = string.Empty;
+
+			using (var xmlTextWriter = Tickets.BeginXmlWrite("Tickets"))
+			{
+				foreach (XmlNode node in nodeList)
+				{
+					//get the tags for the ticket using the ticketId
+					try
+					{
+						string ticketIdString = node["TicketID"].InnerText;
+						Tags tags = new Tags(command.LoginUser);
+						tags.LoadByReference(ReferenceType.Tickets, int.Parse(ticketIdString), isCustomerToken ? command.Organization.ParentID : null);
+						XmlTextWriter writer = Tags.BeginXmlWrite("Tags");
+
+						foreach (DataRow row in tags.Table.Rows)
+						{
+							tags.WriteXml(writer, row, "Tag", false, null);
+						}
+
+						string tagXmlString = string.Empty;
+						tagXmlString = Tags.EndXmlWrite(writer);
+						XmlDocument xmlTag = new XmlDocument();
+						xmlTag.LoadXml(tagXmlString);
+						node.AppendChild(node.OwnerDocument.ImportNode(xmlTag.FirstChild.NextSibling, true));
+					}
+					catch (Exception ex)
+					{
+						ExceptionLogs.LogException(command.LoginUser, ex, "API", string.Format("OrgID: {0}{1}Verb: {2}{1}Url: {3}{1}Body: {4}", command.Organization.OrganizationID, Environment.NewLine, command.Method, command.Method, command.Data));
+					}
+
+					node.WriteTo(xmlTextWriter);
+				}
+
+				xml = Tickets.EndXmlWrite(xmlTextWriter);
+			}
+
+			return xml;
 		}
 	}
 }
