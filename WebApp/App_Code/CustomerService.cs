@@ -2946,6 +2946,8 @@ SELECT
                 }
                 else
                 {
+						  users[0].IsPasswordExpired = true;
+						  users[0].Collection.Save();
                     if (DataUtils.ResetPassword(TSAuthentication.GetLoginUser(), users[0], !(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)))
                     {
                         return("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
