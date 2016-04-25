@@ -1679,7 +1679,15 @@ ORDER BY TicketNumber DESC";
 
 			if (filter.CustomerID != null)
 			{
-				builder.Append(" AND (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID) AND (ot.TicketID = tv.TicketID)))");
+				User userAcount = loginUser.GetUser();
+				if (userAcount.PortalLimitOrgChildrenTickets)
+				{
+					builder.Append(" AND (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @CustomerID)) AND (ot.TicketID = tv.TicketID)))");
+				}
+				else
+				{
+					builder.Append(" AND (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID) AND (ot.TicketID = tv.TicketID)))");
+				}
 				command.Parameters.AddWithValue("CustomerID", filter.CustomerID);
 			}
 
@@ -1761,28 +1769,6 @@ ORDER BY TicketNumber DESC";
 				default:
 					break;
 			}
-
-			//TODO: Now check for product families for this user. 
-			//Organizations organization = new Organizations(loginUser);
-			//organization.LoadByOrganizationID(OrganizationID);
-			//if (organization.Count > 0 && organization[0].UseProductFamilies)
-			//{
-			//	rightsClause = @"AND
-			//										( 
-			//												ProductID IS NULL
-			//												OR ProductID IN 
-			//												(
-			//														SELECT 
-			//																ProductID 
-			//														FROM 
-			//																UserProducts 
-			//														WHERE 
-			//																UserID = {0}
-			//												)
-			//										)";
-			//	builder.Append(string.Format(rightsClause, loginUser.UserID.ToString()));
-			
-			//}
 		}
 
 		public static SearchResults GetQuickSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
