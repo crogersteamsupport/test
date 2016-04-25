@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableTicketProductVersionSelection { get; set; }
     [DataMember] public int? DefaultTicketTypeID { get; set; }
     [DataMember] public int? DefaultGroupTypeID { get; set; }
+    [DataMember] public bool EnableCustomerProductAssociation { get; set; }
           
   }
   
@@ -34,6 +35,7 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.EnableCustomerProductAssociation = this.EnableCustomerProductAssociation;
       result.DefaultGroupTypeID = this.DefaultGroupTypeID;
       result.DefaultTicketTypeID = this.DefaultTicketTypeID;
       result.EnableTicketProductVersionSelection = this.EnableTicketProductVersionSelection;
