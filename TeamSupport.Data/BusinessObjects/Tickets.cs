@@ -898,7 +898,7 @@ AND ts.IsClosed = 0";
 			}
 		}
 
-		public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID)
+		public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
@@ -910,28 +910,34 @@ AND ts.IsClosed = 0";
 																	AND t.IsKnowledgeBase         = 1
 																	AND t.IsVisibleOnPortal         = 1
 																	AND t.KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID");
-																	if (customerID > 0)
-																	{
-																		builder.Append(@" AND(
+				if (customerID > 0)
+				{
+					builder.Append(@" AND(
 																						T.ProductID IS NULL
-																																		OR T.ProductID IN(
-																							SELECT productid
-																																			FROM organizationproducts
-																																			WHERE organizationid = @CustomerID
-																							)
-																					)");
-																	}
-																	builder.Append(@" ORDER BY t.DateModified desc");
+																						OR T.ProductID IN(
+																								SELECT productid
+																								FROM organizationproducts
+																								WHERE organizationid = @CustomerID
+																							)");
+
+					if (contactID > 0 && enforceCustomerProduct)
+					{
+						builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
+					}
+					builder.Append(")");
+				}
+				builder.Append(@" ORDER BY t.DateModified desc");
 				command.CommandText = builder.ToString();
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				command.Parameters.AddWithValue("@CustomerID", customerID);
+				command.Parameters.AddWithValue("@ContactID", contactID);
 				command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
 				Fill(command, "Tickets");
 			}
 		}
 
-		public void LoadUncatogorizedKBs(int organizationID, int customerID)
+		public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
@@ -947,18 +953,24 @@ AND ts.IsClosed = 0";
 				{
 					builder.Append(@" AND(
 																						T.ProductID IS NULL
-																																		OR T.ProductID IN(
-																							SELECT productid
-																																			FROM organizationproducts
-																																			WHERE organizationid = @CustomerID
-																							)
-																					)");
+																						OR T.ProductID IN(
+																								SELECT productid
+																								FROM organizationproducts
+																								WHERE organizationid = @CustomerID
+																							)");
+
+					if (contactID > 0 && enforceCustomerProduct)
+					{
+						builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
+					}
+					builder.Append(")");
 				}
 				builder.Append(@" ORDER BY t.DateModified desc");
 				command.CommandText = builder.ToString();
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				command.Parameters.AddWithValue("@CustomerID", customerID);
+				command.Parameters.AddWithValue("@ContactID", contactID);
 				Fill(command, "Tickets");
 			}
 		}
