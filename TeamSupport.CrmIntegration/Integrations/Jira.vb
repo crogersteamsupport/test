@@ -37,7 +37,7 @@ Namespace TeamSupport
 		Private Function ValidateSyncData() As Boolean
 			Dim result As Boolean = True
 			_issueTypeFieldsList =  New Dictionary(Of IssueTypeFields, JObject)
-        
+
 			If CRMLinkRow.HostName Is Nothing Then
 				result = False
 				AddLog("HostName is missing and it is required to sync.")
@@ -556,26 +556,52 @@ Namespace TeamSupport
 						'An update error could has been caused here or below.
 						'We'll only clear when successfull below.
 					Catch webEx As WebException
-						Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
+						Dim invalidJiraKey As String = String.Empty
 
-						If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
+						If ticketLinkToJira.JiraKey.ToLower().Contains("http") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains(":") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains("/") Then
+							invalidJiraKey = "The JiraKey entered is not valid or does not exist in Jira."
+						End If
+
+						If (String.IsNullOrEmpty(invalidJiraKey)) Then
+							Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
+
+							If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
+								AddLog(String.Format(_jiraExceptionMessageFormat, _
+														webEx.Message, _
+														Environment.NewLine, _
+														vbTab, _
+														jiraErrors.ToString()))
+								AddLog(webEx.StackTrace, _
+											LogType.Report, _
+											crmLinkError, _
+											String.Format("Could not get Jira Issue:{0}{1}", Environment.NewLine, jiraErrors.ToString()), _
+											Orientation.OutToJira, _
+											ObjectType.Ticket, _
+											ticket.TicketID, _
+											"update", _
+											URI, _
+											OperationType.Create)
+							Else
+								AddLog(String.Format("{0}{1}{2}", webEx.Message, Environment.NewLine, webEx.StackTrace))
+							End If
+						Else
 							AddLog(String.Format(_jiraExceptionMessageFormat, _
 													webEx.Message, _
 													Environment.NewLine, _
 													vbTab, _
-													jiraErrors.ToString()))
+													invalidJiraKey))
 							AddLog(webEx.StackTrace, _
 										LogType.Report, _
 										crmLinkError, _
-										String.Format("Could not get Jira Issue:{0}{1}", Environment.NewLine, jiraErrors.ToString()), _
+										String.Format("Could not get Jira Issue:{0}{1}", Environment.NewLine, invalidJiraKey), _
 										Orientation.OutToJira, _
 										ObjectType.Ticket, _
 										ticket.TicketID, _
 										"update", _
 										URI, _
 										OperationType.Create)
-						Else
-							AddLog(String.Format("{0}{1}{2}", webEx.Message, Environment.NewLine, webEx.StackTrace))
 						End If
 
 						Continue For
@@ -711,7 +737,7 @@ Namespace TeamSupport
 						Dim customValue As String = findCustom(0).Value
 
 						If (cRMLinkField.CRMFieldName.ToLower() = "sprint") Then
-							Dim jiraClientAgile As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password, "agile")
+							Dim jiraClientAgile As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password, "agile")
 							Dim boards As List(Of Board) = jiraClientAgile.GetBoards()
 							Dim sprint As Sprint = New Sprint With { .id = 0, .name = "" }
 
@@ -770,7 +796,7 @@ Namespace TeamSupport
 					updateFieldRequestBody.Append("}")
 
 					Try
-						Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
+						Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password)
 						jiraClient.UpdateIssueFieldByParameter(issueId, updateFieldRequestBody.ToString())
 						ClearCrmLinkError(crmLinkError)
 					Catch jiraEx As JiraClientException
@@ -912,7 +938,7 @@ Namespace TeamSupport
 					updateFieldRequestBody.Append("}")
 
 					Try
-						Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
+						Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password)
 						jiraClient.UpdateIssueFieldByParameter(issueId, updateFieldRequestBody.ToString())
 						ClearCrmLinkError(crmLinkError)
 					Catch jiraEx As JiraClientException
@@ -1034,13 +1060,17 @@ Namespace TeamSupport
 			issueTypeName = Replace(issueTypeName, " ", "+")
 			jiraProjectKey = Replace(jiraProjectKey, " ", "+")
 
-			If (_issueTypeFieldsList IsNot Nothing AndAlso _
-				 _issueTypeFieldsList.Any() AndAlso _
-				_issueTypeFieldsList.Count > 0 AndAlso _
-				_issueTypeFieldsList.Where(Function (p) p.Key.IssueType = issueTypeName.ToLower() AndAlso p.Key.Project = jiraProjectKey.ToLower()).Any) Then
-				result = _issueTypeFieldsList.Where(Function (p) p.Key.IssueType = issueTypeName.ToLower() AndAlso p.Key.Project = jiraProjectKey.ToLower()).Select(Function(p) p.Value).FirstOrDefault()
-				addTypeFieldsToList = False
-			End If
+			'//vv
+			'If (_issueTypeFieldsList IsNot Nothing AndAlso _
+			'	 _issueTypeFieldsList.Any() AndAlso _
+			'	_issueTypeFieldsList.Count > 0 AndAlso _
+			'	_issueTypeFieldsList.Where(Function (p) p.Key.IssueType = issueTypeName.ToLower() AndAlso p.Key.Project = jiraProjectKey.ToLower()).Any) Then
+			'	result = _issueTypeFieldsList.Where(Function (p) p.Key.IssueType = issueTypeName.ToLower() AndAlso p.Key.Project = jiraProjectKey.ToLower()).Select(Function(p) p.Value).FirstOrDefault()
+			'	addTypeFieldsToList = False
+			'End If
+			
+			'//vv
+			addTypeFieldsToList = true
 
 			If (addTypeFieldsToList) Then
 				Dim URI As String = _baseURI +
@@ -1076,7 +1106,7 @@ Namespace TeamSupport
 								OperationType.Unknown)
 						AddLog("Type was not found in list of project types. If an exception ahead, chances are it was caused by missing type.")
 					Else
-						_issueTypeFieldsList.Add(New IssueTypeFields With { .IssueType = issueTypeName.ToLower(), .Project = jiraProjectKey.ToLower() }, result)
+						'//vv _issueTypeFieldsList.Add(New IssueTypeFields With { .IssueType = issueTypeName.ToLower(), .Project = jiraProjectKey.ToLower() }, result)
 						ClearCrmLinkError(crmLinkError)
 					End If
 				Catch ex As Exception
@@ -1216,7 +1246,7 @@ Namespace TeamSupport
 
 			Try
 				Dim globalId As String = "system=" + domain + "/Ticket.aspx?ticketid=&id=" + ticketID
-				Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
+				Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password)
 				Dim remoteLink As RemoteLink = New RemoteLink With { .url = domain + "/Ticket.aspx?ticketid=" + ticketID, _
 																	.title = creatorName + " Ticket #" + ticketNumber, _
 																	.summary = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticketName))), _
@@ -1307,7 +1337,7 @@ Namespace TeamSupport
 							issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET", String.Empty)
 						End If
 
-						Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
+						Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password)
 						Dim issueRef As IssueRef = New IssueRef With { .id = issue("id"), .key = issueKey }
 
 						body = New StringBuilder()
@@ -1353,7 +1383,7 @@ Namespace TeamSupport
 								issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET", String.Empty)
 							End If
 
-							Dim jiraClient As JiraClient = New JiraClient(CRMLinkRow.HostName, CRMLinkRow.Username, CRMLinkRow.Password)
+							Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password)
 							Dim issueRef As IssueRef = New IssueRef With { .id = issue("id"), .key = issueKey }
 
 							body = New StringBuilder()
@@ -1746,6 +1776,7 @@ Namespace TeamSupport
 				End If
 
 				Dim ticketValuesChanged = False
+				Dim issueStatusChangedNotUpdatedInTicket = False
 				Dim ticketView As TicketsView = New TicketsView(User)
 				ticketView.LoadByTicketID(ticketID)
 				Dim jiraProjectKey As String = GetProjectKey(ticketView(0))
@@ -1922,7 +1953,10 @@ Namespace TeamSupport
 									End If
 								End If
 
-								ticketLinkToJira(0).JiraStatus = value
+								If (ticketLinkToJira(0).JiraStatus.ToLower().Trim() <> value.ToLower().Trim()) Then
+									ticketLinkToJira(0).JiraStatus = value
+									issueStatusChangedNotUpdatedInTicket = True
+								End If
 						End Select
 					End If
 				Next
@@ -1935,10 +1969,16 @@ Namespace TeamSupport
 					Dim actionLogDescription As String = "Updated Ticket with Jira Issue Key: '" + issue("key").ToString() + "' changes."
 					ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, updateTicket(0).TicketID, actionLogDescription)
 				Else
-					Log.Write("ticketID: " + updateTicket(0).TicketID.ToString() + " values were not updated because have not changed.")
+					AddLog("ticketID: " + updateTicket(0).TicketID.ToString() + " values were not updated because have not changed.")
+
+					If issueStatusChangedNotUpdatedInTicket Then
+						ticketLinkToJira(0).DateModifiedByJiraSync = DateTime.UtcNow
+						ticketLinkToJira.Save()
+						AddLog("The ticket status in the TicketLinkToJira was updated because it changed but was not updated in TeamSupport because either it is setup to be excluded or it does not exist. JiraStatus:" + ticketLinkToJira(0).JiraStatus)
+					End If
 				End If
 			Else
-				Log.Write("Ticket with ID: """ + ticketID.ToString() + """ was not found to be updated.")
+				AddLog("Ticket with ID: """ + ticketID.ToString() + """ was not found to be updated.")
 			End If
 		End Sub
 
@@ -1968,16 +2008,27 @@ Namespace TeamSupport
 				If field.Value.HasValues AndAlso TypeOf(field.Value) Is JObject Then
 					result = field.Value("value").ToString()
 				ElseIf field.Value.HasValues AndAlso TypeOf(field.Value) Is JArray Then
-					Dim fieldValue = field.Value(0).ToString()
-					Dim fieldValueDictionary = fieldValue.Split(","c).Select(Function (kvp) kvp.Split("="c)).ToDictionary( _
-																												Function (kvp) kvp(0), _
-																												Function (kvp) kvp(1))
+					Try
+						Dim fieldValue = field.Value(0).ToString()
+						Dim fieldValueDictionary = fieldValue.Split(","c).Select(Function (kvp) kvp.Split("="c)).ToDictionary( _
+																													Function (kvp) kvp(0), _
+																													Function (kvp) kvp(1))
 	
-					If (fieldValueDictionary.Where(Function(p) p.Key.ToLower() = "name").Any()) Then
-						result = fieldValueDictionary.Where(Function(p) p.Key.ToLower() = "name").Select(Function(p) p.Value).FirstOrDefault()
-					Else
-						result = field.Value.ToString()
-					End If
+						If (fieldValueDictionary.Where(Function(p) p.Key.ToLower() = "name").Any()) Then
+							result = fieldValueDictionary.Where(Function(p) p.Key.ToLower() = "name").Select(Function(p) p.Value).FirstOrDefault()
+						Else
+							result = field.Value.ToString()
+						End If
+					Catch ex As Exception
+						Try
+							'ToDo //vv This probably is a multiselect jira field. For now we are only taking the first value. We need to handle those fields correctly
+							result = field.Value(0)("value").ToString()
+						Catch innerEx As Exception
+							AddLog(String.Format("Unhandled Jira field type {0} with value: {1}{2}", field.Key.ToString(), Environment.NewLine, field.Value(0).ToString()))
+						End Try
+						
+					End Try
+					
 				Else
 					result = field.Value.ToString()
 				End If
