@@ -2736,7 +2736,7 @@ namespace TeamSupport.ServiceLibrary
         //}
 
         //if (!alreadyExists && (newPhoneNumber.Number.Trim() != string.Empty || newPhoneNumber.Extension.Trim() != string.Empty))
-        if (newPhoneNumber.Number.Trim() != string.Empty || newPhoneNumber.Extension.Trim() != string.Empty)
+        if ((newPhoneNumber.Number != null && newPhoneNumber.Number.Trim() != string.Empty) || (newPhoneNumber.Extension != null && newPhoneNumber.Extension.Trim() != string.Empty))
         {
           phoneAdded = true;
           bulkCount++;
