@@ -78,7 +78,18 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByStatusIDs(int organizationID, int[] ticketStatusIDs)
+		public void LoadByOrganizationIDOnTicketType(int organizationID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "SELECT TicketStatuses.* FROM TicketStatuses JOIN TicketTypes ON TicketStatuses.TicketTypeID = TicketTypes.TicketTypeID WHERE TicketStatuses.OrganizationID = @OrganizationID ORDER BY TicketTypes.Name";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("OrganizationID", organizationID);
+				Fill(command);
+			}
+		}
+
+		public void LoadByStatusIDs(int organizationID, int[] ticketStatusIDs)
     {
       using (SqlCommand command = new SqlCommand())
       {

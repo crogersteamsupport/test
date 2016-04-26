@@ -34,7 +34,11 @@ AdminInt = function () {
   });
 
   actionTypes = top.Ts.Cache.getActionTypes();
-  organizationStatuses = top.Ts.Cache.getTicketStatuses();
+
+	top.Ts.Services.Tickets.GetTicketStatusesOrderedByTicketTypeName(function (result) {
+		organizationStatuses = result;
+	});
+
   ticketTypes = top.Ts.Cache.getTicketTypes();
 
   $('#btnRefresh')
@@ -460,7 +464,9 @@ AdminInt = function () {
   		ticketStatusList.empty();
 
   		if (typeof organizationStatuses == "undefined") {
-  			organizationStatuses = top.Ts.Cache.getTicketStatuses();
+  			top.Ts.Services.Tickets.GetTicketStatusesOrderedByTicketTypeName(function (result) {
+  				organizationStatuses = result;
+  			});
   		}
 
   		if (typeof ticketTypes == "undefined") {
@@ -480,6 +486,7 @@ AdminInt = function () {
   			}
 
   			var statusName = organizationStatuses[i].Name;
+  			var typeName = "";
 
   			for (var x = 0; x < ticketTypes.length; x++) {
   				if (organizationStatuses[i].TicketTypeID == ticketTypes[x].TicketTypeID) {
@@ -488,12 +495,10 @@ AdminInt = function () {
   				}
   			}
 
-  			ticketStatusList.append('<option value="' + organizationStatuses[i].TicketStatusID + selected + typeName + ' - ' + statusName + '</option>');
+  			if (typeName != "") {
+  				ticketStatusList.append('<option value="' + organizationStatuses[i].TicketStatusID + selected + typeName + ' - ' + statusName + '</option>');
+  			}
   		}
-
-  		$("#exclusionTicketStatusList").html($('#exclusionTicketStatusList option').sort(function (x, y) {
-  			return $(x).text() < $(y).text() ? -1 : 1;
-  		}))
   	}
   	else {
   		ticketStatusList.attr('disabled', 'disabled');

@@ -648,6 +648,14 @@ namespace TSWebServices
             return statuses.GetTicketStatusProxies();
         }
 
+		[WebMethod]
+		public TicketStatusProxy[] GetTicketStatusesOrderedByTicketTypeName()
+		{
+			TicketStatuses statuses = new TicketStatuses(TSAuthentication.GetLoginUser());
+			statuses.LoadByOrganizationIDOnTicketType(TSAuthentication.OrganizationID);//vv
+			return statuses.GetTicketStatusProxies();
+		}
+
         [WebMethod]
         public TicketNextStatusProxy[] GetNextTicketStatuses()
         {
