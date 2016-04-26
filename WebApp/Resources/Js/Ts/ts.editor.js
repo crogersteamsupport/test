@@ -224,8 +224,6 @@
                 						$('#FireFoxInstallModal').modal('show');
                 					}
 											  		element.parent().find('#recordScreenContainer').hide();
-											  		element.parent().find('#rcdtokScreen').hide();
-											  		element.parent().find('#canceltokScreen').hide();
                 				} else {
                 					// Screen sharing is available
                 					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
