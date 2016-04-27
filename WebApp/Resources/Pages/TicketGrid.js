@@ -120,7 +120,7 @@ TicketGrid = function (options) {
 
 	var layout = this._layout;
 
-	top.Ts.Services.Settings.ReadUserSetting('ShowTicketPreviewPane', '0', function (result) {
+	top.Ts.Services.Settings.ReadUserSetting('ShowTicketPreviewPane', null, function (result) {
 		if (result == "0") {
 			layout.hide("south");
 		}
