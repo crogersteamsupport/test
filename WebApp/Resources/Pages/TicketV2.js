@@ -445,11 +445,12 @@ function SetupTicketProperties() {
       });
     };
 
-    //set the url for the copy paste button
-    var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
-    ticketURLLink.on("aftercopy", function (event) {
-      alert("Copied URL to clipboard: " + event.data["text/plain"]);
-    });
+  	 //set the url for the copy paste button
+    var ticketURLLink = ""
+    //var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
+    //ticketURLLink.on("aftercopy", function (event) {
+    //  alert("Copied URL to clipboard: " + event.data["text/plain"]);
+    //});
     var ticketUrl = top.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
     $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
