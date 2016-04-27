@@ -1252,7 +1252,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
 			action.Description = tinymce.get('action-new-editor').getContent();
 			if (action.Description == "" || action.Description == undefined) {
   				saveError = 1;
-  				top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with Get Function. ticket " + _ticketID, "TinyMCE Error");
+  				top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with Get Function. ticket " + _ticketID + ",body: " + tinymce.get('action-new-editor').getBody().innerHTML, "TinyMCE Error");
 			}
 
 			if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
