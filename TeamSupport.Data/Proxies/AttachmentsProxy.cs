@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public int RefID { get; set; }
     [DataMember] public string CreatorName { get; set; }          
     [DataMember] public bool SentToJira { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
   }
   
   public partial class Attachment : BaseItem
@@ -35,6 +36,7 @@ namespace TeamSupport.Data
     public AttachmentProxy GetProxy()
     {
       AttachmentProxy result = new AttachmentProxy();
+      result.ProductFamilyID = this.ProductFamilyID;
       result.SentToJira = this.SentToJira;
       result.RefID = this.RefID;
       result.RefType = this.RefType;

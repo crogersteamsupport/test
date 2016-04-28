@@ -475,7 +475,7 @@
                   <form class="form-horizontal file-upload" action="Upload/Actions/555" method="POST"
                   enctype="multipart/form-data" title="You can drag and drop your attachments here.">
                   <div class="form-group">
-                    <label for="inputName" class="col-md-1 control-label">File</label>
+                    <label for="inputName" class="col-md-2 control-label">File</label>
                     <div class="col-md-10">
                       <input class="hiddenfile" type="file" name="file[]">
                       <p class="form-control-static"><a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">
@@ -484,11 +484,23 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="inputName" class="col-md-1 control-label">Description</label>
+                    <label for="inputName" class="col-md-2 control-label">Description</label>
                     <div class="col-md-10">
                       <textarea class="col-md-3 form-control" id="attachmentDescription"></textarea>
                     </div>
                   </div>
+                    <div class="form-group productFamilyRow" style="display:none">
+                        <div class="row">
+                            <!--<div class="col-md-8">-->
+                                <label for="ddlFileProductFamily" class="col-md-2 control-label">Product Line</label>
+                                <div class="col-md-6">
+                                    <select class="form-control" id="ddlFileProductFamily">
+                                        <option value="-1">Unassigned</option>
+                                    </select>
+                                </div>
+                            <!--</div>-->
+                        </div>
+                    </div>
                   </form>
                   <button id="btnFilesSave" class="btn btn-primary col-md-offset-1">Upload</button>
                   <button id="btnFilesCancel" class="btn btn-default">Cancel</button>
@@ -509,6 +521,7 @@
                             <th>Description</th>
                             <th>Attached By</th>
                             <th>Date Attached</th>
+                              <th class="productFamilyColumn" style="display: none;">Product Line</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -544,12 +557,12 @@
                         </div>
 
                       </div>
-                          <div class="form-group" id="productFamilyRow" style="display:none">
+                          <div class="form-group productFamilyRow" style="display:none">
                               <div class="row">
                                   <!--<div class="col-md-8">-->
-                                      <label for="ddlProductFamily" class="col-md-2 control-label">Product Line</label>
+                                      <label for="ddlNoteProductFamily" class="col-md-2 control-label">Product Line</label>
                                       <div class="col-md-6">
-                                          <select class="form-control" id="ddlProductFamily">
+                                          <select class="form-control" id="ddlNoteProductFamily">
                                               <option value="-1">Unassigned</option>
                                           </select>
                                       </div>
@@ -584,7 +597,7 @@
                           <th>Title</th>
                                     <th>Author</th>
                           <th>Date Written</th>
-                          <th id="productFamilyColumn" style="display: none;">Product Line</th>
+                          <th class="productFamilyColumn" style="display: none;">Product Line</th>
                         </thead>
                         <tbody>
                         </tbody>

@@ -113,6 +113,8 @@ namespace TeamSupport.Handlers
             attachment.FileSize = files[i].ContentLength;
             if (context.Request.Form["description"] != null)
                 attachment.Description = context.Request.Form["description"].Replace("\n","<br />");
+            if (context.Request.Form["productFamilyID"] != "-1")
+                attachment.ProductFamilyID = Int32.Parse(context.Request.Form["productFamilyID"]);
 
             result.Add(new UploadResult(fileName, attachment.FileType, attachment.FileSize));
             attachment.Collection.Save();

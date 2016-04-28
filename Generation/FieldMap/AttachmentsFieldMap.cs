@@ -28,6 +28,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RefID", "RefID", false, false, false);
       _fieldMap.AddMap("SentToJira", "SentToJira", false, false, false);
       _fieldMap.AddMap("AttachmentGUID", "AttachmentGUID", false, false, false);
+      _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
             
     }
   }

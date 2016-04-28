@@ -30,8 +30,8 @@ $(document).ready(function () {
 
     if (top.Ts.System.Organization.UseProductFamilies) {
         LoadProductFamilies();
-        $('#productFamilyRow').show();
-        $('#productFamilyColumn').show();
+        $('.productFamilyRow').show();
+        $('.productFamilyColumn').show();
     }
 
     LoadNotes();
@@ -922,10 +922,10 @@ $(document).ready(function () {
             $('#fieldNoteDesc').tinymce().setContent(desc);
             $('#fieldNoteDesc').tinymce().focus();
             if (note.ProductFamilyID) {
-                $('#ddlProductFamily').val(note.ProductFamilyID);
+                $('#ddlNoteProductFamily').val(note.ProductFamilyID);
             }
             else {
-                $('#ddlProductFamily').val(-1);
+                $('#ddlNoteProductFamily').val(-1);
             }
         });
     });
@@ -977,12 +977,12 @@ $(document).ready(function () {
         }
         $(this).prop('disabled', true);
         top.Ts.System.logAction('Contact Detail - Save Note');
-        var productFamilyID = $("#ddlProductFamily").val();
+        var productFamilyID = $("#ddlNoteProductFamily").val();
         top.Ts.Services.Customers.SaveNote(title, description, noteID, userID, top.Ts.ReferenceTypes.Users, isAlert, productFamilyID, function (note) {
             $('#fieldNoteTitle').val('');
             $('#fieldNoteDesc').val('');
             $('#fieldNoteID').val('-1');
-            $('#ddlProductFamily').val('-1');
+            $('#ddlNoteProductFamily').val('-1');
             $('#noteContactAlert').prop('checked', false);
             $('#btnNotesSave').text("Save Note");
             LoadNotes();
@@ -994,6 +994,7 @@ $(document).ready(function () {
     $("#btnFilesCancel").click(function (e) {
         $('.upload-queue').empty();
         $('#attachmentDescription').val('');
+        $('#ddlFileProductFamily').val('-1');
         $('#fileForm').toggle();
         top.Ts.System.logAction('Contact Detail - Cancel File Upload');
     });
@@ -1004,7 +1005,10 @@ $(document).ready(function () {
         if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
                 var data = $(o).data('data');
-                data.formData = { description: $('#attachmentDescription').val().replace(/<br\s?\/?>/g, "\n") };
+                data.formData = {
+                    description: $('#attachmentDescription').val().replace(/<br\s?\/?>/g, "\n"),
+                    productFamilyID: $("#ddlFileProductFamily").val()
+                };
                 data.url = '../../../Upload/UserAttachments/' + userID;
                 data.jqXHR = data.submit();
                 $(o).data('data', data);
@@ -1086,6 +1090,7 @@ $(document).ready(function () {
             LoadFiles();
             $('.upload-queue').empty();
             $('#attachmentDescription').val('');
+            $('#ddlFileProductFamily').val('-1');
             $('#fileForm').toggle();
             $('#btnFilesSave').prop('disabled', true);
         }
@@ -1179,24 +1184,53 @@ $(document).ready(function () {
 
     function LoadFiles() {
         $('#tblFiles tbody').empty();
-        top.Ts.Services.Customers.LoadFiles(userID, top.Ts.ReferenceTypes.Users, function (files) {
-            var html;
-            for (var i = 0; i < files.length; i++) {
+        if (top.Ts.System.Organization.UseProductFamilies) {
+            top.Ts.Services.Customers.LoadFilesByUserRights(userID, top.Ts.ReferenceTypes.Users, false, function (note) {
+                var html;
+                for (var i = 0; i < files.length; i++) {
 
-                if (_isAdmin || files[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditContact)
-                    html = '<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
-                else
-                    html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+                    if (_isAdmin || files[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditContact)
+                        html = '<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+                    else
+                        html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
 
-                var tr = $('<tr>')
-                .attr('id', files[i].AttachmentID)
-                .html(html)
-                .appendTo('#tblFiles > tbody:last');
+                    if (files[i].ProductFamilyID != null) {
+                        html += '<td>' + files[i].ProductFamily + '</td>';
+                    }
+                    else {
+                        html += '<td>Unassigned</td>';
+                    }
+
+                    var tr = $('<tr>')
+                    .attr('id', files[i].AttachmentID)
+                    .html(html)
+                    .appendTo('#tblFiles > tbody:last');
 
 
-                //$('#tblFiles > tbody:last').appendTo('<tr id=' +  + '></tr>');
-            }
-        });
+                    //$('#tblFiles > tbody:last').appendTo('<tr id=' +  + '></tr>');
+                }
+            });
+        }
+        else {
+            top.Ts.Services.Customers.LoadFiles(userID, top.Ts.ReferenceTypes.Users, function (files) {
+                var html;
+                for (var i = 0; i < files.length; i++) {
+
+                    if (_isAdmin || files[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditContact)
+                        html = '<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+                    else
+                        html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+
+                    var tr = $('<tr>')
+                    .attr('id', files[i].AttachmentID)
+                    .html(html)
+                    .appendTo('#tblFiles > tbody:last');
+
+
+                    //$('#tblFiles > tbody:last').appendTo('<tr id=' +  + '></tr>');
+                }
+            });
+        }
     }
 
     function LoadPhoneNumbers(reload) {
@@ -2710,7 +2744,8 @@ function GetTinyMCEFontName(fontFamily) {
 function LoadProductFamilies() {
     top.Ts.Services.Organizations.LoadOrgProductFamilies(top.Ts.System.Organization.OrganizationID, function (productFamilies) {
         for (var i = 0; i < productFamilies.length; i++) {
-            $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlProductFamily');
+            $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlNoteProductFamily');
+            $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlFileProductFamily');
         }
     });
 }

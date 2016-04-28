@@ -1269,6 +1269,16 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public AttachmentProxy[] LoadFilesByUserRights(int refID, ReferenceType refType, bool includeChildren)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadByReferenceAndUserRights(refType, refID, loginUser.UserID, "DateCreated desc", includeChildren);
+
+            return attachments.GetAttachmentProxies();
+        }
+
+        [WebMethod]
         public OrganizationCustomProduct[] LoadProducts(int organizationID, string sortColumn, string sortDirection)
         {
             OrganizationProducts organizationProducts = new OrganizationProducts(TSAuthentication.GetLoginUser());

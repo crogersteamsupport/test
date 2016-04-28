@@ -22,6 +22,18 @@ namespace TeamSupport.Data
       }
     }
 
+    public string ProductFamily
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("ProductFamily") && Row["ProductFamily"] != DBNull.Value)
+        {
+          return (string)Row["ProductFamily"];
+        }
+        else return "";
+      }
+    }
+
     public void DeleteFile()
     {
       try { File.Delete(Path); }
@@ -105,6 +117,63 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@RefID", refID);
         command.Parameters.AddWithValue("@RefType", refType);
         command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
+        Fill(command);
+      }
+    }
+
+    public void LoadByReferenceAndUserRights(ReferenceType refType, int refID, int viewerID, string orderBy = "", bool includeCompanyChildren = false)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+            SELECT 
+                a.*
+                , (u.FirstName + ' ' + u.LastName) AS CreatorName 
+                , f.Name AS ProductFamily
+            FROM 
+                Attachments a 
+                LEFT JOIN Users u 
+                    ON u.UserID = a.CreatorID 
+                LEFT JOIN ProductFamilies f
+                    ON a.ProductFamilyID = f.ProductFamilyID
+            WHERE 
+                RefType = @RefType
+                AND RefID IN
+                (
+                    SELECT
+                        @RefID
+                    UNION
+                    SELECT
+                        CustomerID
+                    FROM
+                        CustomerRelationships
+                    WHERE
+                        RelatedCustomerID = @RefID
+                        AND @IncludeCompanyChildren = 1
+                )
+                AND
+                (
+                    EXISTS (SELECT UserID FROM Users WHERE UserID = @ViewerID AND ProductFamiliesRights = 0)
+                    OR a.ProductFamilyID IS NULL
+                    OR a.ProductFamilyID IN
+                    (
+                        SELECT
+                            urpf.ProductFamilyID
+                        FROM
+                            UserRightsProductFamilies urpf
+                        WHERE
+                            urpf.UserID = @ViewerID
+                    )
+                )";
+        if (orderBy != string.Empty)
+        {
+          command.CommandText += " ORDER BY " + orderBy;
+        }
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@RefID", refID);
+        command.Parameters.AddWithValue("@RefType", refType);
+        command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
+        command.Parameters.AddWithValue("@ViewerID", viewerID);
         Fill(command);
       }
     }
