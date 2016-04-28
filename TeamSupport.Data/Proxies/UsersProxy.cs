@@ -97,6 +97,7 @@ namespace TeamSupport.Data
     [DataMember] public ProductFamiliesRightType ProductFamiliesRights { get; set; }
     [DataMember] public bool? BlockEmailFromCreatingOnly { get; set; }
     [DataMember] public Guid CalGUID { get; set; }
+    [DataMember] public bool PortalViewOnly { get; set; }
 	 [DataMember] public string verificationCode { get; set; }
 	 [DataMember] public string verificationPhoneNumber { get; set; }
 	 [DataMember] public DateTime? verificationCodeExpiration { get; set; }
