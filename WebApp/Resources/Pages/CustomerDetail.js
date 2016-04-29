@@ -2140,7 +2140,7 @@ $(document).ready(function () {
     function LoadFiles() {
         $('#tblFiles tbody').empty();
         if (top.Ts.System.Organization.UseProductFamilies) {
-            top.Ts.Services.Customers.LoadFilesByUserRights(organizationID, top.Ts.ReferenceTypes.Organizations, _isParentView, function (note) {
+            top.Ts.Services.Customers.LoadFilesByUserRights(organizationID, top.Ts.ReferenceTypes.Organizations, _isParentView, function (files) {
                 var html;
                 for (var i = 0; i < files.length; i++) {
                     if (!_isParentView)
@@ -2149,7 +2149,7 @@ $(document).ready(function () {
                         html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
 
                     if (files[i].ProductFamilyID != null) {
-                        html += '<td>' + note[i].ProductFamily + '</td>';
+                        html += '<td>' + files[i].ProductFamily + '</td>';
                     }
                     else {
                         html += '<td>Unassigned</td>';

@@ -1185,7 +1185,7 @@ $(document).ready(function () {
     function LoadFiles() {
         $('#tblFiles tbody').empty();
         if (top.Ts.System.Organization.UseProductFamilies) {
-            top.Ts.Services.Customers.LoadFilesByUserRights(userID, top.Ts.ReferenceTypes.Users, false, function (note) {
+            top.Ts.Services.Customers.LoadFilesByUserRights(userID, top.Ts.ReferenceTypes.Users, false, function (files) {
                 var html;
                 for (var i = 0; i < files.length; i++) {
 
