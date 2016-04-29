@@ -48,148 +48,260 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-4">
-                                            <label for="inputName" class="col-md-4 control-label">Name</label>
-                                            <div class="col-md-8">
-                                                <input class="col-md-10 form-control required" name="inputName" id="inputName" placeholder="Name">
+                                        <div class="col-md-12">
+                                            <label for="inputName" class="col-md-2 control-label">Name</label>
+                                            <div class="col-md-10">
+                                                <input class="col-md-12 form-control required" name="inputName" id="inputName" placeholder="Name">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="inputWebSite" class="col-md-4 control-label">Website</label>
-                                            <div class="col-md-8">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="inputWebSite" class="col-md-2 control-label">Website</label>
+                                            <div class="col-md-10">
                                                 <input class="form-control" id="inputWebSite" name="inputWebSite" placeholder="Website">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="inputDomains" class="col-md-4 control-label">Domains</label>
-                                            <div class="col-md-8">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="inputDomains" class="col-md-2 control-label">Domains</label>
+                                            <div class="col-md-10">
                                                 <input class="form-control" id="inputDomains" name="inputDomains" placeholder="Domains">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-4" id="trSupportUser">
-                                            <label for="inputEmail1" class="col-md-4 control-label">Default Support User</label>
-                                            <div class="col-md-8">
-                                                <select class="form-control" id="ddlSUser">
-                                                    <option value="-1">Unassigned</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4" id="trSupportGroup">
-                                            <label for="inputEmail1" class="col-md-4 control-label">Default Support Group</label>
-                                            <div class="col-md-8">
-                                                <select class="form-control" id="ddlSGroup">
-                                                    <option value="-1">Unassigned</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4" id="trTimeZone">
-                                            <label for="inputEmail1" class="col-md-4 control-label">TimeZone</label>
-                                            <div class="col-md-8">
-                                                <select class="form-control" id="ddlTz">
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label for="inputSAE" class="col-md-4 control-label">Service Agreement Expiration</label>
-                                            <div class="col-md-8">
-                                                <input class="col-md-8 form-control datepicker" id="inputSAE" placeholder="Service Agreement Expiration">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="inputSLA" class="col-md-4 control-label">Service Level Agreement</label>
-                                            <div class="col-md-8">
-                                                <select class="form-control" id="ddSla">
-                                                    <option value="-1">Unassigned</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="inputSupportHours" class="col-md-4 control-label">Support hours per month</label>
-                                            <div class="col-md-8">
-                                                <input type="text" class="form-control number" id="inputSupportHours" placeholder="0" value="0">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label for="inputEmail1" class="col-md-4 control-label">Active</label>
-                                            <div class="col-md-8">
-                                                <div class="checkbox">
-                                                  <label>
-                                                    <input id="cbActive" type="checkbox" checked >
-                                                  </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="inputEmail1" class="col-md-4 control-label">Portal Access</label>
-                                            <div class="col-md-8">
-                                                <div class="checkbox">
-                                                  <label>
-                                                    <input type="checkbox" id="cbPortalAccess" value="">
-                                            
-                                                  </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="inputEmail1" class="col-md-4 control-label">API Enabled</label>
-                                            <div class="col-md-8">
-                                                <div class="checkbox">
-                                                  <label>
-                                                    <input type="checkbox" id="cbAPIEnabled" value=""/>
-                                            
-                                                  </label>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <!--<div class="form-group">
+            <div class="row">
+                <div class="col-md-4" id="trSupportUser">
+                    <label for="inputEmail1" class="col-md-4 control-label">Default Support User</label>
+                    <div class="col-md-8">
+                        <select class="form-control" id="ddlSUser">
+                            <option value="-1">Unassigned</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4" id="trSupportGroup">
+                    <label for="inputEmail1" class="col-md-4 control-label">Default Support Group</label>
+                    <div class="col-md-8">
+                        <select class="form-control" id="ddlSGroup">
+                            <option value="-1">Unassigned</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4" id="trTimeZone">
+                    <label for="inputEmail1" class="col-md-4 control-label">TimeZone</label>
+                    <div class="col-md-8">
+                        <select class="form-control" id="ddlTz">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="inputSAE" class="col-md-4 control-label">Service Agreement Expiration</label>
+                    <div class="col-md-8">
+                        <input class="col-md-8 form-control datepicker" id="inputSAE" placeholder="Service Agreement Expiration">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="inputSLA" class="col-md-4 control-label">Service Level Agreement</label>
+                    <div class="col-md-8">
+                        <select class="form-control" id="ddSla">
+                            <option value="-1">Unassigned</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="inputSupportHours" class="col-md-4 control-label">Support hours per month</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control number" id="inputSupportHours" placeholder="0" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="inputEmail1" class="col-md-4 control-label">Active</label>
+                    <div class="col-md-8">
+                        <div class="checkbox">
+                          <label>
+                            <input id="cbActive" type="checkbox" checked >
+                          </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="inputEmail1" class="col-md-4 control-label">Portal Access</label>
+                    <div class="col-md-8">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" id="cbPortalAccess" value="">
 
-                                    </div>
-                                </div>
+                          </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="inputEmail1" class="col-md-4 control-label">API Enabled</label>
+                    <div class="col-md-8">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" id="cbAPIEnabled" value=""/>
+
+                          </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>-->
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
                                             <label for="Description" class="col-md-2 control-label">Description</label>
                                             <div class="col-md-10">
                                                 <textarea class="form-control" id="Description" placeholder="Description"></textarea>
                                             </div>
                                         </div>
-                                     </div>
+                                    </div>
                                 </div>
-                                <div class="form-group" id="formInactive" hidden>
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <label for="inactiveReason" class="col-md-2 control-label">Inactive Reason</label>
-                                            <div class="col-md-10">
-                                                <textarea class="form-control" id="inactiveReason" placeholder="Reason"></textarea>
-                                            </div>
-                                        </div>
-                                     </div>
+                                <!--<div class="form-group" id="formInactive" hidden>
+            <div class="row">
+                <div class="col-md-8">
+                    <label for="inactiveReason" class="col-md-2 control-label">Inactive Reason</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" id="inactiveReason" placeholder="Reason"></textarea>
+                    </div>
+                </div>
+             </div>
+        </div>-->
+                            </div>
                                 </div>
-                          </div>
-                        </div>   
-
                         <div class="box">
-                          <div class="box-header"><h3>Additional Information</h3></div>
-                          <div class="box-content" id="customerCustomInfo">
+                            <div class="box-header"><h3>Additional Information</h3></div>
+                            <div class="box-content">
 
-                          </div>
+                                <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4" id="trSupportUser">
+                        <label for="inputEmail1" class="col-md-4 control-label">Default Support User</label>
+                        <div class="col-md-8">
+                            <select class="form-control" id="ddlSUser">
+                                <option value="-1">Unassigned</option>
+                            </select>
                         </div>
-                        <div class="mt20">
-                            <button class="btn btn-large btn-primary" id="custSaveBtn">Save</button>        
-                            <button id="custCancelBtn" class="btn btn-default">Cancel</button>
+                    </div>
+                    <div class="col-md-4" id="trSupportGroup">
+                        <label for="inputEmail1" class="col-md-4 control-label">Default Support Group</label>
+                        <div class="col-md-8">
+                            <select class="form-control" id="ddlSGroup">
+                                <option value="-1">Unassigned</option>
+                            </select>
                         </div>
-                        </form>
+                    </div>
+                    <div class="col-md-4" id="trTimeZone">
+                        <label for="inputEmail1" class="col-md-4 control-label">TimeZone</label>
+                        <div class="col-md-8">
+                            <select class="form-control" id="ddlTz">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="inputSAE" class="col-md-4 control-label">Service Agreement Expiration</label>
+                        <div class="col-md-8">
+                            <input class="col-md-8 form-control datepicker" id="inputSAE" placeholder="Service Agreement Expiration">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="inputSLA" class="col-md-4 control-label">Service Level Agreement</label>
+                        <div class="col-md-8">
+                            <select class="form-control" id="ddSla">
+                                <option value="-1">Unassigned</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="inputSupportHours" class="col-md-4 control-label">Support hours per month</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control number" id="inputSupportHours" placeholder="0" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="inputEmail1" class="col-md-4 control-label">Active</label>
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                              <label>
+                                <input id="cbActive" type="checkbox" checked >
+                              </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="inputEmail1" class="col-md-4 control-label">Portal Access</label>
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                              <label>
+                                <input type="checkbox" id="cbPortalAccess" value="">
+
+                              </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-md-4">
+                        <label for="inputEmail1" class="col-md-4 control-label">API Enabled</label>
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                              <label>
+                                <input type="checkbox" id="cbAPIEnabled" value=""/>
+
+                              </label>
+                            </div>
+                        </div>
+                    </div>-->
+
+                </div>
+            </div>
+                                <div class="form-group" id="formInactive" hidden>
+                <div class="row">
+                    <div class="col-md-8">
+                        <label for="inactiveReason" class="col-md-2 control-label">Inactive Reason</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" id="inactiveReason" placeholder="Reason"></textarea>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+                            </div>
+                        </div>
+
+                                <div class="box">
+                                    <div class="box-header"><h3>Custom Fields</h3></div>
+                                    <div class="box-content" id="customerCustomInfo">
+
+                                    </div>
+                                </div>
+                                <div class="mt20">
+                                    <button class="btn btn-large btn-primary" id="custSaveBtn">Save</button>
+                                    <button id="custCancelBtn" class="btn btn-default">Cancel</button>
+                                </div>
+</form>
                         </div>
                     </div>
                 </div>
