@@ -1979,7 +1979,7 @@ function () { }, function (e) { console.log(e) });
         var query;
         if (tab != undefined)
             query = "?open=" + tab + "&productfamilyid=" + productFamilyID;
-        this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewProductFamily, 'newProductFamily', 'Add Product Family', true, true, true, null, null, query, null);
+        this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewProductFamily, 'newProductFamily', 'Add Product Line', true, true, true, null, null, query, null);
     },
     closenewProductFamilyTab: function () {
         var tab = this.MainTabs.find('newProductFamily', Ts.Ui.Tabs.Tab.Type.NewProductFamily);
