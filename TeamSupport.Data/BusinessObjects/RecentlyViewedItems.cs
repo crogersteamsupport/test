@@ -18,7 +18,7 @@ namespace TeamSupport.Data
           using (SqlCommand command = new SqlCommand())
           {
               command.CommandText =
-                @"SELECT TOP 5 * FROM RecentlyViewedItems
+                @"SELECT TOP 10 * FROM RecentlyViewedItems
                 WHERE (UserID = @UserID) 
                 AND refType IN (0,1)
                 ORDER BY DateViewed Desc";
