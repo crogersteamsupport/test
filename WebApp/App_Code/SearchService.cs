@@ -476,6 +476,7 @@ namespace TSWebServices
             o.UseProductFamilies = 0 
             OR tv.UserID = " + loginUser.UserID + @" 
             OR urpf.UserID = " + loginUser.UserID + @"
+            OR tv.ProductID IS NULL
           )
           {2}
       ";

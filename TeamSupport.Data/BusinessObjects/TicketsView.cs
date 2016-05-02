@@ -1605,12 +1605,13 @@ ORDER BY TicketNumber DESC";
                             t.TicketID 
                         FROM 
                             Tickets t
-                            JOIN Products p
+                            LEFT JOIN Products p
                                 ON t.ProductID = p.ProductID
-                            JOIN UserRightsProductFamilies urpf
+                            LEFT JOIN UserRightsProductFamilies urpf
                                 ON p.ProductFamilyID = urpf.ProductFamilyID 
                         WHERE 
-                            urpf.UserID = {0}
+                            t.ProductID IS NULL
+                            OR urpf.UserID = {0}
                     ) 
                     OR tv.UserID = {0} 
                   )";

@@ -107,12 +107,27 @@ AND ot.TicketID = @TicketID
             productFamiliesWithRights.LoadByUserRights(user.UserID);
             TicketsViewItem ticket = TicketsView.GetTicketsViewItem(user.Collection.LoginUser, ticketID);
             bool result = false;
-            foreach (ProductFamily productFamilyWithRights in productFamiliesWithRights)
+            if (ticket.UserID == user.UserID || ticket.ProductID == null)
             {
-                if (ticket.ProductFamilyID == productFamilyWithRights.ProductFamilyID)
+                result = true;
+            }
+            else
+            {
+                foreach (ProductFamily productFamilyWithRights in productFamiliesWithRights)
+                {
+                    if (ticket.ProductFamilyID == productFamilyWithRights.ProductFamilyID)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+            if (!result)
+            {
+                Organization account = Organizations.GetOrganization(user.Collection.LoginUser, user.Collection.LoginUser.OrganizationID);
+                if (!account.UseProductFamilies)
                 {
                     result = true;
-                    break;
                 }
             }
 
