@@ -124,6 +124,19 @@ $(document).ready(function () {
 
     organizationID = top.Ts.Utils.getQueryValue("organizationid", window);
     _isParentView = top.Ts.Utils.getQueryValue("parentView", window);
+
+    top.Ts.Services.Customers.CanAccessCustomer(organizationID, function (result) {
+    	if (!result) {
+    		var url = window.location.href;
+    		if (url.indexOf('.') > -1) {
+    			url = url.substring(0, url.lastIndexOf('/') + 1);
+    		}
+    		window.location = url + 'NoCustomerAccess.html';
+    		return;
+    	}
+
+	 });
+
     if (_isParentView) {
         _isParentView = true;
         $('#customerParentView').hide();

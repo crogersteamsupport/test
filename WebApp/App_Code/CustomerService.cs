@@ -4086,6 +4086,48 @@ SELECT
             ActionLogs.AddActionLog(loginUser, ActionLogType.Delete, ReferenceType.Organizations, childID, description);
         }
 
+			[WebMethod]
+			public bool CanAccessCustomer(int customerID)
+			{
+				int userID = TSAuthentication.GetLoginUser().UserID;
+				bool result = false;
+				Users u = new Users(TSAuthentication.GetLoginUser());
+				u.LoadByUserID(userID);
+
+				if (u[0].TicketRights == TicketRightType.Customers)
+            {
+					using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+					{
+						connection.Open();
+
+						SqlCommand command = new SqlCommand();
+						command.Connection = connection;
+						command.CommandText = "SELECT * FROM UserRightsOrganizations WHERE (UserID=@UserID) AND (OrganizationID=@OrganizationID)";
+						command.CommandType = CommandType.Text;
+						command.Parameters.AddWithValue("@UserID", userID);
+						command.Parameters.AddWithValue("@OrganizationID", customerID);
+
+						SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow);
+						if (reader.Read())
+						{
+							result = true;
+						}
+						else
+							result = false;
+
+						reader.Close();
+						connection.Close();
+						return result;
+					}
+				}
+				else
+				{
+					return true;
+				}
+
+				return true;
+			}
+
         public class NewCustomerSave
         {
             public NewCustomerSave() { }

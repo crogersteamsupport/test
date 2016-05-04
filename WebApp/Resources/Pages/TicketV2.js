@@ -1600,6 +1600,7 @@ function LoadTicketControls() {
       $('#ticket-group-KBCat').hide();
       $('#ticket-KBVisible-RO').hide();
 
+
     }
 
     var categories = top.Ts.Cache.getKnowledgeBaseCategories();
@@ -1626,6 +1627,7 @@ function LoadTicketControls() {
     $('#ticket-isKB-RO').text(_ticketInfo.Ticket.IsKnowledgeBase ?  "True" : "False");
     $('#ticket-isKB').closest('.form-horizontal').remove();
     $('#ticket-KBVisible-RO').show();
+    $('#ticket-group-KBCat').hide();
   }
 
   $('#ticket-TimeSpent').text(top.Ts.Utils.getTimeSpentText(_ticketInfo.Ticket.HoursSpent));
