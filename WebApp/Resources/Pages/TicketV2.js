@@ -864,7 +864,7 @@ function SetupActionEditor(elem, action) {
   		element.find('#rcdtokScreen').hide();
   		element.find('#stoptokScreen').show();
   		element.find('#deletetokScreen').hide();
-  		element.find('#muteTokScreen').show();
+  		//element.find('#muteTokScreen').show();
   		recordingID = resultID;
   		element.find('#tokScreenCountdown').show();
   		setTimeout(function () {
@@ -876,7 +876,7 @@ function SetupActionEditor(elem, action) {
   	});
   });
 
-  element.find('#muteTokScreen').hide();
+  //element.find('#muteTokScreen').hide();
   element.find('#muteTokScreen').click(function (e) {
   	publisher.publishAudio(false);
   	element.find('#unmuteTokScreen').show();
