@@ -163,7 +163,25 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-    public void RemoveCustomer(int organizationProductID)
+
+		public void LoadByCustomerIDAndProductID(int organizationID, int productID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT p.* 
+																FROM Products p 
+																WHERE p.ProductID IN 
+																	(SELECT DISTINCT op.ProductID FROM OrganizationProducts op WHERE op.OrganizationID = @OrganizationID)
+																AND p.ProductID = @productID
+                              ORDER BY p.Name";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@productID", productID);
+				Fill(command);
+			}
+		}
+
+		public void RemoveCustomer(int organizationProductID)
     {
       OrganizationProducts organizationProducts = new OrganizationProducts(LoginUser);
       organizationProducts.LoadItemInfo(organizationProductID);
