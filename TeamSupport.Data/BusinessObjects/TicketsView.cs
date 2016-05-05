@@ -1681,7 +1681,7 @@ ORDER BY TicketNumber DESC";
 			if (filter.CustomerID != null)
 			{
 				User userAcount = loginUser.GetUser();
-				if (userAcount.PortalLimitOrgChildrenTickets)
+				if (!userAcount.PortalLimitOrgChildrenTickets)
 				{
 					builder.Append(" AND (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @CustomerID)) AND (ot.TicketID = tv.TicketID)))");
 				}
