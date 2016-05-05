@@ -799,6 +799,19 @@ function SetupDescriptionEditor() {
 
     SetupUploadQueue();
 
+    $('#ticket-isKB').click(function (e) {
+    	if ($('#ticket-isKB').prop('checked')) {
+    		if (!canEdit) {
+    			$('#ticket-visible').prop('checked', false);
+    			$('#ticket-visible').prop('disabled', true);
+    		}
+    	}
+    	else
+    	{
+    		$('#ticket-visible').prop('disabled', false);
+    	}
+    });
+
     $('#ticket-create').click(function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -1166,7 +1179,7 @@ function SetupKBFields() {
     }
   }
   else {
-    $('#ticket-isKB').closest('.form-horizontal').remove();
+    //$('#ticket-isKB').closest('.form-horizontal').remove();
     $('#ticket-group-KBCat').parent().remove();
   }
 }

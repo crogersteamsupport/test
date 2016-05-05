@@ -1823,16 +1823,19 @@ function SetupTicketPropertyEvents() {
     var self = $(this);
 
     if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) {
-      var value = self.is(":checked");
-      top.Ts.System.logAction('Ticket - Visibility Changed');
-      top.Ts.Services.Tickets.SetIsVisibleOnPortal(_ticketID, value, function (result) {
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeisportal", userFullName);
-      },
+    	var value = self.is(":checked");
+    	top.Ts.System.logAction('Ticket - Visibility Changed');
+    	top.Ts.Services.Tickets.SetIsVisibleOnPortal(_ticketID, value, function (result) {
+    		window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeisportal", userFullName);
+    	},
       function (error) {
-        alert('There was an error saving the ticket portal visible\'s status.');
+      	alert('There was an error saving the ticket portal visible\'s status.');
       });
     }
-    else alert("Sorry, you do not have permission to change ticket visibility, please contact your TeamSupport admin.")
+    else {
+    	self.prop('checked', false);
+    	alert("Sorry, you do not have permission to change ticket visibility, please contact your TeamSupport admin.");
+    }
   });
 
   $('#ticket-isKB').change(function (e) {
