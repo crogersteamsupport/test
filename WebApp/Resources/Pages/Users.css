@@ -92,3 +92,7 @@
     position: relative;
     top: 2px;
 }
+
+.productLineRow {
+    margin-bottom: 20px;
+}

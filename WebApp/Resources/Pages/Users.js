@@ -171,6 +171,11 @@ $(document).ready(function () {
         ;
     });
 
+    if (top.Ts.System.Organization.UseProductFamilies) {
+        LoadProductFamilies();
+        $('.productLineRow').show();
+    }
+
     LoadRatings('', 1);
 
     $('#tblRatings').delegate('.delete-link', 'click', function (e) {
@@ -180,10 +185,18 @@ $(document).ready(function () {
         });
     });
 
+    function LoadProductFamilies() {
+        top.Ts.Services.Organizations.LoadOrgProductFamilies(top.Ts.System.Organization.OrganizationID, function (productFamilies) {
+            for (var i = 0; i < productFamilies.length; i++) {
+                $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlRatingProductFamily');
+            }
+        });
+    }
+
     function LoadRatings(ratingOption, start) {
         if (start == 1)
             $('#tblRatings tbody').empty();
-        top.Ts.Services.Customers.LoadAgentRatingsUser(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, function (ratings) {
+        top.Ts.Services.Customers.LoadAgentRatingsUser2(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, $('#ddlRatingProductFamily').val(), function (ratings) {
             var agents = "";
             var deleteIt = "";
             for (var i = 0; i < ratings.length; i++) {
@@ -217,7 +230,7 @@ $(document).ready(function () {
             }
         });
 
-        top.Ts.Services.Customers.LoadRatingPercentsUser(userID, function (results) {
+        top.Ts.Services.Customers.LoadRatingPercentsUser2(userID, $('#ddlRatingProductFamily').val(), function (results) {
             $('#negativePercent').text(results[0] + "%");
             $('#neutralPercent').text(results[1] + "%");
             $('#positivePercent').text(results[2] + "%");
@@ -250,7 +263,9 @@ $(document).ready(function () {
 
     });
 
-
+    $('#ddlRatingProductFamily').change(function () {
+        LoadRatings(ratingFilter, 1);
+    });
 
     $('#cbActive').click(function (e) {
         top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {

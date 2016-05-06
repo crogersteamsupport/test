@@ -311,3 +311,7 @@ div.tag-item {
     border-color: #D5E5F7;
     outline-style:none !important;
 }
+
+.productLineRow {
+    margin-bottom: 20px;
+}

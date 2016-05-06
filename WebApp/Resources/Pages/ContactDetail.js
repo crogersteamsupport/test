@@ -30,8 +30,7 @@ $(document).ready(function () {
 
     if (top.Ts.System.Organization.UseProductFamilies) {
         LoadProductFamilies();
-        $('.productFamilyRow').show();
-        $('.productFamilyColumn').show();
+        $('.productFamilyRow, .productFamilyColumn, .productLineRow').show();
     }
 
     LoadNotes();
@@ -1365,7 +1364,7 @@ $(document).ready(function () {
 
         if (start == 1)
             $('#tblRatings tbody').empty();
-        top.Ts.Services.Customers.LoadAgentRatings(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, top.Ts.ReferenceTypes.Users, function (ratings) {
+        top.Ts.Services.Customers.LoadAgentRatings2(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, top.Ts.ReferenceTypes.Users, $('#ddlRatingProductFamily').val(), function (ratings) {
             var agents = "";
             for (var i = 0; i < ratings.length; i++) {
                 for (var j = 0; j < ratings[i].users.length; j++) {
@@ -1396,7 +1395,7 @@ $(document).ready(function () {
             }
         });
 
-        top.Ts.Services.Customers.LoadRatingPercents(userID, top.Ts.ReferenceTypes.Users, function (results) {
+        top.Ts.Services.Customers.LoadRatingPercents2(userID, top.Ts.ReferenceTypes.Users, $('#ddlRatingProductFamily').val(), function (results) {
             $('#negativePercent').text(results[0] + "%");
             $('#neutralPercent').text(results[1] + "%");
             $('#positivePercent').text(results[2] + "%");
@@ -1418,6 +1417,10 @@ $(document).ready(function () {
     $('#viewAll').click(function () {
         LoadRatings('', 1);
         ratingFilter = '';
+    });
+
+    $('#ddlRatingProductFamily').change(function () {
+        LoadRatings(ratingFilter, 1);
     });
 
     top.Ts.Services.Tickets.Load5MostRecentByContactID(userID, function (tickets) {
@@ -2746,6 +2749,7 @@ function LoadProductFamilies() {
         for (var i = 0; i < productFamilies.length; i++) {
             $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlNoteProductFamily');
             $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlFileProductFamily');
+            $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlRatingProductFamily');
         }
     });
 }

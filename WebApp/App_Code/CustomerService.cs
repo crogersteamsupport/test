@@ -3171,6 +3171,53 @@ SELECT
 
 
         [WebMethod]
+        public int[] LoadRatingPercents2(int organizationID, ReferenceType type, int productFamilyID)
+        {
+            List<int> results = new List<int>();
+
+            AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+
+            if (type == ReferenceType.Organizations)
+                ratings.LoadByOrganizationIDFilter(organizationID, "", -1, productFamilyID);
+            else if (type == ReferenceType.Users)
+                ratings.LoadByContactIDFilter(organizationID, "", -1, productFamilyID);
+
+            if (ratings.Count > 0)
+            {
+                double negativeRating = 0, neutralRating = 0, positiveRating = 0, total = 0;
+                foreach (AgentRating rate in ratings)
+                {
+                    switch (rate.Rating)
+                    {
+                        case -1:
+                            negativeRating++;
+                            break;
+                        case 0:
+                            neutralRating++;
+                            break;
+                        case 1:
+                            positiveRating++;
+                            break;
+                    }
+                }
+
+                total = ratings.Count;
+
+                results.Add((int)Math.Round((negativeRating / total) * 100));
+                results.Add((int)Math.Round((neutralRating / total) * 100));
+                results.Add((int)Math.Round((positiveRating / total) * 100));
+            }
+            else
+            {
+                results.Add(0);
+                results.Add(0);
+                results.Add(0);
+            }
+            return results.ToArray();
+
+        }
+
+        [WebMethod]
         public int[] LoadRatingPercentsUser(int userID)
         {
             List<int> results = new List<int>();
@@ -3190,6 +3237,62 @@ SELECT
             {
                 AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
                 ratings.LoadByAgentRatingIDFilter(ratingIDS.ToArray(), "", -1);
+
+                foreach (AgentRating a in ratings)
+                {
+                    if (Tickets.GetTicket(TSAuthentication.GetLoginUser(), a.TicketID) != null)
+                    {
+                        switch (a.Rating)
+                        {
+                            case -1:
+                                negativeRating++;
+                                break;
+                            case 0:
+                                neutralRating++;
+                                break;
+                            case 1:
+                                positiveRating++;
+                                break;
+                        }
+                    }
+                }
+
+                total = aru.Count;
+                results.Add((int)Math.Round((negativeRating / total) * 100));
+                results.Add((int)Math.Round((neutralRating / total) * 100));
+                results.Add((int)Math.Round((positiveRating / total) * 100));
+            }
+            else
+            {
+                results.Add(0);
+                results.Add(0);
+                results.Add(0);
+            }
+
+            return results.ToArray();
+
+        }
+
+        [WebMethod]
+        public int[] LoadRatingPercentsUser2(int userID, int productFamilyID)
+        {
+            List<int> results = new List<int>();
+            List<int> ratingIDS = new List<int>();
+
+            AgentRatingUsers aru = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+            aru.LoadByUserID(userID);
+
+            double negativeRating = 0, neutralRating = 0, positiveRating = 0, total = 0;
+
+            foreach (AgentRatingUser user in aru)
+            {
+                ratingIDS.Add(user.AgentRatingID);
+            }
+
+            if (aru.Count > 0)
+            {
+                AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+                ratings.LoadByAgentRatingIDFilter(ratingIDS.ToArray(), "", -1, productFamilyID);
 
                 foreach (AgentRating a in ratings)
                 {
@@ -3273,6 +3376,52 @@ SELECT
         }
 
         [WebMethod]
+        public CustomRatingClass[] LoadAgentRatings2(int organizationID, string filter, int start, ReferenceType type, int productFamilyID)
+        {
+            List<CustomRatingClass> list = new List<CustomRatingClass>();
+
+            AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+            if (type == ReferenceType.Organizations)
+                ratings.LoadByOrganizationIDFilter(organizationID, filter, start, productFamilyID);
+            else if (type == ReferenceType.Users)
+                ratings.LoadByContactIDFilter(organizationID, filter, start, productFamilyID);
+
+            Users users = new Users(TSAuthentication.GetLoginUser());
+
+            foreach (AgentRating a in ratings)
+            {
+                CustomRatingClass ratingclass = new CustomRatingClass();
+                ratingclass.rating = a.GetProxy();
+
+                AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+                agents.LoadByAgentRatingID(a.AgentRatingID);
+
+                Organizations org = new Organizations(TSAuthentication.GetLoginUser());
+                org.LoadByOrganizationID(a.CompanyID);
+
+                ratingclass.users = new List<UserProxy>();
+                foreach (AgentRatingUser u in agents)
+                {
+
+                    users.LoadByUserID(u.UserID);
+
+                    ratingclass.users.Add(users[0].GetProxy());
+                }
+
+                users.LoadByUserID(a.ContactID);
+                ratingclass.org = org[0].GetProxy();
+                ratingclass.reporter = users[0].GetProxy();
+
+
+
+                list.Add(ratingclass);
+            }
+
+
+            return list.ToArray();
+        }
+
+        [WebMethod]
         public void DeleteAgentRating(int ratingID)
         {
             
@@ -3294,6 +3443,63 @@ SELECT
 
 
 
+        }
+
+        [WebMethod]
+        public CustomRatingClass[] LoadAgentRatingsUser2(int userID, string filter, int start, int productFamilyID)
+        {
+            List<CustomRatingClass> list = new List<CustomRatingClass>();
+            List<int> ratingIDS = new List<int>();
+            int count = 0;
+
+            AgentRatingUsers aru = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+            aru.LoadByUserID(userID);
+
+            foreach (AgentRatingUser user in aru)
+            {
+                ratingIDS.Add(user.AgentRatingID);
+            }
+
+            if (aru.Count > 0)
+            {
+                AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+                ratings.LoadByAgentRatingIDFilter(ratingIDS.ToArray(), filter, start);
+
+                foreach (AgentRating a in ratings)
+                {
+
+                    if (Tickets.GetTicket(TSAuthentication.GetLoginUser(), a.TicketID) != null)
+                    {
+
+                        Users users = new Users(TSAuthentication.GetLoginUser());
+                        CustomRatingClass ratingclass = new CustomRatingClass();
+                        ratingclass.rating = a.GetProxy();
+                        AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+                        agents.LoadByAgentRatingID(a.AgentRatingID);
+
+                        Organizations org = new Organizations(TSAuthentication.GetLoginUser());
+                        org.LoadByOrganizationID(a.CompanyID);
+
+                        ratingclass.users = new List<UserProxy>();
+                        foreach (AgentRatingUser u in agents)
+                        {
+
+                            users.LoadByUserID(u.UserID);
+
+                            ratingclass.users.Add(users[0].GetProxy());
+                        }
+
+                        ratingclass.org = org[0].GetProxy();
+                        users.LoadByUserID(ratings[count].ContactID);
+                        ratingclass.reporter = users[0].GetProxy();
+
+                        list.Add(ratingclass);
+                        count++;
+                    }
+                }
+            }
+
+            return list.ToArray();
         }
 
         [WebMethod]
