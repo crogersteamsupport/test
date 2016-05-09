@@ -43,6 +43,8 @@ namespace TSWebServices
 	public FieldItem[] GetAllFields(ReferenceType refType, int? auxID, bool isReadOnly)
 	{
 		List<FieldItem> items = new List<FieldItem>();
+		//The fields that are synched by 'default' (stock) should not be available in the dropdown list for the mappings because this creates issues with the sync (data being overwritten). Add them to this list in lowercase.
+		List<string> excludedFields = new List<string>();
 		int tableID;
 
 		switch (refType)
@@ -50,7 +52,11 @@ namespace TSWebServices
 			case ReferenceType.Organizations: tableID = 6; break;
 			case ReferenceType.Tickets: tableID = 10; break;
 			case ReferenceType.Users: tableID = 11; break;
-			case ReferenceType.Contacts: tableID = 12; break;
+			case ReferenceType.Contacts: 
+				tableID = 12;
+				//reference: Integration.vb UpdateContactInfo()
+				excludedFields = new List<string>() { "name", "title", "email" };
+				break;
 			default: return null;
 		}
 
@@ -65,7 +71,12 @@ namespace TSWebServices
 
 		foreach (ReportTableField field in fields)
 		{
-			items.Add(new FieldItem(field.ReportTableFieldID, false, field.FieldName));
+			if (excludedFields.Count == 0
+				|| (tableID == 12
+					&& !excludedFields.Contains(field.FieldName.ToLower())))
+			{
+				items.Add(new FieldItem(field.ReportTableFieldID, false, field.FieldName));	
+			}
 		}
 
 		foreach (CustomField custom in customs)
