@@ -224,9 +224,9 @@ WHERE EmailPostID IN (
 		{
 			PostEmail(loginUser, EmailPostType.ChangedPortalPassword, -1, userID.ToString(), null, null, null, null, null, null, null);
 		}
-		public static void SendSignUpNotification(LoginUser loginUser, int userID)
+		public static void SendSignUpNotification(LoginUser loginUser, int userID, string url, string referrer)
 		{
-			PostEmail(loginUser, EmailPostType.InternalSignupNotification, -1, userID.ToString(), null, null, null, null, null, null, null);
+			PostEmail(loginUser, EmailPostType.InternalSignupNotification, -1, userID.ToString(), url, referrer, null, null, null, null, null);
 		}
 
 	}

@@ -854,7 +854,7 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetSignUpNotification(LoginUser loginUser, User user)
+        public static MailMessage GetSignUpNotification(LoginUser loginUser, User user, string url, string referrer)
         {
             Organization company = Organizations.GetOrganization(loginUser, user.OrganizationID);
             EmailTemplate template = GetTemplate(loginUser, 1078, 17, -1);
@@ -863,10 +863,11 @@ namespace TeamSupport.Data
             string website = string.Format("http://{0}", user.Email.Substring(user.Email.IndexOf("@") + 1));
             PhoneNumbers numbers = new PhoneNumbers(loginUser);
             numbers.LoadByMyOrganization(company.OrganizationID);
-
+            url = string.IsNullOrEmpty(url) ? "" : url;
+            referrer = string.IsNullOrEmpty(url) ? "" : referrer;
             string phone = numbers.IsEmpty ? "N/A" : numbers[0].Number;
 
-            template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Organization", company).ReplaceParameter("SearchUrl", search).ReplaceParameter("Phone", phone).ReplaceParameter("WebsiteUrl", website).ReplaceFields("Organization", company.GetOrganizationView()).ReplaceParameter("ProductType", DataUtils.ProductTypeString(company.ProductType));
+            template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Organization", company).ReplaceParameter("SearchUrl", search).ReplaceParameter("Phone", phone).ReplaceParameter("SignUpUrl", url).ReplaceParameter("ReferrerUrl", referrer).ReplaceParameter("WebsiteUrl", website).ReplaceFields("Organization", company.GetOrganizationView()).ReplaceParameter("ProductType", DataUtils.ProductTypeString(company.ProductType));
             return template.GetMessage();
         }
 

@@ -243,7 +243,7 @@ namespace TeamSupport.ServiceLibrary
                     ProcessResetHubPassword(GetIntParam(emailPost.Param1), emailPost.Param2);
                     break;
                 case EmailPostType.InternalSignupNotification:
-                    ProcessSignUpNotification(GetIntParam(emailPost.Param1));
+                    ProcessSignUpNotification(GetIntParam(emailPost.Param1), emailPost.Param2, emailPost.Param3);
                     break;
                 case EmailPostType.NewDevice:
                     ProcessNewDevice(GetIntParam(emailPost.Param1));
@@ -1156,11 +1156,11 @@ namespace TeamSupport.ServiceLibrary
 
         #endregion
 
-        public void ProcessSignUpNotification(int userID)
+        public void ProcessSignUpNotification(int userID, string url, string referrer)
         {
             User user = Users.GetUser(LoginUser, userID);
             Organization organization = Organizations.GetOrganization(LoginUser, user.OrganizationID);
-            MailMessage message = EmailTemplates.GetSignUpNotification(LoginUser, user);
+            MailMessage message = EmailTemplates.GetSignUpNotification(LoginUser, user, url, referrer);
             message.From = GetMailAddress("sales@teamsupport.com", "TeamSupport.com");
 
             string[] addresses = SystemSettings.ReadString(LoginUser, "SignUpNotifications", "").Split('|');

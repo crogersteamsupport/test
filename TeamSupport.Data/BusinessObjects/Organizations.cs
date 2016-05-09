@@ -369,7 +369,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       return orgTemplate.IsEmpty ? null : orgTemplate[0];
     }
 
-    public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, string evalProcess, string potentialSeats, ProductType productType, SignUpParams signUpParams)
+    public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, string evalProcess, string potentialSeats, ProductType productType, SignUpParams signUpParams, string url, string referrer)
     {
       try
       {
@@ -714,7 +714,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         sourceOrg.Collection.Save();
 
         EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, "");
-        EmailPosts.SendSignUpNotification(loginUser, user.UserID);
+        EmailPosts.SendSignUpNotification(loginUser, user.UserID, url, referrer);
         TeamSupportSync.SyncNewOrg(organization.OrganizationID, organization.Name, user.UserID, user.FirstName, user.LastName, user.Email, phoneNumber.Number, productType, signUpParams != null ? signUpParams.promo : "", signUpParams != null ? signUpParams.hubspotutk : "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "");
 
                 return user;

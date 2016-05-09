@@ -19,7 +19,12 @@ using System.Web.Services;
 public partial class SignUp : System.Web.UI.Page
 {
 
-  [WebMethod]
+    protected override void OnLoad(EventArgs e)
+    {
+        Response.Redirect("https://www.teamsupport.com/customer-support-software-free-trial");
+        base.OnLoad(e); 
+    }
+    [WebMethod]
   public static bool IsCompanyValid(string company)
   {
     Organizations organizations = new Organizations(LoginUser.Anonymous);
@@ -35,6 +40,7 @@ public partial class SignUp : System.Web.UI.Page
   public static int SignMeUp(string name, string email, string company, string phone, int version, string password, string promo)
   {
 
+        return 1;
     if (!IsCompanyValid(company))
     {
       return -1;
@@ -46,8 +52,8 @@ public partial class SignUp : System.Web.UI.Page
     string fname = names[0];
     string lname = string.Join(" ", names.Skip(1).ToArray());
 
-    User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, "", "", (ProductType)version, null);
-    return user.UserID;
+   // User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, "", "", (ProductType)version, null);
+   // return user.UserID;
   }
 
   private static void AddToMuroc(Organization tsOrg, User tsUser, string phoneNumber)

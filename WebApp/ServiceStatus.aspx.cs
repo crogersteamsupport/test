@@ -14,7 +14,7 @@ public partial class ServiceStatus : System.Web.UI.Page
         string name = "All services are ";
         StringBuilder result = new StringBuilder();
 
-        bool flag = false;
+        bool isFailed = false;
         if (Request["ServiceName"] != null)
         {
             Service service = Services.GetService(LoginUser.Anonymous, Request["ServiceName"], false);
@@ -35,9 +35,9 @@ public partial class ServiceStatus : System.Web.UI.Page
             name = service.Name + " service is ";
             if (service.LastStartTime != null)
             {
-                if (DateTime.Now.Subtract((DateTime)service.Row["HealthTime"]).TotalMinutes < service.HealthMaxMinutes)
+                if (DateTime.Now.Subtract((DateTime)service.Row["HealthTime"]).TotalMinutes > service.HealthMaxMinutes)
                 {
-                    flag = true;
+                    isFailed = true;
                 }
             }
         }
@@ -46,22 +46,24 @@ public partial class ServiceStatus : System.Web.UI.Page
             Services services = new Services(LoginUser.Anonymous);
             services.LoadAll();
             result.Append("<table>");
-            flag = true;
+            isFailed = false;
             foreach (Service service in services)
             {
+                string color = "green";
                 if (service.LastStartTime == null || !service.Enabled) continue;
                 if (DateTime.Now.Subtract((DateTime)service.Row["HealthTime"]).TotalMinutes > service.HealthMaxMinutes)
                 {
-                    flag = false;
-                    AddRow(result, service.Row["Name"].ToString(), "Past Health Time");
+                    isFailed = true;
+                    color = "red";
                 }
+                AddRow(result, service.Row["Name"].ToString(), string.Format("Health Time: {0},  Max Minutes: {1}", (DateTime)service.Row["HealthTime"], service.HealthMaxMinutes),color);
             }
 
             result.Append("</table>");
         }
 
 
-        flag = CheckCount(flag, result, 0, "Outbound Email Delay", "There are outgoing email delays of more than 10 minutes, check EmailSender service", @"
+        isFailed = CheckCount(isFailed, result, 0, "Outbound Email Delay", "There are outgoing email delays of more than 10 minutes, check EmailSender service", @"
 SELECT COUNT(*)
 FROM Emails e 
 WHERE IsWaiting = 1 
@@ -69,36 +71,40 @@ AND e.Attempts < 1
 AND DATEDIFF(MINUTE, e.DateCreated, GETUTCDATE()) > 10
 ");
 
-        flag = CheckCount(flag, result, 500, "Outbound Email Back Up", "There are too many out going emails pending, check EmailSender service", @"
+        isFailed = CheckCount(isFailed, result, 500, "Outbound Email Back Up", "There are too many out going emails pending, check EmailSender service", @"
 SELECT COUNT(*)
 FROM Emails e 
 WHERE IsWaiting = 1 
 ");
 
-        flag = CheckCount(flag, result, 1000, "Email Processing Backed Up", "There are too many records in the EmailPosts table, check EmailProcessor service.", @"
+        isFailed = CheckCount(isFailed, result, 1000, "Email Processing Backed Up", "There are too many records in the EmailPosts table, check EmailProcessor service.", @"
 SELECT COUNT(*) FROM EmailPosts 
 ");
 
-        result.Append(string.Format("<h2 style=\"color:{1};\">{0} is{2} running.</h2>", name, flag ? "green" : "red", flag ? "" : " NOT"));
+        result.Append(string.Format("<h2 style=\"color:{1};\">{0} is{2} running.</h2>", name, !isFailed ? "green" : "red", !isFailed ? "" : " NOT"));
         litStatus.Text = result.ToString();
 
     }
 
-    private static void AddRow(StringBuilder builder, string name, string message)
+    private static void AddRow(StringBuilder builder, string name, string message, string color)
     {
-        builder.Append(string.Format("<tr><td>{0}: </td><td>{1}</td></tr>", name, message));
+        builder.Append(string.Format("<tr style=\"color:{2}\"><td>{0}: </td><td>{1}</td></tr>", name, message, color));
     }
 
-    private static bool CheckCount(bool flag, StringBuilder builder, int maxCount, string name, string failedMessage, string query)
+    private static bool CheckCount(bool isFailed, StringBuilder builder, int maxCount, string name, string failedMessage, string query)
     {
         int result = (int)SqlExecutor.ExecuteScalar(LoginUser.Anonymous, query);
-
+        string color = "green";
+        bool isBad = false;
         if (result > maxCount)
         {
-            AddRow(builder, name, failedMessage);
-            return false;
+            isBad = true;
+            color = "red";
         }
 
-        return flag;
+        AddRow(builder, name, failedMessage, color);
+
+
+        return isFailed || isBad;
     }
 }

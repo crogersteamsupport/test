@@ -269,7 +269,7 @@ namespace TeamSupport.Handlers
                 prams.promo = promo;
                 prams.hubspotutk = cookies["hubspotutk"] != null ? cookies["hubspotutk"].Value : "";
                 prams.source = source;
-                return Organizations.SetupNewAccount(fname, lname, email, company, phone, eval, seats, (ProductType)version, prams);
+                return Organizations.SetupNewAccount(fname, lname, email, company, phone, eval, seats, (ProductType)version, prams, context.Request.RawUrl, context.Request.UrlReferrer.OriginalString);
             }
             else
             {
