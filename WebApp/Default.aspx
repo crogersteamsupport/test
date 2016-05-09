@@ -458,7 +458,7 @@
       <li><a class="ts-link ui-state-default menu-help-docs" href="http://help.teamsupport.com" target="TSHelp">Documentation</a></li>
       <li><a class="menu-help-chat ts-link ui-state-default" href="#">Chat with us</a></li>
       <li><a class="menu-help-support ts-link ui-state-default" href="#">Support portal</a></li>
-      <li><div class="ui-widget-content ts-separator"></div></li>
+      <%--I'm not deleting the following line because it is a hidden field that might be used to store important data in one or some of the app pages --%>
       <input type="text"  class="menu-input menu-input-hidden"/>
     </ul>
   </div>
