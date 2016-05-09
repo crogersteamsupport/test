@@ -1967,7 +1967,7 @@ function createCustomFields() {
 
 var appendCategorizedCustomFields = function (fields, className) {
   top.Ts.Services.CustomFields.GetAllTypesCategories(top.Ts.ReferenceTypes.Tickets, function (categories) {
-  	var container = $('.CFProductGroup');//$('#ticket-group-custom-fields');
+  	var container = $('#ticket-group-custom-fields');
     for (var j = 0; j < categories.length; j++) {
       var isFirstFieldAdded = true;
       for (var i = 0; i < fields.length; i++) {

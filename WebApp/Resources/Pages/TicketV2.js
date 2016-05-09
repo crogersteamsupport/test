@@ -1248,50 +1248,50 @@ function SaveAction(_oldActionID, isPrivate, callback) {
 
   if (top.Ts.System.User.OrganizationID !== 13679) {
 	// Get Content Grab and Check with .Get MEthod
-  if (tinymce.get('action-new-editor')) {
+  	if (tinymce.get('action-new-editor')) {
+  		try {
 			action.Description = tinymce.get('action-new-editor').getContent();
 			if (action.Description == "" || action.Description == undefined) {
   				saveError = 1;
-  				top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with Get Function. ticket " + _ticketID + ",body: " + tinymce.get('action-new-editor').getBody().innerHTML, "TinyMCE Error");
+  				top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent Function. ticket " + _ticketID + ",body: " + tinymce.get('action-new-editor').getBody().innerHTML, "TinyMCE Error");
 			}
+  		}
+  		catch (ex) {
+  			saveError = 2;
+			top.Ts.Services.System.LogException("TinyMCE save action threw exception : " + ex.message + " . ticket " + _ticketID, "TinyMCE Error");
+  		}
 
-			if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-  				saveError = 2;
-  				top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with Get Fucntion. ticket " + _ticketID, "TinyMCE Error");
-			}
+			//// Get Content Grab and Check
+			//if (saveError != 0) {
+  			//	action.Description = tinymce.activeEditor.getContent();
+  			//	if (action.Description == "" || action.Description == undefined) {
+  			//		saveError = 1;
+  			//		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
+  			//	}
 
+  			//	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  			//		saveError = 2;
+  			//		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
+  			//	}
+			//}
+			//// HTML Grab Check
+			//if (saveError != 0) {
+  			//	action.Description = $('#action-new-editor').html();
+  			//	if (action.Description == "") {
+  			//		saveError = 1;
+  			//		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
+  			//	}
 
-			// Get Content Grab and Check
-			if (saveError != 0) {
-  				action.Description = tinymce.activeEditor.getContent();
-  				if (action.Description == "" || action.Description == undefined) {
-  					saveError = 1;
-  					top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
-  				}
+  			//	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
+  			//		saveError = 2;
+  			//		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
+  			//	}
+			//}
 
-  				if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-  					saveError = 2;
-  					top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
-  				}
-			}
-			// HTML Grab Check
-			if (saveError != 0) {
-  				action.Description = $('#action-new-editor').html();
-  				if (action.Description == "") {
-  					saveError = 1;
-  					top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
-  				}
-
-  				if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-  					saveError = 2;
-  					top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
-  				}
-			}
-
-			// Text Grab Check
-			if ($('#action-new-editor').text().trim().length < 1) {
-  				top.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
-			}
+			//// Text Grab Check
+			//if ($('#action-new-editor').text().trim().length < 1) {
+  			//	top.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
+			//}
 
 			// TINYMCE ACTIVE EDITOR CHECK
 			if (saveError != 0) {
