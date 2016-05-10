@@ -1001,7 +1001,7 @@ function StopRecording() {
 		$('#unmuteTokScreen').hide();
 		$('#muteTokScreen').hide();
 		tokurl = result;
-		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/screenview.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
 
 		if (top.Ts.System.User.OrganizationID !== 13679) {
 			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
@@ -1495,7 +1495,7 @@ function AddCustomers(customer) {
 
 function SetDefaultSupportGroup(customerID) {
   top.Ts.Services.Organizations.GetOrganization(customerID, function (customer) {
-    if (customer.DefaultSupportGroupID) SetGroup(customer.DefaultSupportGroupID);
+  	if (customer.DefaultSupportGroupID && customer.DefaultSupportGroupID != -1) SetGroup(customer.DefaultSupportGroupID);
     if (customer.DefaultSupportUserID) SetAssignedUser(customer.DefaultSupportUserID);
   });
 }
