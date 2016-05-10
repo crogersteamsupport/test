@@ -54,6 +54,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SlaWarningTime", "SlaWarningTime", false, false, false);
       _fieldMap.AddMap("SlaViolationHours", "SlaViolationHours", false, false, false);
       _fieldMap.AddMap("SlaWarningHours", "SlaWarningHours", false, false, false);
+      _fieldMap.AddMap("DueDate", "DueDate", false, false, false);
             
     }
   }

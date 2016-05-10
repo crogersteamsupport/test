@@ -134,10 +134,14 @@ public partial class TicketPrint : System.Web.UI.Page
     builder.Append(GetColumn("Knowledge Base", ticket.IsKnowledgeBase.ToString()));
     builder.Append("</tr>");
 
+	builder.Append("<tr>");
+    builder.Append(GetColumn("Due Date", ticket.DueDate == null ? "" : ((DateTime)ticket.DueDate).ToString("g", UserSession.LoginUser.CultureInfo)));
+
     CustomFields fields = new CustomFields(UserSession.LoginUser);
     fields.LoadByTicketTypeID(UserSession.LoginUser.OrganizationID, ticket.TicketTypeID);
 
-    bool flag = false;
+    bool flag = true;
+
     foreach (CustomField field in fields)
     {
       flag = !flag;
@@ -149,8 +153,8 @@ public partial class TicketPrint : System.Web.UI.Page
       if (!flag) builder.Append("</tr>");
 
     }
-    if (flag) builder.Append("</tr>");
 
+    if (flag) builder.Append("</tr>");
 
     litProperties.Text = builder.ToString();
   }

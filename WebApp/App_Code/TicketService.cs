@@ -652,7 +652,7 @@ namespace TSWebServices
 		public TicketStatusProxy[] GetTicketStatusesOrderedByTicketTypeName()
 		{
 			TicketStatuses statuses = new TicketStatuses(TSAuthentication.GetLoginUser());
-			statuses.LoadByOrganizationIDOnTicketType(TSAuthentication.OrganizationID);//vv
+			statuses.LoadByOrganizationIDOnTicketType(TSAuthentication.OrganizationID);
 			return statuses.GetTicketStatusProxies();
 		}
 

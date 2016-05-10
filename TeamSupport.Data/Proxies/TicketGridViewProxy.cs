@@ -54,6 +54,7 @@ namespace TeamSupport.Data
     [DataMember] public int? SlaWarningTime { get; set; }
     [DataMember] public int? SlaViolationHours { get; set; }
     [DataMember] public int? SlaWarningHours { get; set; }
+    [DataMember] public DateTime? DueDate { get; set; }
           
   }
   
@@ -104,6 +105,7 @@ namespace TeamSupport.Data
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
+      result.DueDate = this.DueDateUtc == null ? this.DueDateUtc : DateTime.SpecifyKind((DateTime)this.DueDateUtc, DateTimeKind.Utc); 
       result.DateClosed = this.DateClosedUtc == null ? this.DateClosedUtc : DateTime.SpecifyKind((DateTime)this.DateClosedUtc, DateTimeKind.Utc); 
        
       return result;
