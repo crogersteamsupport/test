@@ -47,7 +47,7 @@ namespace TeamSupport.ServiceLibrary
             Quiksoft.EasyMail.SMTP.License.Key = "Muroc Systems, Inc. (Single Developer)/9983782F406978487783FBAA248A#E86A";
             Quiksoft.EasyMail.SSL.License.Key = "Muroc Systems, Inc. (Single Developer)/9984652F406991896501FC33B3#02AE4B";
 
-            Quiksoft.EasyMail.SMTP.SMTP smtp = null;
+            Quiksoft.EasyMail.SMTP.SMTP smtp = CreateSMTP();
             int count = 0;
 
             try
@@ -56,11 +56,11 @@ namespace TeamSupport.ServiceLibrary
                 {
                     try
                     {
-                        if (smtp == null) smtp = CreateSMTP();
                         Email email = GetNextEmail(LoginUser.ConnectionString, (int)_threadPosition);
                         if (email == null) return;
                         SendEmail(email, smtp);
                         count++;
+                        Logs.WriteEvent("Count: " + count.ToString());
 
                         if (count > 100)
                         {
@@ -77,7 +77,7 @@ namespace TeamSupport.ServiceLibrary
                             finally
                             {
                                 count = 0;
-                                smtp = null;
+                                smtp = CreateSMTP();
                             }
                         }
                     }
