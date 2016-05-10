@@ -42,14 +42,31 @@ namespace TeamSupport.ServiceLibrary
 
         public override void Run()
         {
+            Logs.WriteHeader("Starting Run");
+
             _isDebug = Settings.ReadBool("Debug", false);
+
+            Logs.WriteHeader("Debug: " + _isDebug.ToString());
 
             Quiksoft.EasyMail.SMTP.License.Key = "Muroc Systems, Inc. (Single Developer)/9983782F406978487783FBAA248A#E86A";
             Quiksoft.EasyMail.SSL.License.Key = "Muroc Systems, Inc. (Single Developer)/9984652F406991896501FC33B3#02AE4B";
 
-            Quiksoft.EasyMail.SMTP.SMTP smtp = CreateSMTP();
-            int count = 0;
+            Quiksoft.EasyMail.SSL.SSL ssl = new Quiksoft.EasyMail.SSL.SSL();
+            SMTP smtp = new Quiksoft.EasyMail.SMTP.SMTP();
 
+            //Set the SMTP server and secure port.
+            var smtpServer = new SMTPServer
+            {
+                Name = Settings.ReadString("SMTP Host"),
+                Port = Settings.ReadInt("SMTP Port"), //465, //Secure port
+                Account = Settings.ReadString("SMTP UserName"),
+                Password = Settings.ReadString("SMTP Password"),
+                AuthMode = SMTPAuthMode.AuthLogin
+            };
+
+            smtp.SMTPServers.Add(smtpServer);
+            smtp.Connect(ssl.GetInterface());
+            int count = 0;
             try
             {
                 while (!IsStopped)
@@ -60,26 +77,7 @@ namespace TeamSupport.ServiceLibrary
                         if (email == null) return;
                         SendEmail(email, smtp);
                         count++;
-                        Logs.WriteEvent("Count: " + count.ToString());
-
-                        if (count > 100)
-                        {
-                            try
-                            {
-                                Logs.WriteHeader("Destorying SMTP server.");
-                                smtp.Disconnect();
-                                smtp.Dispose();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logs.WriteException(ex);
-                            }
-                            finally
-                            {
-                                count = 0;
-                                smtp = CreateSMTP();
-                            }
-                        }
+                        Logs.WriteEvent("Processing: #" + count.ToString());
                     }
                     catch (Exception ex)
                     {
@@ -91,7 +89,8 @@ namespace TeamSupport.ServiceLibrary
             }
             finally
             {
-                if (smtp != null) smtp.Disconnect();
+                smtp.Disconnect();
+                Logs.WriteHeader("Disconnecting");
             }
 
         }
@@ -178,31 +177,6 @@ namespace TeamSupport.ServiceLibrary
                 email.LockProcessID = null;
                 email.Collection.Save();
             }
-        }
-
-        private Quiksoft.EasyMail.SMTP.SMTP CreateSMTP()
-        {
-            Logs.WriteHeader("Creating SMTP server");
-
-            Quiksoft.EasyMail.SSL.SSL ssl = new Quiksoft.EasyMail.SSL.SSL();
-            SMTP smtp = new Quiksoft.EasyMail.SMTP.SMTP();
-
-            //Set the SMTP server and secure port.
-            var smtpServer = new SMTPServer
-            {
-                Name = Settings.ReadString("SMTP Host"),
-                Port = Settings.ReadInt("SMTP Port"), //465, //Secure port
-                Account = Settings.ReadString("SMTP UserName"),
-                Password = Settings.ReadString("SMTP Password"),
-                AuthMode = SMTPAuthMode.AuthLogin
-            };
-
-            smtp.SMTPServers.Add(smtpServer);
-            smtp.Connect(ssl.GetInterface());
-
-            return smtp;
-
-
         }
 
     }
