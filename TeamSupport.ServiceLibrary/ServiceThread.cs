@@ -117,7 +117,9 @@ namespace TeamSupport.ServiceLibrary
 
         public virtual void Stop()
         {
-            Logs.WriteHeader("Thread Stopped");
+
+            Logs.WriteHeader("Thread Stopped: ");
+            Logs.WriteEvent(Environment.StackTrace);
 
             lock (this) { _isStopped = true; }
 
