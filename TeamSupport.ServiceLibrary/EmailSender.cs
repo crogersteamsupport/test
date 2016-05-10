@@ -87,7 +87,7 @@ namespace TeamSupport.ServiceLibrary
 
 
                         Email email = GetNextEmail(LoginUser.ConnectionString, (int)_threadPosition);
-                        if (email == null) return;
+                        if (email == null) continue;
                         SendEmail(email, smtp);
                         count++;
                         Logs.WriteEvent("Processing: #" + count.ToString());
