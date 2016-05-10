@@ -12,159 +12,162 @@ using System.Configuration;
 namespace TeamSupport.ServiceLibrary
 {
 
-  [Serializable]
-  public abstract class ServiceThread : MarshalByRefObject
-  {
-
-    public override object InitializeLifetimeService()
+    [Serializable]
+    public abstract class ServiceThread : MarshalByRefObject
     {
-      return null;
-    }
-    
-    public ServiceThread()
-    {
-      _loginUser = GetLoginUser(ServiceName);
-      _settings = new Settings(_loginUser, ServiceName);
-    }
 
-	public ServiceThread(SystemUser serviceUser)
-	{
-		_serviceUser = serviceUser;
-		_loginUser = GetLoginUser(ServiceName);
-		_settings = new Settings(_loginUser, ServiceName);
-	}
-
-    private static object _staticLock = new object();
-
-    private static bool _serviceStopped = false;
-    public static bool ServiceStopped
-    {
-      get { lock (_staticLock) { return ServiceThread._serviceStopped; } }
-      set { lock (_staticLock) { ServiceThread._serviceStopped = value; } }
-    }
-
-    private Thread _thread;
-    public Thread Thread
-    {
-      get { lock (this) { return _thread; } }
-    }
-
-    private bool _isLoop = true;
-    public bool IsLoop
-    {
-      get { lock (this) { return _isLoop; } }
-      set { lock (this) { _isLoop = value; } }
-    }
-
-    protected bool _isStopped = true;
-    public virtual  bool IsStopped
-    {
-      get 
-      { 
-        lock (this) { return _isStopped || ServiceStopped; } 
-      }
-    }
-
-    private bool _runHandlesStop = false;
-    protected bool RunHandlesStop
-    {
-      get { lock (this) { return _runHandlesStop; } }
-      set { lock (this) { _runHandlesStop = value; } }
-    }
-
-    public string ServiceName
-    {
-      get
-      {
-        string result;
-
-        lock (this) { 
-          Type type = this.GetType();
-          if (type.IsGenericType)
-          {
-            result = this.GetType().GetGenericArguments()[0].Name + "Pool";
-          }
-          else
-	        {
-            result = this.GetType().Name; 
-	        }
-        }
-        return result;
-      }
-
-    }
-
-    protected Settings _settings;
-    protected Settings Settings
-    {
-      get { return _settings; }
-    }
-
-    protected LoginUser _loginUser;
-    protected LoginUser LoginUser
-    {
-      get { return _loginUser; }
-    }
-
-    protected Logs _logs;
-    protected Logs Logs
-    {
-      get { return _logs; }
-    }
-
-	private static SystemUser _serviceUser = SystemUser.Unknown;
-
-	public virtual void Stop()
-    {
-      lock (this) { _isStopped = true; }
-
-      if (Thread.IsAlive)
-      {
-        if (!Thread.Join(10000))
+        public override object InitializeLifetimeService()
         {
-          if (Thread.IsAlive)
-          {
-            Thread.Abort();
-          }
+            return null;
         }
-      }
-    }
 
-    public virtual void Abort()
-    {
-      lock(this) _thread.Abort();
-    }
+        public ServiceThread()
+        {
+            _loginUser = GetLoginUser(ServiceName);
+            _settings = new Settings(_loginUser, ServiceName);
+        }
 
-    public virtual void Start()
-    {
-      _logs = new Data.Logs(GetLogFileCategory());
-      if (!IsStopped) return;
-      _isStopped = false;
-      _thread = new Thread(new ThreadStart(Process));
-      //_thread.Priority = ThreadPriority.Lowest;
+        public ServiceThread(SystemUser serviceUser)
+        {
+            _serviceUser = serviceUser;
+            _loginUser = GetLoginUser(ServiceName);
+            _settings = new Settings(_loginUser, ServiceName);
+        }
 
-      if (IsLoop)
-      {
-        Service service = Services.GetService(_loginUser, ServiceName);
-        service.RunCount = 0;
-        service.RunTimeAvg = 0;
-        service.RunTimeMax = 0;
-        service.ErrorCount = 0;
-        service.LastError = "";
-        service.LastResult = "";
-        service.HealthTime = DateTime.Now;
-        service.Collection.Save();
-      }
-      _thread.Start();
-    }
+        private static object _staticLock = new object();
 
-    public virtual string GetLogFileCategory()
-    {
-      return ServiceName;
-    }
+        private static bool _serviceStopped = false;
+        public static bool ServiceStopped
+        {
+            get { lock (_staticLock) { return ServiceThread._serviceStopped; } }
+            set { lock (_staticLock) { ServiceThread._serviceStopped = value; } }
+        }
 
-    protected virtual void Process()
-    {
+        private Thread _thread;
+        public Thread Thread
+        {
+            get { lock (this) { return _thread; } }
+        }
+
+        private bool _isLoop = true;
+        public bool IsLoop
+        {
+            get { lock (this) { return _isLoop; } }
+            set { lock (this) { _isLoop = value; } }
+        }
+
+        protected bool _isStopped = true;
+        public virtual bool IsStopped
+        {
+            get
+            {
+                lock (this) { return _isStopped || ServiceStopped; }
+            }
+        }
+
+        private bool _runHandlesStop = false;
+        protected bool RunHandlesStop
+        {
+            get { lock (this) { return _runHandlesStop; } }
+            set { lock (this) { _runHandlesStop = value; } }
+        }
+
+        public string ServiceName
+        {
+            get
+            {
+                string result;
+
+                lock (this)
+                {
+                    Type type = this.GetType();
+                    if (type.IsGenericType)
+                    {
+                        result = this.GetType().GetGenericArguments()[0].Name + "Pool";
+                    }
+                    else
+                    {
+                        result = this.GetType().Name;
+                    }
+                }
+                return result;
+            }
+
+        }
+
+        protected Settings _settings;
+        protected Settings Settings
+        {
+            get { return _settings; }
+        }
+
+        protected LoginUser _loginUser;
+        protected LoginUser LoginUser
+        {
+            get { return _loginUser; }
+        }
+
+        protected Logs _logs;
+        protected Logs Logs
+        {
+            get { return _logs; }
+        }
+
+        private static SystemUser _serviceUser = SystemUser.Unknown;
+
+        public virtual void Stop()
+        {
+            Logs.WriteHeader("Thread Stopped");
+
+            lock (this) { _isStopped = true; }
+
+            if (Thread.IsAlive)
+            {
+                if (!Thread.Join(10000))
+                {
+                    if (Thread.IsAlive)
+                    {
+                        Thread.Abort();
+                    }
+                }
+            }
+        }
+
+        public virtual void Abort()
+        {
+            lock (this) _thread.Abort();
+        }
+
+        public virtual void Start()
+        {
+            _logs = new Data.Logs(GetLogFileCategory());
+            if (!IsStopped) return;
+            _isStopped = false;
+            _thread = new Thread(new ThreadStart(Process));
+            //_thread.Priority = ThreadPriority.Lowest;
+
+            if (IsLoop)
+            {
+                Service service = Services.GetService(_loginUser, ServiceName);
+                service.RunCount = 0;
+                service.RunTimeAvg = 0;
+                service.RunTimeMax = 0;
+                service.ErrorCount = 0;
+                service.LastError = "";
+                service.LastResult = "";
+                service.HealthTime = DateTime.Now;
+                service.Collection.Save();
+            }
+            _thread.Start();
+        }
+
+        public virtual string GetLogFileCategory()
+        {
+            return ServiceName;
+        }
+
+        protected virtual void Process()
+        {
             try
             {
                 DateTime lastTime = DateTime.Now;
@@ -203,9 +206,9 @@ namespace TeamSupport.ServiceLibrary
                         }
                         Thread.Sleep(100);
                     }
-                    catch (ThreadAbortException)
+                    catch (ThreadAbortException threadEx)
                     {
-
+                        _logs.WriteException(threadEx);
                     }
                     catch (System.Data.SqlClient.SqlException sqlEx)
                     {
@@ -258,25 +261,25 @@ namespace TeamSupport.ServiceLibrary
                 }
                 return;
             }
+        }
+
+        ///<summary>This function is called by the service to run a specified interval.  This function is called in its own thread.</summary>
+        ///<remarks>Check the property IsStopped to see if you need to stop processing.</remarks>
+        public abstract void Run();
+
+        public void UpdateHealth()
+        {
+            Service service = Services.GetService(_loginUser, ServiceName);
+            service.HealthTime = DateTime.Now;
+            service.Collection.Save();
+
+        }
+
+        public static LoginUser GetLoginUser(string appName)
+        {
+            return new LoginUser(ConfigurationManager.AppSettings["ConnectionString"], (int)_serviceUser, -1, null);
+        }
+
     }
-
-    ///<summary>This function is called by the service to run a specified interval.  This function is called in its own thread.</summary>
-    ///<remarks>Check the property IsStopped to see if you need to stop processing.</remarks>
-    public abstract void Run();
-
-    public void UpdateHealth()
-    {
-      Service service = Services.GetService(_loginUser, ServiceName);
-      service.HealthTime = DateTime.Now;
-      service.Collection.Save();
-
-    }
-
-    public static LoginUser GetLoginUser(string appName)
-    {
-      return new LoginUser(ConfigurationManager.AppSettings["ConnectionString"], (int)_serviceUser, -1, null);
-    }
-    
-  }
 
 }

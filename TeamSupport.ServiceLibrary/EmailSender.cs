@@ -69,10 +69,23 @@ namespace TeamSupport.ServiceLibrary
             int count = 0;
             try
             {
-                while (!IsStopped)
+                while (true)
                 {
                     try
                     {
+                        if (ServiceThread.ServiceStopped)
+                        {
+                            Logs.WriteHeader("ServiceThread.ServiceStopped");
+                            break;
+                        }
+
+                        if (IsStopped)
+                        {
+                            Logs.WriteHeader("IsStopped");
+                            break;
+                        }
+
+
                         Email email = GetNextEmail(LoginUser.ConnectionString, (int)_threadPosition);
                         if (email == null) return;
                         SendEmail(email, smtp);
@@ -86,6 +99,8 @@ namespace TeamSupport.ServiceLibrary
                         ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
                     }
                 }
+
+
             }
             finally
             {
