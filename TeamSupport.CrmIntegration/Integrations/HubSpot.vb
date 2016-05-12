@@ -187,7 +187,7 @@ Namespace TeamSupport
                       .HubSpotId = contact.properties.associatedcompanyid.value
                       .FirstName = If(contact.properties.firstname IsNot Nothing, contact.properties.firstname.value, String.Empty)
                       .LastName = If(contact.properties.lastname IsNot Nothing, contact.properties.lastname.value, String.Empty)
-                      .Title = If(contact.properties.title IsNot Nothing, contact.properties.title.value, String.Empty)
+                      .Title = If(contact.properties.jobtitle IsNot Nothing, contact.properties.jobtitle.value, String.Empty)
                       .Cell = If(contact.properties.mobilephone IsNot Nothing, contact.properties.mobilephone.value, String.Empty)
                       .Phone = If(contact.properties.phone IsNot Nothing, contact.properties.phone.value, String.Empty)
                       .Fax = If(contact.properties.fax IsNot Nothing, contact.properties.fax.value, String.Empty)

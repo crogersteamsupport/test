@@ -36,7 +36,7 @@ namespace TeamSupport.ServiceLibrary
                 throw new ArgumentException("Missing required credentials");
             }
 
-			      _options = new Dictionary<string, object>();
+			_options = new Dictionary<string, object>();
             _options["api_base"] = "api.hubapi.com";
             UserWebClient = new WindowsWebClient();
             _logs = new SyncLog(logPath, IntegrationType.HubSpot);
