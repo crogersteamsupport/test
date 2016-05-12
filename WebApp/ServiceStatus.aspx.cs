@@ -74,9 +74,12 @@ WHERE DATEDIFF(SECOND, GETUTCDATE(), DATEADD(SECOND, HoldTime, DateCreated)) < 0
         
         int percent = (int)((1-(DateTime.Now.Subtract(lastTime).TotalMinutes / maxTime)) * 100);
         string progressColor = "success";
-        if (percent < 98) progressColor = "info";
-        if (percent < 75) progressColor = "warning";
-        if (percent < 50) progressColor = "danger";
+        if (percent < 50) progressColor = "warning";
+        if (percent < 0)
+        {
+            progressColor = "danger";
+            percent = 100;
+        }
         string bar = string.Format(progress, percent.ToString(), progressColor);
         builder.Append(string.Format("<tr class=\"{0}\"><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>", status ? "" : "danger", name, status ? "Good" : "Down", lastTime, bar));
     }
