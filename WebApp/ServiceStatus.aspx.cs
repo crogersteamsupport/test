@@ -49,8 +49,9 @@ FROM Emails e
 WHERE IsWaiting = 1 
 ");
 
-        isFailed = CheckCount(isFailed, rowBuilder, 1000, "Email Processing", "There are too many records in the EmailPosts table, check EmailProcessor service.", @"
-SELECT COUNT(*) FROM EmailPosts 
+        isFailed = CheckCount(isFailed, rowBuilder, 500, "Email Processing", "There are too many records in the EmailPosts table, check EmailProcessor service.", @"
+SELECT COUNT(*) FROM EmailPosts
+WHERE DATEDIFF(SECOND, GETUTCDATE(), DATEADD(SECOND, HoldTime, DateCreated)) < 0 
 ");
 
         //result.Append(string.Format("<h2 style=\"color:{1};\">{0} is{2} running.</h2>", name, !isFailed ? "green" : "red", !isFailed ? "" : " NOT"));
@@ -64,7 +65,20 @@ SELECT COUNT(*) FROM EmailPosts
 
     private static void AddStatusRow(StringBuilder builder, string name, bool status, DateTime lastTime, int maxTime)
     {
-        builder.Append(string.Format("<tr class=\"{0}\"><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>", status ? "" : "danger", name, status ? "Good" : "Down", lastTime, maxTime));
+        string progress = @"
+<div class=""progress"">
+  <div class=""progress-bar progress-bar-{1}"" role=""progressbar"" aria-valuenow=""{0}"" aria-valuemin=""0"" aria-valuemax=""100"" style=""width: {0}%"">
+    <span class=""sr-only"">{0}% Complete(success)</span>
+  </div>
+</div>";
+        
+        int percent = (int)((1-(DateTime.Now.Subtract(lastTime).TotalMinutes / maxTime)) * 100);
+        string progressColor = "success";
+        if (percent < 98) progressColor = "info";
+        if (percent < 75) progressColor = "warning";
+        if (percent < 50) progressColor = "danger";
+        string bar = string.Format(progress, percent.ToString(), progressColor);
+        builder.Append(string.Format("<tr class=\"{0}\"><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>", status ? "" : "danger", name, status ? "Good" : "Down", lastTime, bar));
     }
 
     private static void AddQueryRow(StringBuilder builder, string name, bool status, int max, int count, string message)

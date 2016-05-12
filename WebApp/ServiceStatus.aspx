@@ -29,7 +29,7 @@
                             <th>Service</th>
                             <th>Status</th>
                             <th>Last Time Checked</th>
-                            <th>Max Alert Time</th>
+                            <th>Health</th>
                         </tr>
                     </thead>
                     <tbody>
