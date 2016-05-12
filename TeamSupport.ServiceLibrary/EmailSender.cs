@@ -94,9 +94,10 @@ namespace TeamSupport.ServiceLibrary
                     }
                     catch (Exception ex)
                     {
-                        Logs.WriteEvent("Error sending email");
+                        Logs.WriteEvent("Error sending email - Ending Thread");
                         Logs.WriteException(ex);
                         ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
+                        return;
                     }
                 }
 
@@ -178,19 +179,26 @@ namespace TeamSupport.ServiceLibrary
             }
             catch (Exception ex)
             {
-                Logs.WriteEvent("Error sending email");
-                Logs.WriteException(ex);
-                ExceptionLogs.LogException(LoginUser, ex, _threadPosition.ToString() + " - Email Sender", email.Row);
-                StringBuilder builder = new StringBuilder();
-                builder.AppendLine("Log File: " + _threadPosition.ToString());
-                builder.AppendLine(ex.Message);
-                builder.AppendLine(ex.StackTrace);
-                email.NextAttempt = DateTime.UtcNow.AddMinutes(_nextAttempts[email.Attempts - 1] * email.Attempts);
-                email.LastFailedReason = builder.ToString();
-                email.IsSuccess = false;
-                email.IsWaiting = (email.Attempts < _nextAttempts.Length);
-                email.LockProcessID = null;
-                email.Collection.Save();
+                if (ex is Quiksoft.EasyMail.SSL.SSLConnectionException)
+                {
+                    throw ex;
+                }
+                else
+                {
+                    Logs.WriteEvent("Error sending email");
+                    Logs.WriteException(ex);
+                    ExceptionLogs.LogException(LoginUser, ex, _threadPosition.ToString() + " - Email Sender", email.Row);
+                    StringBuilder builder = new StringBuilder();
+                    builder.AppendLine("Log File: " + _threadPosition.ToString());
+                    builder.AppendLine(ex.Message);
+                    builder.AppendLine(ex.StackTrace);
+                    email.NextAttempt = DateTime.UtcNow.AddMinutes(_nextAttempts[email.Attempts - 1] * email.Attempts);
+                    email.LastFailedReason = builder.ToString();
+                    email.IsSuccess = false;
+                    email.IsWaiting = (email.Attempts < _nextAttempts.Length);
+                    email.LockProcessID = null;
+                    email.Collection.Save();
+                }
             }
         }
 
