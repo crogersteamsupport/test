@@ -157,19 +157,24 @@ namespace TeamSupport.ServiceLibrary
                 msg.CustomHeaders.Add("X-xsMailingId", email.EmailID.ToString());
 
                 msg.BodyParts.Add(new Quiksoft.EasyMail.SMTP.BodyPart(message.Body, message.IsBodyHtml ? BodyPartFormat.HTML : BodyPartFormat.Plain));
-                string[] attachments = email.GetAttachments();
-                foreach (var attachment in attachments)
+                if (email.Size < 25000)
                 {
-                    if (File.Exists(attachment))
+                    string[] attachments = email.GetAttachments();
+                    foreach (var attachment in attachments)
                     {
-                        msg.Attachments.Add(attachment);
-                    }
-                    else
-                    {
-                        Logs.WriteEvent("File unavailable :" + attachment);
-                    }
+                        if (File.Exists(attachment))
+                        {
+                            msg.Attachments.Add(attachment);
+                        }
+                        else
+                        {
+                            Logs.WriteEvent("File unavailable :" + attachment);
+                        }
 
+                    }
                 }
+
+                
                 try
                 {
                     smtp.Send(msg);
