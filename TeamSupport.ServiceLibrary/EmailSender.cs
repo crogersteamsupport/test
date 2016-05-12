@@ -55,17 +55,19 @@ namespace TeamSupport.ServiceLibrary
             SMTP smtp = new Quiksoft.EasyMail.SMTP.SMTP();
 
             //Set the SMTP server and secure port.
+            int port = Settings.ReadInt("SMTP Port");
             var smtpServer = new SMTPServer
             {
                 Name = Settings.ReadString("SMTP Host"),
-                Port = Settings.ReadInt("SMTP Port"), //465, //Secure port
+                Port = port, //465, //Secure port
                 Account = Settings.ReadString("SMTP UserName"),
                 Password = Settings.ReadString("SMTP Password"),
                 AuthMode = SMTPAuthMode.AuthLogin
             };
 
+
             smtp.SMTPServers.Add(smtpServer);
-            smtp.Connect(ssl.GetInterface());
+            if (port == 465 || port == 587) smtp.Connect(ssl.GetInterface()); else smtp.Connect();
             int count = 0;
             try
             {
@@ -168,7 +170,19 @@ namespace TeamSupport.ServiceLibrary
                     }
 
                 }
-                smtp.Send(msg);
+                try
+                {
+                    smtp.Send(msg);
+                }
+                catch (Quiksoft.EasyMail.SMTP.SMTPProtocolException smtpEx)
+                {
+                    Logs.WriteEvent(smtpEx.ToString());
+                    if (smtpEx.Message.IndexOf("5.3.4") > -1)
+                    {
+                        msg.Attachments.Clear();
+                        smtp.Send(msg);
+                    }
+                }
                 Logs.WriteEvent("Email sent");
                 email.IsSuccess = true;
                 email.IsWaiting = false;
