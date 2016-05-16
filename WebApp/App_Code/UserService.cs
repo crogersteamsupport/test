@@ -453,6 +453,16 @@ namespace TSWebServices
             return signature;
         }
 
+		  [WebMethod]
+		  public void ClearUserSignature(int userID)
+		  {
+			  User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+			  if (user.OrganizationID != TSAuthentication.OrganizationID) return;
+			  user.Signature = "";
+			  user.Collection.Save();
+			  return;
+		  }
+
         [WebMethod]
         public string SaveUserTitle(int userID, string title)
         {

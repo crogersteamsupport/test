@@ -1551,6 +1551,19 @@ UserPage = function () {
 
     });
 
+    $('#userSignatureClear').click(function (e) {
+    	e.preventDefault();
+    	var element = $('#divActionForm');
+    	if (confirm("Are you sure you want to clear this signature?"))
+    	{
+    		top.Ts.Services.Users.ClearUserSignature(_user.UserID, function () {
+    			$('#userSignature').empty();
+    		});
+    	}
+    	
+
+    });
+
   }
   else {
     $('.ts-icon-edit').remove();
