@@ -409,439 +409,451 @@ namespace TeamSupport.Data
             get { return _row; }
         }
 
+		public int TotalRecords
+		{
+			get
+			{
+				string apiTotalRecordsElementName = "TotalRecords";
+				if (Row.Table.Columns.Contains(apiTotalRecordsElementName) && Row[apiTotalRecordsElementName] != DBNull.Value)
+				{
+					return (int)Row[apiTotalRecordsElementName];
+				}
+				else return 0;
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 
-    public abstract class BaseCollection : IDisposable
-    {
-        public BaseCollection(LoginUser loginUser)
-        {
-            _loginUser = loginUser;
-            _table = new DataTable();
-            _deadlockCount = 0;
-        }
+	public abstract class BaseCollection : IDisposable
+	{
+		public BaseCollection(LoginUser loginUser)
+		{
+			_loginUser = loginUser;
+			_table = new DataTable();
+			_deadlockCount = 0;
+		}
 
-        #region Private Members
+		#region Private Members
 
-        private int _deadlockCount = 0;
+		private int _deadlockCount = 0;
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        private LoginUser _loginUser;
-        public LoginUser LoginUser
-        {
-            get { return _loginUser; }
-            set { _loginUser = value; }
-        }
+		private LoginUser _loginUser;
+		public LoginUser LoginUser
+		{
+			get { return _loginUser; }
+			set { _loginUser = value; }
+		}
 
-        private int _cacheExpirationSeconds = 120;
-        public int CacheExpirationSeconds
-        {
-            get { return _cacheExpirationSeconds; }
-            set { _cacheExpirationSeconds = value; }
-        }
+		private int _cacheExpirationSeconds = 120;
+		public int CacheExpirationSeconds
+		{
+			get { return _cacheExpirationSeconds; }
+			set { _cacheExpirationSeconds = value; }
+		}
 
-        private bool _useCache = false;
-        public bool UseCache
-        {
-            get { return _useCache; }
-            set { _useCache = value; }
-        }
+		private bool _useCache = false;
+		public bool UseCache
+		{
+			get { return _useCache; }
+			set { _useCache = value; }
+		}
 
-        private CustomFields _customFields = null;
-        public CustomFields CustomFields
-        {
-            get { return _customFields; }
-            set { _customFields = value; }
-        }
+		private CustomFields _customFields = null;
+		public CustomFields CustomFields
+		{
+			get { return _customFields; }
+			set { _customFields = value; }
+		}
 
-        public IDataCache DataCache
-        {
-            get { return _loginUser.DataCache; }
-        }
+		public IDataCache DataCache
+		{
+			get { return _loginUser.DataCache; }
+		}
 
-        private DataTable _table = null;
-        public DataTable Table
-        {
-            get { return _table; }
-            set { _table = value; }
-        }
+		private DataTable _table = null;
+		public DataTable Table
+		{
+			get { return _table; }
+			set { _table = value; }
+		}
 
-        public int Count
-        {
-            get { return _table.Rows.Count; }
-        }
+		public int Count
+		{
+			get { return _table.Rows.Count; }
+		}
 
-        public bool IsEmpty
-        {
-            get { return Count < 1; }
-        }
+		public bool IsEmpty
+		{
+			get { return Count < 1; }
+		}
 
-        public abstract string TableName
-        {
-            get;
-        }
+		public abstract string TableName
+		{
+			get;
+		}
 
-        public abstract string PrimaryKeyFieldName
-        {
-            get;
-        }
+		public abstract string PrimaryKeyFieldName
+		{
+			get;
+		}
 
-        public virtual void Save()
-        {
+		public virtual void Save()
+		{
 
-            using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-            {
-                connection.Open();
-                try
-                {
-                    Save(connection);
-                    _deadlockCount = 0;
-                }
-                catch (SqlException ex)
-                {
-                    if (ex.Number == 1205 && _deadlockCount < 3)
-                    {
-                        _deadlockCount++;
-                        connection.Close();
-                        System.Threading.Thread.Sleep(10000);
-                        Save();
-                        return;
-                    }
-                    else
-                    {
-                        throw ex;
-                    }
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
+			using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+			{
+				connection.Open();
+				try
+				{
+					Save(connection);
+					_deadlockCount = 0;
+				}
+				catch (SqlException ex)
+				{
+					if (ex.Number == 1205 && _deadlockCount < 3)
+					{
+						_deadlockCount++;
+						connection.Close();
+						System.Threading.Thread.Sleep(10000);
+						Save();
+						return;
+					}
+					else
+					{
+						throw ex;
+					}
+				}
+				finally
+				{
+					connection.Close();
+				}
+			}
 
-        }
+		}
 
-        protected bool TryDeleteFromDB(SqlCommand command)
-        {
-            int deadlockCount = 0;
-            while (deadlockCount < 5)
-            {
-                using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-                {
-                    connection.Open();
-                    command.Connection = connection;
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                        return true;
-                    }
-                    catch (SqlException ex)
-                    {
-                        if (ex.Number == 1205)
-                        {
-                            deadlockCount++;
-                            System.Threading.Thread.Sleep(5000);
-                        }
-                        else
-                        {
-                            throw ex;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
+		protected bool TryDeleteFromDB(SqlCommand command)
+		{
+			int deadlockCount = 0;
+			while (deadlockCount < 5)
+			{
+				using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+				{
+					connection.Open();
+					command.Connection = connection;
+					try
+					{
+						command.ExecuteNonQuery();
+						return true;
+					}
+					catch (SqlException ex)
+					{
+						if (ex.Number == 1205)
+						{
+							deadlockCount++;
+							System.Threading.Thread.Sleep(5000);
+						}
+						else
+						{
+							throw ex;
+						}
+					}
+				}
+			}
+			return false;
+		}
 
-        public abstract void Save(SqlConnection connection);
+		public abstract void Save(SqlConnection connection);
 
-        protected abstract void BuildFieldMap();
-
-
-        #endregion
-
-        #region Protected Members
-
-        protected FieldMap _fieldMap;
-
-        protected void LoadColumns(string tableName)
-        {
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText = "SELECT * FROM " + tableName + " WHERE 0=1";
-                command.CommandType = CommandType.Text;
-                Fill(command);
-                _table.PrimaryKey = null;
-
-                foreach (DataColumn column in _table.Columns)
-                {
-                    if (!column.AllowDBNull && !column.ReadOnly)
-                    {
-                        if (column.DataType == typeof(System.DateTime)) column.DefaultValue = DateTime.UtcNow;
-                        else if (column.DataType == typeof(System.String)) column.DefaultValue = "";
-                        else if (column.DataType == typeof(System.Boolean)) column.DefaultValue = false;
-                        else if (column.DataType == typeof(System.Guid)) column.DefaultValue = Guid.NewGuid();
-                        else column.DefaultValue = 0;
-                    }
-                    if (column.AutoIncrement)
-                    {
-                        column.AutoIncrement = false;
-                        column.ReadOnly = false;
-                        column.AllowDBNull = true;
-                        column.Unique = false;
-                    }
-                }
-            }
-        }
-
-        public virtual void ExecuteNonQuery(SqlCommand command)
-        {
-            ExecuteNonQuery(command, "");
-        }
-
-        public virtual void ExecuteNonQuery(SqlCommand command, string tableName)
-        {
-            FixCommandParameters(command);
-            using (SqlConnection connection = new SqlConnection(_loginUser.ConnectionString))
-            {
-                //SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Snapshot);
-                connection.Open();
-                command.Connection = connection;
-                //command.Transaction = transaction;
-                try
-                {
-                    command.ExecuteNonQuery();
-                    //transaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    //transaction.Rollback();
-                    e.Data["CommandText"] = command.CommandText;
-                    ExceptionLogs.LogException(LoginUser, e, "BaseCollection.ExecuteNonQuery");
-                    throw;
-                }
-                connection.Close();
-            }
-
-            if (DataCache != null) DataCache.InvalidateItem(tableName, _loginUser.OrganizationID);
-        }
-
-        public virtual object ExecuteScalar(SqlCommand command)
-        {
-            return ExecuteScalar(command, "");
-        }
-
-        public virtual object ExecuteScalar(SqlCommand command, string tableNames)
-        {
-            FixCommandParameters(command);
-            using (SqlConnection connection = new SqlConnection(_loginUser.ConnectionString))
-            {
-                object o;
-                if (_useCache && DataCache != null)
-                {
-                    o = DataCache.GetScalar(command);
-                    if (o != null) return o;
-                }
-
-                connection.Open();
-                SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
-                command.Connection = connection;
-                command.Transaction = transaction;
-                try
-                {
-                    o = command.ExecuteScalar();
-                    transaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    transaction.Rollback();
-                    e.Data["CommandText"] = command.CommandText;
-                    ExceptionLogs.LogException(LoginUser, e, "BaseCollection.ExecuteScalar");
-                    throw;
-                }
-
-                connection.Close();
-                if (DataCache != null)
-                {
-                    if (tableNames == "") tableNames = TableName;
-                    DataCache.AddScalar(command, tableNames, _cacheExpirationSeconds, o, _loginUser.OrganizationID);
-                }
-                return o;
-            }
-        }
-
-        public void Fill(SqlCommand command, SqlConnection connection)
-        {
-            FixCommandParameters(command);
-
-            if (_table != null) _table.Dispose();
-            _table = new DataTable();
-
-            command.Connection = connection;
-            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-            {
-                adapter.FillSchema(_table, SchemaType.Source);
-                adapter.Fill(_table);
-            }
-        }
-
-        public virtual void Fill(SqlCommand command, string tableNames)
-        {
-            FixCommandParameters(command);
-
-            if (_table != null) _table.Dispose();
-            if (_useCache && DataCache != null)
-            {
-                _table = DataCache.GetTable(command);
-                if (_table != null) return;
-            }
-            _table = new DataTable();
+		protected abstract void BuildFieldMap();
 
 
-            using (SqlConnection connection = new SqlConnection(_loginUser.ConnectionString))
-            {
-                connection.Open();
-                SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+		#endregion
 
-                command.Connection = connection;
-                command.Transaction = transaction;
-                try
-                {
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                    {
-                        adapter.FillSchema(_table, SchemaType.Source);
-                        adapter.Fill(_table);
-                    }
-                    transaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    transaction.Rollback();
-                    e.Data["CommandText"] = command.CommandText;
-                    ExceptionLogs.LogException(LoginUser, e, "BaseCollection.Fill");
-                    throw;
-                }
-                connection.Close();
-            }
+		#region Protected Members
 
-            if (DataCache != null)
-            {
-                if (tableNames == "") tableNames = TableName;
-                DataCache.AddTable(command, tableNames, _cacheExpirationSeconds, _table, _loginUser.OrganizationID);
-            }
-        }
+		protected FieldMap _fieldMap;
 
-        public static void FixCommandParameters(SqlCommand command)
-        {
-            return;
-            foreach (SqlParameter parameter in command.Parameters)
-            {
-                if (parameter.SqlDbType == SqlDbType.NVarChar)
-                {
-                    parameter.SqlDbType = SqlDbType.VarChar;
-                }
-            }
-        }
+		protected void LoadColumns(string tableName)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "SELECT * FROM " + tableName + " WHERE 0=1";
+				command.CommandType = CommandType.Text;
+				Fill(command);
+				_table.PrimaryKey = null;
 
-        protected virtual void Fill(SqlCommand command)
-        {
-            Fill(command, "");
-        }
-        #endregion
+				foreach (DataColumn column in _table.Columns)
+				{
+					if (!column.AllowDBNull && !column.ReadOnly)
+					{
+						if (column.DataType == typeof(System.DateTime)) column.DefaultValue = DateTime.UtcNow;
+						else if (column.DataType == typeof(System.String)) column.DefaultValue = "";
+						else if (column.DataType == typeof(System.Boolean)) column.DefaultValue = false;
+						else if (column.DataType == typeof(System.Guid)) column.DefaultValue = Guid.NewGuid();
+						else column.DefaultValue = 0;
+					}
+					if (column.AutoIncrement)
+					{
+						column.AutoIncrement = false;
+						column.ReadOnly = false;
+						column.AllowDBNull = true;
+						column.Unique = false;
+					}
+				}
+			}
+		}
 
-        #region Public Members
+		public virtual void ExecuteNonQuery(SqlCommand command)
+		{
+			ExecuteNonQuery(command, "");
+		}
 
-        public FieldMap FieldMap
-        {
-            get { if (_fieldMap == null) BuildFieldMap(); return _fieldMap; }
-        }
+		public virtual void ExecuteNonQuery(SqlCommand command, string tableName)
+		{
+			FixCommandParameters(command);
+			using (SqlConnection connection = new SqlConnection(_loginUser.ConnectionString))
+			{
+				//SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Snapshot);
+				connection.Open();
+				command.Connection = connection;
+				//command.Transaction = transaction;
+				try
+				{
+					command.ExecuteNonQuery();
+					//transaction.Commit();
+				}
+				catch (Exception e)
+				{
+					//transaction.Rollback();
+					e.Data["CommandText"] = command.CommandText;
+					ExceptionLogs.LogException(LoginUser, e, "BaseCollection.ExecuteNonQuery");
+					throw;
+				}
+				connection.Close();
+			}
 
-        public string InjectCustomFields(string text, string refIDFieldName, ReferenceType refType, int? auxID)
-        {
-            int i = text.ToLower().IndexOf(" from");
-            if (i > -1)
-            {
-                return text.Insert(i, GetCustomFieldsSelect(refType, auxID, refIDFieldName));
-            }
-            return text;
-        }
+			if (DataCache != null) DataCache.InvalidateItem(tableName, _loginUser.OrganizationID);
+		}
 
-        public string InjectCustomFields(string text, string refIDFieldName, ReferenceType refType)
-        {
-            return InjectCustomFields(text, refIDFieldName, refType, null);
-        }
+		public virtual object ExecuteScalar(SqlCommand command)
+		{
+			return ExecuteScalar(command, "");
+		}
 
-        public string GetCustomFieldsSelect(ReferenceType refType, string refIDFieldName)
-        {
-            return GetCustomFieldsSelect(refType, null, refIDFieldName);
-        }
+		public virtual object ExecuteScalar(SqlCommand command, string tableNames)
+		{
+			FixCommandParameters(command);
+			using (SqlConnection connection = new SqlConnection(_loginUser.ConnectionString))
+			{
+				object o;
+				if (_useCache && DataCache != null)
+				{
+					o = DataCache.GetScalar(command);
+					if (o != null) return o;
+				}
 
-        public string GetCustomFieldsSelect(ReferenceType refType, int? auxID, string refIDFieldName)
-        {
-            CustomFields = new CustomFields(LoginUser);
-            int orgID = LoginUser.OrganizationID;
-            Organization organization = Organizations.GetOrganization(LoginUser, LoginUser.OrganizationID);
-            if (organization != null && organization.ParentID != 1) { orgID = (int)organization.ParentID; }
-            _customFields.LoadByReferenceType(orgID, refType, auxID);
-            return GetCustomFieldsSelect(CustomFields, refIDFieldName);
-        }
+				connection.Open();
+				SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+				command.Connection = connection;
+				command.Transaction = transaction;
+				try
+				{
+					o = command.ExecuteScalar();
+					transaction.Commit();
+				}
+				catch (Exception e)
+				{
+					transaction.Rollback();
+					e.Data["CommandText"] = command.CommandText;
+					ExceptionLogs.LogException(LoginUser, e, "BaseCollection.ExecuteScalar");
+					throw;
+				}
 
-        public static string GetCustomFieldsSelect(CustomFields fields, string refIDFieldName)
-        {
-            StringBuilder builder = new StringBuilder();
+				connection.Close();
+				if (DataCache != null)
+				{
+					if (tableNames == "") tableNames = TableName;
+					DataCache.AddScalar(command, tableNames, _cacheExpirationSeconds, o, _loginUser.OrganizationID);
+				}
+				return o;
+			}
+		}
 
-            foreach (CustomField customField in fields)
-            {
-                builder.Append(",");
-                builder.Append(GetCustomFieldSelect(customField, refIDFieldName, customField.ApiFieldName));
-            }
-            return builder.ToString();
-        }
+		public void Fill(SqlCommand command, SqlConnection connection)
+		{
+			FixCommandParameters(command);
 
-        public static string GetCustomFieldSelect(CustomField field, string refIDFieldName, string fieldAlias)
-        {
-            switch (field.FieldType)
-            {
-                case CustomFieldType.Date:
-                case CustomFieldType.Time:
-                case CustomFieldType.DateTime: return GetCustomFieldDateSelect(field, refIDFieldName, fieldAlias);
-                case CustomFieldType.Boolean: return GetCustomFieldBooleanSelect(field, refIDFieldName, fieldAlias);
-                case CustomFieldType.Number: return GetCustomFieldNumberSelect(field, refIDFieldName, fieldAlias);
-                default:
-                    break;
-            }
+			if (_table != null) _table.Dispose();
+			_table = new DataTable();
 
+			command.Connection = connection;
+			using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+			{
+				adapter.FillSchema(_table, SchemaType.Source);
+				adapter.Fill(_table);
+			}
+		}
 
-            StringBuilder builder = new StringBuilder();
-            builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)) FROM CustomValues WHERE (CustomFieldID = ");
-            builder.Append(field.CustomFieldID.ToString());
-            builder.Append(") AND (RefID = ");
-            builder.Append(refIDFieldName);
-            builder.Append(")) ");
+		public virtual void Fill(SqlCommand command, string tableNames)
+		{
+			FixCommandParameters(command);
+
+			if (_table != null) _table.Dispose();
+			if (_useCache && DataCache != null)
+			{
+				_table = DataCache.GetTable(command);
+				if (_table != null) return;
+			}
+			_table = new DataTable();
 
 
-            //"(SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = 654) AND (RefID = TicketsView.TicketID)) AS [Approved By Manager]"
-            if (field.FieldType == CustomFieldType.PickList)
-            {
-                string[] items = field.ListValues.Split('|');
-                if (items.Length > 0)
-                {
-                    builder.Insert(0, "ISNULL(");
-                    builder.Append(", '" + items[0].Replace("'", "''") + "')");
-                }
-            }
+			using (SqlConnection connection = new SqlConnection(_loginUser.ConnectionString))
+			{
+				connection.Open();
+				SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-            builder.Append("AS [");
-            builder.Append(fieldAlias);
-            builder.Append("]");
-            return builder.ToString();
-        }
+				command.Connection = connection;
+				command.Transaction = transaction;
+				try
+				{
+					using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+					{
+						adapter.FillSchema(_table, SchemaType.Source);
+						adapter.Fill(_table);
+					}
+					transaction.Commit();
+				}
+				catch (Exception e)
+				{
+					transaction.Rollback();
+					e.Data["CommandText"] = command.CommandText;
+					ExceptionLogs.LogException(LoginUser, e, "BaseCollection.Fill");
+					throw;
+				}
+				connection.Close();
+			}
 
-        public static string GetCustomFieldDateSelect(CustomField field, string refIDFieldName, string fieldAlias)
-        {
-            string sql = @"
+			if (DataCache != null)
+			{
+				if (tableNames == "") tableNames = TableName;
+				DataCache.AddTable(command, tableNames, _cacheExpirationSeconds, _table, _loginUser.OrganizationID);
+			}
+		}
+
+		public static void FixCommandParameters(SqlCommand command)
+		{
+			return;
+			foreach (SqlParameter parameter in command.Parameters)
+			{
+				if (parameter.SqlDbType == SqlDbType.NVarChar)
+				{
+					parameter.SqlDbType = SqlDbType.VarChar;
+				}
+			}
+		}
+
+		protected virtual void Fill(SqlCommand command)
+		{
+			Fill(command, "");
+		}
+		#endregion
+
+		#region Public Members
+
+		public FieldMap FieldMap
+		{
+			get { if (_fieldMap == null) BuildFieldMap(); return _fieldMap; }
+		}
+
+		public string InjectCustomFields(string text, string refIDFieldName, ReferenceType refType, int? auxID)
+		{
+			int i = text.ToLower().IndexOf(" from");
+			if (i > -1)
+			{
+				return text.Insert(i, GetCustomFieldsSelect(refType, auxID, refIDFieldName));
+			}
+			return text;
+		}
+
+		public string InjectCustomFields(string text, string refIDFieldName, ReferenceType refType)
+		{
+			return InjectCustomFields(text, refIDFieldName, refType, null);
+		}
+
+		public string GetCustomFieldsSelect(ReferenceType refType, string refIDFieldName)
+		{
+			return GetCustomFieldsSelect(refType, null, refIDFieldName);
+		}
+
+		public string GetCustomFieldsSelect(ReferenceType refType, int? auxID, string refIDFieldName)
+		{
+			CustomFields = new CustomFields(LoginUser);
+			int orgID = LoginUser.OrganizationID;
+			Organization organization = Organizations.GetOrganization(LoginUser, LoginUser.OrganizationID);
+			if (organization != null && organization.ParentID != 1) { orgID = (int)organization.ParentID; }
+			_customFields.LoadByReferenceType(orgID, refType, auxID);
+			return GetCustomFieldsSelect(CustomFields, refIDFieldName);
+		}
+
+		public static string GetCustomFieldsSelect(CustomFields fields, string refIDFieldName)
+		{
+			StringBuilder builder = new StringBuilder();
+
+			foreach (CustomField customField in fields)
+			{
+				builder.Append(",");
+				builder.Append(GetCustomFieldSelect(customField, refIDFieldName, customField.ApiFieldName));
+			}
+			return builder.ToString();
+		}
+
+		public static string GetCustomFieldSelect(CustomField field, string refIDFieldName, string fieldAlias)
+		{
+			switch (field.FieldType)
+			{
+				case CustomFieldType.Date:
+				case CustomFieldType.Time:
+				case CustomFieldType.DateTime: return GetCustomFieldDateSelect(field, refIDFieldName, fieldAlias);
+				case CustomFieldType.Boolean: return GetCustomFieldBooleanSelect(field, refIDFieldName, fieldAlias);
+				case CustomFieldType.Number: return GetCustomFieldNumberSelect(field, refIDFieldName, fieldAlias);
+				default:
+					break;
+			}
+
+
+			StringBuilder builder = new StringBuilder();
+			builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)) FROM CustomValues WHERE (CustomFieldID = ");
+			builder.Append(field.CustomFieldID.ToString());
+			builder.Append(") AND (RefID = ");
+			builder.Append(refIDFieldName);
+			builder.Append(")) ");
+
+
+			//"(SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = 654) AND (RefID = TicketsView.TicketID)) AS [Approved By Manager]"
+			if (field.FieldType == CustomFieldType.PickList)
+			{
+				string[] items = field.ListValues.Split('|');
+				if (items.Length > 0)
+				{
+					builder.Insert(0, "ISNULL(");
+					builder.Append(", '" + items[0].Replace("'", "''") + "')");
+				}
+			}
+
+			builder.Append("AS [");
+			builder.Append(fieldAlias);
+			builder.Append("]");
+			return builder.ToString();
+		}
+
+		public static string GetCustomFieldDateSelect(CustomField field, string refIDFieldName, string fieldAlias)
+		{
+			string sql = @"
 (
   CASE 
     WHEN ISDATE((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
@@ -850,12 +862,12 @@ namespace TeamSupport.Data
   END
 ) AS [{2}]
 ";
-            return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
-        }
+			return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
+		}
 
-        public static string GetCustomFieldNumberSelect(CustomField field, string refIDFieldName, string fieldAlias)
-        {
-            string sql = @"
+		public static string GetCustomFieldNumberSelect(CustomField field, string refIDFieldName, string fieldAlias)
+		{
+			string sql = @"
 (
   CASE 
     WHEN ISNUMERIC((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
@@ -864,12 +876,12 @@ namespace TeamSupport.Data
   END
 ) AS [{2}]
 ";
-            return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
-        }
+			return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
+		}
 
-        public static string GetCustomFieldBooleanSelect(CustomField field, string refIDFieldName, string fieldAlias)
-        {
-            string sql = @"
+		public static string GetCustomFieldBooleanSelect(CustomField field, string refIDFieldName, string fieldAlias)
+		{
+			string sql = @"
 (
   CASE 
     WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'true'  THEN CAST(1 AS bit)
@@ -878,51 +890,51 @@ namespace TeamSupport.Data
   END 
 ) AS [{2}]
 ";
-            return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
-        }
+			return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
+		}
 
-        public void DeleteAll()
-        {
-            foreach (DataRow row in Table.Rows)
-            {
-                row.Delete();
-            }
-        }
+		public void DeleteAll()
+		{
+			foreach (DataRow row in Table.Rows)
+			{
+				row.Delete();
+			}
+		}
 
-        public void Delete(BaseItem baseItem)
-        {
-            baseItem.Row.Delete();
-        }
-        /*public string GetXml(string listName, string elementName, bool includeCustomFields)
+		public void Delete(BaseItem baseItem)
+		{
+			baseItem.Row.Delete();
+		}
+		/*public string GetXml(string listName, string elementName, bool includeCustomFields)
         {
           return GetXml(listName, elementName, includeCustomFields, null);
         }*/
 
 
-        public static XmlTextWriter BeginXmlWrite(string listName)
-        {
-            MemoryStream stream = new MemoryStream();
-            XmlTextWriter writer = new XmlTextWriter(stream, new UTF8Encoding(false));
-            writer.Formatting = Formatting.Indented;
-            writer.WriteStartDocument();
-            writer.WriteStartElement(listName);
-            return writer;
-        }
+		public static XmlTextWriter BeginXmlWrite(string listName)
+		{
+			MemoryStream stream = new MemoryStream();
+			XmlTextWriter writer = new XmlTextWriter(stream, new UTF8Encoding(false));
+			writer.Formatting = Formatting.Indented;
+			writer.WriteStartDocument();
+			writer.WriteStartElement(listName);
+			return writer;
+		}
 
-        public void WriteXml(XmlTextWriter writer, BaseItem item, string elementName, bool includeCustomFields, NameValueCollection filters, Tags tags = null)
-        {
-            if (IsItemFiltered(item, filters)) return;
-            writer.WriteStartElement(elementName);
-            item.WriteToXml(writer, includeCustomFields, tags);
-            writer.WriteEndElement();
-        }
+		public void WriteXml(XmlTextWriter writer, BaseItem item, string elementName, bool includeCustomFields, NameValueCollection filters, Tags tags = null)
+		{
+			if (IsItemFiltered(item, filters)) return;
+			writer.WriteStartElement(elementName);
+			item.WriteToXml(writer, includeCustomFields, tags);
+			writer.WriteEndElement();
+		}
 
-        public void WriteXml(XmlTextWriter writer, DataRow row, string elementName, bool includeCustomFields, NameValueCollection filters, Tags tags = null)
-        {
-            WriteXml(writer, new BaseItem(row, this), elementName, includeCustomFields, filters, tags);
-        }
+		public void WriteXml(XmlTextWriter writer, DataRow row, string elementName, bool includeCustomFields, NameValueCollection filters, Tags tags = null)
+		{
+			WriteXml(writer, new BaseItem(row, this), elementName, includeCustomFields, filters, tags);
+		}
 
-        public static string EndXmlWrite(XmlTextWriter writer)
+		public static string EndXmlWrite(XmlTextWriter writer)
         {
             writer.WriteFullEndElement();
             writer.WriteEndDocument();
@@ -950,14 +962,22 @@ ORDER BY {3}
             return string.Format(query, IdField, table, where, order, fields);
         }
 
-        public string GetXml(string listName, string elementName, bool includeCustomFields, NameValueCollection filters)
+        public string GetXml(string listName, string elementName, bool includeCustomFields, NameValueCollection filters, bool isPaging = false)
         {
             XmlTextWriter writer = BeginXmlWrite(listName);
-            foreach (DataRow row in Table.Rows)
+
+			foreach (DataRow row in Table.Rows)
             {
                 WriteXml(writer, row, elementName, includeCustomFields, filters);
             }
-            return EndXmlWrite(writer);
+
+			if (Table.Rows.Count > 0 && isPaging)
+			{
+				string apiTotalRecordsElement = "TotalRecords";
+				writer.WriteElementString(apiTotalRecordsElement, Table.Rows[0][apiTotalRecordsElement].ToString());
+			}
+
+			return EndXmlWrite(writer);
 
             /*
             MemoryStream stream = new MemoryStream();

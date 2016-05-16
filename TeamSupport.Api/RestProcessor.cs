@@ -1,19 +1,18 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TeamSupport.Data;
 using System.IO;
 using System.Net;
 using System.Xml;
-using System.Data;
 
 namespace TeamSupport.Api
 {
   public class RestProcessor
   {
     RestCommand _command;
+	string _xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n";
 
     public RestProcessor(RestCommand command)
     {
@@ -52,10 +51,11 @@ namespace TeamSupport.Api
             _command.Context.Response.ContentType = "application/json";
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(data.Replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n", string.Empty));
+            doc.LoadXml(data.Replace(_xmlHeader, string.Empty));
+
             if (_command.Method == HttpMethod.Get)
             {
-              data = FixJsonFormatError(JsonConvert.SerializeXmlNode(doc), uriTemplate);
+				data = FixJsonFormatError(JsonConvert.SerializeXmlNode(doc), uriTemplate, _command.IsPaging);
             }
             else
             {
@@ -70,6 +70,52 @@ namespace TeamSupport.Api
         throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
       }
     }
+
+	//vv
+		//private static string RemoveAndGetTotalRecordsElement(string data, string xmlHeader, ref int? totalRecords)
+		//{
+		//	XmlDocument doc = new XmlDocument();
+		//	doc.LoadXml(data.Replace(xmlHeader, string.Empty));
+		//	string jsonString = JsonConvert.SerializeXmlNode(doc);
+		//	JObject jobject = JObject.Parse(jsonString);
+		//	string objectName = null;
+
+		//	foreach (JProperty property in jobject.Properties())
+		//	{
+		//		if (string.IsNullOrEmpty(objectName))
+		//		{
+		//			objectName = property.Name;
+		//			break;
+		//		}
+		//	}
+
+		//	string totalCountPropertyName = "TotalRecords";
+		//	JObject tickets = (JObject)jobject[objectName];
+		//	string totalCountRaw = null;
+
+		//	if (tickets[totalCountPropertyName] != null)
+		//	{
+		//		string totalRecordsString = (string)tickets[totalCountPropertyName];
+		//		totalCountRaw = string.Format(",\"{0}\":\"{1}\"", totalCountPropertyName, totalRecordsString);
+		//		jsonString = jsonString.Replace(totalCountRaw, "");
+
+		//		int totalRecordsInt = 0;
+
+		//		if (int.TryParse(totalRecordsString, out totalRecordsInt))
+		//		{
+		//			totalRecords = totalRecordsInt;
+		//		}
+		//	}
+
+		//	//data = FixJsonFormatError(jsonString, uriTemplate);
+
+		//	//if (!string.IsNullOrEmpty(totalCountRaw))
+		//	//{
+		//	//	data = data.Substring(0, data.LastIndexOf("]") + 1) + totalCountRaw + "}";
+		//	//}
+
+		//	return jsonString;
+		//}
 
     public string ProcessGet(string uriTemplate)
     {
@@ -275,10 +321,9 @@ namespace TeamSupport.Api
           default: throw new RestException(HttpStatusCode.NotFound);
         }
 
-      }
-      return data;
+		}
 
-
+	  return data;
     }
 
     public string ProcessPost(string uriTemplate)
@@ -449,30 +494,43 @@ namespace TeamSupport.Api
 
     }
 
-    private string FixJsonFormatError(string input, string uriTemplate)
-    {
-      int squareBracketIndex = 0;
-      string objectIDLabel = string.Empty;
-      string stringToRemove = GetStringToRemove(uriTemplate, ref squareBracketIndex, ref objectIDLabel);
-      if (stringToRemove != string.Empty && input.Length > squareBracketIndex)
-      {
-        if (input.Substring(squareBracketIndex, 1) != "[")
-        {
-          input = input.Replace(stringToRemove, "[");
-          input = input.Remove(input.Length - 2);
-        }
-        else
-        {
-          input = input.Replace(stringToRemove, string.Empty);
-          input = input.Remove(input.Length - 3);
-        }
-        input = input + "]}";
-        input = input.Replace(objectIDLabel, "ID");
-      }
-      return input;
-    }
+		private string FixJsonFormatError(string input, string uriTemplate, bool isPaging = false)
+		{
+			int squareBracketIndex = 0;
+			string objectIDLabel = string.Empty;
+			string stringToRemove = GetStringToRemove(uriTemplate, input, ref squareBracketIndex, ref objectIDLabel);
 
-    private string GetStringToRemove(string uriTemplate, ref int squareBracketIndex, ref string objectIDLabel)
+			if (stringToRemove != string.Empty && input.Length > squareBracketIndex)
+			{
+				if (!isPaging)
+				{
+
+					if (input.Substring(squareBracketIndex, 1) != "[")
+					{
+						input = input.Replace(stringToRemove, "[");
+						input = input.Remove(input.Length - 2);
+					}
+					else
+					{
+						input = input.Replace(stringToRemove, string.Empty);
+						input = input.Remove(input.Length - 3);
+					}
+
+					input = input + "]}";
+				}
+				else
+				{
+					input = input.Replace(stringToRemove, string.Empty);
+					input = input.Substring(input.Length - 1, 1) == "}" ? input.Substring(0, input.Length - 1) : input;
+				}
+
+				input = input.Replace(objectIDLabel, "ID");
+			}
+
+			return input;
+		}
+
+    private string GetStringToRemove(string uriTemplate, string input, ref int squareBracketIndex, ref string objectIDLabel)
     {
       string result = string.Empty;
       switch (uriTemplate)
@@ -594,8 +652,9 @@ namespace TeamSupport.Api
         case "/customers/{id}/tickets/":
         case "/contacts/{id}/tickets/":
           result = "{\"Ticket\":";
-          squareBracketIndex = "{\"Tickets\":{\"Ticket\":".Length;
-          objectIDLabel = "TicketID";
+		  squareBracketIndex = input.IndexOf("[");
+
+		  objectIDLabel = "TicketID";
           break;
         case "/zapier/properties/ticketseverities/":
         case "/properties/ticketseverities/":

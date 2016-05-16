@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Xml;
 using System.Data;
@@ -29,65 +28,107 @@ namespace TeamSupport.Api
 	public static string GetTickets(RestCommand command)
 	{
 		string xml = "";
+		bool hasBeenFiltered = false;
+		int totalRecords = 0;
 
-		if (command.Filters["TicketTypeID"] != null)
-		{ 
-			try 
-			{	        
-				TicketsView tickets = new TicketsView(command.LoginUser);
-				int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
-				TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
-				if (ticketType.OrganizationID != command.Organization.OrganizationID) throw new Exception();
-          
+		if (command.IsPaging)
+		{
+			TicketsView tickets = new TicketsView(command.LoginUser);
+			tickets.LoadAllTicketIds(command.Organization.OrganizationID, command.Filters, command.PageNumber, command.PageSize);
+			hasBeenFiltered = true;
+			XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
+
+			foreach (int ticketTypeId in tickets.GroupBy(g => g.TicketTypeID).Select(p => p.Key).ToList())
+			{
 				try
 				{
-					tickets.LoadByTicketTypeID(ticketTypeID, command.Organization.OrganizationID, command.Filters);
+					TicketsView ticketsResult = new TicketsView(command.LoginUser);
+					ticketsResult.LoadByTicketIDList(command.Organization.OrganizationID, ticketTypeId, tickets.Where(w => w.TicketTypeID == ticketTypeId).Select(p => p.TicketID).ToList());
+
+					foreach (DataRow row in ticketsResult.Table.Rows)
+					{
+						int ticketId = (int)row["TicketID"];
+						Tags tags = new Tags(command.LoginUser);
+						tags.LoadByReference(ReferenceType.Tickets, ticketId);
+						tags = tags ?? new Tags(command.LoginUser);
+						ticketsResult.WriteXml(writer, row, "Ticket", true, !hasBeenFiltered ? command.Filters : new System.Collections.Specialized.NameValueCollection(), tags);
+					}
 				}
 				catch (Exception ex)
 				{
-					//if something fails use the old method
-					tickets.LoadByTicketTypeID(ticketTypeID);
 				}
-          
-				xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
-				xml = AddTagsToTickets(xml, command);
 			}
-			catch (Exception ex)
+
+			if (tickets.Count > 0)
 			{
-				throw new RestException(HttpStatusCode.NotAcceptable, "Invalid TicketTypeID to filter.", ex);
+				totalRecords = tickets[0].TotalRecords;
 			}
+
+			writer.WriteElementString("TotalRecords", totalRecords.ToString());
+			xml = Tickets.EndXmlWrite(writer);
 		}
 		else
 		{
-			TicketTypes ticketTypes = new TicketTypes(command.LoginUser);
-			ticketTypes.LoadByOrganizationID(command.Organization.OrganizationID);
-
-			TicketsView tickets = new TicketsView(command.LoginUser);
-			XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
-
-			foreach (TicketType ticketType in ticketTypes)
-			{
-				try
-				{
-					tickets.LoadByTicketTypeID(ticketType.TicketTypeID, command.Organization.OrganizationID, command.Filters);
+			//No Paging
+			if (command.Filters["TicketTypeID"] != null)
+			{ 
+				try 
+				{	        
+					TicketsView tickets = new TicketsView(command.LoginUser);
+					int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
+					TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
+					if (ticketType.OrganizationID != command.Organization.OrganizationID) throw new Exception();
+          
+					try
+					{
+						tickets.LoadByTicketTypeID(ticketTypeID, command.Organization.OrganizationID, command.Filters);
+					}
+					catch (Exception ex)
+					{
+						//if something fails use the old method
+						tickets.LoadByTicketTypeID(ticketTypeID);
+					}
+          
+					xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
+					xml = AddTagsToTickets(xml, command);
 				}
 				catch (Exception ex)
 				{
-					//if something fails use the old method
-					tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
-				}
-
-				foreach (DataRow row in tickets.Table.Rows)
-				{
-					int ticketId = (int)row["TicketID"];
-					Tags tags = new Tags(command.LoginUser);
-					tags.LoadByReference(ReferenceType.Tickets, ticketId);
-					tags = tags ?? new Tags(command.LoginUser);
-					tickets.WriteXml(writer, row, "Ticket", true, command.Filters, tags);
+					throw new RestException(HttpStatusCode.NotAcceptable, "Invalid TicketTypeID to filter.", ex);
 				}
 			}
+			else
+			{
+				TicketTypes ticketTypes = new TicketTypes(command.LoginUser);
+				ticketTypes.LoadByOrganizationID(command.Organization.OrganizationID);
 
-			xml = Tickets.EndXmlWrite(writer);
+				TicketsView tickets = new TicketsView(command.LoginUser);
+				XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
+
+				foreach (TicketType ticketType in ticketTypes)
+				{
+					try
+					{
+						tickets.LoadByTicketTypeID(ticketType.TicketTypeID, command.Organization.OrganizationID, command.Filters);
+					}
+					catch (Exception ex)
+					{
+						//if something fails use the old method
+						tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
+					}
+
+					foreach (DataRow row in tickets.Table.Rows)
+					{
+						int ticketId = (int)row["TicketID"];
+						Tags tags = new Tags(command.LoginUser);
+						tags.LoadByReference(ReferenceType.Tickets, ticketId);
+						tags = tags ?? new Tags(command.LoginUser);
+						tickets.WriteXml(writer, row, "Ticket", true, command.Filters, tags);
+					}
+				}
+
+				xml = Tickets.EndXmlWrite(writer);
+			}
 		}
 
 		return xml;
@@ -452,11 +493,20 @@ namespace TeamSupport.Api
 			XmlDocument xmlDoc = new XmlDocument();
 			xmlDoc.LoadXml(ticketsXml);
 
+			//Do we have paging?
+			XmlNode totalRecordsElement = xmlDoc.SelectSingleNode("/Tickets/TotalRecords");
+
 			XmlNodeList nodeList = xmlDoc.SelectNodes("/Tickets/Ticket");
 			string xmlResultString = string.Empty;
 
 			using (var xmlTextWriter = Tickets.BeginXmlWrite("Tickets"))
 			{
+				if (totalRecordsElement != null)
+				{
+					totalRecordsElement.WriteTo(xmlTextWriter);
+					totalRecordsElement = null;
+				}
+
 				foreach (XmlNode node in nodeList)
 				{
 					//get the tags for the ticket using the ticketId
@@ -490,6 +540,37 @@ namespace TeamSupport.Api
 			}
 
 			return xml;
+		}
+
+		private static string AddSingleXmlElement(string ticketsXml, string element, string value)
+		{
+			string xml = string.Empty;
+			//Add the tag nodes to each ticket object
+			XmlDocument xmlDoc = new XmlDocument();
+			xmlDoc.LoadXml(ticketsXml);
+
+			//Create a new node.
+			XmlElement elem = xmlDoc.CreateElement(element);
+			elem.InnerText = value;
+
+			//Add the node to the document.
+			xmlDoc.DocumentElement.AppendChild(elem);
+
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.NewLineOnAttributes = true;
+			settings.Indent = true;
+
+			string xmlResult = string.Empty;
+
+			using (var stringWriter = new StringWriter())
+			using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
+			{
+				xmlDoc.WriteTo(xmlTextWriter);
+				xmlTextWriter.Flush();
+				xmlResult = stringWriter.GetStringBuilder().ToString();
+			}
+
+			return xmlResult;
 		}
 	}
 }
