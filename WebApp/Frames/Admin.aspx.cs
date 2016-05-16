@@ -35,8 +35,6 @@ public partial class Frames_Admin : BaseFramePage
 			//  RadTab importTab = tsMain.FindTabByText("Import");
 			//  importTab.Visible = true;
 			//}
-
-			if (UserSession.LoginUser.OrganizationID != 1078) tsMain.Tabs.Remove(tsHub);
 		}
   }
 }
