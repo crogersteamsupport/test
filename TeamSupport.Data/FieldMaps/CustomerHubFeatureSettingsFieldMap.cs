@@ -27,6 +27,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DefaultTicketTypeID", "DefaultTicketTypeID", false, false, false);
       _fieldMap.AddMap("DefaultGroupTypeID", "DefaultGroupTypeID", false, false, false);
       _fieldMap.AddMap("EnableCustomerProductAssociation", "EnableCustomerProductAssociation", false, false, false);
+      _fieldMap.AddMap("EnableChat", "EnableChat", false, false, false);
             
     }
   }
