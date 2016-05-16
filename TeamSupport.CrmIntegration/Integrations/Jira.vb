@@ -1341,9 +1341,9 @@ Namespace TeamSupport
 						Dim issueRef As IssueRef = New IssueRef With { .id = issue("id"), .key = issueKey }
 
 						body = New StringBuilder()
-						body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID))
-
-						Dim commentCreated As Comment = jiraClient.CreateComment(issueRef, body.ToString())
+						Dim jiraComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
+						body.Append(jiraComment)
+						Dim commentCreated As Comment = jiraClient.CreateComment(issueRef, jiraComment)
 						Dim newActionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
 						Dim newActionLinkToJiraItem As ActionLinkToJiraItem = newActionLinkToJira.AddNewActionLinkToJiraItem()
 
@@ -1552,7 +1552,7 @@ Namespace TeamSupport
 			result.Append("TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() + creatorUserName + ":")
 			result.Append(Environment.NewLine)
 			result.Append(Environment.NewLine)
-			result.Append(DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription))))
+			result.Append(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription)))
 
 			Return result.ToString()
 		End Function
