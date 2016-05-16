@@ -156,6 +156,64 @@ namespace TeamSupport.Api
       }
       return "";
     }
-  }
+
+	public int? _pageNumber;
+	public int? PageNumber
+	{
+		get
+		{
+			_pageNumber = null;
+
+			if (Filters["pagenumber"] != null)
+			{
+				int pageNumber = 0;
+
+				if (int.TryParse(Filters["pagenumber"].ToString(), out pageNumber))
+				{
+					_pageNumber = pageNumber;
+				}
+			}
+
+			return _pageNumber;
+		}
+		set
+		{
+			_pageNumber = value;
+		}
+	}
+
+		public int? _pagesize;
+		public int? PageSize
+		{
+			get
+			{
+				_pagesize = null;
+
+				if (Filters["pagesize"] != null)
+				{
+					int pagesize = 0;
+
+					if (int.TryParse(Filters["pagesize"].ToString(), out pagesize))
+					{
+						_pagesize = pagesize;
+					}
+				}
+
+				return _pagesize;
+			}
+			set
+			{
+				_pagesize = value;
+			}
+		}
+
+		public bool IsPaging
+		{
+			get
+			{
+				return PageNumber != null || PageSize != null;
+			}
+		}
+	}
 
 }

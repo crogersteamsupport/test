@@ -46,30 +46,31 @@ namespace TeamSupport.Data
 		}
 	}
 
-	public void LoadByParentOrganizationID(int organizationParentId, NameValueCollection filters, string orderBy = "LastName, FirstName", int? limitNumber = null, bool isCustomer = false)
-	{
-		//Get the column names, this row will be deleted before getting the actual data
-		this.LoadOneByParentOrganizationID(organizationParentId);
-
-		using (SqlCommand command = new SqlCommand())
+		public void LoadByParentOrganizationID(int organizationParentId, NameValueCollection filters, int? pageNumber = null, int? pageSize = null, string orderBy = "LastName, FirstName", int? limitNumber = null, bool isCustomer = false)
 		{
-			string limit = string.Empty;
+			//Get the column names, this row will be deleted before getting the actual data
+			this.LoadOneByParentOrganizationID(organizationParentId);
 
-			if (limitNumber != null)
+			using (SqlCommand command = new SqlCommand())
 			{
-				limit = "TOP " + limitNumber.ToString();
+				string limit = string.Empty;
+
+				if (limitNumber != null)
+				{
+					limit = "TOP " + limitNumber.ToString();
+				}
+
+				string sql = BuildLoadByParentOrganizationIdSql(limit, organizationParentId, orderBy, filters, command.Parameters, isCustomer);
+				sql = InjectCustomFields(sql, "UserID", ReferenceType.Contacts);
+				sql = DataUtils.AddPaging(sql, pageSize, pageNumber, command);
+				command.CommandType = CommandType.Text;
+				command.CommandText = sql;
+				command.Parameters.AddWithValue("@OrganizationParentId", organizationParentId);
+				this.DeleteAll();
+
+				Fill(command);
 			}
-
-			string sql = BuildLoadByParentOrganizationIdSql(limit, organizationParentId, orderBy, filters, command.Parameters, isCustomer);
-			sql = InjectCustomFields(sql, "UserID", ReferenceType.Contacts);
-			command.CommandType = CommandType.Text;
-			command.CommandText = sql;
-			command.Parameters.AddWithValue("@OrganizationParentId", organizationParentId);
-			this.DeleteAll();
-
-			Fill(command);
 		}
-	}
 
     public void LoadByOrganizationID(int organizationID, string orderBy = "LastName, FirstName")
     {
@@ -83,7 +84,7 @@ namespace TeamSupport.Data
       }
     }
 
-	/// <summary>
+		/// <summary>
 	/// Build the sql statement including its filters to avoid using the .NET filtering. This improves performance greatly.
 	/// </summary>
 	/// <param name="limit">Return the specified number of rows. E.g. "TOP 1"</param>
@@ -92,388 +93,38 @@ namespace TeamSupport.Data
 	/// <param name="filters">Filters to be applied. Specified in the URL request.</param>
 	/// <param name="filterParameters">SqlParamenterCollection for the input parameters of the sql query.</param>
 	/// <returns>A string with the full sql statement.</returns>
-	public string BuildLoadByParentOrganizationIdSql(string limit, int organizationParentId, string orderBy, NameValueCollection filters, SqlParameterCollection filterParameters, bool isCustomer = false)
-	{
-		StringBuilder result = new StringBuilder();
-
-		//check if it has the PhoneNumber filter by itself and also if it has a square bracket for the contains, lt, gt,... extra operators
-		bool hasPhoneNumberFilter = filters.AllKeys.Where(p => p.ToLower() == "phonenumber").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("phonenumber[")).Any();
-
-		//If phoneNumber filter is used then SELECT needs to be DISTINCT to avoid identity exceptions on the DataTable when a contact has multiple phonenumbers (one-to-many relationship between ContactsView and PhoneNumbers)
-		if (hasPhoneNumberFilter)
+		public string BuildLoadByParentOrganizationIdSql(string limit, int organizationParentId, string orderBy, NameValueCollection filters, SqlParameterCollection filterParameters, bool isCustomer = false)
 		{
-			result.Append("SELECT DISTINCT " + limit + " ContactsView.* ");
-		}
-		else
-		{
-			result.Append("SELECT " + limit + " * ");
-		}
-		
-		result.Append("FROM ContactsView ");
+			StringBuilder result = new StringBuilder();
 
-		if (hasPhoneNumberFilter)
-		{
-			result.Append("LEFT JOIN PhoneNumbers ON ContactsView.UserID = PhoneNumbers.RefID ");
-		}
+			//check if it has the PhoneNumber filter by itself and also if it has a square bracket for the contains, lt, gt,... extra operators
+			bool hasPhoneNumberFilter = filters.AllKeys.Where(p => p.ToLower() == "phonenumber").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("phonenumber[")).Any();
 
-		result.Append("WHERE " + (isCustomer ? "OrganizationID" : "OrganizationParentID") + " = @OrganizationParentId AND (MarkDeleted = 0) " + BuildWhereClausesFromFilters(organizationParentId, filters, ref filterParameters) + " ");
-		result.Append("ORDER BY " + orderBy);
-
-		return result.ToString();
-	}
-
-	private string BuildWhereClausesFromFilters(int organizationParentId, NameValueCollection filters, ref SqlParameterCollection filterParameters)
-	{
-		StringBuilder result = new StringBuilder();
-
-		CustomFields customFields = new CustomFields(this.LoginUser);
-		customFields.LoadByReferenceType(organizationParentId, ReferenceType.Contacts);
-
-		StringBuilder filterFieldName;
-		StringBuilder filterOperator;
-		List<string> filterValues;
-		CustomField customField = null;
-
-		foreach (string key in filters)
-		{
-			if (!string.IsNullOrEmpty(key))
+			//If phoneNumber filter is used then SELECT needs to be DISTINCT to avoid identity exceptions on the DataTable when a contact has multiple phonenumbers (one-to-many relationship between ContactsView and PhoneNumbers)
+			if (hasPhoneNumberFilter)
 			{
-				filterFieldName = new StringBuilder();
-				filterOperator	= new StringBuilder();
-				filterValues	= new List<string>();
-				string filterFieldNameParameter = string.Empty;
-
-				filterFieldName = GetFilterFieldName(key, filters.GetValues(key), customFields, ref filterOperator, ref filterValues, ref customField);
-				filterFieldNameParameter = filterFieldName.ToString();
-
-				if (filterFieldName.Length > 0)
-				{
-					bool isPhoneNumberFilter = filterFieldName.ToString().ToLower().Equals("phonenumber");
-
-					if (isPhoneNumberFilter)
-					{
-						string phoneNumberFilter = string.Format("dbo.StripNonNumericCharacters({0})", filterFieldName.ToString());
-						filterFieldName.Clear();
-						filterFieldName.Append(phoneNumberFilter);
-
-						for (int i = 0; i < filterValues.Count; i++)
-						{
-							filterValues[i] = new string(filterValues[i].Where(char.IsDigit).ToArray());
-						}
-					}
-
-					result.Append(" AND ");
-
-					if (customField == null)
-					{
-						if (filterValues.Count > 1)
-							result.Append("(");
-
-						if (filterValues[0] == null)
-						{
-							string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
-							result.Append("(");
-							result.Append(filterFieldName + " " + filterOperator + " NULL");
-							result.Append(" OR ");
-							result.Append(filterFieldName + " " + notEmptyOperator + " ''");
-							result.Append(")");
-						}
-						else
-						{
-							result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldNameParameter);
-							filterParameters.AddWithValue("@" + filterFieldNameParameter, filterValues[0]);
-						}
-						
-
-						if (filterValues.Count > 1)
-						{
-							for (int j = 1; j < filterValues.Count; j++)
-							{
-								result.Append(" OR ");
-
-								if (filterValues[j] == null)
-								{
-									string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
-									result.Append("(");
-									result.Append(filterFieldName + " " + filterOperator + " NULL");
-									result.Append(" OR ");
-									result.Append(filterFieldName + " " + notEmptyOperator + " ''");
-									result.Append(")");
-								}
-								else
-								{
-									result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldNameParameter + j.ToString());
-									filterParameters.AddWithValue("@" + filterFieldNameParameter + j.ToString(), filterValues[j]);
-								}
-							}
-
-							result.Append(")");
-						}
-					}
-					else
-					{
-						result.Append("UserID IN (SELECT RefID FROM CustomValues WHERE CustomFieldID = ");
-						result.Append(customField.CustomFieldID.ToString());
-						result.Append(" AND ");
-						if (filterValues.Count > 1) result.Append("(");
-						result.Append("CustomValue " + filterOperator + " @" + filterFieldNameParameter);
-						filterParameters.AddWithValue("@" + filterFieldNameParameter, filterValues[0]);
-
-						if (filterValues.Count > 1)
-						{
-							for (int j = 1; j < filterValues.Count; j++)
-							{
-								result.Append(" OR ");
-								result.Append("CustomValue " + filterOperator + " @" + filterFieldNameParameter + j.ToString());
-								filterParameters.AddWithValue("@" + filterFieldNameParameter + j.ToString(), filterValues[j]);
-							}
-
-							result.Append(")");
-						}
-
-						result.Append(")");
-					}
-				}
-			}
-		}
-
-		return result.ToString();
-	}
-
-	private StringBuilder GetFilterFieldName(string rawFieldName, string[] rawValues, CustomFields customFields, ref StringBuilder filterOperator, ref List<string> filterValues, ref CustomField customField)
-	{
-		StringBuilder result = new StringBuilder();
-		string	rawOperator = "=";
-
-		if (rawFieldName.Contains('['))
-		{
-			int index = rawFieldName.IndexOf('[');
-			result.Append(rawFieldName.Substring(0, index));
-			rawOperator = Regex.Match(rawFieldName, @"\[([^]]*)\]").Groups[1].Value;
-		}
-		else
-		{
-			result.Append(rawFieldName);
-		}
-
-		Type filterFieldDataType = GetFilterFieldDataType(result.ToString(), customFields, ref customField);
-
-		if (filterFieldDataType != null)
-		{
-			filterOperator.Append(GetSqlOperator(filterFieldDataType, rawOperator, rawValues, ref filterValues));
-
-			if (filterOperator.Length == 0)
-			{
-				result.Clear();
-			}
-		}
-		else
-		{
-			result.Clear();
-		}
-
-		return result;
-	}
-
-	private Type GetFilterFieldDataType(string fieldName, CustomFields customFields, ref CustomField customField)
-	{
-		Type fieldDataType = null;
-		string field = FieldMap.GetPrivateField(fieldName);
-
-		if (!string.IsNullOrEmpty(field))
-		{
-			BaseItem baseItem = new BaseItem(Table.Rows[0], this);
-			object fieldObject = baseItem.Row[field];
-
-			if (fieldObject != null)
-			{
-				customField = null;
-				fieldDataType = baseItem.Row.Table.Columns[field].DataType;
-			}
-		}
-		//PhoneNumber does not belong to the ContactsView so its type won't be found, however because it can be used as filter we'll set its type to String here
-		else if (fieldName.ToLower() == "phonenumber")
-		{
-			fieldDataType = typeof(string);
-		}
-		else
-		{
-			customField = customFields.FindByApiFieldName(fieldName);
-
-			if (customField != null)
-			{
-				switch (customField.FieldType)
-				{
-					case CustomFieldType.Boolean:
-						Boolean boolean = true;
-						fieldDataType = boolean.GetType();
-						break;
-					case CustomFieldType.Date:
-					case CustomFieldType.DateTime:
-					case CustomFieldType.Time:
-						DateTime dateTime = DateTime.Now;
-						fieldDataType = dateTime.GetType();
-						break;
-					case CustomFieldType.Number:
-						int integer = 0;
-						fieldDataType = integer.GetType();
-						break;
-					case CustomFieldType.PickList:
-					case CustomFieldType.Text:
-						string text = string.Empty;
-						fieldDataType = text.GetType();
-						break;
-					default:
-						fieldDataType = null;
-						break;
-				}
-			}
-		}
-
-		return fieldDataType;
-	}
-
-	private string GetSqlOperator(Type filterFieldDataType, string rawOperator, string[] rawValues, ref List<string> filterValues)
-	{
-		rawOperator = rawOperator.ToLower();
-		StringBuilder result = new StringBuilder();
-
-		for (int i = 0; i < rawValues.Length; i++)
-		{
-			if (rawValues[i].ToLower() == "[null]")
-			{
-				if (i == 0)
-				{
-					if (rawOperator == "not")
-					{
-						result.Append("IS NOT");
-					}
-					else
-					{
-						result.Append("IS");
-					}
-				}
-
-				filterValues.Add(null);
+				result.Append("SELECT DISTINCT " + limit + " ContactsView.* ");
 			}
 			else
 			{
-				if (filterFieldDataType == typeof(System.DateTime))
-				{
-					//format needs to be: yyyymmddhhmmss
-					if (rawValues[i].Length == "yyyymmddhhmmss".Length)
-					{
-						StringBuilder filterValue = new StringBuilder();
-						//sql default datetime format "yyyy-mm-dd hh:mm:ss"
-						//yyyy
-						filterValue.Append(rawValues[i].Substring(0, 4));
-						filterValue.Append("-");
-						//mm
-						filterValue.Append(rawValues[i].Substring(4, 2));
-						filterValue.Append("-");
-						//dd
-						filterValue.Append(rawValues[i].Substring(6, 2));
-						filterValue.Append(" ");
-						//hh
-						filterValue.Append(rawValues[i].Substring(8, 2));
-						filterValue.Append(":");
-						//mm
-						filterValue.Append(rawValues[i].Substring(10, 2));
-						filterValue.Append(":");
-						//ss
-						filterValue.Append(rawValues[i].Substring(12, 2));
-
-						filterValues.Add(filterValue.ToString());
-
-						if (i == 0)
-						{
-							if (rawOperator == "lt")
-							{
-								result.Append("<");
-							}
-							else
-							{
-								result.Append(">");
-							}
-						}
-					}
-				}
-				else if (filterFieldDataType == typeof(System.Boolean))
-				{
-					if (rawValues[i].ToLower().IndexOf("t") > -1 || rawValues[i].ToLower().IndexOf("1") > -1 || rawValues[i].ToLower().IndexOf("y") > -1)
-					{
-						filterValues.Add("1");
-					}
-					if (i == 0)
-					{
-						result.Append("=");
-					}
-				}
-				else if (filterFieldDataType == typeof(System.Double))
-				{
-					double d = double.Parse(rawValues[i]);
-					filterValues.Add(d.ToString());
-
-					if (i == 0)
-					{
-						switch (rawOperator)
-						{
-							case "lt": result.Append("<"); break;
-							case "lte": result.Append("<="); break;
-							case "gt": result.Append(">"); break;
-							case "gte": result.Append(">="); break;
-							case "not": result.Append("<>"); break;
-							default: result.Append("="); break;
-						}
-					}
-				}
-				else if (filterFieldDataType == typeof(System.Int32))
-				{
-					int j = int.Parse(rawValues[i]);
-					filterValues.Add(j.ToString());
-
-					if (i == 0)
-					{
-						switch (rawOperator)
-						{
-							case "lt": result.Append("<"); break;
-							case "lte": result.Append("<="); break;
-							case "gt": result.Append(">"); break;
-							case "gte": result.Append(">="); break;
-							case "not": result.Append("<>"); break;
-							default: result.Append("="); break;
-						}
-					}
-				}
-				else
-				{
-					switch (rawOperator)
-					{
-						case "contains":
-							if (i == 0) result.Append("LIKE");
-							filterValues.Add("%" + rawValues[i] + "%");
-							break;
-						case "not":
-							if (i == 0) result.Append("<>");
-							filterValues.Add(rawValues[i]);
-							break;
-						case "doesnotcontain":
-							if (i == 0) result.Append("NOT LIKE");
-							filterValues.Add("%" + rawValues[i] + "%");
-							break;
-						default:
-							if (i == 0) result.Append("=");
-							filterValues.Add(rawValues[i]);
-							break;
-					}
-				}
+				result.Append("SELECT " + limit + " * ");
 			}
+		
+			result.Append("FROM ContactsView ");
+
+			if (hasPhoneNumberFilter)
+			{
+				result.Append("LEFT JOIN PhoneNumbers ON ContactsView.UserID = PhoneNumbers.RefID ");
+			}
+
+			result.Append("WHERE " + (isCustomer ? "OrganizationID" : "OrganizationParentID") + " = @OrganizationParentId AND (MarkDeleted = 0) ");
+			result.Append(DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationParentId, filters, ReferenceType.Contacts, "UserID", ref filterParameters) + " ");
+			result.Append("ORDER BY " + orderBy);
+
+			return result.ToString();
 		}
 
-		return result.ToString();
-	}
-
-    public void LoadByTicketID(int ticketID, string orderBy = "LastName, FirstName")
+		public void LoadByTicketID(int ticketID, string orderBy = "LastName, FirstName")
     {
       using (SqlCommand command = new SqlCommand())
       {

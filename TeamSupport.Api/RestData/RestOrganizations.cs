@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
 using System.Xml;
 using System.Data;
 using TeamSupport.Data;
@@ -13,26 +11,33 @@ namespace TeamSupport.Api
   public class RestOrganizations
   {
 
-    public static string GetOrganization(RestCommand command, int organizationID)
-    {
-      OrganizationsViewItem organization = OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organizationID);
-      if (organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+	public static string GetOrganization(RestCommand command, int organizationID)
+	{
+		OrganizationsView organizationView = new OrganizationsView(command.LoginUser);
+		OrganizationsViewItem organization = organizationView.LoadByOrganizationIDBySproc(organizationID);
 
-      return organization.GetXml("Customer", true);
-    }
+		if (organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+
+		return organization.GetXml("Customer", true);
+	}
 
     public static string GetOrganizations(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null)
     {
       OrganizationsView organizations = new OrganizationsView(command.LoginUser);
+	  bool hasBeenFiltered = false;
+
       if (orderByDateCreated)
       {
+		//This seems to be Zapier only
         organizations.LoadByParentID(command.Organization.OrganizationID, true, "DateCreated DESC", limitNumber);
+		hasBeenFiltered = true;
       }
       else
       {
         try
         {
-          organizations.LoadByParentID(command.Organization.OrganizationID, true, command.Filters);
+          organizations.LoadByParentID(command.Organization.OrganizationID, true, command.Filters, command.PageNumber, command.PageSize);
+		  hasBeenFiltered = true;
         }
         catch (Exception e)
         {
@@ -40,7 +45,7 @@ namespace TeamSupport.Api
           organizations.LoadByParentID(command.Organization.OrganizationID, true);
         }
       }
-      return organizations.GetXml("Customers", "Customer", true, command.Filters);
+      return organizations.GetXml("Customers", "Customer", true, !hasBeenFiltered ? command.Filters : new System.Collections.Specialized.NameValueCollection(), command.IsPaging);
     }
 
     public static string CreateOrganization(RestCommand command)

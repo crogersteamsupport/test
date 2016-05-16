@@ -1961,6 +1961,10 @@ namespace TeamSupport.Data
 				{
 					result.Append("\\n");
 				}
+				else if (ch == '\r')
+				{
+					result.Append("\\r");
+				}
 			}
 
 			//The single quote is supported in json and do not need to be scaped.
@@ -1972,6 +1976,7 @@ namespace TeamSupport.Data
 			  //Replace(@"\'", @"'").
 			  Replace(@"\", @"\\").
 			  Replace(@"\\n", @"\n").
+			  Replace(@"\\r", @"\r").
 			  Replace(@"""", @"\""");
 			//Replace(@"'", @"\'");
 
@@ -2035,5 +2040,376 @@ namespace TeamSupport.Data
 			}
 			return table;
 		}
+
+		#region "API Common methods"
+
+		/// <summary>
+		/// Add paging to GET API requests
+		/// </summary>
+		/// <param name="sql">Generated sql in the API project for the request</param>
+		/// <param name="pageSize">Page Size</param>
+		/// <param name="pageNumber">Page Number</param>
+		/// <param name="command">sql command</param>
+		/// <returns>The sql statement with the paging statements added to it. (For SQL 2008 and above)</returns>
+		public static string AddPaging(string sql, int? pageSize, int? pageNumber, SqlCommand command)
+		{
+			string sqlPaging = string.Empty;
+
+			//These are the default values if any of them is null
+			pageSize = pageSize ?? 50;
+			pageNumber = pageNumber ?? 1;
+
+			if (!string.IsNullOrEmpty(sql))
+			{
+				sqlPaging = string.Format("{0} OFFSET ((@PageNumber - 1) * @PageSize) ROWS FETCH NEXT @PageSize ROWS ONLY;", sql);
+				sqlPaging = sqlPaging.Insert(sqlPaging.IndexOf("SELECT") + "SELECT ".Length, "TotalRecords = COUNT(1) OVER(), ");
+
+				command.Parameters.AddWithValue("@PageNumber", (int)pageNumber);
+				command.Parameters.AddWithValue("@PageSize", (int)pageSize);
+			}
+
+			return sqlPaging;
+		}
+
+		public static string BuildWhereClausesFromFilters(LoginUser loginUser,
+														BaseCollection baseCollection, 
+														int organizationId, 
+														System.Collections.Specialized.NameValueCollection filters, 
+														ReferenceType refType, 
+														string tableIdColName, 
+														ref SqlParameterCollection filterParameters)
+		{
+			StringBuilder result = new StringBuilder();
+			CustomFields customFields = new CustomFields(loginUser);
+			customFields.LoadByReferenceType(organizationId, refType);
+
+			StringBuilder filterFieldName;
+			StringBuilder filterOperator;
+			List<string> filterValues;
+			CustomField customField = null;
+
+			foreach (string key in filters)
+			{
+				var value = filters[key];
+
+				if (!string.IsNullOrEmpty(key))
+				{
+					filterFieldName = new StringBuilder();
+					filterOperator = new StringBuilder();
+					filterValues = new List<string>();
+
+					filterFieldName = GetFilterFieldName(baseCollection, key, filters.GetValues(key), customFields, ref filterOperator, ref filterValues, ref customField);
+
+					if (filterFieldName.Length > 0)
+					{
+						result.Append(" AND ");
+
+						if (customField == null)
+						{
+							if (filterValues.Count > 1)
+								result.Append("(");
+
+							if (filterValues[0] == null)
+							{
+								string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
+								result.Append("(");
+								result.Append(filterFieldName + " " + filterOperator + " NULL");
+								result.Append(" OR ");
+								result.Append(filterFieldName + " " + notEmptyOperator + " ''");
+								result.Append(")");
+							}
+							else
+							{
+								result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName);
+								filterParameters.AddWithValue("@" + filterFieldName, filterValues[0]);
+							}
+
+
+							if (filterValues.Count > 1)
+							{
+								for (int j = 1; j < filterValues.Count; j++)
+								{
+									result.Append(" OR ");
+
+									if (filterValues[j] == null)
+									{
+										string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
+										result.Append("(");
+										result.Append(filterFieldName + " " + filterOperator + " NULL");
+										result.Append(" OR ");
+										result.Append(filterFieldName + " " + notEmptyOperator + " ''");
+										result.Append(")");
+									}
+									else
+									{
+										result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName + j.ToString());
+										filterParameters.AddWithValue("@" + filterFieldName + j.ToString(), filterValues[j]);
+									}
+								}
+
+								result.Append(")");
+							}
+						}
+						else
+						{
+							result.Append(tableIdColName + " IN (SELECT RefID FROM CustomValues WHERE CustomFieldID = ");
+							result.Append(customField.CustomFieldID.ToString());
+							result.Append(" AND ");
+							if (filterValues.Count > 1) result.Append("(");
+							result.Append("CustomValue " + filterOperator + " @" + filterFieldName);
+							filterParameters.AddWithValue("@" + filterFieldName, filterValues[0]);
+
+							if (filterValues.Count > 1)
+							{
+								for (int j = 1; j < filterValues.Count; j++)
+								{
+									result.Append(" OR ");
+									result.Append("CustomValue " + filterOperator + " @" + filterFieldName + j.ToString());
+									filterParameters.AddWithValue("@" + filterFieldName + j.ToString(), filterValues[j]);
+								}
+
+								result.Append(")");
+							}
+
+							result.Append(")");
+						}
+					}
+				}
+			}
+
+			return result.ToString();
+		}
+
+		private static StringBuilder GetFilterFieldName(BaseCollection baseCollection, string rawFieldName, string[] rawValues, CustomFields customFields, ref StringBuilder filterOperator, ref List<string> filterValues, ref CustomField customField)
+		{
+			StringBuilder result = new StringBuilder();
+			string rawOperator = "=";
+
+			if (rawFieldName.Contains('['))
+			{
+				int index = rawFieldName.IndexOf('[');
+				result.Append(rawFieldName.Substring(0, index));
+				rawOperator = Regex.Match(rawFieldName, @"\[([^]]*)\]").Groups[1].Value;
+			}
+			else
+			{
+				result.Append(rawFieldName);
+			}
+
+			Type filterFieldDataType = GetFilterFieldDataType(result.ToString(), customFields, baseCollection, ref customField);
+
+			if (filterFieldDataType != null)
+			{
+				filterOperator.Append(GetSqlOperator(filterFieldDataType, rawOperator, rawValues, ref filterValues));
+
+				if (filterOperator.Length == 0)
+				{
+					result.Clear();
+				}
+			}
+			else
+			{
+				result.Clear();
+			}
+
+			return result;
+		}
+
+		private static Type GetFilterFieldDataType(string fieldName, CustomFields customFields, BaseCollection baseCollection, ref CustomField customField)
+		{
+			Type fieldDataType = null;
+			FieldMap fieldMap = baseCollection.FieldMap;
+			DataTable table = baseCollection.Table;
+			string field = fieldMap.GetPrivateField(fieldName);
+
+			if (!string.IsNullOrEmpty(field))
+			{
+				BaseItem baseItem = new BaseItem(table.Rows[0], baseCollection);
+				object fieldObject = baseItem.Row[field];
+
+				if (fieldObject != null)
+				{
+					customField = null;
+					fieldDataType = baseItem.Row.Table.Columns[field].DataType;
+				}
+			}
+			else
+			{
+				customField = customFields.FindByApiFieldName(fieldName);
+
+				if (customField != null)
+				{
+					switch (customField.FieldType)
+					{
+						case CustomFieldType.Boolean:
+							Boolean boolean = true;
+							fieldDataType = boolean.GetType();
+							break;
+						case CustomFieldType.Date:
+						case CustomFieldType.DateTime:
+						case CustomFieldType.Time:
+							DateTime dateTime = DateTime.Now;
+							fieldDataType = dateTime.GetType();
+							break;
+						case CustomFieldType.Number:
+							int integer = 0;
+							fieldDataType = integer.GetType();
+							break;
+						case CustomFieldType.PickList:
+						case CustomFieldType.Text:
+							string text = string.Empty;
+							fieldDataType = text.GetType();
+							break;
+						default:
+							fieldDataType = null;
+							break;
+					}
+				}
+			}
+
+			return fieldDataType;
+		}
+
+		private static string GetSqlOperator(Type filterFieldDataType, string rawOperator, string[] rawValues, ref List<string> filterValues)
+		{
+			rawOperator = rawOperator.ToLower();
+			StringBuilder result = new StringBuilder();
+
+			for (int i = 0; i < rawValues.Length; i++)
+			{
+				if (rawValues[i].ToLower() == "[null]")
+				{
+					if (i == 0)
+					{
+						if (rawOperator == "not")
+						{
+							result.Append("IS NOT");
+						}
+						else
+						{
+							result.Append("IS");
+						}
+					}
+
+					filterValues.Add(null);
+				}
+				else
+				{
+					if (filterFieldDataType == typeof(System.DateTime))
+					{
+						//format needs to be: yyyymmddhhmmss
+						if (rawValues[i].Length == "yyyymmddhhmmss".Length)
+						{
+							StringBuilder filterValue = new StringBuilder();
+							//sql default datetime format "yyyy-mm-dd hh:mm:ss"
+							//yyyy
+							filterValue.Append(rawValues[i].Substring(0, 4));
+							filterValue.Append("-");
+							//mm
+							filterValue.Append(rawValues[i].Substring(4, 2));
+							filterValue.Append("-");
+							//dd
+							filterValue.Append(rawValues[i].Substring(6, 2));
+							filterValue.Append(" ");
+							//hh
+							filterValue.Append(rawValues[i].Substring(8, 2));
+							filterValue.Append(":");
+							//mm
+							filterValue.Append(rawValues[i].Substring(10, 2));
+							filterValue.Append(":");
+							//ss
+							filterValue.Append(rawValues[i].Substring(12, 2));
+
+							filterValues.Add(filterValue.ToString());
+
+							if (i == 0)
+							{
+								if (rawOperator == "lt")
+								{
+									result.Append("<");
+								}
+								else
+								{
+									result.Append(">");
+								}
+							}
+						}
+					}
+					else if (filterFieldDataType == typeof(System.Boolean))
+					{
+						if (rawValues[i].ToLower().IndexOf("t") > -1 || rawValues[i].ToLower().IndexOf("1") > -1 || rawValues[i].ToLower().IndexOf("y") > -1)
+						{
+							filterValues.Add("1");
+						}
+						if (i == 0)
+						{
+							result.Append("=");
+						}
+					}
+					else if (filterFieldDataType == typeof(System.Double))
+					{
+						double d = double.Parse(rawValues[i]);
+						filterValues.Add(d.ToString());
+
+						if (i == 0)
+						{
+							switch (rawOperator)
+							{
+								case "lt": result.Append("<"); break;
+								case "lte": result.Append("<="); break;
+								case "gt": result.Append(">"); break;
+								case "gte": result.Append(">="); break;
+								case "not": result.Append("<>"); break;
+								default: result.Append("="); break;
+							}
+						}
+					}
+					else if (filterFieldDataType == typeof(System.Int32))
+					{
+						int j = int.Parse(rawValues[i]);
+						filterValues.Add(j.ToString());
+
+						if (i == 0)
+						{
+							switch (rawOperator)
+							{
+								case "lt": result.Append("<"); break;
+								case "lte": result.Append("<="); break;
+								case "gt": result.Append(">"); break;
+								case "gte": result.Append(">="); break;
+								case "not": result.Append("<>"); break;
+								default: result.Append("="); break;
+							}
+						}
+					}
+					else
+					{
+						switch (rawOperator)
+						{
+							case "contains":
+								if (i == 0) result.Append("LIKE");
+								filterValues.Add("%" + rawValues[i] + "%");
+								break;
+							case "not":
+								if (i == 0) result.Append("<>");
+								filterValues.Add(rawValues[i]);
+								break;
+							case "doesnotcontain":
+								if (i == 0) result.Append("NOT LIKE");
+								filterValues.Add("%" + rawValues[i] + "%");
+								break;
+							default:
+								if (i == 0) result.Append("=");
+								filterValues.Add(rawValues[i]);
+								break;
+						}
+					}
+				}
+			}
+
+			return result.ToString();
+		}
+
+		#endregion
 	}
 }

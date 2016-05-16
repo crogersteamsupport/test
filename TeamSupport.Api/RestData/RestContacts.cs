@@ -25,24 +25,27 @@ namespace TeamSupport.Api
 		public static string GetItems(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null, bool isCustomer = false)
 		{
 			ContactsView items = new ContactsView(command.LoginUser);
+			string xmlString = string.Empty;
 
 			try
 			{
 				if (orderByDateCreated)
 				{
-					items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, "DateCreated DESC", limitNumber, isCustomer);
+					//This seems to be Zapier only
+					items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, null, null, "DateCreated DESC", limitNumber, isCustomer);
 				}
 				else
 				{
-					items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, isCustomer: isCustomer);
+					items.LoadByParentOrganizationID(command.Organization.OrganizationID, command.Filters, command.PageNumber, command.PageSize, isCustomer: isCustomer);
 				}
 
 				//SQL filtering was done already, there's no need for .NET filtering thus the empty collection for the last parameter
-				return items.GetXml("Contacts", "Contact", true, new System.Collections.Specialized.NameValueCollection());
+				xmlString = items.GetXml("Contacts", "Contact", true, new System.Collections.Specialized.NameValueCollection(), command.IsPaging);
 			}
 			catch (Exception ex)
 			{
-				//if something fails use the old method
+				//if something fails use the old method. This one does not have paging.
+				//Something went wrong with the sql filtering and an exception was thrown and caught, .NET filtering will need to be done
 				items = new ContactsView(command.LoginUser);
 
 				if (orderByDateCreated)
@@ -53,10 +56,11 @@ namespace TeamSupport.Api
 				{
 					items.LoadByParentOrganizationID(command.Organization.OrganizationID);
 				}
+
+				xmlString = items.GetXml("Contacts", "Contact", true, command.Filters);
 			}
 
-			//If we get to this point then something went wrong with the sql filtering and an exception was thrown and caught, .NET filtering will need to be done
-			return items.GetXml("Contacts", "Contact", true, command.Filters);
+			return xmlString;
 		}
 
     public static string GetItems(RestCommand command, int organizationID, bool orderByDateCreated = false)
