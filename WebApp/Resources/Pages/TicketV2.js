@@ -1644,7 +1644,8 @@ function LoadTicketControls() {
 
   if (top.Ts.System.Organization.UseForums == true) {
     if (top.Ts.System.User.CanChangeCommunityVisibility) {
-      var forumCategories = top.Ts.Cache.getForumCategories();
+    	var forumCategories = top.Ts.Cache.getForumCategories();
+    	AppendSelect('#ticket-Community', null, 'community', -1, 'Unassigned', false);
       for (var i = 0; i < forumCategories.length; i++) {
         var cat = forumCategories[i].Category;
         AppendSelect('#ticket-Community', cat, 'community', cat.CategoryID, cat.CategoryName, false);

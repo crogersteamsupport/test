@@ -1508,7 +1508,7 @@ namespace TSWebServices
             string description = "Changed community from '" + oldCommunityName + "' to '" + newCommunityName + "'.";
             ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketID, description);
 
-            if (categoryID == null)
+            if (categoryID == null || categoryID == -1)
             {
                 ticket.RemoveCommunityTicket();
             }
