@@ -84,13 +84,7 @@ namespace TeamSupport.Handlers
             //Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
             try
             {
-
-                switch (route)
-                {
-                    case "search/kb": ProcessKBSearch(context, parentID, userID); break;
-                    default:
-                        break;
-                }
+                ProcessRoute(context, route, parentID, userID);
 			}
 			catch (Exception ex)
 			{
@@ -100,10 +94,20 @@ namespace TeamSupport.Handlers
 			context.Response.End();
 		}
 
+        private void ProcessRoute(HttpContext context, string route, int parentID, int userID)
+        {
+            switch (route)
+            {
+                case "search/kb": SAMPLEProcessKBSearch(context, parentID, userID); break;
+                default:
+                    break;
+            }
+        }
+
 
         #endregion
 
-        private void ProcessKBSearch(HttpContext context, int parentID, int userID)
+        private void SAMPLEProcessKBSearch(HttpContext context, int parentID, int userID)
         {
             string term = context.Request.QueryString["q"];
 
