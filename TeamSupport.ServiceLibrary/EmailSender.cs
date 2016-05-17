@@ -56,13 +56,14 @@ namespace TeamSupport.ServiceLibrary
 
             //Set the SMTP server and secure port.
             int port = Settings.ReadInt("SMTP Port");
+            string account = Settings.ReadString("SMTP UserName");
             var smtpServer = new SMTPServer
             {
                 Name = Settings.ReadString("SMTP Host"),
                 Port = port, //465, //Secure port
-                Account = Settings.ReadString("SMTP UserName"),
+                Account = account,
                 Password = Settings.ReadString("SMTP Password"),
-                AuthMode = SMTPAuthMode.AuthLogin
+                AuthMode = string.IsNullOrWhiteSpace(account) ? SMTPAuthMode.None : SMTPAuthMode.AuthLogin
             };
 
 
