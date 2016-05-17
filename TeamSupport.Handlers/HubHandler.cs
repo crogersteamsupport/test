@@ -8,6 +8,9 @@ using System.Web.Security;
 using System.Dynamic;
 using TeamSupport.Data;
 using System.Data.SqlClient;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using System.Net;
 
 
 
@@ -29,7 +32,7 @@ namespace TeamSupport.Handlers
             //SAMPLE: http://localhost/hub/1078/search/kb?q=search%20term
             //SAMPLE: http://localhost/hub/[PARENTID]/search/kb?q=[SEARCH_STRING]
 
-            int userID = GetUserID(context);
+            int userID = -1;
             int parentID = -1;
 
 
@@ -51,6 +54,32 @@ namespace TeamSupport.Handlers
                 parentFlag = context.Request.Url.Segments[i].ToLower() == "hub/";
             }
             string route = routeBuilder.ToString().ToLower().TrimEnd('/');
+
+            dynamic data = JObject.Parse(ReadJsonData(context));
+            Organization org = Organizations.GetOrganization(LoginUser.Anonymous, parentID);
+
+            if (data["Token"].ToString() != org.WebServiceID)
+            {
+                context.Response.ContentType = "text/plain";
+                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                context.Response.ClearContent();
+                context.Response.End();
+                return;
+            }
+
+            if (data["UserID"] != null)
+            {
+                userID = (int)data["UserID"];
+                User user = Users.GetUser(LoginUser.Anonymous, userID);
+                if (user.OrganizationID != parentID)
+                {
+                    context.Response.ContentType = "text/plain";
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    context.Response.ClearContent();
+                    context.Response.End();
+                }
+            }
+
 
             //Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
             try
@@ -103,26 +132,6 @@ namespace TeamSupport.Handlers
 
         #region Utility Methods
 
-        private int GetUserID(HttpContext context)
-        {
-            // the name of this cookie Hub_Session is set up on the hub, in the web.config.  
-            // The same value of the machineKey in the web.config must be the same in the main app and the hub
-            HttpCookie cookie = context.Request.Cookies["Support_Hub_Teamsupport"];
-            if (cookie != null)
-            {
-                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
-                try
-                {
-                    if (!authTicket.Expired) return int.Parse(authTicket.UserData.Split('|')[0]);
-                }
-                catch (Exception)
-                {
-                    return -1;
-                }
-            }
-            return -1;
-        }
-
         private void WriteJson(HttpContext context, object payload)
         {
             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
@@ -130,6 +139,19 @@ namespace TeamSupport.Handlers
             context.Response.AddHeader("Pragma", "no-cache");
             context.Response.ContentType = "application/json; charset=utf-8";
             context.Response.Write(JsonConvert.SerializeObject(payload));
+        }
+
+        private static string ReadJsonData(HttpContext context)
+        {
+            string result = "";
+            using (Stream receiveStream = context.Request.InputStream)
+            {
+                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                {
+                    result = readStream.ReadToEnd();
+                }
+            }
+            return result;
         }
 
         #endregion
