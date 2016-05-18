@@ -118,7 +118,7 @@ ORDER BY r.cpu_time DESC;
     {
         //DBCC FREEPROCCACHE(0x060005000D25462980D64D4B3400000001000000000000000000000000000000000000000000000000000000)
 
-        if (TSAuthentication.OrganizationID != 1078) return "";
+        if (TSAuthentication.OrganizationID != 1078 || !TSAuthentication.IsSystemAdmin) return "";
         if (string.IsNullOrWhiteSpace(plan)) return "";
 
         try

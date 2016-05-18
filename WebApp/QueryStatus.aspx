@@ -19,9 +19,12 @@
                 e.stopPropagation();
                 e.preventDefault();
                 var plan = $(this).closest('tr').data('plan');
-                PageMethods.ClearCache(plan, function (result) {
-                    alert(result);
-                });
+                if (confirm('Are you sure you would like to clear the execution plan?'))
+                {
+                    PageMethods.ClearCache(plan, function (result) {
+                        alert(result);
+                    });
+                }
             });
 
             $('.refresh').click(function (e) {
