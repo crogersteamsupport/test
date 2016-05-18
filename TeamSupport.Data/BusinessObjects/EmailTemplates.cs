@@ -529,7 +529,7 @@ namespace TeamSupport.Data
             }
 
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 0, productFamilyID);
-            template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
+            template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
             template.ReplaceParameter("CreatorAddress", creatorAddress.ToString());
             template.ReplaceActions(ticket, true);
             template.ReplaceContacts(ticket);
@@ -546,7 +546,7 @@ namespace TeamSupport.Data
             }
 
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1, productFamilyID);
-            template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
+            template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
             template.ReplaceActions(ticket, true);
             if (creator != null) template.ReplaceFields("Creator", creator);
             template.ReplaceContacts(ticket);
@@ -643,7 +643,7 @@ namespace TeamSupport.Data
             }
 
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 6, productFamilyID);
-            template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
+            template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
 
             template.ReplaceParameter("ModifierName", modifierName);
             template.ReplaceActions(ticket, true);
@@ -661,7 +661,7 @@ namespace TeamSupport.Data
             }
 
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 7, productFamilyID);
-            template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
+            template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
 
             template.ReplaceParameter("ModifierName", modifierName);
             template.ReplaceActions(ticket, true);
