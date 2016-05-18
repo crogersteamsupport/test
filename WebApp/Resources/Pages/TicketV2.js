@@ -517,7 +517,9 @@ function CreateNewActionLI() {
   $('#action-add-private').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    $(this).attr('disabled', true);
+    if ($(this).attr('disabled'))
+    	return false;
+    $('#action-add-private').attr('disabled', true);
     var editor = $('#action-new-editor');
     SetupActionEditor(editor);
     SetupActionTypeSelect();
