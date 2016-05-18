@@ -11,8 +11,7 @@ using System.Data.SqlClient;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Net;
-
-
+using dtSearch.Engine;
 
 namespace TeamSupport.Handlers
 {
@@ -58,7 +57,7 @@ namespace TeamSupport.Handlers
             dynamic data = JObject.Parse(ReadJsonData(context));
             Organization org = Organizations.GetOrganization(LoginUser.Anonymous, parentID);
 
-            if (data["Token"].ToString() != org.WebServiceID)
+            if (data["Token"].ToString() != org.WebServiceID.ToString())
             {
                 context.Response.ContentType = "text/plain";
                 context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
@@ -71,7 +70,8 @@ namespace TeamSupport.Handlers
             {
                 userID = (int)data["UserID"];
                 User user = Users.GetUser(LoginUser.Anonymous, userID);
-                if (user.OrganizationID != parentID)
+								Organization customer = Organizations.GetOrganization(LoginUser.Anonymous, user.OrganizationID);
+                if (customer.ParentID != parentID)
                 {
                     context.Response.ContentType = "text/plain";
                     context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
@@ -80,11 +80,12 @@ namespace TeamSupport.Handlers
                 }
             }
 
+			string searchTerm = data["q"];
 
-            //Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
-            try
+						//Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
+			try
             {
-                ProcessRoute(context, route, parentID, userID);
+                ProcessRoute(context, route, parentID, userID, searchTerm);
 			}
 			catch (Exception ex)
 			{
@@ -94,12 +95,13 @@ namespace TeamSupport.Handlers
 			context.Response.End();
 		}
 
-        private void ProcessRoute(HttpContext context, string route, int parentID, int userID)
+        private void ProcessRoute(HttpContext context, string route, int parentID, int userID, string searchTerm)
         {
             switch (route)
             {
-                case "search/kb": SAMPLEProcessKBSearch(context, parentID, userID); break;
-                default:
+                case "search/kb": ProcessKBSearch(context, parentID, userID, searchTerm); break;
+								case "search/wiki": ProcessWikiSearch(context, parentID, userID, searchTerm); break;
+								default:
                     break;
             }
         }
@@ -133,10 +135,99 @@ namespace TeamSupport.Handlers
             WriteJson(context, result);
         }
 
+		private void ProcessKBSearch(HttpContext context, int parentID, int userID, string searchTerm)
+		{ 
+			SearchResults kbResults = TicketsView.GetHubSearchKBResults(searchTerm, LoginUser.Anonymous, parentID);
+			List<KBSearchItem> result = GetKBResults(kbResults, LoginUser.Anonymous, userID, parentID);//.OrderByDescending(t => t.HitRating);
+			WriteJson(context, result);
+		}
 
-        #region Utility Methods
+		private List<KBSearchItem> GetKBResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
+		{
+			List<KBSearchItem> items = new List<KBSearchItem>();
+			User user = Users.GetUser(loginUser, userID);
 
-        private void WriteJson(HttpContext context, object payload)
+			for (int i = 0; i < results.Count; i++)
+			{
+				results.GetNthDoc(i);
+				int ticketID = int.Parse(results.CurrentItem.Filename);
+				if (ticketID > 0)
+				{
+					TicketsView ticketsViewHelper = new TicketsView(loginUser);
+					ticketsViewHelper.LoadHubKBByID(ticketID, parentID, user.OrganizationID);
+
+					if (ticketsViewHelper.Any())
+					{
+						KBSearchItem item = new KBSearchItem();
+						item.HitRating = results.CurrentItem.ScorePercent;
+						item.Article = ticketsViewHelper[0].GetProxy();
+
+						TicketRatings ratings = new TicketRatings(loginUser);
+						ratings.LoadByTicketID(ticketID);
+
+						if (ratings.Any())
+						{
+							TicketRating rating = ratings[0];
+							item.VoteRating = rating.ThumbsUp;
+						}
+
+						items.Add(item);
+					}
+				}
+			}
+			return items;
+		}
+
+		private void ProcessWikiSearch(HttpContext context, int parentID, int userID, string searchTerm)
+		{
+			SearchResults wikiResults = WikiArticlesView.GetPortalSearchWikiResults(searchTerm, LoginUser.Anonymous, parentID);
+			List<WikiSearchItem> result = GetWikiResults(wikiResults, LoginUser.Anonymous, userID, parentID);//.OrderByDescending(t => t.HitRating));
+			WriteJson(context, result);
+		}
+
+		private List<WikiSearchItem> GetWikiResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
+		{
+			List<WikiSearchItem> items = new List<WikiSearchItem>();
+			WikiArticlesView articles = new WikiArticlesView(loginUser);
+			articles.LoadByOrganizationID(parentID);
+
+			for (int i = 0; i < results.Count; i++)
+			{
+				results.GetNthDoc(i);
+				int articleID = int.Parse(results.CurrentItem.Filename);
+				if (articleID > 0)
+				{
+					WikiSearchItem item = new WikiSearchItem();
+					item.HitRating = results.CurrentItem.ScorePercent;
+					item.Article = articles.FindByArticleID(articleID).GetProxy();
+					items.Add(item);
+				}
+			}
+			return items;
+		}
+
+		#region classes
+
+		public class KBSearchItem
+		{
+			public int HitRating { get; set; }
+			public int? VoteRating { get; set; }
+			public int Views { get; set; }
+			public TicketsViewItemProxy Article { get; set; }
+		}
+
+		public class WikiSearchItem
+		{
+			public int HitRating { get; set; }
+			public WikiArticlesViewItemProxy Article { get; set; }
+		}
+
+		#endregion
+
+
+		#region Utility Methods
+
+		private void WriteJson(HttpContext context, object payload)
         {
             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             context.Response.AddHeader("Expires", "-1");
