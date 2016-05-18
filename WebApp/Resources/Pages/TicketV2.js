@@ -502,6 +502,9 @@ function CreateNewActionLI() {
   $('#action-add-public').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
+    if ($(this).attr('disabled'))
+    	return false;
+    $('#action-add-public').attr('disabled', true);
     var editor = $('#action-new-editor');
     SetupActionEditor(editor);
     SetupActionTypeSelect();
@@ -514,6 +517,7 @@ function CreateNewActionLI() {
   $('#action-add-private').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
+    $(this).attr('disabled', true);
     var editor = $('#action-new-editor');
     SetupActionEditor(editor);
     SetupActionTypeSelect();
@@ -546,6 +550,11 @@ function CreateNewActionLI() {
     	}
     });
     top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+    $('#action-add-public').attr('disabled', false);
+    $('#action-add-private').attr('disabled', false);
+    $("a.action-option-edit").each(function () {
+    	$(this).attr('disabled', false);
+    });
     $('#recorder').remove();
   });
 
@@ -558,6 +567,11 @@ function CreateNewActionLI() {
   		e.preventDefault();
   		e.stopPropagation();
   		DisableCreateBtns();
+  		$('#action-add-public').attr('disabled', false);
+  		$('#action-add-private').attr('disabled', false);
+  		$("a.action-option-edit").each(function () {
+  			$(this).attr('disabled', false);
+  		});
   		var self = $(this);
   		_oldActionID = self.data('actionid');
   		isFormValid(function (isValid) {
@@ -4222,6 +4236,10 @@ function CreateTimeLineDelegates() {
   $('#action-timeline').on('click', 'a.action-option-edit', function (e) {
     e.preventDefault();
     e.stopPropagation();
+
+    if ($(this).attr('disabled'))
+    	return false;
+    $(this).attr('disabled', true);
 
     var self = $(this);
     var action = self.closest('li').data().action;
