@@ -43,7 +43,7 @@ namespace TeamSupport.ServiceLibrary
         public override void Run()
         {
             Logs.WriteHeader("Starting Run");
-
+            Emails.UnlockThread(LoginUser, (int)_threadPosition);
             _isDebug = Settings.ReadBool("Debug", false);
 
             Logs.WriteHeader("Debug: " + _isDebug.ToString());
@@ -90,7 +90,10 @@ namespace TeamSupport.ServiceLibrary
 
 
                         Email email = GetNextEmail(LoginUser.ConnectionString, (int)_threadPosition);
-                        if (email == null) continue;
+                        if (email == null) {
+                            Thread.Sleep(10000);
+                            continue;
+                        }
                         SendEmail(email, smtp);
                         count++;
                         Logs.WriteEvent("Processing: #" + count.ToString());

@@ -67,10 +67,15 @@ namespace TeamSupport.ServiceLibrary
 
         public override void Run()
         {
+            EmailPosts.UnlockThread(LoginUser, (int)_threadPosition);
             while (!IsStopped)
             {
                 EmailPost emailPost = GetNextEmailPost(LoginUser.ConnectionString, (int)_threadPosition, _isDebug);
-                if (emailPost == null) continue;
+                if (emailPost == null)
+                {
+                    System.Threading.Thread.Sleep(10000);
+                    continue;
+                }
 
                 try
                 {

@@ -168,7 +168,20 @@ WHERE EmailID IN (
       }
     }
 
-    public static string EmailAddressToString(MailAddressCollection addresses)
+        public static void UnlockThread(LoginUser loginUser, int threadNumber)
+        {
+            Emails emails = new Emails(loginUser);
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE Emails SET LockProcessID = NULL WHERE IsWaiting=1 AND LockProcessID = @id";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("id", threadNumber);
+                emails.ExecuteNonQuery(command);
+            }
+        }
+
+        public static string EmailAddressToString(MailAddressCollection addresses)
     {
       StringBuilder builder = new StringBuilder();
 

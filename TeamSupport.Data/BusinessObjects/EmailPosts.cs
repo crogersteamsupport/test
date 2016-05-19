@@ -155,8 +155,20 @@ WHERE EmailPostID IN (
 			}
 		}
 
+        public static void UnlockThread(LoginUser loginUser, int thread)
+        {
+            EmailPosts emailPosts = new EmailPosts(loginUser);
 
-		private static void PostEmail(LoginUser loginUser, EmailPostType emailPostType, int holdTime, string param1, string param2, string param3, string param4, string param5, string text1, string text2, string text3)
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE EmailPosts SET LockProcessID = NULL WHERE LockProcessID = @id";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("id", thread);
+                emailPosts.ExecuteNonQuery(command);
+            }
+        }
+
+        private static void PostEmail(LoginUser loginUser, EmailPostType emailPostType, int holdTime, string param1, string param2, string param3, string param4, string param5, string text1, string text2, string text3)
 		{
 			EmailPosts emailPosts = new EmailPosts(loginUser);
 			EmailPost emailPost = emailPosts.AddNewEmailPost();
