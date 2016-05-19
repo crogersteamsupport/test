@@ -70,7 +70,7 @@ namespace TeamSupport.ServiceLibrary
             while (!IsStopped)
             {
                 EmailPost emailPost = GetNextEmailPost(LoginUser.ConnectionString, (int)_threadPosition, _isDebug);
-                if (emailPost == null) return;
+                if (emailPost == null) continue;
 
                 try
                 {
