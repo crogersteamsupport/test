@@ -90,31 +90,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                WHERE (al.RefType = 6) AND (al.RefID = @GroupID)
-                                
-                                UNION 
-                                
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                LEFT JOIN Tickets t ON t.TicketID = al.RefID
-                                WHERE (al.RefType = 17) AND (t.GroupID = @GroupID)
-                                
-                                UNION 
-                                
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                LEFT JOIN Actions a ON a.ActionID = al.RefID
-                                LEFT JOIN Tickets t ON t.TicketID = a.TicketID
-                                WHERE (al.RefType = 0) AND (t.GroupID = @GroupID)
-
-                                ORDER BY DateCreated DESC
-                                ";
-        command.CommandType = CommandType.Text;
+		command.CommandText = "ActionLogDetailsByGroupID";
+		command.CommandType = CommandType.StoredProcedure;
         command.Parameters.AddWithValue("@GroupID", groupID);
         Fill(command);
       }
@@ -243,41 +220,9 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                WHERE (al.RefType = 9) AND (al.RefID = @OrganizationID)
-                                
-                                UNION 
-                                
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                LEFT JOIN Tickets t ON t.TicketID = al.RefID
-                                LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID
-                                WHERE (al.RefType = 17) AND (ot.OrganizationID = @OrganizationID)
-                                
-                                UNION 
-                                
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                LEFT JOIN Actions a ON a.ActionID = al.RefID
-                                LEFT JOIN Tickets t ON t.TicketID = a.TicketID
-                                LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID
-                                WHERE (al.RefType = 0) AND (ot.OrganizationID = @OrganizationID)
-                                
-                                UNION 
-
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                WHERE (al.OrganizationID = @OrganizationID)
-
-                                ORDER BY DateCreated DESC
-                                ";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+		command.CommandText = "ActionLogDetailsByOrganizationId";
+		command.CommandType = CommandType.StoredProcedure;
+		command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
       }
     }
@@ -597,38 +542,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                WHERE (al.RefType = 22) AND (al.RefID = @UserID)
-                                
-                                UNION 
-                                
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                WHERE (al.CreatorID = @UserID)
-                                
-                                UNION 
-                                
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                LEFT JOIN Tickets t ON t.TicketID = al.RefID
-                                WHERE (al.RefType = 17) AND (t.UserID = @UserID)
-                                
-                                UNION 
-                                
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
-                                FROM ActionLogs al
-                                LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                LEFT JOIN Actions a ON a.ActionID = al.RefID
-                                LEFT JOIN Tickets t ON t.TicketID = a.TicketID
-                                WHERE (al.RefType = 0) AND (t.UserID = @UserID)
-                                
-                                ORDER BY DateCreated DESC
-                                ";
-        command.CommandType = CommandType.Text;
+		command.CommandText = "ActionLogDetailsByUserId";
+		command.CommandType = CommandType.StoredProcedure;
         command.Parameters.AddWithValue("@UserID", userID);
         Fill(command);
       }
