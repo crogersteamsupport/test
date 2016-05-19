@@ -115,7 +115,12 @@ namespace TeamSupport.ServiceLibrary
                 {
                     UpdateHealth();
                     Organization organization = GetNextOrganization(LoginUser.ConnectionString, (int)_threadPosition, isRebuilder, daysSinceLastRebuild, minutesSinceLastActive);
-                    if (organization == null) return;
+                    if (organization == null)
+                    {
+                        System.Threading.Thread.Sleep(10000);
+                        continue;
+                    }
+
                     try
                     {
                         ProcessOrganization(organization, isRebuilder);
