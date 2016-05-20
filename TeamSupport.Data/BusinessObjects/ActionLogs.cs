@@ -636,5 +636,17 @@ namespace TeamSupport.Data
       }
     }
 
-  }
+		public void UpdateCreatorID(int actionLogID, int creatorID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "UPDATE ActionLogs SET CreatorID = @CreatorID WHERE ActionLogID = @ActionLogID";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ActionLogID", actionLogID);
+				command.Parameters.AddWithValue("@CreatorID", creatorID);
+				Fill(command);
+			}
+		}
+
+	}
 }
