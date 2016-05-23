@@ -22,7 +22,7 @@ namespace TeamSupport.ServiceLibrary
     [Serializable]
     public class EmailSender : ServiceThreadPoolProcess
     {
-        private static int[] _nextAttempts = new int[] { 60, 36, 720, 1440 };
+        private static int[] _nextAttempts = new int[] { 1, 5, 10, 20, 40, 60, 120, 480, 1024, 2048 };
         private bool _isDebug = false;
         private static object _staticLock = new object();
 
