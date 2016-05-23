@@ -52,7 +52,7 @@ namespace TeamSupport.ServiceLibrary
             Quiksoft.EasyMail.SSL.License.Key = "Muroc Systems, Inc. (Single Developer)/9984652F406991896501FC33B3#02AE4B";
 
             Quiksoft.EasyMail.SSL.SSL ssl = new Quiksoft.EasyMail.SSL.SSL();
-            ssl.SecureProtocol = Quiksoft.EasyMail.SSL.SecureProtocol.SSL3;
+            
             SMTP smtp = new Quiksoft.EasyMail.SMTP.SMTP();
 
             //Set the SMTP server and secure port.
