@@ -46,7 +46,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SupportHoursUsed", "SupportHoursUsed", false, false, false);
       _fieldMap.AddMap("SupportHoursRemaining", "SupportHoursRemaining", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, true);
-    }
+	  _fieldMap.AddMap("CustDisIndex", "CustDisIndex", false, false, true);
+	  _fieldMap.AddMap("CustDistIndexTrend", "CustDistIndexTrend", false, false, true);
+	}
   }
   
 }
