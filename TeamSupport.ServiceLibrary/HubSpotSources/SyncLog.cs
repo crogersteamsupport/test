@@ -37,7 +37,7 @@ namespace TeamSupport.ServiceLibrary
         }
       }
 
-      File.AppendAllText(string.Format("{0}\\{1}", _logPath, _fileName), string.Format("{0}: {1}{2}", DateTime.UtcNow.ToLongTimeString(), Text, Environment.NewLine));
+      File.AppendAllText(string.Format("{0}\\{1}", _logPath, _fileName), string.Format("{0}: {1}{2}", DateTime.Now.ToLongTimeString(), Text, Environment.NewLine));
     }
   }
 }

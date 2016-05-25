@@ -12,14 +12,12 @@ namespace TeamSupport.Api
   {
 
 	public static string GetOrganization(RestCommand command, int organizationID)
-	{
-		OrganizationsView organizationView = new OrganizationsView(command.LoginUser);
-		OrganizationsViewItem organization = organizationView.LoadByOrganizationIDBySproc(organizationID);
+    {
+      OrganizationsViewItem organization = OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organizationID);
+      if (organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
-		if (organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
-
-		return organization.GetXml("Customer", true);
-	}
+      return organization.GetXml("Customer", true);
+    }
 
     public static string GetOrganizations(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null)
     {
