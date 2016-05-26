@@ -136,6 +136,7 @@ namespace TeamSupport.ServiceLibrary
                     string debugWhiteList = Settings.ReadString("Debug Email White List", "");
                     string debugDomains = Settings.ReadString("Debug Email Domains", "");
                     string debugAddresses = Settings.ReadString("Debug Email Address", "");
+                    
 
                     if (!string.IsNullOrWhiteSpace(debugWhiteList))
                     {
@@ -206,7 +207,7 @@ namespace TeamSupport.ServiceLibrary
                         email.Collection.Save();
                         return;
                     }
-                    message.Subject = "[TEST MODE] " + message.Subject;
+                    message.Subject = string.Format("[{0}] {1}", Settings.ReadString("Debug Email Subject", "TEST MODE"), message.Subject);
                 }
                 Logs.WriteEvent("Sending email");
 
