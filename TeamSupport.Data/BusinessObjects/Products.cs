@@ -321,6 +321,12 @@ namespace TeamSupport.Data
       Products products = new Products(loginUser);
       using (SqlCommand command = new SqlCommand())
       {
+			command.CommandText = "UPDATE CustomFields SET ParentProductID  = null WHERE (ParentProductID  = @ProductID)";
+			command.CommandType = CommandType.Text;
+			command.Parameters.Clear();
+			command.Parameters.AddWithValue("@ProductID", productID);
+			products.ExecuteNonQuery(command, "CustomFields");
+
         command.CommandText = "DELETE FROM OrganizationProducts WHERE (ProductID = @ProductID)";
         command.CommandType = CommandType.Text;
         command.Parameters.Clear();
