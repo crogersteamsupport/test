@@ -195,6 +195,18 @@ namespace TeamSupport.ServiceLibrary
                         Logs.WriteEvent("NO DEBUG FILTERS SET");
                         return;
                     }
+
+                    if (message.To.Count < 1)
+                    {
+                        Logs.WriteEvent("Email sent");
+                        email.IsSuccess = true;
+                        email.IsWaiting = false;
+                        email.Body = "";
+                        email.DateSent = DateTime.UtcNow;
+                        email.LastFailedReason = "No Debug Address specified.";
+                        email.Collection.Save();
+                        return;
+                    }
                     message.Subject = "[TEST MODE] " + message.Subject;
                 }
                 Logs.WriteEvent("Sending email");
