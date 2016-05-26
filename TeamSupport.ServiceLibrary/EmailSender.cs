@@ -131,20 +131,71 @@ namespace TeamSupport.ServiceLibrary
                 Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
                 Logs.WriteEventFormat("Size: {0}, Attachments: {1}", email.Size.ToString(), email.Attachments);
                 MailMessage message = email.GetMailMessage();
+                message.To.Clear();
                 if (_isDebug == true)
                 {
-                    string debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
-                    Logs.WriteEvent("DEBUG Addresses: " + debugAddresses);
-                    StringBuilder builder = new StringBuilder("<div><strong>Orginal To List:</strong></div>");
-                    foreach (MailAddress address in message.To)
-                    {
-                        builder.AppendLine(string.Format("<div>{0}</div>", WebUtility.HtmlEncode(address.ToString())));
-                    }
-                    builder.AppendLine("<br /><br /><br />");
+                    string debugWhiteList = Settings.ReadString("Debug Email White List", "");
+                    string debugDomains = Settings.ReadString("Debug Email Domains", "");
+                    string debugAddresses = Settings.ReadString("Debug Email Address", "");
 
-                    message.To.Clear();
-                    message.To.Add(debugAddresses);
-                    message.Subject = "[DEBUG] " + message.Subject;
+                    if (!string.IsNullOrWhiteSpace(debugWhiteList))
+                    {
+                        Logs.WriteEvent("DEBUG Whitelist: " + debugWhiteList);
+                        string[] addresses = debugWhiteList.Replace(';', ',').Split(',');
+                        List<MailAddress> mailAddresses = new List<MailAddress>();
+                        foreach (MailAddress mailAddress in message.To)
+                        {
+                            foreach (string address in addresses)
+                            {
+                                if (mailAddress.Address.ToLower().IndexOf(address.ToLower()) > -1)
+                                {
+                                    mailAddresses.Add(mailAddress);
+                                }
+                            }
+                        }
+
+                        message.To.Clear();
+
+                        foreach (MailAddress mailAddress in mailAddresses)
+                        {
+                            message.To.Add(mailAddress);
+                        }
+                    }
+                    else if (!string.IsNullOrWhiteSpace(debugDomains))
+                    {
+                        Logs.WriteEvent("DEBUG Domains: " + debugDomains);
+                        string[] domains = debugDomains.Replace(';', ',').Split(',');
+                        List<MailAddress> mailAddresses = new List<MailAddress>();
+                        foreach (MailAddress mailAddress in message.To)
+                        {
+                            foreach (string domain in domains)
+                            {
+                                if (mailAddress.Address.ToLower().IndexOf(domain.ToLower()) > -1)
+                                {
+                                    mailAddresses.Add(mailAddress);
+                                }
+                            }
+                        }
+
+                        message.To.Clear();
+
+                        foreach (MailAddress mailAddress in mailAddresses)
+                        {
+                            message.To.Add(mailAddress);
+                        }
+                    }
+                    else if (!string.IsNullOrWhiteSpace(debugAddresses))
+                    {
+                        Logs.WriteEvent("DEBUG Addresses: " + debugAddresses);
+                        message.To.Clear();
+                        message.To.Add(debugAddresses.Replace(';', ','));
+                    }
+                    else
+                    {
+                        Logs.WriteEvent("NO DEBUG FILTERS SET");
+                        return;
+                    }
+                    message.Subject = "[TEST MODE] " + message.Subject;
                 }
                 Logs.WriteEvent("Sending email");
 
