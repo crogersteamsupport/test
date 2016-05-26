@@ -131,7 +131,6 @@ namespace TeamSupport.ServiceLibrary
                 Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
                 Logs.WriteEventFormat("Size: {0}, Attachments: {1}", email.Size.ToString(), email.Attachments);
                 MailMessage message = email.GetMailMessage();
-                message.To.Clear();
                 if (_isDebug == true)
                 {
                     string debugWhiteList = Settings.ReadString("Debug Email White List", "");
@@ -198,7 +197,7 @@ namespace TeamSupport.ServiceLibrary
 
                     if (message.To.Count < 1)
                     {
-                        Logs.WriteEvent("Email sent");
+                        Logs.WriteEvent("No Debug Address specified.");
                         email.IsSuccess = true;
                         email.IsWaiting = false;
                         email.Body = "";
