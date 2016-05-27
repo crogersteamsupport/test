@@ -21,6 +21,7 @@ namespace TeamSupport.Data
         {
             Tags = new int[0];
             SearchText = "";
+            SearchText2 = "";
             SortColumn = "TicketNumber";
             SortAsc = false;
             MatchAllTerms = true;
@@ -67,6 +68,8 @@ namespace TeamSupport.Data
         public DateTime? DateModifiedEnd { get; set; }
         [DataMember]
         public string SearchText { get; set; }
+        [DataMember]
+        public string SearchText2 { get; set; }
         [DataMember]
         public int[] Tags { get; set; }
         [DataMember]
@@ -1308,6 +1311,20 @@ ORDER BY TicketNumber DESC";
             if (!String.IsNullOrEmpty(filter.SearchText.Trim()))
             {
                 int[] list = GetTicketIDs(filter.SearchText, loginUser);
+                if (list.Length > 0)
+                {
+                    string ids = string.Join(",", Array.ConvertAll<int, string>(list, Convert.ToString));
+                    builder.Append(string.Format(" AND (tv.TicketID IN ({0})) ", ids));
+                }
+                else
+                {
+                    builder.Append(" AND (tv.TicketID IN (-1)) ");
+                }
+            }
+
+            if (!String.IsNullOrEmpty(filter.SearchText2.Trim()))
+            {
+                int[] list = GetTicketIDs(filter.SearchText2, loginUser, filter);
                 if (list.Length > 0)
                 {
                     string ids = string.Join(",", Array.ConvertAll<int, string>(list, Convert.ToString));

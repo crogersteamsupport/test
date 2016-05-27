@@ -157,32 +157,59 @@
 		var ui = $.summernote.ui;
 		var button = ui.button({
 			contents: '<i class="fa fa-book"/>',
-			tooltip: 'Insert Knowledgebase',
+			tooltip: 'Insert Suggested Solution',
 			click: function () {
-				filter = new top.TeamSupport.Data.TicketLoadFilter();
-				filter.IsKnowledgeBase = true;
-				top.Ts.MainPage.selectTicket(filter, function (ticketID) {
-					top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
-						if (result === null) {
-							alert('There was an error inserting your knowledgebase ticket.');
-							return;
-						}
-						var ticket = result[0];
-						var actions = result[1];
+				suggestedSolutions(element.SuggestedSolutionDefaultInput, function (ticketIDs) {
+				    for (var j = 0; j < ticketIDs.length; j++) {
+				        top.Ts.Services.Tickets.GetKBTicketAndActions(ticketIDs[j], function (result) {
+				            if (result === null) {
+				                alert('There was an error inserting your suggested solution ticket.');
+				                return;
+				            }
+				            var ticket = result[0];
+				            var actions = result[1];
 
-						var html = '<div>';
+				            var html = '<div>';
 
-						for (var i = 0; i < actions.length; i++) {
-							html = html + '<div>' + actions[i].Description + '</div></br>';
-						}
-						html = html + '</div>';
+				            if (actions.length == 0) {
+				                alert('The selected ticket has no knowledgebase actions.');
+				            }
 
-						context.invoke('insertNode', $(html)[0])
-						top.Ts.System.logAction('Ticket - KB Inserted');
-					}, function () {
-						alert('There was an error inserting your knowledgebase ticket.');
-					});
+				            for (var i = 0; i < actions.length; i++) {
+				                html = html + '<div>' + actions[i].Description + '</div></br>';
+				            }
+				            html = html + '</div>';
+
+				            context.invoke('insertNode', $(html)[0])
+				            top.Ts.System.logAction('Ticket - Suggested Solution Inserted');
+				        }, function () {
+				            alert('There was an error inserting your suggested solution ticket.');
+				        });
+				    }
 				});
+
+				//top.Ts.MainPage.selectTicket(filter, function (ticketID) {
+				//	top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+				//		if (result === null) {
+				//			alert('There was an error inserting your knowledgebase ticket.');
+				//			return;
+				//		}
+				//		var ticket = result[0];
+				//		var actions = result[1];
+
+				//		var html = '<div>';
+
+				//		for (var i = 0; i < actions.length; i++) {
+				//			html = html + '<div>' + actions[i].Description + '</div></br>';
+				//		}
+				//		html = html + '</div>';
+
+				//		context.invoke('insertNode', $(html)[0])
+				//		top.Ts.System.logAction('Ticket - KB Inserted');
+				//	}, function () {
+				//		alert('There was an error inserting your knowledgebase ticket.');
+				//	});
+				//});
 			}
 		});
 		return button.render();
@@ -433,4 +460,30 @@ function GetTinyMCEFontName(fontFamily) {
             break;
     }
     return result;
+}
+
+function suggestedSolutions(defaultInput, callback) {
+    //$('#SuggestedSolutionsGrid').attr('src', '/vcr/1_9_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_GroupID=4318');
+    $('#SuggestedSolutionsInput').val(defaultInput);
+    $('#SearchSuggestedSolutions').click(function () {
+        $('.afterSearch').show();
+        $('#SuggestedSolutionsGrid').attr('src', '/vcr/1_9_0/Pages/TicketGrid.html?tf_IsKnowledgeBase=true&tf_SearchText2=' + encodeURIComponent($('#SuggestedSolutionsInput').val()));
+    });
+
+
+    $('#InsertSuggestedSolutions').click(function (e) {
+        e.preventDefault();
+
+        //var ids = $('#SuggestedSolutionsGrid')[0].contentWindow.
+        var ids = document.getElementById("SuggestedSolutionsGrid").contentWindow.GetGridSelectedIDs();
+        if (ids.length > 0) {
+            callback(ids);
+            $('#SuggestedSolutionsModal').modal('hide');
+            top.Ts.System.logAction('Inserted suggested solution');
+        }
+        else {
+            alert('Select a suggested solution.');
+        }
+    });
+    $('#SuggestedSolutionsModal').modal('show');
 }

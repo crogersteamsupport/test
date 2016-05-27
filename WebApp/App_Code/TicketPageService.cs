@@ -692,8 +692,38 @@ namespace TSWebServices
 			return ticket.GetProxy();
 		}
 
+        [WebMethod]
+        public string GetSuggestedSolutionDefaultInput(int ticketid)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SqlCommand command = new SqlCommand();
+            command.CommandText = @"
+            SELECT
+                dbo.stripHTML(Description)
+            FROM
+                Actions 
+            WHERE
+                TicketID = @TicketID 
+                and SystemActionTypeID IN (1,3,5)";
+            command.Parameters.AddWithValue("@TicketID", ticketid.ToString());
 
-				[DataContract]
+            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+            if (table.Rows.Count > 0)
+            {
+                StringBuilder result = new StringBuilder();
+                for(int i = 0; i < table.Rows.Count; i++)
+                {
+                    result.AppendLine(table.Rows[i][0].ToString());
+                }
+                return result.ToString();
+            }
+            else
+                return string.Empty;
+
+        }
+
+
+        [DataContract]
         public class TicketPageInfo
         {
             [DataMember]

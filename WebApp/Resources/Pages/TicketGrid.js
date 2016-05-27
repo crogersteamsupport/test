@@ -1,4 +1,13 @@
-﻿
+﻿function GetGridSelectedIDs() {
+    var selectedIDs = [];
+    var rows = ticketGrid._grid.getSelectedRows();
+    for (var i = 0, l = rows.length; i < l; i++) {
+        var ticket = ticketGrid._loader.data[rows[i]];
+        if (ticket) selectedIDs.push(ticket.TicketID);
+    }
+    return selectedIDs;
+}
+
 
 var ticketGrid = null;
 $(document).ready(function () {
@@ -30,7 +39,7 @@ function onShow() {
 
 
 TicketGrid = function (options) {
-	var ticketLoadFilter = top.Ts.Utils.queryToTicketFilter(window);
+    var ticketLoadFilter = top.Ts.Utils.queryToTicketFilter(window);
 	var self = this;
 	var grid = null;
 	var preview = $('iframe');

@@ -25,6 +25,7 @@ var _isLoading = false;
 var _isCreatingAction = false;
 var dateformat;
 var editorInit = false;
+var _suggestedSolutionDefaultInput = '';
 
 var _timerid;
 var _timerElapsed = 0;
@@ -506,12 +507,29 @@ function CreateNewActionLI() {
     	return false;
     $('#action-add-public').attr('disabled', true);
     var editor = $('#action-new-editor');
-    SetupActionEditor(editor);
-    SetupActionTypeSelect();
-    FlipNewActionBadge(false);
-    _isNewActionPrivate = false;
-    $('#action-new-KB').prop('checked', false);
-    $('#action-save-alert').text('').hide();
+    if (_suggestedSolutionDefaultInput == '') {
+        top.Ts.Services.TicketPage.GetSuggestedSolutionDefaultInput(_ticketID, function (result) {
+            _suggestedSolutionDefaultInput = result;
+            if (_suggestedSolutionDefaultInput != '') {
+                editor.SuggestedSolutionDefaultInput = _suggestedSolutionDefaultInput;
+            }
+            SetupActionEditor(editor);
+            SetupActionTypeSelect();
+            FlipNewActionBadge(false);
+            _isNewActionPrivate = false;
+            $('#action-new-KB').prop('checked', false);
+            $('#action-save-alert').text('').hide();
+        });
+    }
+    else {
+        editor.SuggestedSolutionDefaultInput = _suggestedSolutionDefaultInput;
+        SetupActionEditor(editor);
+        SetupActionTypeSelect();
+        FlipNewActionBadge(false);
+        _isNewActionPrivate = false;
+        $('#action-new-KB').prop('checked', false);
+        $('#action-save-alert').text('').hide();
+    }
   });
 
   $('#action-add-private').click(function (e) {
