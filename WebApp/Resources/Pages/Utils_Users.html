@@ -37,7 +37,7 @@
       function getOrganizations(query, process) {
         if (orgTypeAhead.ajax) { orgTypeAhead.ajax._executor.abort(); }
 
-        orgTypeAhead.ajax = top.Ts.Services.Organizations.AdminGetOrganizations(query, function (result) {
+        orgTypeAhead.ajax = parent.Ts.Services.Organizations.AdminGetOrganizations(query, function (result) {
           if (result == null) process(null);
           var orgs = [];
           $.each(result, function (i, org) {
@@ -63,7 +63,7 @@
       function getUsers(query, process) {
         if (userTypeAhead.ajax) { userTypeAhead.ajax._executor.abort(); }
 
-        userTypeAhead.ajax = top.Ts.Services.Users.AdminQueryUsers(orgTypeAhead.selectedID, query, function (result) {
+        userTypeAhead.ajax = parent.Ts.Services.Users.AdminQueryUsers(orgTypeAhead.selectedID, query, function (result) {
           if (result == null) process(null);
           var items = [];
           $.each(result, function (i, item) {
@@ -77,7 +77,7 @@
       $('.user-box').hide();
 
       function showUserInfo(userID) {
-        top.Ts.Services.Users.AdminGetUser(userID, function (user) {
+        parent.Ts.Services.Users.AdminGetUser(userID, function (user) {
           var el = $('.user-info').empty().data('o', user);
           if (user.EnforceSingleSession == false)
             $('.action-toggle-session').addClass('btn-warning').html('<i class="icon-shield"></i> Enforce Single Session');
@@ -101,7 +101,7 @@
       $('.action-toggle-session').click(function (e) {
         e.preventDefault();
         var user = $('.user-info').data('o');
-        top.Ts.Services.Users.SetSingleSessionEnforcement(userTypeAhead.selectedID, !user.EnforceSingleSession, function () {
+        parent.Ts.Services.Users.SetSingleSessionEnforcement(userTypeAhead.selectedID, !user.EnforceSingleSession, function () {
           showUserInfo(userTypeAhead.selectedID);
         });
 

@@ -5,7 +5,7 @@
 
 function LoadOrder() {
     //get ticket categories and append them to list
-    top.Ts.Services.TicketPage.GetTicketPageOrder('TicketFieldsOrder', function (items) {
+    parent.Ts.Services.TicketPage.GetTicketPageOrder('TicketFieldsOrder', function (items) {
       jQuery.each(items, function (i, val) {
         if (val.Disabled == "false") {
           CreateOrderElement('.admin-ticket-page-fields', 'admin-ticket-page-field', val);
@@ -16,7 +16,7 @@ function LoadOrder() {
       });
     });
 
-    top.Ts.Services.TicketPage.GetTicketPageOrder('NewTicketFieldsOrder', function (items) {
+    parent.Ts.Services.TicketPage.GetTicketPageOrder('NewTicketFieldsOrder', function (items) {
       jQuery.each(items, function (i, val) {
         if (val.Disabled == "false") {
           CreateOrderElement('.admin-newticket-page-fields', 'admin-newticket-page-field', val);
@@ -72,7 +72,7 @@ function CreateDOMEvents() {
 
 
 function SaveOrder(parent, classname, group) {
-  var items = new top.Array();
+  var items = new parent.Array();
 
   $(parent + ' > ' + classname).each(function (index) {
         var item = new Object();
@@ -88,7 +88,7 @@ function SaveOrder(parent, classname, group) {
       item.Disabled = "true";
       items.push(item);
     });
-    top.Ts.System.logAction('Admin Ticket Order - ' + group + ' Order Saved');
-    top.Ts.Services.TicketPage.SaveTicketPageOrder(group, JSON.stringify(items));
+    parent.Ts.System.logAction('Admin Ticket Order - ' + group + ' Order Saved');
+    parent.Ts.Services.TicketPage.SaveTicketPageOrder(group, JSON.stringify(items));
 
 };

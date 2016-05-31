@@ -44,7 +44,7 @@
   .on("click", ".UserAnchor", function (event) {
     var self = $(this);
     var userid = self.data('userid');
-    top.Ts.MainPage.openUser(userid);
+    parent.Ts.MainPage.openUser(userid);
   })
 
 	$("body").on("mouseenter", ".ProductAnchor", function (event) {
@@ -92,7 +92,7 @@
   .on("click", ".AssetAnchor", function (event) {
     var self = $(this);
     var assetid = self.data('assetid');
-    top.Ts.MainPage.openAsset(assetid);
+    parent.Ts.MainPage.openAsset(assetid);
   })
 
 	$("body").on("mouseenter", ".OrgAnchor", function (event) {
@@ -117,7 +117,7 @@
   .on("click", ".OrgAnchor", function (event) {
     var self = $(this);
     var orgid = self.data('orgid');
-    top.Ts.MainPage.openNewCustomer(orgid);
+    parent.Ts.MainPage.openNewCustomer(orgid);
   })
 
 	$("body").on("mouseenter", ".SLAAnchor", function (event) {
@@ -160,7 +160,7 @@
   .on("click", ".TicketAnchor", function (event) {
     var self = $(this);
     var ticketid = self.data('ticketid');
-    top.Ts.MainPage.openTicketByID(ticketid, true);
+    parent.Ts.MainPage.openTicketByID(ticketid, true);
   })
 
 $('body').on('click', function (e) {

@@ -19,8 +19,8 @@ function loadSignalR(url) {
     $.connection.hub.url = url;
     // Start the connection only if on main wc page
 
-    $.connection.hub.qs = "userID=" + top.Ts.System.User.UserID + "&organizationID=" + top.Ts.System.User.OrganizationID;
-    //$.connection.hub.qs = "organizationID=" + top.Ts.System.User.OrganizationID;
+    $.connection.hub.qs = "userID=" + parent.Ts.System.User.UserID + "&organizationID=" + parent.Ts.System.User.OrganizationID;
+    //$.connection.hub.qs = "organizationID=" + parent.Ts.System.User.OrganizationID;
 
     var tryingToReconnect = false;
 
@@ -175,15 +175,15 @@ function loadSignalR(url) {
             var mergeTickets = ticketNum.split(',');
             var losingTicket = mergeTickets[0];
             mergeticket = 1;
-            top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
+            parent.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
 
             if ($('.main-ticket-' + losingTicket).length > 0) {
                 if (!$('.main-ticket-' + losingTicket).is(":visible")) {
-                    top.Ts.MainPage.closeTicketTab(losingTicket);
-                    top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
+                    parent.Ts.MainPage.closeTicketTab(losingTicket);
+                    parent.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
                 }
                 else {
-                    top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType, "error");
+                    parent.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType, "error");
                 }
             }
 
@@ -193,15 +193,15 @@ function loadSignalR(url) {
 
         if ($('.main-ticket-' + ticketNum).length > 0) {
             if (!$('.main-ticket-' + ticketNum).is(":visible") && mergeticket != 1){
-                top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
+                parent.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
 
                 if (updateType.indexOf('delete') != -1) {
-                    top.Ts.MainPage.closeTicketTab(ticketNum);
+                    parent.Ts.MainPage.closeTicketTab(ticketNum);
                 }
             }
             else {
                 if (updateType.indexOf('delete') != -1) {
-                    top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType, "error");
+                    parent.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType, "error");
                 }
             }
             //$('.main-ticket-' + ticketNum).show();
@@ -221,7 +221,7 @@ function loadSignalR(url) {
 
         if ($('.main-ticket-' + ticketNum).length > 0) {
             if ($('.main-ticket-' + ticketNum).is(":visible")){
-                window.top.ticketSocket.server.ticketViewingAdd(ticketNum, top.Ts.System.User.UserID);
+                window.parent.ticketSocket.server.ticketViewingAdd(ticketNum, parent.Ts.System.User.UserID);
             }
         }
     };

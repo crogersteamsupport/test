@@ -11,10 +11,10 @@ $(document).ready(function () {
     var speed = 50, counter = 0, start;
   var _ticketID = null;
   var _doClose = false;
-  var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
+  var canEdit = parent.Ts.System.User.IsSystemAdmin || parent.Ts.System.User.ChangeKbVisibility;
   var alertMessage = null;
   var dateFormat;
-  top.Ts.System.logAction('New Ticket - Started');
+  parent.Ts.System.logAction('New Ticket - Started');
   var session;
   var token;
   var recordingID;
@@ -42,11 +42,11 @@ $(document).ready(function () {
     });
   }
 
-  if (top.Ts.System.Organization.SetNewActionsVisibleToCustomers == true) {
+  if (parent.Ts.System.Organization.SetNewActionsVisibleToCustomers == true) {
       $('.newticket-portal').prop('checked', true);
   }
 
-  var knowledgeBaseCategories = top.Ts.Cache.getKnowledgeBaseCategories();
+  var knowledgeBaseCategories = parent.Ts.Cache.getKnowledgeBaseCategories();
   var option = $('<option>').text('Unassigned').attr('value', -1).appendTo('.newticket-kbCategory').data('o', null).attr('selected', 'selected');
   for (var i = 0; i < knowledgeBaseCategories.length; i++) {
     var cat = knowledgeBaseCategories[i].Category;
@@ -59,7 +59,7 @@ $(document).ready(function () {
     }
   }
 
-  top.Ts.Services.Customers.GetDateFormat(true, function (format) {
+  parent.Ts.Services.Customers.GetDateFormat(true, function (format) {
       dateFormat = format.replace("yyyy", "yy");
       $('.ticket-action-form-dueDate').datetimepicker({ dateFormat: dateFormat });
   });
@@ -75,9 +75,9 @@ $(document).ready(function () {
 
   $('button').button();
 
-  if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
+  if (parent.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
 
-  if (!top.Ts.System.User.ChangeTicketVisibility)
+  if (!parent.Ts.System.User.ChangeTicketVisibility)
   {
       $('.community-block').hide();
   }
@@ -86,7 +86,7 @@ $(document).ready(function () {
   $('.ticket-action-form-hours').spinner({ min: 0 }).val(0);
   $('.ticket-action-form-minutes').spinner({ min: 0 }).val(0);
 
-  var types = top.Ts.Cache.getTicketTypes();
+  var types = parent.Ts.Cache.getTicketTypes();
   for (var i = 0; i < types.length; i++) {
     $('<option>').attr('value', types[i].TicketTypeID).text(types[i].Name).data('o', types[i]).appendTo('.newticket-type');
   }
@@ -132,15 +132,15 @@ $(document).ready(function () {
     Ts.ProductType.BugTracking= 3;
     */
 
-    if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express) {
+    if (parent.Ts.System.Organization.ProductType == parent.Ts.ProductType.Express) {
       $('.no-express').hide();
     }
 
-    if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.HelpDesk) {
+    if (parent.Ts.System.Organization.ProductType == parent.Ts.ProductType.HelpDesk) {
       $('.no-helpdesk').hide();
     }
 
-    if (top.Ts.System.Organization.UseForums != true) {
+    if (parent.Ts.System.Organization.UseForums != true) {
       $('.newticket-community').parent().hide();
     }
   }
@@ -157,20 +157,20 @@ $(document).ready(function () {
           if (field1.data('o').FieldType == field2.data('o').FieldType && field2.data('o').AuxID == ticketTypeID && field1.data('o').Name == field2.data('o').Name) {
 
             switch (field1.data('o').FieldType) {
-              case top.Ts.CustomFieldType.Text:
+              case parent.Ts.CustomFieldType.Text:
                 field2.find('input').val(field1.find('input').val());
                 break;
-              case top.Ts.CustomFieldType.Date:
-              case top.Ts.CustomFieldType.Time:
-              case top.Ts.CustomFieldType.DateTime:
+              case parent.Ts.CustomFieldType.Date:
+              case parent.Ts.CustomFieldType.Time:
+              case parent.Ts.CustomFieldType.DateTime:
                 field2.find('input').val(field1.find('input').val());
                 break;
-              case top.Ts.CustomFieldType.Boolean:
+              case parent.Ts.CustomFieldType.Boolean:
                 break;
-              case top.Ts.CustomFieldType.Number:
+              case parent.Ts.CustomFieldType.Number:
                 field2.find('input').val(field1.find('input').val());
                 break;
-              case top.Ts.CustomFieldType.PickList:
+              case parent.Ts.CustomFieldType.PickList:
                 field2.find('select').combobox('setValue', field1.find('select  option:selected').val());
                 break;
               default:
@@ -188,7 +188,7 @@ $(document).ready(function () {
 
   function setTicketTypeTemplateText() {
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
-    top.Ts.Services.Tickets.GetTicketTypeTemplateText(ticketTypeID, function (result) {
+    parent.Ts.Services.Tickets.GetTicketTypeTemplateText(ticketTypeID, function (result) {
       if (result != null && result != "" && result != "<br>") {
           var currenttext = $('.newticket-desc').html();
           tinyMCE.activeEditor.selection.setContent(currenttext + result);
@@ -202,7 +202,7 @@ $(document).ready(function () {
 
 
   function setTicketStatus() {
-    var statuses = top.Ts.Cache.getTicketStatuses();
+    var statuses = parent.Ts.Cache.getTicketStatuses();
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
     $('.newticket-status').empty();
     var flag = false;
@@ -218,20 +218,20 @@ $(document).ready(function () {
     }
   }
 
-  var severities = top.Ts.Cache.getTicketSeverities();
+  var severities = parent.Ts.Cache.getTicketSeverities();
   for (var i = 0; i < severities.length; i++) {
     $('<option>').attr('value', severities[i].TicketSeverityID).text(severities[i].Name).data('o', severities[i]).appendTo('.newticket-severity');
   }
   $('.newticket-severity').combobox();
 
-  var users = top.Ts.Cache.getUsers();
+  var users = parent.Ts.Cache.getUsers();
   for (var i = 0; i < users.length; i++) {
     var option = $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('.newticket-user');
   }
   addUnassignedComboItem($('.newticket-user').combobox());
-  $('.newticket-user').combobox('setValue', top.Ts.System.User.UserID);
+  $('.newticket-user').combobox('setValue', parent.Ts.System.User.UserID);
 
-  var groups = top.Ts.Cache.getGroups();
+  var groups = parent.Ts.Cache.getGroups();
   for (var i = 0; i < groups.length; i++) {
     $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('.newticket-group');
   }
@@ -249,12 +249,12 @@ $(document).ready(function () {
 
   addUnassignedComboItem($('.newticket-group').combobox({
     selected: function (e, ui) {
-      if (top.Ts.System.Organization.ShowGroupMembersFirstInTicketAssignmentList) {
+      if (parent.Ts.System.Organization.ShowGroupMembersFirstInTicketAssignmentList) {
         var userID = $('.newticket-user').val();
         $('.newticket-user').empty();
         var groupID = $('.newticket-group').val();
         if (groupID != -1) {
-          top.Ts.Services.Users.GetGroupUsers(groupID, function (ticketGroupUsers) {
+          parent.Ts.Services.Users.GetGroupUsers(groupID, function (ticketGroupUsers) {
             for (var i = 0; i < ticketGroupUsers.length; i++) {
               $('<option>').attr('value', ticketGroupUsers[i].UserID).text(ticketGroupUsers[i].Name).data('o', ticketGroupUsers[i]).appendTo('.newticket-user');
             }
@@ -278,7 +278,7 @@ $(document).ready(function () {
     }
   }));
 
-  var categories = top.Ts.Cache.getForumCategories();
+  var categories = parent.Ts.Cache.getForumCategories();
   var option = $('<option>').text('Unassigned').attr('value', -1).appendTo('.newticket-community').data('o', null).attr('selected', 'selected');
   for (var i = 0; i < categories.length; i++) {
     var cat = categories[i].Category;
@@ -293,7 +293,7 @@ $(document).ready(function () {
 
   function loadProducts(doAll) {
     if (doAll != undefined && doAll == true) {
-      var products = top.Ts.Cache.getProducts();
+      var products = parent.Ts.Cache.getProducts();
       $('.newticket-product option').remove();
       for (var i = 0; i < products.length; i++) {
         $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('.newticket-product');
@@ -301,7 +301,7 @@ $(document).ready(function () {
       $('<option>').attr('value', -1).text('Unassigned').data('o', null).prependTo('.newticket-product');
       return;
     }
-    top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
+    parent.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
       if (showOnlyCustomers == "True") {
 
         var organizationIDs = new Array();
@@ -315,13 +315,13 @@ $(document).ready(function () {
           loadProducts(true);
           return;
         }
-        top.Ts.Services.Tickets.GetCustomerProductIDs(top.JSON.stringify(organizationIDs), function (productIDs) {
+        parent.Ts.Services.Tickets.GetCustomerProductIDs(parent.JSON.stringify(organizationIDs), function (productIDs) {
 
           if (!productIDs || productIDs == null || productIDs.length < 1) {
             loadProducts(true);
           }
           else {
-            var products = top.Ts.Cache.getProducts();
+            var products = parent.Ts.Cache.getProducts();
             $('.newticket-product option').remove();
             for (var i = 0; i < products.length; i++) {
               for (var j = 0; j < productIDs.length; j++) {
@@ -347,25 +347,25 @@ $(document).ready(function () {
           var productID = -1;
           if ($('.newticket-product option:selected').data('o')) {
               productID = $('.newticket-product option:selected').data('o').ProductID;
-              top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
+              parent.Ts.Services.CustomFields.GetProductMatchingCustomFields(parent.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
                   var container = $('.custom-fields-container');
                   for (var i = 0; i < result.length; i++) {
                       if (!result[i].CustomFieldCategoryID) {
                           try {
                               switch (result[i].FieldType) {
-                                  case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container, null, 'productChild'); break;
-                                  case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container, null, 'productChild'); break;
-                                  case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container, null, 'productChild'); break;
-                                  case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container, null, 'productChild'); break;
-                                  case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container, null, 'productChild'); break;
-                                  case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container, null, 'productChild'); break;
-                                  case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container, null, 'productChild'); break;
+                                  case parent.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container, null, 'productChild'); break;
+                                  case parent.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container, null, 'productChild'); break;
+                                  case parent.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container, null, 'productChild'); break;
+                                  case parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container, null, 'productChild'); break;
+                                  case parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container, null, 'productChild'); break;
+                                  case parent.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container, null, 'productChild'); break;
+                                  case parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container, null, 'productChild'); break;
                                   default:
                               }
                           } catch (err) {
                               var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
                               for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                              top.Ts.Services.System.LogException(err.message, errorString);
+                              parent.Ts.Services.System.LogException(err.message, errorString);
                               $('.newticket-custom-field').remove();
                               return;
                           }
@@ -384,7 +384,7 @@ $(document).ready(function () {
   $('.newticket-reported').combobox();
 
   var appendCategorizedCustomFields = function (fields, className) {
-      top.Ts.Services.CustomFields.GetAllTypesCategories(top.Ts.ReferenceTypes.Tickets, function (categories) {
+      parent.Ts.Services.CustomFields.GetAllTypesCategories(parent.Ts.ReferenceTypes.Tickets, function (categories) {
           for (var j = 0; j < categories.length; j++) {
               var isFirstFieldAdded = true;
               for (var i = 0; i < fields.length; i++) {
@@ -406,13 +406,13 @@ $(document).ready(function () {
                       var container = $('.category-' + categories[j].CustomFieldCategoryID + ' > div');
 
                       switch (field.FieldType) {
-                          case top.Ts.CustomFieldType.Text: appendCustomEdit(field, container, null, className); break;
-                          case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, container, null, className); break;
-                          case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, container, null, className); break;
-                          case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, container, null, className); break;
-                          case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, container, null, className); break;
-                          case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, container, null, className); break;
-                          case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, container, null, className); break;
+                          case parent.Ts.CustomFieldType.Text: appendCustomEdit(field, container, null, className); break;
+                          case parent.Ts.CustomFieldType.Date: appendCustomEditDate(field, container, null, className); break;
+                          case parent.Ts.CustomFieldType.Time: appendCustomEditTime(field, container, null, className); break;
+                          case parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, container, null, className); break;
+                          case parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, container, null, className); break;
+                          case parent.Ts.CustomFieldType.Number: appendCustomEditNumber(field, container, null, className); break;
+                          case parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, container, null, className); break;
                           default:
                       }
                   }
@@ -445,7 +445,7 @@ $(document).ready(function () {
   createCustomFields();
   function createCustomFields() {
     $('.newticket-custom-field').remove();
-    top.Ts.Services.CustomFields.GetParentCustomFields(top.Ts.ReferenceTypes.Tickets, null, function (result) {
+    parent.Ts.Services.CustomFields.GetParentCustomFields(parent.Ts.ReferenceTypes.Tickets, null, function (result) {
         if (result.length == 0) {
             $('.custom-fields').hide();
         }
@@ -456,19 +456,19 @@ $(document).ready(function () {
                 if (!result[i].CustomFieldCategoryID) {
                     try {
                         switch (result[i].FieldType) {
-                            case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container); break;
-                            case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container); break;
-                            case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container); break;
-                            case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container); break;
-                            case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container); break;
-                            case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container); break;
-                            case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container); break;
+                            case parent.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container); break;
+                            case parent.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container); break;
+                            case parent.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container); break;
+                            case parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container); break;
+                            case parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container); break;
+                            case parent.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container); break;
+                            case parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container); break;
                             default:
                         }
                     } catch (err) {
                         var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
                         for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                        top.Ts.Services.System.LogException(err.message, errorString);
+                        parent.Ts.Services.System.LogException(err.message, errorString);
                         $('.newticket-custom-field').remove();
                         return;
                     }
@@ -512,23 +512,23 @@ $(document).ready(function () {
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
     if (field.AuxID == ticketTypeID && items.length > 0) {
         var productID = $('.newticket-product option:selected').val();
-        top.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, items[0], productID, function (result) {
+        parent.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, items[0], productID, function (result) {
             for (var i = 0; i < result.length; i++) {
                 try {
                     switch (result[i].FieldType) {
-                        case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], null, div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], null, div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], null, div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], null, div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], null, div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], null, div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case parent.Ts.CustomFieldType.Text: appendCustomEdit(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case parent.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case parent.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case parent.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], null, div, field.CustomFieldID + 'child'); break;
                         default:
                     }
                 } catch (err) {
                     var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
                     for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                    top.Ts.Services.System.LogException(err.message, errorString);
+                    parent.Ts.Services.System.LogException(err.message, errorString);
                     $('.newticket-custom-field').remove();
                     return;
                 }
@@ -540,7 +540,7 @@ $(document).ready(function () {
     }
 
     select.combobox({ selected: function (e, ui) {
-      top.Ts.Services.Tickets.GetValueTemplateText(ui.item.value, function (result) {
+      parent.Ts.Services.Tickets.GetValueTemplateText(ui.item.value, function (result) {
         if (result != null && result != "") {
             tinyMCE.activeEditor.selection.setContent($('.newticket-desc').html() + '<br/><br/>' + result);
           //$('.newticket-desc').html($('.newticket-desc').html() + '<br/><br/>' + result);
@@ -549,23 +549,23 @@ $(document).ready(function () {
 
       $('.' + field.CustomFieldID + 'child').remove();
       var productID = $('.newticket-product option:selected').val();
-      top.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, ui.item.value, productID, function (result) {
+      parent.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, ui.item.value, productID, function (result) {
           for (var i = 0; i < result.length; i++) {
               try {
                   switch (result[i].FieldType) {
-                      case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case parent.Ts.CustomFieldType.Text: appendCustomEdit(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case parent.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case parent.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case parent.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
                       default:
                   }
               } catch (err) {
                   var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
                   for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                  top.Ts.Services.System.LogException(err.message, errorString);
+                  parent.Ts.Services.System.LogException(err.message, errorString);
                   $('.newticket-custom-field').remove();
                   return;
               }
@@ -776,7 +776,7 @@ $(document).ready(function () {
 
 
   function initEditor(element, init) {
-    top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+    parent.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
 
       var editorOptions = {
         plugins: "autoresize paste link code textcolor image moxiemanager table",
@@ -798,29 +798,29 @@ $(document).ready(function () {
         menubar: false,
         moxiemanager_leftpanel: false,
         moxiemanager_fullscreen: false,
-        moxiemanager_title: top.Ts.System.Organization.Name,
-        moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
+        moxiemanager_title: parent.Ts.System.Organization.Name,
+        moxiemanager_hidden_tools: (parent.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
         paste_data_images: false,
 
         setup: function (ed) {
           ed.on('init', function (e) {
-            top.Ts.System.refreshUser(function () {
-              if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                  ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
-                  ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
+            parent.Ts.System.refreshUser(function () {
+              if (parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                  ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.User.FontFamily));
+                  ed.getBody().style.fontFamily = GetTinyMCEFontName(parent.Ts.System.User.FontFamily);
               }
-              else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                  ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
-                  ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
+              else if (parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                  ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily));
+                  ed.getBody().style.fontFamily = GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily);
               }
 
-              if (top.Ts.System.User.FontSize != "0") {
-                  ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
-                  ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
+              if (parent.Ts.System.User.FontSize != "0") {
+                  ed.execCommand("FontSize", false, parent.Ts.System.User.FontSizeDescription);
+                  ed.getBody().style.fontSize = GetTinyMCEFontSize(parent.Ts.System.User.FontSize + 1);
               }
-              else if (top.Ts.System.Organization.FontSize != "0") {
-                  ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
-                  ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize + 1);
+              else if (parent.Ts.System.Organization.FontSize != "0") {
+                  ed.execCommand("FontSize", false, parent.Ts.System.Organization.FontSizeDescription);
+                  ed.getBody().style.fontSize = GetTinyMCEFontSize(parent.Ts.System.Organization.FontSize + 1);
               }
             });
           });
@@ -830,13 +830,13 @@ $(document).ready(function () {
             //image: '../images/nav/16/tickets.png',
             icon: 'awesome fa fa-ticket',
             onclick: function () {
-              top.Ts.System.logAction('New Ticket - Ticket Inserted');
-              top.Ts.MainPage.selectTicket(null, function (ticketID) {
-                top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
+              parent.Ts.System.logAction('New Ticket - Ticket Inserted');
+              parent.Ts.MainPage.selectTicket(null, function (ticketID) {
+                parent.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
                   ed.focus();
                   ticket.IsParent = null;
                   appendRelated(ticket);
-                  var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
+                  var html = '<a href="' + parent.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
                   ed.selection.setContent(html);
                   ed.execCommand('mceAutoResize');
                   ed.focus();
@@ -857,10 +857,10 @@ $(document).ready(function () {
                 alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
               }
               else {
-                top.Ts.MainPage.pasteImage(null, function (result) {
+                parent.Ts.MainPage.pasteImage(null, function (result) {
                   ed.focus();
                   if (result != "") {
-                    var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                    var html = '<img src="' + parent.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
                     ed.selection.setContent(html);
                     ed.execCommand('mceAutoResize');
                     ed.focus();
@@ -878,7 +878,7 @@ $(document).ready(function () {
               var options = {
                 linkType: "preview",
                 success: function (files) {
-                  top.Ts.System.logAction('New Ticket - DropBox Added');
+                  parent.Ts.System.logAction('New Ticket - DropBox Added');
                   ed.focus();
                   var html = '<a href=' + files[0].link + '>' + files[0].name + '</a>';
                   ed.selection.setContent(html);
@@ -898,7 +898,7 @@ $(document).ready(function () {
               icon: 'awesome fa fa-clock-o',
               //image: '../images/icons/dropbox.png',
               onclick: function () {
-                  var html = Date(Date.UTC(Date.Now)) + ' ' + top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + ' : ';
+                  var html = Date(Date.UTC(Date.Now)) + ' ' + parent.Ts.System.User.FirstName + ' ' + parent.Ts.System.User.LastName + ' : ';
                   ed.selection.setContent(html);
                   ed.execCommand('mceAutoResize');
                   ed.focus();
@@ -910,10 +910,10 @@ $(document).ready(function () {
             //image: '../images/nav/16/knowledge.png',
             icon: 'awesome fa fa-book',
             onclick: function () {
-              filter = new top.TeamSupport.Data.TicketLoadFilter();
+              filter = new parent.TeamSupport.Data.TicketLoadFilter();
               filter.IsKnowledgeBase = true;
-              top.Ts.MainPage.selectTicket(filter, function (ticketID) {
-                top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+              parent.Ts.MainPage.selectTicket(filter, function (ticketID) {
+                parent.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
                   if (result === null) {
                     alert('There was an error inserting your knowledgebase ticket.');
                     return;
@@ -932,7 +932,7 @@ $(document).ready(function () {
                   ed.selection.setContent(html);
                   ed.execCommand('mceAutoResize');
                   ed.focus();
-                  top.Ts.System.logAction('New Ticket - KB Inserted');
+                  parent.Ts.System.logAction('New Ticket - KB Inserted');
 
                   //needs to resize or go to end
 
@@ -948,7 +948,7 @@ $(document).ready(function () {
               //image: '../images/icons/Symbol_Record.png',
               icon: 'awesome fa fa-video-camera',
               onclick: function () {
-                  top.Ts.System.logAction('New Ticket - Video Recording Button Clicked');
+                  parent.Ts.System.logAction('New Ticket - Video Recording Button Clicked');
                   if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                       var dynamicPub = $("#publisher");
                       $("#recordVideoContainer").show();
@@ -962,7 +962,7 @@ $(document).ready(function () {
 
 
 
-                      top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                      parent.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
                           sessionId = resultID[0];
                           token = resultID[1];
                           session = OT.initSession(apiKey, sessionId);
@@ -993,7 +993,7 @@ $(document).ready(function () {
 
                   switch (BrowserDetect.browser) {
                     case "Chrome":
-                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingChromeInfo', 0, function (alreadyReadInfo) {
+                      parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingChromeInfo', 0, function (alreadyReadInfo) {
                         if (alreadyReadInfo == 0) {
                           $(".pAllowPluginsToRunInstructions").html("\
 To use screen recording in this browser before September of 2015 \
@@ -1008,7 +1008,7 @@ on the right side of the address bar");
                       });
                       break;
                     case "Firefox":
-                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingFirefoxInfo', 0, function (alreadyReadInfo) {
+                      parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingFirefoxInfo', 0, function (alreadyReadInfo) {
                         if (alreadyReadInfo == 0) {
                           $(".pAllowPluginsToRunInstructions").html("\
 Please allow the screen recorder Java plugins to run on your browser by clicking on the \
@@ -1019,7 +1019,7 @@ on the left side of the address bar.");
                       });
                       break;
                     case "Explorer":
-                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingExplorerInfo', 0, function (alreadyReadInfo) {
+                      parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingExplorerInfo', 0, function (alreadyReadInfo) {
                         if (alreadyReadInfo == 0) {
                           $(".pAllowPluginsToRunInstructions").html("\
 Please allow the screen recorder Java plugins to run on your browser by clicking on Allow button at the bottom of the page: \
@@ -1030,7 +1030,7 @@ Please allow the screen recorder Java plugins to run on your browser by clicking
                       break;
                     case "Safari":
                       if (BrowserDetect.OS == "Windows") {
-                        top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInWindowsInfo', 0, function (alreadyReadInfo) {
+                        parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInWindowsInfo', 0, function (alreadyReadInfo) {
                           if (alreadyReadInfo == 0) {
                             $(".pAllowPluginsToRunInstructions").html("\
 This browser in Windows usually fails to detect Java preventing the recorder to start. Read \
@@ -1041,13 +1041,13 @@ for more information or use an alternate browser like Firefox or Internet Explor
                         });
                       }
                       else {
-                        top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInfo', 0, function (alreadyReadInfo) {
+                        parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInfo', 0, function (alreadyReadInfo) {
                           if (alreadyReadInfo == 0) {
                             $(".pAllowPluginsToRunInstructions").html("\
 The following steps will refresh your browser<br><br> \
 1. Allow the screen recorder Java plugins to run on your browser by clicking on the Trust button at the top of the page: <br>\
 <img src='../Images/icons/SafariInMacPluginDialog.png' alt='plugin dialog' width='30%' style='margin-top: 10px'><br><br> \
-2. Navigate to Safari > Preferences > Security > Internet Plugins - Website Settings > Java and change the " + top.Ts.System.AppDomain + " setting to Run in Unsafe Mode and click on the Trust button: <br>\
+2. Navigate to Safari > Preferences > Security > Internet Plugins - Website Settings > Java and change the " + parent.Ts.System.AppDomain + " setting to Run in Unsafe Mode and click on the Trust button: <br>\
 <img src='../Images/icons/SafariInMacUnsafeModeDialog.png' alt='plugin dialog' width='30%' style='margin-top: 10px'>");
                             $('.divScreenRecorderMessages').show();
                           }
@@ -1056,7 +1056,7 @@ The following steps will refresh your browser<br><br> \
 
                       break;
                     default:
-                      top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingInfo', 0, function (alreadyReadInfo) {
+                      parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingInfo', 0, function (alreadyReadInfo) {
                         if (alreadyReadInfo == 0) {
                           $(".pAllowPluginsToRunInstructions").html("Please verify java is supported and allowed to run in your browser.");
                           $('.divScreenRecorderMessages').show();
@@ -1071,7 +1071,7 @@ The following steps will refresh your browser<br><br> \
                     applet.code = "com.bixly.pastevid.driver.Launch";
                     applet.width = 200;
                     applet.height = 150;
-                    var orgId = top.Ts.System.Organization.OrganizationID;
+                    var orgId = parent.Ts.System.Organization.OrganizationID;
                     var param1 = document.createElement("param");
                     param1.name = "jnlp_href";
                     param1.value = "launch.jnlp";
@@ -1129,7 +1129,7 @@ The following steps will refresh your browser<br><br> \
 
   function appendCustomer(customer) {
     if (customer == null) return;
-    top.Ts.System.logAction('New Ticket - Customer Added');
+    parent.Ts.System.logAction('New Ticket - Customer Added');
 
     var itemClass = (customer.UserID ? 'ticket-customer-contact' : 'ticket-customer-company');
     var item = $('<div>')
@@ -1144,7 +1144,7 @@ The following steps will refresh your browser<br><br> \
     .attr('target', '_blank')
     .click(function (e) {
       e.preventDefault();
-      top.Ts.MainPage.openNewContact(customer.UserID);
+      parent.Ts.MainPage.openNewContact(customer.UserID);
     })
     .text(ellipseString(customer.Contact, 30))
     .appendTo(title);
@@ -1159,7 +1159,7 @@ The following steps will refresh your browser<br><br> \
     .attr('href', '#')
     .click(function (e) {
       e.preventDefault();
-      top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
+      parent.Ts.MainPage.openNewCustomer(customer.OrganizationID);
     })
     .text(ellipseString(customer.Company, 30))
     .appendTo(desc);
@@ -1176,7 +1176,7 @@ The following steps will refresh your browser<br><br> \
     .attr('href', '#')
     .click(function (e) {
       e.preventDefault();
-      top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
+      parent.Ts.MainPage.openNewCustomer(customer.OrganizationID);
     })
     .text(ellipseString(customer.Company, 30))
     .appendTo(title);
@@ -1205,7 +1205,7 @@ The following steps will refresh your browser<br><br> \
   var execGetCustomer = null;
   function getCustomers(request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
-    execGetCustomer = top.Ts.Services.Organizations.GetUserOrOrganizationForTicket(request.term, function (result) { response(result); });
+    execGetCustomer = parent.Ts.Services.Organizations.GetUserOrOrganizationForTicket(request.term, function (result) { response(result); });
   }
 
   function ellipseString(text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
@@ -1213,7 +1213,7 @@ The following steps will refresh your browser<br><br> \
   var execGetCompany = null;
   function getCompany(request, response) {
     if (execGetCompany) { execGetCompany._executor.abort(); }
-    execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) { response(result); });
+    execGetCompany = parent.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) { response(result); });
   }
 
   $('.ticket-new-customer-company')
@@ -1227,7 +1227,7 @@ The following steps will refresh your browser<br><br> \
           }
         });
 
-  if (!top.Ts.System.User.CanCreateContact && !top.Ts.System.User.IsSystemAdmin) {
+  if (!parent.Ts.System.User.CanCreateContact && !parent.Ts.System.User.IsSystemAdmin) {
     $('.ticket-customer-new').hide();
   }
 
@@ -1250,15 +1250,15 @@ The following steps will refresh your browser<br><br> \
   $('.ticket-new-customer-save').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    top.Ts.System.logAction('New Ticket - New Customer Added');
+    parent.Ts.System.logAction('New Ticket - New Customer Added');
     var email = $('.ticket-new-customer-email').val();
     var firstName = $('.ticket-new-customer-first').val();
     var lastName = $('.ticket-new-customer-last').val();
     var companyName = $('.ticket-new-customer-company').val();
     var phone = $('.ticket-new-customer-phone').val();
-    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
+    parent.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
       if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
-        top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
+        parent.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
           appendCustomer(result);
           $('.ticket-new-customer-email').val('');
           $('.ticket-new-customer-first').val('');
@@ -1269,10 +1269,10 @@ The following steps will refresh your browser<br><br> \
         });
       }
       else if (result.indexOf("The company you have specified is invalid") !== -1) {
-        if (top.Ts.System.User.CanCreateCompany || top.Ts.System.User.IsSystemAdmin) {
+        if (parent.Ts.System.User.CanCreateCompany || parent.Ts.System.User.IsSystemAdmin) {
           if (confirm('Unknown company, would you like to create it?')) {
-              top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
-              top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
+              parent.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
+              parent.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
                 appendCustomer(result);
                 $('.ticket-new-customer-email').val('');
                 $('.ticket-new-customer-first').val('');
@@ -1320,10 +1320,10 @@ The following steps will refresh your browser<br><br> \
           select: function (event, ui) {
             $(this).removeClass('ui-autocomplete-loading');
             alertMessage = ui.item;
-            top.Ts.Services.Tickets.GetTicketCustomer(ui.item.data, ui.item.id, function (result) {
+            parent.Ts.Services.Tickets.GetTicketCustomer(ui.item.data, ui.item.id, function (result) {
               appendCustomer(result);
               if (alertMessage.data == "u") {
-                top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Users, function (note) {
+                parent.Ts.Services.Customers.LoadAlert(alertMessage.id, parent.Ts.ReferenceTypes.Users, function (note) {
                   if (note != null) {
                     $('#modalAlertMessage').html(note.Description);
                     $('#alertID').val(note.RefID);
@@ -1333,14 +1333,14 @@ The following steps will refresh your browser<br><br> \
                             $(this).dialog("close");
                         },
                         "Snooze": function () {
-                            top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                            parent.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
                             $(this).dialog("close");
                         }
                     }
 
-                    if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                    if (!parent.Ts.System.Organization.HideDismissNonAdmins || parent.Ts.System.User.IsSystemAdmin) {
                         buttons["Dismiss"] = function () {
-                            top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                            parent.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
                             $(this).dialog("close");
                         }
                     }
@@ -1359,7 +1359,7 @@ The following steps will refresh your browser<br><br> \
                 });
               }
               else {
-                top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Organizations, function (note) {
+                parent.Ts.Services.Customers.LoadAlert(alertMessage.id, parent.Ts.ReferenceTypes.Organizations, function (note) {
                   if (note != null) {
                     $('#modalAlertMessage').html(note.Description);
                     $('#alertID').val(note.RefID);
@@ -1370,14 +1370,14 @@ The following steps will refresh your browser<br><br> \
                             $(this).dialog("close");
                         },
                         "Snooze": function () {
-                            top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                            parent.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
                             $(this).dialog("close");
                         }
                     }
 
-                    if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                    if (!parent.Ts.System.Organization.HideDismissNonAdmins || parent.Ts.System.User.IsSystemAdmin) {
                         buttons["Dismiss"] = function () {
-                            top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                            parent.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
                             $(this).dialog("close");
                         }
                     }
@@ -1411,7 +1411,7 @@ The following steps will refresh your browser<br><br> \
     .hide()
     .click(function (e) {
       var item = $(this).prev().data('item');
-      top.Ts.Services.Tickets.GetTicketCustomer(item.data, item.id, function (result) {
+      parent.Ts.Services.Tickets.GetTicketCustomer(item.data, item.id, function (result) {
         appendCustomer(result);
       });
       $(this).parent().remove();
@@ -1432,7 +1432,7 @@ The following steps will refresh your browser<br><br> \
 
   var tipTimer = null;
 
-  var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
+  var clueTipOptions = parent.Ts.Utils.getClueTipOptions(tipTimer);
 
   $('body').delegate('.ts-icon-info', 'mouseout', function (e) {
     if (tipTimer != null) clearTimeout(tipTimer);
@@ -1446,7 +1446,7 @@ The following steps will refresh your browser<br><br> \
 
   //Assets
   function appendAsset(asset) {
-    top.Ts.System.logAction('New Ticket - Asset Added');
+    parent.Ts.System.logAction('New Ticket - Asset Added');
 
     var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-asset')
@@ -1459,7 +1459,7 @@ The following steps will refresh your browser<br><br> \
       .addClass('value ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        top.Ts.MainPage.openAsset(asset.AssetID);
+        parent.Ts.MainPage.openAsset(asset.AssetID);
       })
       .text(ellipseString(asset.Name, 30))
       .appendTo(title);
@@ -1476,7 +1476,7 @@ The following steps will refresh your browser<br><br> \
   var execGetAssets = null;
   function getAssets(request, response) {
     if (execGetAssets) { execGetAssets._executor.abort(); }
-    execGetAssets = top.Ts.Services.Assets.FindAsset(request.term, function (result) { response(result); });
+    execGetAssets = parent.Ts.Services.Assets.FindAsset(request.term, function (result) { response(result); });
   }
 
 
@@ -1511,7 +1511,7 @@ The following steps will refresh your browser<br><br> \
             .data('assetID', ui.item.id)
             .removeClass('ui-autocomplete-loading')
             .next().show();
-            top.Ts.Services.Assets.GetAsset(ui.item.id, function (asset) {
+            parent.Ts.Services.Assets.GetAsset(ui.item.id, function (asset) {
               appendAsset(asset);
             });
             $(this).parent().remove();
@@ -1537,11 +1537,11 @@ The following steps will refresh your browser<br><br> \
   var execGetTags = null;
   function getTags(request, response) {
     if (execGetTags) { execGetTags._executor.abort(); }
-    execGetTags = top.Ts.Services.Tickets.SearchTags(request.term, function (result) { response(result); });
+    execGetTags = parent.Ts.Services.Tickets.SearchTags(request.term, function (result) { response(result); });
   }
 
   function appendTag(tag) {
-    top.Ts.System.logAction('New Ticket - Tag Added');
+    parent.Ts.System.logAction('New Ticket - Tag Added');
 
     var item = getRemovableItem(tag, 'ticket-tag', 'a');
     /*var link = $('<a>')
@@ -1549,7 +1549,7 @@ The following steps will refresh your browser<br><br> \
     .text(ellipseString(tag, 30))
     .click(function (e) {
     e.preventDefault();
-    top.Ts.MainPage.openTag($(this).closest('.ticket-tag').data('data').TagID);
+    parent.Ts.MainPage.openTag($(this).closest('.ticket-tag').data('data').TagID);
     });
     */
     var link = $('<span>')
@@ -1626,11 +1626,11 @@ The following steps will refresh your browser<br><br> \
   var execGetRelated = null;
   function getRelated(request, response) {
     if (execGetRelated) { execGetRelated._executor.abort(); }
-    execGetRelated = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
+    execGetRelated = parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
   }
 
   function appendRelated(related) {
-    top.Ts.System.logAction('New Ticket - Ticket Associated');
+    parent.Ts.System.logAction('New Ticket - Ticket Associated');
 
     var item = getRemovableItem(related, 'ticket-related', ' ', ' ');
 
@@ -1663,7 +1663,7 @@ The following steps will refresh your browser<br><br> \
         .data('number', related.TicketNumber)
         .click(function (e) {
           e.preventDefault();
-          top.Ts.MainPage.openTicket($(this).data('number'), true);
+          parent.Ts.MainPage.openTicket($(this).data('number'), true);
         })
           .appendTo(item.find('.ticket-removable-item-description').empty());
 
@@ -1721,7 +1721,7 @@ The following steps will refresh your browser<br><br> \
       $('<button>').text('Child').appendTo(buttons).button().click(function (e) { addRelated(false); });
       function addRelated(isParent) {
         var item = container.find('.related-input').data('item');
-        top.Ts.Services.Tickets.GetTicket(item.data, function (ticket) {
+        parent.Ts.Services.Tickets.GetTicket(item.data, function (ticket) {
           ticket.IsParent = isParent;
           appendRelated(ticket);
           container.remove();
@@ -1731,8 +1731,8 @@ The following steps will refresh your browser<br><br> \
 
 
   function appendQueue(queue) {
-    top.Ts.System.logAction('New Ticket - Queued');
-    top.Ts.System.logAction('Queued');
+    parent.Ts.System.logAction('New Ticket - Queued');
+    parent.Ts.System.logAction('Queued');
 
     var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-queue')
@@ -1745,7 +1745,7 @@ The following steps will refresh your browser<br><br> \
       .addClass('value ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        top.Ts.MainPage.openNewContact(queue.UserID);
+        parent.Ts.MainPage.openNewContact(queue.UserID);
       })
       .text(ellipseString(queue.FirstName + ' ' + queue.LastName, 30))
       .appendTo(title);
@@ -1762,7 +1762,7 @@ The following steps will refresh your browser<br><br> \
   var execGetUsers = null;
   function getUsers(request, response) {
     if (execGetUsers) { execGetUsers._executor.abort(); }
-    execGetUsers = top.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
+    execGetUsers = parent.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
   }
 
 
@@ -1797,7 +1797,7 @@ The following steps will refresh your browser<br><br> \
             .data('userID', ui.item.id)
             .removeClass('ui-autocomplete-loading')
             .next().show();
-            top.Ts.Services.Users.GetUser(ui.item.id, function (user) {
+            parent.Ts.Services.Users.GetUser(ui.item.id, function (user) {
               appendQueue(user);
             });
             $(this).parent().remove();
@@ -1818,7 +1818,7 @@ The following steps will refresh your browser<br><br> \
     });
 
   function appendSubscriber(subscriber) {
-    top.Ts.System.logAction('New Ticket - Subcriber Added');
+    parent.Ts.System.logAction('New Ticket - Subcriber Added');
 
     var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-subscriber')
@@ -1831,7 +1831,7 @@ The following steps will refresh your browser<br><br> \
       .addClass('value ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        top.Ts.MainPage.openNewContact(subscriber.UserID);
+        parent.Ts.MainPage.openNewContact(subscriber.UserID);
       })
       .text(ellipseString(subscriber.FirstName + ' ' + subscriber.LastName, 30))
       .appendTo(title);
@@ -1876,7 +1876,7 @@ The following steps will refresh your browser<br><br> \
             .data('userID', ui.item.id)
             .removeClass('ui-autocomplete-loading')
             .next().show();
-            top.Ts.Services.Users.GetUser(ui.item.id, function (user) {
+            parent.Ts.Services.Users.GetUser(ui.item.id, function (user) {
               appendSubscriber(user);
             });
             $(this).parent().remove();
@@ -1899,7 +1899,7 @@ The following steps will refresh your browser<br><br> \
 
 
   function appendReminder(reminder) {
-    top.Ts.System.logAction('New Ticket - Reminder Added');
+    parent.Ts.System.logAction('New Ticket - Reminder Added');
 
     var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-reminder')
@@ -1912,7 +1912,7 @@ The following steps will refresh your browser<br><br> \
       .addClass('value ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        top.Ts.MainPage.editReminder(
+        parent.Ts.MainPage.editReminder(
           $(this).closest('.ticket-removable-item').data('o'),
           false,
           function (reminder) { appendReminder(reminder); }
@@ -1924,7 +1924,7 @@ The following steps will refresh your browser<br><br> \
 
     $('<div>')
       .addClass('ticket-removable-item-description')
-      .text(reminder.DueDate.localeFormat(top.Ts.Utils.getDateTimePattern()))
+      .text(reminder.DueDate.localeFormat(parent.Ts.Utils.getDateTimePattern()))
       .appendTo(item);
 
     $('#divReminders').append(item);
@@ -1945,17 +1945,17 @@ The following steps will refresh your browser<br><br> \
     .click(function (e) {
       e.preventDefault();
       e.stopPropagation();
-      top.Ts.MainPage.editReminder(
-        { RefType: top.Ts.ReferenceTypes.Tickets },
+      parent.Ts.MainPage.editReminder(
+        { RefType: parent.Ts.ReferenceTypes.Tickets },
         false,
         function (reminder) { appendReminder(reminder); }
       );
     });
 
   function isFormValid(callback) {
-    top.Ts.Services.Organizations.IsProductRequired(function (isProductRequired) {
-      top.Ts.Services.Organizations.IsProductVersionRequired(function (isProductVersionRequired) {
-        top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
+    parent.Ts.Services.Organizations.IsProductRequired(function (isProductRequired) {
+      parent.Ts.Services.Organizations.IsProductVersionRequired(function (isProductVersionRequired) {
+        parent.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
           var result = true;
           var product = $('.newticket-product');
           var reportversion = $('.newticket-reported');
@@ -1983,27 +1983,27 @@ The following steps will refresh your browser<br><br> \
             var field = $(this).data('o');
             if (field.IsRequired) {
               switch (field.FieldType) {
-                case top.Ts.CustomFieldType.Text:
+                case parent.Ts.CustomFieldType.Text:
                   if ($.trim($(this).find('input').val()) == '') {
                     $(this).addClass('ui-state-error ui-corner-all');
                     result = false;
                   }
                   break;
-                case top.Ts.CustomFieldType.Date:
-                case top.Ts.CustomFieldType.Time:
-                case top.Ts.CustomFieldType.DateTime:
+                case parent.Ts.CustomFieldType.Date:
+                case parent.Ts.CustomFieldType.Time:
+                case parent.Ts.CustomFieldType.DateTime:
                   if ($.trim($(this).find('input').val()) == '') {
                     $(this).addClass('ui-state-error ui-corner-all');
                     result = false;
                   }
                   break;
-                case top.Ts.CustomFieldType.Number:
+                case parent.Ts.CustomFieldType.Number:
                   if ($.trim($(this).find('input').val()) == '') {
                     $(this).addClass('ui-state-error ui-corner-all');
                     result = false;
                   }
                   break;
-                case top.Ts.CustomFieldType.PickList:
+                case parent.Ts.CustomFieldType.PickList:
                   if (field.IsFirstIndexSelect == true && $(this).find('select option:selected').index() < 1) {
                     $(this).addClass('ui-state-error ui-corner-all');
                     result = false;
@@ -2019,27 +2019,27 @@ The following steps will refresh your browser<br><br> \
               var field = $(this).data('o');
               if (field.IsRequiredToClose) {
                 switch (field.FieldType) {
-                  case top.Ts.CustomFieldType.Text:
+                  case parent.Ts.CustomFieldType.Text:
                     if ($.trim($(this).find('input').val()) == '') {
                       $(this).addClass('ui-state-error-to-close-custom ui-corner-all');
                       result = false;
                     }
                     break;
-                  case top.Ts.CustomFieldType.Date:
-                  case top.Ts.CustomFieldType.Time:
-                  case top.Ts.CustomFieldType.DateTime:
+                  case parent.Ts.CustomFieldType.Date:
+                  case parent.Ts.CustomFieldType.Time:
+                  case parent.Ts.CustomFieldType.DateTime:
                     if ($.trim($(this).find('input').val()) == '') {
                       $(this).addClass('ui-state-error-to-close-custom ui-corner-all');
                       result = false;
                     }
                     break;
-                  case top.Ts.CustomFieldType.Number:
+                  case parent.Ts.CustomFieldType.Number:
                     if ($.trim($(this).find('input').val()) == '') {
                       $(this).addClass('ui-state-error-to-close-custom ui-corner-all');
                       result = false;
                     }
                     break;
-                  case top.Ts.CustomFieldType.PickList:
+                  case parent.Ts.CustomFieldType.PickList:
                     if (field.IsFirstIndexSelect == true && $(this).find('select option:selected').index() < 1) {
                       $(this).addClass('ui-state-error-to-close-custom ui-corner-all');
                       result = false;
@@ -2069,40 +2069,40 @@ The following steps will refresh your browser<br><br> \
   }
 
   function setInitialValue() {
-    var menuID = top.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
+    var menuID = parent.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
     switch (menuID) {
       case 'mniusers':
-        //top.Ts.Services.Settings.ReadUserSetting('SelectedUserID', -1, function (result) {
+        //parent.Ts.Services.Settings.ReadUserSetting('SelectedUserID', -1, function (result) {
         //  if (result > -1) $('.newticket-user').combobox('setValue', result);
         //});
         break;
       case 'mniproducts':
-        top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
+        parent.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
           if (productID > -1) {
             $('.newticket-product').combobox('setValue', productID);
             loadVersions();
-            top.Ts.Services.Settings.ReadUserSetting('SelectedProductVersionID', -1, function (versionID) {
+            parent.Ts.Services.Settings.ReadUserSetting('SelectedProductVersionID', -1, function (versionID) {
               if (versionID > -1) $('.newticket-reported').combobox('setValue', versionID);
             });
-            top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
+            parent.Ts.Services.CustomFields.GetProductMatchingCustomFields(parent.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
                 var container = $('.custom-fields-container');
                 for (var i = 0; i < result.length; i++) {
                     if (!result[i].CustomFieldCategoryID) {
                         try {
                             switch (result[i].FieldType) {
-                                case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container, null, 'productChild'); break;
-                                case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container, null, 'productChild'); break;
-                                case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container, null, 'productChild'); break;
-                                case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container, null, 'productChild'); break;
-                                case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container, null, 'productChild'); break;
-                                case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container, null, 'productChild'); break;
-                                case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container, null, 'productChild'); break;
+                                case parent.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container, null, 'productChild'); break;
+                                case parent.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container, null, 'productChild'); break;
+                                case parent.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container, null, 'productChild'); break;
+                                case parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container, null, 'productChild'); break;
+                                case parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container, null, 'productChild'); break;
+                                case parent.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container, null, 'productChild'); break;
+                                case parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container, null, 'productChild'); break;
                                 default:
                             }
                         } catch (err) {
                             var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
                             for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                            top.Ts.Services.System.LogException(err.message, errorString);
+                            parent.Ts.Services.System.LogException(err.message, errorString);
                             $('.newticket-custom-field').remove();
                             return;
                         }
@@ -2116,14 +2116,14 @@ The following steps will refresh your browser<br><br> \
         });
         break;
       case 'mnicustomers':
-        top.Ts.Services.Settings.ReadUserSetting('SelectedOrganizationID', -1, function (organizationID) {
+        parent.Ts.Services.Settings.ReadUserSetting('SelectedOrganizationID', -1, function (organizationID) {
           if (organizationID > -1) {
-            top.Ts.Services.Settings.ReadUserSetting('SelectedContactID', -1, function (contactID) {
+            parent.Ts.Services.Settings.ReadUserSetting('SelectedContactID', -1, function (contactID) {
               if (contactID > -1) {
-                top.Ts.Services.Tickets.GetTicketCustomer('u', contactID, function (result) {
+                parent.Ts.Services.Tickets.GetTicketCustomer('u', contactID, function (result) {
                   if (!result.Flag) {
                     appendCustomer(result);
-                    top.Ts.Services.Customers.LoadAlert(result.UserID, top.Ts.ReferenceTypes.Users, function (note) {
+                    parent.Ts.Services.Customers.LoadAlert(result.UserID, parent.Ts.ReferenceTypes.Users, function (note) {
                       if (note != null) {
                         $('#modalAlertMessage').html(note.Description);
                         $('#alertID').val(note.RefID);
@@ -2133,14 +2133,14 @@ The following steps will refresh your browser<br><br> \
                                 $(this).dialog("close");
                             },
                             "Snooze": function () {
-                                top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                parent.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
                                 $(this).dialog("close");
                             }
                         }
 
-                        if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                        if (!parent.Ts.System.Organization.HideDismissNonAdmins || parent.Ts.System.User.IsSystemAdmin) {
                             buttons["Dismiss"] = function () {
-                                top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                parent.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
                                 $(this).dialog("close");
                             }
                         }
@@ -2161,10 +2161,10 @@ The following steps will refresh your browser<br><br> \
                 });
               }
               else {
-                top.Ts.Services.Tickets.GetTicketCustomer('o', organizationID, function (result) {
+                parent.Ts.Services.Tickets.GetTicketCustomer('o', organizationID, function (result) {
                   if (!result.Flag) {
                     appendCustomer(result);
-                    top.Ts.Services.Customers.LoadAlert(result.OrganizationID, top.Ts.ReferenceTypes.Organizations, function (note) {
+                    parent.Ts.Services.Customers.LoadAlert(result.OrganizationID, parent.Ts.ReferenceTypes.Organizations, function (note) {
                       if (note != null) {
                         $('#modalAlertMessage').html(note.Description);
                         $('#alertID').val(note.RefID);
@@ -2174,14 +2174,14 @@ The following steps will refresh your browser<br><br> \
                                 $(this).dialog("close");
                             },
                             "Snooze": function () {
-                                top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                parent.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
                                 $(this).dialog("close");
                             }
                         }
 
-                        if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                        if (!parent.Ts.System.Organization.HideDismissNonAdmins || parent.Ts.System.User.IsSystemAdmin) {
                             buttons["Dismiss"] = function () {
-                                top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                parent.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
                                 $(this).dialog("close");
                             }
                         }
@@ -2215,20 +2215,20 @@ The following steps will refresh your browser<br><br> \
 
         break;
       case 'mniinventory':
-        top.Ts.Services.Settings.ReadUserSetting('SelectedAssetID', -1, function (assetID) {
+        parent.Ts.Services.Settings.ReadUserSetting('SelectedAssetID', -1, function (assetID) {
           if (assetID > -1) {
-            top.Ts.Services.Assets.GetAsset(assetID, function (asset) {
+            parent.Ts.Services.Assets.GetAsset(assetID, function (asset) {
               appendAsset(asset);
               if (asset.Location == "1") {
-                top.Ts.Services.Assets.GetAssetAssignments(assetID, function (assetAssignments) {
+                parent.Ts.Services.Assets.GetAssetAssignments(assetID, function (assetAssignments) {
                   for (var i = 0; i < assetAssignments.length; i++) {
                     if (assetAssignments[i].RefType == 32) {
-                      top.Ts.Services.Tickets.GetTicketCustomer("u", assetAssignments[i].ShippedTo, function (result) {
+                      parent.Ts.Services.Tickets.GetTicketCustomer("u", assetAssignments[i].ShippedTo, function (result) {
                         appendCustomer(result);
                       });
                     }
                     else {
-                      top.Ts.Services.Tickets.GetTicketCustomer("o", assetAssignments[i].ShippedTo, function (result) {
+                      parent.Ts.Services.Tickets.GetTicketCustomer("o", assetAssignments[i].ShippedTo, function (result) {
                         appendCustomer(result);
                       });
                     }
@@ -2252,9 +2252,9 @@ The following steps will refresh your browser<br><br> \
 
     }
 
-    var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+    var chatID = parent.Ts.Utils.getQueryValue('chatid', window)
     if (chatID && chatID != null) {
-      top.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
+      parent.Ts.Services.Tickets.GetChatCustomer(chatID, function (result) {
         appendCustomer(result);
       });
     }
@@ -2277,7 +2277,7 @@ The following steps will refresh your browser<br><br> \
           .appendTo(item);
 
         $('<div>')
-          .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+          .text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
           .addClass('filename')
           .appendTo(bg);
 
@@ -2326,8 +2326,8 @@ The following steps will refresh your browser<br><br> \
     stop: function (e, data) {
       $('.progress').progressbar('value', 100);
 
-      if (_doClose != true) top.Ts.MainPage.openTicketByID(_ticketID);
-      top.Ts.MainPage.closeNewTicketTab();
+      if (_doClose != true) parent.Ts.MainPage.openTicketByID(_ticketID);
+      parent.Ts.MainPage.closeNewTicketTab();
     }
   });
 
@@ -2338,9 +2338,9 @@ The following steps will refresh your browser<br><br> \
         clearTimeout(_timerid);
         _timerElapsed = 0;
         counter = 0;
-        top.Ts.MainPage.closeNewTicketTab();
+        parent.Ts.MainPage.closeNewTicketTab();
     }
-    top.Ts.System.logAction('New Ticket - Canceled');
+    parent.Ts.System.logAction('New Ticket - Canceled');
 
     //window.location = window.location;
   });
@@ -2351,7 +2351,7 @@ The following steps will refresh your browser<br><br> \
     if ($("#recorder").length == 0) {
       _doClose = true;
       $('.newticket-save').click();
-      top.Ts.System.logAction('New Ticket - Save & Closed');
+      parent.Ts.System.logAction('New Ticket - Save & Closed');
     }
   });
 
@@ -2396,10 +2396,10 @@ The following steps will refresh your browser<br><br> \
             var theTime = timeSplit[1];
 
             var formattedDate = month + "/" + day + "/" + year + " " + theTime;
-            info.DueDate = top.Ts.Utils.getMsDate(formattedDate);
+            info.DueDate = parent.Ts.Utils.getMsDate(formattedDate);
           }
           else
-            info.DueDate = top.Ts.Utils.getMsDate(dueDate);
+            info.DueDate = parent.Ts.Utils.getMsDate(dueDate);
         }
         info.CategoryID = $('.newticket-community').val();
         info.ProductID = $('.newticket-product').val();
@@ -2411,7 +2411,7 @@ The following steps will refresh your browser<br><br> \
         info.Description = $('.newticket-desc').html();
 
         info.TimeSpent = parseInt($('.ticket-action-form-hours').val()) * 60 + parseInt($('.ticket-action-form-minutes').val());
-        info.DateStarted = top.Ts.Utils.getMsDate($('.ticket-action-form-date').datetimepicker('getDate'));
+        info.DateStarted = parent.Ts.Utils.getMsDate($('.ticket-action-form-date').datetimepicker('getDate'));
 
 
         // Custom Values
@@ -2420,24 +2420,24 @@ The following steps will refresh your browser<br><br> \
           var field = new Object();
           field.CustomFieldID = $(this).data('o').CustomFieldID;
           switch ($(this).data('o').FieldType) {
-            case top.Ts.CustomFieldType.Boolean:
+            case parent.Ts.CustomFieldType.Boolean:
               field.Value = $(this).find('input').prop('checked');
               break;
-            case top.Ts.CustomFieldType.PickList:
+            case parent.Ts.CustomFieldType.PickList:
               field.Value = $(this).find('select').val();
               break;
-            case top.Ts.CustomFieldType.Date:
+            case parent.Ts.CustomFieldType.Date:
               var dt = $(this).find('input').datepicker('getDate');
               field.Value = dt == null ? null : dt.toUTCString();
               break;
-            case top.Ts.CustomFieldType.Time:
+            case parent.Ts.CustomFieldType.Time:
               var time = new Date("January 1, 1970 00:00:00");
               time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
               time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
               field.Value = $(this).find('input').timepicker('getDate')[0].value == '' ? null : time.toUTCString();
               break;
-            case top.Ts.CustomFieldType.DateTime:
-              //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+            case parent.Ts.CustomFieldType.DateTime:
+              //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
               var dt = $(this).find('input').datetimepicker('getDate');
               field.Value = dt == null ? null : dt.toUTCString();
               //field.Value = $(this).find('input').datetimepicker('getDate');
@@ -2500,12 +2500,12 @@ The following steps will refresh your browser<br><br> \
           info.Contacts[info.Contacts.length] = $(this).data('data').UserID;
         });
 
-        var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+        var chatID = parent.Ts.Utils.getQueryValue('chatid', window)
         if (chatID && chatID != null) {
           info.ChatID = chatID;
         }
 
-        top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
+        parent.Ts.Services.Tickets.NewTicket(parent.JSON.stringify(info), function (result) {
 
           if (result == null) {
             alert('There was an error saving your ticket.  Please try again.');
@@ -2513,7 +2513,7 @@ The following steps will refresh your browser<br><br> \
             return;
           }
           _ticketID = result[0];
-          top.Ts.System.logAction('Ticket Created');
+          parent.Ts.System.logAction('Ticket Created');
 
           if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
@@ -2524,8 +2524,8 @@ The following steps will refresh your browser<br><br> \
             });
           }
           else {
-            if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
-            top.Ts.MainPage.closeNewTicketTab();
+            if (_doClose != true) parent.Ts.MainPage.openTicketByID(result[0]);
+            parent.Ts.MainPage.closeNewTicketTab();
           }
 
         }, function () {
@@ -2555,11 +2555,11 @@ The following steps will refresh your browser<br><br> \
 
   $('.ticket-rail a').addClass('ui-state-default ts-link');
 
-  top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
+  parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 
   $('#rcdtok').click(function (e) {
-      top.Ts.System.logAction('New Ticket - Video Recording Start Clicked');
-      top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+      parent.Ts.System.logAction('New Ticket - Video Recording Start Clicked');
+      parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
           $('#rcdtok').hide();
           //element.find('#rcdtok span').text('Re-Record');
           $('#stoptok').show();
@@ -2573,8 +2573,8 @@ The following steps will refresh your browser<br><br> \
   $('#stoptok').hide();
 
   $('#stoptok').click(function (e) {
-      top.Ts.System.logAction('New Ticket - Video Recording Stop Clicked');
-      top.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
+      parent.Ts.System.logAction('New Ticket - Video Recording Stop Clicked');
+      parent.Ts.Services.Tickets.StopArchiving(recordingID, function (resultID) {
           $('#rcdtok').show();
           $('#stoptok').hide();
           $('#inserttok').show();
@@ -2587,8 +2587,8 @@ The following steps will refresh your browser<br><br> \
   $('#inserttok').hide();
 
   $('#inserttok').click(function (e) {
-      top.Ts.System.logAction('New Ticket - Video Recording Insert Clicked');
-      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + top.Ts.System.AppDomain + '"/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+      parent.Ts.System.logAction('New Ticket - Video Recording Insert Clicked');
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + parent.Ts.System.AppDomain + '"/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
       $('#rcdtok').show();
       $('#stoptok').hide();
       $('#inserttok').hide();
@@ -2598,9 +2598,9 @@ The following steps will refresh your browser<br><br> \
   });
 
   $('#canceltok').click(function (e) {
-      top.Ts.System.logAction('New Ticket - Video Recording Cancel Clicked');
+      parent.Ts.System.logAction('New Ticket - Video Recording Cancel Clicked');
       if (recordingID) {
-          top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+          parent.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
               $('#rcdtok').show();
               $('#stoptok').hide();
               $('#inserttok').hide();
@@ -2709,24 +2709,24 @@ var onScreenRecordStart = function () {
   $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
   switch (BrowserDetect.browser) {
     case "Chrome":
-      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
+      parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
       break;
     case "Firefox":
-      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
+      parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
       break;
     case "Explorer":
-      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
+      parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
       break;
     case "Safari":
       if (BrowserDetect.OS == "Windows") {
-        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
+        parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
       }
       else {
-        top.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
+        parent.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
       }
       break;
     default:
-      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
+      parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
   }
   $('.divScreenRecorderMessages').hide();
 };
@@ -2740,10 +2740,10 @@ var onScreenRecordComplete = function (url) {
     ed.selection.setContent(html);
     ed.execCommand('mceAutoResize');
     ed.focus();
-    top.Ts.System.logAction('Ticket - Screen Recorded');
+    parent.Ts.System.logAction('Ticket - Screen Recorded');
   }
   else {
-    top.Ts.System.logAction('New Ticket - Screen Record Cancelled');
+    parent.Ts.System.logAction('New Ticket - Screen Record Cancelled');
   }
 };
 

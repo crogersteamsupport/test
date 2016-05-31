@@ -282,14 +282,14 @@
       },
       getTimeZones: function () {
           var self = this;
-          top.Ts.Services.Users.GetTimezone(function (result) {
+          parent.Ts.Services.Users.GetTimezone(function (result) {
               self._timeZones = result;
           });
           return self._timeZones;
       },
       getCultures: function () {
           var self = this;
-          top.Ts.Services.Users.GetCultures(function (result) {
+          parent.Ts.Services.Users.GetCultures(function (result) {
               self._cultures = result;
           });
           return self._cultures;

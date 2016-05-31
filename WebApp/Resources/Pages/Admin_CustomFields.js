@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/top.Ts.Services.js" />
+/// <reference path="ts/parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -33,19 +33,19 @@ AdminCustomFields = function () {
     $('<option>').text('Ticket').attr('value', 17).appendTo(select);
     $('<option>').text('User').attr('value', 22).appendTo(select);
 
-    if (top.Ts.System.Organization.ProductType != top.Ts.ProductType.Express) {
+    if (parent.Ts.System.Organization.ProductType != parent.Ts.ProductType.Express) {
 
-      if (top.Ts.System.Organization.ProductType != top.Ts.ProductType.HelpDesk) {
+      if (parent.Ts.System.Organization.ProductType != parent.Ts.ProductType.HelpDesk) {
         $('<option>').text('Product').attr('value', 13).appendTo(select);
         $('<option>').text('Product Version').attr('value', 14).appendTo(select);
-        if (top.Ts.System.Organization.UseProductFamilies) {
+        if (parent.Ts.System.Organization.UseProductFamilies) {
           $('<option>').text('Product Line').attr('value', 44).appendTo(select);
         }
         $('<option>').text('Asset').attr('value', 34).appendTo(select);
       }
       $('<option>').text('Customer').attr('value', 9).appendTo(select);
 
-      if (top.Ts.System.Organization.ProductType != top.Ts.ProductType.HelpDesk) {
+      if (parent.Ts.System.Organization.ProductType != parent.Ts.ProductType.HelpDesk) {
         $('<option>').text('Customer Product').attr('value', 8).appendTo(select);
         $('<option>').text('Contact Product').attr('value', 46).appendTo(select);
       }
@@ -62,7 +62,7 @@ AdminCustomFields = function () {
   }
 
   function loadTicketTypes() {
-    var ticketTypes = top.Ts.Cache.getTicketTypes();
+    var ticketTypes = parent.Ts.Cache.getTicketTypes();
     var select = $('.admin-cf-tickettype')
     select.find('option').remove();
 
@@ -86,8 +86,8 @@ AdminCustomFields = function () {
 
     var refType = $('.admin-cf-type').val();
     var auxID = refType == 17 ? $('.admin-cf-tickettype').val() : null;
-    top.Ts.Services.CustomFields.GetCustomFields(refType, auxID, function (fields) {
-      top.Ts.Services.CustomFields.GetCategories(refType, auxID, function (cats) {
+    parent.Ts.Services.CustomFields.GetCustomFields(refType, auxID, function (fields) {
+      parent.Ts.Services.CustomFields.GetCategories(refType, auxID, function (cats) {
         var div = $('<div>')
             .addClass('ui-widget-content ui-corner-all ts-section admin-cf-cat admin-cf-nocat')
             .data('Category', null)
@@ -148,10 +148,10 @@ AdminCustomFields = function () {
   loadTicketTypes();
   loadData();
   function savePositions() {
-    var orders = new top.Array();
+    var orders = new parent.Array();
     $('.admin-cf-cat').each(function () {
-      var item = new top.TSWebServices.CategoryOrder();
-      item.FieldIDs = new top.Array();
+      var item = new parent.TSWebServices.CategoryOrder();
+      item.FieldIDs = new parent.Array();
       orders[orders.length] = item;
       var cat = $(this).data('Category');
       item.CatID = (cat === null ? null : cat.CustomFieldCategoryID);
@@ -161,8 +161,8 @@ AdminCustomFields = function () {
 
       });
     });
-    top.Ts.System.logAction('Admin Custom Fields - Field Order Saved');
-    top.Ts.Services.CustomFields.SaveOrder(JSON.stringify(orders));
+    parent.Ts.System.logAction('Admin Custom Fields - Field Order Saved');
+    parent.Ts.Services.CustomFields.SaveOrder(JSON.stringify(orders));
 
   }
 
@@ -170,10 +170,10 @@ AdminCustomFields = function () {
     var refType = $('.admin-cf-type').val();
     var auxID = refType == 17 ? $('.admin-cf-tickettype').val() : null;
 
-    var wnd = top.GetCustomFieldDialog(customFieldID, refType, auxID, catID);
+    var wnd = parent.GetCustomFieldDialog(customFieldID, refType, auxID, catID);
     wnd.add_close(fieldDialogClosed);
     wnd.show();
-    top.Ts.System.logAction('Admin Custom Fields - Field Dialog Opened');
+    parent.Ts.System.logAction('Admin Custom Fields - Field Dialog Opened');
     function fieldDialogClosed(sender, args) {
       sender.remove_close(fieldDialogClosed);
       loadData();
@@ -212,8 +212,8 @@ AdminCustomFields = function () {
           .addClass('ts-icon ts-icon-delete')
           .click(function (e) {
             if (confirm('Are you sure you would like to delete this category?  Your existing custom fields will not removed.')) {
-              top.Ts.Services.CustomFields.DeleteCategory($(this).closest('.admin-cf-cat').data('Category').CustomFieldCategoryID, function () {
-                top.Ts.System.logAction('Admin Custom Fields - Category Deleted');
+              parent.Ts.Services.CustomFields.DeleteCategory($(this).closest('.admin-cf-cat').data('Category').CustomFieldCategoryID, function () {
+                parent.Ts.System.logAction('Admin Custom Fields - Category Deleted');
 
                 loadData();
               });
@@ -320,8 +320,8 @@ AdminCustomFields = function () {
           e.preventDefault();
           var parent = $(this).closest('.admin-cf-field');
           if (!confirm('WARNING: Are you sure you would like to delete this custom field.  You will lose ALL data associated with this custom field.')) return;
-          top.Ts.Services.CustomFields.DeleteCustomField($(this).closest('.admin-cf-field').data('CustomField').CustomFieldID, function (result) {
-            top.Ts.System.logAction('Admin Custom Fields - Field Deleted');
+          parent.Ts.Services.CustomFields.DeleteCustomField($(this).closest('.admin-cf-field').data('CustomField').CustomFieldID, function (result) {
+            parent.Ts.System.logAction('Admin Custom Fields - Field Deleted');
 
             parent.remove();
           });
@@ -355,15 +355,15 @@ AdminCustomFields = function () {
         return;
       }
       if (cat === null) {
-        top.Ts.Services.CustomFields.NewCategory($('.admin-cf-type').val(), ($('.admin-cf-type').val() == 17 ? $('.admin-cf-tickettype').val() : null), $(this).prev().val(), function (result) {
+        parent.Ts.Services.CustomFields.NewCategory($('.admin-cf-type').val(), ($('.admin-cf-type').val() == 17 ? $('.admin-cf-tickettype').val() : null), $(this).prev().val(), function (result) {
           element.closest('.admin-cf-cat').data('Category', result);
-          top.Ts.System.logAction('Admin Custom Fields - Category Created');
+          parent.Ts.System.logAction('Admin Custom Fields - Category Created');
 
         });
       }
       else {
-        top.Ts.Services.CustomFields.SaveCategory(cat.CustomFieldCategoryID, $(this).prev().val());
-        top.Ts.System.logAction('Admin Custom Fields - Category Edited');
+        parent.Ts.Services.CustomFields.SaveCategory(cat.CustomFieldCategoryID, $(this).prev().val());
+        parent.Ts.System.logAction('Admin Custom Fields - Category Edited');
 
       }
 

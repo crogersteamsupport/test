@@ -41,7 +41,7 @@
 
 
       function showOrgInfo(orgID) {
-        top.Ts.Services.Organizations.GetOrganization(orgID, function (org) {
+        parent.Ts.Services.Organizations.GetOrganization(orgID, function (org) {
           $('.org-info').data('o', org);
 
           $('.action-toggle-active').text(org.IsActive != true ? 'Enable' : 'Disable');
@@ -64,10 +64,10 @@
           appendProperty('Engagement Score', '<span class="evergage-prop eng-score"><i class="fa fa-spinner fa-spin"></i></span>');
           appendProperty('Total Actions', '<span class="evergage-prop total-actions"><i class="fa fa-spinner fa-spin"></i></span>');
           appendProperty('Index Last Rebuilt', org.LastIndexRebuilt.toString());
-          top.Ts.Services.Organizations.AdminGetUserCount(orgID, function (count) {
+          parent.Ts.Services.Organizations.AdminGetUserCount(orgID, function (count) {
             appendProperty('Active Users', count);
           });
-          top.Ts.Services.Organizations.AdminGetStorageUsed(orgID, function (size) {
+          parent.Ts.Services.Organizations.AdminGetStorageUsed(orgID, function (size) {
             appendProperty('Storage Used', size + ' MB');
           });
 
@@ -80,7 +80,7 @@
 
       function getEngagementScore(orgName) {
 
-        top.Ts.Services.Organizations.GetEvergageData(orgName, function (data) {
+        parent.Ts.Services.Organizations.GetEvergageData(orgName, function (data) {
           $('.evergage-prop').html('');
           var o = JSON.parse(data);
           if (o) {
@@ -99,7 +99,7 @@
         e.preventDefault();
         var org = $('.org-info').data('o');
         var item = $(this);
-        top.Ts.Services.Organizations.AdminSetInventory(org.OrganizationID, !org.IsInventoryEnabled, function () {
+        parent.Ts.Services.Organizations.AdminSetInventory(org.OrganizationID, !org.IsInventoryEnabled, function () {
           org.IsInventoryEnabled = !org.IsInventoryEnabled;
           item.text(org.IsInventoryEnabled.toString());
         });
@@ -107,7 +107,7 @@
       });
 
       function showUsers(org) {
-        top.Ts.Services.Users.AdminGetUsers(org.OrganizationID, function (users) {
+        parent.Ts.Services.Users.AdminGetUsers(org.OrganizationID, function (users) {
 
 
           function appendUser(user) {
@@ -122,7 +122,7 @@
             checkActive.change(function (e) {
               e.preventDefault();
               var user = $(this).parents('tr').data('o');
-              top.Ts.Services.Users.AdminSetActive(user.UserID, !user.IsActive);
+              parent.Ts.Services.Users.AdminSetActive(user.UserID, !user.IsActive);
 
             });
             row.append($('<td>').append(checkActive));
@@ -131,7 +131,7 @@
             checkSession.change(function (e) {
               e.preventDefault();
               var user = $(this).parents('tr').data('o');
-              top.Ts.Services.Users.SetSingleSessionEnforcement(user.UserID, !user.EnforceSingleSession);
+              parent.Ts.Services.Users.SetSingleSessionEnforcement(user.UserID, !user.EnforceSingleSession);
             });
             if (user.EnforceSingleSession == true) checkSession.prop('checked', true);
             row.append($('<td>').append(checkSession));
@@ -139,8 +139,8 @@
             var link = $("<a>").attr("href", "#").addClass("getlink").text("Get Login").click(function (e) {
             	e.preventDefault();
 
-            	top.Ts.Services.Users.AdminGetUserLogin(user.UserID, function (token) {
-            		link.parent().empty().text(top.Ts.System.AppDomain + "/Login.html?SupportToken=" + token);
+            	parent.Ts.Services.Users.AdminGetUserLogin(user.UserID, function (token) {
+            		link.parent().empty().text(parent.Ts.System.AppDomain + "/Login.html?SupportToken=" + token);
             	});
             	
 
@@ -170,7 +170,7 @@
         e.preventDefault();
         if (!confirm("Are you really sure you would like to disable this account?")) return;
         var org = $('.org-info').data('o');
-        top.Ts.Services.Organizations.AdminEnable(org.OrganizationID, !org.IsActive, function () {
+        parent.Ts.Services.Organizations.AdminEnable(org.OrganizationID, !org.IsActive, function () {
           showOrgInfo(org.OrganizationID);
         });
       });
@@ -180,7 +180,7 @@
         var org = $('.org-info').data('o');
         var name = prompt("Rename company", org.Name);
         if (name != null && name != "") {
-          top.Ts.Services.Organizations.AdminRenameCompany(org.OrganizationID, name, function () {
+          parent.Ts.Services.Organizations.AdminRenameCompany(org.OrganizationID, name, function () {
             showOrgInfo(org.OrganizationID);
           });
         }
@@ -191,7 +191,7 @@
         var org = $('.org-info').data('o');
         var count = prompt("Change seat count", org.UserSeats);
         if (count != null) {
-          top.Ts.Services.Organizations.AdminUpdateSeats(org.OrganizationID, count, function () {
+          parent.Ts.Services.Organizations.AdminUpdateSeats(org.OrganizationID, count, function () {
             showOrgInfo(org.OrganizationID);
           });
         }
@@ -202,7 +202,7 @@
         var org = $('.org-info').data('o');
         var pw = prompt("Enter your password.", "");
         if (pw != null) {
-          top.Ts.Services.Organizations.AdminDeleteOrganization(org.OrganizationID, pw, function () {
+          parent.Ts.Services.Organizations.AdminDeleteOrganization(org.OrganizationID, pw, function () {
             window.location = window.location;
           }, function () { alert("Invalid Password."); });
         }
@@ -213,7 +213,7 @@
         var org = $('.org-info').data('o');
         var count = prompt("Change API request count", org.APIRequestLimit);
         if (count != null) {
-          top.Ts.Services.Organizations.AdminSetApiCount(org.OrganizationID, count, function () {
+          parent.Ts.Services.Organizations.AdminSetApiCount(org.OrganizationID, count, function () {
             showOrgInfo(org.OrganizationID);
           });
         }
@@ -224,7 +224,7 @@
         var sendEmails = confirm("Would you like to send password emails?");
         if (!confirm("Are you sure you would like to turn all the contacts into portal users?")) return;
         var org = $('.org-info').data('o');
-        top.Ts.Services.Organizations.AdminSetAllPortalUsers(org.OrganizationID, sendEmails, function () {
+        parent.Ts.Services.Organizations.AdminSetAllPortalUsers(org.OrganizationID, sendEmails, function () {
           alert("All portal users are now enabled.");
         });
       });
@@ -232,14 +232,14 @@
       $('.action-index').click(function (e) {
         e.preventDefault();
         var org = $('.org-info').data('o');
-        top.Ts.Services.Organizations.AdminRebuildIndexes(org.OrganizationID, function () {
+        parent.Ts.Services.Organizations.AdminRebuildIndexes(org.OrganizationID, function () {
           alert("Indexes are rebuilding.");
         });
       });
 
       $('#selectProduct').change(function (e) {
         e.preventDefault();
-        top.Ts.Services.Organizations.AdminUpdateProductType(organizationID, $('#selectProduct').val(), function () {
+        parent.Ts.Services.Organizations.AdminUpdateProductType(organizationID, $('#selectProduct').val(), function () {
           showOrgInfo(organizationID);
         });
 

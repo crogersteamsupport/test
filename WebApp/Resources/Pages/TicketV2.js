@@ -31,9 +31,9 @@ var _timerid;
 var _timerElapsed = 0;
 var speed = 50, counter = 0, start;
 var reminderClose = false;
-var userFullName = top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName;
+var userFullName = parent.Ts.System.User.FirstName + " " + parent.Ts.System.User.LastName;
 
-var clueTipOptions = top.Ts.Utils.getClueTipOptions(null);
+var clueTipOptions = parent.Ts.Utils.getClueTipOptions(null);
 
 var execGetCustomer = null;
 var execGetTags = null;
@@ -56,42 +56,42 @@ var tokTimer;
 
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
-  execGetCustomer = top.Ts.Services.TicketPage.GetUserOrOrganizationForTicket(request, function (result) { response(result); });
+  execGetCustomer = parent.Ts.Services.TicketPage.GetUserOrOrganizationForTicket(request, function (result) { response(result); });
 }
 
 var getTags = function (request, response) {
   if (execGetTags) { execGetTags._executor.abort(); }
-  execGetTags = top.Ts.Services.Tickets.SearchTags(request.term, function (result) { response(result); });
+  execGetTags = parent.Ts.Services.Tickets.SearchTags(request.term, function (result) { response(result); });
 }
 
 var getAssets = function (request, response) {
   if (execGetAsset) { execGetAsset._executor.abort(); }
-  execGetAsset = top.Ts.Services.Assets.FindAsset(request, function (result) { response(result); });
+  execGetAsset = parent.Ts.Services.Assets.FindAsset(request, function (result) { response(result); });
 }
 
 var getUsers = function (request, response) {
   if (execGetUsers) { execGetUsers._executor.abort(); }
-  execGetUsers = top.Ts.Services.TicketPage.SearchUsers(request, function (result) { response(result); });
+  execGetUsers = parent.Ts.Services.TicketPage.SearchUsers(request, function (result) { response(result); });
 }
 
 var getRelated = function (request, response) {
   if (execGetRelated) { execGetRelated._executor.abort(); }
-  execGetRelated = top.Ts.Services.Tickets.SearchTickets(request, null, function (result) { response(result); });
+  execGetRelated = parent.Ts.Services.Tickets.SearchTickets(request, null, function (result) { response(result); });
 }
 
 var getCompany = function (request, response) {
   if (execGetCompany) { execGetCompany._executor.abort(); }
-  execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request, function (result) { response(result); });
+  execGetCompany = parent.Ts.Services.Organizations.WCSearchOrganization(request, function (result) { response(result); });
 }
 
 var selectTicket = function (request, response) {
   if (execSelectTicket) { execSelectTicket._executor.abort(); }
   var filter = $(this.element).data('filter');
   if (filter === undefined) {
-    execSelectTicket = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
+    execSelectTicket = parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
   }
   else {
-    execSelectTicket = top.Ts.Services.Tickets.SearchTickets(request.term, filter, function (result) { response(result); });
+    execSelectTicket = parent.Ts.Services.Tickets.SearchTickets(request.term, filter, function (result) { response(result); });
   }
 }
 
@@ -109,7 +109,7 @@ var isFormValidToClose = function (isClosed, callback) {
 }
 
 var isFormValid = function (callback) {
-  top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
+  parent.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
     var result = true;
 
     if ($('.hasError').length > 0) {
@@ -260,7 +260,7 @@ $.fn.autoGrow = function () {
 $("input[type=text], textarea").autoGrow();
 
 $(document).ready(function () {
-  _ticketNumber = top.Ts.Utils.getQueryValue("TicketNumber", window);
+  _ticketNumber = parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
   apiKey = "45228242";
 
@@ -280,10 +280,10 @@ $(document).ready(function () {
 });
 
 var loadTicket = function (ticketNumber, refresh) {
-  top.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
+  parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
     _ticketInfo = info;
     _ticketID = info.Ticket.TicketID;
-    top.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
+    parent.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
       if (result !== null) {
         _ticketSender = new Object();
         _ticketSender.UserID = result.UserID;
@@ -301,7 +301,7 @@ var loadTicket = function (ticketNumber, refresh) {
 
     $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
     $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
-    top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
+    parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
       LoadTicketNotes(note);
     });
 
@@ -339,7 +339,7 @@ var loadTicket = function (ticketNumber, refresh) {
     LoadGroups();
 
     if (typeof refresh === "undefined") {
-      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+      window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
 
   });
@@ -351,7 +351,7 @@ function CreateNewAction(actions) {
   var firstActionID = firstAction.data('id');
   if (firstActionID !== actions[0].Action.ActionID)
   {
-    top.Ts.Services.TicketPage.ConvertActionItem(actions[0].Action.ActionID, function (actionInfo) {
+    parent.Ts.Services.TicketPage.ConvertActionItem(actions[0].Action.ActionID, function (actionInfo) {
       var actionElement = CreateActionElement(actionInfo, false);
       _actionTotal++;
       actionElement.find('.ticket-action-number').text(_actionTotal);
@@ -365,16 +365,16 @@ function SetupTicketPage() {
 
   $("input[type=text], textarea").autoGrow();
 
-  top.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
+  parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
     jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
     SetupTicketProperties();
   });
 
-  //if (top.Ts.System.Organization.SetNewActionsVisibleToCustomers == false) {
+  //if (parent.Ts.System.Organization.SetNewActionsVisibleToCustomers == false) {
   //	$('#action-add-private').insertBefore('#action-add-public');
   //}
 
-  top.Ts.Services.Customers.GetDateFormat(false, function (format) {
+  parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
     dateFormat = format.replace("yyyy", "yy");
     if (dateFormat.length < 8) {
       var dateArr = dateFormat.split('/');
@@ -400,7 +400,7 @@ function AddTicketProperty(item) {
 };
 
 function SetupTicketProperties() {
-  top.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+  parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
     if (info == null) {
       var url = window.location.href;
       if (url.indexOf('.') > -1) {
@@ -411,7 +411,7 @@ function SetupTicketProperties() {
     }
     _ticketInfo = info;
     _ticketID = info.Ticket.TicketID;
-    top.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
+    parent.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
       if (result !== null) {
         _ticketSender = new Object();
         _ticketSender.UserID = result.UserID;
@@ -424,21 +424,21 @@ function SetupTicketProperties() {
     _productFamilyID = info.Ticket.ProductFamilyID;
     _ticketGroupID = info.Ticket.GroupID;
 
-    top.Ts.System.logAction('View Ticket');
-    top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
+    parent.Ts.System.logAction('View Ticket');
+    parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 
     if (info == null) alert('no ticket');
 
-    if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === _ticketInfo.UserID) {
+    if (parent.Ts.System.User.IsSystemAdmin || parent.Ts.System.User.UserID === _ticketInfo.UserID) {
       $('.ticket-menu-actions').append('<li><a id="Ticket-Delete">Delete</a></li>');
       $('#Ticket-Delete').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to delete this ticket?')) {
-          top.Ts.System.logAction('Ticket - Deleted');
-          top.Ts.Services.Tickets.DeleteTicket(_ticketID, function () {
-            top.Ts.MainPage.closeTicketTab(_ticketNumber);
-            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "delete", userFullName);
+          parent.Ts.System.logAction('Ticket - Deleted');
+          parent.Ts.Services.Tickets.DeleteTicket(_ticketID, function () {
+            parent.Ts.MainPage.closeTicketTab(_ticketNumber);
+            window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "delete", userFullName);
           }, function () {
             alert('There was an error deleting this ticket.');
           });
@@ -452,13 +452,13 @@ function SetupTicketProperties() {
     ticketURLLink.on("aftercopy", function (event) {
       alert("Copied URL to clipboard: " + event.data["text/plain"]);
     });
-    var ticketUrl = top.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
+    var ticketUrl = parent.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
     $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
     //set the ticket title 
     $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
     $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
-    $('.ticket-source').css('backgroundImage', "url('../" + top.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
+    $('.ticket-source').css('backgroundImage', "url('../" + parent.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
     //get total number of actions so we can use it to number each action
     GetActionCount(function () {
         //create timeline now that we have a ticketID and a count
@@ -473,7 +473,7 @@ function SetupTicketProperties() {
     //update ticket property controls with the values needed
     LoadTicketControls();
     //Get Ticket Notes for Customers associated with ticket
-    top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
+    parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
       LoadTicketNotes(note);
     });
 
@@ -482,7 +482,7 @@ function SetupTicketProperties() {
     isFormValid();
 
     if (typeof refresh === "undefined") {
-      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+      window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
 
   });
@@ -497,7 +497,7 @@ function SetupToolTips() {
 
 function CreateNewActionLI() {
   var _compiledNewActionTemplate = Handlebars.compile($("#new-action-template").html());
-  var html = _compiledNewActionTemplate({ OrganizationID: top.Ts.System.User.OrganizationID, UserID: top.Ts.System.User.UserID });
+  var html = _compiledNewActionTemplate({ OrganizationID: parent.Ts.System.User.OrganizationID, UserID: parent.Ts.System.User.UserID });
   $("#action-timeline").append(html);
 
   $('#action-add-public').click(function (e) {
@@ -508,7 +508,7 @@ function CreateNewActionLI() {
     $('#action-add-public').attr('disabled', true);
     var editor = $('#action-new-editor');
     if (_suggestedSolutionDefaultInput == '') {
-        top.Ts.Services.TicketPage.GetSuggestedSolutionDefaultInput(_ticketID, function (result) {
+        parent.Ts.Services.TicketPage.GetSuggestedSolutionDefaultInput(_ticketID, function (result) {
             _suggestedSolutionDefaultInput = result;
             if (_suggestedSolutionDefaultInput != '') {
                 editor.SuggestedSolutionDefaultInput = _suggestedSolutionDefaultInput;
@@ -565,11 +565,11 @@ function CreateNewActionLI() {
     e.preventDefault();
     e.stopPropagation();
     $('#action-new-editor').parent().fadeOut('normal', function () {
-    	if (top.Ts.System.User.OrganizationID !== 13679) {
+    	if (parent.Ts.System.User.OrganizationID !== 13679) {
     		tinymce.activeEditor.destroy();
     	}
     });
-    top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+    parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
     $('#action-add-public').attr('disabled', false);
     $('#action-add-private').attr('disabled', false);
     $("a.action-option-edit").each(function () {
@@ -596,14 +596,14 @@ function CreateNewActionLI() {
   		_oldActionID = self.data('actionid');
   		isFormValid(function (isValid) {
   			if (isValid) {
-  				top.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (result) {
+  				parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (result) {
   					if (!result)
   						alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
   					SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
   						if (result) {
   							_isCreatingAction = true;
   							$('#action-new-editor').parent().fadeOut('normal', function () {
-  								if (top.Ts.System.User.OrganizationID !== 13679) {
+  								if (parent.Ts.System.User.OrganizationID !== 13679) {
   									tinymce.activeEditor.destroy();
   								}
   							});
@@ -652,7 +652,7 @@ function CreateNewActionLI() {
           if (result) {
             UploadAttachments(result);
             $('#action-new-editor').val('').parent().fadeOut('normal');
-            if (top.Ts.System.User.OrganizationID !== 13679) {
+            if (parent.Ts.System.User.OrganizationID !== 13679) {
             	tinymce.activeEditor.destroy();
             }
 
@@ -699,7 +699,7 @@ function CreateNewActionLI() {
     var filename = self.data('name');
 
     if (!confirm('Are you sure you would like to delete "' + filename + '."')) return;
-    top.Ts.Services.Tickets.DeleteAttachment(
+    parent.Ts.Services.Tickets.DeleteAttachment(
       attachmentid,
       function () {
         self.prev().remove();
@@ -714,9 +714,9 @@ function CreateNewActionLI() {
     var actionID = $(this).val();
     var action = $(this).find(':selected').data('data');
     HideActionTimer(!action.IsTimed);
-    top.Ts.Services.TicketPage.GetActionTicketTemplate(actionID, function (result) {
+    parent.Ts.Services.TicketPage.GetActionTicketTemplate(actionID, function (result) {
     	if (result != null && result != "" && result != "<br>") {
-    		if (top.Ts.System.User.OrganizationID !== 13679) {
+    		if (parent.Ts.System.User.OrganizationID !== 13679) {
     			var currenttext = tinyMCE.activeEditor.getContent();
     			tinyMCE.activeEditor.setContent(currenttext + result);
     		}
@@ -762,9 +762,9 @@ function SetupActionEditor(elem, action) {
 
   }
 
-  top.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
+  parent.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
 
-  if (top.Ts.System.User.OrganizationID !== 13679) {
+  if (parent.Ts.System.User.OrganizationID !== 13679) {
   	initEditor(elem, true, function (ed) {
   	  $("#action-new-type").val($("#action-new-type option:first").val());
   	  $('#action-new-editor').val('');
@@ -781,7 +781,7 @@ function SetupActionEditor(elem, action) {
   	    var actionTypeID = $('#action-new-type').val();
   	    $('#action-new-hours').val(0);
   	    $('#action-new-minutes').val(0);
-  	    top.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
+  	    parent.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
   	      if (result != null && result != "" && result != "<br>") {
   	        var currenttext = tinyMCE.activeEditor.getContent();
   	        tinyMCE.activeEditor.setContent(currenttext + result);
@@ -826,7 +826,7 @@ function SetupActionEditor(elem, action) {
         .appendTo(item);
 
         $('<div>')
-        .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+        .text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
         .addClass('filename')
         .appendTo(bg);
 
@@ -876,7 +876,7 @@ function SetupActionEditor(elem, action) {
       element.find('.upload-queue .ui-icon-cancel').show();
     },
     stop: function (e, data) {
-      top.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
+      parent.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
         _newAction.Attachments = attachments;
         if (_oldActionID === -1) {
           _actionTotal = _actionTotal + 1;
@@ -894,7 +894,7 @@ function SetupActionEditor(elem, action) {
   element.find('#recordScreenContainer').hide();
   element.find('#ssDiv').hide(); 
   element.find('#rcdtokScreen').click(function (e) {
-  	top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+  	parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
   		element.find('#rcdtokScreen').hide();
   		element.find('#stoptokScreen').show();
   		element.find('#deletetokScreen').hide();
@@ -929,7 +929,7 @@ function SetupActionEditor(elem, action) {
   	element.find('#statusTextScreen').text("Processing...");
   	clearTimeout(tokTimer);
   	$("#tokScreenCountdown").html("0:00");
-  	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+  	parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
   		element.find('#tokScreenCountdown').hide();
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
@@ -937,8 +937,8 @@ function SetupActionEditor(elem, action) {
   		element.find('#unmuteTokScreen').hide();
   		element.find('#muteTokScreen').hide();
   		tokurl = result;
-  		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/screenview.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-  		if (top.Ts.System.User.OrganizationID !== 13679) {
+  		videoURL = '<video controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/screenview.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+  		if (parent.Ts.System.User.OrganizationID !== 13679) {
   			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
   		}
   		else
@@ -953,7 +953,7 @@ function SetupActionEditor(elem, action) {
   });
 
   element.find('#rcdtok').click(function (e) {
-      top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+      parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
           element.find('#rcdtok').hide();
           element.find('#stoptok').show();
           element.find('#inserttok').hide();
@@ -967,7 +967,7 @@ function SetupActionEditor(elem, action) {
 
   element.find('#stoptok').click(function (e) {
       element.find('#statusText').text("Processing...");
-      top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+      parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
           element.find('#rcdtok').show();
           element.find('#stoptok').hide();
           element.find('#inserttok').show();
@@ -980,12 +980,12 @@ function SetupActionEditor(elem, action) {
   element.find('#inserttok').hide();
 
   element.find('#inserttok').click(function (e) {
-  	if (top.Ts.System.User.OrganizationID !== 13679) {
-  		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+  	if (parent.Ts.System.User.OrganizationID !== 13679) {
+  		tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
   	}
   	else {
   		$('#action-new-editor').summernote('insertNode', $('<br/>')[0]);
-  		var html = $('<video width="400" height="400" controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>')[0];
+  		var html = $('<video width="400" height="400" controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>')[0];
   		$('#action-new-editor').summernote('insertNode', html);
   	}
 
@@ -1003,7 +1003,7 @@ function SetupActionEditor(elem, action) {
   	clearTimeout(tokTimer);
   	$("#tokScreenCountdown").html("0:00");
 	if(recordingID != null){
-  	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+  	parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
   		element.find('#tokScreenCountdown').hide();
   		element.find('#rcdtokScreen').show();
   		element.find('#stoptokScreen').hide();
@@ -1021,7 +1021,7 @@ function SetupActionEditor(elem, action) {
   element.find('#canceltok').click(function (e) {
       if (recordingID) {
           element.find('#statusText').text("Cancelling Recording ...");
-          top.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
+          parent.Ts.Services.Tickets.DeleteArchive(recordingID, function (resultID) {
               element.find('#rcdtok').show();
               element.find('#stoptok').hide();
               element.find('#inserttok').hide();
@@ -1039,7 +1039,7 @@ function SetupActionEditor(elem, action) {
   });
   element.find('#recordVideoContainer').hide();
 
-  var statuses = top.Ts.Cache.getNextStatuses(_ticketInfo.Ticket.TicketStatusID);
+  var statuses = parent.Ts.Cache.getNextStatuses(_ticketInfo.Ticket.TicketStatusID);
   $('#action-new-saveoptions').empty();
   if (action) {
     $('#action-new-save').text('Update').data('actionid', action.RefID);
@@ -1070,7 +1070,7 @@ function SetupNewAction(elem, action) {
 		var actionTypeID = $('#action-new-type').val();
 		$('#action-new-hours').val(0);
 		$('#action-new-minutes').val(0);
-		top.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
+		parent.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
 			if (result != null && result != "" && result != "<br>") {
 				var currenttext = elem.summernote('code');
 				elem.summernote('code', currenttext +  result);
@@ -1089,7 +1089,7 @@ function StopRecording(element)
 	element.find('#statusTextScreen').text("Processing...");
 	clearTimeout(tokTimer);
 	$("#tokScreenCountdown").html("0:00");
-	top.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
+	parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
 		element.find('#statusText').text("");
 		element.find('#tokScreenCountdown').hide();
 		element.find('#rcdtokScreen').show();
@@ -1098,9 +1098,9 @@ function StopRecording(element)
 		element.find('#unmuteTokScreen').hide();
 		element.find('#muteTokScreen').hide();
 		tokurl = result;
-		videoURL = '<video controls poster="' + top.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+		videoURL = '<video controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
 
-		if (top.Ts.System.User.OrganizationID !== 13679) {
+		if (parent.Ts.System.User.OrganizationID !== 13679) {
 			tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
 		}
 		else {
@@ -1195,7 +1195,7 @@ function SetupActionTimers() {
 function SetupActionTypeSelect() {
   var selectType = $('#action-new-type');
   selectType.empty();
-  var types = top.Ts.Cache.getActionTypes();
+  var types = parent.Ts.Cache.getActionTypes();
   for (var i = 0; i < types.length; i++) {
     $('<option>').attr('value', types[i].ActionTypeID).text(types[i].Name).data('data', types[i]).appendTo(selectType);
   }
@@ -1250,7 +1250,7 @@ function convertToValidDate(val) {
     var theTime = timeSplit[1];
 
     var formattedDate = month + "/" + day + "/" + year + " " + theTime + (timeSplit[2] != null ? " " + timeSplit[2] : "");
-    value = top.Ts.Utils.getMsDate(formattedDate);
+    value = parent.Ts.Utils.getMsDate(formattedDate);
     return value;
   }
   else
@@ -1258,7 +1258,7 @@ function convertToValidDate(val) {
 }
 
 function SaveAction(_oldActionID, isPrivate, callback) {
-	var action = new top.TeamSupport.Data.ActionProxy();
+	var action = new parent.TeamSupport.Data.ActionProxy();
 	var saveError = 0;
   action.ActionID = _oldActionID;
   action.TicketID = _ticketID;
@@ -1267,7 +1267,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   var timeSpent = parseInt($('#action-new-hours').val()) * 60 + parseInt($('#action-new-minutes').val());
   var actionType = $('#action-new-type option:selected').data('data');
   if (actionType !== null) {
-    if (timeSpent < 1 && actionType.IsTimed == true && top.Ts.System.Organization.TimedActionsRequired == true) {
+    if (timeSpent < 1 && actionType.IsTimed == true && parent.Ts.System.Organization.TimedActionsRequired == true) {
       $('#action-save-alert').text('Please enter the time you worked on this action.').show();
       $('#action-new-save').prop('disabled', false);
       return false;
@@ -1276,23 +1276,23 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   }
 
   action.TimeSpent = timeSpent || 0;
-  action.DateStarted = top.Ts.Utils.getMsDate(moment($('#action-new-date-started').val(), dateFormat + ' hh:mm A').format('MM/DD/YYYY hh:mm A'));
+  action.DateStarted = parent.Ts.Utils.getMsDate(moment($('#action-new-date-started').val(), dateFormat + ' hh:mm A').format('MM/DD/YYYY hh:mm A'));
   action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
   action.IsVisibleOnPortal = !isPrivate;
 
-  if (top.Ts.System.User.OrganizationID !== 13679) {
+  if (parent.Ts.System.User.OrganizationID !== 13679) {
 	// Get Content Grab and Check with .Get MEthod
   	if (tinymce.get('action-new-editor')) {
   		try {
 			action.Description = tinymce.get('action-new-editor').getContent();
 			if (action.Description == "" || action.Description == undefined) {
   				saveError = 1;
-  				top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent Function. ticket " + _ticketID + ",body: " + tinymce.get('action-new-editor').getBody().innerHTML, "TinyMCE Error");
+  				parent.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent Function. ticket " + _ticketID + ",body: " + tinymce.get('action-new-editor').getBody().innerHTML, "TinyMCE Error");
 			}
   		}
   		catch (ex) {
   			saveError = 2;
-			top.Ts.Services.System.LogException("TinyMCE save action threw exception : " + ex.message + " . ticket " + _ticketID, "TinyMCE Error");
+			parent.Ts.Services.System.LogException("TinyMCE save action threw exception : " + ex.message + " . ticket " + _ticketID, "TinyMCE Error");
   		}
 
 			//// Get Content Grab and Check
@@ -1300,12 +1300,12 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   			//	action.Description = tinymce.activeEditor.getContent();
   			//	if (action.Description == "" || action.Description == undefined) {
   			//		saveError = 1;
-  			//		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
+  			//		parent.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
   			//	}
 
   			//	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
   			//		saveError = 2;
-  			//		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
+  			//		parent.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
   			//	}
 			//}
 			//// HTML Grab Check
@@ -1313,25 +1313,25 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   			//	action.Description = $('#action-new-editor').html();
   			//	if (action.Description == "") {
   			//		saveError = 1;
-  			//		top.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
+  			//		parent.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
   			//	}
 
   			//	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
   			//		saveError = 2;
-  			//		top.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
+  			//		parent.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
   			//	}
 			//}
 
 			//// Text Grab Check
 			//if ($('#action-new-editor').text().trim().length < 1) {
-  			//	top.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
+  			//	parent.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
 			//}
 
 			// TINYMCE ACTIVE EDITOR CHECK
 			if (saveError != 0) {
   				if (tinymce.activeEditor == null) {
   					saveError = 2;
-  					top.Ts.Services.System.LogException("TinyMCE active editor is null", "TinyMCE Error");
+  					parent.Ts.Services.System.LogException("TinyMCE active editor is null", "TinyMCE Error");
   				}
 			}
 
@@ -1358,18 +1358,18 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   	var fontSize;
   	var fontFamily;
   	var styleBlock;
-  	if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-  		fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
+  	if (parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
+  		fontFamily = GetTinyMCEFontName(parent.Ts.System.User.FontFamily);
   	}
-  	else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-  		fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
+  	else if (parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+  		fontFamily = GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily);
   	}
 
-  	if (top.Ts.System.User.FontSize != "0") {
-  		fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize);
+  	if (parent.Ts.System.User.FontSize != "0") {
+  		fontSize = GetTinyMCEFontSize(parent.Ts.System.User.FontSize);
   	}
-  	else if (top.Ts.System.Organization.FontSize != "0") {
-  		fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize);
+  	else if (parent.Ts.System.Organization.FontSize != "0") {
+  		fontSize = GetTinyMCEFontSize(parent.Ts.System.Organization.FontSize);
   	}
 
   	if (fontFamily !== undefined) styleBlock = 'font-family: ' + fontFamily;
@@ -1389,9 +1389,9 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   }
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
-  top.Ts.Services.TicketPage.UpdateAction(action, function (result) {
+  parent.Ts.Services.TicketPage.UpdateAction(action, function (result) {
     _newAction = result;
-    top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+    parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
     if (actionType !== null) {
       result.item.MessageType = actionType.Name;
     }
@@ -1400,13 +1400,13 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     callback(null);
   });
 
-  top.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+  parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
     _ticketInfo = info;
     setSLAInfo();
   });
 
-  top.Ts.System.logAction('Action Saved');
-  window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
+  parent.Ts.System.logAction('Action Saved');
+  window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
 
 }
 
@@ -1458,14 +1458,14 @@ function LoadTicketNotes(note) {
         $(this).dialog("close");
       },
       "Snooze": function () {
-        top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+        parent.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
         $(this).dialog("close");
       }
     }
 
-    if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+    if (!parent.Ts.System.Organization.HideDismissNonAdmins || parent.Ts.System.User.IsSystemAdmin) {
       buttons["Dismiss"] = function () {
-        top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+        parent.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
         $(this).dialog("close");
       }
     }
@@ -1485,7 +1485,7 @@ function LoadTicketNotes(note) {
 };
 
 function GetActionCount(callback) {
-  top.Ts.Services.TicketPage.GetActionCount(_ticketID, function (total) {
+  parent.Ts.Services.TicketPage.GetActionCount(_ticketID, function (total) {
     _actionTotal = total;
     _workingActionNumer = total;
     callback();
@@ -1506,7 +1506,7 @@ function LoadTicketControls() {
   }
 
   if ($('#ticket-assigned').length) {
-    top.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+    parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
       $('#ticket-assigned').selectize({
         dataAttr: 'assigned',
         onDropdownClose: function ($dropdown) {
@@ -1515,8 +1515,8 @@ function LoadTicketControls() {
         onChange: function (value) {
           if (value == '-1') value = null;
           if (value !== ((_ticketCurrUser !== null) ? _ticketCurrUser.toString() : _ticketCurrUser)) {
-            top.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+            parent.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+              window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
               LoadGroups();
             },
             function (error) {
@@ -1524,7 +1524,7 @@ function LoadTicketControls() {
             });
           }
           _ticketSender = new Object();
-          _ticketSender.UserID = top.Ts.System.User.UserID;
+          _ticketSender.UserID = parent.Ts.System.User.UserID;
           _ticketSender.Name = userFullName;
         },
         closeAfterSelect: true,
@@ -1560,9 +1560,9 @@ function LoadTicketControls() {
   }
 
   if ($('#ticket-group').length) {
-    top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
+    parent.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
       AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
-      if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+      if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
           for (var i = 0; i < groups.length; i++) {
               if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID || _ticketInfo.Ticket.GroupID === groups[i].ID) {
                   AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
@@ -1588,8 +1588,8 @@ function LoadTicketControls() {
 
 
   _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
-  var types = top.Ts.Cache.getTicketTypes();
-  if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+  var types = parent.Ts.Cache.getTicketTypes();
+  if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
       for (var i = 0; i < types.length; i++) {
           if (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID) {
               AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
@@ -1615,7 +1615,7 @@ function LoadTicketControls() {
 
   $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
 
-  var severities = top.Ts.Cache.getTicketSeverities();
+  var severities = parent.Ts.Cache.getTicketSeverities();
   for (var i = 0; i < severities.length; i++) {
     AppendSelect('#ticket-severity', severities[i], 'severity', severities[i].TicketSeverityID, severities[i].Name, (_ticketInfo.Ticket.TicketSeverityID === severities[i].TicketSeverityID));
   }
@@ -1624,7 +1624,7 @@ function LoadTicketControls() {
 
   $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase)
 
-  if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) {
+  if (parent.Ts.System.User.ChangeKbVisibility || parent.Ts.System.User.IsSystemAdmin) {
     if (_ticketInfo.Ticket.IsKnowledgeBase) {
       $('#ticket-isKB').prop("checked", true);
       $('#ticket-group-KBCat').show();
@@ -1637,7 +1637,7 @@ function LoadTicketControls() {
 
     }
 
-    var categories = top.Ts.Cache.getKnowledgeBaseCategories();
+    var categories = parent.Ts.Cache.getKnowledgeBaseCategories();
     for (var i = 0; i < categories.length; i++) {
       var cat = categories[i].Category;
       AppendSelect('#ticket-KB-Category', cat, 'category', cat.CategoryID, cat.CategoryName, (_ticketInfo.Ticket.KnowledgeBaseCategoryID === cat.CategoryID));
@@ -1664,7 +1664,7 @@ function LoadTicketControls() {
     $('#ticket-group-KBCat').hide();
   }
 
-  $('#ticket-TimeSpent').text(top.Ts.Utils.getTimeSpentText(_ticketInfo.Ticket.HoursSpent));
+  $('#ticket-TimeSpent').text(parent.Ts.Utils.getTimeSpentText(_ticketInfo.Ticket.HoursSpent));
 
   if (_ticketInfo.Ticket.IsClosed == true) {
     $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysClosed).parent().prev().html('Days Closed');
@@ -1676,9 +1676,9 @@ function LoadTicketControls() {
   var dueDate = _ticketInfo.Ticket.DueDate;
   SetupDueDateField(dueDate);
 
-  if (top.Ts.System.Organization.UseForums == true) {
-    if (top.Ts.System.User.CanChangeCommunityVisibility) {
-    	var forumCategories = top.Ts.Cache.getForumCategories();
+  if (parent.Ts.System.Organization.UseForums == true) {
+    if (parent.Ts.System.User.CanChangeCommunityVisibility) {
+    	var forumCategories = parent.Ts.Cache.getForumCategories();
     	AppendSelect('#ticket-Community', null, 'community', -1, 'Unassigned', false);
       for (var i = 0; i < forumCategories.length; i++) {
         var cat = forumCategories[i].Category;
@@ -1723,21 +1723,21 @@ function LoadTicketControls() {
   setSLAInfo();
 
   SetupTicketPropertyEvents();
-  if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express) {
+  if (parent.Ts.System.Organization.ProductType == parent.Ts.ProductType.Express) {
     $('#ticket-Customer').closest('.form-group').remove();
   }
   else SetupCustomerSection();
 
   SetupTagsSection();
 
-  if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express || top.Ts.System.Organization.ProductType === top.Ts.ProductType.HelpDesk) {
+  if (parent.Ts.System.Organization.ProductType == parent.Ts.ProductType.Express || parent.Ts.System.Organization.ProductType === parent.Ts.ProductType.HelpDesk) {
     $('#ticket-Product').closest('.form-horizontal').remove();
     $('#ticket-Resolved').closest('.form-horizontal').remove();
     $('#ticket-Versions').closest('.form-horizontal').remove();
   }
   else SetupProductSection();
 
-  if (top.Ts.System.Organization.IsInventoryEnabled === true) {
+  if (parent.Ts.System.Organization.IsInventoryEnabled === true) {
     SetupInventorySection();
   }
   else {
@@ -1776,12 +1776,12 @@ function SetupTicketPropertyEvents() {
       e.preventDefault();
       e.stopPropagation();
       titleInputContainer.hide();
-      top.Ts.Services.Tickets.SetTicketName(_ticketID, input.val(), function (result) {
+      parent.Ts.Services.Tickets.SetTicketName(_ticketID, input.val(), function (result) {
         _ticketInfo.Ticket.Name = result;
-        top.Ts.System.logAction('Ticket - Renamed');
+        parent.Ts.System.logAction('Ticket - Renamed');
         self.text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name)).show();
 
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeticketname", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeticketname", userFullName);
       },
       function (error) {
         alert('There was an error saving the ticket name.');
@@ -1801,13 +1801,13 @@ function SetupTicketPropertyEvents() {
     var GroupID = self.val();
     if (GroupID == '-1') GroupID = null; 
     if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
-      top.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
+      parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
         if (result !== null) {
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
         }
         _ticketGroupID = GroupID;
-        if (top.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
-          top.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, GroupID);
+        if (parent.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
+          parent.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, GroupID);
         }
       },
       function (error) {
@@ -1820,7 +1820,7 @@ function SetupTicketPropertyEvents() {
     var self = $(this);
     var value = self.val();
     EnableField('ticket-status', false);
-    top.Ts.Services.TicketPage.SetTicketType(_ticketID, value, function (result) {
+    parent.Ts.Services.TicketPage.SetTicketType(_ticketID, value, function (result) {
       if (result !== null) {
         _ticketTypeID = value;
         SetStatus(result[0].TicketStatusID);
@@ -1832,7 +1832,7 @@ function SetupTicketPropertyEvents() {
         _ticketInfo.Ticket = result[2];
         setSLAInfo();
 
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changetype", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changetype", userFullName);
       }
     },
     function (error) {
@@ -1843,10 +1843,10 @@ function SetupTicketPropertyEvents() {
   $('#ticket-severity').change(function (e) {
     var self = $(this);
     var value = self.val();
-    top.Ts.Services.Tickets.SetTicketSeverity(_ticketID, value, function (result) {
+    parent.Ts.Services.Tickets.SetTicketSeverity(_ticketID, value, function (result) {
     	if (result !== null) {
     		resetSLAInfo();
-      	window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName); 
+      	window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName); 
       }
     },
     function (error) {
@@ -1857,11 +1857,11 @@ function SetupTicketPropertyEvents() {
   $('#ticket-visible').change(function (e) {
     var self = $(this);
 
-    if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) {
+    if (parent.Ts.System.User.ChangeTicketVisibility || parent.Ts.System.User.IsSystemAdmin) {
     	var value = self.is(":checked");
-    	top.Ts.System.logAction('Ticket - Visibility Changed');
-    	top.Ts.Services.Tickets.SetIsVisibleOnPortal(_ticketID, value, function (result) {
-    		window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeisportal", userFullName);
+    	parent.Ts.System.logAction('Ticket - Visibility Changed');
+    	parent.Ts.Services.Tickets.SetIsVisibleOnPortal(_ticketID, value, function (result) {
+    		window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeisportal", userFullName);
     	},
       function (error) {
       	alert('There was an error saving the ticket portal visible\'s status.');
@@ -1876,10 +1876,10 @@ function SetupTicketPropertyEvents() {
   $('#ticket-isKB').change(function (e) {
     var self = $(this);
 
-    if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) {
+    if (parent.Ts.System.User.ChangeKbVisibility || parent.Ts.System.User.IsSystemAdmin) {
       var value = self.is(":checked");
-      top.Ts.System.logAction('Ticket - KB Status Changed');
-      top.Ts.Services.Tickets.SetIsKB(_ticketID, value,
+      parent.Ts.System.logAction('Ticket - KB Status Changed');
+      parent.Ts.Services.Tickets.SetIsKB(_ticketID, value,
       function (result) {
         if (result === true) {
           $('#ticket-group-KBCat').show();
@@ -1887,7 +1887,7 @@ function SetupTicketPropertyEvents() {
         else {
           $('#ticket-group-KBCat').hide();
         }
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeiskb", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeiskb", userFullName);
       },
       function (error) {
         alert('There was an error saving the ticket knowlegdgebase\'s status.');
@@ -1898,9 +1898,9 @@ function SetupTicketPropertyEvents() {
   $('#ticket-KB-Category').change(function (e) {
     var self = $(this);
     var value = self.val();
-    top.Ts.System.logAction('Ticket - KnowledgeBase Community Changed');
-    top.Ts.Services.Tickets.SetTicketKnowledgeBaseCategory(_ticketID, value, function (result) {
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changekbcat", userFullName);
+    parent.Ts.System.logAction('Ticket - KnowledgeBase Community Changed');
+    parent.Ts.Services.Tickets.SetTicketKnowledgeBaseCategory(_ticketID, value, function (result) {
+      window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changekbcat", userFullName);
     },
     function (error) {
       alert('There was an error setting your ticket knowledgebase category.');
@@ -1912,9 +1912,9 @@ function SetupTicketPropertyEvents() {
     var value = self.val();
     var oldCatName = _ticketInfo.Ticket.CategoryName;
     var newCatName = self.text();
-    top.Ts.System.logAction('Ticket - Community Changed');
-    top.Ts.Services.Tickets.SetTicketCommunity(_ticketID, value, oldCatName == null ? 'Unassigned' : oldCatName, newCatName == null ? 'Unassigned' : newCatName, function (result) {
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecommunity", userFullName);
+    parent.Ts.System.logAction('Ticket - Community Changed');
+    parent.Ts.Services.Tickets.SetTicketCommunity(_ticketID, value, oldCatName == null ? 'Unassigned' : oldCatName, newCatName == null ? 'Unassigned' : newCatName, function (result) {
+      window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecommunity", userFullName);
     },
     function (error) {
       alert('There was an error setting your ticket community.');
@@ -1952,27 +1952,27 @@ function SetupCustomerSection() {
           $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
           var customerData = $item.data();
 
-          top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, customerData.type, value, function (customers) {
+          parent.Ts.Services.Tickets.AddTicketCustomer(_ticketID, customerData.type, value, function (customers) {
             AddCustomers(customers);
 
             if (customerData.type == "u") {
-              top.Ts.Services.Customers.LoadAlert(value, top.Ts.ReferenceTypes.Users, function (note) {
+              parent.Ts.Services.Customers.LoadAlert(value, parent.Ts.ReferenceTypes.Users, function (note) {
                 LoadTicketNotes(note);
               });
             }
             else {
-              top.Ts.Services.Customers.LoadAlert(value, top.Ts.ReferenceTypes.Organizations, function (note) {
+              parent.Ts.Services.Customers.LoadAlert(value, parent.Ts.ReferenceTypes.Organizations, function (note) {
                 LoadTicketNotes(note);
               });
             }
 
-            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addcustomer", userFullName);
+            window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addcustomer", userFullName);
           }, function () {
             $(this).parent().remove();
             alert('There was an error adding the customer.');
           });
           this.removeItem(value, true);
-          top.Ts.System.logAction('Ticket - Customer Added');
+          parent.Ts.System.logAction('Ticket - Customer Added');
         }
       },
       plugins: {
@@ -2032,15 +2032,15 @@ function SetupCustomerSection() {
   $('#Customer-Create').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    top.Ts.System.logAction('Ticket - New Customer Added');
+    parent.Ts.System.logAction('Ticket - New Customer Added');
     var email = $('#customer-email-input').val();
     var firstName = $('#customer-fname-input').val();
     var lastName = $('#customer-lname-input').val();
     var phone = $('#customer-phone-input').val();;
     var companyName = $('#customer-company-input').val();
-    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
+    parent.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
       if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
-        top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
+        parent.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
           AddCustomers(result);
           $('.ticket-new-customer-email').val('');
           $('.ticket-new-customer-first').val('');
@@ -2051,10 +2051,10 @@ function SetupCustomerSection() {
         });
       }
       else if (result.indexOf("The company you have specified is invalid") !== -1) {
-        if (top.Ts.System.User.CanCreateCompany || top.Ts.System.User.IsSystemAdmin) {
+        if (parent.Ts.System.User.CanCreateCompany || parent.Ts.System.User.IsSystemAdmin) {
           if (confirm('Unknown company, would you like to create it?')) {
-            top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
-              top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
+            parent.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
+              parent.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
                 AddCustomers(result);
                 $('.ticket-new-customer-email').val('');
                 $('.ticket-new-customer-first').val('');
@@ -2087,22 +2087,22 @@ function SetupCustomerSection() {
     var data = self.parent().data().tag;
 
     if (data.UserID) {
-      top.Ts.Services.Tickets.RemoveTicketContact(_ticketID, data.UserID, function (customers) {
+      parent.Ts.Services.Tickets.RemoveTicketContact(_ticketID, data.UserID, function (customers) {
         AddCustomers(customers);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removecontact", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removecontact", userFullName);
       }, function () {
         alert('There was a problem removing the contact from the ticket.');
       });
-      top.Ts.System.logAction('Ticket - Contact Removed');
+      parent.Ts.System.logAction('Ticket - Contact Removed');
     }
     else {
-      top.Ts.Services.Tickets.RemoveTicketCompany(_ticketID, data.OrganizationID, function (customers) {
+      parent.Ts.Services.Tickets.RemoveTicketCompany(_ticketID, data.OrganizationID, function (customers) {
         AddCustomers(customers);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removecompany", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removecompany", userFullName);
       }, function () {
         alert('There was a problem removing the company from the ticket.');
       });
-      top.Ts.System.logAction('Ticket - Customer Removed');
+      parent.Ts.System.logAction('Ticket - Customer Removed');
     }
   });
 };
@@ -2160,16 +2160,16 @@ function SetupTagsSection() {
         $(this)
     .data('item', ui.item)
 
-        top.Ts.Services.Tickets.AddTag(_ticketID, ui.item.value, function (tags) {
+        parent.Ts.Services.Tickets.AddTag(_ticketID, ui.item.value, function (tags) {
           if (tags !== null) {
             AddTags(tags);
-            //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addtag", userFullName);
+            //window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addtag", userFullName);
           }
 
         }, function () {
           alert('There was an error adding the tag.');
         });
-        top.Ts.System.logAction('Ticket - Added');
+        parent.Ts.System.logAction('Ticket - Added');
       }
     })
     .data("autocomplete")._renderItem = function (ul, item) {
@@ -2181,11 +2181,11 @@ function SetupTagsSection() {
     $('#ticket-tags').on('click', 'span.tagRemove', function (e) {
       var tag = $(this).parent()[0];
       if (tag) {
-        top.Ts.Services.Tickets.RemoveTag(_ticketID, tag.id, function (tags) {
+        parent.Ts.Services.Tickets.RemoveTag(_ticketID, tag.id, function (tags) {
         	
         	//tag.parentNode.removeChild(tag);
         	$(tag).remove();
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removetag", userFullName);
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removetag", userFullName);
         }, function () {
           alert('There was a problem removing the tag from the ticket.');
         });
@@ -2223,8 +2223,8 @@ function UpdateTicketGroups(callback) {
     selectizeGroup.addOption({ value: -1, text: 'Unassigned' });
 
     var persistedGroup = false;
-    var groups = top.Ts.Cache.getGroups();
-    if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+    var groups = parent.Ts.Cache.getGroups();
+    if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
         for (var i = 0; i < groups.length; i++) {
             if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID) {
                 selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
@@ -2260,8 +2260,8 @@ function UpdateTicketTypes(persistedGroup, callback) {
 
     var firstTypeID = 0;
     var persistedType = false;
-    var types = top.Ts.Cache.getTicketTypes();
-    if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+    var types = parent.Ts.Cache.getTicketTypes();
+    if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
         for (var i = 0; i < types.length; i++) {
             if (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID) {
                 selectizeType.addOption({ value: types[i].TicketTypeID, text: types[i].Name });
@@ -2300,22 +2300,22 @@ function UpdateTicketTypes(persistedGroup, callback) {
 
 
 function SetupProductSection() {
-  top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
+  parent.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
     if (showOnlyCustomers == "True") {
-      top.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
+      parent.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
         LoadProductList(CustomerProducts);
       });
     }
     else {
-      var products = top.Ts.Cache.getProducts();
+      var products = parent.Ts.Cache.getProducts();
       LoadProductList(products);
     }
 
-    var product = top.Ts.Cache.getProduct(_ticketInfo.Ticket.ProductID);
+    var product = parent.Ts.Cache.getProduct(_ticketInfo.Ticket.ProductID);
     SetupProductVersionsControl(product);
     SetProductVersionAndResolved(_ticketInfo.Ticket.ReportedVersionID, _ticketInfo.Ticket.SolvedVersionID);
 
-    top.Ts.Services.Organizations.IsProductRequired(function (result) {
+    parent.Ts.Services.Organizations.IsProductRequired(function (result) {
       if (result && _ticketInfo.Ticket.ProductID == null)
         $('#ticket-Product').closest('.form-group').addClass('hasError');
       else
@@ -2324,12 +2324,12 @@ function SetupProductSection() {
 
     $('#ticket-Product').change(function (e) {
         var self = $(this);
-      top.Ts.Services.Tickets.SetProduct(_ticketID, self.val(), function (result) {
+      parent.Ts.Services.Tickets.SetProduct(_ticketID, self.val(), function (result) {
         if (result !== null) {
           var name = result.label;
-          var product = top.Ts.Cache.getProduct(self.val());
+          var product = parent.Ts.Cache.getProduct(self.val());
 
-          top.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
+          parent.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
           	if (IsRequired && (name == null || name == ''))
           		$('#ticket-Product').closest('.form-group').addClass('hasError');
           	else
@@ -2338,7 +2338,7 @@ function SetupProductSection() {
 
           SetupProductVersionsControl(product);
           SetProductVersionAndResolved(null, null);
-          if (top.Ts.System.Organization.UseProductFamilies && _productFamilyID != result.data) {
+          if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != result.data) {
               _productFamilyID = result.data;
               UpdateTicketGroups(function (persistedGroup) {
                   UpdateTicketTypes(persistedGroup, function (persistedData) {
@@ -2361,7 +2361,7 @@ function SetupProductSection() {
           }
       }
 
-        top.Ts.Services.Tickets.GetParentValues(_ticketID, function (fields) {
+        parent.Ts.Services.Tickets.GetParentValues(_ticketID, function (fields) {
           AppenCustomValues(fields);
         });
       },
@@ -2372,10 +2372,10 @@ function SetupProductSection() {
     });
 
     $('#ticket-Versions').change(function (e) {
-      top.Ts.System.logAction('Ticket - Reported Version Changed');
-      top.Ts.Services.Tickets.SetReportedVersion(_ticketID, $(this).val(), function (result) {
+      parent.Ts.System.logAction('Ticket - Reported Version Changed');
+      parent.Ts.Services.Tickets.SetReportedVersion(_ticketID, $(this).val(), function (result) {
         $('#ticket-Versions').closest('.form-group').removeClass('hasError');
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changereported", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changereported", userFullName);
       },
       function (error) {
         alert('There was an error setting the reported version.');
@@ -2383,10 +2383,10 @@ function SetupProductSection() {
     });
 
     $('#ticket-Resolved').change(function (e) {
-      top.Ts.System.logAction('Ticket - Resolved Version Changed');
-      top.Ts.Services.Tickets.SetSolvedVersion(_ticketID, $(this).val(), function (result) {
+      parent.Ts.System.logAction('Ticket - Resolved Version Changed');
+      parent.Ts.Services.Tickets.SetSolvedVersion(_ticketID, $(this).val(), function (result) {
         $('#ticket-Resolved').closest('.form-group').removeClass('hasError');
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeresolved", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeresolved", userFullName);
       },
       function (error) {
         alert('There was an error setting the reported version.');
@@ -2398,7 +2398,7 @@ function SetupProductSection() {
 
 function LoadProductList(products) {
   if ($('#ticket-Product').length) {
-    if (products == null) products = top.Ts.Cache.getProducts();
+    if (products == null) products = parent.Ts.Cache.getProducts();
 
     for (var i = 0; i < products.length; i++) {
       AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, (products[i].ProductID === _ticketInfo.Ticket.ProductID));
@@ -2432,7 +2432,7 @@ function LoadProductList(products) {
 function LoadGroups() {
     var selectField = $('#ticket-group');
     if (selectField.length > 0) {
-      top.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
+      parent.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
         var selectize = selectField[0].selectize;
         selectize.clear(true);
         selectize.clearOptions();
@@ -2526,7 +2526,7 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
     SetSolved(resolvedId);
   }
 
-  top.Ts.Services.Organizations.IsProductVersionRequired(function (IsProductVersionRequired) {
+  parent.Ts.Services.Organizations.IsProductVersionRequired(function (IsProductVersionRequired) {
     if (IsProductVersionRequired && (versionId == null && resolvedId == null))
       $('#ticket-Versions').closest('.form-group').addClass('hasError');
     else
@@ -2552,16 +2552,16 @@ function SetupInventorySection() {
         }
       },
       onItemAdd: function (value, $item) {
-        top.Ts.Services.Tickets.AddTicketAsset(_ticketID, value, function (assets) {
+        parent.Ts.Services.Tickets.AddTicketAsset(_ticketID, value, function (assets) {
           AddInventory(assets);
-          top.Ts.Services.Tickets.GetTicketCustomers(_ticketID, function (customers) {
+          parent.Ts.Services.Tickets.GetTicketCustomers(_ticketID, function (customers) {
             AddCustomers(customers);
           });
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addasset", userFullName);
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addasset", userFullName);
         }, function () {
           alert('There was an error adding the asset.');
         });
-        top.Ts.System.logAction('Ticket - Asset Added');
+        parent.Ts.System.logAction('Ticket - Asset Added');
         this.removeItem(value, true);
       },
       onDropdownClose: function ($dropdown) {
@@ -2577,9 +2577,9 @@ function SetupInventorySection() {
     $('#ticket-Inventory').on('click', 'span.tagRemove', function (e) {
       var self = $(this);
       var data = self.parent().data().tag;
-      top.Ts.Services.Tickets.RemoveTicketAsset(_ticketID, data.AssetID, function (assets) {
+      parent.Ts.Services.Tickets.RemoveTicketAsset(_ticketID, data.AssetID, function (assets) {
         AddInventory(assets);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removeasset", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removeasset", userFullName);
       }, function () {
         alert('There was a problem removing the asset from the ticket.');
       });
@@ -2616,14 +2616,14 @@ function SetupUserQueuesSection() {
         }
       },
       onItemAdd: function (value, $item) {
-        top.Ts.Services.Tickets.SetQueue(_ticketID, true, value, function (queues) {
+        parent.Ts.Services.Tickets.SetQueue(_ticketID, true, value, function (queues) {
           AddQueues(queues);
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addqueue", userFullName);
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addqueue", userFullName);
         }, function () {
           alert('There was an error adding the queue.');
         });
-        top.Ts.System.logAction('Ticket - Enqueued');
-        top.Ts.System.logAction('Queued');
+        parent.Ts.System.logAction('Ticket - Enqueued');
+        parent.Ts.System.logAction('Queued');
         this.removeItem(value, true);
       },
       plugins: {
@@ -2640,13 +2640,13 @@ function SetupUserQueuesSection() {
       var self = $(this);
       var data = self.parent().data().tag;
 
-      top.Ts.Services.Tickets.SetQueue(_ticketID, false, data.UserID, function (queues) {
+      parent.Ts.Services.Tickets.SetQueue(_ticketID, false, data.UserID, function (queues) {
         AddQueues(queues);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removequeue", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removequeue", userFullName);
       }, function () {
         alert('There was a problem removing the queue from the ticket.');
       });
-      top.Ts.System.logAction('Ticket - Dequeued');
+      parent.Ts.System.logAction('Ticket - Dequeued');
     });
   }
 }
@@ -2681,13 +2681,13 @@ function SetupSubscribedUsersSection() {
         }
       },
       onItemAdd: function (value, $item) {
-        top.Ts.Services.Tickets.SetSubscribed(_ticketID, true, value, function (subscribers) {
+        parent.Ts.Services.Tickets.SetSubscribed(_ticketID, true, value, function (subscribers) {
           AddSubscribers(subscribers);
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addsubscriber", userFullName);
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addsubscriber", userFullName);
         }, function () {
           alert('There was an error adding the subscriber.');
         });
-        top.Ts.System.logAction('Ticket - User Subscribed');
+        parent.Ts.System.logAction('Ticket - User Subscribed');
         this.removeItem(value, true);
       },
       plugins: {
@@ -2703,13 +2703,13 @@ function SetupSubscribedUsersSection() {
     $('#ticket-SubscribedUsers').on('click', 'span.tagRemove', function (e) {
       var self = $(this);
       var data = self.parent().data().tag;
-      top.Ts.Services.Tickets.SetSubscribed(_ticketID, false, data.UserID, function (subscribers) {
+      parent.Ts.Services.Tickets.SetSubscribed(_ticketID, false, data.UserID, function (subscribers) {
         AddSubscribers(subscribers);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removesubscriber", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removesubscriber", userFullName);
       }, function () {
         alert('There was a problem removing the subscriber from the ticket.');
       });
-      top.Ts.System.logAction('Ticket - Subscriber Removed');
+      parent.Ts.System.logAction('Ticket - Subscriber Removed');
     });
   }
 };
@@ -2763,20 +2763,20 @@ function SetupAssociatedTicketsSection() {
       e.stopPropagation();
       var self = $(this);
       var data = self.parent().data().tag;
-      top.Ts.Services.Tickets.RemoveRelated(_ticketID, data.TicketID, function (result) {
+      parent.Ts.Services.Tickets.RemoveRelated(_ticketID, data.TicketID, function (result) {
         if (result !== null && result === true) self.parent().remove();
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removerelationship", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removerelationship", userFullName);
       }, function () {
         alert('There was an error removing the associated ticket.');
       });
 
-      top.Ts.System.logAction('Ticket - Association Removed');
+      parent.Ts.System.logAction('Ticket - Association Removed');
     });
 
     $('#ticket-AssociatedTickets').on('click', 'div.tag-item', function (e) {
       var self = $(this);
       var data = self.data().tag;
-      top.Ts.MainPage.openTicket(data.TicketNumber, true);
+      parent.Ts.MainPage.openTicket(data.TicketNumber, true);
     });
 
     $('.ticket-association').click(function (e) {
@@ -2788,10 +2788,10 @@ function SetupAssociatedTicketsSection() {
         $('#associate-error').text('You picked the ticket you are viewing. Please try again.').show();
         return;
       }
-      top.Ts.Services.Tickets.AddRelated(_ticketID, TicketID2, IsParent, function (tickets) {
+      parent.Ts.Services.Tickets.AddRelated(_ticketID, TicketID2, IsParent, function (tickets) {
         $('#AssociateTicketModal').modal('hide');
         AddAssociatedTickets(tickets);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
       }, function (error) {
         $('#associate-error').text(error.get_message()).show();
       });
@@ -2830,7 +2830,7 @@ function SetupRemindersSection() {
       load: function (query, callback) {
         this.clearOptions();        // clear the data
         this.renderCache = {};      // clear the html template cache
-        top.Ts.Services.TicketPage.SearchUsers(query, function (result) {
+        parent.Ts.Services.TicketPage.SearchUsers(query, function (result) {
           callback(result);
         });
       },
@@ -2846,9 +2846,9 @@ function SetupRemindersSection() {
     });
 
     var selectizeControl = $reminderSelect[0].selectize;
-    var currUserObj = { id: top.Ts.System.User.UserID, label: userFullName };
+    var currUserObj = { id: parent.Ts.System.User.UserID, label: userFullName };
     selectizeControl.addOption(currUserObj);
-    selectizeControl.addItem(top.Ts.System.User.UserID);
+    selectizeControl.addItem(parent.Ts.System.User.UserID);
 
     $('#RemindersModal').on('hidden.bs.modal', function () {
     	$('#ticket-reminder-title').val('');
@@ -2858,7 +2858,7 @@ function SetupRemindersSection() {
 
     $('#ticket-reminder-save').click(function (e) {
       var selectizeControl = $reminderSelect[0].selectize;
-      var date = top.Ts.Utils.getMsDate($('#ticket-reminder-date').val());
+      var date = parent.Ts.Utils.getMsDate($('#ticket-reminder-date').val());
       var userid = selectizeControl.getValue();
       if (userid == "") {
         $('#ticket-reminder-who').parent().addClass('has-error').removeClass('has-success');
@@ -2876,14 +2876,14 @@ function SetupRemindersSection() {
 
       var reminderID = $('#reminderID').text();
       if (reminderID == '') reminderID = null;
-      top.Ts.Services.System.EditReminder(reminderID, top.Ts.ReferenceTypes.Tickets, _ticketID, title, date, userid, function (result) {
+      parent.Ts.Services.System.EditReminder(reminderID, parent.Ts.ReferenceTypes.Tickets, _ticketID, title, date, userid, function (result) {
         $('#RemindersModal').modal('hide');
         $('#reminderID').text('');
         $('#ticket-reminder-title').val('');
         $('#ticket-reminder-date').val('');
         $('#reminder-error').hide();
         selectizeControl.clear();
-        top.Ts.Services.System.GetItemReminders(top.Ts.ReferenceTypes.Tickets, _ticketID, top.Ts.System.User.UserID, function (reminders) {
+        parent.Ts.Services.System.GetItemReminders(parent.Ts.ReferenceTypes.Tickets, _ticketID, parent.Ts.System.User.UserID, function (reminders) {
           AddReminders(reminders);
         })
       },
@@ -2896,16 +2896,16 @@ function SetupRemindersSection() {
     	var reminder = $(this).parent()[0];
     	reminderClose = true;
     	var currentUserID = $(reminder).data().tag.CreatorID;
-    	if (reminder && currentUserID == top.Ts.System.User.UserID) {
-        top.Ts.Services.System.DismissReminder(reminder.id, function () {
+    	if (reminder && currentUserID == parent.Ts.System.User.UserID) {
+        parent.Ts.Services.System.DismissReminder(reminder.id, function () {
           $(reminder).remove();
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "removereminder", userFullName);
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removereminder", userFullName);
         }, function () {
           alert('There was a problem removing the reminder from the ticket.');
         });
       }
     	else {
-    		if (currentUserID != top.Ts.System.User.UserID)
+    		if (currentUserID != parent.Ts.System.User.UserID)
     			alert('You do not have permission to delete this reminder');
 			else
 				alert('There was a problem removing the reminder from the ticket.');
@@ -2918,8 +2918,8 @@ function SetupRemindersSection() {
       //var selectizeControl = $reminderSelect[0].selectize;
       //selectizeControl.addItem(1839999);
       $('#ticket-reminder-title').val(reminder.Description);
-      var date = reminder.DueDate == null ? null : top.Ts.Utils.getMsDate(reminder.DueDate);
-      $('#ticket-reminder-date').val(date.localeFormat(top.Ts.Utils.getDateTimePattern()));
+      var date = reminder.DueDate == null ? null : parent.Ts.Utils.getMsDate(reminder.DueDate);
+      $('#ticket-reminder-date').val(date.localeFormat(parent.Ts.Utils.getDateTimePattern()));
       if (!reminderClose)
       $('#RemindersModal').modal('show');
     });
@@ -2931,7 +2931,7 @@ function AddReminders(reminders) {
   remindersDiv.empty();
 
   for (var i = 0; i < reminders.length; i++) {
-    var label = ellipseString(reminders[i].Description, 30) + '<br>' + reminders[i].DueDate.localeFormat(top.Ts.Utils.getDateTimePattern());
+    var label = ellipseString(reminders[i].Description, 30) + '<br>' + reminders[i].DueDate.localeFormat(parent.Ts.Utils.getDateTimePattern());
     var reminderElem = PrependTag(remindersDiv, reminders[i].ReminderID, label, reminders[i]);
   };
 }
@@ -2952,13 +2952,13 @@ function AppenCustomValues(fields) {
 
     if (field.CustomFieldCategoryID == -1) {
       switch (field.FieldType) {
-        case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, parentContainer); break;
-        case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, parentContainer); break;
-        case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, parentContainer); break;
-        case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, parentContainer); break;
-        case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, parentContainer); break;
-        case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, parentContainer); break;
-        case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, parentContainer, true); break;
+        case parent.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, parentContainer); break;
+        case parent.Ts.CustomFieldType.Date: AddCustomFieldDate(field, parentContainer); break;
+        case parent.Ts.CustomFieldType.Time: AddCustomFieldTime(field, parentContainer); break;
+        case parent.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, parentContainer); break;
+        case parent.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, parentContainer); break;
+        case parent.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, parentContainer); break;
+        case parent.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, parentContainer, true); break;
         default:
       }
     }
@@ -2967,7 +2967,7 @@ function AppenCustomValues(fields) {
 }
 
 var appendCategorizedCustomValues = function (fields) {
-  top.Ts.Services.CustomFields.GetCategories(top.Ts.ReferenceTypes.Tickets, _ticketTypeID, function (categories) {
+  parent.Ts.Services.CustomFields.GetCategories(parent.Ts.ReferenceTypes.Tickets, _ticketTypeID, function (categories) {
     var container = $('#ticket-group-custom-fields');
     for (var j = 0; j < categories.length; j++) {
       var isFirstFieldAdded = true;
@@ -2984,13 +2984,13 @@ var appendCategorizedCustomValues = function (fields) {
           }
 
           switch (field.FieldType) {
-            case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, container); break;
-            case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, container); break;
-            case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, container); break;
-            case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, container); break;
-            case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, container); break;
-            case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, container); break;
-            case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, container, false); break;
+            case parent.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, container); break;
+            case parent.Ts.CustomFieldType.Date: AddCustomFieldDate(field, container); break;
+            case parent.Ts.CustomFieldType.Time: AddCustomFieldTime(field, container); break;
+            case parent.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, container); break;
+            case parent.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, container); break;
+            case parent.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, container); break;
+            case parent.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, container, false); break;
             default:
           }
         }
@@ -3011,7 +3011,7 @@ var appendConditionalFields = function () {
 }
 
 var appendMatchingParentValueFields = function (container, parentField) {
-  top.Ts.Services.Tickets.GetMatchingParentValueFields(_ticketID, parentField.CustomFieldID, parentField.Value, function (fields) {
+  parent.Ts.Services.Tickets.GetMatchingParentValueFields(_ticketID, parentField.CustomFieldID, parentField.Value, function (fields) {
     for (var i = 0; i < fields.length; i++) {
       var field = fields[i];
       var div = $('<div>').addClass('').data('field', field);
@@ -3020,13 +3020,13 @@ var appendMatchingParentValueFields = function (container, parentField) {
       container.append(div);
 
       switch (field.FieldType) {
-        case top.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, div); break;
-        case top.Ts.CustomFieldType.Date: AddCustomFieldDate(field, div); break;
-        case top.Ts.CustomFieldType.Time: AddCustomFieldTime(field, div); break;
-        case top.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, div); break;
-        case top.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, div); break;
-        case top.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, div); break;
-        case top.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, div, true); break;
+        case parent.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, div); break;
+        case parent.Ts.CustomFieldType.Date: AddCustomFieldDate(field, div); break;
+        case parent.Ts.CustomFieldType.Time: AddCustomFieldTime(field, div); break;
+        case parent.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, div); break;
+        case parent.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, div); break;
+        case parent.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, div); break;
+        case parent.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, div, true); break;
         default:
       }
     }
@@ -3078,11 +3078,11 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     else {
       groupContainer.removeClass('isEmpty');
     }
-    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+    parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
       groupContainer.data('field', result);
       groupContainer.find('.external-link').remove();
       input.after(getUrls(result.Value));
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+      window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
     }, function () {
       alert("There was a problem saving your ticket property.");
     });
@@ -3103,14 +3103,14 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 }
 
 var AddCustomFieldDate = function (field, parentContainer) {
-  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+  var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                     .attr('href', '#')
                     .addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor')
-                    .text((date === null ? 'unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                    .text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern())))
                     .appendTo(dateContainer);
 
   dateLink.click(function (e) {
@@ -3127,7 +3127,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
 
     var theinput = $('<input type="text">')
       .addClass('form-control')
-      .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getDatePattern()))
+      .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDatePattern()))
       .datetimepicker({ pickTime: false })
       .appendTo(container1)
       .focus();
@@ -3148,7 +3148,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
         var currDate = $(this).prev().find('input').val();
         var value = null;
         if (currDate !== '') {
-          value = top.Ts.Utils.getMsDate(currDate);
+          value = parent.Ts.Utils.getMsDate(currDate);
         }
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -3172,10 +3172,10 @@ var AddCustomFieldDate = function (field, parentContainer) {
           groupContainer.removeClass('isEmpty');
         }
 
-        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-          var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-          dateLink.text((value === null ? '' : value.localeFormat(top.Ts.Utils.getDatePattern()))).show();
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+        parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+          var date = result === null ? null : parent.Ts.Utils.getMsDate(result);
+          dateLink.text((value === null ? '' : value.localeFormat(parent.Ts.Utils.getDatePattern()))).show();
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
         }, function () {
           alert("There was a problem saving your ticket property.");
         });
@@ -3202,14 +3202,14 @@ var AddCustomFieldDate = function (field, parentContainer) {
 }
 
 var AddCustomFieldDateTime = function (field, parentContainer) {
-  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+  var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                     .attr('href', '#')
                     .addClass('ticket-anchor ticket-nullable-link')
-                    .text((date === null ? 'unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                    .text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern())))
                     .appendTo(dateContainer);
 
   dateLink.click(function (e) {
@@ -3226,7 +3226,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 
     var theinput = $('<input type="text">')
       .addClass('form-control')
-      .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getDateTimePattern()))
+      .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))
       .datetimepicker({ pickTime: true })
       .appendTo(container1)
       .focus();
@@ -3248,7 +3248,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
         var currDate = $(this).prev().find('input').val();
         var value = null;
         if (currDate !== '') {
-          value = top.Ts.Utils.getMsDate(currDate);
+          value = parent.Ts.Utils.getMsDate(currDate);
         }
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -3272,10 +3272,10 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
           groupContainer.removeClass('isEmpty');
         }
 
-        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-          var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-          dateLink.text((value === null ? '' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+        parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+          var date = result === null ? null : parent.Ts.Utils.getMsDate(result);
+          dateLink.text((value === null ? '' : value.localeFormat(parent.Ts.Utils.getDateTimePattern()))).show();
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
         }, function () {
           alert("There was a problem saving your ticket property.");
         });
@@ -3302,14 +3302,14 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 }
 
 var AddCustomFieldTime = function (field, parentContainer) {
-  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+  var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                     .attr('href', '#')
                     .addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor')
-                    .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+                    .text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern())))
                     .appendTo(dateContainer);
 
   dateLink.click(function (e) {
@@ -3326,7 +3326,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
 
     var theinput = $('<input type="text">')
       .addClass('form-control')
-      .val(date === null ? '' : date.localeFormat(top.Ts.Utils.getTimePattern()))
+      .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getTimePattern()))
       .datetimepicker({ pickDate: false })
       .appendTo(container1)
       .focus();
@@ -3348,7 +3348,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
         var currDate = $(this).prev().find('input').val();
         var value = null;
         if (currDate !== '') {
-          value = top.Ts.Utils.getMsDate("1/1/1900 " + currDate);
+          value = parent.Ts.Utils.getMsDate("1/1/1900 " + currDate);
         }
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -3372,10 +3372,10 @@ var AddCustomFieldTime = function (field, parentContainer) {
           groupContainer.removeClass('isEmpty');
         }
 
-        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-          var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-          dateLink.text((value === null ? '' : value.localeFormat(top.Ts.Utils.getTimePattern()))).show();
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+        parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+          var date = result === null ? null : parent.Ts.Utils.getMsDate(result);
+          dateLink.text((value === null ? '' : value.localeFormat(parent.Ts.Utils.getTimePattern()))).show();
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
         }, function () {
           alert("There was a problem saving your ticket property.");
         });
@@ -3416,9 +3416,9 @@ var AddCustomFieldBool = function (field, parentContainer) {
 
   input.change(function (e) {
     var isChecked = input.is(':checked')
-    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, isChecked, function (result) {
+    parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, isChecked, function (result) {
       groupContainer.data('field', result);
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+      window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
     }, function () {
       alert("There was a problem saving your ticket property.");
     });
@@ -3459,9 +3459,9 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     else {
       groupContainer.removeClass('isEmpty');
     }
-    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+    parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
       groupContainer.data('field', result);
-      window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+      window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
     }, function () {
       alert("There was a problem saving your ticket property.");
     });
@@ -3524,12 +3524,12 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         groupContainer.removeClass('isEmpty');
       }
 
-      top.Ts.System.logAction('Ticket - Custom Value Set');
-      top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+      parent.Ts.System.logAction('Ticket - Custom Value Set');
+      parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
         $('.' + field.CustomFieldID + 'children').remove();
         var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children').insertAfter(formcontainer);
         appendMatchingParentValueFields(childrenContainer, result);
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
       }, function () {
         alert("There was a problem saving your ticket property.");
       });
@@ -3566,7 +3566,7 @@ var SetupDueDateField = function (duedate) {
                       .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
                       .appendTo(dateContainer);
   if (duedate !== null) {
-    dateLink.text(duedate.localeFormat(top.Ts.Utils.getDateTimePattern()));
+    dateLink.text(duedate.localeFormat(parent.Ts.Utils.getDateTimePattern()));
 
     if(duedate < new Date())
     {
@@ -3588,7 +3588,7 @@ var SetupDueDateField = function (duedate) {
 
     var theinput = $('<input type="text">')
       .addClass('form-control')
-      .val(duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern()))
+      .val(duedate === null ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern()))
       .datetimepicker({ pickTime: true })
       .appendTo(container1)
       .focus();
@@ -3610,12 +3610,12 @@ var SetupDueDateField = function (duedate) {
         var currDate = $(this).prev().find('input').val();
         var value = '';
         if (currDate !== '') {
-          value = top.Ts.Utils.getMsDate(currDate);
+          value = parent.Ts.Utils.getMsDate(currDate);
         }
-        top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
-          var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-          dateLink.text((value === '' ? '' : value.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
-          duedate = value === '' ? null : top.Ts.Utils.getMsDate(value); //result;
+        parent.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
+          var date = result === null ? null : parent.Ts.Utils.getMsDate(result);
+          dateLink.text((value === '' ? '' : value.localeFormat(parent.Ts.Utils.getDateTimePattern()))).show();
+          duedate = value === '' ? null : parent.Ts.Utils.getMsDate(value); //result;
 
           if (date != null && date < Date.now()) {
             dateLink.addClass('nonrequired-field-error-font');
@@ -3623,7 +3623,7 @@ var SetupDueDateField = function (duedate) {
           else {
             dateLink.removeClass('nonrequired-field-error-font');
           }
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
         }, function () {
           alert("There was a problem saving your ticket property.");
         });
@@ -3635,7 +3635,7 @@ var SetupDueDateField = function (duedate) {
 }
 
 var SetupStatusField = function (StatusId) {
-  var statuses = top.Ts.Cache.getNextStatuses(StatusId);
+  var statuses = parent.Ts.Cache.getNextStatuses(StatusId);
   _ticketCurrStatus = StatusId;
   if ($('#ticket-status').length) {
     $("#ticket-status").selectize({
@@ -3645,16 +3645,16 @@ var SetupStatusField = function (StatusId) {
       closeAfterSelect: true,
       onChange: function (value) {
         if (value !== _ticketCurrStatus.toString()) {
-          var status = top.Ts.Cache.getTicketStatus(value);
+          var status = parent.Ts.Cache.getTicketStatus(value);
           isFormValidToClose(status.IsClosed, function (isValid) {
             if (isValid == true) {
-              top.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
+              parent.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
                 if (result !== null) {
                   _ticketCurrStatus = result.TicketStatusID;
                   //SetStatus(null);
-                  top.Ts.System.logAction('Ticket - Status Changed');
+                  parent.Ts.System.logAction('Ticket - Status Changed');
                   $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
-                  window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
+                  window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
                 }
               },
               function (error) {
@@ -3697,7 +3697,7 @@ var SetupJiraFields = function () {
     e.preventDefault();
     $('.ts-jira-buttons-container').hide();
     var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
-    top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
+    parent.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
     	if (result != null) {
     		var syncResult = JSON.parse(result);
     		if (syncResult.IsSuccessful === true) {
@@ -3743,7 +3743,7 @@ var SetupJiraFields = function () {
       $('#issueKey').show();
       var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
 
-      top.Ts.Services.Tickets.SetJiraIssueKey(_ticketID, $.trim($('#issueKeyInput').val()), function (result) {
+      parent.Ts.Services.Tickets.SetJiraIssueKey(_ticketID, $.trim($('#issueKeyInput').val()), function (result) {
       	if (result != null) {
       		var syncResult = JSON.parse(result);
       		if (syncResult.IsSuccessful === false) {
@@ -3771,7 +3771,7 @@ var SetupJiraFields = function () {
       e.preventDefault();
       $('.ts-jira-buttons-container').show();
       $('#issueKey').hide();
-      top.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
+      parent.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
         if (result === true) {
           //It was successful
         }
@@ -3792,7 +3792,7 @@ var SetupJiraFields = function () {
 
 //Load and display the proper fields/values
 var SetupJiraFieldValues = function () {
-	top.Ts.Services.Admin.GetJiraInstanceNameForTicket(_ticketID, function (result) {
+	parent.Ts.Services.Admin.GetJiraInstanceNameForTicket(_ticketID, function (result) {
 		if (result.length > 0) {
 			$('#ticket-jirafields').show();
 
@@ -3867,13 +3867,13 @@ var getUrls = function (input) {
 }
 
 var LoadTicketHistory = function () {
-  top.Ts.Services.Tickets.GetTicketHistory(_ticketID, function (logs) {
+  parent.Ts.Services.Tickets.GetTicketHistory(_ticketID, function (logs) {
     var historyTable = $('#ticket-history-table > tbody');
     historyTable.empty().addClass('ts-loading');
     for (var i = 0; i < logs.length; i++) {
       var row = $('<tr>').appendTo(historyTable);
       var col1 = $('<td>').text(logs[i].CreatorName).appendTo(row);
-      var col2 = $('<td>').text(logs[i].DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern())).appendTo(row);
+      var col2 = $('<td>').text(logs[i].DateCreated.localeFormat(parent.Ts.Utils.getDateTimePattern())).appendTo(row);
       var col3 = $('<td>').html(logs[i].Description).appendTo(row);
     }
     historyTable.removeClass('ts-loading');
@@ -3883,13 +3883,13 @@ var LoadTicketHistory = function () {
 }
 
 function openTicketWindow(ticketID) {
-  top.Ts.MainPage.openTicket(ticketID, true);
+  parent.Ts.MainPage.openTicket(ticketID, true);
 }
 
 function FetchTimeLineItems(start) {
   _isLoading = true;
   $('.results-loading').show();
-  top.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
+  parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
     _timeLine = TimeLineItems;
 
     if (TimeLineItems.length < 1) {
@@ -3903,7 +3903,7 @@ function FetchTimeLineItems(start) {
       //create first timeline date marker if needed
       if (_currDateSpan == null) {
         _currDateSpan = _timeLine[0].item.DateCreated;
-        var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
+        var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(parent.Ts.Utils.getDatePattern()) + '</span>';
         $("#action-timeline").append(dateSpan);
       };
       var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
@@ -3937,7 +3937,7 @@ function FetchTimeLineItems(start) {
 
 function CreateActionElement(val, ShouldAppend) {
   if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-    var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
+    var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(parent.Ts.Utils.getDatePattern()) + '</span>';
     $("#action-timeline").append(dateSpan);
     _currDateSpan = val.item.DateCreated;
   }
@@ -3970,7 +3970,7 @@ function CreateActionElement(val, ShouldAppend) {
 
 function UpdateActionElement(val) {
   if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-    var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(top.Ts.Utils.getDatePattern()) + '</span>';
+    var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(parent.Ts.Utils.getDatePattern()) + '</span>';
     $("#action-timeline").append(dateSpan);
     _currDateSpan = val.item.DateCreated;
   }
@@ -3990,7 +3990,7 @@ function CreateHandleBarHelpers() {
   });
 
   Handlebars.registerHelper('FormatDateTime', function (Date) {
-    return Date.localeFormat(top.Ts.Utils.getDateTimePattern())
+    return Date.localeFormat(parent.Ts.Utils.getDateTimePattern())
   });
 
   Handlebars.registerHelper('TimeLineLabel', function () {
@@ -4023,23 +4023,23 @@ function CreateHandleBarHelpers() {
   });
 
   Handlebars.registerHelper('CanPin', function (options) {
-    if (top.Ts.System.User.UserCanPinAction || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
+    if (parent.Ts.System.User.UserCanPinAction || parent.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
   });
 
   Handlebars.registerHelper('CanEdit', function (options) {
     var action = this.item;
-    var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === action.CreatorID;
-    var restrictedFromEditingAnyActions = !top.Ts.System.User.IsSystemAdmin && top.Ts.System.User.RestrictUserFromEditingAnyActions;
+    var canEdit = parent.Ts.System.User.IsSystemAdmin || parent.Ts.System.User.UserID === action.CreatorID;
+    var restrictedFromEditingAnyActions = !parent.Ts.System.User.IsSystemAdmin && parent.Ts.System.User.RestrictUserFromEditingAnyActions;
 
-    if (!(!top.Ts.System.User.AllowUserToEditAnyAction && (!canEdit || restrictedFromEditingAnyActions))) { return options.fn(this); }
+    if (!(!parent.Ts.System.User.AllowUserToEditAnyAction && (!canEdit || restrictedFromEditingAnyActions))) { return options.fn(this); }
   });
 
   Handlebars.registerHelper('CanKB', function (options) {
-    if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
+    if (parent.Ts.System.User.ChangeKbVisibility || parent.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
   });
 
   Handlebars.registerHelper('CanMakeVisible', function (options) {
-    if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
+    if (parent.Ts.System.User.ChangeTicketVisibility || parent.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
   });
 
   Handlebars.registerHelper('TimeSpent', function () {
@@ -4051,7 +4051,7 @@ function CreateHandleBarHelpers() {
     if (timeSpentString == "") return ""
     else {
     	if (this.item.DateStarted !== null) {
-    		var time = this.item.DateStarted.localeFormat(top.Ts.Utils.getDateTimePattern())
+    		var time = this.item.DateStarted.localeFormat(parent.Ts.Utils.getDateTimePattern())
     		return timeSpentString + " - " + time
     	}
     }
@@ -4088,10 +4088,10 @@ function CreateTimeLineDelegates() {
     if (isPinned) self.get(0).lastChild.nodeValue = "Pin";
     else self.get(0).lastChild.nodeValue = "Unpin";
 
-    if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
+    if (parent.Ts.System.User.IsSystemAdmin || parent.Ts.System.User.UserCanPinAction) {
       $('a.ticket-action-pinned').addClass('hidden');
-      top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-      top.Ts.Services.TicketPage.SetActionPinned(_ticketID, Action.RefID, !isPinned,
+      parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
+      parent.Ts.Services.TicketPage.SetActionPinned(_ticketID, Action.RefID, !isPinned,
       function (result) {
         if (result) {
           Action.IsPinned = result;
@@ -4147,9 +4147,9 @@ function CreateTimeLineDelegates() {
     var action = parentLI.data().action;
     var titleElement = $('.action-placeholder');
 
-    if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
-      top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-      top.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false,
+    if (parent.Ts.System.User.IsSystemAdmin || parent.Ts.System.User.UserCanPinAction) {
+      parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
+      parent.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false,
       function (result) {
         parentLI.data().action.IsPinned = result;
         parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
@@ -4178,9 +4178,9 @@ function CreateTimeLineDelegates() {
     var self = $(this);
     var action = self.closest('li').data().action;
 
-    if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) {
-      top.Ts.System.logAction('Ticket - Action KB Icon Clicked');
-      top.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase,
+    if (parent.Ts.System.User.ChangeKbVisibility || parent.Ts.System.User.IsSystemAdmin) {
+      parent.Ts.System.logAction('Ticket - Action KB Icon Clicked');
+      parent.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase,
     function (result) {
       var parentLI = self.closest('li');
       parentLI.data().action.IsKnowledgeBase = result;
@@ -4198,9 +4198,9 @@ function CreateTimeLineDelegates() {
     var self = $(this);
     var action = self.closest('li').data().action;
 
-    if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) {
-      top.Ts.System.logAction('Ticket - Action KB Icon Clicked');
-      top.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase,
+    if (parent.Ts.System.User.ChangeKbVisibility || parent.Ts.System.User.IsSystemAdmin) {
+      parent.Ts.System.logAction('Ticket - Action KB Icon Clicked');
+      parent.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase,
     function (result) {
       var parentLI = self.closest('li');
       parentLI.data().action.IsKnowledgeBase = result;
@@ -4218,10 +4218,10 @@ function CreateTimeLineDelegates() {
     var self = $(this);
     var action = self.closest('li').data().action;
 
-    if (top.Ts.System.User.ChangeTicketVisibility || top.Ts.System.User.IsSystemAdmin) {
-      top.Ts.System.logAction('Ticket - Action Visible Icon Clicked');
+    if (parent.Ts.System.User.ChangeTicketVisibility || parent.Ts.System.User.IsSystemAdmin) {
+      parent.Ts.System.logAction('Ticket - Action Visible Icon Clicked');
       if (!action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
-      top.Ts.Services.TicketPage.SetActionPortal(action.RefID, !action.IsVisibleOnPortal,
+      parent.Ts.Services.TicketPage.SetActionPortal(action.RefID, !action.IsVisibleOnPortal,
       function (result) {
         var parentLI = self.closest('li');
         parentLI.data().action.IsVisibleOnPortal = result;
@@ -4230,7 +4230,7 @@ function CreateTimeLineDelegates() {
 
         if (result) {
         	badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
-        	top.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
+        	parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
         		if (!isInvalid)
         			alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
         	});
@@ -4239,7 +4239,7 @@ function CreateTimeLineDelegates() {
           badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
         }
 
-        top.Ts.Services.Tickets.GetAction(action.RefID, function (action) {
+        parent.Ts.Services.Tickets.GetAction(action.RefID, function (action) {
           parentLI.find('div.timeline-body').html(action.Description);
           parentLI.data().action.Message = action.Description;
         });
@@ -4284,10 +4284,10 @@ function CreateTimeLineDelegates() {
     var action = self.closest('li').data().action;
 
     if (confirm('Are you sure you would like to delete this action?')) {
-      top.Ts.System.logAction('Ticket - Action Deleted');
-      top.Ts.Services.Tickets.DeleteAction(action.RefID, function () {
+      parent.Ts.System.logAction('Ticket - Action Deleted');
+      parent.Ts.Services.Tickets.DeleteAction(action.RefID, function () {
         self.closest('li').remove();
-        window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "deleteaction", userFullName);
+        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "deleteaction", userFullName);
       },
       function () { alert('There was an error deleting this action.'); });
     }
@@ -4423,13 +4423,13 @@ function CreateTimeLineDelegates() {
       //    commentinfo.User[commentinfo.User.length] = $(this).data('User');
       //});
 
-      if (commentinfo.Tickets.length > 0) top.Ts.System.logAction('Water Cooler - Ticket Inserted');
-      if (commentinfo.Groups.length > 0) top.Ts.System.logAction('Water Cooler - Group Inserted');
-      if (commentinfo.Products.length > 0) top.Ts.System.logAction('Water Cooler - Product Inserted');
-      if (commentinfo.Company.length > 0) top.Ts.System.logAction('Water Cooler - Company Inserted');
-      if (commentinfo.User.length > 0) top.Ts.System.logAction('Water Cooler - User Inserted');
+      if (commentinfo.Tickets.length > 0) parent.Ts.System.logAction('Water Cooler - Ticket Inserted');
+      if (commentinfo.Groups.length > 0) parent.Ts.System.logAction('Water Cooler - Group Inserted');
+      if (commentinfo.Products.length > 0) parent.Ts.System.logAction('Water Cooler - Product Inserted');
+      if (commentinfo.Company.length > 0) parent.Ts.System.logAction('Water Cooler - Company Inserted');
+      if (commentinfo.User.length > 0) parent.Ts.System.logAction('Water Cooler - User Inserted');
 
-      top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
+      parent.Ts.Services.WaterCooler.NewComment(parent.JSON.stringify(commentinfo), function (Message) {
         var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
         Message.Message = Message.Message.replace(/\n\r?/g, '<br />');
         var html = _compiledWCReplyTemplate(Message);
@@ -4437,7 +4437,7 @@ function CreateTimeLineDelegates() {
         self.parent().hide();
         self.parent().parent().find('.wc-option-replyarea').show();
         self.closest('.wc-textarea').find('textarea').val('');
-        window.top.chatHubClient.server.newThread(Message.MessageID, top.Ts.System.User.OrganizationID);
+        window.parent.chatHubClient.server.newThread(Message.MessageID, parent.Ts.System.User.OrganizationID);
       });
     }
 
@@ -4457,14 +4457,14 @@ function CreateTimeLineDelegates() {
     var hasLiked = self.data('liked');
     if (!hasLiked) {
       var messageID = self.closest('div.timeline-wc-reply').data().messageid;
-      top.Ts.System.logAction('Water Cooler - Message Liked');
-      top.Ts.Services.WaterCooler.AddCommentLike(messageID, function (likes) {
+      parent.Ts.System.logAction('Water Cooler - Message Liked');
+      parent.Ts.Services.WaterCooler.AddCommentLike(messageID, function (likes) {
         var countSpan = self.find('.wc-reply-like-total');
         countSpan.html("+" + likes.length);
         self.data('liked', true);
         countSpan.next().hide();
         //TODO:  need to update signalr
-        //window.top.chatHubClient.server.addLike(likes, messageID, thread.Message.MessageParent, top.Ts.System.User.OrganizationID);
+        //window.parent.chatHubClient.server.addLike(likes, messageID, thread.Message.MessageParent, parent.Ts.System.User.OrganizationID);
       });
     };
   });
@@ -4486,15 +4486,15 @@ function CreateTicketToolbarDomEvents() {
   $('#Ticket-Owner').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    SetAssignedUser(top.Ts.System.User.UserID);
-    top.Ts.System.logAction('Ticket - Take Ownership');
+    SetAssignedUser(parent.Ts.System.User.UserID);
+    parent.Ts.System.logAction('Ticket - Take Ownership');
   });
 
   $('#Ticket-GetUpdate').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    top.Ts.System.logAction('Ticket - Request Update');
-    top.Ts.Services.TicketPage.RequestUpdate(_ticketID, function (actionInfo) {
+    parent.Ts.System.logAction('Ticket - Request Update');
+    parent.Ts.Services.TicketPage.RequestUpdate(_ticketID, function (actionInfo) {
     	_actionTotal = _actionTotal + 1;
     	var actionElement = CreateActionElement(actionInfo, false);
     	actionElement.find('.ticket-action-number').text(_actionTotal);
@@ -4510,16 +4510,16 @@ function CreateTicketToolbarDomEvents() {
     e.stopPropagation();
     var self = $(this);
     var isRead = self.find('i').hasClass('color-blue');
-    top.Ts.Services.Tickets.SetTicketRead(_ticketID, isRead, function () {
+    parent.Ts.Services.Tickets.SetTicketRead(_ticketID, isRead, function () {
       if (!isRead) {
         self.find('i').addClass('color-blue');
         self.attr('data-original-title', 'Mark Ticket as Read').tooltip('fixTitle');
-        top.Ts.System.logAction('Ticket Grid - Mark UnRead');
+        parent.Ts.System.logAction('Ticket Grid - Mark UnRead');
       }
       else {
         self.find('i').removeClass('color-blue');
         self.attr('data-original-title', 'Mark Ticket as UnRead').tooltip('fixTitle');
-        top.Ts.System.logAction('Ticket Grid - Mark Read');
+        parent.Ts.System.logAction('Ticket Grid - Mark Read');
       }
     });
   });
@@ -4537,7 +4537,7 @@ function CreateTicketToolbarDomEvents() {
       $(this).data('ticketnumber', ui.item.id);
 
       try {
-        top.Ts.Services.Tickets.GetTicketInfo(ui.item.id, function (info) {
+        parent.Ts.Services.Tickets.GetTicketInfo(ui.item.id, function (info) {
           var descriptionString = info.Actions[0].Action.Description;
 
           if (ellipseString(info.Actions[0].Action.Description, 30).indexOf("<img src") !== -1)
@@ -4576,18 +4576,18 @@ function CreateTicketToolbarDomEvents() {
       var winningTicketNumber = $('#Ticket-Merge-search').data('ticketnumber');
       var JSTop = top;
       //var window = window;
-      top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function (result) {
+      parent.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function (result) {
         if (result != "")
           alert(result);
         else {
           $('#MergeModal').modal('hide');
-          JSTop.Ts.MainPage.closeTicketTab(_ticketNumber);
-          JSTop.Ts.MainPage.openTicket(winningTicketNumber, true);
+          JSparent.Ts.MainPage.closeTicketTab(_ticketNumber);
+          JSparent.Ts.MainPage.openTicket(winningTicketNumber, true);
           //window.location = window.location;
-          window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
         }
       });
-      //top.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+      //parent.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
       //  function () {
       //  $('#merge-error').show();
       //});
@@ -4600,8 +4600,8 @@ function CreateTicketToolbarDomEvents() {
   $('#Ticket-Refresh').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    top.Ts.System.logAction('Ticket - Refreshed');
-    top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+    parent.Ts.System.logAction('Ticket - Refreshed');
+    parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
     window.location = window.location;
   });
 
@@ -4610,8 +4610,8 @@ function CreateTicketToolbarDomEvents() {
     e.stopPropagation();
     var self = $(this);
     var isSubscribed = _ticketInfo.Ticket.IsSubscribed;
-    top.Ts.System.logAction('Ticket - Subscribed');
-    top.Ts.Services.Tickets.SetSubscribed(_ticketID, !isSubscribed, null, function (subscribers) {
+    parent.Ts.System.logAction('Ticket - Subscribed');
+    parent.Ts.Services.Tickets.SetSubscribed(_ticketID, !isSubscribed, null, function (subscribers) {
       _ticketInfo.Ticket.IsSubscribed = !isSubscribed;
       self.children().toggleClass('color-green');
       self.attr('data-original-title', (_ticketInfo.Ticket.IsSubscribed) ? 'UnSubscribe to Ticket' : 'Subscribe to Ticket').tooltip('fixTitle');
@@ -4626,9 +4626,9 @@ function CreateTicketToolbarDomEvents() {
     e.stopPropagation();
     var self = $(this);
     var isQueued = _ticketInfo.Ticket.IsEnqueued;
-    top.Ts.System.logAction('Ticket - Enqueued');
-    top.Ts.System.logAction('Queued');
-    top.Ts.Services.Tickets.SetQueue(_ticketID, !isQueued, null, function (queues) {
+    parent.Ts.System.logAction('Ticket - Enqueued');
+    parent.Ts.System.logAction('Queued');
+    parent.Ts.Services.Tickets.SetQueue(_ticketID, !isQueued, null, function (queues) {
       _ticketInfo.Ticket.IsEnqueued = !isQueued;
       self.children().toggleClass('color-green');
       self.attr('data-original-title', (_ticketInfo.Ticket.IsEnqueued) ? 'Remove from your Ticket Queue' : 'Add to your Ticket Queue').tooltip('fixTitle');
@@ -4646,8 +4646,8 @@ function CreateTicketToolbarDomEvents() {
     _ticketInfo.Ticket.IsFlagged = !isFlagged;
     self.children().toggleClass('color-red');
     self.attr('data-original-title', (_ticketInfo.Ticket.IsFlagged) ? 'UnFlag Ticket' : 'Flag Ticket').tooltip('fixTitle');
-    top.Ts.System.logAction('Ticket - Flagged');
-    top.Ts.Services.Tickets.SetTicketFlag(_ticketID, !isFlagged, null, function () {
+    parent.Ts.System.logAction('Ticket - Flagged');
+    parent.Ts.Services.Tickets.SetTicketFlag(_ticketID, !isFlagged, null, function () {
     }, function () {
       alert('There was an error unflagging to this ticket.');
     });
@@ -4656,15 +4656,15 @@ function CreateTicketToolbarDomEvents() {
   $('#Ticket-Print').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    top.Ts.System.logAction('Ticket - Printed');
+    parent.Ts.System.logAction('Ticket - Printed');
     window.open('../../../TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
   });
 
   $('#Ticket-Email').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    top.Ts.System.logAction('Ticket - Emailed');
-    top.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function (actionInfo) {
+    parent.Ts.System.logAction('Ticket - Emailed');
+    parent.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function (actionInfo) {
     	$('#email-success').show();
     	_actionTotal = _actionTotal + 1;
     	var actionElement = CreateActionElement(actionInfo, false);
@@ -4678,7 +4678,7 @@ function CreateTicketToolbarDomEvents() {
   $('#Ticket-History').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    top.Ts.System.logAction('Ticket - Shown History');
+    parent.Ts.System.logAction('Ticket - Shown History');
     LoadTicketHistory();
     $('#TicketHistoryModal').modal('show')
   });
@@ -4689,7 +4689,7 @@ function SetupWCArea() {
   var execGetCustomer = null;
   function getCustomers(request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
-    execGetCustomer = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
+    execGetCustomer = parent.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
       response(result);
     });
   }
@@ -4697,14 +4697,14 @@ function SetupWCArea() {
   var execGetUsers = null;
   function getUsers(request, response) {
     if (execGetUsers) { execGetUsers._executor.abort(); }
-    execGetUsers = top.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
+    execGetUsers = parent.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
   }
 
   var execGetTicket = null;
   function getTicketsByTerm(request, response) {
     if (execGetTicket) { execGetTicket._executor.abort(); }
     //execGetTicket = Ts.Services.Tickets.GetTicketsByTerm(request.term, function (result) { response(result); });
-    execGetTicket = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
+    execGetTicket = parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
       $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
       response(result);
     });
@@ -4714,13 +4714,13 @@ function SetupWCArea() {
   var execGetGroups = null;
   function getGroupsByTerm(request, response) {
     if (execGetGroups) { execGetGroups._executor.abort(); }
-    execGetTicket = top.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
+    execGetTicket = parent.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
   }
 
   var execGetProducts = null;
   function getProductByTerm(request, response) {
     if (execGetProducts) { execGetProducts._executor.abort(); }
-    execGetProducts = top.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
+    execGetProducts = parent.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
   }
 
   $('#associationSearch').attr("placeholder", "Search Tickets").val("");
@@ -5013,13 +5013,13 @@ function SetupWCArea() {
         commentinfo.User[commentinfo.User.length] = $(this).data('User');
       });
 
-      if (commentinfo.Tickets.length > 0) top.Ts.System.logAction('Water Cooler - Ticket Inserted');
-      if (commentinfo.Groups.length > 0) top.Ts.System.logAction('Water Cooler - Group Inserted');
-      if (commentinfo.Products.length > 0) top.Ts.System.logAction('Water Cooler - Product Inserted');
-      if (commentinfo.Company.length > 0) top.Ts.System.logAction('Water Cooler - Company Inserted');
-      if (commentinfo.User.length > 0) top.Ts.System.logAction('Water Cooler - User Inserted');
+      if (commentinfo.Tickets.length > 0) parent.Ts.System.logAction('Water Cooler - Ticket Inserted');
+      if (commentinfo.Groups.length > 0) parent.Ts.System.logAction('Water Cooler - Group Inserted');
+      if (commentinfo.Products.length > 0) parent.Ts.System.logAction('Water Cooler - Product Inserted');
+      if (commentinfo.Company.length > 0) parent.Ts.System.logAction('Water Cooler - Company Inserted');
+      if (commentinfo.User.length > 0) parent.Ts.System.logAction('Water Cooler - User Inserted');
 
-      top.Ts.Services.TicketPage.NewWCPost(top.JSON.stringify(commentinfo), function (message) {
+      parent.Ts.Services.TicketPage.NewWCPost(parent.JSON.stringify(commentinfo), function (message) {
         if ($('.wc-attachments li').length > 0) {
           $('.wc-attachments li').each(function (i, o) {
             var data = $(o).data('data');
@@ -5028,7 +5028,7 @@ function SetupWCArea() {
             $(o).data('data', data);
           });
         }
-        window.top.chatHubClient.server.newThread(message.item.RefID, top.Ts.System.User.OrganizationID);
+        window.parent.chatHubClient.server.newThread(message.item.RefID, parent.Ts.System.User.OrganizationID);
         $('.wc-attachments').empty();
         CreateActionElement(message, false);
         $('.watercooler-new-area').fadeOut('normal');
@@ -5052,7 +5052,7 @@ function SetupWCArea() {
         .appendTo(item);
 
         $('<span>')
-        .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+        .text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
         .addClass('filename')
         .appendTo(bg);
 
@@ -5110,17 +5110,17 @@ function SetupWCArea() {
 var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
   $('#merge-success').show();
   $('#MergeModal').modal('hide');
-  top.Ts.MainPage.closeTicketTab(_ticketNumber);
-  top.Ts.MainPage.openTicket(winningTicketNumber, true);
+  parent.Ts.MainPage.closeTicketTab(_ticketNumber);
+  parent.Ts.MainPage.openTicket(winningTicketNumber, true);
   window.location = window.location;
-  window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+  window.parent.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
 };
 
 var addUserViewing = function (userID) {
   $('#ticket-now-viewing').show();
   $('#ticket-viewing-users').empty();
   if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
-    top.Ts.Services.Users.GetUser(userID, function (user) {
+    parent.Ts.Services.Users.GetUser(userID, function (user) {
       var fullName = user.FirstName + " " + user.LastName;
       var viewuser = $('<a>')
               .data('ChatID', user.UserID)
@@ -5128,7 +5128,7 @@ var addUserViewing = function (userID) {
               .addClass('ticket-viewer')
               .click(function () {
                 window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
-                top.Ts.System.logAction('Now Viewing - Chat Opened');
+                parent.Ts.System.logAction('Now Viewing - Chat Opened');
               })
               .html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>')
               .appendTo($('#ticket-viewing-users'));
@@ -5153,7 +5153,7 @@ var removeUserViewing = function (ticketNum, userID) {
 }
 
 var resetSLAInfo = function () {
-	top.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {
+	parent.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {
 		_ticketInfo.Ticket.SlaViolationTime = info.SlaViolationTime;
 		_ticketInfo.Ticket.SlaWarningTime = info.SlaWarningTime;
 		_ticketInfo.Ticket.SlaViolationDate = info.SlaViolationDate;
@@ -5172,7 +5172,7 @@ var setSLAInfo = function () {
       .find('i')
       .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
     if (_ticketInfo.Ticket.SlaViolationDate !== undefined) {
-      $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(top.Ts.Utils.getDateTimePattern()));
+      $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(parent.Ts.Utils.getDateTimePattern()));
     }
     else {
       $('#ticket-SLANote').text('');
@@ -5204,7 +5204,7 @@ var SetCommunityCategory = function (ForumCategory) {
 }
 
 var SetDueDate = function (duedate) {
-  $('.ticket-duedate-anchor').text((duedate === null ? '' : duedate.localeFormat(top.Ts.Utils.getDateTimePattern())));
+  $('.ticket-duedate-anchor').text((duedate === null ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())));
 };
 
 var SetAssignedUser = function (ID) {
@@ -5228,7 +5228,7 @@ var SetGroup = function (GroupID) {
 var SetStatus = function (StatusID) {
   var selectField = $('#ticket-status');
   if (selectField.length > 0) {
-    var statuses = top.Ts.Cache.getNextStatuses(StatusID);
+    var statuses = parent.Ts.Cache.getNextStatuses(StatusID);
     var selectize = selectField[0].selectize;
     selectize.clear(true);
     selectize.clearOptions();

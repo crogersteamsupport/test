@@ -54,22 +54,22 @@
 
       $('#btnClear').click(function (e) {
         e.preventDefault();
-        top.Ts.Services.System.ClearExceptionLogs(false, function () { loadTopExceptions(); });
+        parent.Ts.Services.System.ClearExceptionLogs(false, function () { loadTopExceptions(); });
       });
 
       $('#btnClearApi').click(function (e) {
         e.preventDefault();
-        top.Ts.Services.System.ClearExceptionLogs(true, function () { loadTopExceptions(); });
+        parent.Ts.Services.System.ClearExceptionLogs(true, function () { loadTopExceptions(); });
       });
       
 
       $('#btnThrow').click(function (e) {
         e.preventDefault();
-        top.Ts.Services.System.CreateNewException(function () { loadTopExceptions(); });
+        parent.Ts.Services.System.CreateNewException(function () { loadTopExceptions(); });
       });
 
       function loadException(id) {
-        top.Ts.Services.System.GetException(id, function (exception) {
+        parent.Ts.Services.System.GetException(id, function (exception) {
           $('.preview').html('');
           var table = $('<table>').appendTo($('.preview'));
           for (prop in exception) {
@@ -81,11 +81,11 @@
       }
 
       function loadTopExceptions() {
-        top.Ts.Services.System.GetExceptionLogCount(function (count) {
+        parent.Ts.Services.System.GetExceptionLogCount(function (count) {
           $('#divCount').html('Total Count: ' + count);
         });
 
-        top.Ts.Services.System.GetTopExceptions(function (exceptions) {
+        parent.Ts.Services.System.GetTopExceptions(function (exceptions) {
           $('#divTopExceptions').html('');
           var table = $('<table>').attr('cellpadding', '10').appendTo('#divTopExceptions');
           for (var i = 0; i < exceptions.length; i++) {

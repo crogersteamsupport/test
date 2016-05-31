@@ -1,5 +1,5 @@
 ﻿var initEditorV2 = function (element, callback) {
-	top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+	parent.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
 		element.summernote({
 			height: 150,
 			focus: true,
@@ -23,19 +23,19 @@
 			},
 			callbacks: {
 				onInit: function () {
-					top.Ts.System.refreshUser(function () {
-						if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-							$('.note-editable').css('font-family', GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+					parent.Ts.System.refreshUser(function () {
+						if (parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
+							$('.note-editable').css('font-family', GetTinyMCEFontName(parent.Ts.System.User.FontFamily));
 						}
-						else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-							$('.note-editable').css('font-family', GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+						else if (parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+							$('.note-editable').css('font-family', GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily));
 						}
 
-						if (top.Ts.System.User.FontSize != "0") {
-							$('.note-editable').css('font-size', GetTinyMCEFontSize(top.Ts.System.User.FontSize));
+						if (parent.Ts.System.User.FontSize != "0") {
+							$('.note-editable').css('font-size', GetTinyMCEFontSize(parent.Ts.System.User.FontSize));
 						}
-						else if (top.Ts.System.Organization.FontSize != "0") {
-							$('.note-editable').css('font-size', GetTinyMCEFontSize(top.Ts.System.Organization.FontSize));
+						else if (parent.Ts.System.Organization.FontSize != "0") {
+							$('.note-editable').css('font-size', GetTinyMCEFontSize(parent.Ts.System.Organization.FontSize));
 						}
 					});
 					callback();
@@ -53,7 +53,7 @@
 			contents: '<i class="fa fa-clock-o"/>',
 			tooltip: 'Insert User',
 			click: function () {
-				context.invoke('editor.insertText', Date(Date.UTC(Date.Now)) + ' ' + top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + ' : ');
+				context.invoke('editor.insertText', Date(Date.UTC(Date.Now)) + ' ' + parent.Ts.System.User.FirstName + ' ' + parent.Ts.System.User.LastName + ' : ');
 			}
 		});
 		return button.render();
@@ -70,7 +70,7 @@
 					success: function (files) {
 						var html = $('<a href=' + files[0].link + '>' + files[0].name + '</a>')[0];
 						context.invoke('insertNode', html);
-						top.Ts.System.logAction('Ticket - Dropbox Added');
+						parent.Ts.System.logAction('Ticket - Dropbox Added');
 					},
 					cancel: function () {
 						alert('There was a problem inserting the dropbox file.');
@@ -88,18 +88,18 @@
 			contents: '<i class="fa fa-ticket"/>',
 			tooltip: 'Insert Ticket',
 			click: function () {
-				top.Ts.System.logAction('Ticket - Ticket Inserted');
+				parent.Ts.System.logAction('Ticket - Ticket Inserted');
 
-				top.Ts.MainPage.selectTicket(null, function (ticketID) {
-					top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
+				parent.Ts.MainPage.selectTicket(null, function (ticketID) {
+					parent.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
 						if (_ticketID) {
-							top.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
+							parent.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
 								appendRelated(tickets);
 							}, function (error) {
 								alert(error.get_message());
 							});
 						}
-						var html = $('<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>')[0];
+						var html = $('<a href="' + parent.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>')[0];
 						context.invoke('insertNode', html);
 					}, function () {
 						alert('There was a problem inserting the ticket link.');
@@ -116,7 +116,7 @@
 			contents: '<i class="fa fa-video-camera"/>',
 			tooltip: 'Record Video',
 			click: function () {
-				top.Ts.System.logAction('Ticket - Video Recording Button Clicked');
+				parent.Ts.System.logAction('Ticket - Video Recording Button Clicked');
 				if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
 					var dynamicPub = element.parent().find("#publisher");
 					element.parent().find("#recordVideoContainer").show();
@@ -130,7 +130,7 @@
 
 
 
-					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+					parent.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
 						sessionId = resultID[0];
 						token = resultID[1];
 						session = OT.initSession(apiKey, sessionId);
@@ -161,7 +161,7 @@
 			click: function () {
 				suggestedSolutions(element.SuggestedSolutionDefaultInput, function (ticketIDs) {
 				    for (var j = 0; j < ticketIDs.length; j++) {
-				        top.Ts.Services.Tickets.GetKBTicketAndActions(ticketIDs[j], function (result) {
+				        parent.Ts.Services.Tickets.GetKBTicketAndActions(ticketIDs[j], function (result) {
 				            if (result === null) {
 				                alert('There was an error inserting your suggested solution ticket.');
 				                return;
@@ -181,15 +181,15 @@
 				            html = html + '</div>';
 
 				            context.invoke('insertNode', $(html)[0])
-				            top.Ts.System.logAction('Ticket - Suggested Solution Inserted');
+				            parent.Ts.System.logAction('Ticket - Suggested Solution Inserted');
 				        }, function () {
 				            alert('There was an error inserting your suggested solution ticket.');
 				        });
 				    }
 				});
 
-				//top.Ts.MainPage.selectTicket(filter, function (ticketID) {
-				//	top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+				//parent.Ts.MainPage.selectTicket(filter, function (ticketID) {
+				//	parent.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
 				//		if (result === null) {
 				//			alert('There was an error inserting your knowledgebase ticket.');
 				//			return;
@@ -205,7 +205,7 @@
 				//		html = html + '</div>';
 
 				//		context.invoke('insertNode', $(html)[0])
-				//		top.Ts.System.logAction('Ticket - KB Inserted');
+				//		parent.Ts.System.logAction('Ticket - KB Inserted');
 				//	}, function () {
 				//		alert('There was an error inserting your knowledgebase ticket.');
 				//	});
@@ -225,9 +225,9 @@
 					alert("Sorry, this feature is not supported by your browser");
 				}
 				else {
-					top.Ts.MainPage.pasteImage(null, function (result) {
+					parent.Ts.MainPage.pasteImage(null, function (result) {
 						if (result != "") {
-							var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '">';
+							var html = '<img src="' + parent.Ts.System.AppDomain + '/dc/' + result + '">';
 							context.invoke('insertNode', $(html)[0])
 						}
 					});
@@ -264,7 +264,7 @@
 			contents: '<i class="fa fa-desktop"/>',
 			tooltip: 'Screen Video Recording',
 			click: function () {
-				top.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
+				parent.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
 				if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
 					var dynamicPub = element.parent().find("#screenShare");
 					element.parent().find("#recordScreenContainer").show();
@@ -296,7 +296,7 @@
 							element.parent().find('#canceltokScreen').hide();
 						} else {
 							// Screen sharing is available
-							top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+							parent.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
 								sessionId = resultID[0];
 								token = resultID[1];
 								apiKey = resultID[2];
@@ -479,7 +479,7 @@ function suggestedSolutions(defaultInput, callback) {
         if (ids.length > 0) {
             callback(ids);
             $('#SuggestedSolutionsModal').modal('hide');
-            top.Ts.System.logAction('Inserted suggested solution');
+            parent.Ts.System.logAction('Inserted suggested solution');
         }
         else {
             alert('Select a suggested solution.');

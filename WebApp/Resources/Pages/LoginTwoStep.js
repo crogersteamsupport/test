@@ -7,7 +7,7 @@ $(document).ready(function () {
   $('#verify').click(function (e) {
     e.preventDefault();
     var code = $('#inputVerificationCode').val();
-    var userId = top.Ts.Utils.getQueryValue("UserID", window);
+    var userId = parent.Ts.Utils.getQueryValue("UserID", window);
     if (code) {
       var userData = { userId: userId, codeEntered: code };
       IssueAjaxRequest(loginService, "CodeVerification", userData,
@@ -36,7 +36,7 @@ $(document).ready(function () {
 
   $('#resendCode').click(function (e) {
     e.preventDefault();
-    var userId = top.Ts.Utils.getQueryValue("UserID", window);
+    var userId = parent.Ts.Utils.getQueryValue("UserID", window);
     var userData = { userId: userId };
     IssueAjaxRequest(loginService, "RegenerateCodeVerification", userData,
     function (result) {
@@ -49,7 +49,7 @@ $(document).ready(function () {
 });
 
 function GetUserPhoneNumb() {
-	var userId = top.Ts.Utils.getQueryValue("UserID", window);
+	var userId = parent.Ts.Utils.getQueryValue("UserID", window);
 	IssueAjaxRequest(loginService, "GetUsersPhoneNumber", { "userID": parseInt(userId) }, successEvent, function () { });
 }
 

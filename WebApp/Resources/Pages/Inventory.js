@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
 
-  var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+  var _isAdmin = parent.Ts.System.User.IsSystemAdmin;
 
   $('input, textarea').placeholder();
 
@@ -32,11 +32,11 @@
       searchJunkyard = true;
     }
 
-    if (!top.Ts.System.User.CanCreateAsset && !_isAdmin) {
+    if (!parent.Ts.System.User.CanCreateAsset && !_isAdmin) {
         $('.action-new').remove();
     }
 
-    top.Ts.Services.Search.SearchAssets($('#searchString').val(), start, 20, searchAssigned, searchWarehouse, searchJunkyard, function (items) {
+    parent.Ts.Services.Search.SearchAssets($('#searchString').val(), start, 20, searchAssigned, searchWarehouse, searchJunkyard, function (items) {
       $('.searchresults').fadeTo(0, 1);
 
       if (start == 0) {
@@ -180,7 +180,7 @@
       secondRow.append('Empty');
     }
     else {
-      secondRow.append(top.Ts.Utils.getMsDate(item.warrantyExpiration).localeFormat(top.Ts.Utils.getDatePattern()));
+      secondRow.append(parent.Ts.Utils.getMsDate(item.warrantyExpiration).localeFormat(parent.Ts.Utils.getDatePattern()));
     }
 
   }
@@ -194,13 +194,13 @@
     e.preventDefault();
     $('.inventory-filter li.active').removeClass('active');
     $(this).parent().addClass('active');
-    top.Ts.System.logAction('Inventory Page - Change Filter');
+    parent.Ts.System.logAction('Inventory Page - Change Filter');
     fetchItems();
   });
 
   $('.action-new').click(function (e) {
     e.preventDefault();
-    top.Ts.MainPage.newAsset();
+    parent.Ts.MainPage.newAsset();
 
   });
 
@@ -208,17 +208,17 @@
     e.preventDefault();
 
     var id = $(this).data('assetid');
-    top.Ts.System.logAction('Inventory Page - View Recent Asset');
-    top.Ts.MainPage.openNewAsset(id);
+    parent.Ts.System.logAction('Inventory Page - View Recent Asset');
+    parent.Ts.MainPage.openNewAsset(id);
 
-    top.Ts.Services.Assets.UpdateRecentlyViewed('o' + id, function (resultHtml) {
+    parent.Ts.Services.Assets.UpdateRecentlyViewed('o' + id, function (resultHtml) {
       $('.recent-container').empty();
       $('.recent-container').html(resultHtml);
     });
 
   });
 
-  top.Ts.Services.Assets.GetRecentlyViewed(function (resultHtml) {
+  parent.Ts.Services.Assets.GetRecentlyViewed(function (resultHtml) {
     $('.recent-container').empty();
     $('.recent-container').html(resultHtml);
   });

@@ -4,15 +4,15 @@ $(document).ready(function () {
         applyDemoStyles: true
     });
     
-    if (!top.Ts.System.User.IsSystemAdmin) {
+    if (!parent.Ts.System.User.IsSystemAdmin) {
         $('#groupDelete').remove();
         //$('#openTab').hide();
         //$('#closedTab').hide();
     }
 
-    if (top.Ts.Utils.getQueryValue("groupID", window) != null) {    
-        groupID = top.Ts.Utils.getQueryValue("groupID", window);
-        top.Ts.Services.Organizations.GetGroupInfo(groupID, function (group) {
+    if (parent.Ts.Utils.getQueryValue("groupID", window) != null) {    
+        groupID = parent.Ts.Utils.getQueryValue("groupID", window);
+        parent.Ts.Services.Organizations.GetGroupInfo(groupID, function (group) {
             groupID = group.GroupID;
             $('#groupName').text(group.Name);
             $('#infoIframe').attr("src", "../../../Frames/GroupInformation.aspx?GroupID=" + groupID);
@@ -21,7 +21,7 @@ $(document).ready(function () {
 
     }
     else {
-        top.Ts.Services.Organizations.GetGroupInfo(null, function (group) {
+        parent.Ts.Services.Organizations.GetGroupInfo(null, function (group) {
             groupID = group.GroupID;
             $('#groupName').text(group.Name);
             $('#infoIframe').attr("src", "../../../Frames/GroupInformation.aspx?GroupID=" + groupID);
@@ -32,7 +32,7 @@ $(document).ready(function () {
 
     
 
-    top.Ts.Services.Organizations.GetGroups(function (groupsList) {
+    parent.Ts.Services.Organizations.GetGroups(function (groupsList) {
         $('.group-container').empty();
         if (groupsList.HasProductFamilies)
         {
@@ -85,14 +85,14 @@ $(document).ready(function () {
     });
 
     $('#groupNew').click(function () {
-        ShowDialog(top.GetGroupDialog());
-        top.Ts.System.logAction('Groups - New Group Dialog Opened');
+        ShowDialog(parent.GetGroupDialog());
+        parent.Ts.System.logAction('Groups - New Group Dialog Opened');
     });
 
     $('#groupDelete').click(function () {
         if (confirm("Are you sure you would like to PERMANENTLY delete this group?")) {
-            top.Ts.System.logAction('Groups - Group Deleted');
-            top.privateServices.DeleteGroup(groupID, function () {
+            parent.Ts.System.logAction('Groups - Group Deleted');
+            parent.privateServices.DeleteGroup(groupID, function () {
                 window.location = window.location;
             });
             
@@ -102,8 +102,8 @@ $(document).ready(function () {
     });
 
     $('#groupEdit').click(function () {
-        ShowDialog(top.GetGroupDialog(groupID));
-        top.Ts.System.logAction('Groups - Edit Group Dialog Opened');
+        ShowDialog(parent.GetGroupDialog(groupID));
+        parent.Ts.System.logAction('Groups - Edit Group Dialog Opened');
     });
 
     function DialogClosed(sender, args) {

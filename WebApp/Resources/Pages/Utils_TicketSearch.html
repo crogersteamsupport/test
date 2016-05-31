@@ -37,7 +37,7 @@
       var execGetOrganization = null;
       function getOrganizations(request, response) {
         if (execGetOrganization) { execGetOrganization._executor.abort(); }
-        execGetOrganization = top.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
+        execGetOrganization = parent.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
       }
 
       $('#textOrgID').autocomplete({
@@ -45,7 +45,7 @@
         source: getOrganizations,
         select: function (event, ui) {
           $(this).data('itemID', ui.item.id);
-          top.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
+          parent.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
           });
         }
       });
@@ -53,7 +53,7 @@
       $('#btnSearch').click(function (e) {
         e.preventDefault();
         $('#divResults').empty();
-        top.Ts.Services.Tickets.SearchTicketsTest($('#textSearch').val(), $('#textOrgID').data('itemID'), function (results) {
+        parent.Ts.Services.Tickets.SearchTicketsTest($('#textSearch').val(), $('#textOrgID').data('itemID'), function (results) {
           $('<div>').html(results.length + ' tickets found.').appendTo('#divResults');
           for (var i = 0; i < results.length; i++) {
             $('<div>').html(results[i]).appendTo('#divResults');

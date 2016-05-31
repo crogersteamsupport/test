@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/top.Ts.Services.js" />
+/// <reference path="ts/parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -11,7 +11,7 @@
 
 $(document).ready(function () {
     var _organizatinID = -1;
-    var _isAdmin = top.Ts.System.User.IsSystemAdmin && (_organizatinID != top.Ts.System.User.OrganizationID);
+    var _isAdmin = parent.Ts.System.User.IsSystemAdmin && (_organizatinID != parent.Ts.System.User.OrganizationID);
 
     $('body').layout({
         defaults: {
@@ -27,8 +27,8 @@ $(document).ready(function () {
         }
     });
 
-    var defaultTab = top.Ts.Utils.getQueryValue("open", window);
-    var defaultProductFamily = top.Ts.Utils.getQueryValue("productFamilyID", window);
+    var defaultTab = parent.Ts.Utils.getQueryValue("open", window);
+    var defaultProductFamily = parent.Ts.Utils.getQueryValue("productFamilyID", window);
 
     $(".maincontainer").on("keypress", "input", (function (evt) {
         //Deterime where our character code is coming from within the event
@@ -55,7 +55,7 @@ $(document).ready(function () {
 
     LoadCustomControls();
     function LoadCustomControls() {
-      top.Ts.Services.Assets.LoadCustomControls(top.Ts.ReferenceTypes.ProductFamilies, function (html) {
+      parent.Ts.Services.Assets.LoadCustomControls(parent.Ts.ReferenceTypes.ProductFamilies, function (html) {
         if (html.length < 31) {
           $('#productFamilyCustomInfoBox').hide();
         }
@@ -85,7 +85,7 @@ $(document).ready(function () {
 
         if (isValid) {
             var productFamilyInfo = new Object();
-            top.Ts.System.logAction('New Product Line Page - Added New Product Line');
+            parent.Ts.System.logAction('New Product Line Page - Added New Product Line');
             productFamilyInfo.Name = $("#inputName").val();
             productFamilyInfo.Description = $("#Description").val();
 
@@ -98,13 +98,13 @@ $(document).ready(function () {
                   field.Value = $(this).prop('checked');
                   break;
                 case "date":
-                  field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+                  field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
                   break;
                 case "time":
-                  field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                  field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
                   break;
                 case "datetime":
-                  field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+                  field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
                   break;
                 default:
                   field.Value = $(this).val();
@@ -112,9 +112,9 @@ $(document).ready(function () {
               productFamilyInfo.Fields[productFamilyInfo.Fields.length] = field;
             });
 
-            top.Ts.Services.Products.SaveProductFamily(top.JSON.stringify(productFamilyInfo), function (f) {
-                top.Ts.MainPage.openNewProductFamily(f);
-                top.Ts.MainPage.closenewProductFamilyTab();
+            parent.Ts.Services.Products.SaveProductFamily(parent.JSON.stringify(productFamilyInfo), function (f) {
+                parent.Ts.MainPage.openNewProductFamily(f);
+                parent.Ts.MainPage.closenewProductFamilyTab();
             }, function () {
                 alert('There was an error saving this product line.  Please try again.');
             });
@@ -122,13 +122,13 @@ $(document).ready(function () {
     });
 
     $('#productFamilyCancelBtn').click(function (e) {
-        top.Ts.MainPage.closenewProductFamilyTab();
+        parent.Ts.MainPage.closenewProductFamilyTab();
     });
 
 });
 
 var initEditor = function (element, init) {
-    top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+    parent.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
         var editorOptions = {
             plugins: "autoresize paste link code textcolor",
             toolbar1: "link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
@@ -148,26 +148,26 @@ var initEditor = function (element, init) {
             media_external_list_url: "tinymce/jscripts/media_list.js",
             menubar: false,
             moxiemanager_image_settings: {
-                moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
+                moxiemanager_rootpath: "/" + parent.Ts.System.Organization.OrganizationID + "/images/",
                 extensions: 'gif,jpg,jpeg,png'
             },
             paste_data_images: true,
             images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
             setup: function (ed) {
                 ed.on('init', function (e) {
-                    top.Ts.System.refreshUser(function () {
-                        if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+                    parent.Ts.System.refreshUser(function () {
+                        if (parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.User.FontFamily));
                         }
-                        else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+                        else if (parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily));
                         }
 
-                        if (top.Ts.System.User.FontSize != "0") {
-                            ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+                        if (parent.Ts.System.User.FontSize != "0") {
+                            ed.execCommand("FontSize", false, parent.Ts.System.User.FontSizeDescription);
                         }
-                        else if (top.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
+                        else if (parent.Ts.System.Organization.FontSize != "0") {
+                            ed.execCommand("FontSize", false, parent.Ts.System.Organization.FontSizeDescription);
                         }
                     });
                 });

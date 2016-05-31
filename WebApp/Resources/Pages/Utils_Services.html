@@ -37,7 +37,7 @@
       });
 
       function loadServices() {
-        top.Ts.Services.System.GetServices(function (services) {
+        parent.Ts.Services.System.GetServices(function (services) {
           var table = $('<table>'); 
           var head = $('<tr>').appendTo($('<thead>').appendTo(table));
           for (prop in services[0]) {
