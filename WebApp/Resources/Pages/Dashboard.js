@@ -20,13 +20,13 @@ Dashboard.prototype = {
             e.preventDefault();
             e.stopPropagation();
             var report = $(this).closest('.item').data('report');
-            parent.Ts.MainPage.openReport(report, true);
+            top.Ts.MainPage.openReport(report, true);
         });
 
 
-        parent.Ts.Utils.webMethod("ReportService", "GetDashboard", {},
+        top.Ts.Utils.webMethod("ReportService", "GetDashboard", {},
               function (result) {
-                  parent.Ts.Utils.webMethod("ReportService", "GetDashboardReports", {},
+                  top.Ts.Utils.webMethod("ReportService", "GetDashboardReports", {},
                       function (reports) {
                           _reports = reports;
                           var dashboards = [];
@@ -99,7 +99,7 @@ Dashboard.prototype = {
             });
 
             //ReportID Rows  Columns 
-            parent.Ts.Utils.webMethod("ReportService", "SaveDashboard", { data: JSON.stringify(items) });
+            top.Ts.Utils.webMethod("ReportService", "SaveDashboard", { data: JSON.stringify(items) });
         }
 
         $('.dashboard-refresh').click(function (e) {
@@ -161,7 +161,7 @@ Dashboard.prototype = {
             if (execGetReports) {
                 execGetReports._executor.abort();
             }
-            execGetReports = parent.Ts.Services.Reports.FindReport(request.term, function (result) {
+            execGetReports = top.Ts.Services.Reports.FindReport(request.term, function (result) {
                 response(result);
                 $(this).removeClass('ui-autocomplete-loading');
             });
@@ -186,7 +186,7 @@ Dashboard.prototype = {
                 return;
             }
 
-            parent.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": reportID }, function (report) {
+            top.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": reportID }, function (report) {
                 var $container = $('.dashboard-container');
                 var item = $('.template-box .item').clone().appendTo($container).data('report', report);
                 item.find('.report-title a').text(report.Name);
@@ -254,7 +254,7 @@ Dashboard.prototype = {
         else if (report.ReportType == 1) {
             report.Def = JSON.parse(report.ReportDef);
 
-            parent.Ts.Utils.webMethod(null, "reportdata/chart",
+            top.Ts.Utils.webMethod(null, "reportdata/chart",
               { "reportID": report.ReportID },
               function (data) {
                   createChart(content, report.Def.Chart, data);
@@ -323,7 +323,7 @@ Grid.prototype = {
     init: function () {
         var self = this;
 
-        parent.Ts.Utils.webMethod("ReportService", "GetReportColumns", { "reportID": self.report.ReportID },
+        top.Ts.Utils.webMethod("ReportService", "GetReportColumns", { "reportID": self.report.ReportID },
         function (repCols) {
 
             function findRepCol(id) {
@@ -389,7 +389,7 @@ Grid.prototype = {
         });
 
         function saveUserSettings(callback) {
-            parent.Ts.Utils.webMethod("ReportService", "SaveUserSettings",
+            top.Ts.Utils.webMethod("ReportService", "SaveUserSettings",
             {
                 "reportID": self.report.ReportID,
                 "data": JSON.stringify(self.report.Settings)
@@ -416,7 +416,7 @@ Grid.prototype = {
 
         var dateFormatter = function (row, cell, value, columnDef, dataContext) {
             var date = dataContext[columnDef.id];
-            return date ? parent.Ts.Utils.getDateString(date, true, true, self.report.ReportType == 3) : '';
+            return date ? top.Ts.Utils.getDateString(date, true, true, self.report.ReportType == 3) : '';
         };
 
         var bitFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -436,16 +436,16 @@ Grid.prototype = {
         };
 
         var ticketNumberFormatter = function (row, cell, value, columnDef, dataContext) {
-            return '<a href="#" onclick="parent.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+            return '<a href="#" onclick="top.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         }
 
         var openFormatter = function (row, cell, value, columnDef, dataContext) {
             if (columnDef.openField == "TicketID") {
-                return '<a href="#" onclick="parent.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+                return '<a href="#" onclick="top.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
             } else if (columnDef.openField == "OrganizationID") {
-                return '<a href="#" onclick="parent.Ts.MainPage.openCustomer(' + dataContext["hiddenOrganizationID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
+                return '<a href="#" onclick="top.Ts.MainPage.openCustomer(' + dataContext["hiddenOrganizationID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
             } else if (columnDef.openField == "UserID") {
-                return '<a href="#" onclick="parent.Ts.MainPage.openContact(' + dataContext["hiddenUserID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
+                return '<a href="#" onclick="top.Ts.MainPage.openContact(' + dataContext["hiddenUserID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
             }
             return value;
         };

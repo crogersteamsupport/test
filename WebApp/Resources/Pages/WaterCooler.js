@@ -1,15 +1,15 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/parent.Ts.Services.js" />
+/// <reference path="ts/top.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.pages.main.js" />
 /// <reference path="~/Default.aspx" />
 
 $(document).ready(function () {
-    var pageType = parent.Ts.Utils.getQueryValue("pagetype", window);
-    var pageID = parent.Ts.Utils.getQueryValue("pageid", window);
-    var singleMsgID = parent.Ts.Utils.getQueryValue("wcinstanceid", window);
-    var _orgID = parent.Ts.System.User.OrganizationID;
+    var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
+    var pageID = top.Ts.Utils.getQueryValue("pageid", window);
+    var singleMsgID = top.Ts.Utils.getQueryValue("wcinstanceid", window);
+    var _orgID = top.Ts.System.User.OrganizationID;
 
     if (pageType == null)
         pageType = -1;
@@ -31,7 +31,7 @@ $(document).ready(function () {
     }
 
     var tipTimer = null;
-    var clueTipOptions = parent.Ts.Utils.getClueTipOptions(tipTimer);
+    var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
     var newMessageID = null;
     $('body').delegate('.ts-vcard', 'mouseout', function (e) {
         if (tipTimer != null) clearTimeout(tipTimer);
@@ -43,19 +43,19 @@ $(document).ready(function () {
     });
 
     $(window).focus(function () {
-        parent.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(false);
+        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(false);
         newMsg = 1;
-        parent.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
+        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
     });
 
     // delete link event
     $('.wc-threads').delegate('.wc-delete-link', 'click', function (e) {
         var parent = $(this).closest('.wc-message');
         var message = parent.data('message');
-        parent.Ts.Services.WaterCooler.DeleteMessage(message.MessageID, function (result) {
+        top.Ts.Services.WaterCooler.DeleteMessage(message.MessageID, function (result) {
             if (result == true)
                 parent.remove();
-            window.parent.chatHubClient.server.deleteMessage(message.MessageID);
+            window.top.chatHubClient.server.deleteMessage(message.MessageID);
             
         });
 
@@ -64,7 +64,7 @@ $(document).ready(function () {
     var execGetCustomer = null;
     function getCustomers(request, response) {
         if (execGetCustomer) { execGetCustomer._executor.abort(); }
-        execGetCustomer = parent.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
+        execGetCustomer = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
             response(result);
         });
     }
@@ -72,14 +72,14 @@ $(document).ready(function () {
     var execGetUsers = null;
     function getUsers(request, response) {
         if (execGetUsers) { execGetUsers._executor.abort(); }
-        execGetUsers = parent.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
+        execGetUsers = top.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
     }
 
     var execGetTicket = null;
     function getTicketsByTerm(request, response) {
         if (execGetTicket) { execGetTicket._executor.abort(); }
         //execGetTicket = Ts.Services.Tickets.GetTicketsByTerm(request.term, function (result) { response(result); });
-        execGetTicket = parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
+        execGetTicket = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
             $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
             response(result);
         });
@@ -89,13 +89,13 @@ $(document).ready(function () {
     var execGetGroups = null;
     function getGroupsByTerm(request, response) {
         if (execGetGroups) { execGetGroups._executor.abort(); }
-        execGetTicket = parent.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
+        execGetTicket = top.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
     }
 
     var execGetProducts = null;
     function getProductByTerm(request, response) {
         if (execGetProducts) { execGetProducts._executor.abort(); }
-        execGetProducts = parent.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
+        execGetProducts = top.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
     }
 
     $('.user-search').autocomplete({
@@ -211,7 +211,7 @@ $(document).ready(function () {
         select: function (event, ui) {
             if (ui.item) {
               $('#messagecontents').val($('#messagecontents').val() + " &ticket" + ui.item.id);
-              parent.Ts.System.logAction('Water Cooler - Ticket Inserted');
+              top.Ts.System.logAction('Water Cooler - Ticket Inserted');
             }
             $('.insert-ticket').removeClass('ui-autocomplete-loading');
             return false;
@@ -329,7 +329,7 @@ $(document).ready(function () {
     .click(function () { $(this).val('').removeClass('product-search-blur'); })
     .val('Search for a product...');
 
-    parent.Ts.Services.WaterCooler.GetOnlineChatUsers(parent.Ts.System.User.OrganizationID, function (users) {
+    top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
         var name;
         var chatID;
         for (var i = 0; i < users.length; i++) {
@@ -341,7 +341,7 @@ $(document).ready(function () {
         .addClass('onlineUser ts-vcard')
         .click(function () {
           window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
-          parent.Ts.System.logAction('Water Cooler - Chat Opened');
+          top.Ts.System.logAction('Water Cooler - Chat Opened');
         })
         .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
         .cluetip(clueTipOptions)
@@ -350,12 +350,12 @@ $(document).ready(function () {
         }
     });
 
-    parent.Ts.Services.Users.GetUserPhoto(-99, function (att) {
+    top.Ts.Services.Users.GetUserPhoto(-99, function (att) {
         $('.mainavatarlrg').attr("src", att);
     });
 
     //Gets the top 10 threads on initial page load
-    parent.Ts.Services.WaterCooler.GetThreads(pageType, pageID, singleMsgID, function (threads) {
+    top.Ts.Services.WaterCooler.GetThreads(pageType, pageID, singleMsgID, function (threads) {
         var threadContainer = $('#maincontainer');
         if (threads.length > 0) {
             for (var i = 0; i < threads.length; i++) {
@@ -439,15 +439,15 @@ $(document).ready(function () {
                 commentinfo.User[commentinfo.User.length] = $(this).data('User');
               });
 
-              if (commentinfo.Tickets.length > 0) parent.Ts.System.logAction('Water Cooler - Ticket Inserted');
-              if (commentinfo.Groups.length > 0) parent.Ts.System.logAction('Water Cooler - Group Inserted');
-              if (commentinfo.Products.length > 0) parent.Ts.System.logAction('Water Cooler - Product Inserted');
-              if (commentinfo.Company.length > 0) parent.Ts.System.logAction('Water Cooler - Company Inserted');
-              if (commentinfo.User.length > 0) parent.Ts.System.logAction('Water Cooler - User Inserted');
+              if (commentinfo.Tickets.length > 0) top.Ts.System.logAction('Water Cooler - Ticket Inserted');
+              if (commentinfo.Groups.length > 0) top.Ts.System.logAction('Water Cooler - Group Inserted');
+              if (commentinfo.Products.length > 0) top.Ts.System.logAction('Water Cooler - Product Inserted');
+              if (commentinfo.Company.length > 0) top.Ts.System.logAction('Water Cooler - Company Inserted');
+              if (commentinfo.User.length > 0) top.Ts.System.logAction('Water Cooler - User Inserted');
 
             var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
-            parent.Ts.Services.WaterCooler.NewComment(parent.JSON.stringify(commentinfo), function (Message) {
+            top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
               newMessageID = Message.MessageID;
                 if (attcontainer.length > 0) {
                     attcontainer.each(function (i, o) {
@@ -458,7 +458,7 @@ $(document).ready(function () {
                     });
                 }
                 else {
-                  window.parent.chatHubClient.server.newThread(Message.MessageID, parent.Ts.System.User.OrganizationID);
+                  window.top.chatHubClient.server.newThread(Message.MessageID, top.Ts.System.User.OrganizationID);
                     $('.commentcontainer').hide();
                     $('.faketextcontainer').show();
                     $('#messagecontents').val('');
@@ -586,7 +586,7 @@ $(document).ready(function () {
                 bg.data('data', data);
 
                 $('<span>')
-          .text(ellipseString(data.files[i].name, 20) + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
+          .text(ellipseString(data.files[i].name, 20) + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
           .addClass('filename')
           .appendTo(bg);
 
@@ -634,8 +634,8 @@ $(document).ready(function () {
         },
         stop: function (e, data) {
           $(this).parent().parent().find('.progress').progressbar('value', 100);
-          parent.Ts.System.logAction('Water Cooler - Attachment Added');
-          window.parent.chatHubClient.server.newThread(newMessageID, parent.Ts.System.User.OrganizationID);
+          top.Ts.System.logAction('Water Cooler - Attachment Added');
+          window.top.chatHubClient.server.newThread(newMessageID, top.Ts.System.User.OrganizationID);
           $('.commentcontainer').hide();
           $('.faketextcontainer').show();
           $('#messagecontents').val('');
@@ -644,7 +644,7 @@ $(document).ready(function () {
     });
 
     $('#returnBtn').click(function (e) {
-        parent.Ts.MainPage.openWaterCoolerInstance(-1,-1,-1);
+        top.Ts.MainPage.openWaterCoolerInstance(-1,-1,-1);
     });
 
     $('.ui-autocomplete-input').css('width', '200px');
@@ -652,7 +652,7 @@ $(document).ready(function () {
 
     $('.frame-content').bind('scroll', function () {
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            parent.Ts.Services.WaterCooler.GetMoreThreads(pageType, pageID, $('#maincontainer').find('.topic_container').length, function (newthreads) {
+            top.Ts.Services.WaterCooler.GetMoreThreads(pageType, pageID, $('#maincontainer').find('.topic_container').length, function (newthreads) {
                 var threadContainer = $('#maincontainer');
 
                 for (var i = 0; i < newthreads.length; i++) {
@@ -672,7 +672,7 @@ $(document).ready(function () {
 
     $('.scrollup').click(function () {
       $('.frame-content').animate({ scrollTop: 0 }, 600);
-      parent.Ts.System.logAction('Water Cooler - Scrolled to Top');
+      top.Ts.System.logAction('Water Cooler - Scrolled to Top');
         return false;
     });
 
@@ -766,14 +766,14 @@ this.imagePreview = function () {
     });
 };
 
-var pageType = parent.Ts.Utils.getQueryValue("pagetype", window);
-var pageID = parent.Ts.Utils.getQueryValue("pageid", window);
-var singleMsgID = parent.Ts.Utils.getQueryValue("wcinstanceid", window);
+var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
+var pageID = top.Ts.Utils.getQueryValue("pageid", window);
+var singleMsgID = top.Ts.Utils.getQueryValue("wcinstanceid", window);
 var newMsg = 1;
-var _orgID = parent.Ts.System.User.OrganizationID;
+var _orgID = top.Ts.System.User.OrganizationID;
 
 var tipTimer = null;
-var clueTipOptions = parent.Ts.Utils.getClueTipOptions(tipTimer);
+var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
 
 if (pageType == null)
     pageType = -1;
@@ -829,16 +829,16 @@ function placeHolder() {
 function addThread(message) {
         var firstpost = $('#maincontainer');
 
-        parent.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageID, function (valid) {
+        top.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageID, function (valid) {
           if (valid) {
-              parent.Ts.System.logAction('Water Cooler - Post Added');
+              top.Ts.System.logAction('Water Cooler - Post Added');
                 var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + message.Message.MessageID + ')');
                 if (parentThread.length == 0) {
                     var nmdiv = createThread(message);
                     firstpost.prepend(nmdiv.fadeIn(1500));
-                    if (message.Message.UserID != parent.Ts.System.User.UserID) {
-                        parent.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
-                        parent.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
+                    if (message.Message.UserID != top.Ts.System.User.UserID) {
+                        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
+                        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
                         parent.chime();
                       }
 
@@ -854,9 +854,9 @@ function addComment (message) {
         var commentcount = $(parentThread).find('.treplycontainer').length + 1;
         var comments = $(parentThread).find('.treplycontainer');
         var firstpost = $('#maincontainer');
-        parent.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageParent, function (valid) {
+        top.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageParent, function (valid) {
             if (valid) {
-                parent.Ts.System.logAction('Water Cooler - Reply Added');
+                top.Ts.System.logAction('Water Cooler - Reply Added');
                 if (parentThread.length > 0) {
                     //If over 6 comments compact it
                     if (commentcount > 6) {
@@ -908,7 +908,7 @@ function addComment (message) {
                     firstpost.prepend(parentThread.fadeIn(1500));
                 }
                 else {
-                    parent.Ts.Services.WaterCooler.GetMessage(message.Message.MessageParent, function (message) {
+                    top.Ts.Services.WaterCooler.GetMessage(message.Message.MessageParent, function (message) {
                         var firstpost = $('#maincontainer');
                         var nmdiv = createThread(message);
                         firstpost.prepend(nmdiv.fadeIn(1500));
@@ -916,9 +916,9 @@ function addComment (message) {
                     });
                 }
 
-                if (message.Message.UserID != parent.Ts.System.User.UserID) {
-                    parent.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
-                    parent.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
+                if (message.Message.UserID != top.Ts.System.User.UserID) {
+                    top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
+                    top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
                 }
             }
             else 
@@ -965,7 +965,7 @@ function updateLikes (likes, messageID, messageParentID) {
 
         var likeUsers = '';
         for (var i = 0; i < likes.length; i++) {
-            if (likes[i].UserID == parent.Ts.System.User.UserID)
+            if (likes[i].UserID == top.Ts.System.User.UserID)
                 likeUsers += "You<br/>";
             else
                 likeUsers += likes[i].UserName + "<br/>";
@@ -993,7 +993,7 @@ function updateattachments (message) {
         if (tixatt.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixatt.length; i++) {
-                tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + parent.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
+                tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
             }
         }
 
@@ -1002,7 +1002,7 @@ function updateattachments (message) {
         if (tixgrp.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixgrp.length; i++) {
-                tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group <a href="#" target="_blank" onclick="parent.Ts.MainPage.openGroup(' + tixgrp[i].AttachmentID + '); return false;">' + tixgrp[i].GroupName + '</a><br/>';
+                tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group <a href="#" target="_blank" onclick="top.Ts.MainPage.openGroup(' + tixgrp[i].AttachmentID + '); return false;">' + tixgrp[i].GroupName + '</a><br/>';
             }
         }
 
@@ -1011,7 +1011,7 @@ function updateattachments (message) {
         if (tixprod.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixprod.length; i++) {
-                tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
+                tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
             }
         }
 
@@ -1020,7 +1020,7 @@ function updateattachments (message) {
         if (tixcompany.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixcompany.length; i++) {
-                tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
+                tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
             }
         }
 
@@ -1029,7 +1029,7 @@ function updateattachments (message) {
         if (tixuser.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixuser.length; i++) {
-                tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
+                tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
             }
         }
 
@@ -1052,7 +1052,7 @@ function disconnect (windowid) {
 
 function updateUsers () {
         if (pageType == -1) {
-            parent.Ts.Services.WaterCooler.GetOnlineChatUsers(parent.Ts.System.User.OrganizationID, function (users) {
+            top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
                 var name;
                 var chatID;
                 for (var i = 0; i < users.length; i++) {
@@ -1111,7 +1111,7 @@ function createThread(thread) {
 				.attr("src", "/dc/" + thread.Message.OrganizationID + "/UserAvatar/" + thread.Message.UserID + "/40/" + new Date().getTime())
 				.appendTo(ta);
 
-        //parent.Ts.Services.Users.GetUserPhoto(thread.Message.UserID, function (att) {
+        //top.Ts.Services.Users.GetUserPhoto(thread.Message.UserID, function (att) {
         //    avaimg.attr("src", att);
         //});
 
@@ -1137,7 +1137,7 @@ function createThread(thread) {
             .text(thread.Message.UserName)
             .click(function (e) {
                 e.preventDefault();
-                parent.Ts.MainPage.openUser(thread.Message.UserID);
+                top.Ts.MainPage.openUser(thread.Message.UserID);
             })
             .attr('rel', '../../../Tips/User.aspx?UserID=' + thread.Message.UserID)
             .cluetip(clueTipOptions)
@@ -1154,12 +1154,12 @@ function createThread(thread) {
             .attr('id', 'spnlike')
             .appendTo(dv);
 
-        parent.Ts.Services.WaterCooler.GetLikes(thread.Message.MessageID, function (likes) {
+        top.Ts.Services.WaterCooler.GetLikes(thread.Message.MessageID, function (likes) {
             var likeUsers = '';
             var userLike = false;
 
             for (var i = 0; i < likes.length; i++) {
-                if (likes[i].UserID == parent.Ts.System.User.UserID) {
+                if (likes[i].UserID == top.Ts.System.User.UserID) {
                     likeUsers += "You<br/>";
                     userLike = true;
                 }
@@ -1190,9 +1190,9 @@ function createThread(thread) {
                 var parent = $(this).parent();
                 //parent.find('#likeCounter').remove();
                 $(this).hide();
-                parent.Ts.System.logAction('Water Cooler - Message Liked');
-                parent.Ts.Services.WaterCooler.AddCommentLike(thread.Message.MessageID, function (likes) {
-                    window.parent.chatHubClient.server.addLike(likes, thread.Message.MessageID, thread.Message.MessageParent, _orgID);
+                top.Ts.System.logAction('Water Cooler - Message Liked');
+                top.Ts.Services.WaterCooler.AddCommentLike(thread.Message.MessageID, function (likes) {
+                    window.top.chatHubClient.server.addLike(likes, thread.Message.MessageID, thread.Message.MessageParent, _orgID);
                 });
 
             })
@@ -1207,7 +1207,7 @@ function createThread(thread) {
         if (tixatt.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixatt.length; i++) {
-                tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + parent.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
+                tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
             }
         }
 
@@ -1216,7 +1216,7 @@ function createThread(thread) {
         if (tixgrp.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixgrp.length; i++) {
-                tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group <a href="#" target="_blank" onclick="parent.Ts.MainPage.openGroup(' + tixgrp[i].AttachmentID + '); return false;">' + tixgrp[i].GroupName + '</a><br/>';
+                tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group <a href="#" target="_blank" onclick="top.Ts.MainPage.openGroup(' + tixgrp[i].AttachmentID + '); return false;">' + tixgrp[i].GroupName + '</a><br/>';
                 //tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group ' + tixgrp[i].GroupName + '<br/>';
             }
         }
@@ -1226,7 +1226,7 @@ function createThread(thread) {
         if (tixprod.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixprod.length; i++) {
-                tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
+                tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
             }
         }
 
@@ -1235,7 +1235,7 @@ function createThread(thread) {
         if (tixcompany.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixcompany.length; i++) {
-                tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
+                tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
             }
         }
 
@@ -1244,7 +1244,7 @@ function createThread(thread) {
         if (tixuser.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixuser.length; i++) {
-                tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
+                tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
                 //tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user ' + tixuser[i].UserName + '<br/>';
             }
         }
@@ -1262,17 +1262,17 @@ function createThread(thread) {
 
         }
 
-        var canEdit = parent.Ts.System.User.UserID == thread.Message.UserID || parent.Ts.System.User.IsSystemAdmin;
+        var canEdit = top.Ts.System.User.UserID == thread.Message.UserID || top.Ts.System.User.IsSystemAdmin;
 
         if (canEdit) {
             var spdelete = $('<span>')
             .addClass('topicrel close')
             .click(function (e) {
                 if (confirm('Are you sure you would like to remove this post?')) {
-                  parent.Ts.Services.WaterCooler.DeleteMessage(thread.Message.MessageID, function () {
-                    parent.Ts.System.logAction('Water Cooler - Post Deleted');
+                  top.Ts.Services.WaterCooler.DeleteMessage(thread.Message.MessageID, function () {
+                    top.Ts.System.logAction('Water Cooler - Post Deleted');
                     });
-                    window.parent.chatHubClient.server.del(thread.Message.MessageID);
+                    window.top.chatHubClient.server.del(thread.Message.MessageID);
                 }
             }).hide()
             .text('x')
@@ -1285,7 +1285,7 @@ function createThread(thread) {
         .html(thread.Message.Message.replace(/\n\r?/g, '<br />'))
         .appendTo(tpic);
 
-        parent.Ts.Services.WaterCooler.GetAttachments(thread.Message.MessageID, function (attachments) {
+        top.Ts.Services.WaterCooler.GetAttachments(thread.Message.MessageID, function (attachments) {
             if (attachments.length > 0) {
                 var attdiv = $('<div>')
                 .addClass('attachment-list')
@@ -1369,7 +1369,7 @@ function createReply(thread) {
 				.attr("src", "/dc/" + thread.OrganizationID + "/UserAvatar/" + thread.UserID + "/40/" + new Date().getTime())
             .appendTo(avaspn);
 
-        //parent.Ts.Services.Users.GetUserPhoto(thread.UserID, function (att) {
+        //top.Ts.Services.Users.GetUserPhoto(thread.UserID, function (att) {
         //    avaimg.attr("src", att);
         //});
 
@@ -1395,7 +1395,7 @@ function createReply(thread) {
             .text(thread.UserName)
             .click(function (e) {
                 e.preventDefault();
-                parent.Ts.MainPage.openUser(thread.UserID);
+                top.Ts.MainPage.openUser(thread.UserID);
             })
             .appendTo(sptpic);
 
@@ -1410,12 +1410,12 @@ function createReply(thread) {
             .attr('id', 'spnlike')
             .appendTo(dv);
 
-        parent.Ts.Services.WaterCooler.GetLikes(thread.MessageID, function (likes) {
+        top.Ts.Services.WaterCooler.GetLikes(thread.MessageID, function (likes) {
             var likeUsers = '';
             var userLike = false;
 
             for (var i = 0; i < likes.length; i++) {
-                if (likes[i].UserID == parent.Ts.System.User.UserID) {
+                if (likes[i].UserID == top.Ts.System.User.UserID) {
                     likeUsers += "You<br/>";
                     userLike = true;
                 }
@@ -1446,8 +1446,8 @@ function createReply(thread) {
                 var parent = $(this).parent();
                 //parent.find('#likeCounter').remove();
                 $(this).hide();
-                parent.Ts.Services.WaterCooler.AddCommentLike(thread.MessageID, function (likes) {
-                    window.parent.chatHubClient.server.addLike(likes, thread.MessageID, thread.MessageParent, _orgID);
+                top.Ts.Services.WaterCooler.AddCommentLike(thread.MessageID, function (likes) {
+                    window.top.chatHubClient.server.addLike(likes, thread.MessageID, thread.MessageParent, _orgID);
                 });
 
             })
@@ -1455,17 +1455,17 @@ function createReply(thread) {
             }
         });
 
-        var canEdit = parent.Ts.System.User.UserID == thread.UserID || parent.Ts.System.User.IsSystemAdmin;
+        var canEdit = top.Ts.System.User.UserID == thread.UserID || top.Ts.System.User.IsSystemAdmin;
 
         if (canEdit) {
             var spdelete = $('<span>')
             .addClass('topicrel close')
             .click(function (e) {
                 if (confirm('Are you sure you would like to remove this reply?')) {
-                  parent.Ts.Services.WaterCooler.DeleteMessage(thread.MessageID, function () {
-                    parent.Ts.System.logAction('Water Cooler - Reply Deleted');
+                  top.Ts.Services.WaterCooler.DeleteMessage(thread.MessageID, function () {
+                    top.Ts.System.logAction('Water Cooler - Reply Deleted');
                     });
-                    window.parent.chatHubClient.server.del(thread.MessageID);
+                    window.top.chatHubClient.server.del(thread.MessageID);
                 }
             }).hide()
             .text('x')
@@ -1477,7 +1477,7 @@ function createReply(thread) {
         .appendTo(tprpy);
 
 
-        parent.Ts.Services.WaterCooler.GetAttachments(thread.MessageID, function (attachments) {
+        top.Ts.Services.WaterCooler.GetAttachments(thread.MessageID, function (attachments) {
             if (attachments.length > 0) {
                 var attdiv = $('<div>')
                 .addClass('attachment-list')
@@ -1711,7 +1711,7 @@ function createCommentContainer(messageid) {
 
                 var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
-                parent.Ts.Services.WaterCooler.NewComment(parent.JSON.stringify(commentinfo), function (Message) {
+                top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (Message) {
                   newMessageID = Message.MessageID;
                     if (attcontainer.length > 0) {
                         attcontainer.each(function (i, o) {
@@ -1722,7 +1722,7 @@ function createCommentContainer(messageid) {
                         });
                     }
                     else {
-                      window.parent.chatHubClient.server.newThread(Message.MessageID, parent.Ts.System.User.OrganizationID);
+                      window.top.chatHubClient.server.newThread(Message.MessageID, top.Ts.System.User.OrganizationID);
 
                         cc.hide();
                         ftc.show();
@@ -1795,7 +1795,7 @@ function createCommentContainer(messageid) {
                     bg.data('data', data);
 
                     $('<span>')
-                  .text(ellipseString(data.files[i].name, 20) + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                  .text(ellipseString(data.files[i].name, 20) + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
                   .addClass('filename')
                   .appendTo(bg);
 
@@ -1843,7 +1843,7 @@ function createCommentContainer(messageid) {
             },
             stop: function (e, data) {
                 $(this).parent().parent().find('.progress').progressbar('value', 100);
-                window.parent.chatHubClient.server.newThread(newMessageID, parent.Ts.System.User.OrganizationID);
+                window.top.chatHubClient.server.newThread(newMessageID, top.Ts.System.User.OrganizationID);
 
                 cc.hide();
                 ftc.show();
@@ -2117,7 +2117,7 @@ function createCommentContainer(messageid) {
 var execGetCustomer = null;
 function getCustomers(request, response) {
         if (execGetCustomer) { execGetCustomer._executor.abort(); }
-        execGetCustomer = parent.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
+        execGetCustomer = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
             response(result);
         });
     }
@@ -2125,14 +2125,14 @@ function getCustomers(request, response) {
 var execGetUsers = null;
 function getUsers(request, response) {
         if (execGetUsers) { execGetUsers._executor.abort(); }
-        execGetUsers = parent.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
+        execGetUsers = top.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
     }
 
 var execGetTicket = null;
 function getTicketsByTerm(request, response) {
         if (execGetTicket) { execGetTicket._executor.abort(); }
         //execGetTicket = Ts.Services.Tickets.GetTicketsByTerm(request.term, function (result) { response(result); });
-        execGetTicket = parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
+        execGetTicket = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
             $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
             response(result);
         });
@@ -2142,13 +2142,13 @@ function getTicketsByTerm(request, response) {
 var execGetGroups = null;
 function getGroupsByTerm(request, response) {
         if (execGetGroups) { execGetGroups._executor.abort(); }
-        execGetTicket = parent.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
+        execGetTicket = top.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
     }
 
 var execGetProducts = null;
 function getProductByTerm(request, response) {
         if (execGetProducts) { execGetProducts._executor.abort(); }
-        execGetProducts = parent.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
+        execGetProducts = top.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
     }
 
 $('.user-search').autocomplete({

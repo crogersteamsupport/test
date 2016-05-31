@@ -13,7 +13,7 @@ $(document).ready(function () {
 
   $('button').button();
   $('#divProgressBar').progressbar({ value: 0 });
-  var versionID = parent.Ts.Utils.getQueryValue('versionid', window);
+  var versionID = top.Ts.Utils.getQueryValue('versionid', window);
 
   $('#file-upload').attr('action', 'Upload/Products/' + versionID);
   var loadTimer = null;
@@ -23,8 +23,8 @@ $(document).ready(function () {
 
   function loadVersion() {
     loadTimer = setTimeout(showLoading, 500);
-    parent.Ts.Services.Products.GetVersion(versionID, function (version) {
-      parent.Ts.Services.CustomFields.GetValues(14, versionID, function (values) {
+    top.Ts.Services.Products.GetVersion(versionID, function (version) {
+      top.Ts.Services.CustomFields.GetValues(14, versionID, function (values) {
         loadAttachments(function () {
           var div = $('#divVersionInfo').html('');
           $('<h1>').text(version.ProductName + ' - ' + version.VersionNumber).appendTo(div);
@@ -32,7 +32,7 @@ $(document).ready(function () {
           $('<tr>').append('<td>Version:</td><td>' + version.VersionNumber + '</td>').appendTo(table);
           $('<tr>').append('<td>Status:</td><td>' + version.VersionStatus + '</td>').appendTo(table);
           $('<tr>').append('<td>Released:</td><td>' + (version.IsReleased === false ? 'No' : 'Yes') + '</td>').appendTo(table);
-          if (version.ReleaseDate) $('<tr>').append('<td>Date:</td><td>' + version.ReleaseDate.localeFormat(parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern) + '</td>').appendTo(table);
+          if (version.ReleaseDate) $('<tr>').append('<td>Date:</td><td>' + version.ReleaseDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern) + '</td>').appendTo(table);
           var formattedValue = '';
           for (var i = 0; i < values.length; i++) {
             if (values[i].Value) {
@@ -43,19 +43,19 @@ $(document).ready(function () {
             }
 
             switch (values[i].FieldType) {
-              case parent.Ts.CustomFieldType.Date:
+              case top.Ts.CustomFieldType.Date:
                 if (values[i].Value) {
-                  formattedValue = parent.Ts.Utils.getMsDate(values[i].Value).localeFormat(parent.Ts.Utils.getDatePattern());
+                  formattedValue = top.Ts.Utils.getMsDate(values[i].Value).localeFormat(top.Ts.Utils.getDatePattern());
                 }
                 break;
-              case parent.Ts.CustomFieldType.Time:
+              case top.Ts.CustomFieldType.Time:
                 if (values[i].Value) {
-                  formattedValue = parent.Ts.Utils.getMsDate(values[i].Value).localeFormat(parent.Ts.Utils.getTimePattern());
+                  formattedValue = top.Ts.Utils.getMsDate(values[i].Value).localeFormat(top.Ts.Utils.getTimePattern());
                 }
                 break;
-              case parent.Ts.CustomFieldType.DateTime:
+              case top.Ts.CustomFieldType.DateTime:
                 if (values[i].Value) {
-                  formattedValue = parent.Ts.Utils.getMsDate(values[i].Value).localeFormat(parent.Ts.Utils.getDateTimePattern());
+                  formattedValue = top.Ts.Utils.getMsDate(values[i].Value).localeFormat(top.Ts.Utils.getDateTimePattern());
                 }
                 break;
             }
@@ -74,7 +74,7 @@ $(document).ready(function () {
   }
 
   function loadAttachments(callback) {
-    parent.Ts.Services.Products.GetAttachments(versionID, function (attachments) {
+    top.Ts.Services.Products.GetAttachments(versionID, function (attachments) {
       var list = $('<ul>');
 
       for (var i = 0; i < attachments.length; i++) {
@@ -87,7 +87,7 @@ $(document).ready(function () {
           .click(function (e) {
             var item = $(this).parent();
             if (!confirm('Are you sure you would like to remove ' + item.data('fileName') + '?')) return;
-            parent.Ts.Services.Products.DeleteAttachment(item.data('id'), function () {
+            top.Ts.Services.Products.DeleteAttachment(item.data('id'), function () {
               item.remove();
             });
 
@@ -118,7 +118,7 @@ $(document).ready(function () {
           .appendTo(item);
 
         $('<div>')
-          .text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
+          .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
           .addClass('filename')
           .appendTo(bg);
 
@@ -156,7 +156,7 @@ $(document).ready(function () {
     always: function (e, data) {
       data.context.remove();
       loadAttachments();
-      parent.Ts.System.logAction('Product Version - Attacment Added');
+      top.Ts.System.logAction('Product Version - Attacment Added');
 
     }
   });

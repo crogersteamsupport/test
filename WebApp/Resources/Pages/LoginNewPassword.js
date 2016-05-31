@@ -5,8 +5,8 @@ $(document).ready(function () {
  
   $('#save').click(function (e) {
     e.preventDefault();
-    var userId = Number(parent.Ts.Utils.getQueryValue("UserID", window));
-    var token = parent.Ts.Utils.getQueryValue("Token", window);
+    var userId = Number(top.Ts.Utils.getQueryValue("UserID", window));
+    var token = top.Ts.Utils.getQueryValue("Token", window);
     var pw1 = $('#pw1').val();
     var pw2 = $('#pw2').val();
     var userData = { userID: userId, token: token, pw1: pw1, pw2: pw2 };

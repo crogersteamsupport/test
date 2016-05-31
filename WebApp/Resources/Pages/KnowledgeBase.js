@@ -13,7 +13,7 @@ $(document).ready(function () {
   GetHomePage();
   BuildSideBar();
 
-  var canKbEdit = parent.Ts.System.User.IsSystemAdmin || parent.Ts.System.User.ChangeKbVisibility;
+  var canKbEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
 
   if (!canKbEdit) {
       //$('.newticket-kb').attr("disabled", true);
@@ -23,13 +23,13 @@ $(document).ready(function () {
   $('#search-button').click(function () {
     _firstItemIndex = 0; 
     GetSearchResults();
-    parent.Ts.System.logAction('Knowledge Base - Searched');
+    top.Ts.System.logAction('Knowledge Base - Searched');
   });
 
   $('.frame-content').bind('scroll', function () {
     if ($(this).scrollTop() > 0 && $(this).scrollTop() + $(this).innerHeight() >= ($(this)[0].scrollHeight * 0.9)) {
       if ($('#SubCategoryPage').is(":visible")) {
-        parent.Ts.System.logAction('Knowledge Base - Get more articles');
+        top.Ts.System.logAction('Knowledge Base - Get more articles');
         var categoryName = $('#SubCategoryPageHeader').text().substring(0, $('#SubCategoryPageHeader').text().indexOf('(') - 1);
         if (categoryName == 'Uncategorized') {
           categoryName = null;
@@ -47,7 +47,7 @@ $(document).ready(function () {
 
   $('.scrollup').click(function () {
     $('.frame-content').animate({ scrollTop: 0 }, 600);
-    parent.Ts.System.logAction('Knowledge Base - Scrolled to Top');
+    top.Ts.System.logAction('Knowledge Base - Scrolled to Top');
     return false;
   });
 
@@ -66,14 +66,14 @@ function onShow() {
 
 function GetHomePage() {
   $('#HomePageContent').empty();
-  parent.Ts.System.logAction('Knowledge Base - Get home page');
+  top.Ts.System.logAction('Knowledge Base - Get home page');
   if (_homePageIsBuilt == true) {
     // I added this thinking in implementing click in category name that hide all the rows but the one clicked.
     // Then I decided to hold on that idea for now.
     $('.row-fluid').show();
   }
   else {
-    parent.Ts.Services.Admin.GetKnowledgeBaseCategories(function (knowledgeBaseCategories) {
+    top.Ts.Services.Admin.GetKnowledgeBaseCategories(function (knowledgeBaseCategories) {
       _knowledgeBaseCategories = knowledgeBaseCategories;
       BuildSections();
       //_homePageIsBuilt = true;
@@ -87,11 +87,11 @@ function GetHomePage() {
 }
 
 function BuildSideBar() {
-  parent.Ts.Services.Tickets.GetNewKnowledgeBaseArticles(_firstItemIndex, _pageSize, function (newKnowledgeBaseArticles) {
+  top.Ts.Services.Tickets.GetNewKnowledgeBaseArticles(_firstItemIndex, _pageSize, function (newKnowledgeBaseArticles) {
     BuildNewArticles(newKnowledgeBaseArticles);
   });
 
-  parent.Ts.Services.Tickets.GetRecentlyModifiedKnowledgeBaseArticles(_firstItemIndex, _pageSize, function (recentlyModifiedKnowledgeBaseArticles) {
+  top.Ts.Services.Tickets.GetRecentlyModifiedKnowledgeBaseArticles(_firstItemIndex, _pageSize, function (recentlyModifiedKnowledgeBaseArticles) {
     BuildRecentlyModifiedArticles(recentlyModifiedKnowledgeBaseArticles);
   });
 }
@@ -140,7 +140,7 @@ function BuildSection(category) {
       var ul = $('<ul>').addClass('nav nav-list').attr('id', 'catID-' + categoryID);
       subCategorySection.append(ul);
 
-      parent.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
+      top.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
         categoryID,
         categoryName,
         parentCategoryName,
@@ -163,7 +163,7 @@ function BuildSection(category) {
     ul.append($('<li id="UncategorizedHeader"></li>'));
     subCategorySection.append(ul);
 
-    parent.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
+    top.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
       null,
       '',
       '',
@@ -181,7 +181,7 @@ function BuildSection(category) {
 
   $('#new-article').click(function (e) {
     e.preventDefault();
-    parent.Ts.MainPage.newTicket();
+    top.Ts.MainPage.newTicket();
   });
 
 } // End of Build Section
@@ -237,7 +237,7 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
   var iconPath = "/vcr/1_5_6/images/nav/16/file.png";
 
   for (var i = 0; i < tickets.Items.length; i++) {
-      var onClickHandler = "parent.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
+      var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
     var text            = tickets.Items[i].Name;
 
     html =
@@ -284,7 +284,7 @@ function BuildNewArticles(tickets) {
   var iconPath = "/vcr/1_5_6/images/nav/16/file.png";
 
   for (var i = 0; i < tickets.Items.length; i++) {
-      var onClickHandler = "parent.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
+      var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
     var text = tickets.Items[i].Name;
 
     html =
@@ -326,7 +326,7 @@ function BuildRecentlyModifiedArticles(tickets) {
   var iconPath = "/vcr/1_5_6/images/nav/16/file.png";
 
   for (var i = 0; i < tickets.Items.length; i++) {
-      var onClickHandler = "parent.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
+      var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
     var text = tickets.Items[i].Name;
 
     html =
@@ -351,7 +351,7 @@ function BuildRecentlyModifiedArticles(tickets) {
 }
 
 function GetSubCategoryPage(categoryID, categoryName, parentCategoryName) {
-  parent.Ts.System.logAction('Knowledge Base - Get SubCategory page');
+  top.Ts.System.logAction('Knowledge Base - Get SubCategory page');
 
   _categoryID           = categoryID;
   _categoryName         = categoryName;
@@ -375,7 +375,7 @@ function GetSubCategoryPage(categoryID, categoryName, parentCategoryName) {
     var ul = $('<ul>').addClass('nav nav-list').attr('id', 'subcatID-' + categoryID);
     $('#SubCategoryPageContent').append(ul);
 
-    parent.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
+    top.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
       categoryID,
       categoryName,
       parentCategoryName,
@@ -392,7 +392,7 @@ function GetSubCategoryPage(categoryID, categoryName, parentCategoryName) {
 
     if (categoryName == 'Search results') {
       $('.loading-section').show().next().hide();
-      parent.Ts.Services.Tickets.GetKnowledgeBaseSearchResults(
+      top.Ts.Services.Tickets.GetKnowledgeBaseSearchResults(
         $('#search-input').val(),
         _firstItemIndex,
         _subCategoryPageSize,
@@ -403,7 +403,7 @@ function GetSubCategoryPage(categoryID, categoryName, parentCategoryName) {
       );
     }
     else {
-      parent.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
+      top.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
         null,
         categoryName,
         '',
@@ -424,7 +424,7 @@ function GetMoreForSubCategoryPage(categoryName) {
   }
   _subCategoryfirstItemIndex += _subCategoryPageSize;
   if (_subCategoryItemsCount > _subCategoryfirstItemIndex) {
-    parent.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
+    top.Ts.Services.Tickets.GetKnowledgeBaseCategoryTickets(
       categoryID,
       categoryName,
       '',
@@ -449,7 +449,7 @@ function appendTicketsToSection(tickets, inSubcategoryPage) {
   var iconPath = "/vcr/1_5_6/images/nav/16/file.png";
 
   for (var i = 0; i < tickets.Items.length; i++) {
-      var onClickHandler = "parent.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
+      var onClickHandler = "top.Ts.MainPage.openTicketByID(" + tickets.Items[i].ID + ", true); return false;";
     var text = tickets.Items[i].Name;
 
     html =
@@ -495,31 +495,31 @@ function showSearchResults(results) {
 //    switch (results.Items[i].TypeID) {
 //      case 1: //Tickets
 //        iconPath = "/vcr/1_9_0/images/nav/16/tickets.png";
-//        onClickHandler = "parent.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
+//        onClickHandler = "top.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
 //        subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
 //                '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
 //        break;
 //      case 2: //KnowledgeBase
 //        iconPath = "/vcr/1_9_0/images/nav/16/knowledge.png";
-//        onClickHandler = "parent.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
+//        onClickHandler = "top.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
 //        subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
 //                '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
 //        break;
 //      case 3: //Wikis
 //        iconPath = "/vcr/1_9_0/images/nav/16/wiki.png";
-//        onClickHandler = "parent.Ts.MainPage.openWiki(" + results.Items[i].ID + ", true)";
+//        onClickHandler = "top.Ts.MainPage.openWiki(" + results.Items[i].ID + ", true)";
 //        subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
 //                '<h2>Modified by: ' + results.Items[i].Modifier + '</h2>';
 //        break;
 //      case 4: //Notes
 //        iconPath = "/vcr/1_9_0/images/nav/16/customers.png";
-//        onClickHandler = "parent.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
+//        onClickHandler = "top.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
 //        subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
 //                '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
 //        break;
 //      case 5: //ProductVersions
 //        iconPath = "/vcr/1_9_0/images/nav/16/products.png";
-//        onClickHandler = "parent.Ts.MainPage.openProductVersion(" + results.Items[i].ProductID + ", " + results.Items[i].ID + ", true)";
+//        onClickHandler = "top.Ts.MainPage.openProductVersion(" + results.Items[i].ProductID + ", " + results.Items[i].ID + ", true)";
 //        subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
 //                '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
 //        break;

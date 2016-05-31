@@ -1,5 +1,5 @@
 ﻿$(document).ready(function () {
-  parent.Ts.System.logAction('New Asset - Started');
+  top.Ts.System.logAction('New Asset - Started');
   $('body').layout({
     defaults: {
       spacing_open: 0,
@@ -15,7 +15,7 @@
   });
 
   function LoadProducts() {
-    var products = parent.Ts.Cache.getProducts();
+    var products = top.Ts.Cache.getProducts();
     for (var i = 0; i < products.length; i++) {
       $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
     }
@@ -23,7 +23,7 @@
 
   function LoadProductVersions() {
     $('#ddlProductVersion').empty();
-    var product = parent.Ts.Cache.getProduct($('#ddlProduct').val());
+    var product = top.Ts.Cache.getProduct($('#ddlProduct').val());
     for (var i = 0; i < product.Versions.length; i++) {
       $('<option>').attr('value', product.Versions[i].ProductVersionID).text(product.Versions[i].VersionNumber).data('version', product.Versions[i]).appendTo('#ddlProductVersion');
     }
@@ -44,7 +44,7 @@
     LoadProductVersions();
   });
 
-  var userDateFormat = parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern.replace("yyyy", "yy");
+  var userDateFormat = top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern.replace("yyyy", "yy");
   $("#inputWarrantyExpiration").datepicker({ dateFormat: userDateFormat });
 
   $('#assetSaveBtn').click(function (e) {
@@ -74,19 +74,19 @@
             break;
           case "date":
             //    var dt = $(this).find('input').datepicker('getDate');
-            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
             break;
           case "time":
             //    var time = new Date("January 1, 1970 00:00:00");
             //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
             //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
-            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
           case "datetime":
-            //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+            //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
             //    var dt = $(this).find('input').datetimepicker('getDate');
             //    field.Value = dt == null ? null : dt.toUTCString();
-            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
             break;
           default:
             field.Value = $(this).val();
@@ -95,11 +95,11 @@
       });
 
 
-      parent.Ts.Services.Assets.SaveAsset(parent.JSON.stringify(assetInfo), function (assetID) {
+      top.Ts.Services.Assets.SaveAsset(top.JSON.stringify(assetInfo), function (assetID) {
           $('#assetSaveBtn').prop("disabled", false);
-        parent.Ts.System.logAction('Asset Created');
-        parent.Ts.MainPage.openNewAsset(assetID);
-        parent.Ts.MainPage.closenewAssetTab();
+        top.Ts.System.logAction('Asset Created');
+        top.Ts.MainPage.openNewAsset(assetID);
+        top.Ts.MainPage.closenewAssetTab();
       }, function () {
           $('#assetSaveBtn').prop("disabled", false);
         alert('There was an error saving this asset.  Please try again.');
@@ -108,12 +108,12 @@
   });
 
   $('#assetCancelBtn').click(function (e) {
-    parent.Ts.System.logAction('New Asset - Cancelled');
-    parent.Ts.MainPage.closenewAssetTab();
+    top.Ts.System.logAction('New Asset - Cancelled');
+    top.Ts.MainPage.closenewAssetTab();
   });
 
   function LoadCustomControls() {
-    parent.Ts.Services.Assets.LoadCustomControls(parent.Ts.ReferenceTypes.Assets, function (html) {
+    top.Ts.Services.Assets.LoadCustomControls(top.Ts.ReferenceTypes.Assets, function (html) {
       $('#customerCustomInfo').append(html);
       $('.customField:visible').each(function () {
         var maskValue = $(this).attr("placeholder");
@@ -124,7 +124,7 @@
     });
   }
 
-  parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+  top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
     //$('.datepicker').datepicker({ format: dateformat });
     //$('.datepicker').datetimepicker({ pickTime: false });
     //The line below breaks the page when the format is different than us

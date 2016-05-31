@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/parent.Ts.Services.js" />
+/// <reference path="ts/top.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -32,36 +32,36 @@ WelcomePage = function () {
   $('a').addClass('ui-state-default ts-link');
 
   $('.loading-section').hide().next().show();
-  $('.first-name').text(parent.Ts.System.User.FirstName);
+  $('.first-name').text(top.Ts.System.User.FirstName);
 
 
   $('.welcome-new-user').click(function (e) {
     e.preventDefault();
-      //parent.Ts.MainPage.openNewContact(parent.Ts.System.User.UserID);
-    parent.Ts.MainPage.openUser(parent.Ts.System.User.UserID);
+      //top.Ts.MainPage.openNewContact(top.Ts.System.User.UserID);
+    top.Ts.MainPage.openUser(top.Ts.System.User.UserID);
     
 
   });
   $('.welcome-new-customer').click(function (e) {
       e.preventDefault();
-      parent.Ts.MainPage.newCustomer(null, parent.Ts.System.User.OrganizationID);
-    //parent.Ts.MainPage.openNewCustomer(-1);
+      top.Ts.MainPage.newCustomer(null, top.Ts.System.User.OrganizationID);
+    //top.Ts.MainPage.openNewCustomer(-1);
   });
   $('.welcome-new-ticket').click(function (e) {
     e.preventDefault();
-    parent.Ts.MainPage.newTicket();
+    top.Ts.MainPage.newTicket();
   });
 
-  //parent.Ts.Services.Organizations.GetPortalOption(parent.Ts.System.Organization.OrganizationID, function (portalOption) { });
+  //top.Ts.Services.Organizations.GetPortalOption(top.Ts.System.Organization.OrganizationID, function (portalOption) { });
   //$('.welcome-view-portal').click(function (e) { });
 
-  $('.welcome-view-portal').attr('href', parent.Ts.System.PoratlDomain + '?OrganizationID=' + parent.Ts.System.Organization.OrganizationID);
+  $('.welcome-view-portal').attr('href', top.Ts.System.PoratlDomain + '?OrganizationID=' + top.Ts.System.Organization.OrganizationID);
 
   $('.welcome-test-chat').click(function (e) {
     e.preventDefault();
 
     window.open(
-      parent.Ts.System.AppDomain + '/Chat/ChatInit.aspx?uid=' + parent.Ts.System.Organization.ChatID,
+      top.Ts.System.AppDomain + '/Chat/ChatInit.aspx?uid=' + top.Ts.System.Organization.ChatID,
       'TSChat',
       'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'
       );
@@ -69,7 +69,7 @@ WelcomePage = function () {
 
   $('.welcome-hide').click(function (e) {
     e.preventDefault();
-    parent.Ts.MainPage.hideWelcome();
+    top.Ts.MainPage.hideWelcome();
   });
 
   $('.welcome-payonline').click(function (e) {
@@ -78,7 +78,7 @@ WelcomePage = function () {
   });
 
 
-  var sysEmail = parent.Ts.System.Organization.SystemEmailID + '@' + parent.Ts.System.Domain;
+  var sysEmail = top.Ts.System.Organization.SystemEmailID + '@' + top.Ts.System.Domain;
 
   $('.welcome-sysemail')
     .text(sysEmail)
@@ -86,49 +86,49 @@ WelcomePage = function () {
 
   $('.welcome-setup-email').click(function (e) {
     e.preventDefault();
-    parent.Ts.MainPage.openAdmin('Email');
+    top.Ts.MainPage.openAdmin('Email');
 
   });
 
   $('.welcome-setup-tickettypes').click(function (e) {
     e.preventDefault();
-    parent.Ts.Settings.User.write('SelectedCustomPropertyValue', 5, function () {
-      parent.Ts.MainPage.openAdmin('Custom Properties');
+    top.Ts.Settings.User.write('SelectedCustomPropertyValue', 5, function () {
+      top.Ts.MainPage.openAdmin('Custom Properties');
     });
 
   });
 
   $('.welcome-setup-ticketstatuses').click(function (e) {
     e.preventDefault();
-    parent.Ts.Settings.User.write('SelectedCustomPropertyValue', 4, function () {
-      parent.Ts.MainPage.openAdmin('Custom Properties');
+    top.Ts.Settings.User.write('SelectedCustomPropertyValue', 4, function () {
+      top.Ts.MainPage.openAdmin('Custom Properties');
     });
   });
 
   $('.welcome-setup-custom-fields').click(function (e) {
     e.preventDefault();
-    parent.Ts.MainPage.openAdmin('Custom Fields');
+    top.Ts.MainPage.openAdmin('Custom Fields');
   });
 
   $('.welcome-setup-workflow').click(function (e) {
     e.preventDefault();
-    parent.Ts.MainPage.openAdmin('Workflow');
+    top.Ts.MainPage.openAdmin('Workflow');
   });
 
   $('.welcome-setup-portals').click(function (e) {
     e.preventDefault();
-    parent.Ts.MainPage.openAdmin('My Portal');
+    top.Ts.MainPage.openAdmin('My Portal');
   });
 
   $('.welcome-help-ticket').click(function (e) {
     e.preventDefault();
-    parent.Ts.System.openSupport();
+    top.Ts.System.openSupport();
   });
 
   $('.welcome-help-chat').click(function (e) {
     e.preventDefault();
-    parent.Ts.System.logAction('Helcome - Page Hidden');
-    window.open(parent.Ts.System.AppDomain + '/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
+    top.Ts.System.logAction('Helcome - Page Hidden');
+    window.open(top.Ts.System.AppDomain + '/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
   });
 
   

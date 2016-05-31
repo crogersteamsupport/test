@@ -1,18 +1,18 @@
 ﻿$(document).ready(function () {
 
-    var _isAdmin = parent.Ts.System.User.IsSystemAdmin;
-    if (!parent.Ts.System.User.CanCreateCompany && !parent.Ts.System.User.CanCreateContact && !_isAdmin) {
+    var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+    if (!top.Ts.System.User.CanCreateCompany && !top.Ts.System.User.CanCreateContact && !_isAdmin) {
         $('.action-new').hide();
     }
     $('input, textarea').placeholder();
 
-    if(parent.Ts.System.User.FilterInactive){
+    if(top.Ts.System.User.FilterInactive){
         $('#cbActive').prop('checked', true);
     }
 
     $('#cbActive').click(function (e) {
-        parent.Ts.Services.Users.SetInactiveFilter(parent.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {
-            parent.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
+        top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {
+            top.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
         },
               function (error) {
                   alert('There was an error saving the user filter inaactive setting.');
@@ -41,8 +41,8 @@
             searchCompanies = true;
             parentsOnly = true;
         }
-        parent.Ts.System.logAction('Customer Page - Search Executed');
-        parent.Ts.Services.Search.SearchCompaniesAndContacts2($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, parentsOnly, function (items) {
+        top.Ts.System.logAction('Customer Page - Search Executed');
+        top.Ts.Services.Search.SearchCompaniesAndContacts2($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, parentsOnly, function (items) {
             $('.searchresults').fadeTo(0, 1);
 
             if (start == 0) {
@@ -92,8 +92,8 @@
     }
 
     function appendItem(container, item) {
-      var hasCustomerInsights = parent.Ts.System.Organization.IsCustomerInsightsActive;
-      var organizationId = parent.Ts.System.Organization.OrganizationID;
+      var hasCustomerInsights = top.Ts.System.Organization.IsCustomerInsightsActive;
+      var organizationId = top.Ts.System.Organization.OrganizationID;
       var el = $('<tr>');
 
       if (!hasCustomerInsights) {
@@ -265,15 +265,15 @@
         e.preventDefault();
         $('.customers-filter li.active').removeClass('active');
         $(this).parent().addClass('active');
-        parent.Ts.System.logAction('Customer Page - Change Filter');
+        top.Ts.System.logAction('Customer Page - Change Filter');
         fetchItems();
     });
 
 
     $('.action-new').click(function (e) {
         e.preventDefault();
-        parent.Ts.System.logAction('Customer Page - New Customer');
-        parent.Ts.MainPage.newCustomer();
+        top.Ts.System.logAction('Customer Page - New Customer');
+        top.Ts.MainPage.newCustomer();
 
     });
 
@@ -282,10 +282,10 @@
         e.preventDefault();
 
         var id = $(this).data('userid');
-        parent.Ts.System.logAction('Customer Page - View Recent Contact');
-        parent.Ts.MainPage.openNewContact(id);
+        top.Ts.System.logAction('Customer Page - View Recent Contact');
+        top.Ts.MainPage.openNewContact(id);
 
-        parent.Ts.Services.Customers.UpdateRecentlyViewed('u'+id, function (resultHtml) {
+        top.Ts.Services.Customers.UpdateRecentlyViewed('u'+id, function (resultHtml) {
             $('.recent-container').empty();
             $('.recent-container').html(resultHtml);
         });
@@ -296,22 +296,22 @@
         e.preventDefault();
 
         var id = $(this).data('organizationid');
-        parent.Ts.System.logAction('Customer Page - View Recent Company');
+        top.Ts.System.logAction('Customer Page - View Recent Company');
         if ($('.customers-filter-parents').parent().hasClass('active')) {
-            parent.Ts.MainPage.openNewCustomerInParentView(id);
+            top.Ts.MainPage.openNewCustomerInParentView(id);
         }
         else {
-            parent.Ts.MainPage.openNewCustomer(id);
+            top.Ts.MainPage.openNewCustomer(id);
         }
 
-        parent.Ts.Services.Customers.UpdateRecentlyViewed('o'+id, function (resultHtml) {
+        top.Ts.Services.Customers.UpdateRecentlyViewed('o'+id, function (resultHtml) {
             $('.recent-container').empty();
             $('.recent-container').html(resultHtml);
         });
 
     });
 
-    parent.Ts.Services.Customers.GetRecentlyViewed(function (resultHtml) {
+    top.Ts.Services.Customers.GetRecentlyViewed(function (resultHtml) {
         $('.recent-container').empty();
         $('.recent-container').html(resultHtml);
     });
@@ -365,7 +365,7 @@
 });
 
 function refreshPage() {
-    parent.Ts.Services.Customers.GetRecentlyViewed(function (resultHtml) {
+    top.Ts.Services.Customers.GetRecentlyViewed(function (resultHtml) {
         $('.recent-container').empty();
         $('.recent-container').html(resultHtml);
     });

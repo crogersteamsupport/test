@@ -1,14 +1,14 @@
 ﻿$(document).ready(function () {
-    var _reportID = parent.Ts.Utils.getQueryValue('ReportID', window);
+    var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
     var _report = null;
     $('.reports-edit').hide();
-    if (parent.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
+    if (top.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
 
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 
 
     function loadChart() {
-        parent.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": _reportID }, function (report) {
+        top.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": _reportID }, function (report) {
             _report = report;
             _report.Def = JSON.parse(report.ReportDef);
 
@@ -19,16 +19,16 @@
             $('#mainFrame').attr('src', report.ReportDef);
             $('.report-title').text(report.Name);
 
-            if ((parent.Ts.System.User.IsSystemAdmin != false || report.CreatorID == parent.Ts.System.User.UserID) && report.OrganizationID != null) {
+            if ((top.Ts.System.User.IsSystemAdmin != false || report.CreatorID == top.Ts.System.User.UserID) && report.OrganizationID != null) {
                 $('.reports-edit').show();
             }
 
-            if (report.OrganizationID == null && (parent.Ts.System.User.UserID == 34 || parent.Ts.System.User.UserID == 43 || parent.Ts.System.User.UserID == 47)) {
+            if (report.OrganizationID == null && (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47)) {
                 $('.reports-edit').show();
             }
 
 
-            parent.Ts.Utils.webMethod(null, "reportdata/chart",
+            top.Ts.Utils.webMethod(null, "reportdata/chart",
               { "reportID": _reportID },
               function (data) {
                   
@@ -74,7 +74,7 @@
     $('.reports-fav').click(function (e) {
         e.preventDefault();
         _report.IsFavorite = !_report.IsFavorite;
-        parent.Ts.Utils.webMethod("ReportService", "SetFavorite", { "reportID": _reportID, "value": _report.IsFavorite }, function () {
+        top.Ts.Utils.webMethod("ReportService", "SetFavorite", { "reportID": _reportID, "value": _report.IsFavorite }, function () {
             if (_report.IsFavorite) $('.reports-fav i').removeClass('fa-star-o').addClass('fa-star'); else $('.reports-fav i').removeClass('fa-star').addClass('fa-star-o');
         });
     });

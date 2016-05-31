@@ -6,12 +6,12 @@ var emailAddress = null;
 var orgId = null;
 
 $(document).ready(function () {
-	returnURL = parent.Ts.Utils.getQueryValue("ReturnUrl", window);
+	returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
 	if (returnURL == null) returnURL = '/default.aspx';
-	emailAddress = parent.Ts.Utils.getQueryValue("Email", window);
-	orgId = parent.Ts.Utils.getQueryValue("OrgID", window);
+	emailAddress = top.Ts.Utils.getQueryValue("Email", window);
+	orgId = top.Ts.Utils.getQueryValue("OrgID", window);
 	$('#email').text(emailAddress);
-	supportToken = parent.Ts.Utils.getQueryValue("SupportToken", window);
+	supportToken = top.Ts.Utils.getQueryValue("SupportToken", window);
 	if (supportToken && supportToken != '')
 	{
 		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result) { window.location = '/Default.aspx'; }, function () { });

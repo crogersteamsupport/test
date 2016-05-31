@@ -231,8 +231,8 @@ Ts.Ui.Tabs.Tab.prototype = {
   constructor: Ts.Ui.Tabs.Tab,
   //
   getElement: function () { return this._element; },
-  getId: function () { return parent.Ts.Utils.getNameParam('ts-tab', this._element, 0); },
-  getTabType: function () { return parent.Ts.Utils.getNameParam('ts-tab', this._element, 1); },
+  getId: function () { return top.Ts.Utils.getNameParam('ts-tab', this._element, 0); },
+  getTabType: function () { return top.Ts.Utils.getNameParam('ts-tab', this._element, 1); },
   getCaption: function () { return $(this._element).find('a').html(); },
   setCaption: function (value) { $(this._element).find('a').html(value); },
 

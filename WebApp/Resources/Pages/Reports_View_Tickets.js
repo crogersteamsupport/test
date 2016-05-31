@@ -1,11 +1,11 @@
 ﻿$(document).ready(function () {
     var _layout = null;
-    var _reportID = parseInt(parent.Ts.Utils.getQueryValue('ReportID', window));
+    var _reportID = parseInt(top.Ts.Utils.getQueryValue('ReportID', window));
     var _grid;
     var datamodel = new TeamSupport.DataModel(getReportData);
     var _report = null;
     $('.reports-edit').hide();
-    if (parent.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
+    if (top.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
 
     function getReportData(from, to, sortcol, isdesc, callback) {
         var params = { "reportID":
@@ -33,7 +33,7 @@
 
     $('.btn-group .toolitp').tooltip({ placement: 'bottom', container: 'body' });
 
-    parent.Ts.Utils.webMethod("ReportService", "GetReport", {
+    top.Ts.Utils.webMethod("ReportService", "GetReport", {
         "reportID": _reportID
     }, function (report) {
         _report = report;
@@ -46,19 +46,19 @@
             $('.reports-filter i').addClass('color-red');
         }
 
-        if ((parent.Ts.System.User.IsSystemAdmin != false || report.CreatorID == parent.Ts.System.User.UserID) && report.ReportType != 3 && report.OrganizationID != null) {
+        if ((top.Ts.System.User.IsSystemAdmin != false || report.CreatorID == top.Ts.System.User.UserID) && report.ReportType != 3 && report.OrganizationID != null) {
             $('.reports-edit').show();
         }
 
-        if (report.OrganizationID == null && (parent.Ts.System.User.UserID == 34 || parent.Ts.System.User.UserID == 43 || parent.Ts.System.User.UserID == 47) && report.ReportType != 3) {
+        if (report.OrganizationID == null && (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47) && report.ReportType != 3) {
             $('.reports-edit').show();
         }
 
-        parent.Ts.Utils.webMethod("ReportService", "GetReportColumns", {
+        top.Ts.Utils.webMethod("ReportService", "GetReportColumns", {
             "reportID": _reportID
         }, function (repCols) {
 
-            parent.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
+            top.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
                 $('#filter-user').reportFilter({ "fields": fields });
                 if (_report.OrganizationID != null) {
                     $('#filter-global').reportFilter({ "fields": fields });
@@ -168,7 +168,7 @@
             $('.reports-filter i').removeClass('color-red');
         }
 
-        parent.Ts.Utils.webMethod("ReportService", "SaveReportDef",
+        top.Ts.Utils.webMethod("ReportService", "SaveReportDef",
             {
                 "reportID": _report.ReportID,
                 "data": JSON.stringify(_report.Def)
@@ -187,7 +187,7 @@
     });
 
     function saveUserSettings(callback) {
-        parent.Ts.Utils.webMethod("ReportService", "SaveUserSettings",
+        top.Ts.Utils.webMethod("ReportService", "SaveUserSettings",
             {
                 "reportID": _report.ReportID,
                 "data": JSON.stringify(_report.Settings)
@@ -232,7 +232,7 @@
     $('.reports-fav').click(function (e) {
         e.preventDefault();
         _report.IsFavorite = !_report.IsFavorite;
-        parent.Ts.Utils.webMethod("ReportService", "SetFavorite", {
+        top.Ts.Utils.webMethod("ReportService", "SetFavorite", {
             "reportID": _reportID,
             "value": _report.IsFavorite
         }, function () {
@@ -245,13 +245,13 @@
     $('.reports-export-excel').click(function (e) {
         e.preventDefault();
         //'../dc/1078/reports/95'
-        window.open('../../../dc/' + parent.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=EXCEL', 'ReportDownload');
+        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=EXCEL', 'ReportDownload');
     });
 
     $('.reports-export-csv').click(function (e) {
         e.preventDefault();
         //'../dc/1078/reports/95'
-        window.open('../../../dc/' + parent.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=CSV', 'ReportDownload');
+        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=CSV', 'ReportDownload');
     });
     _layout = $('#reports-tabview-layout').layout({
         resizeNestedLayout: true,
@@ -306,7 +306,7 @@
 
     var dateFormatter = function (row, cell, value, columnDef, dataContext) {
         var date = dataContext[columnDef.id];
-        return date ? parent.Ts.Utils.getDateString(date, true, true, _report.ReportType == 3) : '';
+        return date ? top.Ts.Utils.getDateString(date, true, true, _report.ReportType == 3) : '';
     };
 
     var bitFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -326,21 +326,21 @@
     };
 
     var ticketNumberFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="#" onclick="parent.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        return '<a href="#" onclick="top.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
     }
 
     var companyFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="#" onclick="parent.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        return '<a href="#" onclick="top.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
     }
 
 
     var openFormatter = function (row, cell, value, columnDef, dataContext) {
         if (columnDef.openField == "TicketID") {
-            return '<a href="#" onclick="parent.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+            return '<a href="#" onclick="top.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "OrganizationID") {
-            return '<a href="#" onclick="parent.Ts.MainPage.openCustomer(' + dataContext["hiddenOrganizationID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
+            return '<a href="#" onclick="top.Ts.MainPage.openCustomer(' + dataContext["hiddenOrganizationID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "UserID") {
-            return '<a href="#" onclick="parent.Ts.MainPage.openContact(' + dataContext["hiddenUserID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
+            return '<a href="#" onclick="top.Ts.MainPage.openContact(' + dataContext["hiddenUserID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
         }
         return value;
     };
@@ -463,12 +463,12 @@
                     var setRead = !ticket.IsRead;
                     if (ids.length > 1) {
                         showLoadingIndicator();
-                        parent.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { refreshGrid(); deselectRows(); });
+                        top.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { refreshGrid(); deselectRows(); });
                     }
                     else {
                         ticket.IsRead = setRead;
-                        parent.Ts.Services.Tickets.SetTicketRead(ticket.hiddenTicketID, ticket.IsRead, function () {
-                            parent.Ts.MainPage.updateMyOpenTicketReadCount();
+                        top.Ts.Services.Tickets.SetTicketRead(ticket.hiddenTicketID, ticket.IsRead, function () {
+                            top.Ts.MainPage.updateMyOpenTicketReadCount();
                         });
                         if (ticket.IsRead) {
                             $('.slick-row[row="' + row + '"]').addClass('ticket-grid-row-read');
@@ -482,7 +482,7 @@
 
                     }
 
-                    parent.Ts.System.logAction('Ticket Grid - Changed Read Status');
+                    top.Ts.System.logAction('Ticket Grid - Changed Read Status');
                     e.stopPropagation();
                     e.stopImmediatePropagation();
 
@@ -491,18 +491,18 @@
                     var setIsFlagged = !ticket.IsFlagged;
                     if (ids.length > 1) {
                         showLoadingIndicator();
-                        parent.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { refreshGrid(); deselectRows(); });
+                        top.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { refreshGrid(); deselectRows(); });
                     }
                     else {
                         ticket.IsFlagged = setIsFlagged;
-                        parent.Ts.Services.Tickets.SetTicketFlag(ticket.hiddenTicketID, ticket.IsFlagged, function () {
+                        top.Ts.Services.Tickets.SetTicketFlag(ticket.hiddenTicketID, ticket.IsFlagged, function () {
                             _grid.invalidateRow(row);
                             _grid.updateRow(row);
                             _grid.render();
                         });
                     }
 
-                    parent.Ts.System.logAction('Ticket Grid - Changed Flagged Status');
+                    top.Ts.System.logAction('Ticket Grid - Changed Flagged Status');
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     return true;
@@ -510,17 +510,17 @@
                     var setIsEnqueued = !ticket.IsEnqueued;
                     if (ids.length > 1) {
                         showLoadingIndicator();
-                        parent.Ts.Services.Tickets.SetUserQueues(data, setIsEnqueued, function () { refreshGrid(); deselectRows(); });
+                        top.Ts.Services.Tickets.SetUserQueues(data, setIsEnqueued, function () { refreshGrid(); deselectRows(); });
                     }
                     else {
                         ticket.IsEnqueued = setIsEnqueued;
-                        parent.Ts.Services.Tickets.SetUserQueue(ticket.hiddenTicketID, setIsEnqueued, function () {
+                        top.Ts.Services.Tickets.SetUserQueue(ticket.hiddenTicketID, setIsEnqueued, function () {
                             _grid.invalidateRow(row);
                             _grid.updateRow(row);
                             _grid.render();
                         });
                     }
-                    parent.Ts.System.logAction('Ticket Grid - Changed Queue Status');
+                    top.Ts.System.logAction('Ticket Grid - Changed Queue Status');
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     return true;
@@ -528,22 +528,22 @@
                     var setIsSubscribed = !ticket.IsSubscribed;
                     if (ids.length > 1) {
                         showLoadingIndicator();
-                        parent.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { refreshGrid(); deselectRows(); });
+                        top.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { refreshGrid(); deselectRows(); });
                     }
                     else {
                         ticket.IsSubscribed = setIsSubscribed;
-                        parent.Ts.Services.Tickets.SetSubscribed(ticket.hiddenTicketID, ticket.IsSubscribed, null, function () {
+                        top.Ts.Services.Tickets.SetSubscribed(ticket.hiddenTicketID, ticket.IsSubscribed, null, function () {
                             _grid.invalidateRow(row);
                             _grid.updateRow(row);
                             _grid.render();
                         });
                     }
-                    parent.Ts.System.logAction('Ticket Grid - Changed Subscribed Status');
+                    top.Ts.System.logAction('Ticket Grid - Changed Subscribed Status');
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     return true;
                 case "openButton":
-                    parent.Ts.MainPage.openTicket(datamodel.data[row]['Ticket Number']);
+                    top.Ts.MainPage.openTicket(datamodel.data[row]['Ticket Number']);
                     _grid.invalidateRow(row);
                     _grid.updateRow(row);
                     _grid.render();

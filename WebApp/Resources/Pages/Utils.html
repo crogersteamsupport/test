@@ -22,7 +22,7 @@
       $('.ts-loading').hide().next().show();
       $('#btnCleanUpOrphanTicketStatus').click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.Organizations.CleanUpOrphanTicketStatuses(function (result) { alert(result); });
+        top.Ts.Services.Organizations.CleanUpOrphanTicketStatuses(function (result) { alert(result); });
       });
       $('#btnRefresh').click(function (e) {
         e.preventDefault();
@@ -32,7 +32,7 @@
       $('#btnSearch').click(function (e) {
         e.preventDefault();
         $('#divSearch').empty();
-        parent.Ts.Services.Tickets.SearchTicketsTest($('#textSearch').val(), function (result) {
+        top.Ts.Services.Tickets.SearchTicketsTest($('#textSearch').val(), function (result) {
           $('<div>').html(result.length + ' tickets found.').appendTo('#divSearch');
           for (var i = 0; i < result.length; i++) {
             $('<div>').html(result[i]).appendTo('#divSearch');
@@ -45,7 +45,7 @@
 
       $('#btnGenKeys').click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.System.GenerateKeys(function (result) {
+        top.Ts.Services.System.GenerateKeys(function (result) {
           $('.keys').html('');
           for (var i = 0; i < result.length; i++) {
             $('.keys').append('<p>' + result[i] + '</p>');
@@ -57,12 +57,12 @@
 
       $('#btnDefaultUsers').click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.Users.CreateDefaultUsers();
+        top.Ts.Services.Users.CreateDefaultUsers();
       });
 
       $('#btnTest').click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.System.UtilTest(function (result) {
+        top.Ts.Services.System.UtilTest(function (result) {
           $('.test-results').html(result);
         });
       });
@@ -70,7 +70,7 @@
       $('#btnDummyCreate').click(function (e) {
         e.preventDefault();
         $('.dummyCreate').html('...');
-        parent.Ts.Services.Tickets.CreateDummyTickets(function (result) {
+        top.Ts.Services.Tickets.CreateDummyTickets(function (result) {
           var output = $('.dummyCreate').html('');
           for (var i = 0; i < result.length; i++) {
             output.append('<p>' + result[i] + '</p>');
@@ -82,7 +82,7 @@
       $('#btnDummyRead').click(function (e) {
         e.preventDefault();
         $('.dummyRead').html('...');
-        parent.Ts.Services.Tickets.ReadDummyTickets(function (result) {
+        top.Ts.Services.Tickets.ReadDummyTickets(function (result) {
           var output = $('.dummyRead').html('');
           for (var i = 0; i < result.length; i++) {
             output.append('<p>' + result[i] + '</p>');
@@ -95,7 +95,7 @@
       $('#btnActionToText').click(function (e) {
         e.preventDefault();
 
-        parent.Ts.Services.Tickets.ActionToText($('#textActionToText').val(), function (result) {
+        top.Ts.Services.Tickets.ActionToText($('#textActionToText').val(), function (result) {
           $('.action-text').text(result[0]);
           $('.action-html').text(result[1]);
         });
@@ -108,7 +108,7 @@
       var execGetTicket = null;
       function getTickets(request, response) {
         if (execGetTicket) { execGetTicket._executor.abort(); }
-        execGetTicket = parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
+        execGetTicket = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
       }
 
       $('#textQuick').autocomplete({
@@ -122,10 +122,10 @@
 
 
       $('#btnHealthOff').click(function (e) { 
-        parent.Ts.Services.System.ChangeHealthCheck(false);
+        top.Ts.Services.System.ChangeHealthCheck(false);
       });
       $('#btnHealthOn').click(function (e) {
-        parent.Ts.Services.System.ChangeHealthCheck(true);
+        top.Ts.Services.System.ChangeHealthCheck(true);
       });
 
     });  

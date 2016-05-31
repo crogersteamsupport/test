@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/parent.Ts.Services.js" />
+/// <reference path="ts/top.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -11,7 +11,7 @@
 
 $(document).ready(function () {
     var _organizatinID = -1;
-    var _isAdmin = parent.Ts.System.User.IsSystemAdmin && (_organizatinID != parent.Ts.System.User.OrganizationID);
+    var _isAdmin = top.Ts.System.User.IsSystemAdmin && (_organizatinID != top.Ts.System.User.OrganizationID);
 
     $('body').layout({
         defaults: {
@@ -29,8 +29,8 @@ $(document).ready(function () {
 
 
 
-    var defaultTab = parent.Ts.Utils.getQueryValue("open", window);
-    var defaultOrg = parent.Ts.Utils.getQueryValue("organizationID", window);
+    var defaultTab = top.Ts.Utils.getQueryValue("open", window);
+    var defaultOrg = top.Ts.Utils.getQueryValue("organizationID", window);
 
     $(".maincontainer").on("keypress", "input", (function (evt) {
         //Deterime where our character code is coming from within the event
@@ -49,18 +49,18 @@ $(document).ready(function () {
         $('#customerTabs a:first').tab('show');
     }
 
-    if (!parent.Ts.System.User.CanCreateContact && !_isAdmin) {
+    if (!top.Ts.System.User.CanCreateContact && !_isAdmin) {
         $('#customerTabs a:last').hide();
         $('#customerTabs a:first').tab('show');
     }
 
-    if (!parent.Ts.System.User.CanCreateCompany && !_isAdmin) {
+    if (!top.Ts.System.User.CanCreateCompany && !_isAdmin) {
         $('#customerTabs a:first').hide();
         $('#customerTabs a:last').tab('show');
     }
 
     if (defaultOrg) {
-        parent.Ts.Services.Organizations.GetOrganization(defaultOrg, function (org) {
+        top.Ts.Services.Organizations.GetOrganization(defaultOrg, function (org) {
             $('#inputContactCompany').val(org.Name);
             $('#inputContactCompany').data('item', defaultOrg);
         });
@@ -74,11 +74,11 @@ $(document).ready(function () {
     }
 
     // Can the user modify portal access
-    if (_isAdmin && parent.Ts.System.Organization.HasPortalAccess) {
+    if (_isAdmin && top.Ts.System.Organization.HasPortalAccess) {
         $('#cbPortalActive').prop('disabled', true);
     }
 
-    if (_organizatinID == parent.Ts.System.User.OrganizationID) {
+    if (_organizatinID == top.Ts.System.User.OrganizationID) {
         $('#trSupportUser').hide();
         $('#trSupportGroup').hide();
     } else {
@@ -88,7 +88,7 @@ $(document).ready(function () {
     var execGetCompany = null;
     function getCompany(request, response) {
         if (execGetCompany) { execGetCompany._executor.abort(); }
-        execGetCompany = parent.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) { response(result); });
+        execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) { response(result); });
     }
 
     $('#inputContactCompany').autocomplete({
@@ -113,15 +113,15 @@ $(document).ready(function () {
     LoadSlas();
     LoadUsers(_organizatinID);
     LoadGroups(_organizatinID);
-    LoadCustomControls(parent.Ts.ReferenceTypes.Organizations);
+    LoadCustomControls(top.Ts.ReferenceTypes.Organizations);
     LoadCustomContactControls();
 
-    if (parent.Ts.System.Organization.HasPortalAccess && parent.Ts.System.User.IsSystemAdmin)
+    if (top.Ts.System.Organization.HasPortalAccess && top.Ts.System.User.IsSystemAdmin)
     {
         $('#contactPortalUserPanel').show();
     }
 
-    if (parent.Ts.System.Organization.ParentID == null)
+    if (top.Ts.System.Organization.ParentID == null)
     {
         $('#contactSysAdminPanel').show();
         $('#contactFinanceAdminPanel').show();
@@ -172,7 +172,7 @@ $(document).ready(function () {
         {
                 $('#custSaveBtn').prop("disabled", true);
                 var customerInfo = new Object();
-                parent.Ts.System.logAction('New Customer Page - Added New Customer');
+                top.Ts.System.logAction('New Customer Page - Added New Customer');
                 customerInfo.Name = $("#inputName").val();
                 customerInfo.Website = $("#inputWebSite").val();
                 customerInfo.CompanyDomains = $("#inputDomains").val();
@@ -198,19 +198,19 @@ $(document).ready(function () {
                             break;
                         case "date":
                             //    var dt = $(this).find('input').datepicker('getDate');
-                            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
                             break;
                         case "time":
                             //    var time = new Date("January 1, 1970 00:00:00");
                             //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
                             //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
-                            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
                             break;
                         case "datetime":
-                            //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+                            //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
                             //    var dt = $(this).find('input').datetimepicker('getDate');
                             //    field.Value = dt == null ? null : dt.toUTCString();
-                            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
                             break;
                         default:
                             field.Value = $(this).val();
@@ -219,10 +219,10 @@ $(document).ready(function () {
                 });
 
 
-                parent.Ts.Services.Customers.SaveCustomer(parent.JSON.stringify(customerInfo), function (f) {
+                top.Ts.Services.Customers.SaveCustomer(top.JSON.stringify(customerInfo), function (f) {
                     $('#custSaveBtn').prop("disabled", false);
-                    parent.Ts.MainPage.openNewCustomer(f);
-                    parent.Ts.MainPage.closenewCustomerTab();
+                    top.Ts.MainPage.openNewCustomer(f);
+                    top.Ts.MainPage.closenewCustomerTab();
                 }, function () {
                     $('#custSaveBtn').prop("disabled", false);
                     alert('There was an error saving this customer.  Please try again.');
@@ -230,7 +230,7 @@ $(document).ready(function () {
         }
     });
     $('#contactCancelBtn, #custCancelBtn').click(function (e) {
-        parent.Ts.MainPage.closenewCustomerTab();
+        top.Ts.MainPage.closenewCustomerTab();
     });
 
     $('#contactSaveBtn').click(function (e) {
@@ -243,7 +243,7 @@ $(document).ready(function () {
         {
             $('#contactSaveBtn').prop("disabled", true);
             var contactInfo = new Object();
-            parent.Ts.System.logAction('New Customer Page - Added New Contact');
+            top.Ts.System.logAction('New Customer Page - Added New Contact');
             contactInfo.FirstName = $("#inputContactFname").val();
             contactInfo.MiddleName = $("#inputContactMname").val();
             contactInfo.LastName = $("#inputContactLname").val();
@@ -273,23 +273,23 @@ $(document).ready(function () {
                         break;
                     case "date":
                     //    var dt = $(this).find('input').datepicker('getDate');
-                        field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                        field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
                         break;
                     case "time":
                     //    var time = new Date("January 1, 1970 00:00:00");
                     //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
                     //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
-                        field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                        field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
                         break;
                     case "datetime":
-                    //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+                    //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
                     //    var dt = $(this).find('input').datetimepicker('getDate');
                     //    field.Value = dt == null ? null : dt.toUTCString();
-                        field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                        field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
                         break;
 
                     //case "date":
-                    //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+                    //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
                     //    //var dt = $(this).find('input').datetimepicker('getDate');
                     //    //field.Value = dt == null ? null : dt.toUTCString();
                     //    //field.Value = $(this).find('input').datetimepicker('getDate');
@@ -301,15 +301,15 @@ $(document).ready(function () {
                 contactInfo.Fields[contactInfo.Fields.length] = field;
             });
 
-            parent.Ts.Services.Customers.SaveContact(parent.JSON.stringify(contactInfo), function (f) {
+            top.Ts.Services.Customers.SaveContact(top.JSON.stringify(contactInfo), function (f) {
                 if (f == -1) {
                     alert("The email you have specified is already in use.  Please choose another email.");
                     $('#contactSaveBtn').prop("disabled", false);
                 }
                 else {
                     $('#contactSaveBtn').prop("disabled", false);
-                    parent.Ts.MainPage.openNewContact(f);
-                    parent.Ts.MainPage.closenewCustomerTab();
+                    top.Ts.MainPage.openNewContact(f);
+                    top.Ts.MainPage.closenewCustomerTab();
                 }
                 });
         }
@@ -317,7 +317,7 @@ $(document).ready(function () {
     });
 
     function LoadSlas() {
-        parent.Ts.Services.Customers.LoadSlas(function (sla) {
+        top.Ts.Services.Customers.LoadSlas(function (sla) {
             for (var i = 0; i < sla.length; i++) {
                 $('<option>').attr('value', sla[i].SlaLevelID).text(sla[i].Name).data('o', sla[i]).appendTo('#ddSla');
             }
@@ -325,7 +325,7 @@ $(document).ready(function () {
     }
 
     function LoadTimeZones() {
-        parent.Ts.Services.Customers.LoadTimeZones(function (timeZones) {
+        top.Ts.Services.Customers.LoadTimeZones(function (timeZones) {
             for (var i = 0; i < timeZones.length; i++) {
                 $('<option>').attr('value', timeZones[i].Id).text(timeZones[i].DisplayName).data('o', timeZones[i]).appendTo('#ddlTz');
             }
@@ -333,7 +333,7 @@ $(document).ready(function () {
     }
 
     function LoadGroups(organizationID) {
-        parent.Ts.Services.Customers.LoadGroups(function (groups) {
+        top.Ts.Services.Customers.LoadGroups(function (groups) {
             for (var i = 0; i < groups.length; i++) {
                 $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('#ddlSGroup');
             }
@@ -341,7 +341,7 @@ $(document).ready(function () {
     }
 
     function LoadUsers(organizationID) {
-        parent.Ts.Services.Customers.LoadUsers(function (users) {
+        top.Ts.Services.Customers.LoadUsers(function (users) {
             for (var i = 0; i < users.length; i++) {
                 $('<option>').attr('value', users[i].UserID).text(users[i].FirstName + ' ' + users[i].LastName).data('o', users[i]).appendTo('#ddlSUser');
             }
@@ -349,13 +349,13 @@ $(document).ready(function () {
     }
 
     function LoadCustomControls(refType) {
-        parent.Ts.Services.Customers.LoadCustomControls(refType,function (html) {
+        top.Ts.Services.Customers.LoadCustomControls(refType,function (html) {
             $('#customerCustomInfo').append(html);
         });
     }
 
     function LoadCustomContactControls() {
-        parent.Ts.Services.Customers.LoadCustomContactControls(function (html) {
+        top.Ts.Services.Customers.LoadCustomContactControls(function (html) {
             if (html.length < 1)
             {
                 $('#customInfoBox').hide();
@@ -366,7 +366,7 @@ $(document).ready(function () {
         });
     }
 
-    parent.Ts.Services.Customers.GetDateFormat(false,function (dateformat) {
+    top.Ts.Services.Customers.GetDateFormat(false,function (dateformat) {
         //$('.datepicker').datepicker({ format: dateformat });
         //$('.datepicker').datetimepicker({ pickTime: false });
         $('.datepicker').attr("data-format", dateformat);

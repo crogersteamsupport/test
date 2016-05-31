@@ -28,33 +28,33 @@
       $('#btnGetTicketByNumber').click(function (e) {
         e.preventDefault();
         if ($('#textTicketID').val().length > 0) {
-          parent.Ts.Services.Tickets.AdminGetTicketByID($('#textTicketID').val(), loadTicket);
+          top.Ts.Services.Tickets.AdminGetTicketByID($('#textTicketID').val(), loadTicket);
         }
         else {
-          parent.Ts.Services.Tickets.AdminGetTicketByNumber($('#textOrgID').data('itemID'), $('#textTicketNumber').val(), loadTicket);
+          top.Ts.Services.Tickets.AdminGetTicketByNumber($('#textOrgID').data('itemID'), $('#textTicketNumber').val(), loadTicket);
         }
       });
 
       $('#linkCleanEmail').click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.Tickets.AdminCleanAllEmailActions(_ticket.TicketID, function () { alert('Email actions cleaned.'); });
+        top.Ts.Services.Tickets.AdminCleanAllEmailActions(_ticket.TicketID, function () { alert('Email actions cleaned.'); });
       });
 
       $('#linkProcessEmails').click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.Tickets.AdminProcessEmails(_ticket.TicketID, function () { alert('word.'); });
+        top.Ts.Services.Tickets.AdminProcessEmails(_ticket.TicketID, function () { alert('word.'); });
       });
 
 
       $('#linkCleanAll').click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.Tickets.AdminCleanAllActions(_ticket.TicketID, function () { alert('All actions cleaned.'); });
+        top.Ts.Services.Tickets.AdminCleanAllActions(_ticket.TicketID, function () { alert('All actions cleaned.'); });
       });
 
       var execGetOrganization = null;
       function getOrganizations(request, response) {
         if (execGetOrganization) { execGetOrganization._executor.abort(); }
-        execGetOrganization = parent.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
+        execGetOrganization = top.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
       }
 
       $('#textOrgID').autocomplete({
@@ -86,11 +86,11 @@
 
         }
 
-        parent.Ts.Services.Tickets.AdminGetActions(ticket.TicketID, function (actions) {
+        top.Ts.Services.Tickets.AdminGetActions(ticket.TicketID, function (actions) {
           var html = '<table class="table table-striped">'
           for (var i = 0; i < actions.length; i++) {
             html = html + '<tr>'
-            html = html + '<td><a href="#" onclick="parent.Ts.Services.Tickets.AdminCleanAction(' + actions[i].ActionID + ', function(){ alert(\'Action cleaned.\');}); return false;">Clean</a></td>';
+            html = html + '<td><a href="#" onclick="top.Ts.Services.Tickets.AdminCleanAction(' + actions[i].ActionID + ', function(){ alert(\'Action cleaned.\');}); return false;">Clean</a></td>';
             html = html + '<td>' + actions[i].ActionID + '</td>';
             html = html + '<td>' + actions[i].ActionType + '</td>';
             html = html + '<td>' + actions[i].Name + '</td>';
@@ -99,7 +99,7 @@
           $('#divActions').html(html);
         });
 
-        parent.Ts.Services.Tickets.AdminGetSlaInfo(ticket.TicketID, function (sla) {
+        top.Ts.Services.Tickets.AdminGetSlaInfo(ticket.TicketID, function (sla) {
           alert(sla);
         });
       }

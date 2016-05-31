@@ -130,17 +130,17 @@
 
      if ((showDate || showDate === true) && (showTime || showTime === true))
      {
-     	return msDate.localeFormat(parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
+     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
      }
      else if ((showDate || showDate === true) && (!showTime || showTime === false))
      {
-     	return msDate.localeFormat(parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern);
+     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern);
      }
      else if ((!showDate || showDate === false) && (showTime || showTime === true))
      {
-     	return msDate.localeFormat(parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
+     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
      }
-     else msDate.localeFormat(parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
+     else msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
    },
 
    getJqueryDateFormat: function(dateFormat)
@@ -173,18 +173,18 @@
    },
 
    getDateTimePattern: function () {
-     return parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
+     return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
    },
    getDatePattern: function () {
-     return parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern
+     return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern
    },
    getTimePattern: function () {
-     return parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
+     return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
    },
    getMsDate: function(args)
    {
-     if (args) return new parent.Date(args);
-     else  return new parent.Date();
+     if (args) return new top.Date(args);
+     else  return new top.Date();
    },
 
    setCookie: function(key,subkey,value) {

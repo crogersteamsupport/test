@@ -4,16 +4,16 @@ var returnURL = '/default.aspx';
 var orgCookie = null;
 
 $(document).ready(function () {
-	returnURL = parent.Ts.Utils.getQueryValue("ReturnUrl", window);
+	returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
 	if (returnURL == null) returnURL = '/default.aspx';
-	var newSignUpID = parent.Ts.Utils.getQueryValue("SignUpID", window);
+	var newSignUpID = top.Ts.Utils.getQueryValue("SignUpID", window);
 	if (newSignUpID != null)
 	{
 	    IssueAjaxRequest(loginService, "NewSignUpSignIn", { "userID": newSignUpID }, signInSuccess, function () { });
 	}
 
 
-	supportToken = parent.Ts.Utils.getQueryValue("SupportToken", window);
+	supportToken = top.Ts.Utils.getQueryValue("SupportToken", window);
 	if (supportToken && supportToken != '')
 	{
 		IssueAjaxRequest(loginService, "SupportSignIn", { token: supportToken }, function (result) { window.location = '/Default.aspx'; }, function () { });

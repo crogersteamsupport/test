@@ -29,7 +29,7 @@ Reminders = function () {
   function loadReminders() {
     $('.reminders').hide();
     $('.reminders .reminder').remove();
-    parent.Ts.Services.System.GetUserReminders(parent.Ts.Utils.getQueryValue('userid', window), function (reminders) {
+    top.Ts.Services.System.GetUserReminders(top.Ts.Utils.getQueryValue('userid', window), function (reminders) {
       $('.no-reminders').toggle(reminders.length < 1);
 
       for (var i = 0; i < reminders.length; i++) {
@@ -50,9 +50,9 @@ Reminders = function () {
         .attr('type', 'checkbox')
         .change(function (e) {
           var item = $(this).closest('.reminder').addClass('dismissed');
-          parent.Ts.Services.System.DismissReminder(item.data('o').ReminderID, function () {
+          top.Ts.Services.System.DismissReminder(item.data('o').ReminderID, function () {
             item.fadeOut(500, function () { $(this).remove(); });
-            parent.Ts.System.logAction('Reminders - Reminder Dismissed');
+            top.Ts.System.logAction('Reminders - Reminder Dismissed');
 
 
           });
@@ -64,23 +64,23 @@ Reminders = function () {
         .appendTo(reminderDiv);
 
         switch (reminder.RefType) {
-          case parent.Ts.ReferenceTypes.Contacts:
+          case top.Ts.ReferenceTypes.Contacts:
             itemIcon
             .addClass('ts-icon-contact')
             .attr('rel', '../../../Tips/User.aspx?UserID=' + reminder.RefID);
             break;
-          case parent.Ts.ReferenceTypes.Organizations:
+          case top.Ts.ReferenceTypes.Organizations:
             itemIcon
             .addClass('ts-icon-company')
             .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + reminder.RefID);
             break;
-          case parent.Ts.ReferenceTypes.Tickets:
+          case top.Ts.ReferenceTypes.Tickets:
             itemIcon
             .addClass('ts-icon-ticket')
             .attr('rel', '../../../Tips/Ticket.aspx?TicketID=' + reminder.RefID);
             break;
         }
-        itemIcon.cluetip(parent.Ts.Utils.getClueTipOptions(tipTimer))
+        itemIcon.cluetip(top.Ts.Utils.getClueTipOptions(tipTimer))
 
 
         $('<span>')
@@ -98,7 +98,7 @@ Reminders = function () {
           .text(reminder.Description)
           .click(function (e) {
             e.preventDefault();
-            parent.Ts.MainPage.editReminder({ ReminderID: $(this).closest('.reminder').data('o').ReminderID }, true, function () { loadReminders(); });
+            top.Ts.MainPage.editReminder({ ReminderID: $(this).closest('.reminder').data('o').ReminderID }, true, function () { loadReminders(); });
           })
           .appendTo(desc);
 
@@ -107,7 +107,7 @@ Reminders = function () {
         $('<span>')
         .addClass('ts-icon ts-icon-edit ui-helper-hidden')
         .click(function (e) {
-        parent.Ts.MainPage.editReminder({ ReminderID: $(this).closest('.reminder').data('o').ReminderID }, true, function () {
+        top.Ts.MainPage.editReminder({ ReminderID: $(this).closest('.reminder').data('o').ReminderID }, true, function () {
         loadReminders();
         });
         });
@@ -147,25 +147,25 @@ Reminders = function () {
       return weekNo;
     }
 
-    date = parent.Ts.Utils.getMsDate(date);
+    date = top.Ts.Utils.getMsDate(date);
     var now = new Date();
 
     if (date.getTime() < now.getTime()) {
-      return { Text: date.localeFormat(parent.Ts.Utils.getDateTimePattern()), Group: 'past' }
+      return { Text: date.localeFormat(top.Ts.Utils.getDateTimePattern()), Group: 'past' }
     }
 
     if (date.getFullYear() == now.getFullYear()) {
       if (date.getMonth() == now.getMonth()) {
-        if (date.getDate() == now.getDate()) return { Text: date.localeFormat(parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern), Group: 'today' };
+        if (date.getDate() == now.getDate()) return { Text: date.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern), Group: 'today' };
         var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-        if (tomorrow.getDate() == date.getDate()) return { Text: date.localeFormat(parent.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern), Group: 'tomorrow' };
+        if (tomorrow.getDate() == date.getDate()) return { Text: date.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern), Group: 'tomorrow' };
       }
       var w = getWeekNumber(date);
       var week = getWeekNumber(now);
-      if (w == week) return { Text: date.localeFormat(parent.Ts.Utils.getDateTimePattern()), Group: 'thisweek' }
-      if (w == week + 1) return { Text: date.localeFormat(parent.Ts.Utils.getDateTimePattern()), Group: 'nextweek' }
+      if (w == week) return { Text: date.localeFormat(top.Ts.Utils.getDateTimePattern()), Group: 'thisweek' }
+      if (w == week + 1) return { Text: date.localeFormat(top.Ts.Utils.getDateTimePattern()), Group: 'nextweek' }
     }
-    return { Text: date.localeFormat(parent.Ts.Utils.getDateTimePattern()), Group: 'later' }
+    return { Text: date.localeFormat(top.Ts.Utils.getDateTimePattern()), Group: 'later' }
   }
 
   return {

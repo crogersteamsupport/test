@@ -25,7 +25,7 @@
       });
       $('#btnSanitize').click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.System.SanitizeHtml($('#textIn').val(), function (result) {
+        top.Ts.Services.System.SanitizeHtml($('#textIn').val(), function (result) {
           $('#textOut').val(result);
           $('#preview').html(result);
         });

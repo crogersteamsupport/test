@@ -21,7 +21,7 @@ $(document).ready(function () {
 
   $('#search-button').click(function () {
     _firstItemIndex = 0; GetSearchResults(); 
-    parent.Ts.System.logAction('Search - Searched');
+    top.Ts.System.logAction('Search - Searched');
   });
 
   $('#search-results-pane').bind('scroll', function () {
@@ -39,7 +39,7 @@ $(document).ready(function () {
 
 function LoadAdvancedOptions() {
   if (_advancedSearchOptions == null) {
-    parent.Ts.Services.Search.GetAdvancedSearchOptions(function (advancedSearchOptions) {
+    top.Ts.Services.Search.GetAdvancedSearchOptions(function (advancedSearchOptions) {
 
       _advancedSearchOptions  = advancedSearchOptions;
       _standardFilterID       = advancedSearchOptions.StandardFilterID;
@@ -58,10 +58,10 @@ function LoadAdvancedOptions() {
 }
 
 function LoadStandardFilters() {
-  if (parent.Ts.System.Organization.ProductType > 0) {
+  if (top.Ts.System.Organization.ProductType > 0) {
     $('#search-standard-filters').append($('<input id="include-notes" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()"/> Customer Notes<br />'));
 
-    if (parent.Ts.System.Organization.ProductType > 1) {
+    if (top.Ts.System.Organization.ProductType > 1) {
       $('#search-standard-filters').append($('<input id="include-product-versions" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" /> Product Versions<br />'));
     }
 
@@ -188,7 +188,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
     .addClass('ui-icon ui-icon-close')
     .click(function (e) {
       var clickedCustomFilterID = Ts.Utils.getIdFromElement('filter', $(this).parent());
-      parent.Ts.Services.Search.DeleteCustomFilter(clickedCustomFilterID, function () { });
+      top.Ts.Services.Search.DeleteCustomFilter(clickedCustomFilterID, function () { });
       div.remove();
       displayFieldSet.remove();
       setTimeout(function(){$('#search-button').trigger('click');}, 5);
@@ -216,14 +216,14 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
   var saveIcon = $('<span>')
     .addClass('ts-icon ts-icon-save')
     .click(function (e) {
-      parent.Ts.System.logAction('Search - Filter Added');
+      top.Ts.System.logAction('Search - Filter Added');
       var fieldID = $(this).parent().parent().find('.condition-field').val();
       var measure = $(this).parent().parent().find('.condition-measure').val();
       var value = $(this).parent().parent().find('.condition-value').val();
       var isCustom = $(this).parent().parent().find('.condition-field option:selected').data('field').IsCustom;
       var clickedCustomFilterID = Ts.Utils.getIdFromElement('filter', $(this).parent().parent());
       if (clickedCustomFilterID == null) {
-        parent.Ts.Services.Search.AddCustomFilter(fieldID, measure, value, isCustom, function (result) {
+        top.Ts.Services.Search.AddCustomFilter(fieldID, measure, value, isCustom, function (result) {
           div.addClass('filter-' + result);
           displayFieldSet.addClass('filter-' + result);
           _addingFilter = false;
@@ -233,7 +233,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
           });
       }
       else {
-        parent.Ts.Services.Search.UpdateCustomFilter(clickedCustomFilterID, fieldID, measure, value, isCustom);
+        top.Ts.Services.Search.UpdateCustomFilter(clickedCustomFilterID, fieldID, measure, value, isCustom);
       }
       fieldText.html(fields.find('option:selected').text());
       measureText.html(measures.find('option:selected').text());
@@ -334,7 +334,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
     .addClass('ui-icon ui-icon-close')
     .click(function (e) {
       var clickedSorterID = Ts.Utils.getIdFromElement('sorter', $(this).parent());
-      parent.Ts.Services.Search.DeleteSorter(clickedSorterID, function () { });
+      top.Ts.Services.Search.DeleteSorter(clickedSorterID, function () { });
       div.remove();
       displayFieldSet.remove();
       setTimeout(function(){$('#search-button').trigger('click');}, 5);
@@ -359,13 +359,13 @@ function AddCustomSorter(sorterID, fieldID, descending) {
   var saveIcon = $('<span>')
         .addClass('ts-icon ts-icon-save')
         .click(function (e) {
-          parent.Ts.System.logAction('Search - Sort Condition Added');
+          top.Ts.System.logAction('Search - Sort Condition Added');
           var fieldID = $(this).parent().parent().find('.condition-field').val();
           var descending = $(this).parent().parent().find('.condition-direction').val();
           var isCustom = $(this).parent().parent().find('.condition-field option:selected').data('field').IsCustom;
           var clickedSorterID = Ts.Utils.getIdFromElement('sorter', $(this).parent().parent());
           if (clickedSorterID == null) {
-            parent.Ts.Services.Search.AddSorter(fieldID, descending, isCustom, function (result) {
+            top.Ts.Services.Search.AddSorter(fieldID, descending, isCustom, function (result) {
               div.addClass('sorter-' + result);
               displayFieldSet.addClass('sorter-' + result);
               _addingSorter = false;
@@ -375,7 +375,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
             });
           }
           else {
-            parent.Ts.Services.Search.UpdateSorter(clickedSorterID, fieldID, descending, isCustom);
+            top.Ts.Services.Search.UpdateSorter(clickedSorterID, fieldID, descending, isCustom);
           }
 
           fieldText.html(fields.find('option:selected').text());
@@ -441,7 +441,7 @@ function loadComboFields(select, withCustomFields) {
   select.html('');
   $('<option>').attr('value', '-1').text('-- Select a Field --').appendTo(select).attr('selected', 'selected');
   if (_advancedSearchOptions == null) {
-    parent.Ts.Services.Search.GetAdvancedSearchOptions(function (advancedSearchOptions) {
+    top.Ts.Services.Search.GetAdvancedSearchOptions(function (advancedSearchOptions) {
       _advancedSearchOptions = advancedSearchOptions;
       PopulateComboFields(select, withCustomFields);
     });
@@ -496,7 +496,7 @@ function createConditionValue(condition, field, value) {
   var execGetFieldValues = null;
   function getFieldValues(request, response) {
     if (execGetFieldValues) { execGetFieldValues._executor.abort(); }
-    execGetFieldValues = parent.Ts.Services.System.GetLookupDisplayNames(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
+    execGetFieldValues = top.Ts.Services.System.GetLookupDisplayNames(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
   }
 
   if (field.DataType == 'bit') {
@@ -557,7 +557,7 @@ function GetSearchResults() {
     $('#search-results').hide();
     $('#search-results-loading').show();
   }
-  parent.Ts.Services.Search.GetSearchResults($('#search-input').val(), _firstItemIndex, _pageSize, function (results) { showSearchResults(results); });
+  top.Ts.Services.Search.GetSearchResults($('#search-input').val(), _firstItemIndex, _pageSize, function (results) { showSearchResults(results); });
 }
 
 function GetSearchResultsNextPage() {
@@ -565,7 +565,7 @@ function GetSearchResultsNextPage() {
   GetSearchResults();
 }
 
-var _ticketTypes = parent.Ts.Cache.getTicketTypes();
+var _ticketTypes = top.Ts.Cache.getTicketTypes();
 
 function showSearchResults(results) {
   if (results == null) return;
@@ -582,44 +582,44 @@ function showSearchResults(results) {
     switch (results.Items[i].TypeID) {
       case 1: //Tickets
         iconPath = "/vcr/1_9_0/images/nav/16/tickets.png";
-        onClickHandler = "parent.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
+        onClickHandler = "top.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                 '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
         break;
       case 2: //KnowledgeBase
         iconPath = "/vcr/1_9_0/images/nav/16/knowledge.png";
-        onClickHandler = "parent.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
+        onClickHandler = "top.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                 '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
         break;
       case 3: //Wikis
         iconPath = "/vcr/1_9_0/images/nav/16/wiki.png";
-        onClickHandler = "parent.Ts.MainPage.openWiki(" + results.Items[i].ID + ", true)";
+        onClickHandler = "top.Ts.MainPage.openWiki(" + results.Items[i].ID + ", true)";
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Modified by: ' + results.Items[i].Modifier + '</h2>';
         break;
       case 4: //CustomerNotes
         iconPath = "/vcr/1_9_0/images/nav/16/customers.png";
-          //onClickHandler = "parent.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
-        onClickHandler = "parent.Ts.MainPage.openNewCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
+          //onClickHandler = "top.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
+        onClickHandler = "top.Ts.MainPage.openNewCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
         break;
       case 5: //ProductVersions
         iconPath = "/vcr/1_9_0/images/nav/16/products.png";
-        onClickHandler = "parent.Ts.MainPage.openNewProductVersion(" + results.Items[i].ID + ")";
+        onClickHandler = "top.Ts.MainPage.openNewProductVersion(" + results.Items[i].ID + ")";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                 '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
         break;
       case 6: //WaterCooler
         iconPath = "/vcr/1_9_0/images/nav/16/watercooler.png";
-        onClickHandler = "parent.Ts.MainPage.openWaterCoolerInstance(" + results.Items[i].ID + ", " + results.Items[i].RefType + ", " + results.Items[i].AttachmentID + ")";
+        onClickHandler = "top.Ts.MainPage.openWaterCoolerInstance(" + results.Items[i].ID + ", " + results.Items[i].RefType + ", " + results.Items[i].AttachmentID + ")";
         subText = '<h2>Posted by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Posted on: ' + results.Items[i].DateModified + '</h2>';
         break;
       case 7: //ContactNotes
         iconPath = "/vcr/1_9_0/images/nav/16/customers.png";
-        onClickHandler = "parent.Ts.MainPage.openNewContactNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
+        onClickHandler = "top.Ts.MainPage.openNewContactNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
         break;
@@ -687,7 +687,7 @@ function HandleIncludeAllClickEvent() {
 }
 
 function HandleStandardFilterClickEvent() {
-  parent.Ts.System.logAction('Search - Display Item Changed');
+  top.Ts.System.logAction('Search - Display Item Changed');
   if (
     $('#include-tickets').prop('checked')
     && $('#include-knowledge-base').prop('checked')
@@ -723,7 +723,7 @@ function HandleStandardFilterClickEvent() {
   }
 
   if (_standardFilterID != null) {
-    parent.Ts.Services.Search.UpdateStandardFilters(
+    top.Ts.Services.Search.UpdateStandardFilters(
       _standardFilterID,
       includeTickets,
       includeKnowledgeBase,
@@ -734,7 +734,7 @@ function HandleStandardFilterClickEvent() {
     );
   }
   else {
-    parent.Ts.Services.Search.AddStandardFilters(
+    top.Ts.Services.Search.AddStandardFilters(
       includeTickets,
       includeKnowledgeBase,
       includeWikis,

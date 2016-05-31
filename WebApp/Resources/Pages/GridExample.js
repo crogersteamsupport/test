@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/parent.Ts.Services.js" />
+/// <reference path="ts/top.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -9,7 +9,7 @@
 /// <reference path="~/Default.aspx" />
 
 $(document).ready(function () {
-  //var _reportID = parent.Ts.Utils.getQueryValue('ReportID');
+  //var _reportID = top.Ts.Utils.getQueryValue('ReportID');
 
   var grid;
   var datamodel = new TeamSupport.DataModels.Example();

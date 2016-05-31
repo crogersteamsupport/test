@@ -38,7 +38,7 @@
       var execGetOrganization = null;
       function getOrganizations(request, response) {
         if (execGetOrganization) { execGetOrganization._executor.abort(); }
-        execGetOrganization = parent.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
+        execGetOrganization = top.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
       }
 
       $('#textOrgID').autocomplete({
@@ -46,11 +46,11 @@
         source: getOrganizations,
         select: function (event, ui) {
           $(this).data('itemID', ui.item.id);
-          parent.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
-            parent.Ts.Services.Organizations.GetPortalOption(ui.item.id, function (po) {
-              parent.Ts.Services.Organizations.AdminGetCrmLinks(ui.item.id, function (crms) {
+          top.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
+            top.Ts.Services.Organizations.GetPortalOption(ui.item.id, function (po) {
+              top.Ts.Services.Organizations.AdminGetCrmLinks(ui.item.id, function (crms) {
 
-              	var apiLink = 'https://' + org.OrganizationID + ':' + org.WebServiceID + '@' + parent.Ts.System.AppDomain + '/api/xml/';
+              	var apiLink = 'https://' + org.OrganizationID + ':' + org.WebServiceID + '@' + top.Ts.System.AppDomain + '/api/xml/';
                 org.ApiLink = '<a href="' + apiLink + '" target="_blank">' + apiLink + '</a>';
                 var orgDiv = $('#divOrganization').empty().data('o', org);
 
@@ -59,7 +59,7 @@
                   .text('Set admin(s) show welcome page to true')
                   .click(function (e) {
                     e.preventDefault();
-                    parent.Ts.Services.Organizations.SetShowWelcomePage($('#divOrganization').data('o').OrganizationID, function () { alert('Word.'); });
+                    top.Ts.Services.Organizations.SetShowWelcomePage($('#divOrganization').data('o').OrganizationID, function () { alert('Word.'); });
                   })
                   .appendTo(orgDiv)
                   .button();
@@ -83,7 +83,7 @@
                   .text('Reset LastLink Date')
                   .click(function (e) {
                     e.preventDefault();
-                    parent.Ts.Services.Organizations.ResetCrmLastLink($(this).closest('.crm-item').data('o').CRMLinkID, function () { alert('LastLink was set to NULL.'); });
+                    top.Ts.Services.Organizations.ResetCrmLastLink($(this).closest('.crm-item').data('o').CRMLinkID, function () { alert('LastLink was set to NULL.'); });
                   })
                   .appendTo(crmDiv)
                   .button();
@@ -137,7 +137,7 @@
         try {
           if (confirm('Are you sure again?!')) {
             $('.ts-loading').show().next().hide();
-            parent.Ts.Services.Organizations.CopyOrganizationSettings($('#textCopySrc').data('itemID'), $('#textCopyDest').data('itemID'), function (result) {
+            top.Ts.Services.Organizations.CopyOrganizationSettings($('#textCopySrc').data('itemID'), $('#textCopyDest').data('itemID'), function (result) {
               $('.ts-loading').hide().next().show();
               alert(result);
             });

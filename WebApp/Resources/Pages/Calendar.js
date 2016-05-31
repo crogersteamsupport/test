@@ -1,8 +1,8 @@
 ﻿$(document).ready(function () {
 
     //check if the calendar is on a sub section or not
-    var pageType = parent.Ts.Utils.getQueryValue("pagetype", window);
-    var pageID = parent.Ts.Utils.getQueryValue("pageid", window);
+    var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
+    var pageID = top.Ts.Utils.getQueryValue("pageid", window);
     var theTempEvent = null;
     var dateFormat;
     var isNewButton = false;
@@ -18,10 +18,10 @@
         applyDemoStyles: true
     });
 
-    parent.Ts.System.logAction('Calendar - Loaded');
+    top.Ts.System.logAction('Calendar - Loaded');
 
     //setup the dateformat
-    parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
+    top.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
 
         if (dateFormat.indexOf("DD") == -1)
@@ -55,7 +55,7 @@
     // After this construct a string with the above results as below
     var time = day + "/" + month + "/" + year;
     var tempVar = "";
-    //var e = parent.Ts.Services.Users.GetCalendarEvents($.fullCalendar.moment('2014-05-01'));
+    //var e = top.Ts.Services.Users.GetCalendarEvents($.fullCalendar.moment('2014-05-01'));
     
     //initialize the calendar
     $('#calendar').fullCalendar({
@@ -129,7 +129,7 @@
                     var events = [];
                     $(data.d).each(function () {
                         var editable;
-                        if (this.creatorID == parent.Ts.System.User.UserID || parent.Ts.System.User.IsSystemAdmin)
+                        if (this.creatorID == top.Ts.System.User.UserID || top.Ts.System.User.IsSystemAdmin)
                             editable = true;
                         else
                             editable = false;
@@ -159,7 +159,7 @@
             });
         },
         eventDrop: function (event, delta, revertFunc) {
-            parent.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.end.format(), event.type, event.allDay, function () {
+            top.Ts.Services.Users.ChangeEventDate(event.id, event.start.format(), event.end.format(), event.type, event.allDay, function () {
                 $('#calendar').fullCalendar('refetchEvents');
             });
             
@@ -215,26 +215,26 @@
     // edit event delagate
     $('body').on('click', '.eventEdit', function (e) {
         var event = theTempEvent;
-        parent.Ts.System.logAction('Calendar Event - Edit Event Clicked');
+        top.Ts.System.logAction('Calendar Event - Edit Event Clicked');
         $('.popover').not(this).hide();
         switch (event.type)
         {
             case "reminder-ticket":
-                parent.Ts.MainPage.openTicket(event.id); return false;
+                top.Ts.MainPage.openTicket(event.id); return false;
                 break;
             case "reminder-org":
-                parent.Ts.MainPage.openNewCustomer(event.id); return false;
+                top.Ts.MainPage.openNewCustomer(event.id); return false;
                 break;
             case "reminder-user":
-                parent.Ts.MainPage.openNewContact(event.id); return false;
+                top.Ts.MainPage.openNewContact(event.id); return false;
                 break;
             case "ticket":
-                parent.Ts.MainPage.openTicket(event.id); return false;
+                top.Ts.MainPage.openTicket(event.id); return false;
                 break;
             case "cal":
                 
                 clearModal();
-                if (event.creatorID != parent.Ts.System.User.UserID && !parent.Ts.System.User.IsSystemAdmin)
+                if (event.creatorID != top.Ts.System.User.UserID && !top.Ts.System.User.IsSystemAdmin)
                 {
                     loadModal(event, false);
                     readOnlyModal();
@@ -255,10 +255,10 @@
     $('body').on('click', '.eventDelete', function (e) {
         var eventid = theTempEvent;
         if (confirm("Are you sure you want to delete this event")) {
-            parent.Ts.Services.Users.DeleteCalEvent(eventid.id, function () {
+            top.Ts.Services.Users.DeleteCalEvent(eventid.id, function () {
                 $('.popover').hide();
                 $("#calendar").fullCalendar('refetchEvents');
-                parent.Ts.System.logAction('Calendar Event - Deleted');
+                top.Ts.System.logAction('Calendar Event - Deleted');
             });
         }
     });
@@ -363,19 +363,19 @@
             {
                 switch (event.references[i].RefType) {
                     case 0:
-                        refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openTicket(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
                         break;
                     case 1:
-                        refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewProduct(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewProduct(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
                         break;
                     case 2:
-                        refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewCustomer(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewCustomer(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
                         break;
                     case 3:
-                        refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewContact(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewContact(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
                         break;
                     case 4:
-                        refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openGroup(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        refstring += '<a href="#" target="_blank" onclick="top.Ts.MainPage.openGroup(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
                         break;
                 }
             }
@@ -396,7 +396,7 @@
             .text("View")
             .appendTo(theTime);
 
-        if (event.type == "cal" && (parent.Ts.System.User.IsSystemAdmin || event.creatorID == parent.Ts.System.User.UserID))
+        if (event.type == "cal" && (top.Ts.System.User.IsSystemAdmin || event.creatorID == top.Ts.System.User.UserID))
         {
             var delButton = $("<a>")
                 .addClass("pull-right eventDelete")
@@ -687,7 +687,7 @@
             var theTime = timeSplit[1];
 
             var formattedDate = month + "/" + day + "/" + year + " " + theTime + (timeSplit[2] != null ? " " + timeSplit[2] : "");
-            value = parent.Ts.Utils.getMsDate(formattedDate);
+            value = top.Ts.Utils.getMsDate(formattedDate);
             return value;
         }
         else
@@ -777,13 +777,13 @@
             calendarinfo.User[calendarinfo.User.length] = $(this).data('User');
         });
 
-        if (calendarinfo.Tickets.length > 0) parent.Ts.System.logAction('Calendar Event - Ticket Inserted');
-        if (calendarinfo.Groups.length > 0) parent.Ts.System.logAction('Calendar Event - Group Inserted');
-        if (calendarinfo.Products.length > 0) parent.Ts.System.logAction('Calendar Event - Product Inserted');
-        if (calendarinfo.Company.length > 0) parent.Ts.System.logAction('Calendar Event - Company Inserted');
-        if (calendarinfo.User.length > 0) parent.Ts.System.logAction('Calendar Event - User Inserted');
+        if (calendarinfo.Tickets.length > 0) top.Ts.System.logAction('Calendar Event - Ticket Inserted');
+        if (calendarinfo.Groups.length > 0) top.Ts.System.logAction('Calendar Event - Group Inserted');
+        if (calendarinfo.Products.length > 0) top.Ts.System.logAction('Calendar Event - Product Inserted');
+        if (calendarinfo.Company.length > 0) top.Ts.System.logAction('Calendar Event - Company Inserted');
+        if (calendarinfo.User.length > 0) top.Ts.System.logAction('Calendar Event - User Inserted');
 
-        parent.Ts.Services.Users.SaveCalendarEvent(parent.JSON.stringify(calendarinfo), function (result) {
+        top.Ts.Services.Users.SaveCalendarEvent(top.JSON.stringify(calendarinfo), function (result) {
             if (result)
             {
                 $('#fullCalModal').modal('hide');
@@ -794,8 +794,8 @@
             {
                 alert("A valid start date must be entered.");
             }
-            parent.Ts.System.logAction('Calendar Event - Event Inserted');
-            //window.parent.ticketSocket.server.calendarUpdate();
+            top.Ts.System.logAction('Calendar Event - Event Inserted');
+            //window.top.ticketSocket.server.calendarUpdate();
         });
 
 
@@ -822,11 +822,11 @@
 
     $("#refresh").click(function () { $('#calendar').fullCalendar('refetchEvents') });
 
-    $("#calURL").click(function () { $('#subscribeURL').val(parent.Ts.System.AppDomain + "/dc/" + parent.Ts.System.User.OrganizationID + "/calendarfeed/" + parent.Ts.System.User.CalGUID); $('#subscribeModal').modal(); parent.Ts.System.logAction('Calendar Event - Subscription Button Clicked'); });
+    $("#calURL").click(function () { $('#subscribeURL').val(top.Ts.System.AppDomain + "/dc/" + top.Ts.System.User.OrganizationID + "/calendarfeed/" + top.Ts.System.User.CalGUID); $('#subscribeModal').modal(); top.Ts.System.logAction('Calendar Event - Subscription Button Clicked'); });
     $("#newEvent").click(function () {
         clearModal();
         isNewButton = true;
-        parent.Ts.System.logAction('Calendar Event - New Event Button Clicked');
+        top.Ts.System.logAction('Calendar Event - New Event Button Clicked');
         $('#fullCalModal').modal();
         if ($('#inputStartTime').data("DateTimePicker"))
             $('#inputStartTime').data("DateTimePicker").destroy();
@@ -844,7 +844,7 @@
     var execGetCustomer = null;
     function getCustomers(request, response) {
         if (execGetCustomer) { execGetCustomer._executor.abort(); }
-        execGetCustomer = parent.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
+        execGetCustomer = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
             response(result);
         });
     }
@@ -852,14 +852,14 @@
     var execGetUsers = null;
     function getUsers(request, response) {
         if (execGetUsers) { execGetUsers._executor.abort(); }
-        execGetUsers = parent.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
+        execGetUsers = top.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
     }
 
     var execGetTicket = null;
     function getTicketsByTerm(request, response) {
         if (execGetTicket) { execGetTicket._executor.abort(); }
         //execGetTicket = Ts.Services.Tickets.GetTicketsByTerm(request.term, function (result) { response(result); });
-        execGetTicket = parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
+        execGetTicket = top.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
             $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
             response(result);
         });
@@ -869,13 +869,13 @@
     var execGetGroups = null;
     function getGroupsByTerm(request, response) {
         if (execGetGroups) { execGetGroups._executor.abort(); }
-        execGetTicket = parent.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
+        execGetTicket = top.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
     }
 
     var execGetProducts = null;
     function getProductByTerm(request, response) {
         if (execGetProducts) { execGetProducts._executor.abort(); }
-        execGetProducts = parent.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
+        execGetProducts = top.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
     }
 
     //text shortening

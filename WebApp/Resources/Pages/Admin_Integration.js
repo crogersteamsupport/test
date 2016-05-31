@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/parent.Ts.Services.js" />
+/// <reference path="ts/top.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -29,17 +29,17 @@ function onShow() {
 };
 
 AdminInt = function () {
-  parent.Ts.Services.Organizations.GetSlaLevels(function (result) {
+  top.Ts.Services.Organizations.GetSlaLevels(function (result) {
     slaLevels = result;
   });
 
-  actionTypes = parent.Ts.Cache.getActionTypes();
+  actionTypes = top.Ts.Cache.getActionTypes();
 
-	parent.Ts.Services.Tickets.GetTicketStatusesOrderedByTicketTypeName(function (result) {
+	top.Ts.Services.Tickets.GetTicketStatusesOrderedByTicketTypeName(function (result) {
 		organizationStatuses = result;
 	});
 
-  ticketTypes = parent.Ts.Cache.getTicketTypes();
+  ticketTypes = top.Ts.Cache.getTicketTypes();
 
   $('#btnRefresh')
   .click(function (e) {
@@ -53,10 +53,10 @@ AdminInt = function () {
   $('a').addClass('ui-state-default ts-link');
   $('.int-support').click(function (e) {
     e.preventDefault();
-    parent.Ts.System.openSupport();
+    top.Ts.System.openSupport();
   });
 
-  parent.Ts.Services.Organizations.GetCrmLinks(function (result) {
+  top.Ts.Services.Organizations.GetCrmLinks(function (result) {
   	jiraInstances = result;
   	_anyJiraInstance = false;
 
@@ -202,22 +202,22 @@ AdminInt = function () {
   $('#int-api-new').click(function (e) {
     e.preventDefault();
     if (confirm('Are you sure you would like to generate a new API token?' + '\n' + 'You will need to replace the token in all the applications that use the TeamSupport API.')) {
-      parent.Ts.Services.Organizations.GenerateNewApiToken(loadApiInfo);
-      parent.Ts.System.logAction('Admin Integration - API Token Generated');
+      top.Ts.Services.Organizations.GenerateNewApiToken(loadApiInfo);
+      top.Ts.System.logAction('Admin Integration - API Token Generated');
 
     }
   });
 
   $('#int-api-enable').click(function (e) {
     e.preventDefault();
-    parent.Ts.Services.Organizations.SetApiEnabled(true, loadApiInfo);
-    parent.Ts.System.logAction('Admin Integration - API Toggled');
+    top.Ts.Services.Organizations.SetApiEnabled(true, loadApiInfo);
+    top.Ts.System.logAction('Admin Integration - API Toggled');
   });
 
   $('#int-api-disable').click(function (e) {
     e.preventDefault();
-    parent.Ts.Services.Organizations.SetApiEnabled(false, loadApiInfo);
-    parent.Ts.System.logAction('Admin Integration - API Toggled');
+    top.Ts.Services.Organizations.SetApiEnabled(false, loadApiInfo);
+    top.Ts.System.logAction('Admin Integration - API Toggled');
   });
 
   $('.int-api-link-users').click(function (e) {
@@ -225,11 +225,11 @@ AdminInt = function () {
     var info = $('.ts-api').data('info');
     if (info.IsEnabled === false) {
       if (confirm('You must have your API enabled before you can use it.' + '\n' + 'Would you like to enabled it now?')) {
-        parent.Ts.Services.Organizations.SetApiEnabled(true, function (result) {
+        top.Ts.Services.Organizations.SetApiEnabled(true, function (result) {
           loadApiInfo(result);
           info = $('.ts-api').data('info');
           window.open($('.int-api-link-users').attr('href'), "TSAPI");
-          parent.Ts.System.logAction('Admin Integration - API Toggled');
+          top.Ts.System.logAction('Admin Integration - API Toggled');
 
         });
       }
@@ -257,7 +257,7 @@ AdminInt = function () {
       $('<dd>').html(current).appendTo(list);
       $('<dt>').text('Maximum daily requests:').appendTo(list);
       $('<dd>').text(info.RequestMax).appendTo(list);
-      var link = 'https://' + parent.Ts.System.Organization.OrganizationID + ':' + info.Token + '@'+ parent.Ts.System.AppDomain + '/api/xml/users';
+      var link = 'https://' + top.Ts.System.Organization.OrganizationID + ':' + info.Token + '@'+ top.Ts.System.AppDomain + '/api/xml/users';
       $('.int-api-link-users').attr('href', link).text(link);
     }
     else {
@@ -266,7 +266,7 @@ AdminInt = function () {
     }
   }
 
-  parent.Ts.Services.Organizations.GetApiInfo(loadApiInfo);
+  top.Ts.Services.Organizations.GetApiInfo(loadApiInfo);
 
   $('.int-list li').addClass('ui-widget-content ui-corner-all');
 
@@ -300,7 +300,7 @@ AdminInt = function () {
     element.find('.mappings').toggle(data != undefined);
     if (data == undefined) return;
 
-    parent.Ts.Services.Organizations.GetCrmLinkFields(data.CRMLinkID, function (fields) {
+    top.Ts.Services.Organizations.GetCrmLinkFields(data.CRMLinkID, function (fields) {
       loadMapFields(element, fields);
     });
 
@@ -309,18 +309,18 @@ AdminInt = function () {
     if ($('.int-map-type option').length < 1) {
       $('<option>')
         .text('Account')
-        .attr('value', parent.Ts.ReferenceTypes.Organizations)
+        .attr('value', top.Ts.ReferenceTypes.Organizations)
         .attr('selected', 'selected')
         .appendTo('.int-map-type');
 
       $('<option>')
         .text('Contact')
-        .attr('value', parent.Ts.ReferenceTypes.Contacts)
+        .attr('value', top.Ts.ReferenceTypes.Contacts)
         .appendTo('.int-map-type');
 
       $('<option>')
         .text('Ticket')
-        .attr('value', parent.Ts.ReferenceTypes.Tickets)
+        .attr('value', top.Ts.ReferenceTypes.Tickets)
         .appendTo('.int-map-type');
 
       $('.int-map-type').combobox({ selected: function (e, ui) {
@@ -340,13 +340,13 @@ AdminInt = function () {
         if ($('.int-zoho-map-type option').length < 1) {
           $('<option>')
             .text('Account')
-            .attr('value', parent.Ts.ReferenceTypes.Organizations)
+            .attr('value', top.Ts.ReferenceTypes.Organizations)
             .attr('selected', 'selected')
             .appendTo('.int-zoho-map-type');
 
           $('<option>')
             .text('Contact')
-            .attr('value', parent.Ts.ReferenceTypes.Contacts)
+            .attr('value', top.Ts.ReferenceTypes.Contacts)
             .appendTo('.int-zoho-map-type');
 
           $('.int-zoho-map-type').combobox({ selected: function (e, ui) {
@@ -362,7 +362,7 @@ AdminInt = function () {
 
   function loadFields(select, refType) {
     select.empty();
-    parent.Ts.Services.CustomFields.GetAllFields(refType, null, false, function (fields) {
+    top.Ts.Services.CustomFields.GetAllFields(refType, null, false, function (fields) {
       for (var i = 0; i < fields.length; i++) {
         $('<option>')
           .text(fields[i].Name)
@@ -464,13 +464,13 @@ AdminInt = function () {
   		ticketStatusList.empty();
 
   		if (typeof organizationStatuses == "undefined") {
-  			parent.Ts.Services.Tickets.GetTicketStatusesOrderedByTicketTypeName(function (result) {
+  			top.Ts.Services.Tickets.GetTicketStatusesOrderedByTicketTypeName(function (result) {
   				organizationStatuses = result;
   			});
   		}
 
   		if (typeof ticketTypes == "undefined") {
-  			ticketTypes = parent.Ts.Cache.getTicketTypes();
+  			ticketTypes = top.Ts.Cache.getTicketTypes();
   		}
 
   		for (var i = 0; i < organizationStatuses.length; i++) {
@@ -516,7 +516,7 @@ AdminInt = function () {
     	ticketTypesList.empty();
 
     	if (typeof ticketTypes == "undefined") {
-    		ticketTypes = parent.Ts.Cache.getTicketTypes();
+    		ticketTypes = top.Ts.Cache.getTicketTypes();
     	}
 
 		for (var i = 0; i < ticketTypes.length; i++) {
@@ -562,9 +562,9 @@ AdminInt = function () {
       .click(function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to delete this mapping?')) {
-          parent.Ts.Services.Organizations.DeleteCrmLinkField(div.data('field').CRMFieldID, function () {
+          top.Ts.Services.Organizations.DeleteCrmLinkField(div.data('field').CRMFieldID, function () {
             div.remove();
-            parent.Ts.System.logAction('Admin Integration - CRM Mapping Deleted');
+            top.Ts.System.logAction('Admin Integration - CRM Mapping Deleted');
           });
         }
 
@@ -581,7 +581,7 @@ AdminInt = function () {
 
     var tsField = parent.find('.int-map-tsfield option:selected').data('field');
 
-    parent.Ts.Services.Organizations.SaveCrmLinkField(
+    top.Ts.Services.Organizations.SaveCrmLinkField(
       parent.data('link').CRMLinkID,
       tsField.ID,
       tsField.IsCustom,
@@ -593,7 +593,7 @@ AdminInt = function () {
 
 
     );
-    parent.Ts.System.logAction('Admin Integration - CRM Mapping Added');
+    top.Ts.System.logAction('Admin Integration - CRM Mapping Added');
     parent.find('.int-map-crmfield').val('');
   });
 
@@ -606,7 +606,7 @@ AdminInt = function () {
 
     var tsField = parent.find('.int-jira-map-tsfield option:selected').data('field');
 
-    parent.Ts.Services.Organizations.SaveCrmLinkField(
+    top.Ts.Services.Organizations.SaveCrmLinkField(
       parent.data('link').CRMLinkID,
       tsField.ID,
       tsField.IsCustom,
@@ -618,7 +618,7 @@ AdminInt = function () {
 
 
     );
-    parent.Ts.System.logAction('Admin Integration - Jira Mapping Added');
+    top.Ts.System.logAction('Admin Integration - Jira Mapping Added');
     parent.find('.int-jira-map-crmfield').val('');
   });
 
@@ -631,7 +631,7 @@ AdminInt = function () {
 
     var tsField = parent.find('.int-zoho-map-tsfield option:selected').data('field');
 
-    parent.Ts.Services.Organizations.SaveCrmLinkField(
+    top.Ts.Services.Organizations.SaveCrmLinkField(
       parent.data('link').CRMLinkID,
       tsField.ID,
       tsField.IsCustom,
@@ -643,7 +643,7 @@ AdminInt = function () {
 
 
     );
-    parent.Ts.System.logAction('Admin Integration - ZohoCRM Mapping Added');
+    top.Ts.System.logAction('Admin Integration - ZohoCRM Mapping Added');
     parent.find('.int-zoho-map-crmfield').val('');
   });
 
@@ -840,7 +840,7 @@ AdminInt = function () {
 
     var linkID = parent.data('link') == undefined || (_isNewJiraInstance && crmType == 'Jira') ? -1 : parent.data('link').CRMLinkID;
 
-    parent.Ts.Services.Organizations.SaveCrmLink(
+    top.Ts.Services.Organizations.SaveCrmLink(
           linkID,
           parent.find('.int-crm-active').prop('checked'),
           crmType,
@@ -871,7 +871,7 @@ AdminInt = function () {
             parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
             loadMaps(parent);
             ReLoadJiraInstances(parent);
-            parent.Ts.System.logAction('Admin Integration - Settings Saved');
+            top.Ts.System.logAction('Admin Integration - Settings Saved');
           },
           function () {
             parent.find('.int-message').addClass('ui-state-error').html('<div>There was an error saving this information, please try again.<div>').show();
@@ -1077,7 +1077,7 @@ AdminInt = function () {
 	}
 
 	function ReLoadJiraInstances(panel) {
-		parent.Ts.Services.Organizations.GetCrmLinks(function (result) {
+		top.Ts.Services.Organizations.GetCrmLinks(function (result) {
 			jiraInstances = result;
 			loadJiraInstancesList(panel);
 

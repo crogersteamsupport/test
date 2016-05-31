@@ -23,7 +23,7 @@
 
   <script language="javascript" type="text/javascript">
     $(document).ready(function () {
-      parent.Ts.Services.Reports.AdminGetReports(function (reports) {
+      top.Ts.Services.Reports.AdminGetReports(function (reports) {
         var list = $('.report-list ul');
         for (var i = 0; i < reports.length; i++) {
           var item = $('<li>').data('report', reports[i]).attr('data-id', reports[i].ReportID);
@@ -48,7 +48,7 @@
         var report = li.addClass('active').data('report');
         $('.alert-danger').hide();
         $('.alert-success').hide();
-        parent.Ts.Services.Reports.AdminGetReport(report.ReportID, function (result) {
+        top.Ts.Services.Reports.AdminGetReport(report.ReportID, function (result) {
           li.data('report', result);
           $('.title').text(result.Name);
           $('#query').val(result.Query);
@@ -61,7 +61,7 @@
       $('.btn-save').click(function (e) {
         e.preventDefault();
         var report = $('.report-list li.active').data('report');
-        parent.Ts.Services.Reports.AdminUpdateQuery(report.ReportID, $('#query').val())
+        top.Ts.Services.Reports.AdminUpdateQuery(report.ReportID, $('#query').val())
       });
 
 
@@ -70,7 +70,7 @@
         var report = $('.report-list li.active').data('report');
         var name = prompt("Enter a new report name", report.Name + ' Copy');
         if (name != null) {
-          parent.Ts.Services.Reports.AdminCloneReport(report.ReportID, name, function (id) {
+          top.Ts.Services.Reports.AdminCloneReport(report.ReportID, name, function (id) {
             alert('Cloned.  Refresh to see it.');
           });
         }
@@ -81,7 +81,7 @@
         var report = $('.report-list li.active').data('report');
         var name = prompt("Enter a new report name", report.Name);
         if (name != null) {
-          parent.Ts.Services.Reports.AdminRenameReport(report.ReportID, name, function () {
+          top.Ts.Services.Reports.AdminRenameReport(report.ReportID, name, function () {
             alert('Renamed.  Refresh to see it.');
           })
         }
@@ -93,7 +93,7 @@
         var oldID = report.OrganizationID ? report.OrganizationID : 'ALL';
         var orgID = prompt('Enter a new organization id or "ALL"', oldID);
         if (orgID != null) {
-          parent.Ts.Services.Reports.AdminChangeOrg(report.ReportID, orgID, function () {
+          top.Ts.Services.Reports.AdminChangeOrg(report.ReportID, orgID, function () {
             alert('Renamed.  Refresh to see it.');
           })
         }
@@ -110,7 +110,7 @@
 
       function testQuery(reportID, query) {
         var li = $('li[data-id="' + reportID + '"]');
-        parent.Ts.Services.Reports.AdminTestQuery(reportID, query,
+        top.Ts.Services.Reports.AdminTestQuery(reportID, query,
         function () {
           li.addClass('report-valid').removeClass('report-bad');
           $('.alert-danger').hide();

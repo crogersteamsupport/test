@@ -1,5 +1,5 @@
 ﻿var initEditor = function (element, shouldResize, init, postinit) {
-    parent.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+    top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
         var resizePluginCode = ''; 
         if (shouldResize)
         {
@@ -24,33 +24,33 @@
             menubar: false,
             moxiemanager_leftpanel: false,
             moxiemanager_fullscreen: false,
-            moxiemanager_title: parent.Ts.System.Organization.Name,
-            moxiemanager_hidden_tools: (parent.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
+            moxiemanager_title: top.Ts.System.Organization.Name,
+            moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
             paste_data_images: true,
             moxiemanager_image_settings: {
-                moxiemanager_rootpath: "/" + parent.Ts.System.Organization.OrganizationID + "/images/",
+                moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
                 extensions: 'gif,jpg,jpeg,png'
             },
             images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
             setup: function (ed) {
                 ed.on('init', function (e) {
-                    parent.Ts.System.refreshUser(function () {
-                        if (parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.User.FontFamily));
-                            ed.getBody().style.fontFamily = GetTinyMCEFontName(parent.Ts.System.User.FontFamily);
+                    top.Ts.System.refreshUser(function () {
+                        if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+                            ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
                         }
-                        else if (parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily));
-                            ed.getBody().style.fontFamily = GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily);
+                        else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+                            ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
                         }
 
-                        if (parent.Ts.System.User.FontSize != "0") {
-                            ed.execCommand("FontSize", false, parent.Ts.System.User.FontSizeDescription);
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(parent.Ts.System.User.FontSize + 1);
+                        if (top.Ts.System.User.FontSize != "0") {
+                            ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+                            ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
                         }
-                        else if (parent.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, parent.Ts.System.Organization.FontSize + 1);
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(parent.Ts.System.Organization.FontSize + 1);
+                        else if (top.Ts.System.Organization.FontSize != "0") {
+                            ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSize + 1);
+                            ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize + 1);
                         }
 
                       if(postinit) postinit();
@@ -67,21 +67,21 @@
                     //image: '../images/nav/16/tickets.png',
                     icon: 'awesome fa fa-ticket',
                     onclick: function () {
-                        parent.Ts.System.logAction('Ticket - Ticket Inserted');
+                        top.Ts.System.logAction('Ticket - Ticket Inserted');
 
-                        parent.Ts.MainPage.selectTicket(null, function (ticketID) {
-                            parent.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
+                        top.Ts.MainPage.selectTicket(null, function (ticketID) {
+                            top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
                               ed.focus();
                               if (_ticketID) {
-                                parent.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
+                                top.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
                                   appendRelated(tickets);
-                                  //window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
+                                  //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
                                 }, function (error) {
                                   //container.remove();
                                   alert(error.get_message());
                                 });
                               }
-                                var html = '<a href="' + parent.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
+                                var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
                                 ed.focus();
@@ -102,10 +102,10 @@
                             alert("Sorry, this feature is not supported by your browser");
                         }
                         else {
-                            parent.Ts.MainPage.pasteImage(null, function (result) {
+                            top.Ts.MainPage.pasteImage(null, function (result) {
                                 ed.focus();
                                 if (result != "") {
-                                    var html = '<img src="' + parent.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                                    var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
                                     ed.selection.setContent(html);
                                     setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
                                     ed.execCommand('mceAutoResize');
@@ -121,7 +121,7 @@
                     icon: 'awesome fa fa-clock-o',
                     //image: '../images/icons/dropbox.png',
                     onclick: function () {
-                        var html = Date(Date.UTC(Date.Now)) + ' ' + parent.Ts.System.User.FirstName + ' ' + parent.Ts.System.User.LastName + ' : ';
+                        var html = Date(Date.UTC(Date.Now)) + ' ' + top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + ' : ';
                         ed.selection.setContent(html);
                         ed.execCommand('mceAutoResize');
                         ed.focus();
@@ -141,7 +141,7 @@
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
                                 ed.focus();
-                                parent.Ts.System.logAction('Ticket - Dropbox Added');
+                                top.Ts.System.logAction('Ticket - Dropbox Added');
                             },
                             cancel: function () {
                                 alert('There was a problem inserting the dropbox file.');
@@ -156,7 +156,7 @@
                     //image: '../images/icons/Symbol_Record.png',
                     icon: 'awesome fa fa-video-camera',
                     onclick: function () {
-                        parent.Ts.System.logAction('Ticket - Video Recording Button Clicked');
+                        top.Ts.System.logAction('Ticket - Video Recording Button Clicked');
                         if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                             var dynamicPub = element.parent().find("#publisher");
                             element.parent().find("#recordVideoContainer").show();
@@ -170,7 +170,7 @@
 
 
 
-                            parent.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                            top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
                                 sessionId = resultID[0];
                                 token = resultID[1];
                                 session = OT.initSession(apiKey, sessionId);
@@ -196,7 +196,7 @@
                 	//image: '../images/icons/Symbol_Record.png',
                 	icon: 'awesome fa fa-circle',
                 	onclick: function () {
-                		parent.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
+                		top.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                 			var dynamicPub = element.parent().find("#screenShare");
                 			element.parent().find("#recordScreenContainer").show();
@@ -226,7 +226,7 @@
 											  		element.parent().find('#recordScreenContainer').hide();
                 				} else {
                 					// Screen sharing is available
-                					parent.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
                 						sessionId = resultID[0];
                 						token = resultID[1];
                 						apiKey = resultID[2];
@@ -289,7 +289,7 @@
                     onclick: function () {
                         suggestedSolutions(element.SuggestedSolutionDefaultInput, function (ticketIDs) {
                             for (var j = 0; j < ticketIDs.length; j++) {
-                                parent.Ts.Services.Tickets.GetKBTicketAndActions(ticketIDs[j], function (result) {
+                                top.Ts.Services.Tickets.GetKBTicketAndActions(ticketIDs[j], function (result) {
                                     if (result === null) {
                                         alert('There was an error inserting your suggested solution ticket.');
                                         return;
@@ -312,17 +312,17 @@
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
                                 ed.focus();
-                                    parent.Ts.System.logAction('Ticket - Suggested Solution Inserted');
+                                    top.Ts.System.logAction('Ticket - Suggested Solution Inserted');
                                 }, function () {
                                     alert('There was an error inserting your suggested solution ticket.');
                                 });
                             }
                         });
 
-                        //filter = new parent.TeamSupport.Data.TicketLoadFilter();
+                        //filter = new top.TeamSupport.Data.TicketLoadFilter();
                         //filter.IsKnowledgeBase = true;
-                        //parent.Ts.MainPage.selectTicket(filter, function (ticketID) {
-                        //    parent.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+                        //top.Ts.MainPage.selectTicket(filter, function (ticketID) {
+                        //    top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
                         //        if (result === null) {
                         //            alert('There was an error inserting your knowledgebase ticket.');
                         //            return;
@@ -341,7 +341,7 @@
                         //        ed.selection.setContent(html);
                         //        ed.execCommand('mceAutoResize');
                         //        ed.focus();
-                        //        parent.Ts.System.logAction('Ticket - KB Inserted');
+                        //        top.Ts.System.logAction('Ticket - KB Inserted');
                         //        //needs to resize or go to end
 
                         //    }, function () {
@@ -361,7 +361,7 @@
 
                             switch (BrowserDetect.browser) {
                               case "Chrome":
-                                parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingChromeInfo', 0, function (alreadyReadInfo) {
+                                top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingChromeInfo', 0, function (alreadyReadInfo) {
                                   if (alreadyReadInfo == 0) {
                                     $(".pAllowPluginsToRunInstructions").html("\
 To use screen recording in this browser before September of 2015 \
@@ -376,7 +376,7 @@ on the right side of the address bar");
                                 });
                                 break;
                               case "Firefox":
-                                parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingFirefoxInfo', 0, function (alreadyReadInfo) {
+                                top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingFirefoxInfo', 0, function (alreadyReadInfo) {
                                   if (alreadyReadInfo == 0) {
                                     $(".pAllowPluginsToRunInstructions").html("\
 Please allow the screen recorder Java plugins to run on your browser by clicking on the \
@@ -387,7 +387,7 @@ on the left side of the address bar.");
                                 });
                                 break;
                               case "Explorer":
-                                parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingExplorerInfo', 0, function (alreadyReadInfo) {
+                                top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingExplorerInfo', 0, function (alreadyReadInfo) {
                                   if (alreadyReadInfo == 0) {
                                     $(".pAllowPluginsToRunInstructions").html("\
 Please allow the screen recorder Java plugins to run on your browser by clicking on Allow button at the bottom of the page: \
@@ -398,7 +398,7 @@ Please allow the screen recorder Java plugins to run on your browser by clicking
                                 break;
                               case "Safari":
                                 if (BrowserDetect.OS == "Windows") {
-                                  parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInWindowsInfo', 0, function (alreadyReadInfo) {
+                                  top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInWindowsInfo', 0, function (alreadyReadInfo) {
                                     if (alreadyReadInfo == 0) {
                                       $(".pAllowPluginsToRunInstructions").html("\
 This browser in Windows usually fails to detect Java preventing the recorder to start. Read \
@@ -409,13 +409,13 @@ for more information or use an alternate browser like Firefox or Internet Explor
                                   });
                                 }
                                 else {
-                                  parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInfo', 0, function (alreadyReadInfo) {
+                                  top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInfo', 0, function (alreadyReadInfo) {
                                     if (alreadyReadInfo == 0) {
                                       $(".pAllowPluginsToRunInstructions").html("\
 The following steps will refresh your browser<br><br> \
 1. Allow the screen recorder Java plugins to run on your browser by clicking on the Trust button at the top of the page: <br>\
 <img src='../Images/icons/SafariInMacPluginDialog.png' alt='plugin dialog' width='30%' style='margin-top: 10px'><br><br> \
-2. Navigate to Safari > Preferences > Security > Internet Plugins - Website Settings > Java and change the " + parent.Ts.System.AppDomain + " setting to Run in Unsafe Mode and click on the Trust button: <br>\
+2. Navigate to Safari > Preferences > Security > Internet Plugins - Website Settings > Java and change the " + top.Ts.System.AppDomain + " setting to Run in Unsafe Mode and click on the Trust button: <br>\
 <img src='../Images/icons/SafariInMacUnsafeModeDialog.png' alt='plugin dialog' width='30%' style='margin-top: 10px'>");
                                       $('.divScreenRecorderMessages').show();
                                     }
@@ -424,7 +424,7 @@ The following steps will refresh your browser<br><br> \
 
                                 break;
                               default:
-                                parent.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingInfo', 0, function (alreadyReadInfo) {
+                                top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingInfo', 0, function (alreadyReadInfo) {
                                   if (alreadyReadInfo == 0) {
                                     $(".pAllowPluginsToRunInstructions").html("Please verify java is supported and allowed to run in your browser.");
                                     $('.divScreenRecorderMessages').show();
@@ -439,7 +439,7 @@ The following steps will refresh your browser<br><br> \
                               applet.code = "com.bixly.pastevid.driver.Launch";
                               applet.width = 200;
                               applet.height = 150;
-                              var orgId = parent.Ts.System.Organization.OrganizationID;
+                              var orgId = top.Ts.System.Organization.OrganizationID;
                               var param1 = document.createElement("param");
                               param1.name = "jnlp_href";
                               param1.value = "launch.jnlp";
@@ -481,24 +481,24 @@ var onScreenRecordStart = function () {
   $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
   switch (BrowserDetect.browser) {
     case "Chrome":
-      parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
       break;
     case "Firefox":
-      parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
       break;
     case "Explorer":
-      parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
       break;
     case "Safari":
       if (BrowserDetect.OS == "Windows") {
-        parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
+        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
       }
       else {
-        parent.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
+        top.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
       }
       break;
     default:
-      parent.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
+      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
   }
   $('.divScreenRecorderMessages').hide();
 };
@@ -512,10 +512,10 @@ var onScreenRecordComplete = function (url) {
     ed.selection.setContent(html);
     ed.execCommand('mceAutoResize');
     ed.focus();
-    parent.Ts.System.logAction('Ticket - Screen Recorded');
+    top.Ts.System.logAction('Ticket - Screen Recorded');
   }
   else {
-    parent.Ts.System.logAction('Ticket - Screen Record Cancelled');
+    top.Ts.System.logAction('Ticket - Screen Record Cancelled');
   }
 };
 
@@ -622,7 +622,7 @@ function suggestedSolutions(defaultInput, callback) {
         if (ids.length > 0) {
             callback(ids);
             $('#SuggestedSolutionsModal').modal('hide');
-            parent.Ts.System.logAction('Inserted suggested solution');
+            top.Ts.System.logAction('Inserted suggested solution');
         }
         else {
             alert('Select a suggested solution.');

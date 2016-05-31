@@ -274,7 +274,7 @@ var _startDate = new Date();
         return;
       }
       var self = this;
-      parent.Ts.Services.Settings.ReadUserSetting(key, defaultValue, function(result){
+      top.Ts.Services.Settings.ReadUserSetting(key, defaultValue, function(result){
         self._cache[key] = result;
         callback(result);
       });
@@ -286,7 +286,7 @@ var _startDate = new Date();
         return;
       }
       this._cache[key] = value;
-      parent.Ts.Services.Settings.WriteUserSetting(key, value, callback);
+      top.Ts.Services.Settings.WriteUserSetting(key, value, callback);
     }
   };
 
@@ -301,7 +301,7 @@ var _startDate = new Date();
         return;
       }
       var self = this;
-      parent.Ts.Services.Settings.ReadOrganizationSetting(key, defaultValue, function(result){
+      top.Ts.Services.Settings.ReadOrganizationSetting(key, defaultValue, function(result){
         self._cache[key] = result;
         callback(result);
       });
@@ -313,7 +313,7 @@ var _startDate = new Date();
         return;
       }
       this._cache[key] = value;
-      parent.Ts.Services.Settings.WriteOrganizationSetting(key, value, callback);
+      top.Ts.Services.Settings.WriteOrganizationSetting(key, value, callback);
     }
   };
 
@@ -328,7 +328,7 @@ var _startDate = new Date();
         return;
       }
       var self = this;
-      parent.Ts.Services.Settings.ReadSessionSetting(key, defaultValue, function(result){
+      top.Ts.Services.Settings.ReadSessionSetting(key, defaultValue, function(result){
         self._cache[key] = result;
         callback(result);
       });
@@ -340,7 +340,7 @@ var _startDate = new Date();
         return;
       }
       this._cache[key] = value;
-      parent.Ts.Services.Settings.WriteSessionSetting(key, value, callback);
+      top.Ts.Services.Settings.WriteSessionSetting(key, value, callback);
     }
   };
 
@@ -355,7 +355,7 @@ var _startDate = new Date();
         return;
       }
       var self = this;
-      parent.Ts.Services.Settings.ReadSystemSetting(key, defaultValue, function(result){
+      top.Ts.Services.Settings.ReadSystemSetting(key, defaultValue, function(result){
         self._cache[key] = result;
         callback(result);
       });
@@ -367,7 +367,7 @@ var _startDate = new Date();
         return;
       }
       this._cache[key] = value;
-      parent.Ts.Services.Settings.WriteSystemSetting(key, value, callback);
+      top.Ts.Services.Settings.WriteSystemSetting(key, value, callback);
     }
   };
 

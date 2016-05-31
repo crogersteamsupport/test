@@ -27,7 +27,7 @@
             return;
         }
 
-        parent.Ts.Services.Search.SearchProducts($('#searchString').val(), start, 20, searchProducts, searchProductVersions, function (items) {
+        top.Ts.Services.Search.SearchProducts($('#searchString').val(), start, 20, searchProducts, searchProductVersions, function (items) {
             $('.searchresults').fadeTo(0, 1);
 
             if (start == 0) {
@@ -43,7 +43,7 @@
     }
 
     function fetchProductFamilies(start) {
-        parent.Ts.Services.Search.SearchProductFamilies($('#searchString').val(), start, function (items) {
+        top.Ts.Services.Search.SearchProductFamilies($('#searchString').val(), start, function (items) {
             $('.searchresults').fadeTo(0, 1);
             $('.results-loading').hide();
             $('.results-done').hide();
@@ -137,7 +137,7 @@
           .addClass('productinfo');
 
         if (!item.productVersionID) {
-            parent.Ts.Services.Products.GetProductOpenTicketCount(item.productID, function (count) {
+            top.Ts.Services.Products.GetProductOpenTicketCount(item.productID, function (count) {
                 div.append(
                     $('<div>')
                     .addClass('pull-right')
@@ -146,7 +146,7 @@
             });
         }
         else {
-            parent.Ts.Services.Products.GetProductVersionOpenTicketCount(item.productVersionID, function (count) {
+            top.Ts.Services.Products.GetProductVersionOpenTicketCount(item.productVersionID, function (count) {
                 div.append(
                     $('<div>')
                     .addClass('pull-right')
@@ -222,7 +222,7 @@
           .attr('href', '#')
           .addClass('productversionlink')
           .data('productversionid', item.productVersionID)
-          .text(parent.Ts.Utils.getMsDate(item.releaseDate).localeFormat(parent.Ts.Utils.getDatePattern()))
+          .text(top.Ts.Utils.getMsDate(item.releaseDate).localeFormat(top.Ts.Utils.getDatePattern()))
           .appendTo(fourthRow);
         }
     }
@@ -275,31 +275,31 @@
         e.preventDefault();
         $('.products-filter li.active').removeClass('active');
         $(this).parent().addClass('active');
-        parent.Ts.System.logAction('Products Page - Change Filter');
+        top.Ts.System.logAction('Products Page - Change Filter');
         $('.product-family-new').hide();
         $('.product-new').show();
         fetchItems();
     });
 
-    var _isAdmin = parent.Ts.System.User.IsSystemAdmin;
-    if (!_isAdmin && !parent.Ts.System.User.CanCreateProducts) {
+    var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+    if (!_isAdmin && !top.Ts.System.User.CanCreateProducts) {
         $('.product-new').remove();
         $('.product-family-new').remove();
     }
 
-    if (parent.Ts.System.Organization.UseProductFamilies) {
+    if (top.Ts.System.Organization.UseProductFamilies) {
         $('#productFamiliesFilter').show();
     }
 
     $('.product-new').click(function (e) {
         e.preventDefault();
-        parent.Ts.MainPage.newProduct();
+        top.Ts.MainPage.newProduct();
 
     });
 
     $('.product-family-new').click(function (e) {
         e.preventDefault();
-        parent.Ts.MainPage.newProductFamily();
+        top.Ts.MainPage.newProductFamily();
 
     });
 
@@ -307,10 +307,10 @@
         e.preventDefault();
 
         var id = $(this).data('productversionid');
-        parent.Ts.System.logAction('Products Page - View Recent Product Version');
-        parent.Ts.MainPage.openNewProductVersion(id);
+        top.Ts.System.logAction('Products Page - View Recent Product Version');
+        top.Ts.MainPage.openNewProductVersion(id);
 
-        parent.Ts.Services.Products.UpdateRecentlyViewed('v' + id, function (resultHtml) {
+        top.Ts.Services.Products.UpdateRecentlyViewed('v' + id, function (resultHtml) {
             $('.recent-container').empty();
             $('.recent-container').html(resultHtml);
         });
@@ -321,10 +321,10 @@
         e.preventDefault();
 
         var id = $(this).data('productid');
-        parent.Ts.System.logAction('Products Page - View Recent Product');
-        parent.Ts.MainPage.openNewProduct(id);
+        top.Ts.System.logAction('Products Page - View Recent Product');
+        top.Ts.MainPage.openNewProduct(id);
 
-        parent.Ts.Services.Products.UpdateRecentlyViewed('p' + id, function (resultHtml) {
+        top.Ts.Services.Products.UpdateRecentlyViewed('p' + id, function (resultHtml) {
             $('.recent-container').empty();
             $('.recent-container').html(resultHtml);
         });
@@ -335,17 +335,17 @@
         e.preventDefault();
 
         var id = $(this).data('productfamilyid');
-        parent.Ts.System.logAction('Products Page - View Recent Product Line');
-        parent.Ts.MainPage.openNewProductFamily(id);
+        top.Ts.System.logAction('Products Page - View Recent Product Line');
+        top.Ts.MainPage.openNewProductFamily(id);
 
-        parent.Ts.Services.Products.UpdateRecentlyViewed('f' + id, function (resultHtml) {
+        top.Ts.Services.Products.UpdateRecentlyViewed('f' + id, function (resultHtml) {
             $('.recent-container').empty();
             $('.recent-container').html(resultHtml);
         });
 
     });
 
-    parent.Ts.Services.Products.GetRecentlyViewed(function (resultHtml) {
+    top.Ts.Services.Products.GetRecentlyViewed(function (resultHtml) {
         $('.recent-container').empty();
         $('.recent-container').html(resultHtml);
     });

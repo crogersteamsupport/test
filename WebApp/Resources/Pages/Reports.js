@@ -29,11 +29,11 @@ ReportPage = function () {
     });
 
     function writeSettings(settings) {
-        parent.Ts.Services.Settings.WriteUserSetting('Reports-Settings', JSON.stringify(settings));
+        top.Ts.Services.Settings.WriteUserSetting('Reports-Settings', JSON.stringify(settings));
     }
 
     function readSettings(callback) {
-        parent.Ts.Services.Settings.ReadUserSetting('Reports-Settings', null, function (settings) {
+        top.Ts.Services.Settings.ReadUserSetting('Reports-Settings', null, function (settings) {
             if (callback) { callback(settings == null ? {} : JSON.parse(settings)); }
         });
     }
@@ -54,8 +54,8 @@ ReportPage = function () {
 
 
 
-    parent.Ts.Services.Reports.GetFolders(function (folders) {
-        parent.Ts.Settings.User.read('reports-folder', '[]', function (userFolders) {
+    top.Ts.Services.Reports.GetFolders(function (folders) {
+        top.Ts.Settings.User.read('reports-folder', '[]', function (userFolders) {
             var savedIDs = JSON.parse(userFolders);
 
             function findFolder(id) {
@@ -89,7 +89,7 @@ ReportPage = function () {
                     $('.report-menu li.report-folder').each(function () {
                         ids.push($(this).data('o').FolderID);
                     });
-                    parent.Ts.Settings.User.write('reports-folder', JSON.stringify(ids));
+                    top.Ts.Settings.User.write('reports-folder', JSON.stringify(ids));
 
                 }
             });
@@ -122,7 +122,7 @@ ReportPage = function () {
             var item = $(this).closest('.report-folder');
             var data = item.data('o');
             if (confirm('Are you sure you would like to delete this folder?  Your reports will not be deleted.')) {
-                parent.Ts.Services.Reports.DeleteFolder(data.FolderID, function () {
+                top.Ts.Services.Reports.DeleteFolder(data.FolderID, function () {
                     item.remove();
                 });
             }
@@ -167,7 +167,7 @@ ReportPage = function () {
         e.preventDefault();
         $('.modal-folder-name').modal('hide');
         var id = $('.modal-folder-name').data('folderid');
-        parent.Ts.Services.Reports.SaveFolder(id, $('#folderName').val(), function (folder) {
+        top.Ts.Services.Reports.SaveFolder(id, $('#folderName').val(), function (folder) {
             var item = $('.report-folder-' + folder.FolderID);
             if (item.length > 0) {
                 item.data('o', folder).find('.report-folder-name').text(folder.Name);
@@ -260,10 +260,10 @@ ReportPage = function () {
         e.preventDefault();
         var report = $(this).parents('.report-item').data('o');
         if (report.ReportType == 5) {
-            parent.Ts.MainPage.openTicketView(report.ReportID, report.IsPrivate);
+            top.Ts.MainPage.openTicketView(report.ReportID, report.IsPrivate);
         }
         else {
-            parent.Ts.MainPage.openReport($(this).parents('.report-item').data('o'));
+            top.Ts.MainPage.openReport($(this).parents('.report-item').data('o'));
         }
     });
 
@@ -306,7 +306,7 @@ ReportPage = function () {
             ids.push(report.ReportID);
         });
 
-        parent.Ts.Services.Reports.MoveReports(JSON.stringify(ids), folderID, function () { getReports(); });
+        top.Ts.Services.Reports.MoveReports(JSON.stringify(ids), folderID, function () { getReports(); });
     }
 
     $('.report-clone').click(function (e) {
@@ -317,11 +317,11 @@ ReportPage = function () {
         var item = $('.report-active');
         if (item.length < 1) return;
         var report = item.data('o');
-        parent.Ts.Services.Reports.CloneReport(report.ReportID, function (clone) {
+        top.Ts.Services.Reports.CloneReport(report.ReportID, function (clone) {
             if (report != null) {
                 getNewReportItem(clone).hide().insertAfter(item).fadeIn("slow");
                 if (clone.ReportType == 5) {
-                    parent.Ts.MainPage.addNewTicketView(clone, clone.IsPrivate, false);
+                    top.Ts.MainPage.addNewTicketView(clone, clone.IsPrivate, false);
                 }
             }
         });
@@ -339,11 +339,11 @@ ReportPage = function () {
 
 
         if (confirm("Are you sure you would like to delete selected reports?")) {
-            parent.Ts.Services.Reports.DeleteReports(JSON.stringify(ids), function (results) {
+            top.Ts.Services.Reports.DeleteReports(JSON.stringify(ids), function (results) {
                 for (var i = 0; i < results.length; i++) {
                     var item = $('.reportid-' + results[i]);
                     item.fadeOut("slow", function (results) { item.remove(); });
-                    parent.Ts.MainPage.closeReportTab(results[i]);
+                    top.Ts.MainPage.closeReportTab(results[i]);
                 }
             });
         }
@@ -355,7 +355,7 @@ ReportPage = function () {
         var item = $(this).parents('.report-item');
         var report = item.data('o');
         var isFavorite = item.find('.report-list-star i').hasClass('fa-star');
-        parent.Ts.Services.Reports.SetFavorite(report.ReportID, !isFavorite, function () {
+        top.Ts.Services.Reports.SetFavorite(report.ReportID, !isFavorite, function () {
             if (isFavorite) {
                 item.find('.report-list-star i').removeClass('fa-star color-amber').addClass('fa-star-o');
             }
@@ -459,18 +459,18 @@ ReportPage = function () {
 
     function getReports() {
         var item = $('.report-menu-item.active');
-        if (item.hasClass('menu-all')) { parent.Ts.Services.Reports.GetAllReports(loadReports); }
-        else if (item.hasClass('menu-starred')) { parent.Ts.Services.Reports.GetStarredReports(loadReports); }
-        else if (item.hasClass('menu-tablular')) { parent.Ts.Services.Reports.GetReportsByReportType(0, loadReports); }
-        else if (item.hasClass('menu-summary')) { parent.Ts.Services.Reports.GetReportsByReportType(4, loadReports); }
-        else if (item.hasClass('menu-charts')) { parent.Ts.Services.Reports.GetReportsByReportType(1, loadReports); }
-        else if (item.hasClass('menu-external')) { parent.Ts.Services.Reports.GetReportsByReportType(2, loadReports); }
-        else if (item.hasClass('menu-custom')) { parent.Ts.Services.Reports.GetReportsByReportType(3, loadReports); }
-        else if (item.hasClass('menu-stock')) { parent.Ts.Services.Reports.GetStockReports(loadReports); }
-        else if (item.hasClass('menu-tickets')) { parent.Ts.Services.Reports.GetTicketViews(loadReports); }
+        if (item.hasClass('menu-all')) { top.Ts.Services.Reports.GetAllReports(loadReports); }
+        else if (item.hasClass('menu-starred')) { top.Ts.Services.Reports.GetStarredReports(loadReports); }
+        else if (item.hasClass('menu-tablular')) { top.Ts.Services.Reports.GetReportsByReportType(0, loadReports); }
+        else if (item.hasClass('menu-summary')) { top.Ts.Services.Reports.GetReportsByReportType(4, loadReports); }
+        else if (item.hasClass('menu-charts')) { top.Ts.Services.Reports.GetReportsByReportType(1, loadReports); }
+        else if (item.hasClass('menu-external')) { top.Ts.Services.Reports.GetReportsByReportType(2, loadReports); }
+        else if (item.hasClass('menu-custom')) { top.Ts.Services.Reports.GetReportsByReportType(3, loadReports); }
+        else if (item.hasClass('menu-stock')) { top.Ts.Services.Reports.GetStockReports(loadReports); }
+        else if (item.hasClass('menu-tickets')) { top.Ts.Services.Reports.GetTicketViews(loadReports); }
         else if (item.hasClass('report-folder')) {
             var folder = item.data('o');
-            parent.Ts.Services.Reports.GetReportsByFolder(folder.FolderID, loadReports);
+            top.Ts.Services.Reports.GetReportsByFolder(folder.FolderID, loadReports);
         }
 
     }
@@ -511,9 +511,9 @@ ReportPage = function () {
         item.find('.report-list-title a').text(report.Name);
         item.find('.report-list-star i').addClass(report.IsFavorite == true ? 'fa-star color-amber' : 'fa-star-o');
         item.find('.report-list-owner').text(report.Creator);
-        var name = isTsReport ? "" : (report.EditorID == parent.Ts.System.User.UserID ? "me" : report.Editor);
-        item.find('.report-list-modified').html('<span>' + parent.Ts.Utils.getDateString(report.DateEdited, true, false, true) + '</span> <span class="text-muted">' + name + '</span>');
-        item.find('.report-list-lastviewed').text(report.LastViewed ? parent.Ts.Utils.getDateString(report.LastViewed, true, true, true) : "Never");
+        var name = isTsReport ? "" : (report.EditorID == top.Ts.System.User.UserID ? "me" : report.Editor);
+        item.find('.report-list-modified').html('<span>' + top.Ts.Utils.getDateString(report.DateEdited, true, false, true) + '</span> <span class="text-muted">' + name + '</span>');
+        item.find('.report-list-lastviewed').text(report.LastViewed ? top.Ts.Utils.getDateString(report.LastViewed, true, true, true) : "Never");
         switch (report.ReportType) {
             case 1: item.find('.report-list-title i').addClass('fa-bar-chart-o color-green'); break;
             case 2: item.find('.report-list-title i').addClass('fa-globe color-blue'); break;

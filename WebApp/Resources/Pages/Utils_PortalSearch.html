@@ -37,7 +37,7 @@
       var execGetOrganization = null;
       function getOrganizations(request, response) {
         if (execGetOrganization) { execGetOrganization._executor.abort(); }
-        execGetOrganization = parent.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
+        execGetOrganization = top.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
       }
 
       $('#textOrgID').autocomplete({
@@ -45,7 +45,7 @@
         source: getOrganizations,
         select: function (event, ui) {
           $(this).data('itemID', ui.item.id);
-          parent.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
+          top.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
           });
         }
       });
@@ -53,21 +53,21 @@
       var execGetCustomer = null;
       function getCustomers(request, response) {
         if (execGetCustomer) { execGetCustomer._executor.abort(); }
-        execGetCustomer = parent.Ts.Services.Organizations.AdminGetCustomers($('#textOrgID').data('itemID'), request.term, function (result) { response(result); });
+        execGetCustomer = top.Ts.Services.Organizations.AdminGetCustomers($('#textOrgID').data('itemID'), request.term, function (result) { response(result); });
       }
       $('#textCustID').autocomplete({
         minLength: 2,
         source: getOrganizations,
         select: function (event, ui) {
           $(this).data('itemID', ui.item.id);
-          parent.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
+          top.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
           });
         }
       });
       $('#btnSearch').click(function (e) {
         e.preventDefault();
         $('#divResults').empty();
-        parent.Ts.Services.Tickets.GetSearchPortalResultsTest($('#textSearch').val(), $('#textOrgID').data('itemID'), $('#textCustID').data('itemID'), function (results) {
+        top.Ts.Services.Tickets.GetSearchPortalResultsTest($('#textSearch').val(), $('#textOrgID').data('itemID'), $('#textCustID').data('itemID'), function (results) {
           $('<div>').html(results.length + ' tickets found.').appendTo('#divResults');
           for (var i = 0; i < results.length; i++) {
             $('<div>').html(results[i]).appendTo('#divResults');
