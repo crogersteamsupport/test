@@ -18,6 +18,7 @@ using System.Net;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace TSWebServices
 {
@@ -562,7 +563,7 @@ namespace TSWebServices
 				if (hubs.Any())
 				{
 					hub = hubs[0];
-					hub.PortalName = portal.PortalName;
+					hub.PortalName = Regex.Replace(portal.PortalName, "[^0-9a-zA-Z-]", "");
 					hub.OrganizationID = parentOrgID;
 					hub.IsActive = true;
 					hubs.Save();
@@ -578,11 +579,11 @@ namespace TSWebServices
 
 					Organizations orgs = new Organizations(loginUser);
 					orgs.LoadByOrganizationID(parentOrgID);
-
+					
 					if (orgs.Any())
 					{
-						//trim out all the white space from the org name for a temp portal name to use. 
-						hub.PortalName = orgs[0].Name.Trim().Replace(" ", "");
+						//trim out all the white space and potentially offending characters from the org name for a temp portal name to use. 
+						hub.PortalName = Regex.Replace(orgs[0].Name, "[^0-9a-zA-Z-]", "");
 					}
 
 					newHubs.Save();
