@@ -2053,22 +2053,23 @@ namespace TeamSupport.Data
 		/// <returns>The sql statement with the paging statements added to it. (For SQL 2008 and above)</returns>
 		public static string AddPaging(string sql, int? pageSize, int? pageNumber, SqlCommand command)
 		{
-			string sqlPaging = string.Empty;
-
-			//These are the default values if any of them is null
-			pageSize = pageSize ?? 50;
-			pageNumber = pageNumber ?? 1;
-
-			if (!string.IsNullOrEmpty(sql))
+			if (pageSize != null || pageNumber != null)
 			{
-				sqlPaging = string.Format("{0} OFFSET ((@PageNumber - 1) * @PageSize) ROWS FETCH NEXT @PageSize ROWS ONLY;", sql);
-				sqlPaging = sqlPaging.Insert(sqlPaging.IndexOf("SELECT") + "SELECT ".Length, "TotalRecords = COUNT(1) OVER(), ");
+				//These are the default values if any of them is null
+				pageSize = pageSize ?? 50;
+				pageNumber = pageNumber ?? 1;
 
-				command.Parameters.AddWithValue("@PageNumber", (int)pageNumber);
-				command.Parameters.AddWithValue("@PageSize", (int)pageSize);
+				if (!string.IsNullOrEmpty(sql))
+				{
+					sql = string.Format("{0} OFFSET ((@PageNumber - 1) * @PageSize) ROWS FETCH NEXT @PageSize ROWS ONLY;", sql);
+					sql = sql.Insert(sql.IndexOf("SELECT") + "SELECT ".Length, "TotalRecords = COUNT(1) OVER(), ");
+
+					command.Parameters.AddWithValue("@PageNumber", (int)pageNumber);
+					command.Parameters.AddWithValue("@PageSize", (int)pageSize);
+				}
 			}
 
-			return sqlPaging;
+			return sql;
 		}
 
 		public static string BuildWhereClausesFromFilters(LoginUser loginUser,
