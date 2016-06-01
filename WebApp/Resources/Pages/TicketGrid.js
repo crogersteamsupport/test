@@ -39,7 +39,7 @@ function onShow() {
 function getMainFrame() {
     var result = window.parent;
     var cnt = 0;
-    while (!result.Ts)
+    while (!(result.Ts && result.Ts.Services))
     {
         result = result.parent;
         cnt++;
