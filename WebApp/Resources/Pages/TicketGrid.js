@@ -53,7 +53,9 @@ function getMainFrame() {
 
 TicketGrid = function (options) {
     var ticketLoadFilter = mainFrame.Ts.Utils.queryToTicketFilter(window);
-
+    if (window.parent.$('#SuggestedSolutionsInput').length) {
+        ticketLoadFilter.SearchText2 = window.parent.$('#SuggestedSolutionsInput').val();
+    }
 	var self = this;
 	var grid = null;
 	var preview = $('iframe');

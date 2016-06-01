@@ -465,9 +465,12 @@ function GetTinyMCEFontName(fontFamily) {
 function suggestedSolutions(defaultInput, callback) {
     //$('#SuggestedSolutionsGrid').attr('src', '/vcr/1_9_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_GroupID=4318');
     $('#SuggestedSolutionsInput').val(defaultInput);
+    $('#SuggestedSolutionsGrid').attr('src', '/vcr/1_9_0/Pages/TicketGrid.html?tf_IsKnowledgeBase=true');
+    $('.afterSearch').show();
+
     $('#SearchSuggestedSolutions').click(function () {
         $('.afterSearch').show();
-        $('#SuggestedSolutionsGrid').attr('src', '/vcr/1_9_0/Pages/TicketGrid.html?tf_IsKnowledgeBase=true&tf_SearchText2=' + encodeURIComponent($('#SuggestedSolutionsInput').val()));
+        $('#SuggestedSolutionsGrid').attr('src', '/vcr/1_9_0/Pages/TicketGrid.html?tf_IsKnowledgeBase=true');
     });
 
 
