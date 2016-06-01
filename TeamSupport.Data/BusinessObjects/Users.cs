@@ -377,7 +377,7 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-					command.CommandText = "SELECT organizationid, userid, AppChatID, AppChatStatus FROM Users WHERE (AppChatID = @chatid)";
+					command.CommandText = "SELECT * FROM Users WHERE (AppChatID = @chatid)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@chatid", chatID);
                 Fill(command);
