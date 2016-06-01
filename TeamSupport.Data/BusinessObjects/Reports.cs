@@ -932,7 +932,18 @@ namespace TeamSupport.Data
               break;
           }
           break;
-        case "datetime":
+				case "bool":
+					switch (condition.Comparator.ToUpper())
+					{
+						case "IS TRUE": builder.Append(string.Format("{0} = 'True'", fieldName)); break;
+						case "IS FALSE": builder.Append(string.Format("{0} = 'False'", fieldName)); break;
+						case "IS EMPTY": builder.Append(string.Format("{0} IS NULL", fieldName)); break;
+						case "IS NOT EMPTY": builder.Append(string.Format("{0} IS NOT NULL", fieldName)); break;
+						default:
+							break;
+					}
+					break;
+				case "datetime":
           TimeSpan offset = loginUser.Offset;
           string datetimeSql = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
             fieldName,
