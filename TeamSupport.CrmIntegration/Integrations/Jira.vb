@@ -451,7 +451,7 @@ Namespace TeamSupport
 
 					Continue For
 				Catch ex As Exception
-					AddLog(String.Format("Exception in PushTicktsAndActionsAsIssuesAndComments: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
+					AddLog(String.Format("Exception in PushTicketsAndActionsAsIssuesAndComments: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
 					Continue For
 				End Try
 
@@ -1126,11 +1126,11 @@ Namespace TeamSupport
 			Else
 				Dim ticketProductVersion As ProductVersion
 
-				If Not ticket.ReportedVersionID Is Nothing Then
+				If Not ticket.ReportedVersionID Is Nothing AndAlso ticket.ReportedVersionID > 0 Then
 					ticketProductVersion = ProductVersions.GetProductVersion(User, ticket.ReportedVersionID)
 				End If
 
-				If Not ticket.ReportedVersionID Is Nothing AndAlso Not String.IsNullOrEmpty(ticketProductVersion.JiraProjectKey) Then
+				If Not ticket.ReportedVersionID Is Nothing AndAlso Not ticketProductVersion Is Nothing AndAlso Not String.IsNullOrEmpty(ticketProductVersion.JiraProjectKey) Then
 					jiraProjectKey = ticketProductVersion.JiraProjectKey
 					Log.Write(String.Format("Jira Project Key ""{0}"" from Product Version {1}", jiraProjectKey, ticket.ReportedVersion))
 				Else
