@@ -211,7 +211,39 @@ namespace TeamSupport.Data
             }
         }
 
-        public bool UserHasRights(User user)
+				public bool GetCustomerHasAccess(int organizationID, LoginUser loginUser)
+				{
+
+					using (SqlCommand command = new SqlCommand())
+					{
+						User userAcount = loginUser.GetUser();
+						if (!userAcount.PortalLimitOrgChildrenTickets)
+						{
+							command.CommandText = @"SELECT COUNT(*) 
+																			FROM OrganizationTickets ot 
+																			WHERE (
+																							ot.OrganizationID = @OrganizationID 
+																							OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)
+																						) 
+																						AND (ot.TicketID = @TicketID)";
+						}
+						else
+						{
+							command.CommandText = @"SELECT COUNT(*) 
+																				FROM OrganizationTickets 
+																				WHERE (OrganizationID = @OrganizationID) 
+																					AND (TicketID = @TicketID)";
+						}
+						command.CommandType = CommandType.Text;
+						command.Parameters.AddWithValue("@TicketID", TicketID);
+						command.Parameters.AddWithValue("@OrganizationID", organizationID);
+						object o = Collection.ExecuteScalar(command);
+						if (o == null || o == DBNull.Value) return false;
+						return (int)o > 0;
+					}
+				}
+
+		public bool UserHasRights(User user)
         {
             return Ticket.UserHasRights(user, this.GroupID, this.UserID, this.TicketID, this.IsKnowledgeBase);
         }
