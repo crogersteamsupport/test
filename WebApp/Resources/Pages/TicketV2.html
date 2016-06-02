@@ -89,6 +89,7 @@
               <li><a id="Ticket-Print">Print</a></li>
               <li><a data-toggle="modal" data-target="#EmailModal">Email Ticket</a></li>
               <li><a id="Ticket-URL" data-clipboard-text="">URL</a></li>
+			  <li><a data-toggle="modal" data-target="#CloneModal">Clone</a></li>
             </ul>
           </div>
           <div class="" style="display: inline; position: fixed; top: 33px; right: 15px;">
@@ -1009,6 +1010,39 @@
         </div>
     </div>
 
+	<div id="CloneModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CloneModalTitle" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="CloneModalTitle">Clone Ticket</h4>
+				</div>
+				<div class="modal-body">
+					<div>
+						<span>You are about to clone this ticket and all its properties</span>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button id="Ticket-Clone" type="button" class="btn btn-primary">Clone</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="CloningModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CloningModalTitle" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="CloneModalTitle">Clone Ticket</h4>
+				</div>
+				<div class="modal-body cloning-inprogress">
+					<div>
+						<span>Cloning the ticket...</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropbox.js" id="dropboxjs" data-app-key="ebdoql1dhyy7l72"></script>
 </html>

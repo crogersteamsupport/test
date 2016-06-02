@@ -121,6 +121,17 @@ namespace TeamSupport.Data
       }
     }
 
+	  public void LoadByTicketId(int ticketId)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT * FROM Attachments WHERE RefID IN (SELECT ActionID FROM Actions WHERE TicketID = @ticketId)";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ticketId", ticketId);
+				Fill(command);
+			}
+		}
+
     public void LoadByReferenceAndUserRights(ReferenceType refType, int refID, int viewerID, string orderBy = "", bool includeCompanyChildren = false)
     {
       using (SqlCommand command = new SqlCommand())

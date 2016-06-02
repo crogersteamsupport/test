@@ -4682,6 +4682,27 @@ function CreateTicketToolbarDomEvents() {
     LoadTicketHistory();
     $('#TicketHistoryModal').modal('show')
   });
+
+  $('#Ticket-Clone').click(function (e) {
+  	e.preventDefault();
+  	e.stopPropagation();
+  	$('#CloneModal').modal('hide');
+  	$('#CloningModal').modal({ backdrop: 'static', keyboard: false });
+
+  	top.Ts.System.logAction('Ticket - Cloned');
+  	top.Ts.Services.TicketPage.CloneTicket(_ticketID, function (clonedTicketId) {
+  		$('#CloningModal').modal('hide');
+
+  		if (clonedTicketId > 0) {
+  			top.Ts.MainPage.openTicketByID(clonedTicketId);
+  		} else {
+  			alert("There was an error cloning the ticket.");
+  		}
+  	}, function () {
+  		$('#CloningModal').modal('hide');
+  		alert("There was an error cloning the ticket.");
+  	});
+  });
 };
 
 function SetupWCArea() {

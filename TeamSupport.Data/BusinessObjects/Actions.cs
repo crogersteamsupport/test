@@ -59,7 +59,47 @@ namespace TeamSupport.Data
     
     }
 
-  }
+		/// <summary>
+		/// This will clone all Action object writable properties using reflection. This way we make sure that if there are more fields added (or deleted) in this table this will still work.
+		/// This was the easier way to do this due to the amount of properties to process and the high possibility of this table scheme being updated often.
+		/// I wanted to do this with serialization (JsonConvert.Deserialize/Serialize object), but didn't work due to how our Data objects are generated (Collections in them), and the primary key.
+		/// </summary>
+		/// <param name="clone">The empty initialized Action object to clone to.</param>
+		public void ClonePropertiesTo(Action clone)
+		{
+			foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
+			{
+				if (sourcePropertyInfo.CanWrite
+					&& sourcePropertyInfo.Name.ToLower() != "basecollection"
+					&& sourcePropertyInfo.PropertyType != typeof(DateTime)
+					&& sourcePropertyInfo.PropertyType != typeof(DateTime?))
+				{
+					System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name);
+					destPropertyInfo.SetValue(
+						clone,
+						sourcePropertyInfo.GetValue(this, null),
+						null);
+				}
+			}
+
+			//DateTime properties are special it needs to be the UTC value. The DateTime (and DateTime?) properties always have a UTC version
+			foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
+			{
+				if (sourcePropertyInfo.CanRead
+					&& sourcePropertyInfo.Name.Substring(sourcePropertyInfo.Name.Length - 3).ToLower() == "utc"
+					&& (sourcePropertyInfo.PropertyType == typeof(DateTime)
+						|| sourcePropertyInfo.PropertyType == typeof(DateTime?)))
+				{
+					System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name.Substring(0, sourcePropertyInfo.Name.Length - 3));
+					destPropertyInfo.SetValue(
+						clone,
+						sourcePropertyInfo.GetValue(this, null),
+						null);
+				}
+			}
+		}
+
+	}
 
   public partial class Actions
   {

@@ -153,7 +153,8 @@ namespace TeamSupport.Data
 		Email = 3,
 		UpdateRequest = 4,
 		Chat = 5,
-		Reminder = 6
+		Reminder = 6,
+		Clone = 7
 	}
 
 	public enum CreditCardType

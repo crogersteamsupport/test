@@ -292,6 +292,26 @@ namespace TSWebServices
     }
 
 		[WebMethod]
+		public int CloneTicket(int ticketID)
+		{
+			LoginUser loginUser = TSAuthentication.GetLoginUser();
+			int cloneTicketId = 0;
+
+			try
+			{
+				Ticket originalTicket = Tickets.GetTicket(loginUser, ticketID);
+				Ticket clonedTicket = originalTicket.Clone();
+				cloneTicketId = clonedTicket.TicketID;
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "TicketPageService.CloneTicket");
+			}
+
+			return cloneTicketId;
+		}
+
+		[WebMethod]
         public int GetActionCount(int ticketID)
         {
             return Actions.GetTicketActionCount(TSAuthentication.GetLoginUser(), ticketID);

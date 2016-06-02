@@ -40,6 +40,23 @@ namespace TeamSupport.Data
 			}
 		}
 
+		public virtual void LoadByTicketId(int ticketId)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "Select *  FROM [dbo].[EmailPosts] WHERE ([Param1] = @ticketId)";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ticketId", ticketId);
+
+				try
+				{
+					Fill(command);
+				}
+				catch (Exception e)
+				{
+				}
+			}
+		}
 
 		public static EmailPost GetNextWaiting(LoginUser loginUser, string processID)
 		{
