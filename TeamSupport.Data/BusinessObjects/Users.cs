@@ -515,7 +515,7 @@ namespace TeamSupport.Data
                                 WHERE (o.ParentID = @ParentID)
                                 AND (u.Email = @Email)
                                 AND (u.MarkDeleted = 0)
-																ORDER BY IsActive desc";
+																ORDER BY u.IsActive, o.IsActive desc";
 
 
 				command.CommandType = CommandType.Text;
