@@ -135,7 +135,6 @@ namespace TeamSupport.JIRA
 			}
 			catch (Exception ex)
 			{
-				//vv
 			}
 
 			return customFieldErrors;

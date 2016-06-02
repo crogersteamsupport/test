@@ -71,52 +71,6 @@ namespace TeamSupport.Api
       }
     }
 
-	//vv
-		//private static string RemoveAndGetTotalRecordsElement(string data, string xmlHeader, ref int? totalRecords)
-		//{
-		//	XmlDocument doc = new XmlDocument();
-		//	doc.LoadXml(data.Replace(xmlHeader, string.Empty));
-		//	string jsonString = JsonConvert.SerializeXmlNode(doc);
-		//	JObject jobject = JObject.Parse(jsonString);
-		//	string objectName = null;
-
-		//	foreach (JProperty property in jobject.Properties())
-		//	{
-		//		if (string.IsNullOrEmpty(objectName))
-		//		{
-		//			objectName = property.Name;
-		//			break;
-		//		}
-		//	}
-
-		//	string totalCountPropertyName = "TotalRecords";
-		//	JObject tickets = (JObject)jobject[objectName];
-		//	string totalCountRaw = null;
-
-		//	if (tickets[totalCountPropertyName] != null)
-		//	{
-		//		string totalRecordsString = (string)tickets[totalCountPropertyName];
-		//		totalCountRaw = string.Format(",\"{0}\":\"{1}\"", totalCountPropertyName, totalRecordsString);
-		//		jsonString = jsonString.Replace(totalCountRaw, "");
-
-		//		int totalRecordsInt = 0;
-
-		//		if (int.TryParse(totalRecordsString, out totalRecordsInt))
-		//		{
-		//			totalRecords = totalRecordsInt;
-		//		}
-		//	}
-
-		//	//data = FixJsonFormatError(jsonString, uriTemplate);
-
-		//	//if (!string.IsNullOrEmpty(totalCountRaw))
-		//	//{
-		//	//	data = data.Substring(0, data.LastIndexOf("]") + 1) + totalCountRaw + "}";
-		//	//}
-
-		//	return jsonString;
-		//}
-
     public string ProcessGet(string uriTemplate)
     {
       string data = "";

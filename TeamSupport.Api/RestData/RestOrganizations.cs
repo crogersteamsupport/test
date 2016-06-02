@@ -224,7 +224,7 @@ namespace TeamSupport.Api
 
 								if (!wasFoundByName)
 								{
-									//vv check if also the SlaLevelId was sent and it's different than current
+									//check if also the SlaLevelId was sent and it's different than current
 									string slaLevelIdField = "slalevelid";
 									XmlNode nodeSlaLevelId = GetNode(command, slaLevelIdField);
 
@@ -252,7 +252,7 @@ namespace TeamSupport.Api
 								}
 
 								break;
-							//ToDo: //vv DefaultSupportGroup, DefaultSupportUser
+							//ToDo: DefaultSupportGroup, DefaultSupportUser
 							default:
 								break;
 						}

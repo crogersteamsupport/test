@@ -40,10 +40,6 @@ namespace TeamSupport.JIRA
 
 						try
 						{
-							//vv
-							//var obj = JToken.Parse(field.Value.ToString());
-							//customField.Id = int.Parse(obj["id"].ToString());
-							//customField.Value = obj["value"].ToString();
 							JObject jObject = JObject.Parse(field.Value.ToString());
 							customField = JsonConvert.DeserializeObject<CustomField>(jObject.ToString());
 						}
@@ -75,7 +71,6 @@ namespace TeamSupport.JIRA
         public List<Comment> comments { get; set; }
         public List<IssueLink> issuelinks { get; set; }
         public List<Attachment> attachment { get; set; }
-		//vv
 		public Priority priority { get; set; }
 
 		public Dictionary<string, CustomField> customFields { get; set; }

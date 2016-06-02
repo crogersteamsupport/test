@@ -86,7 +86,7 @@ namespace TeamSupport.Data
 
 			result.Append("SELECT " + limit + " * ");
 			result.Append("FROM OrganizationsView ");
-			result.Append("WHERE ParentID = @ParentID " + DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, parentID, filters, ReferenceType.Organizations, "OrganizationID", ref filterParameters) + " "); //vv
+			result.Append("WHERE ParentID = @ParentID " + DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, parentID, filters, ReferenceType.Organizations, "OrganizationID", ref filterParameters) + " ");
 			result.Append("ORDER BY " + orderBy);
 
 			filterParameters.AddWithValue("@ParentID", parentID);

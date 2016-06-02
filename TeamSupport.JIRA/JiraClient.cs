@@ -272,7 +272,6 @@ namespace TeamSupport.JIRA
 			}
 		}
 
-		//vv
 		public bool UpdateIssueField(int issueId, string fieldName, string fieldValue)
 		{
 			bool isSuccessful = false;
@@ -368,7 +367,6 @@ namespace TeamSupport.JIRA
 			return isSuccessful;
 		}
 
-		//vv
 		public bool UpdateIssueFields(int issueId, Dictionary<string, string> updateFields)
 		{
 			bool isSuccessful = false;
