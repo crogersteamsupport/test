@@ -1237,16 +1237,16 @@ UserPage = function () {
 
           select.combobox({
             selected: function (e, ui) {
-              parent.parent.show().find('img').show();
+              parent.show().find('img').show();
               var type = $(ui.item).data('type');
               parent.parent.Ts.Services.Users.SetProductFamiliesRights(_user.UserID, type, function () {
                 parent.parent.Ts.System.logAction('User Info - User Product Lines Rights Changed');
                 $('#userProductFamiliesRights').html(userProductFamiliesRightsToString(type)).data('o', type);
                 $('#divProductFamiliesContainer').toggle(type == 1);
-                parent.parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
               },
             function (error) {
-              parent.parent.show().find('img').hide();
+              parent.show().find('img').hide();
               alert('There was an error setting user product lines rights.');
             });
               container.remove();
@@ -1282,17 +1282,17 @@ UserPage = function () {
 
           select.combobox({
             selected: function (e, ui) {
-              parent.parent.show().find('img').show();
+              parent.show().find('img').show();
               var type = $(ui.item).data('type');
               parent.parent.Ts.Services.Users.SetTicketRights(_user.UserID, type, function () {
                 parent.parent.Ts.System.logAction('User Info - User Ticket Rights Changed');
                 $('#userTicketRights').html(userRightsToString(type)).data('o', type);
                 if (type == 3) $('#userRightsAllTicketCustomers').closest('div').show(); else $('#userRightsAllTicketCustomers').closest('div').hide();
                 $('#divCustomerContainer').toggle(type == 3 && isSysAdmin == true);
-                parent.parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
               },
             function (error) {
-              parent.parent.show().find('img').hide();
+              parent.show().find('img').hide();
               alert('There was an error setting user rights.');
             });
               container.remove();
@@ -1346,20 +1346,20 @@ UserPage = function () {
 
           select.combobox({
             selected: function (e, ui) {
-              parent.parent.show().find('img').show();
+              parent.show().find('img').show();
               var type = $(ui.item).data('type');
               parent.parent.Ts.Services.Users.SetTimezone(_user.UserID, type, function (result) {
                 parent.parent.Ts.System.logAction('User Info - User Time Zone Changed');
                 if (result !== null) {
                   $('#userTimeZone').html(result);
-                  parent.parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                  parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
                 }
                 else {
-                  parent.parent.show().find('img').hide();
+                  parent.show().find('img').hide();
                 }
               },
             function (error) {
-              parent.parent.show().find('img').hide();
+              parent.show().find('img').hide();
               alert('There was an error setting user timezone.');
             });
               container.remove();
@@ -1392,20 +1392,20 @@ UserPage = function () {
 
           select.combobox({
             selected: function (e, ui) {
-              parent.parent.show().find('img').show();
+              parent.show().find('img').show();
               var type = $(ui.item).data('type');
               parent.parent.Ts.Services.Users.SetFontFamily(_user.UserID, type, function (result) {
                 parent.parent.Ts.System.logAction('User Info - User Font Family Changed');
                 if (result !== null) {
                   $('#userFontFamily').html(result);
-                  parent.parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                  parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
                 }
                 else {
-                  parent.parent.show().find('img').hide();
+                  parent.show().find('img').hide();
                 }
               },
             function (error) {
-              parent.parent.show().find('img').hide();
+              parent.show().find('img').hide();
               alert('There was an error setting user Font Family.');
             });
               container.remove();
@@ -1438,20 +1438,20 @@ UserPage = function () {
 
           select.combobox({
             selected: function (e, ui) {
-              parent.parent.show().find('img').show();
+              parent.show().find('img').show();
               var type = $(ui.item).data('type');
               parent.parent.Ts.Services.Users.SetFontSize(_user.UserID, type, function (result) {
                 parent.parent.Ts.System.logAction('User Info - User Font Size Changed');
                 if (result !== null) {
                   $('#userFontSize').html(result);
-                  parent.parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                  parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
                 }
                 else {
-                  parent.parent.show().find('img').hide();
+                  parent.show().find('img').hide();
                 }
               },
             function (error) {
-              parent.parent.show().find('img').hide();
+              parent.show().find('img').hide();
               alert('There was an error setting user Font Size.');
             });
               container.remove();
@@ -1485,20 +1485,20 @@ UserPage = function () {
 
           select.combobox({
             selected: function (e, ui) {
-              parent.parent.show().find('img').show();
+              parent.show().find('img').show();
               var type = $(ui.item).data('type');
               parent.parent.Ts.Services.Users.SetCulture(_user.UserID, type, function (result) {
                 parent.parent.Ts.System.logAction('User Info - User Date Format Changed');
                 if (result !== null) {
                   $('#userDateFormat').html(result);
-                  parent.parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                  parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
                 }
                 else {
-                  parent.parent.show().find('img').hide();
+                  parent.show().find('img').hide();
                 }
               },
             function (error) {
-              parent.parent.show().find('img').hide();
+              parent.show().find('img').hide();
               alert('There was an error setting user date format.');
             });
               container.remove();
@@ -2072,7 +2072,7 @@ UserPage = function () {
                 .addClass('user-cutstom-edit ticket-combobox user-custom-edit')
                 .css('marginTop', '1em')
                 .insertAfter(parent);
-            var fieldValue = parent.parent.closest('.user-name-value').data('field').Value;
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
             var select = $('<select>').appendTo(container);
 
             var items = field.ListValues.split('|');
@@ -2083,7 +2083,7 @@ UserPage = function () {
 
             select.combobox({
               selected: function (e, ui) {
-                parent.parent.show().find('img').show();
+                parent.show().find('img').show();
                 var value = $(this).val();
                 container.remove();
 
@@ -2095,9 +2095,9 @@ UserPage = function () {
                 }
                 parent.parent.Ts.System.logAction('User - Custom Value Set');
                 parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
-                  parent.parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                  parent.parent.closest('.user-name-value').data('field', result);
-                  parent.parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                  parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                  parent.closest('.user-name-value').data('field', result);
+                  parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
                 }, function () {
                   alert("There was a problem saving your user property.");
                 });
@@ -2135,7 +2135,7 @@ UserPage = function () {
                 .css('marginTop', '1em')
                 .insertAfter($(this));
 
-            var fieldValue = parent.parent.closest('.user-name-value').data('field').Value;
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
             var input = $('<input type="text">')
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
                   .val(fieldValue)
@@ -2146,7 +2146,7 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-save')
                 .click(function (e) {
-                  parent.parent.show().find('img').show();
+                  parent.show().find('img').show();
                   var value = input.val();
                   container.remove();
                   if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -2157,9 +2157,9 @@ UserPage = function () {
                   }
 
                   parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
-                    parent.parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                    parent.parent.closest('.user-name-value').data('field', result);
-                    parent.parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
+                    parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
                   }, function () {
                     alert("There was a problem saving your user property.");
                   });
@@ -2169,8 +2169,8 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-cancel')
                 .click(function (e) {
-                  parent.parent.show();
-                  parent.parent.find('a').show();
+                  parent.show();
+                  parent.find('a').show();
                   container.remove();
                 })
                 .appendTo(container);
@@ -2195,11 +2195,11 @@ UserPage = function () {
 
             var parent = $(this).parent();
             var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
-            parent.parent.find('img').show();
+            parent.find('img').show();
             parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
-              parent.parent.find('img').hide().next().show().delay(800).fadeOut(400);
-              parent.parent.closest('.user-name-value').data('field', result);
-              parent.parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
+              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              parent.closest('.user-name-value').data('field', result);
+              parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
             }, function () {
               alert("There was a problem saving your user property.");
             });
@@ -2226,14 +2226,14 @@ UserPage = function () {
                 .css('marginTop', '1em')
                 .insertAfter($(this));
 
-            var fieldValue = parent.parent.closest('.user-name-value').data('field').Value;
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
             var input = $('<input type="text">')
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
                   .val(fieldValue)
                   .appendTo(container)
                   .focus();
 
-            var fieldMask = parent.parent.closest('.user-name-value').data('field').Mask;
+            var fieldMask = parent.closest('.user-name-value').data('field').Mask;
             if (fieldMask) {
               input.mask(fieldMask);
               input.attr("placeholder", fieldMask);
@@ -2242,7 +2242,7 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-save')
                 .click(function (e) {
-                  parent.parent.show().find('img').show();
+                  parent.show().find('img').show();
                   var value = input.val();
                   container.remove();
                   if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -2252,9 +2252,9 @@ UserPage = function () {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
                   parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
-                    parent.parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                    parent.parent.closest('.user-name-value').data('field', result);
-                    parent.parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
+                    parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
                   }, function () {
                     alert("There was a problem saving your user property.");
                   });
@@ -2264,8 +2264,8 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-cancel')
                 .click(function (e) {
-                  parent.parent.show();
-                  parent.parent.find('a').show();
+                  parent.show();
+                  parent.find('a').show();
                   container.remove();
                 })
                 .appendTo(container);
@@ -2296,7 +2296,7 @@ UserPage = function () {
                 .css('marginTop', '1em')
                 .insertAfter($(this));
 
-            var fieldValue = parent.parent.closest('.user-name-value').data('field').Value;
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
 
             var input = $('<input type="text">')
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
@@ -2308,7 +2308,7 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-save')
                 .click(function (e) {
-                  parent.parent.show().find('img').show();
+                  parent.show().find('img').show();
                   var value = parent.parent.Ts.Utils.getMsDate(input.datepicker('getDate'));
                   container.remove();
                   if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -2318,10 +2318,10 @@ UserPage = function () {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
                   parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
-                    parent.parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                    parent.parent.closest('.user-name-value').data('field', result);
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
                     var date = result.Value === null ? null : parent.parent.Ts.Utils.getMsDate(result.Value);
-                    parent.parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getDatePattern()))).show();
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getDatePattern()))).show();
 
                   }, function () {
                     alert("There was a problem saving your user property.");
@@ -2332,8 +2332,8 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-cancel')
                 .click(function (e) {
-                  parent.parent.show();
-                  parent.parent.find('a').show();
+                  parent.show();
+                  parent.find('a').show();
                   container.remove();
                 })
                 .appendTo(container);
@@ -2364,7 +2364,7 @@ UserPage = function () {
                 .css('marginTop', '1em')
                 .insertAfter($(this));
 
-            var fieldValue = parent.parent.closest('.user-name-value').data('field').Value;
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
 
             var input = $('<input type="text">')
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
@@ -2376,7 +2376,7 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-save')
                 .click(function (e) {
-                  parent.parent.show().find('img').show();
+                  parent.show().find('img').show();
                   var time = new Date("January 1, 1970 00:00:00");
                   time.setHours(input.timepicker('getDate')[0].value.substring(0, 2));
                   time.setMinutes(input.timepicker('getDate')[0].value.substring(3, 5));
@@ -2389,10 +2389,10 @@ UserPage = function () {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
                   parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
-                    parent.parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                    parent.parent.closest('.user-name-value').data('field', result);
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
                     var date = result.Value === null ? null : parent.parent.Ts.Utils.getMsDate(result.Value);
-                    parent.parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getTimePattern()))).show();
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getTimePattern()))).show();
 
                   }, function () {
                     alert("There was a problem saving your user property.");
@@ -2403,8 +2403,8 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-cancel')
                 .click(function (e) {
-                  parent.parent.show();
-                  parent.parent.find('a').show();
+                  parent.show();
+                  parent.find('a').show();
                   container.remove();
                 })
                 .appendTo(container);
@@ -2435,7 +2435,7 @@ UserPage = function () {
                 .css('marginTop', '1em')
                 .insertAfter($(this));
 
-            var fieldValue = parent.parent.closest('.user-name-value').data('field').Value;
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
 
             var input = $('<input type="text">')
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
@@ -2447,7 +2447,7 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-save')
                 .click(function (e) {
-                  parent.parent.show().find('img').show();
+                  parent.show().find('img').show();
                   var value = parent.parent.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
                   container.remove();
                   if (field.IsRequired && (value === null || $.trim(value) === '')) {
@@ -2457,10 +2457,10 @@ UserPage = function () {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
                   parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
-                    parent.parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                    parent.parent.closest('.user-name-value').data('field', result);
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
                     var date = result.Value === null ? null : parent.parent.Ts.Utils.getMsDate(result.Value);
-                    parent.parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getDateTimePattern()))).show();
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getDateTimePattern()))).show();
 
                   }, function () {
                     alert("There was a problem saving your user property.");
@@ -2471,8 +2471,8 @@ UserPage = function () {
             $('<span>')
                 .addClass('ts-icon ts-icon-cancel')
                 .click(function (e) {
-                  parent.parent.show();
-                  parent.parent.find('a').show();
+                  parent.show();
+                  parent.find('a').show();
                   container.remove();
                 })
                 .appendTo(container);
