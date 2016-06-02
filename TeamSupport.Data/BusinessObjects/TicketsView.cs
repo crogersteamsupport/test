@@ -1356,7 +1356,7 @@ ORDER BY TicketNumber DESC";
 
             if (!String.IsNullOrEmpty(filter.SearchText2.Trim()))
             {
-                int[] list = GetTicketIDs(filter.SearchText2, loginUser, filter);
+                int[] list = GetSuggestedSolutions(filter.SearchText2, loginUser);
                 if (list.Length > 0)
                 {
                     string ids = string.Join(",", Array.ConvertAll<int, string>(list, Convert.ToString));
@@ -1776,6 +1776,54 @@ ORDER BY TicketNumber DESC";
                 }
             }
 
+        }
+
+        private static int[] GetSuggestedSolutions(string searchTerm, LoginUser loginUser)
+        {
+            DataTable tagList = new DataTable();
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder builder = new StringBuilder();
+
+                builder.Append(@"
+                    SELECT
+                        t.TicketID
+                        , LOWER(tlv.Value)
+                    FROM
+                        Tickets t
+                        JOIN TagLinksView tlv
+                            ON  t.TicketID = tlv.RefID
+                    WHERE
+                        t.OrganizationID = @OrganizationID
+                        AND t.IsKnowledgeBase = 1"
+                );
+                command.CommandText = builder.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+                    tagList.Load(reader);
+                }
+            }
+
+            List<int> result = new List<int>();
+            searchTerm = searchTerm.ToLower();
+            for (int i = 0; i < tagList.Rows.Count; i++)
+            {
+                if (searchTerm.Contains(tagList.Rows[i][1].ToString()))
+                {
+                    result.Add((int)tagList.Rows[i][0]);
+                }
+            }
+            return result.ToArray();
         }
 
         public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser)
