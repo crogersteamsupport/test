@@ -270,45 +270,46 @@ Namespace TeamSupport
             End If
 
             If Not isTicketCustomerProcessed Then
-            Dim authorName As String = Nothing
+				Dim authorName As String = Nothing
 
-            Using findAuthor As New Users(User)
-                findAuthor.LoadByUserID(thisTicket.CreatorID)
+				Using findAuthor As New Users(User)
+					findAuthor.LoadByUserID(thisTicket.CreatorID)
 
-                If findAuthor.Count > 0 Then
-                  Dim author As User
-                  author = findAuthor(0)
+					If findAuthor.Count > 0 Then
+					  Dim author As User
+					  author = findAuthor(0)
 
-                  If author IsNot Nothing Then
-                    authorName = author.FirstLastName
-                  End If
-                End If
-            End Using
+					  If author IsNot Nothing Then
+						authorName = author.FirstLastName
+					  End If
+					End If
+				End Using
 
-            Dim action As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
-            Dim description = String.Empty
+				Dim action As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+				Dim description = String.Empty
 
-            If action IsNot Nothing Then
-              description = HtmlUtility.StripHTML(action.Description)
-            End If
+				If action IsNot Nothing Then
+				  description = HtmlUtility.StripHTML(action.Description)
+				End If
 
-            Dim noteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}{3}{4}", _
-                                  thisTicket.Name, thisTicket.TicketID, description, Environment.NewLine, If(authorName IsNot Nothing, "Created by " & authorName, ""))
+				Dim noteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}{3}{4}", _
+									  thisTicket.Name, thisTicket.TicketID, description, Environment.NewLine, If(authorName IsNot Nothing, "Created by " & authorName, ""))
 
-            Dim hubSpotApi As Engagements = New Engagements(apiKey:=hapiKey, logPath:=_crmLogPath)
+				Dim hubSpotApi As Engagements = New Engagements(apiKey:=hapiKey, logPath:=_crmLogPath)
 
-            Dim newEngagement As Objects.Engagement.RootObject = New Objects.Engagement.RootObject()
-            newEngagement.engagement = New Objects.Engagement.EngagementItem()
-            newEngagement.engagement.active = True
-            newEngagement.engagement.type = "NOTE"
-            newEngagement.engagement.timestamp = (DateTime.UtcNow - New DateTime(1970, 1, 1)).TotalMilliseconds
-            newEngagement.associations = New Objects.Engagement.Associations()
-            newEngagement.associations.companyIds = New List(Of Integer)(New Integer() {accountId})
-            newEngagement.metadata = New Objects.Engagement.Metadata()
-            newEngagement.metadata.body = noteBody
-            Dim engagementCreated As Objects.Engagement.RootObject = hubSpotApi.Create(newEngagement)
+				Dim newEngagement As Objects.Engagement.RootObject = New Objects.Engagement.RootObject()
+				newEngagement.engagement = New Objects.Engagement.EngagementItem()
+				newEngagement.engagement.active = True
+				newEngagement.engagement.type = "NOTE"
+				newEngagement.engagement.timestamp = (DateTime.UtcNow - New DateTime(1970, 1, 1)).TotalMilliseconds
+				newEngagement.associations = New Objects.Engagement.Associations()
+				newEngagement.associations.companyIds = New List(Of Integer)(New Integer() {accountId})
+				newEngagement.metadata = New Objects.Engagement.Metadata()
+				newEngagement.metadata.body = noteBody
+				Dim engagementCreated As Objects.Engagement.RootObject = hubSpotApi.Create(newEngagement)
 
-            isSuccessful = engagementCreated.engagement.id > 0
+				isSuccessful = engagementCreated.engagement.id > 0
+				Log.Write(String.Format("Engagement id created {0}.", engagementCreated.engagement.id))
             End If
           Else
             If isTicketCustomerProcessed Then
