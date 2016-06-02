@@ -866,7 +866,9 @@ AND ot.TicketID = @TicketID
 			}
 
 
-			clone.Name = string.Format("Clone of {0}", this.Name);
+			clone.Name = string.Format("{0} (Clone)", this.Name);
+			clone.DateCreated = DateTime.UtcNow;
+			clone.DateModified = DateTime.UtcNow;
 			clone.NeedsIndexing = true;
 		}
 
