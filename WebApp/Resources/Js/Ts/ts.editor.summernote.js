@@ -462,8 +462,14 @@ function GetTinyMCEFontName(fontFamily) {
     return result;
 }
 
+var execSuggestedSolutions = null;
+
 function suggestedSolutions(defaultInput, callback) {
-    //$('#SuggestedSolutionsGrid').attr('src', '/vcr/1_9_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_GroupID=4318');
+    if (execSuggestedSolutions) {
+        $('#SuggestedSolutionsModal').modal('show');
+        execSuggestedSolutions._executor.abort();
+    }
+    execSuggestedSolutions = true;
     $('#SuggestedSolutionsInput').val(defaultInput);
     $('#SuggestedSolutionsGrid').attr('src', '/vcr/1_9_0/Pages/TicketGrid.html?tf_IsKnowledgeBase=true');
     $('.afterSearch').show();
@@ -477,7 +483,6 @@ function suggestedSolutions(defaultInput, callback) {
     $('#InsertSuggestedSolutions').click(function (e) {
         e.preventDefault();
 
-        //var ids = $('#SuggestedSolutionsGrid')[0].contentWindow.
         var ids = document.getElementById("SuggestedSolutionsGrid").contentWindow.GetGridSelectedIDs();
         if (ids.length > 0) {
             callback(ids);
