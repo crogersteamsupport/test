@@ -574,10 +574,10 @@ AND ot.TicketID = @TicketID
 			try
 			{
 				CustomValues originalTicketCustomValues = new CustomValues(loginUser);
-				originalTicketCustomValues.LoadByReferenceType(this.OrganizationID, ReferenceType.Tickets, this.TicketTypeID, this.TicketID);
+				originalTicketCustomValues.LoadExistingOnlyByReferenceType(this.OrganizationID, ReferenceType.Tickets, this.TicketID);
 				CustomValues clonedCustomValues = new CustomValues(loginUser);
 
-				foreach (CustomValue customValue in originalTicketCustomValues.Where(p => !string.IsNullOrEmpty(p.Value)).ToList())
+				foreach (CustomValue customValue in originalTicketCustomValues)
 				{
 					CustomValue clonedTicketCustomValue = clonedCustomValues.AddNewCustomValue();
 					clonedTicketCustomValue.CustomFieldID = customValue.CustomFieldID;
