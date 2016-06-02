@@ -560,7 +560,7 @@ AND ot.TicketID = @TicketID
 				originalTicketCustomValues.LoadByReferenceType(this.OrganizationID, ReferenceType.Tickets, this.TicketTypeID, this.TicketID);
 				CustomValues clonedCustomValues = new CustomValues(loginUser);
 
-				foreach (CustomValue customValue in originalTicketCustomValues)
+				foreach (CustomValue customValue in originalTicketCustomValues.Where(p => !string.IsNullOrEmpty(p.Value)).ToList())
 				{
 					CustomValue clonedTicketCustomValue = clonedCustomValues.AddNewCustomValue();
 					clonedTicketCustomValue.CustomFieldID = customValue.CustomFieldID;
