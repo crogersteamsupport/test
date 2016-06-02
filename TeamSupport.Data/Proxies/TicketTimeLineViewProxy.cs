@@ -46,7 +46,7 @@ namespace TeamSupport.Data
       result.CreatorID = this.CreatorID;
       result.OrganizationID = this.OrganizationID;
       result.Message = this.Message;
-      result.MessageType = this.MessageType == null ? "Email" : this.MessageType;
+      result.MessageType = this.MessageType == null ? "Description" : this.MessageType;
       result.ActionTypeID = this.ActionTypeID;
       result.IsWC = this.IsWC;
       result.RefID = this.RefID;
