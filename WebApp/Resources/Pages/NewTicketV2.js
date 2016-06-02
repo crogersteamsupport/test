@@ -2010,7 +2010,7 @@ function showCustomFields() {
     var field = $(this).data('field');
     if (field.AuxID == ticketTypeID) {
       $(this).show();
-      if (field.CustomFieldCategoryID !== null) $('#CFCat-' + field.CustomFieldCategoryID).show();
+      if (field.CustomFieldCategoryID !== null) $('#CFCat-' + field.CustomFieldCategoryID).show().prev().show();
       if (field.ParentProductID !== null) $('#CFGroupProduct-' + field.ParentProductID).show();
     }
     else {
