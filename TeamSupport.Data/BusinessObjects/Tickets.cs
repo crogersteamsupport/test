@@ -529,6 +529,23 @@ AND ot.TicketID = @TicketID
 
 			try
 			{
+				ForumTickets originalTicketForums = new ForumTickets(loginUser);
+				originalTicketForums.LoadByTicketID(this.TicketID);
+
+				foreach (int forumCategoryId in originalTicketForums.Select(p => p.ForumCategory))
+				{
+					clone.AddCommunityTicket((int)forumCategoryId);
+				}
+			}
+			catch (Exception ex)
+			{
+				actionLog = string.Format("Failed to clone ticket {0} Community into {1}.", this.TicketNumber, clone.TicketNumber);
+				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Community");
+			}
+
+			try
+			{
 				TagLinks originalTicketTags = new TagLinks(loginUser);
 				originalTicketTags.LoadByReference(ReferenceType.Tickets, this.TicketID);
 				TagLinks clonedTicketTags = new TagLinks(loginUser);
@@ -802,9 +819,6 @@ AND ot.TicketID = @TicketID
 			}
 
 			cloneActionLogs.Save();
-
-			//cloneActionLogs.DeleteAll();
-			//cloneActionLogs.Save();
 
 			return clone;
 		}
