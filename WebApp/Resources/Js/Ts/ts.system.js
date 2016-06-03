@@ -239,9 +239,9 @@ var _startDate = new Date();
 
     openSupport: function () {
     	var encrypted = CryptoJS.AES.encrypt(Date.now() + "," + this.User.Email + "", "57ee1f58-5c8b-4b47-b629-be7c702a2022");
-    	//window.open("http://muroc.alpha.teamsupport.com/#/sso/" + encrypted);
-		window.open("https://teamsupport.na1.teamsupport.com/sso/" + encrypted);
-        //window.open("http://www.teamsupport.com/support/customer-portal-login?OrganizationID=1078&authtoken=" + encrypted, "portal");
+    	window.open("https://support.teamsupport.com/sso/" + encrypted);
+		//To test Dev
+    	//window.open("http://teamsupport.na1.teamsupport.com:90/sso/" + encrypted);
     },
 
     signOut: function (callback) {
