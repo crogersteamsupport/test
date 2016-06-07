@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public int? ProductFamilyID { get; set; }
     [DataMember] public string JiraProjectKey { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
+    [DataMember] public string EmailReplyToAddress { get; set; }
           
   }
   
@@ -34,6 +35,7 @@ namespace TeamSupport.Data
     public ProductProxy GetProxy()
     {
       ProductProxy result = new ProductProxy();
+      result.EmailReplyToAddress = this.EmailReplyToAddress;
       result.ImportFileID = this.ImportFileID;
       result.JiraProjectKey = this.JiraProjectKey;
       result.ProductFamilyID = this.ProductFamilyID;
@@ -41,8 +43,8 @@ namespace TeamSupport.Data
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.ImportID = this.ImportID;
-      result.Description = (this.Description);
-      result.Name = (this.Name);
+      result.Description = this.Description;
+      result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
       result.ProductID = this.ProductID;
        

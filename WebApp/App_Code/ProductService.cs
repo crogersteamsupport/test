@@ -805,7 +805,23 @@ namespace TSWebServices
       return value;
     }
 
-    [WebMethod]
+		[WebMethod]
+		public string SetEmailReplyToAddress(int id, string value)
+		{
+			LoginUser loginUser = TSAuthentication.GetLoginUser();
+			string description = string.Empty;
+
+			Product product = Products.GetProduct(loginUser, id);
+			product.EmailReplyToAddress = string.IsNullOrEmpty(value) ? null : value;
+			product.Collection.Save();
+			description = String.Format("{0} set Email Reply To Address as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, string.IsNullOrEmpty(value) ? "NULL" : value);
+
+			ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, id, description);
+
+			return value;
+		}
+
+		[WebMethod]
     public string LoadVersions(int productID, int start)
     {
       StringBuilder htmlresults = new StringBuilder("");

@@ -372,7 +372,7 @@ namespace TeamSupport.ServiceLibrary
 
                 int publicActionCount = 0;
 
-                foreach (TeamSupport.Data.Action action in actions)
+                foreach (Data.Action action in actions)
                 {
                     if (action.IsVisibleOnPortal) publicActionCount++;
                 }
@@ -559,6 +559,8 @@ namespace TeamSupport.ServiceLibrary
                     }
                 }
 
+				string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
+
                 if (ticket.UserID != null && oldUserID != null)
                 {
                     Logs.WriteEvent("Ticket.UserID is not null AND old userid is not null");
@@ -576,8 +578,8 @@ namespace TeamSupport.ServiceLibrary
                             message.Subject = message.Subject + subject;
                             Logs.WriteEvent("Added to ticket log");
                             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + message.To[0].DisplayName);
-                            AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
-                        }
+							AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray());
+						}
                     }
                 }
 
@@ -608,9 +610,9 @@ namespace TeamSupport.ServiceLibrary
                     {
                         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + mailAddress.Address);
                     }
-                    AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
-                }
+					AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray());
+				}
 
             }
             catch (Exception ex)
@@ -689,9 +691,10 @@ namespace TeamSupport.ServiceLibrary
                 {
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket modified email sent to " + mailAddress.Address);
                 }
-                AddMessage(ticketOrganization.OrganizationID, "Internal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
-            }
+				string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
+				AddMessage(ticketOrganization.OrganizationID, "Internal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray());
+			}
             catch (Exception ex)
             {
                 Logs.WriteEvent("Error with AddMessageInternalTicketModified");
@@ -951,8 +954,11 @@ namespace TeamSupport.ServiceLibrary
                             }
 
                             Logs.WriteEvent(string.Format("Email: {0} <{1}>", userEmail.Name, userEmail.Address));
-                            AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
-                            Logs.WriteEvent("Adding action log to ticket");
+
+							string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
+							AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray());
+
+							Logs.WriteEvent("Adding action log to ticket");
                             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, messageType + " sent to " + mailAddress.Address);
                         }
                     }
@@ -1014,9 +1020,10 @@ namespace TeamSupport.ServiceLibrary
                 {
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket update request email sent to " + mailAddress.Address);
                 }
-                AddMessage(ticketOrganization.OrganizationID, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress);
 
-            }
+				string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
+				AddMessage(ticketOrganization.OrganizationID, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
+			}
             catch (Exception ex)
             {
                 Logs.WriteEvent("Error with ProcessTicketUpdateRequest");
@@ -1080,9 +1087,10 @@ namespace TeamSupport.ServiceLibrary
                     {
                         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket email sent to " + mailAddress.Address);
                     }
-                    AddMessage(sender.OrganizationID, "Ticket Email [" + ticket.TicketNumber.ToString() + "] to " + item, message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
-                }
+					string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
+					AddMessage(sender.OrganizationID, "Ticket Email [" + ticket.TicketNumber.ToString() + "] to " + item, message, emailReplyToAddress, fileNames.ToArray());
+				}
                 catch (Exception ex)
                 {
                     ExceptionLogs.LogException(loginUser, ex, "Email Processor", "Email Ticket");
@@ -1132,7 +1140,9 @@ namespace TeamSupport.ServiceLibrary
 
             MailAddress modifierAddress = (modifier == null) ? GetMailAddress(ticket.PortalEmail) : GetMailAddress(modifier.Email, modifier.FirstLastName);
 
-            if (modifier != null && modifier.OrganizationID == ticketOrganization.OrganizationID) // internal
+			string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
+
+			if (modifier != null && modifier.OrganizationID == ticketOrganization.OrganizationID) // internal
             {
                 MailMessage message = EmailTemplates.GetNewTicketInternal(LoginUser, modifier.GetUserView(), ticket.GetTicketView());
                 message.To.Add(modifierAddress);
@@ -1140,9 +1150,9 @@ namespace TeamSupport.ServiceLibrary
                 {
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "New ticket email sent to " + mailAddress.Address);
                 }
-                AddMessage(ticket.OrganizationID, "Internal New Ticket [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress);
 
-            }
+				AddMessage(ticket.OrganizationID, "Internal New Ticket [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
+			}
             else // portal
             {
                 MailMessage message = modifier != null && modifier.IsPortalUser ? EmailTemplates.GetNewTicketAdvPortal(LoginUser, modifier.GetUserView(), ticket.GetTicketView()) :
@@ -1152,11 +1162,9 @@ namespace TeamSupport.ServiceLibrary
                 {
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "New ticket portal email sent to " + mailAddress.Address);
                 }
-                AddMessage(ticketOrganization.OrganizationID, "New Ticket [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress);
 
-            }
-
-
+				AddMessage(ticketOrganization.OrganizationID, "New Ticket [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
+			}
         }
 
         #endregion
@@ -1535,7 +1543,6 @@ namespace TeamSupport.ServiceLibrary
 
         }
 
-
         private void AddBasicPortalUsers(List<UserEmail> userList, Ticket ticket)
         {
             Users users;
@@ -1636,10 +1643,22 @@ namespace TeamSupport.ServiceLibrary
             return displayName.Replace("<", "").Replace(">", "").Replace("|", " ");
         }
 
+		private string GetEmailReplyToAddress(LoginUser loginUser, Ticket ticket)
+		{
+			string emailReplyToAddress = ticket.EmailReplyToAddress;
+
+			if (string.IsNullOrEmpty(emailReplyToAddress) && ticket.ProductID != null && ticket.ProductID > 0)
+			{
+				Product product = Products.GetProduct(loginUser, (int)ticket.ProductID);
+				emailReplyToAddress = product.EmailReplyToAddress;
+				Logs.WriteEvent(string.Format("EmailReplyToAddress {0} from Product {1}", emailReplyToAddress, product.Name));
+			}
+
+			return emailReplyToAddress;
+		}
+
+		#endregion
 
 
-        #endregion
-
-
-    }
+	}
 }

@@ -64,6 +64,12 @@ namespace TeamSupport.Data
       set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
     }
     
+    public string EmailReplyToAddress
+    {
+      get { return Row["EmailReplyToAddress"] != DBNull.Value ? (string)Row["EmailReplyToAddress"] : null; }
+      set { Row["EmailReplyToAddress"] = CheckValue("EmailReplyToAddress", value); }
+    }
+    
 
     
     public bool NeedsIndexing
@@ -211,7 +217,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Products] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [ProductFamilyID] = @ProductFamilyID,    [JiraProjectKey] = @JiraProjectKey,    [ImportFileID] = @ImportFileID  WHERE ([ProductID] = @ProductID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Products] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [ProductFamilyID] = @ProductFamilyID,    [JiraProjectKey] = @JiraProjectKey,    [ImportFileID] = @ImportFileID,    [EmailReplyToAddress] = @EmailReplyToAddress  WHERE ([ProductID] = @ProductID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
@@ -291,13 +297,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("EmailReplyToAddress", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Products] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [ProductFamilyID],    [JiraProjectKey],    [ImportFileID]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @ProductFamilyID, @JiraProjectKey, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Products] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [ProductFamilyID],    [JiraProjectKey],    [ImportFileID],    [EmailReplyToAddress]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @ProductFamilyID, @JiraProjectKey, @ImportFileID, @EmailReplyToAddress); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("EmailReplyToAddress", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -495,7 +515,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [ProductFamilyID], [JiraProjectKey], [ImportFileID] FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [ProductFamilyID], [JiraProjectKey], [ImportFileID], [EmailReplyToAddress] FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ProductID", productID);
         Fill(command);

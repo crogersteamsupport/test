@@ -333,6 +333,10 @@ $(document).ready(function () {
               $('#fieldProductFamily').data('field', result.prodproxy.ProductFamilyID);
           });
       }
+
+      parent.Ts.Services.Products.GetProperties(_productID, function (result) {
+      	$('#fieldEmailReplyToAddress').text(result.prodproxy.EmailReplyToAddress != null && result.prodproxy.EmailReplyToAddress != "" ? result.prodproxy.EmailReplyToAddress : "Not Set");
+      });
   }
 
   function LoadJiraProjectKey() {
@@ -541,6 +545,56 @@ $(document).ready(function () {
   		});
   	});
 
+  	$('#productEdit').addClass("disabled");
+  });
+
+  $('#fieldEmailReplyToAddress').click(function (e) {
+  	e.preventDefault();
+  	if (!$(this).hasClass('editable'))
+  		return false;
+
+  	top.Ts.System.logAction('Product Detail - Edit Email Reply To Address');
+  	var header = $(this).hide();
+  	var container = $('<div>')
+      .insertAfter(header);
+
+  	var container1 = $('<div>')
+        .addClass('col-xs-8')
+      .appendTo(container);
+
+  	$('<input type="text">')
+      .addClass('col-xs-8 form-control')
+      .val($(this).text())
+      .appendTo(container1)
+      .focus();
+
+  	$('<i>')
+      .addClass('col-xs-1 fa fa-times')
+      .click(function (e) {
+      	$(this).closest('div').remove();
+      	header.show();
+      	$('#productEdit').removeClass("disabled");
+      })
+      .insertAfter(container1);
+  	$('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+      	top.Ts.System.logAction('Product Detail - Email Reply To Address Edit');
+      	var isForProductVersion = false;
+      	top.Ts.Services.Products.SetEmailReplyToAddress(_productID, $(this).prev().find('input').val(), function (result) {
+      		header.text(result);
+      		$('#fieldEmailReplyToAddress').text(result);
+      	},
+        function (error) {
+        	header.show();
+        	alert('There was an error saving the product email reply to address.');
+        });
+
+      	$('#productEdit').removeClass("disabled");
+      	$(this).closest('div').remove();
+      	header.show();
+      })
+      .insertAfter(container1);
   	$('#productEdit').addClass("disabled");
   });
 
