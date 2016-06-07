@@ -34,7 +34,7 @@
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/aes.js" type="text/javascript"></script>
-  <!-- Start Apptegic Code -->
+  <!-- Start Apptegic Code 
   <script type="text/javascript">
     var _aaq = _aaq || [];
     var _evergageAccount = 'teamsupport';
@@ -49,7 +49,7 @@
       })();
     }
   </script>
-  <!-- End Apptegic Code -->
+   End Apptegic Code -->
 
   <script type="text/javascript" language="javascript">
 

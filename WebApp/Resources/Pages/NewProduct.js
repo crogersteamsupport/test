@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/top.Ts.Services.js" />
+/// <reference path="ts/parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -11,10 +11,10 @@
 
 $(document).ready(function () {
   var _organizatinID = -1;
-  var _isAdmin = top.Ts.System.User.IsSystemAdmin && (_organizatinID != top.Ts.System.User.OrganizationID);
+  var _isAdmin = parent.Ts.System.User.IsSystemAdmin && (_organizatinID != parent.Ts.System.User.OrganizationID);
   var dateFormat;
 
-  top.Ts.Services.Customers.GetDateFormat(false, function (format) {
+  parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
   	dateFormat = format.replace("yyyy", "yy");
   	if (dateFormat.length < 8) {
   		var dateArr = dateFormat.split('/');
@@ -32,12 +32,12 @@ $(document).ready(function () {
   	$('#inputExpectedRelease').datetimepicker({ pickTime: false, format: dateFormat });
   });
 
-  if (top.Ts.System.Organization.UseProductFamilies) {
+  if (parent.Ts.System.Organization.UseProductFamilies) {
       LoadProductFamilies();
       $('#productFamilyRow').show();
   }
 
-  if (top.Ts.Cache.GetIsJiraLinkActiveForOrganization()) {
+  if (parent.Ts.Cache.GetIsJiraLinkActiveForOrganization()) {
     //alert('vv1');
     $('#jiraProjectKeyRow').show();
     $('#productVersionJiraProjectKeyRow').show();
@@ -57,8 +57,8 @@ $(document).ready(function () {
     }
   });
 
-  var defaultTab = top.Ts.Utils.getQueryValue("open", window);
-  var defaultProduct = top.Ts.Utils.getQueryValue("productID", window);
+  var defaultTab = parent.Ts.Utils.getQueryValue("open", window);
+  var defaultProduct = parent.Ts.Utils.getQueryValue("productID", window);
 
   $(".maincontainer").on("keypress", "input", (function (evt) {
     //Determine where our character code is coming from within the event
@@ -92,7 +92,7 @@ $(document).ready(function () {
   LoadVersionCustomControls();
 
   function LoadProducts() {
-    top.Ts.Services.Products.GetProducts(function (products) {
+    parent.Ts.Services.Products.GetProducts(function (products) {
 
         for (var i = 0; i < products.length; i++) {
             if (defaultProduct == products[i].ProductID) {
@@ -106,7 +106,7 @@ $(document).ready(function () {
   }
 
   function LoadProductFamilies() {
-      top.Ts.Services.Organizations.LoadOrgProductFamilies(top.Ts.System.Organization.OrganizationID, function (productFamilies) {
+      parent.Ts.Services.Organizations.LoadOrgProductFamilies(parent.Ts.System.Organization.OrganizationID, function (productFamilies) {
           for (var i = 0; i < productFamilies.length; i++) {
               $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlProductFamily');
           }
@@ -114,14 +114,14 @@ $(document).ready(function () {
   }
 
   function LoadStatuses() {
-    var productVersionStatuses = top.Ts.Cache.getProductVersionStatuses();
+    var productVersionStatuses = parent.Ts.Cache.getProductVersionStatuses();
     for (var i = 0; i < productVersionStatuses.length; i++) {
       $('<option>').attr('value', productVersionStatuses[i].ProductVersionStatusID).text(productVersionStatuses[i].Name).data('o', productVersionStatuses[i]).appendTo('#ddlStatus');
     }
   }
 
   function LoadCustomControls() {
-    top.Ts.Services.Assets.LoadCustomControls(top.Ts.ReferenceTypes.Products, function (html) {
+    parent.Ts.Services.Assets.LoadCustomControls(parent.Ts.ReferenceTypes.Products, function (html) {
       if (html.length < 31) {
         $('#productCustomInfoBox').hide();
       }
@@ -139,7 +139,7 @@ $(document).ready(function () {
   }
 
   function LoadVersionCustomControls() {
-    top.Ts.Services.Assets.LoadCustomControls(top.Ts.ReferenceTypes.ProductVersions, function (html) {
+    parent.Ts.Services.Assets.LoadCustomControls(parent.Ts.ReferenceTypes.ProductVersions, function (html) {
       if (html.length < 31) {
         $('#versionCustomInfoBox').hide();
       }
@@ -170,7 +170,7 @@ $(document).ready(function () {
     if (isValid) {
       $('#productSaveBtn').prop("disabled", true);
       var productInfo = new Object();
-      top.Ts.System.logAction('New Product Page - Added New Product');
+      parent.Ts.System.logAction('New Product Page - Added New Product');
       productInfo.Name = $("#inputName").val();
       productInfo.Description = $("#Description").val();
       productInfo.JiraProjectKey = $("inputJiraProjectKey").val();
@@ -188,13 +188,13 @@ $(document).ready(function () {
             field.Value = $(this).prop('checked');
             break;
           case "date":
-            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
           case "time":
-            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
           case "datetime":
-            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
           default:
             field.Value = $(this).val();
@@ -203,10 +203,10 @@ $(document).ready(function () {
       });
 
 
-      top.Ts.Services.Products.SaveProduct(top.JSON.stringify(productInfo), function (f) {
+      parent.Ts.Services.Products.SaveProduct(parent.JSON.stringify(productInfo), function (f) {
           $('#productSaveBtn').prop("disabled", false);
-        top.Ts.MainPage.openNewProduct(f);
-        top.Ts.MainPage.closenewProductTab();
+        parent.Ts.MainPage.openNewProduct(f);
+        parent.Ts.MainPage.closenewProductTab();
       }, function () {
           $('#productSaveBtn').prop("disabled", false);
           alert('There was an error saving this product.  Please try again.');
@@ -228,7 +228,7 @@ $(document).ready(function () {
     if (isValid) {
         $('#productVersionSaveBtn').prop("disabled", true);
       var versionInfo = new Object();
-      top.Ts.System.logAction('New Product Page - Added New Product Version');
+      parent.Ts.System.logAction('New Product Page - Added New Product Version');
       versionInfo.VersionNumber = $("#inputVersionNumber").val();
       versionInfo.ProductID = $("#ddlProduct").val();
       versionInfo.ProductVersionStatusID = $("#ddlStatus").val();
@@ -249,13 +249,13 @@ $(document).ready(function () {
             field.Value = $(this).prop('checked');
             break;
           case "date":
-            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
           case "time":
-            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
           case "datetime":
-            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
           default:
             field.Value = $(this).val();
@@ -264,10 +264,10 @@ $(document).ready(function () {
       });
 
 
-      top.Ts.Services.Products.SaveProductVersion(top.JSON.stringify(versionInfo), function (f) {
+      parent.Ts.Services.Products.SaveProductVersion(parent.JSON.stringify(versionInfo), function (f) {
           $('#productVersionSaveBtn').prop("disabled", false);
-        top.Ts.MainPage.openNewProductVersion(f);
-        top.Ts.MainPage.closenewProductTab();
+        parent.Ts.MainPage.openNewProductVersion(f);
+        parent.Ts.MainPage.closenewProductTab();
       }, function () {
           $('#productVersionSaveBtn').prop("disabled", false);
         alert('There was an error saving this product version.  Please try again.');
@@ -276,13 +276,13 @@ $(document).ready(function () {
   });
 
   $('#productCancelBtn, #productVersionCancelBtn').click(function (e) {
-    top.Ts.MainPage.closenewProductTab();
+    parent.Ts.MainPage.closenewProductTab();
   });
 
 });
 
 var initEditor = function (element, init) {
-  top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+  parent.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
     var editorOptions = {
       plugins: "autoresize paste link code textcolor",
       toolbar1: "link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
@@ -302,26 +302,26 @@ var initEditor = function (element, init) {
       media_external_list_url: "tinymce/jscripts/media_list.js",
       menubar: false,
       moxiemanager_image_settings: {
-          moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
+          moxiemanager_rootpath: "/" + parent.Ts.System.Organization.OrganizationID + "/images/",
           extensions: 'gif,jpg,jpeg,png'
       },
       paste_data_images: true,
       images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
       setup: function (ed) {
         ed.on('init', function (e) {
-          top.Ts.System.refreshUser(function () {
-            if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-              ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+          parent.Ts.System.refreshUser(function () {
+            if (parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.User.FontFamily));
             }
-            else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-              ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+            else if (parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily));
             }
 
-            if (top.Ts.System.User.FontSize != "0") {
-              ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+            if (parent.Ts.System.User.FontSize != "0") {
+              ed.execCommand("FontSize", false, parent.Ts.System.User.FontSizeDescription);
             }
-            else if (top.Ts.System.Organization.FontSize != "0") {
-              ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
+            else if (parent.Ts.System.Organization.FontSize != "0") {
+              ed.execCommand("FontSize", false, parent.Ts.System.Organization.FontSizeDescription);
             }
           });
         });

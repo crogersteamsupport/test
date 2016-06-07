@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/top.Ts.Services.js" />
+/// <reference path="ts/parent.parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -145,7 +145,7 @@ AdminPortal = function () {
 
   function saveValues() {
 
-    var _cdiOption = new top.TeamSupport.Data.CDI_SettingProxy();
+    var _cdiOption = new parent.parent.TeamSupport.Data.CDI_SettingProxy();
     _cdiOption.TotalTicketsWeight = ($('#ttw-slider').slider('value') * .1);
     _cdiOption.OpenTicketsWeight = $('#otw-slider').slider('value') * .1;
     _cdiOption.Last30Weight = $('#last30-slider').slider('value') * .1;
@@ -154,8 +154,8 @@ AdminPortal = function () {
     _cdiOption.GreenUpperRange = $("#cdi-green").slider('value');
     _cdiOption.YellowUpperRange = $("#cdi-yellow").slider('value');
 
-    top.Ts.Services.Organizations.SaveCDISettings(_cdiOption, function (result) {
-        top.Ts.System.logAction('Admin Company - CDI Settings Saved');
+    parent.parent.Ts.Services.Organizations.SaveCDISettings(_cdiOption, function (result) {
+        parent.parent.Ts.System.logAction('Admin Company - CDI Settings Saved');
         $('.portal-save-panel').hide();
     });
 
@@ -164,7 +164,7 @@ AdminPortal = function () {
   loadCDISettings();
   function loadCDISettings()
   {
-      top.Ts.Services.Organizations.LoadCDISettings(top.Ts.System.Organization.OrganizationID, function (cdi) {
+      parent.parent.Ts.Services.Organizations.LoadCDISettings(parent.parent.Ts.System.Organization.OrganizationID, function (cdi) {
 
           if (cdi != null)
             {
@@ -196,7 +196,7 @@ AdminPortal = function () {
               $('#cdi-yellow').slider('value', yellowlimit);
               $('#cdi-yellow').next().text("Upper Limit: " + yellowlimit);
 
-              var lastCompute = cdi.LastCompute == null ? 'Never' : top.Ts.Utils.getMsDate(cdi.LastCompute);
+              var lastCompute = cdi.LastCompute == null ? 'Never' : parent.parent.Ts.Utils.getMsDate(cdi.LastCompute);
 
               if (lastCompute == 'Never')
               {
@@ -204,7 +204,7 @@ AdminPortal = function () {
               }
                   else
               {
-                  var cdistatus = lastCompute.localeFormat(top.Ts.Utils.getDateTimePattern())
+                  var cdistatus = lastCompute.localeFormat(parent.parent.Ts.Utils.getDateTimePattern())
               }
               
               $('#cdiStatus').html("The CDI runs once per day, and the last time your account processed was: <strong>" + cdistatus + "</strong> To force an update now, please click the force update button below.");
@@ -213,11 +213,11 @@ AdminPortal = function () {
 
   }
 
-  //var V2OrgID = top.Ts.System.User.OrganizationID;
+  //var V2OrgID = parent.parent.Ts.System.User.OrganizationID;
   //if (!(V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372)) { $('.tabs-order').remove(); }
 
   $('#recalculate-cdi').click(function () {
-      top.Ts.Services.Organizations.ResetCDI();
+      parent.parent.Ts.Services.Organizations.ResetCDI();
       alert("TeamSupport will begin recomputing the CDI indexes momentarily - Please note that it could take as much as 30 minutes for this process to be completed.");
   });
 

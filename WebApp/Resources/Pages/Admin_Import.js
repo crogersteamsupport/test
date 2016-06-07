@@ -21,7 +21,7 @@ ImportPage = function () {
     if (start == 1)
       $('#tblImports tbody').empty();
 
-    top.Ts.Services.Organizations.LoadImports(start, function (imports) {
+    parent.parent.parent.Ts.Services.Organizations.LoadImports(start, function (imports) {
       hideLoadingIndicator();
       if (imports.length < 1) {
         if (start == 1) {
@@ -76,7 +76,7 @@ ImportPage = function () {
   }
 
   function LoadFields(refType) {
-    top.Ts.Services.Organizations.LoadImportFields(refType, function (importFields) {
+    parent.parent.parent.Ts.Services.Organizations.LoadImportFields(refType, function (importFields) {
       $('.available-field-list').empty();
       for (var i = 0; i < importFields.length; i++) {
         var li = $('<li>')
@@ -139,8 +139,8 @@ ImportPage = function () {
   	e.preventDefault();
   	var proceedWithRollback = prompt('Rollback will delete all the records created by this import. It is an irreversible action. If you want to proceed type "yes" and click the OK button.', 'No');
   	if (proceedWithRollback.trim().toLowerCase() == 'yes') {
-  		top.Ts.System.logAction('Import - Rollback');
-  		top.Ts.Services.Admin.RollbackImport($(this).attr('id'), $(this).attr('data-refType'), function () {
+  		parent.parent.parent.Ts.System.logAction('Import - Rollback');
+  		parent.parent.parent.Ts.Services.Admin.RollbackImport($(this).attr('id'), $(this).attr('data-refType'), function () {
   			location.reload();
   		});
   	}
@@ -192,7 +192,7 @@ ImportPage = function () {
   }
 
   function getImportPanels() {
-    top.Ts.Services.Organizations.GetImportPanels(_uploadedFileName, $('#import-type').val(), function (panels) {
+    parent.parent.parent.Ts.Services.Organizations.GetImportPanels(_uploadedFileName, $('#import-type').val(), function (panels) {
       var fieldList = $('<select>')
         .addClass('form-control');
 
@@ -358,7 +358,7 @@ ImportPage = function () {
                     .appendTo(item);
 
           $('<div>')
-                    .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                    .text(data.files[i].name + '  (' + parent.parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
                     .addClass('filename')
                     .appendTo(bg);
 
@@ -432,7 +432,7 @@ ImportPage = function () {
       //  }
       //});
       var result = JSON.parse(data.result);
-      //top.Ts.Services.Organizations.SaveImportFieldMaps(result[0].id, JSON.stringify(fields), function (importFields) {});
+      //parent.parent.parent.Ts.Services.Organizations.SaveImportFieldMaps(result[0].id, JSON.stringify(fields), function (importFields) {});
       _uploadedFileName = result[0].name;
       getImportPanels();
     }
@@ -440,7 +440,7 @@ ImportPage = function () {
 
   $(".btnCancel").click(function (e) {
     e.preventDefault();
-    top.Ts.System.logAction('Import - Cancel Upload');
+    parent.parent.parent.Ts.System.logAction('Import - Cancel Upload');
     $('.upload-queue').empty();
     $('.import-section').removeClass('hidden');
     $('#import-new').addClass('hidden');
@@ -448,7 +448,7 @@ ImportPage = function () {
 
   $('#btnUpload').click(function (e) {
     e.preventDefault();
-    top.Ts.System.logAction('Import - Upload Files');
+    parent.parent.parent.Ts.System.logAction('Import - Upload Files');
     if ($('.upload-queue li').length > 0) {
       $('.upload-queue li').each(function (i, o) {
         var data = $(o).data('data');
@@ -462,8 +462,8 @@ ImportPage = function () {
 
   $('#btnImport').click(function (e) {
     e.preventDefault();
-    top.Ts.System.logAction('Import - Create import.');
-    top.Ts.Services.Organizations.SaveImport(_uploadedFileName, $('#import-type').val(), JSON.stringify(_fieldMaps), function (importFields) {
+    parent.parent.parent.Ts.System.logAction('Import - Create import.');
+    parent.parent.parent.Ts.Services.Organizations.SaveImport(_uploadedFileName, $('#import-type').val(), JSON.stringify(_fieldMaps), function (importFields) {
       $('.import-section').removeClass('hidden');
       $('#import-new').addClass('hidden');
       $('#importUpload').addClass('hidden');

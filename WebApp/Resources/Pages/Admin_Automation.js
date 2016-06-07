@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/top.Ts.Services.js" />
+/// <reference path="ts/parent.parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -20,7 +20,7 @@ function onShow() {
 
 
 AdminAuto = function () {
-  $('head').append(top.Ts.MainPage.getCalcStyle());
+  $('head').append(parent.parent.Ts.MainPage.getCalcStyle());
   layout = $('.admin-auto-layout').layout({
     resizeNestedLayout: true,
     defaults: { spacing_open: 5, closable: false },
@@ -67,7 +67,7 @@ AdminAuto = function () {
     data.Actions = getActions();
     data.LogicItems = getLogic();
 
-    top.Ts.Services.Automation.SaveTrigger(JSON.stringify(data), function (trigger) {
+    parent.parent.Ts.Services.Automation.SaveTrigger(JSON.stringify(data), function (trigger) {
       isModified(false);
       if (trigger && _triggerID < 0) {
         appendTrigger(trigger);
@@ -76,7 +76,7 @@ AdminAuto = function () {
       else {
         $('.triggers li.trigger-selected').click();
       }
-      top.Ts.System.logAction('Admin Automation - Trigger Saved');
+      parent.parent.Ts.System.logAction('Admin Automation - Trigger Saved');
     });
   });
 
@@ -115,7 +115,7 @@ AdminAuto = function () {
     _triggerID = -1;
     hideNoTrigger();
     clearTrigger();
-    top.Ts.System.logAction('Admin Automation - Started New Trigger');
+    parent.parent.Ts.System.logAction('Admin Automation - Started New Trigger');
   }
 
   addToolbarButton('btnDuplicate', 'ts-icon-add', 'Duplicate Trigger', duplicateTrigger);
@@ -130,14 +130,14 @@ AdminAuto = function () {
   	$('#executionsCountLabel').html('');
   	$('#lastModifiedLabel').html('');
   	$('#cmbEnable').val(0);
-  	top.Ts.System.logAction('Admin Automation - Trigger Duplicated');
+  	parent.parent.Ts.System.logAction('Admin Automation - Trigger Duplicated');
   }
 
   addToolbarButton('btnDelete', 'ts-icon-delete', 'Delete Trigger', function (e) {
     e.preventDefault();
     e.stopPropagation();
     if (!confirm('Are you sure you would like to delete this trigger?')) return;
-    top.Ts.Services.Automation.DeleteTrigger(getSelectedTriggerID(), function () {
+    parent.parent.Ts.Services.Automation.DeleteTrigger(getSelectedTriggerID(), function () {
       var element = $('li.trigger-' + getSelectedTriggerID());
       var prev = element.prev();
       element.remove();
@@ -150,7 +150,7 @@ AdminAuto = function () {
       }
       _triggerID = getSelectedTriggerID();
       if (_triggerID == null) showNoTrigger();
-      top.Ts.System.logAction('Admin Automation - Trigger Deleted');
+      parent.parent.Ts.System.logAction('Admin Automation - Trigger Deleted');
     });
 
   });
@@ -210,7 +210,7 @@ AdminAuto = function () {
     //editor.render();
   }
 
-  top.Ts.Services.Automation.GetData(function (data) {
+  parent.parent.Ts.Services.Automation.GetData(function (data) {
     _data = data;
     loadTriggers();
   });
@@ -263,7 +263,7 @@ AdminAuto = function () {
 
   function loadComboProducts(select) {
     select.empty();
-    var products = top.Ts.Cache.getProducts();
+    var products = parent.parent.Ts.Cache.getProducts();
     for (var i = 0; i < products.length; i++) {
       select.append('<option value="' + products[i].ProductID + '">' + products[i].Name + '</option>');
     }
@@ -312,7 +312,7 @@ AdminAuto = function () {
   }
 
   function loadTriggers(triggerID) {
-    top.Ts.Services.Automation.GetTriggers(function (result) {
+    parent.parent.Ts.Services.Automation.GetTriggers(function (result) {
       if (result.length > 0) {
         var list = $('.triggers ul').html('');
 
@@ -370,7 +370,7 @@ AdminAuto = function () {
       showNoTrigger();
     }
 
-    top.Ts.Services.Automation.GetTrigger(_triggerID, function (result) {
+    parent.parent.Ts.Services.Automation.GetTrigger(_triggerID, function (result) {
       $('#textName').val(result.Trigger.Name);
       $('#executionsCountLabel').html('This automation has modified ' + result.Trigger.ExecutionsCount + ' tickets.');
       $('#lastModifiedLabel').html('Last modified on ' + result.Trigger.DateModified);
@@ -397,13 +397,13 @@ AdminAuto = function () {
   $('#btnAddAllCondition').click(function (e) {
     e.preventDefault();
     addCondition('.conditions-all');
-    top.Ts.System.logAction('Admin Automation - All Condition Added');
+    parent.parent.Ts.System.logAction('Admin Automation - All Condition Added');
   });
 
   $('#btnAddAnyCondition').click(function (e) {
     e.preventDefault();
     addCondition('.conditions-any');
-    top.Ts.System.logAction('Admin Automation - Any Condition Added');
+    parent.parent.Ts.System.logAction('Admin Automation - Any Condition Added');
   });
 
   function addCondition(selector, fieldID, measure, value) {
@@ -423,7 +423,7 @@ AdminAuto = function () {
     $('<span>').addClass('condition-value-container').appendTo(div);
     createConditionValue(div, fields.find('option:selected').data('field'), value);
     $('<span>').addClass('ts-icon ts-icon-remove').appendTo(div).click(function (e) {
-      $(this).parent().remove(); isModified(true); top.Ts.System.logAction('Admin Automation - Condition Removed');
+      $(this).parent().remove(); isModified(true); parent.parent.Ts.System.logAction('Admin Automation - Condition Removed');
     });
     $('<div>').css('clear', 'both').appendTo(div);
     div.appendTo(selector);
@@ -437,7 +437,7 @@ AdminAuto = function () {
     var execGetFieldValues = null;
     function getFieldValues(request, response) {
       if (execGetFieldValues) { execGetFieldValues._executor.abort(); }
-      execGetFieldValues = top.Ts.Services.System.GetLookupDisplayNames(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
+      execGetFieldValues = parent.parent.Ts.Services.System.GetLookupDisplayNames(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
     }
 
     if (field.DataType == 'bit') {
@@ -480,10 +480,10 @@ AdminAuto = function () {
   }
 
   function getLogic() {
-    var items = new top.Array();
+    var items = new parent.parent.Array();
     function getItems(selector, isAny, items) {
       $(selector).find('.condition').each(function () {
-        proxy = new top.TeamSupport.Data.TicketAutomationTriggerLogicItemProxy();
+        proxy = new parent.parent.TeamSupport.Data.TicketAutomationTriggerLogicItemProxy();
         proxy.TriggerID = -1;
         proxy.TableID = $(this).find('.condition-field option:selected').data('field').TableID;
         proxy.FieldID = $(this).find('.condition-field').val();
@@ -503,7 +503,7 @@ AdminAuto = function () {
   $('#btnAddAction').click(function (e) {
     e.preventDefault();
     addAction('.actions');
-    top.Ts.System.logAction('Admin Automation - Action Added');
+    parent.parent.Ts.System.logAction('Admin Automation - Action Added');
 
   });
 
@@ -531,7 +531,7 @@ AdminAuto = function () {
       .combobox({ selected: function () { isModified(true); } });
 
     $('<span>').addClass('ts-icon ts-icon-remove').appendTo(main).click(function (e) {
-      $(this).parents('.action').remove(); isModified(true); top.Ts.System.logAction('Admin Automation - Action Removed');
+      $(this).parents('.action').remove(); isModified(true); parent.parent.Ts.System.logAction('Admin Automation - Action Removed');
     });
 
     var actionEditor = $('<div>')
@@ -563,9 +563,9 @@ AdminAuto = function () {
   }
 
   function getActions() {
-    var items = new top.Array();
+    var items = new parent.parent.Array();
     $('.actions .action').each(function (index) {
-      proxy = new top.TeamSupport.Data.TicketAutomationActionProxy();
+      proxy = new parent.parent.TeamSupport.Data.TicketAutomationActionProxy();
       proxy.TriggerID = -1;
       proxy.ActionID = $(this).find('.action-type').val();
       var action = getAction(proxy.ActionID);
@@ -646,7 +646,7 @@ AdminAuto = function () {
 
             });
 
-            top.Ts.Services.Organizations.GetOrganization(value1, function (result) {
+            parent.parent.Ts.Services.Organizations.GetOrganization(value1, function (result) {
                 if (result) {
                     input.val(result.Name);
                     input.data('itemID', value1);
@@ -663,7 +663,7 @@ AdminAuto = function () {
 
             });
 
-            top.Ts.Services.Organizations.GetUser(value1, function (result) {
+            parent.parent.Ts.Services.Organizations.GetUser(value1, function (result) {
                 if (result) {
                     input.val(result.LastName + ', ' + result.FirstName);
                     input.data('itemID', value1);
@@ -691,14 +691,14 @@ AdminAuto = function () {
   var execGetCompany = null;
   function getCompanies(request, response) {
       if (execGetCompany) { execGetCompany._executor.abort(); }
-      execGetCompany = top.Ts.Services.Organizations.GetCompanies(request.term, function (result) { response(result); });
+      execGetCompany = parent.parent.Ts.Services.Organizations.GetCompanies(request.term, function (result) { response(result); });
       isModified(true);
   }
 
   var execGetContact = null;
   function getContacts(request, response) {
       if (execGetContact) { execGetContact._executor.abort(); }
-      execGetContact = top.Ts.Services.Organizations.GetContacts(request.term, function (result) { response(result); });
+      execGetContact = parent.parent.Ts.Services.Organizations.GetContacts(request.term, function (result) { response(result); });
       isModified(true);
   }
 

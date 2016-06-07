@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/top.Ts.Services.js" />
+/// <reference path="ts/parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -8,8 +8,8 @@
 /// <reference path="ts/ts.grids.models.tickets.js" />
 /// <reference path="~/Default.aspx" />
 $(document).ready(function () {
-    var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
-    var _reportType = top.Ts.Utils.getQueryValue('ReportType', window);
+    var _reportID = parent.Ts.Utils.getQueryValue('ReportID', window);
+    var _reportType = parent.Ts.Utils.getQueryValue('ReportType', window);
     var _chartData = null;
     if (_reportType != null) _reportType = parseInt(_reportType);
     var _tempReport = new Object();
@@ -36,12 +36,12 @@ $(document).ready(function () {
     });
 
     if (_reportID != null) {
-        top.Ts.Utils.webMethod("ReportService", "GetReport", {
+        parent.Ts.Utils.webMethod("ReportService", "GetReport", {
             "reportID": _reportID
         }, function (report) {
             _report = report;
             if (_report.OrganizationID == null) {
-                if (top.Ts.System.User.UserID != 34 && top.Ts.System.User.UserID != 43 && top.Ts.System.User.UserID != 47) return;
+                if (parent.Ts.System.User.UserID != 34 && parent.Ts.System.User.UserID != 43 && parent.Ts.System.User.UserID != 47) return;
                 $('#cbStock').prop('checked', true).trigger('change');
 
             }
@@ -56,7 +56,7 @@ $(document).ready(function () {
         return;
     }
 
-    if (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47) {
+    if (parent.Ts.System.User.UserID == 34 || parent.Ts.System.User.UserID == 43 || parent.Ts.System.User.UserID == 47) {
         $('.checkbox-stock').removeClass('hidden');
     }
 
@@ -123,7 +123,7 @@ $(document).ready(function () {
             $('#selectCat').val(32);
             $('#selectSubCat').val(70);
 
-            if (top.Ts.System.User.IsSystemAdmin == true) {
+            if (parent.Ts.System.User.IsSystemAdmin == true) {
                 $('.report-class-tickets-privacy').show();
             }
             else {
@@ -134,7 +134,7 @@ $(document).ready(function () {
             if (_report && _report.ReportDef) {
                 _report.Def = JSON.parse(_report.ReportDef);
             }
-            top.Ts.Services.Reports.GetCategories(loadCats);
+            parent.Ts.Services.Reports.GetCategories(loadCats);
             $('.report-privacy').val(false);
         }
 
@@ -383,7 +383,7 @@ $(document).ready(function () {
             _subID = subID;
             _fields = null;
             $('.report-fields-available ul').empty();
-            top.Ts.Services.Reports.GetFields(subID, function (fields) {
+            parent.Ts.Services.Reports.GetFields(subID, function (fields) {
                 var primaryFields = jQuery.grep(fields, function (elem) {
                     return (elem.IsPrimary == true && elem.IsCustom == false);
                 });
@@ -515,7 +515,7 @@ $(document).ready(function () {
                 default: break;
             }
 
-            top.Ts.Utils.webMethod("ReportService", "SaveReport", {
+            parent.Ts.Utils.webMethod("ReportService", "SaveReport", {
                 "reportID": _reportID,
                 "name": $('.report-name').val(),
                 "reportType": _reportType,
@@ -627,12 +627,12 @@ $(document).ready(function () {
                     if (_reportID) {
                         result = result + getReportUrl();
                         var isPrivate = $('.report-privacy').val();
-                        top.Ts.MainPage.updateTicketViewItem(report, isPrivate, true);
+                        parent.Ts.MainPage.updateTicketViewItem(report, isPrivate, true);
                     }
                     else {
                         result = result + 'reports.html';
                         var isPrivate = $('.report-privacy').val();
-                        top.Ts.MainPage.addNewTicketView(report, isPrivate, true);
+                        parent.Ts.MainPage.addNewTicketView(report, isPrivate, true);
                     }
 
 
@@ -642,7 +642,7 @@ $(document).ready(function () {
                     result = result + getReportUrl();
                 } else { // go back to list AND open tab
                     result = result + 'reports.html';
-                    top.Ts.MainPage.openReport(report);
+                    parent.Ts.MainPage.openReport(report);
                 }
             }
 
@@ -738,7 +738,7 @@ $(document).ready(function () {
         }
 
         function getChartData(data, callback) {
-            top.Ts.Utils.webMethod("ReportService", "GetChartData",
+            parent.Ts.Utils.webMethod("ReportService", "GetChartData",
               { "summaryReportFields": data },
               callback,
               function (error) {

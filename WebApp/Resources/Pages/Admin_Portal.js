@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/top.Ts.Services.js" />
+/// <reference path="ts/parent.parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -27,7 +27,7 @@ AdminPortal = function () {
   })
   .toggle(window.location.hostname.indexOf('127.0.0.1') > -1);
 
-  if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express) {
+  if (parent.parent.Ts.System.Organization.ProductType == parent.parent.Ts.ProductType.Express) {
     $('#tab-community').remove();
     $('#tabs-community').hide();
     $('#tab-advanced').remove();
@@ -149,9 +149,9 @@ AdminPortal = function () {
     e.preventDefault();
     if (enablingCommunity) return;
     enablingCommunity = true;
-    top.Ts.Services.Organizations.UpdateUseCommunity($(this).text().indexOf('Enable') > -1, function (result) {
+    parent.parent.Ts.Services.Organizations.UpdateUseCommunity($(this).text().indexOf('Enable') > -1, function (result) {
       if (result != null) {
-        top.Ts.System.logAction('Admin Portal - Community Toggled');
+        parent.parent.Ts.System.logAction('Admin Portal - Community Toggled');
         $('.com-enable').button('option', 'label', (result == true ? "Disable Community" : "Enable Community"));
       }
       enablingCommunity = false;
@@ -170,7 +170,7 @@ AdminPortal = function () {
   loadCombos();
 
   function loadCombos() {
-    var groups = top.Ts.Cache.getGroups();
+    var groups = parent.parent.Ts.Cache.getGroups();
     $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#portal_def_group');
     for (var i = 0; i < groups.length; i++) {
       $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('#portal_def_group');
@@ -189,7 +189,7 @@ AdminPortal = function () {
     }
     $('#com_cat_group').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
 
-    var ticketTypes = top.Ts.Cache.getTicketTypes();
+    var ticketTypes = parent.parent.Ts.Cache.getTicketTypes();
     //$('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_tickettype');
     for (var i = 0; i < ticketTypes.length; i++) {
       $('<option>').attr('value', ticketTypes[i].TicketTypeID).text(ticketTypes[i].Name).data('o', ticketTypes[i]).appendTo('#com_cat_tickettype');
@@ -203,7 +203,7 @@ AdminPortal = function () {
     $('#portal_req_tickettype').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
 
     //portal_req_tickettype
-    var products = top.Ts.Cache.getProducts();
+    var products = parent.parent.Ts.Cache.getProducts();
     $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_product');
     for (var i = 0; i < products.length; i++) {
       $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#com_cat_product');
@@ -218,11 +218,11 @@ AdminPortal = function () {
   var organization = null;
 
   function getData() {
-    top.Ts.Services.Organizations.GetOrganization(top.Ts.System.Organization.OrganizationID, function (org) {
+    parent.parent.Ts.Services.Organizations.GetOrganization(parent.parent.Ts.System.Organization.OrganizationID, function (org) {
       organization = org;
-      top.Ts.Services.Organizations.GetPortalOption(organization.OrganizationID, function (po) {
-        top.Ts.Settings.clearCache();
-        top.Ts.Settings.Organization.read('ExternalPortalLink', '', function (externalLink) {
+      parent.parent.Ts.Services.Organizations.GetPortalOption(organization.OrganizationID, function (po) {
+        parent.parent.Ts.Settings.clearCache();
+        parent.parent.Ts.Settings.Organization.read('ExternalPortalLink', '', function (externalLink) {
           _portalOption = po;
           loadValues(organization, _portalOption, externalLink);
         });
@@ -251,7 +251,7 @@ AdminPortal = function () {
     $('#portal_twocolumn').prop('checked', portalOption.TwoColumnFields);
     $('#portal_poweredby').prop('checked', portalOption.DisplayFooter);
 
-    $('#portal_adv_url').text(top.Ts.System.PortalDomain + '/' + portalOption.PortalName).attr('href', top.Ts.System.PortalDomain + '/' + portalOption.PortalName);
+    $('#portal_adv_url').text(parent.parent.Ts.System.PortalDomain + '/' + portalOption.PortalName).attr('href', parent.parent.Ts.System.PortalDomain + '/' + portalOption.PortalName);
     $('#portal_landing_enabled').prop('checked', portalOption.DisplayLandingPage);
     $('#portal_landing_html').val(portalOption.LandingPageHtml);
     $('#portal_external_link').val(externalLink);
@@ -275,7 +275,7 @@ AdminPortal = function () {
     $('#portal_captcha').prop('checked', portalOption.UseRecaptcha == null ? false : portalOption.UseRecaptcha);
     $('#portal_basic_header').val(portalOption.BasicPortalDirections);
     $('#portal_basic_width').val(portalOption.BasicPortalColumnWidth);
-    var domain = top.Ts.System.Domain;
+    var domain = parent.parent.Ts.System.Domain;
     function buildDomain(zone) { return 'https://' + zone + '.' + domain + '/'; }
     $('#portal_ticket_url').text(buildDomain('ticket') + portalOption.PortalName).attr('href', buildDomain('ticket') + portalOption.PortalName);
     $('#portal_use_company').prop('checked', portalOption.UseCompanyInBasic == null ? false : portalOption.UseCompanyInBasic);
@@ -354,19 +354,19 @@ AdminPortal = function () {
     // show some indicator
 
 
-    var _agentratingOption = new top.TeamSupport.Data.AgentRatingsOptionProxy();;
+    var _agentratingOption = new parent.parent.TeamSupport.Data.AgentRatingsOptionProxy();;
     _agentratingOption.PositiveRatingText = $('#agentrating-positive').val();
     _agentratingOption.NeutralRatingText = $('#agentrating-neutral').val();
     _agentratingOption.NegativeRatingText = $('#agentrating-negative').val();
     _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
     _agentratingOption.ExternalPageLink = $('#agentrating-externalurl').val();
 
-    top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), _agentratingOption, function (result) {
+    parent.parent.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), _agentratingOption, function (result) {
       if (result != null) {
         alert(result);
       }
       else {
-        top.Ts.System.logAction('Admin Portal - Portal Settings Saved');
+        parent.parent.Ts.System.logAction('Admin Portal - Portal Settings Saved');
         $('.portal-save-panel').hide();
       }
     });
@@ -378,7 +378,7 @@ AdminPortal = function () {
 
   getForumCats()
   function getForumCats() {
-    top.Ts.Services.Admin.GetForumCategories(function (cats) {
+    parent.parent.Ts.Services.Admin.GetForumCategories(function (cats) {
       $('.com-cat-list').empty();
       for (var i = 0; i < cats.length; i++) {
         var cat = cats[i].Category;
@@ -477,8 +477,8 @@ AdminPortal = function () {
       if (!confirm("Are you sure you would like to delete subcategory '" + cat.CategoryName + "'?")) return;
     }
 
-    top.Ts.System.logAction('Admin Portal - Category Deleted');
-    top.Ts.Services.Admin.DeleteForumCategory(cat.CategoryID, function (result) {
+    parent.parent.Ts.System.logAction('Admin Portal - Category Deleted');
+    parent.parent.Ts.Services.Admin.DeleteForumCategory(cat.CategoryID, function (result) {
       if (result == false) return;
 
       if (isMain == true) {
@@ -506,8 +506,8 @@ AdminPortal = function () {
     var el = $('.com-cat-list .ui-state-active.com-cat');
     if (el.length < 1) return;
     var cat = el.data('cat');
-    top.Ts.System.logAction('Admin Portal - Category Saved');
-    top.Ts.Services.Admin.UpdateForumCategory(
+    parent.parent.Ts.System.logAction('Admin Portal - Category Saved');
+    parent.parent.Ts.Services.Admin.UpdateForumCategory(
       cat.CategoryID,
       $('#com_cat_name').val(),
       $('#com_cat_description').val(),
@@ -530,13 +530,13 @@ AdminPortal = function () {
 
   $('.com-new-cat').click(function (e) {
     e.preventDefault();
-    top.Ts.Services.Admin.AddForumCategory(null, function (result) {
+    parent.parent.Ts.Services.Admin.AddForumCategory(null, function (result) {
       if (result != null) {
 
         var el = createCategory(result);
         el.click();
         $('.com-no-cat').hide().next().show();
-        top.Ts.System.logAction('Admin Portal - Category Created');
+        parent.parent.Ts.System.logAction('Admin Portal - Category Created');
       }
     });
   });
@@ -544,7 +544,7 @@ AdminPortal = function () {
   $('.com-cat-list').delegate('.com-new-sub', 'click', function (e) {
     e.preventDefault();
     var parentCat = $(this).closest('.com-cats').find('.com-cat-main').data('cat');
-    top.Ts.Services.Admin.AddForumCategory(parentCat.CategoryID, function (result) {
+    parent.parent.Ts.Services.Admin.AddForumCategory(parentCat.CategoryID, function (result) {
       if (result != null) {
         var el = createSubCategory(result);
         el.click();
@@ -568,11 +568,11 @@ AdminPortal = function () {
   }
 
   function savePositions() {
-    var orders = new top.Array();
+    var orders = new parent.parent.Array();
     $('.com-cats').each(function () {
 
-      var item = new Object(); // top.TSWebServices.ForumCategoryOrder();
-      item.CategoryIDs = new top.Array();
+      var item = new Object(); // parent.parent.TSWebServices.ForumCategoryOrder();
+      item.CategoryIDs = new parent.parent.Array();
       orders[orders.length] = item;
 
       var cat = $(this).find('.com-cat-main').data('cat');
@@ -586,13 +586,13 @@ AdminPortal = function () {
       });
     });
 
-    top.Ts.Services.Admin.UpdateForumCategoryOrder(JSON.stringify(orders));
-    top.Ts.System.logAction('Admin Portal - Category Positions Changed');
+    parent.parent.Ts.Services.Admin.UpdateForumCategoryOrder(JSON.stringify(orders));
+    parent.parent.Ts.System.logAction('Admin Portal - Category Positions Changed');
   }
 
   getKnowledgeBaseCats()
   function getKnowledgeBaseCats() {
-    top.Ts.Services.Admin.GetKnowledgeBaseCategories(function (cats) {
+    parent.parent.Ts.Services.Admin.GetKnowledgeBaseCategories(function (cats) {
       $('.kb-cat-list').empty();
       for (var i = 0; i < cats.length; i++) {
         var cat = cats[i].Category;
@@ -689,8 +689,8 @@ AdminPortal = function () {
       if (!confirm("Are you sure you would like to delete subcategory '" + cat.CategoryName + "'?")) return;
     }
 
-    top.Ts.System.logAction('Admin Portal - KnowledgeBase Category Deleted');
-    top.Ts.Services.Admin.DeleteKnowledgeBaseCategory(cat.CategoryID, function (result) {
+    parent.parent.Ts.System.logAction('Admin Portal - KnowledgeBase Category Deleted');
+    parent.parent.Ts.Services.Admin.DeleteKnowledgeBaseCategory(cat.CategoryID, function (result) {
       if (result == false) return;
 
       if (isMain == true) {
@@ -718,8 +718,8 @@ AdminPortal = function () {
     var el = $('.kb-cat-list .ui-state-active.kb-cat');
     if (el.length < 1) return;
     var cat = el.data('cat');
-    top.Ts.System.logAction('Admin Portal - KnowledgeBase Category Saved');
-    top.Ts.Services.Admin.UpdateKnowledgeBaseCategory(
+    parent.parent.Ts.System.logAction('Admin Portal - KnowledgeBase Category Saved');
+    parent.parent.Ts.Services.Admin.UpdateKnowledgeBaseCategory(
       cat.CategoryID,
       $('#kb_cat_name').val(),
       $('#kb_cat_description').val(),
@@ -740,12 +740,12 @@ AdminPortal = function () {
 
   $('.kb-new-cat').click(function (e) {
     e.preventDefault();
-    top.Ts.Services.Admin.AddKnowledgeBaseCategory(null, function (result) {
+    parent.parent.Ts.Services.Admin.AddKnowledgeBaseCategory(null, function (result) {
       if (result != null) {
         var el = createKnowledgeBaseCategory(result);
         el.click();
         $('.kb-no-cat').hide().next().show();
-        top.Ts.System.logAction('Admin Portal - KnowledgeBase Category Created');
+        parent.parent.Ts.System.logAction('Admin Portal - KnowledgeBase Category Created');
 
       }
     });
@@ -754,7 +754,7 @@ AdminPortal = function () {
   $('.kb-cat-list').delegate('.kb-new-sub', 'click', function (e) {
     e.preventDefault();
     var parentCat = $(this).closest('.kb-cats').find('.kb-cat-main').data('cat');
-    top.Ts.Services.Admin.AddKnowledgeBaseCategory(parentCat.CategoryID, function (result) {
+    parent.parent.Ts.Services.Admin.AddKnowledgeBaseCategory(parentCat.CategoryID, function (result) {
       if (result != null) {
         var el = createKnowledgeBaseSubCategory(result);
         el.click();
@@ -778,11 +778,11 @@ AdminPortal = function () {
   }
 
   function saveKnowledgeBasePositions() {
-    var orders = new top.Array();
+    var orders = new parent.parent.Array();
     $('.kb-cats').each(function () {
 
-      var item = new Object(); // top.TSWebServices.ForumCategoryOrder();
-      item.CategoryIDs = new top.Array();
+      var item = new Object(); // parent.parent.TSWebServices.ForumCategoryOrder();
+      item.CategoryIDs = new parent.parent.Array();
       orders[orders.length] = item;
 
       var cat = $(this).find('.kb-cat-main').data('cat');
@@ -796,15 +796,15 @@ AdminPortal = function () {
       });
     });
 
-    top.Ts.Services.Admin.UpdateKnowledgeBaseCategoryOrder(JSON.stringify(orders));
-    top.Ts.System.logAction('Admin Portal - KnowledgeBase Category Positions Changed');
+    parent.parent.Ts.Services.Admin.UpdateKnowledgeBaseCategoryOrder(JSON.stringify(orders));
+    parent.parent.Ts.System.logAction('Admin Portal - KnowledgeBase Category Positions Changed');
 
   }
 
   loadGridDropDown();
   function loadGridDropDown()
   {
-      top.Ts.Services.Search.GetAdvancedSearchOptions(function (advancedSearchOptions) {
+      parent.parent.Ts.Services.Search.GetAdvancedSearchOptions(function (advancedSearchOptions) {
           for (var i = 0; i < advancedSearchOptions.Fields.length; i++) {
               $('<option>').attr('value', (advancedSearchOptions.Fields[i].IsCustom ? "c":"s") + advancedSearchOptions.Fields[i].FieldID).text(advancedSearchOptions.Fields[i].Alias).appendTo('.admin-portal-columns').data('field', advancedSearchOptions.Fields[i]);
           }
@@ -817,7 +817,7 @@ AdminPortal = function () {
   loadGridData();
   function loadGridData()
   {
-      top.Ts.Services.Organizations.LoadCustomPortalColumns(top.Ts.System.Organization.OrganizationID, function(columns){
+      parent.parent.Ts.Services.Organizations.LoadCustomPortalColumns(parent.parent.Ts.System.Organization.OrganizationID, function(columns){
           for (var col in columns)
               appendCustomPortalColumn(columns[col]);
       });
@@ -830,9 +830,9 @@ AdminPortal = function () {
       var title = $('<span>').text(col.FieldText).appendTo(sort);
       var trash = $('<span>').addClass('ts-icon ts-icon-delete').hide().click(function () {
           if (confirm("Do you want to delete this column?")) {
-              top.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
+              parent.parent.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
               sort.remove();
-              top.Ts.System.logAction('Admin Portal - Grid Column Removed');
+              parent.parent.Ts.System.logAction('Admin Portal - Grid Column Removed');
           }
       }).appendTo(sort);
   }
@@ -852,14 +852,14 @@ AdminPortal = function () {
           var trash = $('<span>').addClass('ts-icon ts-icon-delete').hide().click(function(){
               if (confirm("Do you want to delete this column?"))
               {
-                  top.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
+                  parent.parent.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
                   savePortalColPositions();
                   sort.remove();
-                  top.Ts.System.logAction('Admin Portal - Grid Column Removed');
+                  parent.parent.Ts.System.logAction('Admin Portal - Grid Column Removed');
               }
           }).appendTo(sort);
-          top.Ts.Services.Organizations.AddCustomPortalColumn($('.admin-portal-columns').val(), $('.sort-item').length);
-          top.Ts.System.logAction('Admin Portal - Grid Column Added');
+          parent.parent.Ts.Services.Organizations.AddCustomPortalColumn($('.admin-portal-columns').val(), $('.sort-item').length);
+          parent.parent.Ts.System.logAction('Admin Portal - Grid Column Added');
       }
       setPortalColSortable();
       savePortalColPositions();
@@ -876,12 +876,12 @@ AdminPortal = function () {
   }
 
   function savePortalColPositions() {
-      var items = new top.Array();
+      var items = new parent.parent.Array();
       $('.sort-item').each(function () {
         items[items.length] = $(this).data('fieldID');
       });
-      top.Ts.System.logAction('Admin Portal - Grid Column Order Saved');
-      top.Ts.Services.Organizations.SavePortalColOrder(JSON.stringify(items));
+      parent.parent.Ts.System.logAction('Admin Portal - Grid Column Order Saved');
+      parent.parent.Ts.Services.Organizations.SavePortalColOrder(JSON.stringify(items));
   }
 
 
@@ -897,7 +897,7 @@ AdminPortal = function () {
   loadAgentRating();
   function loadAgentRating() {
 
-      top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
+      parent.parent.Ts.Services.Organizations.GetAgentRatingOptions(parent.parent.Ts.System.Organization.OrganizationID, function (o) {
           if (o != null) {
               if (o.PositiveImage)
                   $('#agentrating-positive-img').attr('src', o.PositiveImage);
@@ -923,7 +923,7 @@ AdminPortal = function () {
   loadCDISettings();
   function loadCDISettings()
   {
-      top.Ts.Services.Organizations.LoadCDISettings(top.Ts.System.Organization.OrganizationID, function (cdi) {
+      parent.parent.Ts.Services.Organizations.LoadCDISettings(parent.parent.Ts.System.Organization.OrganizationID, function (cdi) {
 
           if (cdi != null)
             {
@@ -986,7 +986,7 @@ AdminPortal = function () {
                 .appendTo(item);
 
               $('<div>')
-                .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
                 .addClass('filename')
                 .appendTo(bg);
 
@@ -1071,7 +1071,7 @@ AdminPortal = function () {
                 .appendTo(item);
 
               $('<div>')
-                .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
                 .addClass('filename')
                 .appendTo(bg);
 
@@ -1156,7 +1156,7 @@ AdminPortal = function () {
                 .appendTo(item);
 
               $('<div>')
-                .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
                 .addClass('filename')
                 .appendTo(bg);
 
@@ -1272,17 +1272,17 @@ AdminPortal = function () {
   });
 
   $('#resetPositiveImage').click(function () {
-      top.Ts.Services.Organizations.ResetRatingImage(1, function () {
+      parent.parent.Ts.Services.Organizations.ResetRatingImage(1, function () {
           $('#agentrating-positive-img').attr("src","../Images/face-positive.png");
       });
   });
   $('#resetNegativeImage').click(function () {
-      top.Ts.Services.Organizations.ResetRatingImage(-1, function () {
+      parent.parent.Ts.Services.Organizations.ResetRatingImage(-1, function () {
           $('#agentrating-negative-img').attr("src", "../Images/face-negative.png");
       });
   });
   $('#resetNeutralImage').click(function () {
-      top.Ts.Services.Organizations.ResetRatingImage(0, function () {
+      parent.parent.Ts.Services.Organizations.ResetRatingImage(0, function () {
           $('#agentrating-neutral-img').attr("src", "../Images/face-neutral.png");
       });
   });
@@ -1296,7 +1296,7 @@ AdminPortal = function () {
   })();
 
   function buildWidgetCode() {
-  	var defaultString = "<script src='"+ top.Ts.System.AppDomain + "/widget.js'></script>\n";
+  	var defaultString = "<script src='"+ parent.parent.Ts.System.AppDomain + "/widget.js'></script>\n";
       var options = "";
       if ($('#widget-width').val() != '')
       {
@@ -1321,7 +1321,7 @@ AdminPortal = function () {
           options = options + ",offset:" + $('#widget-offset').val();
       }
 
-      var appendString = "<script>TeamSupport.Widget({orgID: " + top.Ts.System.Organization.OrganizationID + options +"'}); </script>";
+      var appendString = "<script>TeamSupport.Widget({orgID: " + parent.parent.Ts.System.Organization.OrganizationID + options +"'}); </script>";
       $('#widget-generated-code').val(defaultString + appendString);
 
       }
@@ -1340,7 +1340,7 @@ AdminPortal = function () {
   //});
 
   $('#recalculate-cdi').click(function () {
-      top.Ts.Services.Organizations.ResetCDI();
+      parent.parent.Ts.Services.Organizations.ResetCDI();
       $(this).hide();
   });
 };

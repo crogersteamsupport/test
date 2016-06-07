@@ -8,6 +8,7 @@
   <link href="../css_5/frame.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <script src="../vcr/1_9_0/Js/Ts/ts.pendo.js" type="text/javascript"></script>
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
   <script src="../js_5/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
   <style type="text/css">
@@ -46,7 +47,7 @@
     
     function getDomain()
     {
-        return "@" + top.Ts.System.Domain;
+        return "@" + parent.parent.Ts.System.Domain;
     }
 
     function loadSettings() {
@@ -101,7 +102,7 @@
 
       PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked, $('#cbReplyToAlternateEmailAddresses')[0].checked, !$('#cbAddEmailViaTS')[0].checked);
       $('#divSettingsButtons').hide();
-      top.Ts.System.logAction('Admin Email - Email Settings Saved');
+      parent.parent.Ts.System.logAction('Admin Email - Email Settings Saved');
     }
 
     function loadEmailTemplate(emailTemplateID) {
@@ -191,7 +192,7 @@
         _productFamilyID
         );
       $('#divTemplateButtons').hide();
-      top.Ts.System.logAction('Admin Email - Email Template Saved');
+      parent.parent.Ts.System.logAction('Admin Email - Email Template Saved');
     }
 
     function loadPlaceHolders(emailTemplateID) {
@@ -423,7 +424,7 @@
         if (!confirm('Are you sure you would like to delete ' + id + getDomain()+'?')) return;
       PageMethods.DeleteAltEmail(id, function() {
         loadAltEmails();
-        top.Ts.System.logAction('Admin Email - Alternate Email Deleted');
+        parent.parent.Ts.System.logAction('Admin Email - Alternate Email Deleted');
 
       });
     }
@@ -438,13 +439,13 @@
           setDialogCombo('<%= wndAltEmail.ContentContainer.FindControl("cmbEAITicket").ClientID %>', result.TicketTypeID);
           setDialogCombo('<%= wndAltEmail.ContentContainer.FindControl("cmbEAIProduct").ClientID %>', result.ProductID);
           showDialog($find('wndAltEmail'), true, null, 'Edit Alternate Email - ' + id);
-          top.Ts.System.logAction('Admin Email - Edit Alternate Email Dialog Opened');
+          parent.parent.Ts.System.logAction('Admin Email - Edit Alternate Email Dialog Opened');
         });
       }
       else {
         $get('<%= wndAltEmail.ContentContainer.FindControl("fieldEAIID").ClientID %>').value = '';
         showDialog($find('wndAltEmail'), true, null, 'New Alternate Email');
-        top.Ts.System.logAction('Admin Email - New Alternate Email Dialog Opened');
+        parent.parent.Ts.System.logAction('Admin Email - New Alternate Email Dialog Opened');
       }
     }
 

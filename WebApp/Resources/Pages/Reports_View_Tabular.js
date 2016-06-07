@@ -1,11 +1,11 @@
 ﻿$(document).ready(function () {
     var _layout = null;
-    var _reportID = parseInt(top.Ts.Utils.getQueryValue('ReportID', window));
+    var _reportID = parseInt(parent.Ts.Utils.getQueryValue('ReportID', window));
     var _grid;
     var datamodel = new TeamSupport.DataModel(getReportData);
     var _report = null;
     $('.reports-edit').hide();
-    if (top.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
+    if (parent.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
 
     function getReportData(from, to, sortcol, isdesc, callback) {
         var params = { "reportID":
@@ -34,7 +34,7 @@
 
     $('.btn-group .toolitp').tooltip({ placement: 'bottom', container: 'body' });
 
-    top.Ts.Utils.webMethod("ReportService", "GetReport", {
+    parent.Ts.Utils.webMethod("ReportService", "GetReport", {
         "reportID": _reportID
     }, function (report) {
         _report = report;
@@ -71,15 +71,15 @@
             $('.reports-filter i').addClass('color-red');
         }
 
-        if ((top.Ts.System.User.IsSystemAdmin != false || report.CreatorID == top.Ts.System.User.UserID) && report.ReportType != 3 && report.OrganizationID != null) {
+        if ((parent.Ts.System.User.IsSystemAdmin != false || report.CreatorID == parent.Ts.System.User.UserID) && report.ReportType != 3 && report.OrganizationID != null) {
             $('.reports-edit').show();
         }
 
-        if (report.OrganizationID == null && (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47) && report.ReportType != 3) {
+        if (report.OrganizationID == null && (parent.Ts.System.User.UserID == 34 || parent.Ts.System.User.UserID == 43 || parent.Ts.System.User.UserID == 47) && report.ReportType != 3) {
             $('.reports-edit').show();
         }
 
-        top.Ts.Utils.webMethod("ReportService", "GetReportColumns", {
+        parent.Ts.Utils.webMethod("ReportService", "GetReportColumns", {
             "reportID": _reportID
         }, function (repCols) {
             //var idx = new Object();idx.id = "index";idx.name = "index";idx.field = "index";columns.push(idx);
@@ -111,7 +111,7 @@
                 $('.global-filter-tab').remove();
             }
             else if (_report.Def.Subcategory) {
-                top.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
+                parent.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
                     $('#filter-user').reportFilter({ "fields": fields });
                     if (_report.OrganizationID != null) {
                         $('#filter-global').reportFilter({ "fields": fields });
@@ -210,7 +210,7 @@
             $('.reports-filter i').removeClass('color-red');
         }
 
-        top.Ts.Utils.webMethod("ReportService", "SaveReportDef",
+        parent.Ts.Utils.webMethod("ReportService", "SaveReportDef",
             {
                 "reportID": _report.ReportID,
                 "data": JSON.stringify(_report.Def)
@@ -229,7 +229,7 @@
     });
 
     function saveUserSettings(callback) {
-        top.Ts.Utils.webMethod("ReportService", "SaveUserSettings",
+        parent.Ts.Utils.webMethod("ReportService", "SaveUserSettings",
             {
                 "reportID": _report.ReportID,
                 "data": JSON.stringify(_report.Settings)
@@ -274,7 +274,7 @@
     $('.reports-fav').click(function (e) {
         e.preventDefault();
         _report.IsFavorite = !_report.IsFavorite;
-        top.Ts.Utils.webMethod("ReportService", "SetFavorite", {
+        parent.Ts.Utils.webMethod("ReportService", "SetFavorite", {
             "reportID": _reportID,
             "value": _report.IsFavorite
         }, function () {
@@ -286,13 +286,13 @@
     $('.reports-export-excel').click(function (e) {
         e.preventDefault();
         //'../dc/1078/reports/95'
-        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=EXCEL', 'ReportDownload');
+        window.open('../../../dc/' + parent.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=EXCEL', 'ReportDownload');
     });
 
     $('.reports-export-csv').click(function (e) {
         e.preventDefault();
         //'../dc/1078/reports/95'
-        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=CSV', 'ReportDownload');
+        window.open('../../../dc/' + parent.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=CSV', 'ReportDownload');
     });
     _layout = $('#reports-tabview-layout').layout({
         resizeNestedLayout: true,
@@ -337,7 +337,7 @@
     var dateFormatter = function (row, cell, value, columnDef, dataContext) {
     	console.log(_report.ReportType)
         var date = dataContext[columnDef.id];
-        return date ? top.Ts.Utils.getDateString(date, true, !(_report.ReportType == 4), _report.ReportType == 3) : '';
+        return date ? parent.Ts.Utils.getDateString(date, true, !(_report.ReportType == 4), _report.ReportType == 3) : '';
     };
 
     var bitFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -363,21 +363,21 @@
     };
 
     var ticketNumberFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="#" onclick="top.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        return '<a href="#" onclick="parent.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
     }
 
     var companyFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="#" onclick="top.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        return '<a href="#" onclick="parent.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
     }
 
 
     var openFormatter = function (row, cell, value, columnDef, dataContext) {
         if (columnDef.openField == "TicketID") {
-            return '<a href="#" onclick="top.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+            return '<a href="#" onclick="parent.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "OrganizationID") {
-            return '<a href="#" onclick="top.Ts.MainPage.openCustomer(' + dataContext["hiddenOrganizationID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
+            return '<a href="#" onclick="parent.Ts.MainPage.openCustomer(' + dataContext["hiddenOrganizationID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "UserID") {
-            return '<a href="#" onclick="top.Ts.MainPage.openContact(' + dataContext["hiddenUserID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
+            return '<a href="#" onclick="parent.Ts.MainPage.openContact(' + dataContext["hiddenUserID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
         }
         return value;
     };

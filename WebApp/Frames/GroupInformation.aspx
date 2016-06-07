@@ -66,7 +66,7 @@
       function ShowDialog(wnd) {
         wnd.add_close(DialogClosed);
         wnd.show();
-        top.Ts.System.logAction('Group Info - User(s) Added');
+        parent.Ts.System.logAction('Group Info - User(s) Added');
       }
 
       function RefreshPage() {
@@ -74,8 +74,8 @@
       }
 
       function RemoveUser(userID, groupID) {
-        top.privateServices.DeleteGroupUser(groupID, userID, RefreshPage);
-        top.Ts.System.logAction('Group Info - User Removed');
+        parent.privateServices.DeleteGroupUser(groupID, userID, RefreshPage);
+        parent.Ts.System.logAction('Group Info - User Removed');
 
       }
     

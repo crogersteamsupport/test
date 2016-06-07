@@ -2,8 +2,8 @@
 var _wikiArticles = null;
 var _wikiID = null;
 var _wikiParentID = null;
-var _wikiInternalLLinkBase = top.Ts.System.AppDomain + "?articleid={ArticleID}";
-var _wikiExternalLinkBase = top.Ts.System.AppDomain + "/wiki/justarticle.aspx?Organizationid={ORGID}&ArticleID={ArticleID}";
+var _wikiInternalLLinkBase = parent.Ts.System.AppDomain + "?articleid={ArticleID}";
+var _wikiExternalLinkBase = parent.Ts.System.AppDomain + "/wiki/justarticle.aspx?Organizationid={ORGID}&ArticleID={ArticleID}";
 var _wikiInternalLink = null;
 var _wikiExternalLink = null;
 var _wikiTitle = null;
@@ -38,13 +38,13 @@ WikiPage = function () {
 //Build Page Functions
 function BuildWikiPage() {
   $('.page-loading').show().next().hide();
-  top.Ts.Services.Wiki.GetWikiMenuItems(function (menuItems) {
+  parent.Ts.Services.Wiki.GetWikiMenuItems(function (menuItems) {
     _wikiArticles = menuItems;
     if (menuItems !== null) {
       if (_wikiID == null) {
-        var articleID = top.Ts.Utils.getQueryValue("ArticleID", window);
+        var articleID = parent.Ts.Utils.getQueryValue("ArticleID", window);
         if (articleID == null) {
-          top.Ts.Services.Wiki.GetDefaultWikiID(function (wikiID) {
+          parent.Ts.Services.Wiki.GetDefaultWikiID(function (wikiID) {
             if (wikiID == null) {
               _wikiID = menuItems[0].ID
             }
@@ -71,7 +71,7 @@ function BuildWikiPage() {
     };
 
   });
-  top.Ts.System.logAction('Wiki - Wiki Viewed');
+  parent.Ts.System.logAction('Wiki - Wiki Viewed');
 };
 
 
@@ -103,7 +103,7 @@ function BuildWikiView() {
     e.preventDefault();
     var url = ($(this).attr('href'));
     var ArticleID = getURLParameter(url, 'ArticleID');
-    top.Ts.MainPage.openWiki(ArticleID, true)
+    parent.Ts.MainPage.openWiki(ArticleID, true)
   });
 };
 
@@ -114,7 +114,7 @@ function getURLParameter(url, name) {
 function BuildWikiMenuItems() {
   $("#wiki-sidebar").empty();
 
-  top.Ts.Services.Wiki.GetWikis(function (wikis) {
+  parent.Ts.Services.Wiki.GetWikis(function (wikis) {
     for (i = 0; i < wikis.length; i++) {
       $('#Wiki-Edit-Parent')
         .append($("<option></option>")
@@ -123,7 +123,7 @@ function BuildWikiMenuItems() {
     }
   });
 
-  top.Ts.Services.Wiki.GetWikiParents(function (wikis) {
+  parent.Ts.Services.Wiki.GetWikiParents(function (wikis) {
     if (wikis !== null) {
       var menuParents = "";
       var subMenuItems = "";
@@ -143,7 +143,7 @@ function BuildWikiMenuItems() {
 };
 
 function recursiveFunction(key, parent) {
-  top.Ts.Services.Wiki.GetWikiAndChildren(parent.ID, function (children) {
+  window.parent.Ts.Services.Wiki.GetWikiAndChildren(parent.ID, function (children) {
     if (children.SubArticles !== null) {
       $("#" + parent.ID).parent().append(_wikiSubMenuULTemplate);
       $.each(children.SubArticles, function (key, child) {
@@ -182,11 +182,11 @@ function SidebarFunction(element) {
 
 function BuildWikiEditEvents() {
   $("#EditWiki").click(function () {
-    top.Ts.MainPage.editWiki(_wikiID)
+    parent.Ts.MainPage.editWiki(_wikiID)
   });
 
   $("#NewWiki").click(function () {
-    top.Ts.MainPage.editWiki(-1);
+    parent.Ts.MainPage.editWiki(-1);
   });
 
   $("#WikiLink").click(function (e) { e.preventDefault(); });
@@ -210,7 +210,7 @@ function MapWikiProperties(wiki) {
 };
 
 function GetWiki(wikiID) {
-  top.Ts.Services.Wiki.GetWiki(wikiID, function (wiki) {
+  parent.Ts.Services.Wiki.GetWiki(wikiID, function (wiki) {
     if (wiki !== null) {
       MapWikiProperties(wiki);
       BuildWikiView();

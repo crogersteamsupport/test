@@ -8,33 +8,33 @@ $(document).ready(function () {
     });
 
     /*initialize */
-    userID = top.Ts.System.User.UserID;
+    userID = parent.Ts.System.User.UserID;
     var activeID;
 
-    var organizationID = top.Ts.System.User.OrganizationID;
+    var organizationID = parent.Ts.System.User.OrganizationID;
     //if (organizationID != 1078 && organizationID != 13679 && organizationID != 1088) {
     //    $('#ratingsTab').hide();
     //}
 
-    if (top.Ts.System.User.FilterInactive) {
+    if (parent.Ts.System.User.FilterInactive) {
         $('#cbActive').prop('checked', true);
     }
 
-    if (!top.Ts.System.User.IsSystemAdmin)
+    if (!parent.Ts.System.User.IsSystemAdmin)
     {
         $('#historyTab').hide();
     }
 
-    if (top.Ts.Utils.getQueryValue("UserID", window) != null) {
-        userID = top.Ts.Utils.getQueryValue("UserID", window);
-        top.Ts.Services.Users.GetUser(userID, function (user) {
+    if (parent.Ts.Utils.getQueryValue("UserID", window) != null) {
+        userID = parent.Ts.Utils.getQueryValue("UserID", window);
+        parent.Ts.Services.Users.GetUser(userID, function (user) {
             $('#userName').text(user.FirstName + " " + user.LastName);
         });
         
     }
     else
     {
-        $('#userName').text(top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName);
+        $('#userName').text(parent.Ts.System.User.FirstName + " " + parent.Ts.System.User.LastName);
     }
         
     $('#infoIframe').attr("src", "/vcr/1_9_0/Pages/User.html?UserID=" + userID);
@@ -46,7 +46,7 @@ $(document).ready(function () {
         $('.maincontainer').fadeTo(0, 1);
     });
 
-    if (!top.Ts.System.User.IsSystemAdmin) {
+    if (!parent.Ts.System.User.IsSystemAdmin) {
         $('#userNew').hide();
         $('#userDelete').hide();
     }
@@ -83,7 +83,7 @@ $(document).ready(function () {
 
     //function Search()
     //{
-    //    top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(), function (html) {
+    //    parent.Ts.Services.Users.GetUsersSearch(parent.Ts.System.User.OrganizationID, $('#searchString').val(), function (html) {
     //        $('.user-container').empty();
     //        $('.user-container').fadeTo(0, 1);
     //        $('.user-container').append(html);
@@ -94,20 +94,20 @@ $(document).ready(function () {
 
     function SearchDelete()
     {
-        top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(), function (html) {
+        parent.Ts.Services.Users.GetUsersSearch(parent.Ts.System.User.OrganizationID, $('#searchString').val(), function (html) {
             $('.user-container').empty();
             $('.user-container').fadeTo(0, 1);
             $('.user-container').append(html);
             $('.user-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
-            userID = top.Ts.System.User.UserID;
+            userID = parent.Ts.System.User.UserID;
             $('#infoIframe').attr("src", "/vcr/1_9_0/Pages/User.html?UserID=" + userID);
             $('#openIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=" + userID);
             $('#closedIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_IsClosed=true&tf_UserID=" + userID);
             $('#allIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_UserID=" + userID);
             $('#queueIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_IsEnqueued=true&tf_ViewerID=" + userID);
             $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=22&RefID=" + userID);
-            $('#userName').text(top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName);
+            $('#userName').text(parent.Ts.System.User.FirstName + " " + parent.Ts.System.User.LastName);
         });
     }
 
@@ -134,19 +134,19 @@ $(document).ready(function () {
     });
 
     $('#userNew').click(function () {
-        top.Ts.Services.Users.GetNewUserMessage(function (msg) {
+        parent.Ts.Services.Users.GetNewUserMessage(function (msg) {
             if (msg != "")
                 alert(msg);
             else
-                ShowDialog(top.GetUserDialog(top.Ts.System.User.OrganizationID));
+                ShowDialog(parent.GetUserDialog(parent.Ts.System.User.OrganizationID));
         });
     });
 
 
     $('#userDelete').click(function () {
         if (confirm("Are you sure you would like to PERMANENTLY delete this user?")) {
-            top.privateServices.DeleteUser(activeID, SearchDelete);
-            top.Ts.System.logAction('Users - User Deleted');
+            parent.privateServices.DeleteUser(activeID, SearchDelete);
+            parent.Ts.System.logAction('Users - User Deleted');
         }
     });
 
@@ -171,7 +171,7 @@ $(document).ready(function () {
         ;
     });
 
-    if (top.Ts.System.Organization.UseProductFamilies) {
+    if (parent.Ts.System.Organization.UseProductFamilies) {
         LoadProductFamilies();
         $('.productLineRow').show();
     }
@@ -180,13 +180,13 @@ $(document).ready(function () {
 
     $('#tblRatings').delegate('.delete-link', 'click', function (e) {
         var id = $(this).attr('id');
-        top.Ts.Services.Customers.DeleteAgentRating(id, function () {
+        parent.Ts.Services.Customers.DeleteAgentRating(id, function () {
             LoadRatings('', 1);
         });
     });
 
     function LoadProductFamilies() {
-        top.Ts.Services.Organizations.LoadOrgProductFamilies(top.Ts.System.Organization.OrganizationID, function (productFamilies) {
+        parent.Ts.Services.Organizations.LoadOrgProductFamilies(parent.Ts.System.Organization.OrganizationID, function (productFamilies) {
             for (var i = 0; i < productFamilies.length; i++) {
                 $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlRatingProductFamily');
             }
@@ -196,7 +196,7 @@ $(document).ready(function () {
     function LoadRatings(ratingOption, start) {
         if (start == 1)
             $('#tblRatings tbody').empty();
-        top.Ts.Services.Customers.LoadAgentRatingsUser2(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, $('#ddlRatingProductFamily').val(), function (ratings) {
+        parent.Ts.Services.Customers.LoadAgentRatingsUser2(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, $('#ddlRatingProductFamily').val(), function (ratings) {
             var agents = "";
             var deleteIt = "";
             for (var i = 0; i < ratings.length; i++) {
@@ -204,22 +204,22 @@ $(document).ready(function () {
                     if (j != 0)
                         agents = agents + ", ";
 
-                    agents = agents + '<a href="#" target="_blank" onclick="top.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
+                    agents = agents + '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
                 }
 
-                if (top.Ts.System.User.IsSystemAdmin)
+                if (parent.Ts.System.User.IsSystemAdmin)
                 {
                     deleteIt = '<a href="#" class="delete-link" id="' + ratings[i].rating.AgentRatingID + '"><span class="fa fa-trash-o"></span></a>';
                 }
 
                 var tr = $('<tr>')
-                .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="top.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td><a href="#" onclick="top.Ts.MainPage.openNewCustomer(' + ratings[i].org.OrganizationID + '); return false;">' + ratings[i].org.Name + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td><td>'+deleteIt+'</td>')
+                .html('<td><a href="' + parent.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="parent.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td><a href="#" onclick="parent.Ts.MainPage.openNewCustomer(' + ratings[i].org.OrganizationID + '); return false;">' + ratings[i].org.Name + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td><td>'+deleteIt+'</td>')
                 .appendTo('#tblRatings > tbody:last');
                 agents = "";
             }
         });
 
-        top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
+        parent.Ts.Services.Organizations.GetAgentRatingOptions(parent.Ts.System.Organization.OrganizationID, function (o) {
             if (o != null) {
                 if (o.PositiveImage)
                     $('#positiveImage').attr('src', o.PositiveImage);
@@ -230,7 +230,7 @@ $(document).ready(function () {
             }
         });
 
-        top.Ts.Services.Customers.LoadRatingPercentsUser2(userID, $('#ddlRatingProductFamily').val(), function (results) {
+        parent.Ts.Services.Customers.LoadRatingPercentsUser2(userID, $('#ddlRatingProductFamily').val(), function (results) {
             $('#negativePercent').text(results[0] + "%");
             $('#neutralPercent').text(results[1] + "%");
             $('#positivePercent').text(results[2] + "%");
@@ -268,8 +268,8 @@ $(document).ready(function () {
     });
 
     $('#cbActive').click(function (e) {
-        top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {
-            top.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
+        parent.Ts.Services.Users.SetInactiveFilter(parent.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {
+            parent.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
         },
               function (error) {
                   alert('There was an error saving the user filter inaactive setting.');
@@ -280,7 +280,7 @@ $(document).ready(function () {
 });
 
 function Search() {
-    top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(), !$('#cbActive').prop('checked'), function (html) {
+    parent.Ts.Services.Users.GetUsersSearch(parent.Ts.System.User.OrganizationID, $('#searchString').val(), !$('#cbActive').prop('checked'), function (html) {
         $('.user-container').empty();
         $('.user-container').fadeTo(0, 1);
         $('.user-container').append(html);

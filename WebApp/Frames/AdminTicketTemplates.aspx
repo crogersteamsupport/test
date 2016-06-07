@@ -8,6 +8,7 @@
   <link href="../css_5/frame.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <script src="../vcr/1_9_0/Js/Ts/ts.pendo.js" type="text/javascript"></script>
 
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
   <script src="../js_5/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
@@ -52,7 +53,7 @@
     function deleteTemplate() {
       if (!confirm('Are you sure you would like to delete this template?')) return;
       PageMethods.DeleteTicketTemplate(getSelectedTemplateID(), function () { loadTemplateList(); });
-      top.Ts.System.logAction('Admin Ticket Template - Template Deleted');
+      parent.parent.Ts.System.logAction('Admin Ticket Template - Template Deleted');
     }
 
     function loadTemplateList(id) {
@@ -120,7 +121,7 @@
     }
 
     function loadActionTypes(ticketTemplateID, ticketTypeID) {
-        var result = top.Ts.Cache.getActionTypes();
+        var result = parent.parent.Ts.Cache.getActionTypes();
         var combo = $find('cmbActionType');
         var items = combo.get_items();;
         combo.trackChanges();
@@ -166,7 +167,7 @@
         $find('editTemplate').get_html(),
         function(result) { loadTemplateList(result); });
 
-      top.Ts.System.logAction('Admin Ticket Template - Template Saved');
+      parent.parent.Ts.System.logAction('Admin Ticket Template - Template Saved');
       hideButtons();
     }
 
@@ -190,7 +191,7 @@
       showButtons();
       g_loading = true;
       loadTicketTypes(-1, -1);
-      top.Ts.System.logAction('Admin Ticket Template - New Template Started');
+      parent.parent.Ts.System.logAction('Admin Ticket Template - New Template Started');
     }
     
 

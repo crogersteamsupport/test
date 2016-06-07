@@ -28,7 +28,7 @@
   <script type="text/javascript">
 
     function openTicketWindow(ticketID) {
-      top.Ts.MainPage.openTicketByID(ticketID, true);
+      getMainFrame().Ts.MainPage.openTicketByID(ticketID, true);
     }
 
   </script>

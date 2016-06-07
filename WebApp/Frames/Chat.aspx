@@ -5,6 +5,8 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
+  <script src="../vcr/1_9_0/Js/Ts/ts.pendo.js" type="text/javascript"></script>
+
   <style type="text/css">
     body { background-color: #fff !important; }
     .reToolbar.Office2007 .InsertTicketLink { background-image: url(../images/icons/add.png); }
@@ -217,7 +219,7 @@
 
 
     function AcceptRequest(chatRequestID) {
-      top.Ts.System.logAction('Chat - Chat Request Accepted');
+      parent.Ts.System.logAction('Chat - Chat Request Accepted');
       PageMethods.AcceptRequest(chatRequestID, function(result) {
         if (result < 0) {
           alert('Request was already accepted.');
@@ -245,14 +247,14 @@
       UpdateActiveChats(true);
       UpdateMessages();
       RefreshActionID();
-      top.privateServices.UpdateUserActivityTime();
+      parent.privateServices.UpdateUserActivityTime();
     }
 
     
 
     function SendMessage() {
       if (_activeChatID < 0) return;
-      top.Ts.System.logAction('Chat - Message Sent');
+      parent.Ts.System.logAction('Chat - Message Sent');
       var textbox = $('#textSend');
       var message = textbox.val().trim();
       if (message == '') return;
@@ -319,14 +321,14 @@
       else if (value == 'addticket') { AddTicket(_activeChatID); }
       else if (value == 'openticket') { OpenTicket(_activeChatID); }
       else if (value == 'available') { ToggleAvailable(); }
-      else if (value == 'opencustomer') { top.Ts.MainPage.openContact(_contactID); }
+      else if (value == 'opencustomer') { parent.Ts.MainPage.openContact(_contactID); }
       
       
     }
 
     function CloseChat() {
       if (confirm("Are you sure you would like to leave this chat?")) {
-        top.Ts.System.logAction('Chat - Chat Closed');
+        parent.Ts.System.logAction('Chat - Chat Closed');
         PageMethods.CloseChat(_activeChatID, function(result) {
           _activeChatID = -1;
           $('#divChatMessages').html('Closed');
@@ -337,42 +339,42 @@
     }
 
     function TransferChat(chatID) {
-      top.ShowUserDialog('OtherChatUsers', true, function (arg) {
-        top.Ts.System.logAction('Chat - Chat Transfered');
+      parent.ShowUserDialog('OtherChatUsers', true, function (arg) {
+        parent.Ts.System.logAction('Chat - Chat Transfered');
         if (arg) PageMethods.RequestTransfer(chatID, arg);
       }, 'Select a Chat User');    
     }
 
     function InviteChat(chatID) {
-      top.ShowUserDialog('OtherChatUsers', true, function (arg) {
-        top.Ts.System.logAction('Chat - Invitation Sent');
+      parent.ShowUserDialog('OtherChatUsers', true, function (arg) {
+        parent.Ts.System.logAction('Chat - Invitation Sent');
         if (arg) PageMethods.RequestInvite(chatID, arg);
       }, 'Select a Chat User');
     }
 
     function CreateTicket(chatID) {
-      top.Ts.MainPage.newTicket('?ChatID=' + chatID);
-      top.Ts.System.logAction('Chat - Ticket Created');
+      parent.Ts.MainPage.newTicket('?ChatID=' + chatID);
+      parent.Ts.System.logAction('Chat - Ticket Created');
     }
 
     function AddTicket(chatID) {
-      top.ShowTicketDialog(true, function(ticketID) {
+      parent.ShowTicketDialog(true, function(ticketID) {
         PageMethods.AddTicket(chatID, ticketID, function(ticketID) {
-          top.Ts.MainPage.openTicketByID(ticketID);
-          top.Ts.System.logAction('Chat - Ticket Added');
+          parent.Ts.MainPage.openTicketByID(ticketID);
+          parent.Ts.System.logAction('Chat - Ticket Added');
         });
       });
     }
     function OpenTicket(chatID) {
       PageMethods.GetTicketID(chatID, function (ticketID) {
-        top.Ts.MainPage.openTicketByID(ticketID);
-        top.Ts.System.logAction('Chat - Ticket Opened');    
+        parent.Ts.MainPage.openTicketByID(ticketID);
+        parent.Ts.System.logAction('Chat - Ticket Opened');    
       });
     }
 
     function ToggleAvailable() {
       PageMethods.ToggleAvailable(function (isAvailable) {
-        top.Ts.System.logAction('Chat - Availablity Set');
+        parent.Ts.System.logAction('Chat - Availablity Set');
         var button = $find("<%=tbChat.ClientID %>").findItemByValue('available');
         if (isAvailable) {
           button.set_text('I am available');

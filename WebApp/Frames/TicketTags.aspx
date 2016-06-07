@@ -7,6 +7,7 @@
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/frame.css" rel="stylesheet" type="text/css" />
+  <script src="../vcr/1_9_0/Js/Ts/ts.pendo.js" type="text/javascript"></script>
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
   <script src="../js_5/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
   <script src="../js_5/ts.system.old.js" type="text/javascript"></script>
@@ -157,7 +158,7 @@
           clearSelectedTags();
           if (first != null) first.addClass('tag-link-selected');
           $('#lnk-reset-tags').hide();
-          top.Ts.System.logAction('Ticket Tags - Multiple Tag Mode');
+          parent.Ts.System.logAction('Ticket Tags - Multiple Tag Mode');
 
         }
             loadTickets();
@@ -183,7 +184,7 @@
         toggleRenameTag(false);
         var id = getItemID('tagid', $('.tag-link-selected')[0]);
         TSSystem.Services.Tickets.RenameTag(id, $('#tag-rename-edit input').val(), function (result) { loadTags(result); });
-        top.Ts.System.logAction('Ticket Tags - Tag Renamed');
+        parent.Ts.System.logAction('Ticket Tags - Tag Renamed');
       });
 
       $('#tag-rename-cancel').click(function (e) {
@@ -197,7 +198,7 @@
         var id = getItemID('tagid', $('.tag-link-selected')[0]);
         TSSystem.Services.Tickets.DeleteTag(id);
         loadTags();
-        top.Ts.System.logAction('Ticket Tags - Tag Deleted');
+        parent.Ts.System.logAction('Ticket Tags - Tag Deleted');
       });
     }
 
@@ -267,7 +268,7 @@
       $('.page-num').click(function (e) { e.preventDefault(); loadTickets($(this).html() - 1); });
       $('#next').click(function (e) { e.preventDefault(); loadTickets($('.page-selected').html()); });
       $('#prev').click(function (e) { e.preventDefault(); loadTickets($('.page-selected').html() - 2); });
-      $('.ticket-link').click(function (e) { e.preventDefault(); top.Ts.MainPage.openTicketByID(getItemID('ticketid', this), true); });
+      $('.ticket-link').click(function (e) { e.preventDefault(); parent.Ts.MainPage.openTicketByID(getItemID('ticketid', this), true); });
 
 
     }
@@ -369,7 +370,7 @@
           }
           $(this).toggleClass('tag-link-selected');
           loadTickets();
-          top.Ts.System.logAction('Ticket Tags - Tag Selected');
+          parent.Ts.System.logAction('Ticket Tags - Tag Selected');
 
         });
         if(!loaded)

@@ -164,7 +164,7 @@
       var _editID = -1;
 
       function onShow() {
-        top.Ts.Settings.User.read('SelectedCustomPropertyValue', 0, function (value) {
+        parent.parent.Ts.Settings.User.read('SelectedCustomPropertyValue', 0, function (value) {
           var cmbType = $find("<%=cmbTypes.ClientID %>");
           var item = cmbType.findItemByValue(value);
           if (item != null) item.select();
@@ -222,7 +222,7 @@
         if (comboBoxItem == null) return;
         $('#spanCaption').text(comboBoxItem.get_text());
         _type = comboBoxItem.get_value();
-        top.Ts.Settings.User.write('SelectedCustomPropertyValue', _type);
+        parent.parent.Ts.Settings.User.write('SelectedCustomPropertyValue', _type);
         if (_type == 4) {
           $('#divTicketType').show();
         }
@@ -387,7 +387,7 @@
               loadCombo(combo, items);
               $('#itemNameDiv').html('"' + name + '"');
               if (_type == 5) $('#divDeleteReplace').hide(); else $('#divDeleteReplace').show();
-              top.Ts.System.logAction('Admin Custom Properties - Type Deleted');
+              parent.parent.Ts.System.logAction('Admin Custom Properties - Type Deleted');
 
               showWindow($find("<%=wndDeleteType.ClientID%>"), function(result) {
                 if (!result) return;
@@ -418,21 +418,21 @@
           wnd.add_close(fn);
         }
         wnd.show();
-        top.Ts.System.logAction('Admin Custom Properties - Type Dialog Opened');
+        parent.parent.Ts.System.logAction('Admin Custom Properties - Type Dialog Opened');
       }
 
       function moveUp(id) {
         PageMethods.MoveUp(_type, id, _ticketType, function(result) {
           $('#divTypes').html(result);
           if (_type == 5) loadTicketTypeCombo();
-          top.Ts.System.logAction('Admin Custom Properties - Position Changed');
+          parent.parent.Ts.System.logAction('Admin Custom Properties - Position Changed');
         });
       }
       function moveDown(id) {
         PageMethods.MoveDown(_type, id, _ticketType, function(result) {
           $('#divTypes').html(result);
           if (_type == 5) loadTicketTypeCombo();
-          top.Ts.System.logAction('Admin Custom Properties - Position Changed');
+          parent.parent.Ts.System.logAction('Admin Custom Properties - Position Changed');
         });
       }
 

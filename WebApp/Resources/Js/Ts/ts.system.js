@@ -157,38 +157,36 @@ var _startDate = new Date();
         var org = Ts.System.Organization;
         var diffDays = Math.round(Math.abs((org.DateCreated.getTime() - (new Date()).getTime()) / (24 * 60 * 60 * 1000)));
         var orgStatus = diffDays > 14 ? 'Paying' : 'Trial';
-        if (org.OrganizationID == 991835) {
-            // Please use Strings, Numbers, or Bools for value types.
-            window.pendo_options = {
-                apiKey: '6af64640-2a96-4767-4bd8-f480c3f1ac37',
+        // Please use Strings, Numbers, or Bools for value types.
+        window.pendo_options = {
+            apiKey: '6af64640-2a96-4767-4bd8-f480c3f1ac37',
 
-                // If you load your user info asynchronously, set this to true
-                usePendoAgentAPI: false,
+            // If you load your user info asynchronously, set this to true
+            usePendoAgentAPI: false,
 
-                visitor: {
-                    id: user.UserID,   // Required if user is logged in
-                    email: user.Email,
-                    role: user.Title,
-                    name: user.Name
-                },
+            visitor: {
+                id: user.UserID,   // Required if user is logged in
+                email: user.Email,
+                role: user.Title,
+                name: user.Name
+            },
 
-                account: {
-                    id: org.OrganizationID,
-                    name: org.Name,
-                    planLevel: orgStatus,
-                    creationDate: org.DateCreated
-                }
-            };
-            (function () {
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.async = true;
-                script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'd3accju1t3mngt.cloudfront.net/js/pa.min.js';
-                var firstScript = document.getElementsByTagName('script')[0];
-                firstScript.parentNode.insertBefore(script, firstScript);
-            })();
-        }
-
+            account: {
+                id: org.OrganizationID,
+                name: org.Name,
+                planLevel: orgStatus,
+                creationDate: org.DateCreated
+            }
+        };
+        (function () {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.async = true;
+            script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'd3accju1t3mngt.cloudfront.net/js/pa.min.js';
+            var firstScript = document.getElementsByTagName('script')[0];
+            firstScript.parentNode.insertBefore(script, firstScript);
+        })();
+        /*
       _aaq.push(['setEvergageAccount', _evergageAccount], ['setDataset', _evergageDataset], ['setUseSiteConfig', true]);
       
       //_aaq.push(['setUser', user.FirstName + ' ' + user.LastName + ' (' + user.UserID + ')']);
@@ -205,7 +203,7 @@ var _startDate = new Date();
 
        _aaq.push(['setCustomField', 'IsAdmin', user.IsSystemAdmin, 'visit']);
 
-      _aaq.push(['trackAction', 'Login']);
+      _aaq.push(['trackAction', 'Login']);*/
     }
 
   }
@@ -253,8 +251,7 @@ var _startDate = new Date();
       return $('#fieldSID').val(); 
     },
     logAction: function (action, customData) {
-      if (_aaq == null) return;
-      _aaq.push(['trackAction', action, customData]);
+      //if (_aaq == null) return;    _aaq.push(['trackAction', action, customData]);
     }
 
   };
@@ -274,7 +271,7 @@ var _startDate = new Date();
         return;
       }
       var self = this;
-      top.Ts.Services.Settings.ReadUserSetting(key, defaultValue, function(result){
+      Ts.Services.Settings.ReadUserSetting(key, defaultValue, function(result){
         self._cache[key] = result;
         callback(result);
       });
@@ -286,7 +283,7 @@ var _startDate = new Date();
         return;
       }
       this._cache[key] = value;
-      top.Ts.Services.Settings.WriteUserSetting(key, value, callback);
+      Ts.Services.Settings.WriteUserSetting(key, value, callback);
     }
   };
 
@@ -301,7 +298,7 @@ var _startDate = new Date();
         return;
       }
       var self = this;
-      top.Ts.Services.Settings.ReadOrganizationSetting(key, defaultValue, function(result){
+      Ts.Services.Settings.ReadOrganizationSetting(key, defaultValue, function(result){
         self._cache[key] = result;
         callback(result);
       });
@@ -313,7 +310,7 @@ var _startDate = new Date();
         return;
       }
       this._cache[key] = value;
-      top.Ts.Services.Settings.WriteOrganizationSetting(key, value, callback);
+      Ts.Services.Settings.WriteOrganizationSetting(key, value, callback);
     }
   };
 
@@ -328,7 +325,7 @@ var _startDate = new Date();
         return;
       }
       var self = this;
-      top.Ts.Services.Settings.ReadSessionSetting(key, defaultValue, function(result){
+      Ts.Services.Settings.ReadSessionSetting(key, defaultValue, function(result){
         self._cache[key] = result;
         callback(result);
       });
@@ -340,7 +337,7 @@ var _startDate = new Date();
         return;
       }
       this._cache[key] = value;
-      top.Ts.Services.Settings.WriteSessionSetting(key, value, callback);
+      Ts.Services.Settings.WriteSessionSetting(key, value, callback);
     }
   };
 
@@ -355,7 +352,7 @@ var _startDate = new Date();
         return;
       }
       var self = this;
-      top.Ts.Services.Settings.ReadSystemSetting(key, defaultValue, function(result){
+      Ts.Services.Settings.ReadSystemSetting(key, defaultValue, function(result){
         self._cache[key] = result;
         callback(result);
       });
@@ -367,7 +364,7 @@ var _startDate = new Date();
         return;
       }
       this._cache[key] = value;
-      top.Ts.Services.Settings.WriteSystemSetting(key, value, callback);
+      Ts.Services.Settings.WriteSystemSetting(key, value, callback);
     }
   };
 

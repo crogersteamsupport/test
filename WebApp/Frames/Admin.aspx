@@ -46,7 +46,7 @@
       }
 
       function onShow() {
-        top.Ts.Settings.Organization.read('SelectedAdminTabText', 'My Company', function (tabText) {
+        parent.Ts.Settings.Organization.read('SelectedAdminTabText', 'My Company', function (tabText) {
           if (tabText == null) {
             $find("<%=tsMain.ClientID %>").get_allTabs()[0].select();
           }
@@ -71,7 +71,7 @@
       function TabSelected(sender, args) {
         var tab=args.get_tab();
         changeTab(tab);
-        top.Ts.System.logAction('Admin - Tab Selected (' + tab.get_text() + ')');
+        parent.Ts.System.logAction('Admin - Tab Selected (' + tab.get_text() + ')');
       }
 
       function selectTab(text) {
@@ -92,7 +92,7 @@
       function changeTab(tab) {
         var frame = $get("<%=frmAdmin.ClientID %>");
         frame.setAttribute('src', tab.get_value());
-        top.Ts.Settings.Organization.write('SelectedAdminTabText', tab.get_text());
+        parent.Ts.Settings.Organization.write('SelectedAdminTabText', tab.get_text());
       }
     
     </script>

@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/top.Ts.Services.js" />
+/// <reference path="ts/parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.ui.menutree.js" />
@@ -18,7 +18,7 @@ $(document).ready(function () {
   _assetDetailPage.refresh();
   $('.asset-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
-  var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+  var _isAdmin = parent.Ts.System.User.IsSystemAdmin;
 
   $('body').layout({
     defaults: {
@@ -36,17 +36,17 @@ $(document).ready(function () {
     }
   });
 
-  _assetID = top.Ts.Utils.getQueryValue("assetid", window);
+  _assetID = parent.Ts.Utils.getQueryValue("assetid", window);
   var historyLoaded = 0;
   var actionsHistoryLoaded = 0;
-  top.privateServices.SetUserSetting('SelectedAssetID', _assetID);
+  parent.privateServices.SetUserSetting('SelectedAssetID', _assetID);
 
   LoadProperties();
   LoadCustomProperties();
   LoadFiles();
 
 
-  if (!top.Ts.System.User.CanEditAsset && !_isAdmin) {
+  if (!parent.Ts.System.User.CanEditAsset && !_isAdmin) {
     $('#assetEdit').hide();
   }
 
@@ -95,7 +95,7 @@ $(document).ready(function () {
     e.preventDefault();
     if (!$(this).hasClass('editable'))
       return false;
-    top.Ts.System.logAction('Asset Detail - Name clicked');
+    parent.Ts.System.logAction('Asset Detail - Name clicked');
     var header = $(this).hide();
     var container = $('<div>')
           .insertAfter(header);
@@ -116,17 +116,17 @@ $(document).ready(function () {
             $(this).closest('div').remove();
             header.show();
             $('#assetEdit').removeClass("disabled");
-            top.Ts.System.logAction('Asset Detail - Change Name cancelled');
+            parent.Ts.System.logAction('Asset Detail - Change Name cancelled');
           })
           .insertAfter(container1);
     $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
-            top.Ts.Services.Assets.SetAssetName(_assetID, $(this).prev().find('input').val(), function (result) {
+            parent.Ts.Services.Assets.SetAssetName(_assetID, $(this).prev().find('input').val(), function (result) {
               header.text(result);
               $('#assetTitle').text(result);
               $('#assetEdit').removeClass("disabled");
-              top.Ts.System.logAction('Asset Detail - Name changed');
+              parent.Ts.System.logAction('Asset Detail - Name changed');
             },
             function (error) {
               header.show();
@@ -145,7 +145,7 @@ $(document).ready(function () {
     e.preventDefault();
     if (!$(this).hasClass('editable'))
       return false;
-    top.Ts.System.logAction('Asset Detail - Product clicked');
+    parent.Ts.System.logAction('Asset Detail - Product clicked');
     var header = $(this).hide();
 
     var container = $('<div>')
@@ -157,7 +157,7 @@ $(document).ready(function () {
 
     var select = $('<select>').addClass('form-control').attr('id', 'ddlProduct').appendTo(container1);
 
-    var products = top.Ts.Cache.getProducts();
+    var products = parent.Ts.Cache.getProducts();
 
     for (var i = 0; i < products.length; i++) {
       var opt = $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]);
@@ -173,7 +173,7 @@ $(document).ready(function () {
           $(this).closest('div').remove();
           header.show();
           $('#assetEdit').removeClass("disabled");
-          top.Ts.System.logAction('Asset Detail - Product changed cancelled');
+          parent.Ts.System.logAction('Asset Detail - Product changed cancelled');
         })
         .insertAfter(container1);
     $('#ddlProduct').on('change', function () {
@@ -181,13 +181,13 @@ $(document).ready(function () {
       var name = this.options[this.selectedIndex].innerHTML;
       container.remove();
 
-      top.Ts.Services.Assets.SetAssetProduct(_assetID, value, $('#fieldProduct').text(), name, function (result) {
+      parent.Ts.Services.Assets.SetAssetProduct(_assetID, value, $('#fieldProduct').text(), name, function (result) {
         header.data('productID', result);
         header.text(name);
         header.show();
         $('#assetEdit').removeClass("disabled");
-        top.Ts.System.logAction('Asset Detail - Product changed.');
-        var product = top.Ts.Cache.getProduct(result);
+        parent.Ts.System.logAction('Asset Detail - Product changed.');
+        var product = parent.Ts.Cache.getProduct(result);
         if (product.Versions.length == 0) {
           $('#fieldProductVersion').text('N/A');
           $('#fieldProductVersion').removeClass("editable");
@@ -205,7 +205,7 @@ $(document).ready(function () {
     e.preventDefault();
     if (!$(this).hasClass('editable'))
       return false;
-    top.Ts.System.logAction('Asset Detail - Product Version clicked');
+    parent.Ts.System.logAction('Asset Detail - Product Version clicked');
     var header = $(this).hide();
 
     var container = $('<div>')
@@ -217,7 +217,7 @@ $(document).ready(function () {
 
     var select = $('<select>').addClass('form-control').attr('id', 'ddlProductVersion').appendTo(container1);
 
-    var product = top.Ts.Cache.getProduct($('#fieldProduct').data('productID'));
+    var product = parent.Ts.Cache.getProduct($('#fieldProduct').data('productID'));
     for (var i = 0; i < product.Versions.length; i++) {
       var opt = $('<option>').attr('value', product.Versions[i].ProductVersionID).text(product.Versions[i].VersionNumber).data('o', product.Versions[i]);
       if (header.data('productVersionID') == product.Versions[i].ProductVersionID)
@@ -231,7 +231,7 @@ $(document).ready(function () {
           $(this).closest('div').remove();
           header.show();
           $('#assetEdit').removeClass("disabled");
-          top.Ts.System.logAction('Asset Detail - Product Version changed cancelled');
+          parent.Ts.System.logAction('Asset Detail - Product Version changed cancelled');
         })
         .insertAfter(container1);
 
@@ -242,11 +242,11 @@ $(document).ready(function () {
         var name = $('#ddlProductVersion').text();
         container.remove();
 
-        top.Ts.Services.Assets.SetAssetProductVersion(_assetID, value, $('#fieldProductVersion').text(), name, function (result) {
+        parent.Ts.Services.Assets.SetAssetProductVersion(_assetID, value, $('#fieldProductVersion').text(), name, function (result) {
           header.data('productVersionID', result);
           header.text(name);
           header.show();
-          top.Ts.System.logAction('Asset Detail - Product Version changed.');
+          parent.Ts.System.logAction('Asset Detail - Product Version changed.');
         },
         function (error) {
           header.show();
@@ -263,12 +263,12 @@ $(document).ready(function () {
       var name = this.options[this.selectedIndex].innerHTML;
       container.remove();
 
-      top.Ts.Services.Assets.SetAssetProductVersion(_assetID, value, $('#fieldProductVersion').text(), name, function (result) {
+      parent.Ts.Services.Assets.SetAssetProductVersion(_assetID, value, $('#fieldProductVersion').text(), name, function (result) {
         header.data('productVersionID', result);
         header.text(name);
         header.show();
         $('#assetEdit').removeClass("disabled");
-        top.Ts.System.logAction('Asset Detail - Product Version changed.');
+        parent.Ts.System.logAction('Asset Detail - Product Version changed.');
       });
     });
     $('#assetEdit').addClass("disabled");
@@ -278,7 +278,7 @@ $(document).ready(function () {
     e.preventDefault();
     if (!$(this).hasClass('editable'))
       return false;
-    top.Ts.System.logAction('Asset Detail - Serial Number clicked');
+    parent.Ts.System.logAction('Asset Detail - Serial Number clicked');
     var header = $(this).hide();
     var container = $('<div>')
           .insertAfter(header);
@@ -299,16 +299,16 @@ $(document).ready(function () {
             $(this).closest('div').remove();
             header.show();
             $('#assetEdit').removeClass("disabled");
-            top.Ts.System.logAction('Asset Detail - Serial Number change cancelled');
+            parent.Ts.System.logAction('Asset Detail - Serial Number change cancelled');
           })
           .insertAfter(container1);
     $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
-            top.Ts.Services.Assets.SetAssetSerialNumber(_assetID, $(this).prev().find('input').val(), function (result) {
+            parent.Ts.Services.Assets.SetAssetSerialNumber(_assetID, $(this).prev().find('input').val(), function (result) {
               header.text(result);
               $('#assetEdit').removeClass("disabled");
-              top.Ts.System.logAction('Asset Detail - Serial Number changed');
+              parent.Ts.System.logAction('Asset Detail - Serial Number changed');
             },
             function (error) {
               header.show();
@@ -327,7 +327,7 @@ $(document).ready(function () {
     e.preventDefault();
     if (!$(this).hasClass('editable'))
       return false;
-    top.Ts.System.logAction('Asset Detail - Warranty Expiration clicked');
+    parent.Ts.System.logAction('Asset Detail - Warranty Expiration clicked');
     var parent = $(this).hide();
     var container = $('<div>')
           .insertAfter(parent);
@@ -349,19 +349,19 @@ $(document).ready(function () {
             $(this).closest('div').remove();
             parent.show();
             $('#assetEdit').removeClass("disabled");
-            top.Ts.System.logAction('Asset Detail - Warranty Expiration change cancelled');
+            parent.Ts.System.logAction('Asset Detail - Warranty Expiration change cancelled');
           })
           .insertAfter(container1);
     $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
-            var value = top.Ts.Utils.getMsDate(input.val());
+            var value = parent.Ts.Utils.getMsDate(input.val());
             container.remove();
-            top.Ts.Services.Assets.SetAssetWarrantyExpiration(_assetID, value, function (result) {
-              var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-              parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+            parent.Ts.Services.Assets.SetAssetWarrantyExpiration(_assetID, value, function (result) {
+              var date = result === null ? null : parent.Ts.Utils.getMsDate(result);
+              parent.text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern())))
               $('#assetEdit').removeClass("disabled");
-              top.Ts.System.logAction('Asset Detail - Warranty Expiration Change');
+              parent.Ts.System.logAction('Asset Detail - Warranty Expiration Change');
             },
             function (error) {
               parent.show();
@@ -380,7 +380,7 @@ $(document).ready(function () {
     e.preventDefault();
     if (!$(this).hasClass('editable'))
       return false;
-    top.Ts.System.logAction('Asset Detail - Notes clicked');
+    parent.Ts.System.logAction('Asset Detail - Notes clicked');
     var header = $(this).hide();
     var container = $('<div>')
           .insertAfter(header);
@@ -401,16 +401,16 @@ $(document).ready(function () {
             $(this).closest('div').remove();
             header.show();
             $('#assetEdit').removeClass("disabled");
-            top.Ts.System.logAction('Asset Detail - Notes change cancelled');
+            parent.Ts.System.logAction('Asset Detail - Notes change cancelled');
           })
           .insertAfter(container1);
     $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
-            top.Ts.Services.Assets.SetAssetNotes(_assetID, $(this).prev().find('textarea').val(), function (result) {
+            parent.Ts.Services.Assets.SetAssetNotes(_assetID, $(this).prev().find('textarea').val(), function (result) {
               header.text(result);
               $('#assetEdit').removeClass("disabled");
-              top.Ts.System.logAction('Asset Detail - Notes changed');
+              parent.Ts.System.logAction('Asset Detail - Notes changed');
             },
             function (error) {
               header.show();
@@ -425,7 +425,7 @@ $(document).ready(function () {
     $('#assetEdit').addClass("disabled");
   });
 
-  top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+  parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
     $('.datepicker').attr("data-format", dateformat);
     $('.datepicker').datetimepicker({ pickTime: false });
 
@@ -453,7 +453,7 @@ $(document).ready(function () {
   });
 
   $('#fileToggle').click(function (e) {
-    top.Ts.System.logAction('Asset Detail - Toggle File Form');
+    parent.Ts.System.logAction('Asset Detail - Toggle File Form');
     $('#fileForm').toggle();
   });
 
@@ -465,10 +465,10 @@ $(document).ready(function () {
   // To implement once we've figure out the two types of asset functionality
   //  $('#customerDelete').click(function (e) {
   //    if (confirm('Are you sure you would like to remove this organization?')) {
-  //      top.privateServices.DeleteOrganization(organizationID, function (e) {
+  //      parent.privateServices.DeleteOrganization(organizationID, function (e) {
   //        if (window.parent.document.getElementById('iframe-mniCustomers'))
   //          window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
-  //        top.Ts.MainPage.closeNewCustomerTab(organizationID);
+  //        parent.Ts.MainPage.closeNewCustomerTab(organizationID);
   //      });
   //    }
   //  });
@@ -491,8 +491,8 @@ $(document).ready(function () {
       assetAssignmentInfo.Comments = $('#comments').val();
       assetAssignmentInfo.AssigneeName = $('#inputCustomer').data('item').value;
 
-      top.Ts.Services.Assets.AssignAsset(_assetID, top.JSON.stringify(assetAssignmentInfo), function (assetID) {
-        top.Ts.System.logAction('Asset Assigned');
+      parent.Ts.Services.Assets.AssignAsset(_assetID, parent.JSON.stringify(assetAssignmentInfo), function (assetID) {
+        parent.Ts.System.logAction('Asset Assigned');
         $('#modalAssign').modal('hide');
         window.location = window.location;
       }, function () {
@@ -508,7 +508,7 @@ $(document).ready(function () {
       }
     }
     //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-    //      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+    //      parent.Ts.Services.System.EditReminder(null, parent.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), parent.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
     //      $('#modalReminder').modal('hide');
     //    }
     //    else
@@ -530,8 +530,8 @@ $(document).ready(function () {
         assetReturnInfo.ReferenceNumber = $('#referenceNumber').val();
         assetReturnInfo.Comments = $('#comments').val();
 
-        top.Ts.Services.Assets.ReturnAsset(_assetID, top.JSON.stringify(assetReturnInfo), function (assetID) {
-          top.Ts.System.logAction('Asset Returned');
+        parent.Ts.Services.Assets.ReturnAsset(_assetID, parent.JSON.stringify(assetReturnInfo), function (assetID) {
+          parent.Ts.System.logAction('Asset Returned');
           $('#modalAssign').modal('hide');
           window.location = window.location;
         }, function () {
@@ -548,8 +548,8 @@ $(document).ready(function () {
   });
 
   $('#btnJunkSave').click(function (e) {
-    top.Ts.Services.Assets.JunkAsset(_assetID, $('#junkingComments').val(), function (assetID) {
-      top.Ts.System.logAction('Asset Junked');
+    parent.Ts.Services.Assets.JunkAsset(_assetID, $('#junkingComments').val(), function (assetID) {
+      parent.Ts.System.logAction('Asset Junked');
       $('#modalJunk').modal('hide');
       window.location = window.location;
     }, function () {
@@ -559,15 +559,15 @@ $(document).ready(function () {
 
   $('#tblFiles').on('click', '.viewFile', function (e) {
     e.preventDefault();
-    top.Ts.MainPage.openNewAttachment($(this).parent().attr('id'));
+    parent.Ts.MainPage.openNewAttachment($(this).parent().attr('id'));
   });
 
   $('#tblFiles').on('click', '.delFile', function (e) {
     e.preventDefault();
     e.stopPropagation();
     if (confirm('Are you sure you would like to remove this attachment?')) {
-      top.Ts.System.logAction('Asset Detail - Delete File');
-      top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
+      parent.Ts.System.logAction('Asset Detail - Delete File');
+      parent.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
         LoadFiles();
       });
 
@@ -575,14 +575,14 @@ $(document).ready(function () {
   });
 
   $("#btnFilesCancel").click(function (e) {
-    top.Ts.System.logAction('Asset Detail - Cancel File Form');
+    parent.Ts.System.logAction('Asset Detail - Cancel File Form');
     $('.upload-queue').empty();
     $('#attachmentDescription').val('');
     $('#fileForm').toggle();
   });
 
   $('#btnFilesSave').click(function (e) {
-    top.Ts.System.logAction('Asset Detail - Save Files');
+    parent.Ts.System.logAction('Asset Detail - Save Files');
     if ($('.upload-queue li').length > 0) {
       $('.upload-queue li').each(function (i, o) {
         var data = $(o).data('data');
@@ -598,15 +598,15 @@ $(document).ready(function () {
   $('#assignedTable > tbody').on('click', '.companylink', function (e) {
     e.preventDefault();
 
-    top.Ts.System.logAction('Asset Detail - View assigned company');
-    top.Ts.MainPage.openNewCustomer(this.id);
+    parent.Ts.System.logAction('Asset Detail - View assigned company');
+    parent.Ts.MainPage.openNewCustomer(this.id);
   });
 
   $('#assignedTable > tbody').on('click', '.contactlink', function (e) {
     e.preventDefault();
 
-    top.Ts.System.logAction('Asset Detail - View assigned contact');
-    top.Ts.MainPage.openNewContact(this.id);
+    parent.Ts.System.logAction('Asset Detail - View assigned contact');
+    parent.Ts.MainPage.openNewContact(this.id);
   });
 
   $('.file-upload').fileupload({
@@ -625,7 +625,7 @@ $(document).ready(function () {
                   .appendTo(item);
 
         $('<div>')
-                  .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                  .text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
                   .addClass('filename')
                   .appendTo(bg);
 
@@ -688,7 +688,7 @@ $(document).ready(function () {
 
   var getCustomers = function (request, response) {
     if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
-    _execGetCustomer = top.Ts.Services.Organizations.GetUserOrOrganizationForTicket(request.term, function (result) { response(result); });
+    _execGetCustomer = parent.Ts.Services.Organizations.GetUserOrOrganizationForTicket(request.term, function (result) { response(result); });
   }
 
   $('#inputCustomer').autocomplete({
@@ -704,7 +704,7 @@ $(document).ready(function () {
   });
 
   function LoadCustomProperties() {
-    top.Ts.Services.Assets.GetCustomValues(_assetID, top.Ts.ReferenceTypes.Assets, function (html) {
+    parent.Ts.Services.Assets.GetCustomValues(_assetID, parent.Ts.ReferenceTypes.Assets, function (html) {
       //$('#customProperties').append(html);
       appendCustomValues(html);
 
@@ -712,7 +712,7 @@ $(document).ready(function () {
   }
 
   function LoadProperties() {
-    top.Ts.Services.Assets.GetAsset(_assetID, function (asset) {
+    parent.Ts.Services.Assets.GetAsset(_assetID, function (asset) {
       if (asset.Name) {
         $('#assetTitle').html(asset.Name);
       }
@@ -728,7 +728,7 @@ $(document).ready(function () {
       $('#fieldProduct').text((asset.ProductName === null || $.trim(asset.ProductName) === '' ? 'Unassigned' : asset.ProductName));
       $('#fieldProductVersion').data('productVersionID', asset.ProductVersionID);
       if (asset.ProductVersionID == null) {
-        var product = top.Ts.Cache.getProduct(asset.ProductID);
+        var product = parent.Ts.Cache.getProduct(asset.ProductID);
         if (product.Versions.length == 0) {
           $('#fieldProductVersion').text('N/A');
           $('#fieldProductVersion').removeClass("editable");
@@ -742,14 +742,14 @@ $(document).ready(function () {
         $('#fieldProductVersion').text(asset.ProductVersionNumber);
       }
       $('#fieldSerialNumber').text((asset.SerialNumber === null || $.trim(asset.SerialNumber) === '' ? 'Unassigned' : asset.SerialNumber));
-      $('#fieldWarrantyExpiration').text(top.Ts.Utils.getMsDate(asset.WarrantyExpiration).localeFormat(top.Ts.Utils.getDatePattern()));
+      $('#fieldWarrantyExpiration').text(parent.Ts.Utils.getMsDate(asset.WarrantyExpiration).localeFormat(parent.Ts.Utils.getDatePattern()));
       $('#fieldNotes').text((asset.Notes === null || $.trim(asset.Notes) === '' ? 'Unassigned' : asset.Notes));
 
       $('#fieldAssetID').text(asset.AssetID);
       $('#fieldCreator').text(asset.CreatorName);
-      $('#fieldDateCreated').text(top.Ts.Utils.getMsDate(asset.DateCreated).localeFormat(top.Ts.Utils.getDateTimePattern()));
+      $('#fieldDateCreated').text(parent.Ts.Utils.getMsDate(asset.DateCreated).localeFormat(parent.Ts.Utils.getDateTimePattern()));
       $('#fieldModifier').text(asset.ModifierName);
-      $('#fieldDateModified').text(top.Ts.Utils.getMsDate(asset.DateModified).localeFormat(top.Ts.Utils.getDateTimePattern()));
+      $('#fieldDateModified').text(parent.Ts.Utils.getMsDate(asset.DateModified).localeFormat(parent.Ts.Utils.getDateTimePattern()));
 
       switch (asset.Location) {
         case '1':
@@ -757,7 +757,7 @@ $(document).ready(function () {
           $('.assignedDetails').show();
           $('.junkyardDetails').hide();
           $('#assetToJunkyard').hide();
-          top.Ts.Services.Assets.GetAssetAssignments(_assetID, function (assetAssignments) {
+          parent.Ts.Services.Assets.GetAssetAssignments(_assetID, function (assetAssignments) {
             _assetAssignments = assetAssignments;
             for (var i = 0; i < assetAssignments.length; i++) {
               var refTypeClass = 'contactlink';
@@ -766,7 +766,7 @@ $(document).ready(function () {
               }
               $('<tr>').html('<td>' +
               "<a href='#' id='" + assetAssignments[i].ShippedTo + "' class='" + refTypeClass + "'>" + assetAssignments[i].NameAssignedTo + '</a></td><td>' +
-              top.Ts.Utils.getMsDate(assetAssignments[i].ActionTime).localeFormat(top.Ts.Utils.getDatePattern()) + '</td><td>' +
+              parent.Ts.Utils.getMsDate(assetAssignments[i].ActionTime).localeFormat(parent.Ts.Utils.getDatePattern()) + '</td><td>' +
               assetAssignments[i].ActorName + '</td><td>' +
               assetAssignments[i].Comments + '</td><td>' +
               '</td>').appendTo('#assignedTable > tbody:last');
@@ -795,13 +795,13 @@ $(document).ready(function () {
     if (start == 1)
       $('#tblHistory tbody').empty();
 
-    top.Ts.Services.Assets.LoadHistory(_assetID, start, function (history) {
+    parent.Ts.Services.Assets.LoadHistory(_assetID, start, function (history) {
       for (var i = 0; i < history.length; i++) {
         var nameAssignedFromValue = history[i].NameAssignedFrom == null ? '' : history[i].NameAssignedFrom;
         var nameAssignedToValue = history[i].NameAssignedTo == null ? '' : history[i].NameAssignedTo;
         $('<tr>').html('<td>' +
         history[i].ActionDescription + '</td><td>' +
-        history[i].ActionTime.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' +
+        history[i].ActionTime.localeFormat(parent.Ts.Utils.getDateTimePattern()) + '</td><td>' +
         history[i].ActorName + '</td><td>' +
         history[i].Comments + '</td><td>' +
         nameAssignedFromValue + '</td><td>' +
@@ -826,9 +826,9 @@ $(document).ready(function () {
     if (start == 1)
       $('#tblActionsHistory tbody').empty();
 
-    top.Ts.Services.Assets.LoadActionsHistory(_assetID, start, function (history) {
+    parent.Ts.Services.Assets.LoadActionsHistory(_assetID, start, function (history) {
       for (var i = 0; i < history.length; i++) {
-        $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+        $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(parent.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
         .appendTo('#tblActionsHistory > tbody:last');
       }
       if (history.length == 50)
@@ -843,7 +843,7 @@ $(document).ready(function () {
 
   function LoadFiles() {
     $('#tblFiles tbody').empty();
-    top.Ts.Services.Assets.LoadFiles(_assetID, top.Ts.ReferenceTypes.Assets, function (files) {
+    parent.Ts.Services.Assets.LoadFiles(_assetID, parent.Ts.ReferenceTypes.Assets, function (files) {
       for (var i = 0; i < files.length; i++) {
         var tr = $('<tr>')
                 .attr('id', files[i].AttachmentID)
@@ -946,13 +946,13 @@ var appendCustomValues = function (fields) {
           .appendTo(div);
 
     switch (field.FieldType) {
-      case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-      case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
-      case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
-      case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
-      case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
-      case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
-      case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+      case parent.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+      case parent.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+      case parent.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+      case parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+      case parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+      case parent.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+      case parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
       default:
     }
 
@@ -980,7 +980,7 @@ var appendCustomEditCombo = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Asset Detail - Edit Custom Combobox');
+        parent.Ts.System.logAction('Asset Detail - Edit Custom Combobox');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -1014,8 +1014,8 @@ var appendCustomEditCombo = function (field, element) {
             alert("This field is required and the first value is not a valid selection for a required field.");
           }
           else {
-            top.Ts.System.logAction('Asset Detail - Save Custom Edit Change');
-            top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+            parent.Ts.System.logAction('Asset Detail - Save Custom Edit Change');
+            parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
               parent.closest('.form-group').data('field', result);
               parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
               $('#assetEdit').removeClass("disabled");
@@ -1060,7 +1060,7 @@ var appendCustomEditNumber = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Asset Detail - Edit Custom Number');
+        parent.Ts.System.logAction('Asset Detail - Edit Custom Number');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -1092,8 +1092,8 @@ var appendCustomEditNumber = function (field, element) {
                 alert("This field is required");
               }
               else {
-                top.Ts.System.logAction('Asset Detail - Save Custom Number Edit');
-                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                parent.Ts.System.logAction('Asset Detail - Save Custom Number Edit');
+                parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
                   parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
                   $('#assetEdit').removeClass("disabled");
@@ -1138,10 +1138,10 @@ var appendCustomEditBool = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         //$('.form-group').prev().show().next().remove();
-        top.Ts.System.logAction('Asset Detail - Edit Custom Boolean Value');
+        parent.Ts.System.logAction('Asset Detail - Edit Custom Boolean Value');
         var parent = $(this);
         var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
-        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+        parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
           parent.closest('.form-group').data('field', result);
           parent.text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
         }, function () {
@@ -1169,7 +1169,7 @@ var appendCustomEdit = function (field, element) {
           if (!$(this).hasClass('editable'))
             return false;
           var parent = $(this).hide();
-          top.Ts.System.logAction('Asset Detail - Edit Custom Textbox');
+          parent.Ts.System.logAction('Asset Detail - Edit Custom Textbox');
           var container = $('<div>')
                 .insertAfter(parent);
 
@@ -1206,8 +1206,8 @@ var appendCustomEdit = function (field, element) {
                     alert("This field is required");
                   }
                   else {
-                    top.Ts.System.logAction('Asset Detail - Save Custom Textbox Edit');
-                    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                    parent.Ts.System.logAction('Asset Detail - Save Custom Textbox Edit');
+                    parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
                       parent.closest('.form-group').data('field', result);
                       parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
                       $('#assetEdit').removeClass("disabled");
@@ -1239,14 +1239,14 @@ var appendCustomEdit = function (field, element) {
 }
 
 var appendCustomEditDate = function (field, element) {
-  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+  var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
 
   var div = $('<div>')
     .addClass('col-xs-8')
     .appendTo(element);
 
   var result = $('<p>')
-      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+      .text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern())))
       .addClass('form-control-static editable')
       .appendTo(div)
       .click(function (e) {
@@ -1254,7 +1254,7 @@ var appendCustomEditDate = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Asset Detail - Edit Custom Date');
+        parent.Ts.System.logAction('Asset Detail - Edit Custom Date');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -1265,7 +1265,7 @@ var appendCustomEditDate = function (field, element) {
         var fieldValue = parent.closest('.form-group').data('field').Value;
         var input = $('<input type="text">')
             .addClass('col-xs-10 form-control')
-            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getDatePattern()))
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(parent.Ts.Utils.getDatePattern()))
             .datetimepicker({ pickTime: false })
             .appendTo(container1)
             .focus();
@@ -1281,7 +1281,7 @@ var appendCustomEditDate = function (field, element) {
         $('<i>')
             .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
-              var value = top.Ts.Utils.getMsDate(input.val());
+              var value = parent.Ts.Utils.getMsDate(input.val());
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 // Currently there is no way to clear a Date.
@@ -1289,11 +1289,11 @@ var appendCustomEditDate = function (field, element) {
                 alert("This field is required");
               }
               else {
-                top.Ts.System.logAction('Asset Detail - Save Custom Date Change');
-                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                parent.Ts.System.logAction('Asset Detail - Save Custom Date Change');
+                parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
-                  var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
-                  parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                  var date = result.Value === null ? null : parent.Ts.Utils.getMsDate(result.Value);
+                  parent.text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern())))
                   $('#assetEdit').removeClass("disabled");
                 }, function () {
                   alert("There was a problem saving your asset property.");
@@ -1322,14 +1322,14 @@ var appendCustomEditDate = function (field, element) {
 }
 
 var appendCustomEditDateTime = function (field, element) {
-  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+  var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
 
   var div = $('<div>')
     .addClass('col-xs-8')
     .appendTo(element);
 
   var result = $('<p>')
-      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+      .text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern())))
       .addClass('form-control-static editable')
       .appendTo(div)
       .click(function (e) {
@@ -1337,7 +1337,7 @@ var appendCustomEditDateTime = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Asset Detail - Edit Custom DateTime');
+        parent.Ts.System.logAction('Asset Detail - Edit Custom DateTime');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -1348,7 +1348,7 @@ var appendCustomEditDateTime = function (field, element) {
         var fieldValue = parent.closest('.form-group').data('field').Value;
         var input = $('<input type="text">')
             .addClass('col-xs-10 form-control')
-            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getDateTimePattern()))
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(parent.Ts.Utils.getDateTimePattern()))
             .datetimepicker({
             })
 
@@ -1366,7 +1366,7 @@ var appendCustomEditDateTime = function (field, element) {
         $('<i>')
             .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
-              var value = top.Ts.Utils.getMsDate(input.val());
+              var value = parent.Ts.Utils.getMsDate(input.val());
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 // Currently there is no way to clear a Date.
@@ -1374,11 +1374,11 @@ var appendCustomEditDateTime = function (field, element) {
                 alert("This field is required");
               }
               else {
-                top.Ts.System.logAction('Asset Detail - Save Custom DateTime');
-                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                parent.Ts.System.logAction('Asset Detail - Save Custom DateTime');
+                parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
-                  var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
-                  parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                  var date = result.Value === null ? null : parent.Ts.Utils.getMsDate(result.Value);
+                  parent.text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern())))
                   $('#assetEdit').removeClass("disabled");
                 }, function () {
                   alert("There was a problem saving your asset property.");
@@ -1414,7 +1414,7 @@ var appendCustomEditTime = function (field, element) {
     .appendTo(element);
 
   var result = $('<p>')
-      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+      .text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern())))
       .addClass('form-control-static editable')
       .appendTo(div)
       .click(function (e) {
@@ -1422,7 +1422,7 @@ var appendCustomEditTime = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Asset Detail - Edit Custom Time');
+        parent.Ts.System.logAction('Asset Detail - Edit Custom Time');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -1433,7 +1433,7 @@ var appendCustomEditTime = function (field, element) {
         var fieldValue = parent.closest('.form-group').data('field').Value;
         var input = $('<input type="text">')
             .addClass('col-xs-10 form-control')
-            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getTimePattern()))
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(parent.Ts.Utils.getTimePattern()))
             .datetimepicker({ pickDate: false })
 
             .appendTo(container1)
@@ -1450,7 +1450,7 @@ var appendCustomEditTime = function (field, element) {
         $('<i>')
             .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
-              var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
+              var value = parent.Ts.Utils.getMsDate("1/1/1900 " + input.val());
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 // Currently there is no way to clear a Date.
@@ -1458,11 +1458,11 @@ var appendCustomEditTime = function (field, element) {
                 alert("This field is required");
               }
               else {
-                top.Ts.System.logAction('Asset Detail - Save Custom Time');
-                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                parent.Ts.System.logAction('Asset Detail - Save Custom Time');
+                parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
-                  var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
-                  parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+                  var date = result.Value === null ? null : parent.Ts.Utils.getMsDate(result.Value);
+                  parent.text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern())))
                   $('#assetEdit').removeClass("disabled");
                 }, function () {
                   alert("There was a problem saving your asset property.");
