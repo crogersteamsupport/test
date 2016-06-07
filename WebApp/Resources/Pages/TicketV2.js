@@ -482,7 +482,7 @@ function SetupTicketProperties() {
     isFormValid();
 
     if (typeof refresh === "undefined") {
-      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+      window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
 
   });
