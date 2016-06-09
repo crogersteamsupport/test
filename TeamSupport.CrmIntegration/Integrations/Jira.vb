@@ -424,7 +424,7 @@ Namespace TeamSupport
 
 				Try
 					crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
-					jiraProjectKey = GetProjectKey(ticket)
+					jiraProjectKey = GetProjectKey(ticket, crmLinkErrors)
 					issueFields = GetIssueFields(ticket, jiraProjectKey, crmLinkError, Orientation.OutToJira)
 				Catch webEx As WebException
 					Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
@@ -456,13 +456,14 @@ Namespace TeamSupport
 				End Try
 
 				Dim issue As JObject = Nothing
-
+				Dim isNew As Boolean = false
 				'Create new issue
 				If ticketLinkToJira.JiraKey Is Nothing OrElse ticketLinkToJira.JiraKey.IndexOf("Error") > -1 Then
 					Try
 						crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
 						AddLog("No JiraKey. Creating issue...")
 						URI = _baseURI + "/issue"
+						isNew = True
 
 						Dim actionDescriptionId As Integer
 						ticketData = New StringBuilder()
@@ -706,7 +707,7 @@ Namespace TeamSupport
 							End If
 						Next
 					End If
-				Else
+				Else If isNew
 					AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
 				End If
 			Next
@@ -1118,8 +1119,9 @@ Namespace TeamSupport
           Return result
         End Function
 
-		Private Function GetProjectKey(ByVal ticket As TicketsViewItem) As String
+		Private Function GetProjectKey(ByVal ticket As TicketsViewItem, ByVal crmLinkErrors As CRMLinkErrors) As String
 			Dim jiraProjectKey As String = CRMLinkRow.DefaultProject
+			Dim crmLinkError As CRMLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, "ProjectKey")
 
 			If CRMLinkRow.AlwaysUseDefaultProjectKey Then
 				Log.Write(String.Format("Using Default Project Key ""{0}""", jiraProjectKey))
@@ -1155,9 +1157,21 @@ Namespace TeamSupport
 
 			If String.IsNullOrEmpty(jiraProjectKey) Then
 				Dim message As String = If(CRMLinkRow.AlwaysUseDefaultProjectKey, "AlwaysUseDefaultProjectKey but no Default Project.", "Couldn't find a Jira Project Key in ProductVersion, Product, Product Name in Ticket, or Default Project to use for integration.")
+				AddLog(message, _
+						LogType.TextAndReport, _
+						crmLinkError, _
+						"Error attempting to get Jira project.", _
+						Orientation.OutToJira, _
+						ObjectType.Ticket, _
+						ticket.TicketID, _
+						"ProjectKey", _
+						Nothing, _
+						OperationType.Unknown)
 				Dim ex As Exception = New Exception(message)
 				Throw ex
 			End If
+
+			ClearCrmLinkError(crmLinkError)
 
 			Return jiraProjectKey
 		End Function
@@ -1779,7 +1793,7 @@ Namespace TeamSupport
 				Dim issueStatusChangedNotUpdatedInTicket = False
 				Dim ticketView As TicketsView = New TicketsView(User)
 				ticketView.LoadByTicketID(ticketID)
-				Dim jiraProjectKey As String = GetProjectKey(ticketView(0))
+				Dim jiraProjectKey As String = GetProjectKey(ticketView(0), crmLinkErrors)
 				Dim issueFields As JObject = GetIssueFields(ticketView(0), jiraProjectKey, crmLinkError, Orientation.IntoTeamSupport)
 				Dim ticketsFieldMap As Tickets = New Tickets(User)
 
