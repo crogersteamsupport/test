@@ -484,7 +484,7 @@ namespace TeamSupport.Data
 
         }
 
-        public static void ReplaceParameter(MailMessage message, string parameterName, string value)
+		public static void ReplaceParameter(MailMessage message, string parameterName, string value)
         {
             try
             {
@@ -498,10 +498,33 @@ namespace TeamSupport.Data
             }
         }
 
+		public static void ReplaceEmailRecipientParameters(LoginUser loginUser, MailMessage message, Ticket ticket, int? userId, bool onlyEmailAfterHours = false)
+		{
+			if (ticket != null && userId != null)
+			{
+				bool isSubscribed = false;
+				bool isQueued = false;
+				bool isAssigned = ticket.UserID == userId;
 
-        #region Utilities
+				UsersView ticketQueuers = new UsersView(loginUser);
+				ticketQueuers.LoadByTicketQueue(ticket.TicketID);
+				isQueued = ticketQueuers != null && ticketQueuers.Where(p => p.UserID == userId).Any();
 
-        public static EmailTemplate GetTemplate(LoginUser loginUser, int organizationID, int emailTemplateID, int productFamilyID)
+				UsersView ticketSubscribers = new UsersView(loginUser);
+				ticketSubscribers.LoadBySubscription(ticket.TicketID, ReferenceType.Tickets);
+				isSubscribed = ticketSubscribers != null && ticketSubscribers.Where(p => p.UserID == userId).Any();
+
+				ReplaceParameter(message, "ToIsAssigned", isAssigned.ToString());
+				ReplaceParameter(message, "ToIsQueued", isQueued.ToString());
+				ReplaceParameter(message, "ToIsSubscribed", isSubscribed.ToString());
+				ReplaceParameter(message, "ToIsBusinessHours", onlyEmailAfterHours.ToString());
+			}
+		}
+
+
+		#region Utilities
+
+		public static EmailTemplate GetTemplate(LoginUser loginUser, int organizationID, int emailTemplateID, int productFamilyID)
         {
             EmailTemplate result = EmailTemplates.GetEmailTemplate(loginUser, emailTemplateID);
             result.UpdateForOrganization(organizationID, productFamilyID);

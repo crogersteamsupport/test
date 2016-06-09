@@ -61,6 +61,7 @@ namespace TeamSupport.ServiceLibrary
           TicketsViewItem ticket = TicketsView.GetTicketsViewItem(LoginUser, reminder.RefID);
           if (ticket == null) return;
           message = EmailTemplates.GetReminderTicketEmail(LoginUser, reminder, user, ticket);
+			EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, Tickets.GetTicket(LoginUser, ticket.TicketID), reminder.UserID); //vv
 
           TeamSupport.Data.Action action = (new Actions(LoginUser)).AddNewAction();
           action.ActionTypeID = null;

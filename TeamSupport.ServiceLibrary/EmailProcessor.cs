@@ -262,7 +262,7 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
-        private void AddMessage(int organizationID, string description, MailMessage message, string replyToAddress = null, string[] attachments = null, DateTime? timeToSend = null)
+        private void AddMessage(int organizationID, string description, MailMessage message, string replyToAddress = null, string[] attachments = null, DateTime? timeToSend = null, Ticket ticket = null, List<UserEmail> recipientList = null)
         {
             Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
             string replyAddress = organization.GetReplyToAddress(replyToAddress).Trim();
@@ -284,7 +284,6 @@ namespace TeamSupport.ServiceLibrary
             if (message.To.Count < 1) return;
 
             StringBuilder builder = new StringBuilder();
-            //builder.AppendLine("<span class=\"TeamSupportStart\">&nbsp</span>");
             builder.AppendLine(message.Body);
             message.HeadersEncoding = Encoding.UTF8;
             message.Body = builder.ToString();
@@ -299,8 +298,15 @@ namespace TeamSupport.ServiceLibrary
                 Logs.WriteEvent(string.Format("Successfuly added email address [{0}]", address.ToString()));
                 message.HeadersEncoding = Encoding.UTF8;
                 message.Body = body;
-                message.Subject = subject;
-                Logs.WriteEvent(string.Format("Adding ReplyTo Address[{0}]", replyAddress.Replace("<", "").Replace(">", "")));
+				message.Subject = subject;
+
+				if (ticket != null && recipientList != null && recipientList.Any())
+				{
+					UserEmail userEmail = recipientList.Where(p => p.Address.ToLower() == address.Address.ToLower()).FirstOrDefault();
+					EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, userEmail != null ? userEmail.UserID : 0, userEmail != null ? userEmail.SendTicketsOnlyAfterHours : false);
+				}
+
+				Logs.WriteEvent(string.Format("Adding ReplyTo Address[{0}]", replyAddress.Replace("<", "").Replace(">", "")));
                 MailAddress replyMailAddress = null;
                 try
                 {
@@ -313,7 +319,8 @@ namespace TeamSupport.ServiceLibrary
 
                 message.From = replyMailAddress;
                 EmailTemplates.ReplaceMailAddressParameters(message);
-                Emails.AddEmail(LoginUser, organizationID, _currentEmailPostID, description, message, attachments, timeToSend);
+
+				Emails.AddEmail(LoginUser, organizationID, _currentEmailPostID, description, message, attachments, timeToSend);
 
                 if (message.Subject == null) message.Subject = "";
                 Logs.WriteEvent(string.Format("Queueing email [{0}] - {1}  Subject: {2}", description, address.ToString(), message.Subject));
@@ -576,8 +583,11 @@ namespace TeamSupport.ServiceLibrary
                             MailMessage message = EmailTemplates.GetTicketAssignmentUser(LoginUser, modifierName, ticket.GetTicketView());
                             message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                             message.Subject = message.Subject + subject;
-                            Logs.WriteEvent("Added to ticket log");
+							EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
+
+							Logs.WriteEvent("Added to ticket log");
                             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + message.To[0].DisplayName);
+							UserEmail userEmail = new UserEmail(owner.UserID, owner.FirstName, owner.LastName, "", owner.OnlyEmailAfterHours);
 							AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray());
 						}
                     }
@@ -611,7 +621,7 @@ namespace TeamSupport.ServiceLibrary
                         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + mailAddress.Address);
                     }
 
-					AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray());
+					AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray(), ticket: ticket, recipientList: list);
 				}
 
             }
@@ -671,7 +681,7 @@ namespace TeamSupport.ServiceLibrary
                     if (!actions.IsEmpty && !ticketOrganization.NoAttachmentsInOutboundEmail)
                     {
                         Attachments attachments = actions[0].GetAttachments();
-                        foreach (TeamSupport.Data.Attachment attachment in attachments)
+                        foreach (Data.Attachment attachment in attachments)
                         {
                             fileNames.Add(attachment.Path);
                         }
@@ -693,7 +703,7 @@ namespace TeamSupport.ServiceLibrary
                 }
 
 				string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
-				AddMessage(ticketOrganization.OrganizationID, "Internal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray());
+				AddMessage(ticketOrganization.OrganizationID, "Internal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress, fileNames.ToArray(), ticket: ticket, recipientList: userList);
 			}
             catch (Exception ex)
             {
@@ -913,7 +923,7 @@ namespace TeamSupport.ServiceLibrary
                             ContactsViewItem contact = ContactsView.GetContactsViewItem(_loginUser, userEmail.UserID);
                             EmailTemplate.ReplaceMessageFields(_loginUser, "Recipient", contact, message, -1, ticket.OrganizationID);
 
-                            if (ticketOrganization.AgentRating == true)
+							if (ticketOrganization.AgentRating == true)
                             {
                                 AgentRatingsOptions options = new AgentRatingsOptions(_loginUser);
                                 options.LoadByOrganizationID(ticket.OrganizationID);
@@ -1015,6 +1025,7 @@ namespace TeamSupport.ServiceLibrary
                 MailMessage message = EmailTemplates.GetTicketUpdateRequest(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), ticket.GetTicketView(), true);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 message.Subject = message.Subject + " [pvt]";
+				EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
 
                 foreach (MailAddress mailAddress in message.To)
                 {
