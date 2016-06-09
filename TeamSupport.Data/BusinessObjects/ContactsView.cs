@@ -118,7 +118,7 @@ namespace TeamSupport.Data
 			}
 
 			result.Append("WHERE " + (isCustomer ? "OrganizationID" : "OrganizationParentID") + " = @OrganizationParentId AND (MarkDeleted = 0) ");
-			result.Append(DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationParentId, filters, ReferenceType.Contacts, "UserID", ref filterParameters) + " ");
+			result.Append(DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationParentId, filters, ReferenceType.Contacts, "UserID", null, ref filterParameters) + " ");
 			result.Append("ORDER BY " + orderBy);
 
 			return result.ToString();

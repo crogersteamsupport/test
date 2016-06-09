@@ -201,7 +201,7 @@ namespace TeamSupport.Data
 			result.Append("SELECT " + limit + " * ");
 			result.Append("FROM AssetsView ");
 			result.Append("WHERE OrganizationID = @OrganizationId ");
-			result.Append(DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationParentId, filters, ReferenceType.Assets, "AssetID", ref filterParameters) + " ");
+			result.Append(DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationParentId, filters, ReferenceType.Assets, "AssetID", null, ref filterParameters) + " ");
 			result.Append("ORDER BY " + orderBy);
 
 			return result.ToString();

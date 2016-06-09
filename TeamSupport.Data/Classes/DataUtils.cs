@@ -2077,12 +2077,21 @@ namespace TeamSupport.Data
 														int organizationId, 
 														System.Collections.Specialized.NameValueCollection filters, 
 														ReferenceType refType, 
-														string tableIdColName, 
+														string tableIdColName,
+														int? ticketTypeId = null,
 														ref SqlParameterCollection filterParameters)
 		{
 			StringBuilder result = new StringBuilder();
 			CustomFields customFields = new CustomFields(loginUser);
-			customFields.LoadByReferenceType(organizationId, refType);
+
+			if (ticketTypeId == null)
+			{
+				customFields.LoadByReferenceType(organizationId, refType);
+			}
+			else
+			{
+				customFields.LoadByReferenceType(organizationId, refType, ticketTypeId);
+			}
 
 			StringBuilder filterFieldName;
 			StringBuilder filterOperator;
