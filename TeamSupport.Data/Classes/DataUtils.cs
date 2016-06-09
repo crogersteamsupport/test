@@ -2078,7 +2078,7 @@ namespace TeamSupport.Data
 														System.Collections.Specialized.NameValueCollection filters, 
 														ReferenceType refType, 
 														string tableIdColName,
-														int? ticketTypeId = null,
+														int? ticketTypeId,
 														ref SqlParameterCollection filterParameters)
 		{
 			StringBuilder result = new StringBuilder();
