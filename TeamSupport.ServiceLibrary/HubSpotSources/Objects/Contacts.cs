@@ -80,7 +80,7 @@ namespace TeamSupport.ServiceLibrary.HubSpotSources.Objects
       [DataMember(Name = "contacts")]
       public List<Contact> contacts { get; set; }
       [DataMember(Name = "time-offset")]
-      public int timeOffset { get; set; }
+      public long timeOffset { get; set; }
       [DataMember(Name = "query")]
       public string query { get; set; }
       [DataMember(Name = "vid-offset")]
