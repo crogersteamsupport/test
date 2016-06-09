@@ -742,7 +742,7 @@ ORDER BY TicketNumber DESC";
                 string sql = "SELECT * FROM TicketsView WHERE (TicketTypeID = @TicketTypeID) ";
                 sql += DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationId, filters, ReferenceType.Tickets, "TicketID", ref filterParameters);
                 sql += " ORDER BY TicketNumber";
-                sql += InjectCustomFields(sql, "TicketID", ReferenceType.Tickets, ticketTypeID);
+                sql = InjectCustomFields(sql, "TicketID", ReferenceType.Tickets, ticketTypeID);
                 command.CommandText = sql;
                 command.CommandType = CommandType.Text;
 
