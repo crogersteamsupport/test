@@ -56,7 +56,7 @@ namespace TeamSupport.Data
 																FROM WikiArticles 
 																WHERE [OrganizationID] = @OrganizationID
 																	AND IsNull(IsDeleted,0)=0
-																	AND PortalView = 1
+																
 																	AND ParentID IS NULL
 																ORDER BY ArticleName";
         command.CommandType = CommandType.Text;
@@ -73,9 +73,27 @@ namespace TeamSupport.Data
 																FROM WikiArticles 
 																WHERE [OrganizationID] = @OrganizationID
 																	AND IsNull(IsDeleted,0)=0
+																	
+																ORDER BY ArticleName";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				Fill(command);
+			}
+		}
+
+		public virtual void LoadPublicArticleByArticleID(int articleID, int organizationID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = @"SELECT * 
+																FROM WikiArticles 
+																WHERE [OrganizationID] = @OrganizationID
+																	AND ArticleID = @ArticleID
+																	AND IsNull(IsDeleted,0)=0
 																	AND PortalView = 1
 																ORDER BY ArticleName";
 				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ArticleID", articleID);
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				Fill(command);
 			}
@@ -89,7 +107,7 @@ namespace TeamSupport.Data
 																FROM WikiArticles 
 																WHERE [ParentID] = @ParentID
 																	AND IsNull(IsDeleted,0)=0
-																	AND PortalView = 1
+											
 																ORDER BY ArticleName";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ParentID", parentID);
