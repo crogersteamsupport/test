@@ -3981,6 +3981,180 @@ WHERE t.TicketID = @TicketID
 
 			return JsonConvert.SerializeObject(result);
         }
+
+        [WebMethod]
+        public SuggestedSolutions GetSuggestedSolutions(int ticketID, int firstItemIndex, int pageSize)
+        {
+            SuggestedSolutions result = new SuggestedSolutions();
+            List<SuggestedSolutionsItem> resultItems = new List<SuggestedSolutionsItem>();
+
+            if (ticketID != 0)
+            {
+                LoginUser loginUser = TSAuthentication.GetLoginUser();
+                string searchTerm = GetSuggestedSolutionDefaultInput(ticketID);
+                List<int> suggestedSolutionsIDs = GetSuggestedSolutionsIDs(searchTerm, loginUser);
+                if (suggestedSolutionsIDs.Count > 0)
+                {
+                    string ticketIdsCommaList = string.Join(",", suggestedSolutionsIDs);
+
+                    DataTable suggestedSolutions = new DataTable();
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        StringBuilder builder = new StringBuilder();
+
+                        builder.Append(@"
+                            DECLARE @TempItems 
+                            TABLE
+                            ( 
+                              ID        int IDENTITY,
+                              TicketID  int 
+                            )
+
+                            INSERT INTO @TempItems 
+                            (
+                              TicketID
+                            )
+                            SELECT
+                                t.TicketID
+                            FROM
+                                Tickets t
+                            WHERE
+                                t.TicketID IN (" + ticketIdsCommaList + @")
+                            ORDER BY
+                                t.TicketID
+
+                            SELECT
+                                t.TicketID
+                                , t.TicketNumber
+                                , t.Name
+                                , dbo.uspGetTags(17, t.TicketID) AS Tags
+	                            , kbc.CategoryName AS KnowledgeBaseCategoryName
+                            FROM 
+                                @TempItems ti 
+                                JOIN Tickets t
+                                    ON ti.TicketID = t.TicketID
+                                LEFT JOIN KnowledgeBaseCategories kbc
+                                    ON t.KnowledgeBaseCategoryID = kbc.CategoryID
+                            WHERE
+                                ti.ID BETWEEN @FromIndex AND @toIndex
+                            ORDER BY 
+                                ti.ID"
+                        );
+                        command.CommandText = builder.ToString();
+                        command.CommandType = CommandType.Text;
+                        command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
+                        command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
+
+                        using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                        {
+                            connection.Open();
+                            SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                            command.Connection = connection;
+                            command.Transaction = transaction;
+                            SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+                            suggestedSolutions.Load(reader);
+                        }
+                    }
+
+                    result.Count = suggestedSolutions.Rows.Count;
+                    for (int i = 0; i < suggestedSolutions.Rows.Count; i++)
+                    {
+                        SuggestedSolutionsItem item = new SuggestedSolutionsItem();
+                        item.ID = (int)suggestedSolutions.Rows[i]["TicketID"];
+                        item.DisplayName = string.Format("{0}: {1}", suggestedSolutions.Rows[i]["TicketNumber"].ToString(), suggestedSolutions.Rows[i]["Name"].ToString());
+                        item.Tags = suggestedSolutions.Rows[i]["Tags"].ToString();
+                        item.KBCategory = suggestedSolutions.Rows[i]["KnowledgeBaseCategoryName"].ToString();
+                        resultItems.Add(item);
+                    }
+                    result.Items = resultItems.ToArray();
+                }
+            }
+            else
+            {
+                result.Count = 0;
+            }
+            return result;
+        }
+
+
+        [WebMethod]
+        public string GetSuggestedSolutionDefaultInput(int ticketid)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SqlCommand command = new SqlCommand();
+            command.CommandText = @"
+            SELECT
+                dbo.stripHTML(Description)
+            FROM
+                Actions 
+            WHERE
+                TicketID = @TicketID 
+                and SystemActionTypeID IN (1,3,5)";
+            command.Parameters.AddWithValue("@TicketID", ticketid.ToString());
+
+            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+            if (table.Rows.Count > 0)
+            {
+                StringBuilder result = new StringBuilder();
+                for (int i = 0; i < table.Rows.Count; i++)
+                {
+                    result.AppendLine(table.Rows[i][0].ToString());
+                }
+                return result.ToString();
+            }
+            else
+                return string.Empty;
+
+        }
+
+        private static List<int> GetSuggestedSolutionsIDs(string searchTerm, LoginUser loginUser)
+        {
+            DataTable tagList = new DataTable();
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder builder = new StringBuilder();
+
+                builder.Append(@"
+                    SELECT
+                        t.TicketID
+                        , LOWER(tlv.Value)
+                    FROM
+                        Tickets t
+                        JOIN TagLinksView tlv
+                            ON  t.TicketID = tlv.RefID
+                    WHERE
+                        t.OrganizationID = @OrganizationID
+                        AND t.IsKnowledgeBase = 1"
+                );
+                command.CommandText = builder.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+                    tagList.Load(reader);
+                }
+            }
+
+            List<int> result = new List<int>();
+            searchTerm = searchTerm.ToLower();
+            for (int i = 0; i < tagList.Rows.Count; i++)
+            {
+                if (searchTerm.Contains(tagList.Rows[i][1].ToString()))
+                {
+                    result.Add((int)tagList.Rows[i][0]);
+                }
+            }
+            return result;
+        }
     }
 
 
@@ -4239,6 +4413,25 @@ WHERE t.TicketID = @TicketID
         public bool IsClosed { get; set; }
     }
 
+    [DataContract]
+    public class SuggestedSolutions
+    {
+        [DataMember]
+        public int Count { get; set; }
+        [DataMember]
+        public SuggestedSolutionsItem[] Items { get; set; }
+    }
 
-
+    [DataContract]
+    public class SuggestedSolutionsItem
+    {
+        [DataMember]
+        public int ID { get; set; }
+        [DataMember]
+        public string DisplayName { get; set; }
+        [DataMember]
+        public string Tags { get; set; }
+        [DataMember]
+        public string KBCategory { get; set; }
+    }
 }
