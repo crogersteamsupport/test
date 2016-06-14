@@ -2575,7 +2575,20 @@ WHERE t.TicketID = @TicketID
             statuses.Save();
         }
 
-        [WebMethod]
+
+		[WebMethod]
+		public void SetTicketVisibility(string ticketIDs, bool value)
+		{
+			int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+
+			foreach (int ticketID in ids)
+			{
+				SetIsVisibleOnPortal(ticketID, value);
+			}
+
+		}
+
+		[WebMethod]
         public void SetTicketSubcribes(string ticketIDs, bool value)
         {
             int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
