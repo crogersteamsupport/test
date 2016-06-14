@@ -2038,6 +2038,25 @@ namespace TeamSupport.Data
 					objRow.EndEdit();
 				}
 			}
+
+			return table;
+		}
+
+		public static DataTable StripHtmlDataTable(DataTable table)
+		{
+			foreach (DataRow objRow in table.Rows)
+			{
+				for (int i = 0; i < objRow.ItemArray.Count(); i++)
+				{
+					if (objRow[i].GetType().Name.ToLower() == "string")
+					{
+						objRow.BeginEdit();
+						objRow[i] = HtmlUtility.StripHTML(objRow[i].ToString());
+						objRow.EndEdit();
+					}
+				}
+			}
+
 			return table;
 		}
 

@@ -360,6 +360,7 @@ namespace TeamSupport.Data
 					}
 					transaction.Commit();
 					table = DataUtils.DecodeDataTable(table);
+					table = DataUtils.StripHtmlDataTable(table);
 				}
 				catch (Exception ex)
 				{
@@ -571,8 +572,6 @@ namespace TeamSupport.Data
 
           ReportTable table = tables.FindByReportTableID(tableField.ReportTableID);
           string fieldName = table.TableName + "." + tableField.FieldName;
-			 if (tableField.DataType.Trim().ToLower() == "text" || tableField.DataType.Trim().ToLower() == "varchar")
-            fieldName = "dbo.StripHTML(" + fieldName + ")";
           if (tableField.DataType.Trim().ToLower() == "datetime")
           {
             fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
@@ -2135,6 +2134,7 @@ WHERE RowNum BETWEEN @From AND @To";
           }
           transaction.Commit();
           table = DataUtils.DecodeDataTable(table);
+		  table = DataUtils.StripHtmlDataTable(table);
         }
         catch (Exception ex)
         {
