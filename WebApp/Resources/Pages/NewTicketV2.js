@@ -204,6 +204,16 @@ $(document).ready(function () {
   SetupActionTimers();
 
   $('.page-loading').hide().next().show();
+
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.async = true;
+  script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+  var firstScript = document.getElementsByTagName('script')[0];
+  script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+  script.setAttribute('id', 'dropboxjs');
+  firstScript.parentNode.insertBefore(script, firstScript);
+
 });
 
 function LoadTicketPageOrder() {
