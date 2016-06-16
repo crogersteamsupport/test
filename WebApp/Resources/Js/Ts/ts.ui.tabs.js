@@ -12,6 +12,19 @@ Ts.Ui.Tabs = function (element) {
   this._sortStop = function (event, ui) { if (self._events.sort) { self._events.sort(self); } };
   this._callEvent = function (event, sender) { if (self._events[event]) { return self._events[event](sender ? sender : self); } return true; };
   $(this._list).sortable({ items: 'li.ts-tab-sortable', stop: this._sortStop });
+  function getMainFrame(wnd) {
+      if (!wnd) wnd = window;
+      var result = wnd;
+      var cnt = 0;
+      while (!(result.Ts && result.Ts.Services)) {
+          result = result.parent;
+          cnt++;
+          if (cnt > 5) return null;
+      }
+      return result;
+  }
+
+  this._mainFrame = getMainFrame();
 }
 
 Ts.Ui.Tabs.prototype = {
@@ -231,8 +244,8 @@ Ts.Ui.Tabs.Tab.prototype = {
   constructor: Ts.Ui.Tabs.Tab,
   //
   getElement: function () { return this._element; },
-  getId: function () { return top.Ts.Utils.getNameParam('ts-tab', this._element, 0); },
-  getTabType: function () { return top.Ts.Utils.getNameParam('ts-tab', this._element, 1); },
+  getId: function () { return this._mainFrame.Ts.Utils.getNameParam('ts-tab', this._element, 0); },
+  getTabType: function () { return this._mainFrame.Ts.Utils.getNameParam('ts-tab', this._element, 1); },
   getCaption: function () { return $(this._element).find('a').html(); },
   setCaption: function (value) { $(this._element).find('a').html(value); },
 
