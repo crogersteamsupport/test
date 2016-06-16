@@ -11,7 +11,7 @@ var _customersSortColumn = 'Date Created';
 var _customersSortDirection = 'DESC';
 
 $(document).ready(function () {
-    _productFamilyID = parent.Ts.Utils.getQueryValue("productfamilyid", window);
+    _productFamilyID = window.parent.parent.Ts.Utils.getQueryValue("productfamilyid", window);
 
     $('body').layout({
         defaults: {
@@ -29,10 +29,10 @@ $(document).ready(function () {
         }
     });
 
-    parent.Ts.Services.Products.GetProductFamily(_productFamilyID, function (productFamily) {
+    window.parent.parent.Ts.Services.Products.GetProductFamily(_productFamilyID, function (productFamily) {
         if (productFamily == null) {
             alert('This product line has been deleted.');
-            parent.Ts.MainPage.closeNewProductFamilyTab(_productFamilyID);
+            window.parent.parent.Ts.MainPage.closeNewProductFamilyTab(_productFamilyID);
         }
         else {
             $('#productFamilyName').text(productFamily.Name);
@@ -47,7 +47,7 @@ $(document).ready(function () {
     $('.productFamilyProperties span').toggleClass("editable");
 
     $('#productFamilyEdit').click(function (e) {
-        parent.Ts.System.logAction('Product Line Detail - Product Edit');
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Product Edit');
         $('.productFamilyProperties p').toggleClass("editable");
         $('.productFamilyProperties span').toggleClass("editable");
         $('.customProperties p').toggleClass("editable");
@@ -58,16 +58,16 @@ $(document).ready(function () {
     });
 
     $('#productFamilyRefresh').click(function (e) {
-        parent.Ts.System.logAction('Product Line Detail - Refresh Page');
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Refresh Page');
         window.location = window.location;
     });
 
 
     $('#productFamilyDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this product line?')) {
-            parent.Ts.System.logAction('Product Line Detail - Delete Product Line');
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Delete Product Line');
             parent.privateServices.DeleteProductFamily(_productFamilyID, function (e) {
-                parent.Ts.MainPage.closeNewProductFamilyTab(_productFamilyID);
+                window.parent.parent.Ts.MainPage.closeNewProductFamilyTab(_productFamilyID);
             });
         }
     });
@@ -124,7 +124,7 @@ $(document).ready(function () {
     function createTestChart() {
         var greenLimit, yellowLimit;
 
-        parent.Ts.Services.Products.LoadFamilyChartData(_productFamilyID, true, function (chartString) {
+        window.parent.parent.Ts.Services.Products.LoadFamilyChartData(_productFamilyID, true, function (chartString) {
 
             var chartData = [];
             var dummy = chartString.split(",");
@@ -188,7 +188,7 @@ $(document).ready(function () {
             }
         });
 
-        parent.Ts.Services.Products.LoadFamilyChartData(_productFamilyID, false, function (chartString) {
+        window.parent.parent.Ts.Services.Products.LoadFamilyChartData(_productFamilyID, false, function (chartString) {
 
             var chartData = [];
             var dummy = chartString.split(",");
@@ -251,11 +251,11 @@ $(document).ready(function () {
         });
     }
 
-    parent.Ts.Services.Products.GetProductFamilyTickets(_productFamilyID, 0, function (e) {
+    window.parent.parent.Ts.Services.Products.GetProductFamilyTickets(_productFamilyID, 0, function (e) {
         $('#openTicketCount').text("Open Tickets: " + e);
     });
 
-    parent.Ts.Services.Tickets.Load5MostRecentByProductFamilyID(_productFamilyID, function (tickets) {
+    window.parent.parent.Ts.Services.Tickets.Load5MostRecentByProductFamilyID(_productFamilyID, function (tickets) {
         var max = 5;
         if (tickets.length < 5)
             max = tickets.length;
@@ -282,7 +282,7 @@ $(document).ready(function () {
           .appendTo(caption)
           .click(function (e) {
 
-              parent.Ts.MainPage.openTicket($(this).closest('.ticket').data('o').TicketNumber, true);
+              window.parent.parent.Ts.MainPage.openTicket($(this).closest('.ticket').data('o').TicketNumber, true);
           });
 
 
@@ -300,7 +300,7 @@ $(document).ready(function () {
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
     function LoadCustomProperties() {
-        parent.Ts.Services.Assets.GetCustomValues(_productFamilyID, parent.Ts.ReferenceTypes.ProductFamilies, function (html) {
+        window.parent.parent.Ts.Services.Assets.GetCustomValues(_productFamilyID, window.parent.parent.Ts.ReferenceTypes.ProductFamilies, function (html) {
             appendCustomValues(html);
         });
     }
@@ -308,7 +308,7 @@ $(document).ready(function () {
     var historyLoaded = 0;
 
     $('#historyToggle').on('click', function () {
-        parent.Ts.System.logAction('Product Line Detail - History Toggle');
+        window.parent.parent.Ts.System.logAction('Product Line Detail - History Toggle');
         if (historyLoaded == 0) {
             historyLoaded = 1;
             LoadHistory(1);
@@ -316,7 +316,7 @@ $(document).ready(function () {
     });
 
     $('#historyRefresh').on('click', function () {
-        parent.Ts.System.logAction('Product Line Detail - History Refresh');
+        window.parent.parent.Ts.System.logAction('Product Line Detail - History Refresh');
         LoadHistory(1);
     });
 
@@ -325,9 +325,9 @@ $(document).ready(function () {
         if (start == 1)
             $('#tblHistory tbody').empty();
 
-        parent.Ts.Services.Products.LoadFamilyHistory(_productFamilyID, start, function (history) {
+        window.parent.parent.Ts.Services.Products.LoadFamilyHistory(_productFamilyID, start, function (history) {
             for (var i = 0; i < history.length; i++) {
-                $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(parent.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+                $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
                 .appendTo('#tblHistory > tbody:last');
                 //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
             }
@@ -346,7 +346,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
 
-        parent.Ts.System.logAction('Product Line Detail - Edit Name');
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Name');
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
@@ -372,8 +372,8 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
-              parent.Ts.System.logAction('Product Line Detail - Save Name Edit');
-              parent.Ts.Services.Products.SetFamilyName(_productFamilyID, $(this).prev().find('input').val(), function (result) {
+              window.parent.parent.Ts.System.logAction('Product Line Detail - Save Name Edit');
+              window.parent.parent.Ts.Services.Products.SetFamilyName(_productFamilyID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
                   $('#productFamilyName').text(result);
                   $('#productFamilyEdit').removeClass("disabled");
@@ -400,8 +400,8 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         var header = $(this).hide();
-        parent.Ts.System.logAction('Product Line Detail - Edit Description');
-        parent.Ts.Services.Products.GetProductFamily(_productFamilyID, function (productFamily) {
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Description');
+        window.parent.parent.Ts.Services.Products.GetProductFamily(_productFamilyID, function (productFamily) {
             var desc = productFamily.Description;
             desc = desc.replace(/<br\s?\/?>/g, "\n");
             //        $('#fieldDesc').tinymce().setContent(desc);
@@ -419,8 +419,8 @@ $(document).ready(function () {
 
         $('#btnDescriptionSave').click(function (e) {
             e.preventDefault();
-            parent.Ts.System.logAction('Product Line Detail - Save Description Edit');
-            parent.Ts.Services.Products.SetFamilyDescription(_productFamilyID, $(this).prev().find('textarea').val(), function (result) {
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Save Description Edit');
+            window.parent.parent.Ts.Services.Products.SetFamilyDescription(_productFamilyID, $(this).prev().find('textarea').val(), function (result) {
                 header.html(result);
                 $('#productFamilyEdit').removeClass("disabled");
             },
@@ -437,14 +437,14 @@ $(document).ready(function () {
 
     //$('.product-action-add').click(function (e) {
     //    e.preventDefault();
-    //    parent.Ts.MainPage.newProduct("product", _productFamilyID);
+    //    window.parent.parent.Ts.MainPage.newProduct("product", _productFamilyID);
     //});
 
     function LoadProducts(start) {
         start = start || 0;
         showProductsLoadingIndicator();
         $('.productList').fadeTo(200, 0.5);
-        parent.Ts.Services.Products.LoadFamilyProducts(_productFamilyID, start, function (versions) {
+        window.parent.parent.Ts.Services.Products.LoadFamilyProducts(_productFamilyID, start, function (versions) {
             $('.productList').fadeTo(0, 1);
 
             if (start == 0) {
@@ -530,27 +530,27 @@ $(document).ready(function () {
         e.preventDefault();
 
         var id = $(this).attr('id');
-        parent.Ts.System.logAction('Product Line Detail Page - View Product');
-        parent.Ts.MainPage.openNewProduct(id);
+        window.parent.parent.Ts.System.logAction('Product Line Detail Page - View Product');
+        window.parent.parent.Ts.MainPage.openNewProduct(id);
 
-        parent.Ts.Services.Products.UpdateRecentlyViewed('p' + id, function (resultHtml) {
+        window.parent.parent.Ts.Services.Products.UpdateRecentlyViewed('p' + id, function (resultHtml) {
             $('.recent-container').empty();
             $('.recent-container').html(resultHtml);
         });
 
     });
 
-    var _isAdmin = parent.Ts.System.User.IsSystemAdmin;
-    if (!parent.Ts.System.User.CanEditCompany && !_isAdmin) {
+    var _isAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
+    if (!window.parent.parent.Ts.System.User.CanEditCompany && !_isAdmin) {
         $('#customerToggle').hide();
     }
 
-    if (!parent.Ts.System.User.CanEditProducts && !_isAdmin) {
+    if (!window.parent.parent.Ts.System.User.CanEditProducts && !_isAdmin) {
         $('#productFamilyEdit').remove();
         $('.product-action-add').hide();
     }
 
-    //if (!parent.Ts.System.User.CanCreateVersions && !_isAdmin) {
+    //if (!window.parent.parent.Ts.System.User.CanCreateVersions && !_isAdmin) {
     //    $('.version-action-add').hide();
     //}
 
@@ -562,14 +562,14 @@ $(document).ready(function () {
     }
 
     $('#customerToggle').click(function (e) {
-        parent.Ts.System.logAction('Product Line Detail - Toggle Customer Form');
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Toggle Customer Form');
         $('#customerForm').toggle();
     });
 
     $('#associateAllToggle').click(function (e) {
         if (confirm('Are you sure you would like to associate All customers to this product?')) {
-            parent.Ts.System.logAction('Product Line Detail - Toggle Associate All Customer Form');
-            parent.Ts.Services.Customers.AssignAllCustomersToProduct(_productFamilyID, function () {
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Toggle Associate All Customer Form');
+            window.parent.parent.Ts.Services.Customers.AssignAllCustomersToProduct(_productFamilyID, function () {
                 LoadCustomers();
             }, function () {
                 alert('There was an error associating all customers to this product. Please try again.');
@@ -579,8 +579,8 @@ $(document).ready(function () {
 
     $('#unAssociateAllToggle').click(function (e) {
         if (confirm('Are you sure you would like to unassociate All customers from this product?')) {
-            parent.Ts.System.logAction('Product Line Detail - Toggle Unassociate All Customer Form');
-            parent.Ts.Services.Customers.UnassignAllCustomersFromProduct(_productFamilyID, function () {
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Toggle Unassociate All Customer Form');
+            window.parent.parent.Ts.Services.Customers.UnassignAllCustomersFromProduct(_productFamilyID, function () {
                 LoadCustomers();
             }, function () {
                 alert('There was an error unassociating all customers from this product. Please try again.');
@@ -592,7 +592,7 @@ $(document).ready(function () {
 
         if (!_headersLoaded) {
 
-            parent.Ts.Services.Customers.LoadcustomProductHeaders(function (headers) {
+            window.parent.parent.Ts.Services.Customers.LoadcustomProductHeaders(function (headers) {
                 for (var i = 0; i < headers.length; i++) {
                     var header = headers[i];
                     if (header == 'Product Name') {
@@ -611,7 +611,7 @@ $(document).ready(function () {
         showCustomersLoadingIndicator();
         $('#tblCustomers').fadeTo(200, 0.5);
 
-        parent.Ts.Services.Products.LoadCustomers(_productFamilyID, start, _customersSortColumn, _customersSortDirection, function (customers) {
+        window.parent.parent.Ts.Services.Products.LoadCustomers(_productFamilyID, start, _customersSortColumn, _customersSortDirection, function (customers) {
             $('#tblCustomers').fadeTo(0, 1);
             if (start == 0) {
                 insertCustomers(customers);
@@ -656,7 +656,7 @@ $(document).ready(function () {
 
                 var html;
 
-                if (parent.Ts.System.User.CanEditCompany || _isAdmin) {
+                if (window.parent.parent.Ts.System.User.CanEditCompany || _isAdmin) {
                     html = '<td><i class="fa fa-edit customerEdit"></i></td><td><i class="fa fa-trash-o customerDelete"></i></td><td><a href="#" class="customerView">' + customers[i].Customer + '</a></td><td>' + customers[i].VersionNumber + '</td><td>' + customers[i].SupportExpiration + '</td><td>' + customers[i].VersionStatus + '</td><td>' + customers[i].IsReleased + '</td><td>' + customers[i].ReleaseDate + '</td><td>' + customers[i].DateCreated + '</td>' + customfields;
                 }
                 else {
@@ -675,7 +675,7 @@ $(document).ready(function () {
 
     var getCustomers = function (request, response) {
         if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
-        _execGetCustomer = parent.Ts.Services.Organizations.GetOrganizationForTicket(request.term, function (result) { response(result); });
+        _execGetCustomer = window.parent.parent.Ts.Services.Organizations.GetOrganizationForTicket(request.term, function (result) { response(result); });
     }
 
     $('#inputCustomer').autocomplete({
@@ -693,18 +693,18 @@ $(document).ready(function () {
     $('.product-customers-export-excel').on('click', function (e) {
         e.preventDefault();
 
-        parent.Ts.System.logAction('Product Line Detail Page - Export Customers Excel');
+        window.parent.parent.Ts.System.logAction('Product Line Detail Page - Export Customers Excel');
 
-        window.open('../../../dc/' + parent.Ts.System.Organization.OrganizationID + '/productcustomers/' + _productFamilyID + '?Type=EXCEL', 'ProductCustomersDownload');
+        window.open('../../../dc/' + window.parent.parent.Ts.System.Organization.OrganizationID + '/productcustomers/' + _productFamilyID + '?Type=EXCEL', 'ProductCustomersDownload');
 
     });
 
     $('.product-customers-export-csv').on('click', function (e) {
         e.preventDefault();
 
-        parent.Ts.System.logAction('Product Line Detail Page - Export Customers CSV');
+        window.parent.parent.Ts.System.logAction('Product Line Detail Page - Export Customers CSV');
 
-        window.open('../../../dc/' + parent.Ts.System.Organization.OrganizationID + '/productcustomers/' + _productFamilyID + '?Type=CSV', 'ProductCustomersDownload');
+        window.open('../../../dc/' + window.parent.parent.Ts.System.Organization.OrganizationID + '/productcustomers/' + _productFamilyID + '?Type=CSV', 'ProductCustomersDownload');
 
     });
 
@@ -712,7 +712,7 @@ $(document).ready(function () {
     function LoadProductVersions() {
         $("#productVersion").empty();
 
-        parent.Ts.Services.Customers.LoadProductVersions(_productFamilyID, function (pt) {
+        window.parent.parent.Ts.Services.Customers.LoadProductVersions(_productFamilyID, function (pt) {
             $('<option>').attr('value', '-1').text('Unassigned').appendTo('#productVersion');
             for (var i = 0; i < pt.length; i++) {
                 var opt = $('<option>').attr('value', pt[i].ProductVersionID).text(pt[i].VersionNumber).data('o', pt[i]);
@@ -723,7 +723,7 @@ $(document).ready(function () {
         });
     }
 
-    parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+    window.parent.parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
         $('.datepicker').attr("data-format", dateformat);
         $('.datepicker').datetimepicker({ pickTime: false });
 
@@ -731,9 +731,9 @@ $(document).ready(function () {
         $('.datetimepicker').datetimepicker({});
     });
 
-    LoadCustomControls(parent.Ts.ReferenceTypes.OrganizationProducts);
+    LoadCustomControls(window.parent.parent.Ts.ReferenceTypes.OrganizationProducts);
     function LoadCustomControls(refType) {
-        parent.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
+        window.parent.parent.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
             $('#customProductsControls').append(html);
 
             $('#customProductsControls .datepicker').datetimepicker({ pickTime: false });
@@ -745,7 +745,7 @@ $(document).ready(function () {
     $('#btnCustomerSave').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        parent.Ts.System.logAction('Product Line Detail - Save Customer');
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Save Customer');
         var productInfo = new Object();
         var hasError = 0;
         productInfo.OrganizationID = $('#inputCustomer').data('item').id;
@@ -772,13 +772,13 @@ $(document).ready(function () {
                     field.Value = $(this).prop('checked');
                     break;
                     //case "date":
-                    //    field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                    //    field.Value = $(this).val() == "" ? null : window.parent.parent.Ts.Utils.getMsDate($(this).val());
                     //    break;
                     //case "time":
-                    //    field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                    //    field.Value = $(this).val() == "" ? null : window.parent.parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
                     //    break;
                     //case "datetime":
-                    //    field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                    //    field.Value = $(this).val() == "" ? null : window.parent.parent.Ts.Utils.getMsDate($(this).val());
                     //    break;
                 default:
                     field.Value = $(this).val();
@@ -787,7 +787,7 @@ $(document).ready(function () {
         });
 
         if (hasError == 0) {
-            parent.Ts.Services.Customers.SaveProduct(parent.JSON.stringify(productInfo), function (prod) {
+            window.parent.parent.Ts.Services.Customers.SaveProduct(parent.JSON.stringify(productInfo), function (prod) {
                 LoadCustomers();
                 $('#productExpiration').val('');
                 $('#fieldOrganizationProductID').val('-1');
@@ -810,7 +810,7 @@ $(document).ready(function () {
 
     $("#btnCustomerCancel").click(function (e) {
         e.preventDefault();
-        parent.Ts.System.logAction('Product Line Detail - Cancel Customer Edit');
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Cancel Customer Edit');
         $('#productExpiration').val('');
         $('#fieldOrganizationProductID').val('-1');
         $('.customField:visible').each(function () {
@@ -829,8 +829,8 @@ $(document).ready(function () {
         e.preventDefault();
         var organizationProductID = $(this).parent().parent().attr('id');
         //var orgproductID;
-        parent.Ts.System.logAction('Product Line Detail - Edit Customer');
-        parent.Ts.Services.Products.LoadCustomer(organizationProductID, function (organizationProduct) {
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Customer');
+        window.parent.parent.Ts.Services.Products.LoadCustomer(organizationProductID, function (organizationProduct) {
             //orgproductID = prod.OrganizationProductID;
             SetVersion(organizationProduct.VersionNumber);
             var item = new Object();
@@ -842,14 +842,14 @@ $(document).ready(function () {
             $('#inputCustomer').val(organizationProduct.Customer);
             $('#supportExpiration').val(organizationProduct.SupportExpiration);
             $('#fieldOrganizationProductID').val(organizationProductID);
-            parent.Ts.Services.Customers.LoadCustomProductFields(organizationProductID, function (custField) {
+            window.parent.parent.Ts.Services.Customers.LoadCustomProductFields(organizationProductID, function (custField) {
                 for (var i = 0; i < custField.length; i++) {
                     if (custField[i].FieldType == 2 && custField[i].Value == "True")
                         $('#' + custField[i].CustomFieldID).attr('checked', true);
                         //else if (custField[i].FieldType == 5)
                         //{
-                        //    var date = field.value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
-                        //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(parent.Ts.Utils.getDatePattern()));
+                        //    var date = field.value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
+                        //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern()));
                         //}
 
                     else
@@ -904,7 +904,7 @@ $(document).ready(function () {
     $('#tblCustomers').on('click', '.customerDelete', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this customer association?')) {
-            parent.Ts.System.logAction('Product Line Detail - Delete Customer');
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Delete Customer');
             parent.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), false, function (e) {
                 LoadCustomers();
             });
@@ -914,8 +914,8 @@ $(document).ready(function () {
 
     $('#tblCustomers').on('click', '.customerView', function (e) {
         e.preventDefault();
-        parent.Ts.System.logAction('Product Line Detail - View Customer');
-        parent.Ts.MainPage.openProductOrganization($(this).parent().parent().attr('id'))
+        window.parent.parent.Ts.System.logAction('Product Line Detail - View Customer');
+        window.parent.parent.Ts.MainPage.openProductOrganization($(this).parent().parent().attr('id'))
         //parent.location = "../../../Default.aspx?OrganizationProductID=" + ;
 
     });
@@ -925,7 +925,7 @@ $(document).ready(function () {
         showAssetsLoadingIndicator();
         $('.assetList').fadeTo(200, 0.5);
 
-        parent.Ts.Services.Products.LoadAssets(_productFamilyID, start, function (assets) {
+        window.parent.parent.Ts.Services.Products.LoadAssets(_productFamilyID, start, function (assets) {
             $('.assetList').fadeTo(0, 1);
 
             if (start == 0) {
@@ -970,8 +970,8 @@ $(document).ready(function () {
 
     $('.assetList').on('click', '.assetLink', function (e) {
         e.preventDefault();
-        parent.Ts.System.logAction('Product Line Detail - Open Asset From List');
-        parent.Ts.MainPage.openNewAsset(this.id);
+        window.parent.parent.Ts.System.logAction('Product Line Detail - Open Asset From List');
+        window.parent.parent.Ts.MainPage.openNewAsset(this.id);
     });
 });
 
@@ -997,7 +997,7 @@ var getUrls = function (input) {
 }
 
 var initEditor = function (element, init) {
-    parent.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+    window.parent.parent.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
         var editorOptions = {
             plugins: "autoresize paste link code textcolor",
             toolbar1: "link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
@@ -1017,26 +1017,26 @@ var initEditor = function (element, init) {
             media_external_list_url: "tinymce/jscripts/media_list.js",
             menubar: false,
             moxiemanager_image_settings: {
-                moxiemanager_rootpath: "/" + parent.Ts.System.Organization.OrganizationID + "/images/",
+                moxiemanager_rootpath: "/" + window.parent.parent.Ts.System.Organization.OrganizationID + "/images/",
                 extensions: 'gif,jpg,jpeg,png'
             },
             paste_data_images: true,
             images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
             setup: function (ed) {
                 ed.on('init', function (e) {
-                    parent.Ts.System.refreshUser(function () {
-                        if (parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.User.FontFamily));
+                    window.parent.parent.Ts.System.refreshUser(function () {
+                        if (window.parent.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(window.parent.parent.Ts.System.User.FontFamily));
                         }
-                        else if (parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(parent.Ts.System.Organization.FontFamily));
+                        else if (window.parent.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(window.parent.parent.Ts.System.Organization.FontFamily));
                         }
 
-                        if (parent.Ts.System.User.FontSize != "0") {
-                            ed.execCommand("FontSize", false, parent.Ts.System.User.FontSizeDescription);
+                        if (window.parent.parent.Ts.System.User.FontSize != "0") {
+                            ed.execCommand("FontSize", false, window.parent.parent.Ts.System.User.FontSizeDescription);
                         }
-                        else if (parent.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, parent.Ts.System.Organization.FontSizeDescription);
+                        else if (window.parent.parent.Ts.System.Organization.FontSize != "0") {
+                            ed.execCommand("FontSize", false, window.parent.parent.Ts.System.Organization.FontSizeDescription);
                         }
                     });
                 });
@@ -1072,13 +1072,13 @@ var appendCustomValues = function (fields) {
               .appendTo(div);
 
         switch (field.FieldType) {
-            case parent.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-            case parent.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
-            case parent.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
-            case parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
-            case parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
-            case parent.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
-            case parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+            case window.parent.parent.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+            case window.parent.parent.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+            case window.parent.parent.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+            case window.parent.parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+            case window.parent.parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+            case window.parent.parent.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+            case window.parent.parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
             default:
         }
 
@@ -1106,7 +1106,7 @@ var appendCustomEditCombo = function (field, element) {
             if (!$(this).hasClass('editable'))
                 return false;
             var parent = $(this).hide();
-            parent.Ts.System.logAction('Product Line Detail - Edit Custom Combobox');
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Custom Combobox');
             var container = $('<div>')
                 .insertAfter(parent);
 
@@ -1140,8 +1140,8 @@ var appendCustomEditCombo = function (field, element) {
                     alert("This field is required and the first value is not a valid selection for a required field.");
                 }
                 else {
-                    parent.Ts.System.logAction('Product Line Detail - Save Custom Edit Change');
-                    parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
+                    window.parent.parent.Ts.System.logAction('Product Line Detail - Save Custom Edit Change');
+                    window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
                         parent.closest('.form-group').data('field', result);
                         parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
                         $('#productFamilyEdit').removeClass("disabled");
@@ -1186,7 +1186,7 @@ var appendCustomEditNumber = function (field, element) {
             if (!$(this).hasClass('editable'))
                 return false;
             var parent = $(this).hide();
-            parent.Ts.System.logAction('Product Line Detail - Edit Custom Number');
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Custom Number');
             var container = $('<div>')
                 .insertAfter(parent);
 
@@ -1218,8 +1218,8 @@ var appendCustomEditNumber = function (field, element) {
                         alert("This field is required");
                     }
                     else {
-                        parent.Ts.System.logAction('Product Line Detail - Save Custom Number Edit');
-                        parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
+                        window.parent.parent.Ts.System.logAction('Product Line Detail - Save Custom Number Edit');
+                        window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
                             parent.closest('.form-group').data('field', result);
                             parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
                             $('#productFamilyEdit').removeClass("disabled");
@@ -1264,10 +1264,10 @@ var appendCustomEditBool = function (field, element) {
             if (!$(this).hasClass('editable'))
                 return false;
             //$('.form-group').prev().show().next().remove();
-            parent.Ts.System.logAction('Product Line Detail - Edit Custom Boolean Value');
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Custom Boolean Value');
             var parent = $(this);
             var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
-            parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
+            window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
                 parent.closest('.form-group').data('field', result);
                 parent.text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
             }, function () {
@@ -1295,7 +1295,7 @@ var appendCustomEdit = function (field, element) {
                 if (!$(this).hasClass('editable'))
                     return false;
                 var parent = $(this).hide();
-                parent.Ts.System.logAction('Product Line Detail - Edit Custom Textbox');
+                window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Custom Textbox');
                 var container = $('<div>')
                       .insertAfter(parent);
 
@@ -1332,8 +1332,8 @@ var appendCustomEdit = function (field, element) {
                               alert("This field is required");
                           }
                           else {
-                              parent.Ts.System.logAction('Product Line Detail - Save Custom Textbox Edit');
-                              parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
+                              window.parent.parent.Ts.System.logAction('Product Line Detail - Save Custom Textbox Edit');
+                              window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
                                   parent.closest('.form-group').data('field', result);
                                   parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
                                   $('#productFamilyEdit').removeClass("disabled");
@@ -1365,14 +1365,14 @@ var appendCustomEdit = function (field, element) {
 }
 
 var appendCustomEditDate = function (field, element) {
-    var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
+    var date = field.Value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
 
     var div = $('<div>')
       .addClass('col-xs-8')
       .appendTo(element);
 
     var result = $('<p>')
-        .text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern())))
+        .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern())))
         .addClass('form-control-static editable')
         .appendTo(div)
         .click(function (e) {
@@ -1380,7 +1380,7 @@ var appendCustomEditDate = function (field, element) {
             if (!$(this).hasClass('editable'))
                 return false;
             var parent = $(this).hide();
-            parent.Ts.System.logAction('Product Line Detail - Edit Custom Date');
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Custom Date');
             var container = $('<div>')
                 .insertAfter(parent);
 
@@ -1391,7 +1391,7 @@ var appendCustomEditDate = function (field, element) {
             var fieldValue = parent.closest('.form-group').data('field').Value;
             var input = $('<input type="text">')
                 .addClass('col-xs-10 form-control')
-                .val(fieldValue === null ? '' : fieldValue.localeFormat(parent.Ts.Utils.getDatePattern()))
+                .val(fieldValue === null ? '' : fieldValue.localeFormat(window.parent.parent.Ts.Utils.getDatePattern()))
                 .datetimepicker({ pickTime: false })
                 .appendTo(container1)
                 .focus();
@@ -1407,7 +1407,7 @@ var appendCustomEditDate = function (field, element) {
             $('<i>')
                 .addClass('col-xs-1 fa fa-check')
                 .click(function (e) {
-                    var value = parent.Ts.Utils.getMsDate(input.val());
+                    var value = window.parent.parent.Ts.Utils.getMsDate(input.val());
                     container.remove();
                     if (field.IsRequired && (value === null || $.trim(value) === '')) {
                         // Currently there is no way to clear a Date.
@@ -1415,11 +1415,11 @@ var appendCustomEditDate = function (field, element) {
                         alert("This field is required");
                     }
                     else {
-                        parent.Ts.System.logAction('Product Line Detail - Save Custom Date Change');
-                        parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
+                        window.parent.parent.Ts.System.logAction('Product Line Detail - Save Custom Date Change');
+                        window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
                             parent.closest('.form-group').data('field', result);
-                            var date = result.Value === null ? null : parent.Ts.Utils.getMsDate(result.Value);
-                            parent.text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern())))
+                            var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                            parent.text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern())))
                             $('#productFamilyEdit').removeClass("disabled");
                         }, function () {
                             alert("There was a problem saving your product property.");
@@ -1448,14 +1448,14 @@ var appendCustomEditDate = function (field, element) {
 }
 
 var appendCustomEditDateTime = function (field, element) {
-    var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
+    var date = field.Value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
 
     var div = $('<div>')
       .addClass('col-xs-8')
       .appendTo(element);
 
     var result = $('<p>')
-        .text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern())))
+        .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())))
         .addClass('form-control-static editable')
         .appendTo(div)
         .click(function (e) {
@@ -1463,7 +1463,7 @@ var appendCustomEditDateTime = function (field, element) {
             if (!$(this).hasClass('editable'))
                 return false;
             var parent = $(this).hide();
-            parent.Ts.System.logAction('Product Line Detail - Edit Custom DateTime');
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Custom DateTime');
             var container = $('<div>')
                 .insertAfter(parent);
 
@@ -1474,7 +1474,7 @@ var appendCustomEditDateTime = function (field, element) {
             var fieldValue = parent.closest('.form-group').data('field').Value;
             var input = $('<input type="text">')
                 .addClass('col-xs-10 form-control')
-                .val(fieldValue === null ? '' : fieldValue.localeFormat(parent.Ts.Utils.getDateTimePattern()))
+                .val(fieldValue === null ? '' : fieldValue.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()))
                 .datetimepicker({
                 })
 
@@ -1492,7 +1492,7 @@ var appendCustomEditDateTime = function (field, element) {
             $('<i>')
                 .addClass('col-xs-1 fa fa-check')
                 .click(function (e) {
-                    var value = parent.Ts.Utils.getMsDate(input.val());
+                    var value = window.parent.parent.Ts.Utils.getMsDate(input.val());
                     container.remove();
                     if (field.IsRequired && (value === null || $.trim(value) === '')) {
                         // Currently there is no way to clear a Date.
@@ -1500,11 +1500,11 @@ var appendCustomEditDateTime = function (field, element) {
                         alert("This field is required");
                     }
                     else {
-                        parent.Ts.System.logAction('Product Line Detail - Save Custom DateTime');
-                        parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
+                        window.parent.parent.Ts.System.logAction('Product Line Detail - Save Custom DateTime');
+                        window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
                             parent.closest('.form-group').data('field', result);
-                            var date = result.Value === null ? null : parent.Ts.Utils.getMsDate(result.Value);
-                            parent.text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern())))
+                            var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                            parent.text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())))
                             $('#productFamilyEdit').removeClass("disabled");
                         }, function () {
                             alert("There was a problem saving your product property.");
@@ -1540,7 +1540,7 @@ var appendCustomEditTime = function (field, element) {
       .appendTo(element);
 
     var result = $('<p>')
-        .text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern())))
+        .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getTimePattern())))
         .addClass('form-control-static editable')
         .appendTo(div)
         .click(function (e) {
@@ -1548,7 +1548,7 @@ var appendCustomEditTime = function (field, element) {
             if (!$(this).hasClass('editable'))
                 return false;
             var parent = $(this).hide();
-            parent.Ts.System.logAction('Product Line Detail - Edit Custom Time');
+            window.parent.parent.Ts.System.logAction('Product Line Detail - Edit Custom Time');
             var container = $('<div>')
                 .insertAfter(parent);
 
@@ -1559,7 +1559,7 @@ var appendCustomEditTime = function (field, element) {
             var fieldValue = parent.closest('.form-group').data('field').Value;
             var input = $('<input type="text">')
                 .addClass('col-xs-10 form-control')
-                .val(fieldValue === null ? '' : fieldValue.localeFormat(parent.Ts.Utils.getTimePattern()))
+                .val(fieldValue === null ? '' : fieldValue.localeFormat(window.parent.parent.Ts.Utils.getTimePattern()))
                 .datetimepicker({ pickDate: false })
 
                 .appendTo(container1)
@@ -1576,7 +1576,7 @@ var appendCustomEditTime = function (field, element) {
             $('<i>')
                 .addClass('col-xs-1 fa fa-check')
                 .click(function (e) {
-                    var value = parent.Ts.Utils.getMsDate("1/1/1900 " + input.val());
+                    var value = window.parent.parent.Ts.Utils.getMsDate("1/1/1900 " + input.val());
                     container.remove();
                     if (field.IsRequired && (value === null || $.trim(value) === '')) {
                         // Currently there is no way to clear a Date.
@@ -1584,11 +1584,11 @@ var appendCustomEditTime = function (field, element) {
                         alert("This field is required");
                     }
                     else {
-                        parent.Ts.System.logAction('Product Line Detail - Save Custom Time');
-                        parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
+                        window.parent.parent.Ts.System.logAction('Product Line Detail - Save Custom Time');
+                        window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productFamilyID, value, function (result) {
                             parent.closest('.form-group').data('field', result);
-                            var date = result.Value === null ? null : parent.Ts.Utils.getMsDate(result.Value);
-                            parent.text((date === null ? 'Unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern())))
+                            var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                            parent.text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getTimePattern())))
                             $('#productFamilyEdit').removeClass("disabled");
                         }, function () {
                             alert("There was a problem saving your product property.");
