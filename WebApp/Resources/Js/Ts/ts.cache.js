@@ -24,6 +24,20 @@
         this._isJiraLinkActiveForOrganization = null;
         this._fontFamilies = null;
         this._fontSizes = null;
+
+        function getMainFrame(wnd) {
+            if (!wnd) wnd = window;
+            var result = wnd;
+            var cnt = 0;
+            while (!(result.Ts && result.Ts.Services)) {
+                result = result.parent;
+                cnt++;
+                if (cnt > 5) return null;
+            }
+            return result;
+        }
+
+        this._mainFrame = getMainFrame();
       }
 
     TsCache.prototype =
@@ -282,14 +296,14 @@
       },
       getTimeZones: function () {
           var self = this;
-          top.Ts.Services.Users.GetTimezone(function (result) {
+          this._mainFrame.Ts.Services.Users.GetTimezone(function (result) {
               self._timeZones = result;
           });
           return self._timeZones;
       },
       getCultures: function () {
           var self = this;
-          top.Ts.Services.Users.GetCultures(function (result) {
+          this._mainFrame.Ts.Services.Users.GetCultures(function (result) {
               self._cultures = result;
           });
           return self._cultures;

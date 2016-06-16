@@ -3,7 +3,19 @@
 (function () {
 
   function TsUtils() {
+      function getMainFrame(wnd) {
+          if (!wnd) wnd = window;
+          var result = wnd;
+          var cnt = 0;
+          while (!(result.Ts && result.Ts.Services)) {
+              result = result.parent;
+              cnt++;
+              if (cnt > 5) return null;
+          }
+          return result;
+      }
 
+      this._mainFrame = getMainFrame();
   }
 
   TsUtils.prototype =
@@ -130,17 +142,17 @@
 
      if ((showDate || showDate === true) && (showTime || showTime === true))
      {
-     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
+     	return msDate.localeFormat(this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
      }
      else if ((showDate || showDate === true) && (!showTime || showTime === false))
      {
-     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern);
+     	return msDate.localeFormat(this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern);
      }
      else if ((!showDate || showDate === false) && (showTime || showTime === true))
      {
-     	return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
+     	return msDate.localeFormat(this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
      }
-     else msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
+     else msDate.localeFormat(this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
    },
 
    getJqueryDateFormat: function(dateFormat)
@@ -173,18 +185,18 @@
    },
 
    getDateTimePattern: function () {
-     return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
+     return this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
    },
    getDatePattern: function () {
-     return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern
+     return this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern
    },
    getTimePattern: function () {
-     return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
+     return this._mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
    },
    getMsDate: function(args)
    {
-     if (args) return new top.Date(args);
-     else  return new top.Date();
+     if (args) return new this._mainFrame.Date(args);
+     else  return new this._mainFrame.Date();
    },
 
    setCookie: function(key,subkey,value) {
