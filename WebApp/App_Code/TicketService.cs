@@ -4034,7 +4034,7 @@ WHERE t.TicketID = @TicketID
                             WHERE
                                 t.TicketID IN (" + ticketIdsCommaList + @")
                             ORDER BY
-                                t.TicketID
+                                t.DateModified DESC
 
                             SELECT
                                 t.TicketID
@@ -4098,7 +4098,7 @@ WHERE t.TicketID = @TicketID
             SqlCommand command = new SqlCommand();
             command.CommandText = @"
             SELECT
-                dbo.stripHTML(Description)
+                Description
             FROM
                 Actions 
             WHERE
@@ -4112,7 +4112,7 @@ WHERE t.TicketID = @TicketID
                 StringBuilder result = new StringBuilder();
                 for (int i = 0; i < table.Rows.Count; i++)
                 {
-                    result.AppendLine(table.Rows[i][0].ToString());
+                    result.AppendLine(HtmlUtility.StripHTML2(table.Rows[i][0].ToString()));
                 }
                 return result.ToString();
             }
@@ -4161,7 +4161,8 @@ WHERE t.TicketID = @TicketID
             searchTerm = searchTerm.ToLower();
             for (int i = 0; i < tagList.Rows.Count; i++)
             {
-                if (searchTerm.Contains(tagList.Rows[i][1].ToString()))
+                //if (searchTerm.Contains(tagList.Rows[i][1].ToString()))
+                if (System.Text.RegularExpressions.Regex.IsMatch(searchTerm, @"\b" + tagList.Rows[i][1].ToString() + @".?\b"))
                 {
                     result.Add((int)tagList.Rows[i][0]);
                 }

@@ -283,38 +283,52 @@
                 });
 
                 ed.addButton('insertKb', {
-                    title: 'Insert Knowledgebase',
+                    title: 'Suggested Solutions',
                     //image: '../images/nav/16/knowledge.png',
                     icon: 'awesome fa fa-book',
                     onclick: function () {
-                        suggestedSolutions(element.SuggestedSolutionDefaultInput, function (ticketID) {
-                            top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
-                                if (result === null) {
+                        suggestedSolutions(element.SuggestedSolutionDefaultInput, function (ticketID, isArticle) {
+                            if (isArticle) {
+                                top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+                                    if (result === null) {
+                                        alert('There was an error inserting your suggested solution ticket.');
+                                        return;
+                                    }
+                                    var ticket = result[0];
+                                    var actions = result[1];
+
+                                    var html = '<div>';
+
+                                    if (actions.length == 0) {
+                                        alert('The selected ticket has no knowledgebase actions.');
+                                    }
+
+                                    for (var i = 0; i < actions.length; i++) {
+                                        html = html + '<div>' + actions[i].Description + '</div></br>';
+                                    }
+                                    html = html + '</div>';
+
+                                    ed.focus();
+                                    ed.selection.setContent(html);
+                                    ed.execCommand('mceAutoResize');
+                                    ed.focus();
+                                    top.Ts.System.logAction('Ticket - Suggested Solution Inserted');
+                                }, function () {
                                     alert('There was an error inserting your suggested solution ticket.');
-                                    return;
-                                }
-                                var ticket = result[0];
-                                var actions = result[1];
+                                });
+                            }
+                            else {
+                                top.Ts.Services.Admin.GetHubURL(function (url) {
+                                    var link = "https://" + url + "/knowledgeBase/" + ticketID;
+                                    var html = $('<a href="' + link + '" target="_blank">' + link + '</a></br>');
+                                    ed.focus();
+                                    ed.selection.setContent(html);
+                                    ed.execCommand('mceAutoResize');
+                                    ed.focus();
+                                    top.Ts.System.logAction('Ticket - Suggested Solution Link Inserted');
+                                });
 
-                                var html = '<div>';
-
-                                if (actions.length == 0) {
-                                    alert('The selected ticket has no knowledgebase actions.');
-                                }
-
-                                for (var i = 0; i < actions.length; i++) {
-                                    html = html + '<div>' + actions[i].Description + '</div></br>';
-                                }
-                                html = html + '</div>';
-
-                                ed.focus();
-                                ed.selection.setContent(html);
-                                ed.execCommand('mceAutoResize');
-                                ed.focus();
-                                top.Ts.System.logAction('Ticket - Suggested Solution Inserted');
-                            }, function () {
-                                alert('There was an error inserting your suggested solution ticket.');
-                            });
+                            }
                         });
 
                         //filter = new top.TeamSupport.Data.TicketLoadFilter();
@@ -608,10 +622,10 @@ var execSuggestedSolutions = null;
 function suggestedSolutions(defaultInput, callback) {
     $('.dialog-select-ticket2').find('input').val('');
     $('.dialog-select-ticket2').find('input').focus();
-    $('#SuggestedSolutionsIFrame').attr('src', '/vcr/1_9_0/Pages/SuggestedSolutions.html?tf_IsKnowledgeBase=true');
+    $('#SuggestedSolutionsIFrame').attr('src', '/vcr/1_9_0/Pages/SuggestedSolutions.html');
     $('#SuggestedSolutionsModal').modal('show');
     if (execSuggestedSolutions) {
-        execSuggestedSolutions._executor.abort();
+        return;
     }
     execSuggestedSolutions = true;
 
@@ -626,6 +640,22 @@ function suggestedSolutions(defaultInput, callback) {
         source: selectTicket,
         select: function (event, ui) {
             $(this).data('item', ui.item).removeClass('ui-autocomplete-loading')
+            top.Ts.Services.Tickets.GetKBTicketAndActions(ui.item.data, function (result) {
+                var html = '<div>';
+
+                var actions = result[1];
+                if (actions.length == 0) {
+                    html = html + '<h2>The selected ticket has no knowledgebase actions.</h2>';
+                }
+                else {
+                    for (var i = 0; i < actions.length; i++) {
+                        html = html + '<div>' + actions[i].Description + '</div></br>';
+                    }
+                }
+                html = html + '</div>';
+                //clickedItem.find('.previewHtml').attr("value", html);
+                window.frames[0].document.getElementById("TicketPreviewIFrame").contentWindow.writeHtml(html);
+            });
         },
         position: {
             my: "right top",
@@ -645,7 +675,28 @@ function suggestedSolutions(defaultInput, callback) {
         else {
             var id = document.getElementById("SuggestedSolutionsIFrame").contentWindow.GetSelectedID();
             if (id) {
-                callback(id);
+                callback(id, true);
+                $('#SuggestedSolutionsModal').modal('hide');
+                top.Ts.System.logAction('Inserted suggested solution');
+            }
+            else {
+                alert('Select a knowledgebase article.');
+            }
+        }
+    });
+
+    $('#InsertSuggestedSolutionsLink').click(function (e) {
+        e.preventDefault();
+
+        if ($(".dialog-select-ticket2 input").data('item')) {
+            callback($(".dialog-select-ticket2 input").data('item').data);
+            $('#SuggestedSolutionsModal').modal('hide');
+            top.Ts.System.logAction('Inserted kb');
+        }
+        else {
+            var id = document.getElementById("SuggestedSolutionsIFrame").contentWindow.GetSelectedID();
+            if (id) {
+                callback(id, false);
                 $('#SuggestedSolutionsModal').modal('hide');
                 top.Ts.System.logAction('Inserted suggested solution');
             }

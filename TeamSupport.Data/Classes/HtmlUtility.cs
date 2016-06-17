@@ -246,6 +246,39 @@ namespace TeamSupport.Data
             return Content;
         }
 
+        // Same as StripHTML but split table content with spaces
+        public static string StripHTML2(string Content)
+        {
+            // While researching Ticket #20811 realized further Regex.Replace break in multiple lines. This added to temporarily remove break lines, and carriage returns.
+            Content = Regex.Replace(Content, @"\n", "TeamSupportNewLine");
+            Content = Regex.Replace(Content, @"\r", "TeamSupportNewLine");
+
+            // Added to remove <style> tag and its contect based on http://forums.asp.net/t/1901224.aspx?Remove+Head+tag+from+HTML+
+            Content = Regex.Replace(Content, "<style(.|\n)*?</style>", string.Empty);
+            Content = Regex.Replace(Content, "<w:WordDocument>(.|\n)*?</w:WordDocument>", string.Empty);
+
+            Content = Regex.Replace(Content, "<td>", " ");
+            Content = Regex.Replace(Content, "</td>", " ");
+            Content = Regex.Replace(Content, "<.*?>", string.Empty);
+            Content = System.Web.HttpUtility.HtmlDecode(Content);
+            Content = StripComments(Content);
+
+            //regex based on http://stackoverflow.com/questions/787932/using-c-regular-expressions-to-remove-html-tags/787949#787949
+            Content = Regex.Replace(Content, @"</?\w+((\s+\w+(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)/?>", "", RegexOptions.Singleline);
+
+            // Added to remove duplicate spaces based on http://texthandler.com/?module=remove_double_spaces_cc
+            Content = Regex.Replace(Content, " {2,}", " ");
+
+            Content = Regex.Replace(Content, "TeamSupportNewLine", Environment.NewLine);
+
+            Content = Regex.Replace(Content, @"(?:(?:\r?\n)+ +){2,}", Environment.NewLine + Environment.NewLine);
+
+            //regex to replace the contiguous newlines, leave just one. ref: http://stackoverflow.com/questions/11710966/building-a-regex-how-to-remove-redundant-line-breaks
+            Content = Regex.Replace(Content, @"\s*\r\n\s*", "\r\n");
+
+            return Content;
+        }
+
         public static string StripHTMLUsingAgilityPack(string Content)
         {
             StringBuilder output = new StringBuilder();

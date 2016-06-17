@@ -9,16 +9,10 @@
 
 var _firstItemIndex = 0;
 var _pageSize = 20;
+var _resultsCount = 0;
 
 var mainFrame = getMainFrame();
 $(document).ready(function () {
-    layout = $('body').layout({
-        applyDefaultStyles: true
-      , west__size: 283
-      , west__resizable: false
-      , west__closable: false
-      , spacing_open: 0
-    });
 
     $('#suggested-solutions-pane').bind('scroll', function () {
         if ($(this).scrollTop() > 0 && $(this).scrollTop() + $(this).innerHeight() >= ($(this)[0].scrollHeight * 0.9)) {
@@ -28,6 +22,13 @@ $(document).ready(function () {
 
     GetSearchResults();
 
+    layout = $('body').layout({
+        applyDefaultStyles: true
+      , west__size: 283
+      , west__resizable: false
+      , west__closable: false
+      , spacing_open: 0
+    });
 });
 
 function getMainFrame() {
@@ -56,21 +57,25 @@ function GetSearchResults() {
     }
     mainFrame.Ts.Services.Tickets.GetSuggestedSolutions(ticketID, _firstItemIndex, _pageSize, function (results) { showSearchResults(results); });
     
-    var timLoading = setTimeout(function () { document.getElementById("TicketPreviewIFrame").contentWindow.writeHtml('<div class="ui-widget ticket-preview-none"><h1 class="ui-widget-content">Find a suggested solution you want to look at?</h1><h2>Just click on a ticket on the left, and you can preview it here.</h2></div>'); timLoading = null; }, 500);
+    var timLoading = setTimeout(function () { document.getElementById("TicketPreviewIFrame").contentWindow.writeHtml('<div class="ui-widget ticket-preview-none"><h1 class="ui-widget-content">Find a suggested solution you want to look at?</h1><h2>Just click a ticket on the left, and you can preview it here.</h2></div>'); timLoading = null; }, 500);
 }
 
 function GetSuggestedSolutionsNextPage() {
     _firstItemIndex += _pageSize;
-    GetSearchResults();
+    if (_resultsCount > _firstItemIndex) {
+        GetSearchResults();
+    }
 }
 
 function showSearchResults(results) {
     if (results == null) return;
-    $('#suggested-solutions-summary').html(
-    '<div class="resultsSummary">' +
-        results.Count + ' solutions found.' +
-      '</div>' +
-      '<div class="ui-helper-clearfix" />')
+    if (_firstItemIndex == 0) {
+        _resultsCount = results.Count;
+        $('#suggested-solutions-summary').html(
+        '<div class="resultsSummary">' +
+            results.Count + ' solutions found.' +
+          '</div>')
+    }
     var html = '';
 
     if (results.Count > 0) {
