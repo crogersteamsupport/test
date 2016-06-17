@@ -187,7 +187,7 @@
 			            });
 			        }
 			        else {
-			            top.Ts.Services.Admin.GetHubURL(function (url) {
+			            top.Ts.Services.Admin.GetHubURLwithCName(function (url) {
 			                var link = "https://" + url + "/knowledgeBase/" + ticketID;
 			                var html = $('<a href="' + link + '" target="_blank">' + link + '</a></br>')[0];
 			                context.invoke('insertNode', html);
@@ -522,7 +522,7 @@ function suggestedSolutions(defaultInput, callback) {
         e.preventDefault();
 
         if ($(".dialog-select-ticket2 input").data('item')){
-            callback($(".dialog-select-ticket2 input").data('item').data);
+            callback($(".dialog-select-ticket2 input").data('item').data, true);
             $('#SuggestedSolutionsModal').modal('hide');
             top.Ts.System.logAction('Inserted kb');
         }
@@ -543,7 +543,7 @@ function suggestedSolutions(defaultInput, callback) {
         e.preventDefault();
 
         if ($(".dialog-select-ticket2 input").data('item')) {
-            callback($(".dialog-select-ticket2 input").data('item').data);
+            callback($(".dialog-select-ticket2 input").data('item').data, false);
             $('#SuggestedSolutionsModal').modal('hide');
             top.Ts.System.logAction('Inserted kb');
         }

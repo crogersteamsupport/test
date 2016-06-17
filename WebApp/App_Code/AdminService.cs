@@ -543,11 +543,41 @@ namespace TSWebServices
 			return null;
 		}
 
-		/// <summary>
-		/// Method to migrate the customers portal settings into the customer hub tables
-		/// </summary>
-		/// <returns>returns true if migration was successfull</returns>
-		private bool MigratePortalSettings(int parentOrgID, LoginUser loginUser)
+        [WebMethod]
+        public string GetHubURLwithCName()
+        {
+            CustomerHubs hubs = new CustomerHubs(TSAuthentication.GetLoginUser());
+            hubs.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+            if (hubs.Any())
+            {
+                if (string.IsNullOrWhiteSpace(hubs[0].CNameURL))
+                {
+                    return string.Format("{0}.{1}", hubs[0].PortalName, SystemSettings.GetHubURL());
+                }
+                else
+                {
+                    return string.Format("{0}", hubs[0].CNameURL);
+                }
+            }
+            else
+            {
+                bool success = MigratePortalSettings(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser());
+                if (success)
+                {
+                    CustomerHubs hubs2 = new CustomerHubs(TSAuthentication.GetLoginUser());
+                    hubs2.LoadByOrganizationID(TSAuthentication.OrganizationID);
+                    return string.Format("{0}.{1}", hubs2[0].PortalName, SystemSettings.GetHubURL());
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Method to migrate the customers portal settings into the customer hub tables
+        /// </summary>
+        /// <returns>returns true if migration was successfull</returns>
+        private bool MigratePortalSettings(int parentOrgID, LoginUser loginUser)
 		{
 			PortalOptions portals = new PortalOptions(loginUser);
 			portals.LoadByOrganizationID(parentOrgID);
