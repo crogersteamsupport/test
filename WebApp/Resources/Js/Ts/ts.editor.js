@@ -622,12 +622,12 @@ var execSuggestedSolutions = null;
 function suggestedSolutions(defaultInput, callback) {
     $('.dialog-select-ticket2').find('input').val('');
     $('.dialog-select-ticket2').find('input').focus();
-    $('#SuggestedSolutionsIFrame').attr('src', '/vcr/1_9_0/Pages/SuggestedSolutions.html');
     $('#SuggestedSolutionsModal').modal('show');
     if (execSuggestedSolutions) {
         return;
     }
     execSuggestedSolutions = true;
+    $('#SuggestedSolutionsIFrame').attr('src', '/vcr/1_9_0/Pages/SuggestedSolutions.html');
 
     $('.afterSearch').show();
 
