@@ -1,4 +1,7 @@
-﻿var initEditor = function (element, shouldResize, init, postinit) {
+﻿var execSuggestedSolutions = null;
+
+var initEditor = function (element, shouldResize, init, postinit) {
+    execSuggestedSolutions = null;
     top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
         var resizePluginCode = ''; 
         if (shouldResize)
@@ -616,8 +619,6 @@ function GetTinyMCEFontName(fontFamily) {
     }
     return result;
 }
-
-var execSuggestedSolutions = null;
 
 function suggestedSolutions(defaultInput, callback) {
     $('.dialog-select-ticket2').find('input').val('');

@@ -1,4 +1,7 @@
-﻿var initEditorV2 = function (element, callback) {
+﻿var execSuggestedSolutions = null;
+
+var initEditorV2 = function (element, callback) {
+    execSuggestedSolutions = null;
 	top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
 		element.summernote({
 			height: 150,
@@ -470,8 +473,6 @@ function GetTinyMCEFontName(fontFamily) {
     }
     return result;
 }
-
-var execSuggestedSolutions = null;
 
 function suggestedSolutions(defaultInput, callback) {
     $('.dialog-select-ticket2').find('input').val('');
