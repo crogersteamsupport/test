@@ -1,5 +1,5 @@
 ﻿/// <reference path="ts/ts.js" />
-/// <reference path="ts/parent.parent.Ts.Services.js" />
+/// <reference path="ts/window.parent.parent.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
 /// <reference path="ts/ts.pages.main.js" />
@@ -44,7 +44,7 @@ UserPage = function () {
   });
 
   var tipTimer = null;
-  var clueTipOptions = parent.parent.Ts.Utils.getClueTipOptions(tipTimer);
+  var clueTipOptions = window.parent.parent.Ts.Utils.getClueTipOptions(tipTimer);
 
   $('body').delegate('.ts-icon-info', 'mouseout', function (e) {
     if (tipTimer != null) clearTimeout(tipTimer);
@@ -89,10 +89,10 @@ UserPage = function () {
       }
     });
 
-  var userID = parent.parent.Ts.Utils.getQueryValue("userid", window);
+  var userID = window.parent.parent.Ts.Utils.getQueryValue("userid", window);
   var orgID;
 
-  parent.parent.Ts.Services.Users.GetUser(userID, function (user) {
+  window.parent.parent.Ts.Services.Users.GetUser(userID, function (user) {
     _user = user;
     orgID = user.OrganizationID;
 
@@ -128,10 +128,10 @@ UserPage = function () {
     $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Yes' : 'No'));
     $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
     $('#userProductFamiliesRights').html(userProductFamiliesRightsToString(user.ProductFamiliesRights)).data('o', user.ProductFamiliesRights);
-    if (parent.parent.Ts.System.Organization.UseProductFamilies && parent.parent.Ts.System.User.IsSystemAdmin) {
+    if (window.parent.parent.Ts.System.Organization.UseProductFamilies && window.parent.parent.Ts.System.User.IsSystemAdmin) {
       $('#userProductFamiliesRights').closest('div').show();
       $('#divProductFamiliesContainer').toggle(user.ProductFamiliesRights == 1);
-      parent.parent.Ts.Services.Users.GetUserProductFamilies(_user.UserID, appendProductFamilies);
+      window.parent.parent.Ts.Services.Users.GetUserProductFamilies(_user.UserID, appendProductFamilies);
     }
 
     $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Yes' : 'No'));
@@ -163,7 +163,7 @@ UserPage = function () {
       $('#userWebsite').attr("target", "_blank");
     }
 
-    parent.parent.Ts.Services.Users.GetCustomValues(userID, function (customValues) {
+    window.parent.parent.Ts.Services.Users.GetCustomValues(userID, function (customValues) {
       appendCustomValues(customValues);
     });
 
@@ -186,14 +186,14 @@ UserPage = function () {
       }
     }
 
-    if (parent.parent.Ts.System.Organization.ProductType == parent.parent.Ts.ProductType.Express) {
+    if (window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.Express) {
       $('#mniCustomers').hide();
       $('#mniChat').hide();
       $('#mniWiki').hide();
       $('#mniWC2').hide();
     }
 
-    if (parent.parent.Ts.System.Organization.ProductType == parent.parent.Ts.ProductType.Express || parent.parent.Ts.System.Organization.ProductType == parent.parent.Ts.ProductType.HelpDesk) {
+    if (window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.Express || window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.HelpDesk) {
       $('#mniProducts').hide();
     }
 
@@ -201,30 +201,30 @@ UserPage = function () {
       $('#mniAdmin').hide();
     }
 
-    var pwText = parent.parent.Ts.System.User.UserID == userID && parent.parent.Ts.System.User.IsSystemAdmin && (userID > -1);
+    var pwText = window.parent.parent.Ts.System.User.UserID == userID && window.parent.parent.Ts.System.User.IsSystemAdmin && (userID > -1);
     $('#userPW').text((pwText == true ? 'Change Password' : 'Reset and Email Password'));
 
-    parent.parent.Ts.Services.Users.GetUserPhoto(userID, function (att) {
+    window.parent.parent.Ts.Services.Users.GetUserPhoto(userID, function (att) {
       $('#userPhoto').attr("src", att);
     });
 
-    parent.parent.Ts.Services.Users.GetUserSignature(userID, function (signature) {
+    window.parent.parent.Ts.Services.Users.GetUserSignature(userID, function (signature) {
       if (signature == '')
         signature = 'None';
       $('#userSignature').html(signature);
     });
 
-    parent.parent.Ts.Services.Users.GetUserCustomers(_user.UserID, appendCustomers);
+    window.parent.parent.Ts.Services.Users.GetUserCustomers(_user.UserID, appendCustomers);
   });
 
-  var canEdit = parent.parent.Ts.System.User.UserID == userID || parent.parent.Ts.System.User.IsSystemAdmin;
-  var isSysAdmin = parent.parent.Ts.System.User.IsSystemAdmin;
+  var canEdit = window.parent.parent.Ts.System.User.UserID == userID || window.parent.parent.Ts.System.User.IsSystemAdmin;
+  var isSysAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
 
   if (isSysAdmin == true) {
     $('#divMenuItems').show();
     $('#userTicketRights').closest('.user-name-value').show();
 
-    var types = parent.parent.Ts.Cache.getTicketTypes();
+    var types = window.parent.parent.Ts.Cache.getTicketTypes();
     for (var i = 0; i < types.length; i++) {
       var ttmi = $('<li>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
       $('<label>')
@@ -244,8 +244,8 @@ UserPage = function () {
       list = (list != "") ? list + "," + id : id;
     });
 
-    parent.parent.Ts.Services.Users.SetMenuItems(userID, list, function () {
-      parent.parent.Ts.System.logAction('User Info - Menu Items Changed');
+    window.parent.parent.Ts.Services.Users.SetMenuItems(userID, list, function () {
+      window.parent.parent.Ts.System.logAction('User Info - Menu Items Changed');
     });
 
   });
@@ -323,7 +323,7 @@ UserPage = function () {
         e.preventDefault();
          $(this).parent().show().find('img').show();
          var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
-        parent.parent.Ts.Services.Login.SetupVerificationPhoneNumber(userID, phoneNumb, false, function (result) {
+        window.parent.parent.Ts.Services.Login.SetupVerificationPhoneNumber(userID, phoneNumb, false, function (result) {
 				$('#twoStepInputDiv').hide();
 				if (phoneNumb !== null && phoneNumb !== "") {
         			$('#userTwoFactorCell').text(phoneNumb).parent().show();
@@ -349,14 +349,14 @@ UserPage = function () {
       e.preventDefault();
       e.stopPropagation();
       ShowDialog(parent.parent.GetAddressDialog(userID, 22));
-      parent.parent.Ts.System.logAction('User Info - Address Dialog Opened');
+      window.parent.parent.Ts.System.logAction('User Info - Address Dialog Opened');
     });
 
     $('.user-phone-add').click(function (e) {
       e.preventDefault();
       e.stopPropagation();
       ShowDialog(parent.parent.GetPhoneDialog(userID, 22));
-      parent.parent.Ts.System.logAction('User Info - Phone Dialog Opened');
+      window.parent.parent.Ts.System.logAction('User Info - Phone Dialog Opened');
     });
 
     if (!isSysAdmin) {
@@ -367,17 +367,17 @@ UserPage = function () {
         e.preventDefault();
         e.stopPropagation();
         ShowDialog(parent.parent.GetSelectGroupDialog(userID, 22));
-        parent.parent.Ts.System.logAction('User Info - Group Dialog Opened');
+        window.parent.parent.Ts.System.logAction('User Info - Group Dialog Opened');
       });
     }
 
     $('#userPW').click(function (e) {
       e.preventDefault();
-      var pwText = parent.parent.Ts.System.User.UserID == userID && parent.parent.Ts.System.User.IsSystemAdmin && (userID > -1);
+      var pwText = window.parent.parent.Ts.System.User.UserID == userID && window.parent.parent.Ts.System.User.IsSystemAdmin && (userID > -1);
       if (!pwText) {
-        parent.parent.Ts.Services.Users.ResetEmailPW(_user.UserID, function (result) {
+        window.parent.parent.Ts.Services.Users.ResetEmailPW(_user.UserID, function (result) {
           alert(result);
-          parent.parent.Ts.System.logAction('User Info - User Email Reset');
+          window.parent.parent.Ts.System.logAction('User Info - User Email Reset');
         },
                   function (error) {
                     alert('There was an error.');
@@ -392,7 +392,7 @@ UserPage = function () {
     $('#userPhotoEdit')
       .click(function (e) {
         e.preventDefault();
-        parent.parent.Ts.System.logAction('User Info - Photo Dialog Opened');
+        window.parent.parent.Ts.System.logAction('User Info - Photo Dialog Opened');
         ShowDialog(parent.parent.GetProfileImageDialog(orgID, userID));
         //            $('.dialog-avatar').dialog({
         //              autoOpen: true,
@@ -445,8 +445,8 @@ UserPage = function () {
             return;
           }
 
-          parent.parent.Ts.Services.Users.SaveUserName(_user.UserID, fname, mname, lname, function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Name Changed');
+          window.parent.parent.Ts.Services.Users.SaveUserName(_user.UserID, fname, mname, lname, function (result) {
+            window.parent.parent.Ts.System.logAction('User Info - User Name Changed');
             header.show().find('img').hide().next().show().delay(800).fadeOut(400);
             $('#UserName').html(result);
             _user.FirstName = fname;
@@ -490,8 +490,8 @@ UserPage = function () {
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
-          parent.parent.Ts.Services.Users.SaveUserInfo(_user.UserID, $(this).prev().val(), function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Info Changed');
+          window.parent.parent.Ts.Services.Users.SaveUserInfo(_user.UserID, $(this).prev().val(), function (result) {
+            window.parent.parent.Ts.System.logAction('User Info - User Info Changed');
             header.show().find('img').hide().next().show().delay(800).fadeOut(400);
             if (result != '') {
               $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
@@ -535,8 +535,8 @@ UserPage = function () {
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
-          parent.parent.Ts.Services.Users.SaveUserTitle(_user.UserID, $(this).prev().val(), function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Title Changed');
+          window.parent.parent.Ts.Services.Users.SaveUserTitle(_user.UserID, $(this).prev().val(), function (result) {
+            window.parent.parent.Ts.System.logAction('User Info - User Title Changed');
             header.show().find('img').hide().next().show().delay(800).fadeOut(400);
             $('#userTitle').html(result);
           },
@@ -577,14 +577,14 @@ UserPage = function () {
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
-          parent.parent.Ts.Services.Users.SaveUserEmail(_user.UserID, $(this).prev().val(), function (result) {
+          window.parent.parent.Ts.Services.Users.SaveUserEmail(_user.UserID, $(this).prev().val(), function (result) {
             header.show().find('img').hide().next().show().delay(800).fadeOut(400);
             if (result.substring(0, 6) == "_error") {
               alert("The email you have specified is invalid.  Please choose another email.");
             }
             else {
               $('#userEmail').html('<a href="mailto:' + result + '">' + result + '</a>');
-              parent.parent.Ts.System.logAction('User Info - User Email Changed');
+              window.parent.parent.Ts.System.logAction('User Info - User Email Changed');
             }
           },
           function (error) {
@@ -624,8 +624,8 @@ UserPage = function () {
           .click(function (e) {
             $(this).closest('div').remove();
             header.show().find('img').show();
-            parent.parent.Ts.Services.Users.SaveUserLinkedin(_user.UserID, $(this).prev().val(), function (result) {
-              parent.parent.Ts.System.logAction('User Info - User LinkedIn ID Changed');
+            window.parent.parent.Ts.Services.Users.SaveUserLinkedin(_user.UserID, $(this).prev().val(), function (result) {
+              window.parent.parent.Ts.System.logAction('User Info - User LinkedIn ID Changed');
               header.show().find('img').hide().next().show().delay(800).fadeOut(400);
               if (result.substring(0, 6) == "_error")
                 alert("The Website you have specified is invalid.");
@@ -666,9 +666,9 @@ UserPage = function () {
 
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Active State Changed');
+            window.parent.parent.Ts.System.logAction('User Info - User Active State Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -684,9 +684,9 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        parent.parent.Ts.Services.Users.SetEmailNotify(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetEmailNotify(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Email Notifications Changed');
+            window.parent.parent.Ts.System.logAction('User Info - User Email Notifications Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -702,9 +702,9 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        parent.parent.Ts.Services.Users.SetSubscribeTickets(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetSubscribeTickets(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Ticket Subscription Setting Changed');
+            window.parent.parent.Ts.System.logAction('User Info - User Ticket Subscription Setting Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -719,9 +719,9 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        parent.parent.Ts.Services.Users.SetSubscribeActions(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetSubscribeActions(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Action Subscription Changed');
+            window.parent.parent.Ts.System.logAction('User Info - User Action Subscription Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -736,9 +736,9 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Auto Subscribe Changed');
+            window.parent.parent.Ts.System.logAction('User Info - User Auto Subscribe Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -748,7 +748,7 @@ UserPage = function () {
       });
 
 
-    //var V2OrgID = parent.parent.Ts.System.User.OrganizationID;
+    //var V2OrgID = window.parent.parent.Ts.System.User.OrganizationID;
     //if (V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372) {
     //  $('#userTicketPageVersion')
     //    .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
@@ -756,9 +756,9 @@ UserPage = function () {
     //      e.preventDefault();
     //      var item = $(this);
     //      item.next().show();
-    //      parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'Yes'),
+    //      window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'Yes'),
     //      function (result) {
-    //        parent.parent.Ts.System.logAction('User Info - User Changed Ticket Page Version');
+    //        window.parent.parent.Ts.System.logAction('User Info - User Changed Ticket Page Version');
     //        item.text((result === false ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
     //      },
     //      function (error) {
@@ -774,9 +774,9 @@ UserPage = function () {
           e.preventDefault();
           var item = $(this);
           item.next().show();
-          parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'No'),
+          window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'No'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Changed Ticket Page Version');
+            window.parent.parent.Ts.System.logAction('User Info - User Changed Ticket Page Version');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -791,9 +791,9 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        parent.parent.Ts.Services.Users.SetGroupNotify(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetGroupNotify(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - Group Notification Changed');
+            window.parent.parent.Ts.System.logAction('User Info - Group Notification Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -808,9 +808,9 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        parent.parent.Ts.Services.Users.SetUnassignedGroupNotify(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetUnassignedGroupNotify(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - Group Unassigned Notification Changed');
+            window.parent.parent.Ts.System.logAction('User Info - Group Unassigned Notification Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -825,9 +825,9 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        parent.parent.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - Only Email After Hours Changed');
+            window.parent.parent.Ts.System.logAction('User Info - Only Email After Hours Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -844,9 +844,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - User System Admin Status Changed');
+            window.parent.parent.Ts.System.logAction('User Info - User System Admin Status Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -864,9 +864,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetRestrictUserFromEditingAnyActions(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetRestrictUserFromEditingAnyActions(_user.UserID, (item.text() !== 'Yes'),
               function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Editing Any Actions Changed');
+                window.parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Editing Any Actions Changed');
                 item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 if (result === true && $('#userAllowToEditAnyAction').text() == 'Yes') {
                   $('#userAllowToEditAnyAction').click();
@@ -886,9 +886,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetRestrictUserFromExportingData(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetRestrictUserFromExportingData(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-            parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Exporting Changed');
+            window.parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Exporting Changed');
             item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
@@ -905,9 +905,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetAllowUserToEditAnyAction(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetAllowUserToEditAnyAction(_user.UserID, (item.text() !== 'Yes'),
               function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Change Allow User To Edit Any Action Changed');
+                window.parent.parent.Ts.System.logAction('User Info - User Change Allow User To Edit Any Action Changed');
                 item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 if (result === true && $('#userRestrictFromEditingAnyActions').text() == 'Yes') {
                   $('#userRestrictFromEditingAnyActions').click();
@@ -927,9 +927,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetUserCanPinAction(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetUserCanPinAction(_user.UserID, (item.text() !== 'Yes'),
               function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Can Pin Action Changed');
+                window.parent.parent.Ts.System.logAction('User Info - User Can Pin Action Changed');
                 item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
               },
               function (error) {
@@ -946,9 +946,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeTicketVisibility(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeTicketVisibility(_user.UserID, (item.text() !== 'Yes'),
               function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Change Ticket Visibility Changed');
+                window.parent.parent.Ts.System.logAction('User Info - User Change Ticket Visibility Changed');
                 item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
               },
               function (error) {
@@ -965,9 +965,9 @@ UserPage = function () {
       var item = $(this);
       if (isSysAdmin) {
         item.next().show();
-        parent.parent.Ts.Services.Users.SetChangeCommunityVisibility(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetChangeCommunityVisibility(_user.UserID, (item.text() !== 'Yes'),
             function (result) {
-              parent.parent.Ts.System.logAction('User Info - User Change Ticket Community Changed');
+              window.parent.parent.Ts.System.logAction('User Info - User Change Ticket Community Changed');
               item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
             },
             function (error) {
@@ -984,9 +984,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Create Company Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Company Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1003,9 +1003,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Edit Company Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Company Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1022,9 +1022,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Create Contacts Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Contacts Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1041,9 +1041,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Edit Contacts Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Contacts Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1061,9 +1061,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanCreateAssets(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateAssets(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Create Assets Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Assets Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1080,9 +1080,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanEditAssets(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditAssets(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Edit Assets Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Assets Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1100,9 +1100,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanCreateProducts(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateProducts(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Create Products Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Products Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1119,9 +1119,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanEditProducts(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditProducts(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Edit Products Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Products Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1138,9 +1138,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanCreateVersions(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateVersions(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Create Versions Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Versions Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1157,9 +1157,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeCanEditVersions(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditVersions(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                    parent.parent.Ts.System.logAction('User Info - User Change Can Edit Versions Changed');
+                    window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Versions Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
@@ -1176,9 +1176,9 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChangeKbVisibility(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeKbVisibility(_user.UserID, (item.text() !== 'Yes'),
               function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Change Knowledgebase Visibility Changed');
+                window.parent.parent.Ts.System.logAction('User Info - User Change Knowledgebase Visibility Changed');
                 item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
               },
               function (error) {
@@ -1195,14 +1195,14 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          parent.parent.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
             if (result == 'error') {
               item.text('No').next().hide().next().show().delay(800).fadeOut(400);
               alert("You have exceeded your chat licenses.  Please purchase more seats to add additional chat users.");
             }
             else {
-              parent.parent.Ts.System.logAction('User Info - User Chat User Status Changed');
+              window.parent.parent.Ts.System.logAction('User Info - User Chat User Status Changed');
               item.text((result == "True" ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
             }
           },
@@ -1239,8 +1239,8 @@ UserPage = function () {
             selected: function (e, ui) {
               parent.show().find('img').show();
               var type = $(ui.item).data('type');
-              parent.parent.Ts.Services.Users.SetProductFamiliesRights(_user.UserID, type, function () {
-                parent.parent.Ts.System.logAction('User Info - User Product Lines Rights Changed');
+              window.parent.parent.Ts.Services.Users.SetProductFamiliesRights(_user.UserID, type, function () {
+                window.parent.parent.Ts.System.logAction('User Info - User Product Lines Rights Changed');
                 $('#userProductFamiliesRights').html(userProductFamiliesRightsToString(type)).data('o', type);
                 $('#divProductFamiliesContainer').toggle(type == 1);
                 parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
@@ -1284,8 +1284,8 @@ UserPage = function () {
             selected: function (e, ui) {
               parent.show().find('img').show();
               var type = $(ui.item).data('type');
-              parent.parent.Ts.Services.Users.SetTicketRights(_user.UserID, type, function () {
-                parent.parent.Ts.System.logAction('User Info - User Ticket Rights Changed');
+              window.parent.parent.Ts.Services.Users.SetTicketRights(_user.UserID, type, function () {
+                window.parent.parent.Ts.System.logAction('User Info - User Ticket Rights Changed');
                 $('#userTicketRights').html(userRightsToString(type)).data('o', type);
                 if (type == 3) $('#userRightsAllTicketCustomers').closest('div').show(); else $('#userRightsAllTicketCustomers').closest('div').hide();
                 $('#divCustomerContainer').toggle(type == 3 && isSysAdmin == true);
@@ -1311,9 +1311,9 @@ UserPage = function () {
           var item = $(this);
           if (isSysAdmin) {
             item.next().show();
-            parent.parent.Ts.Services.Users.SetAllowAnyTicketCustomer(_user.UserID, (item.text() !== 'Yes'),
+            window.parent.parent.Ts.Services.Users.SetAllowAnyTicketCustomer(_user.UserID, (item.text() !== 'Yes'),
               function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Changed AllowAnyTicketCustomer');
+                window.parent.parent.Ts.System.logAction('User Info - User Changed AllowAnyTicketCustomer');
                 item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
               },
               function (error) {
@@ -1336,7 +1336,7 @@ UserPage = function () {
           var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
           var select = $('<select>').appendTo(container);
 
-          var tz = parent.parent.Ts.Cache.getTimeZones();
+          var tz = window.parent.parent.Ts.Cache.getTimeZones();
           for (var i = 0; i < tz.length; i += 2) {
             var option = $('<option>').text(tz[i]).data('type', tz[i + 1]).appendTo(select);
             if ($.trim(value) == $.trim(tz[i])) {
@@ -1348,8 +1348,8 @@ UserPage = function () {
             selected: function (e, ui) {
               parent.show().find('img').show();
               var type = $(ui.item).data('type');
-              parent.parent.Ts.Services.Users.SetTimezone(_user.UserID, type, function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Time Zone Changed');
+              window.parent.parent.Ts.Services.Users.SetTimezone(_user.UserID, type, function (result) {
+                window.parent.parent.Ts.System.logAction('User Info - User Time Zone Changed');
                 if (result !== null) {
                   $('#userTimeZone').html(result);
                   parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
@@ -1382,7 +1382,7 @@ UserPage = function () {
           var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
           var select = $('<select>').appendTo(container);
 
-          var families = parent.parent.Ts.Cache.getFontFamilies();
+          var families = window.parent.parent.Ts.Cache.getFontFamilies();
           for (var i = 0; i < families.length; i += 2) {
             var option = $('<option>').text(families[i]).data('type', families[i + 1]).appendTo(select);
             if ($.trim(value) == $.trim(families[i])) {
@@ -1394,8 +1394,8 @@ UserPage = function () {
             selected: function (e, ui) {
               parent.show().find('img').show();
               var type = $(ui.item).data('type');
-              parent.parent.Ts.Services.Users.SetFontFamily(_user.UserID, type, function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Font Family Changed');
+              window.parent.parent.Ts.Services.Users.SetFontFamily(_user.UserID, type, function (result) {
+                window.parent.parent.Ts.System.logAction('User Info - User Font Family Changed');
                 if (result !== null) {
                   $('#userFontFamily').html(result);
                   parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
@@ -1428,7 +1428,7 @@ UserPage = function () {
           var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
           var select = $('<select>').appendTo(container);
 
-          var sizes = parent.parent.Ts.Cache.getFontSizes();
+          var sizes = window.parent.parent.Ts.Cache.getFontSizes();
           for (var i = 0; i < sizes.length; i += 2) {
             var option = $('<option>').text(sizes[i]).data('type', sizes[i + 1]).appendTo(select);
             if ($.trim(value) == $.trim(sizes[i])) {
@@ -1440,8 +1440,8 @@ UserPage = function () {
             selected: function (e, ui) {
               parent.show().find('img').show();
               var type = $(ui.item).data('type');
-              parent.parent.Ts.Services.Users.SetFontSize(_user.UserID, type, function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Font Size Changed');
+              window.parent.parent.Ts.Services.Users.SetFontSize(_user.UserID, type, function (result) {
+                window.parent.parent.Ts.System.logAction('User Info - User Font Size Changed');
                 if (result !== null) {
                   $('#userFontSize').html(result);
                   parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
@@ -1474,7 +1474,7 @@ UserPage = function () {
           var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
           var select = $('<select>').appendTo(container);
 
-          var culture = parent.parent.Ts.Cache.getCultures();
+          var culture = window.parent.parent.Ts.Cache.getCultures();
           for (var i = 0; i < culture.length; i++) {
             var displayname = culture[i].split("_");
             var option = $('<option>').text(displayname[0]).appendTo(select).data('type', displayname[1]);
@@ -1487,8 +1487,8 @@ UserPage = function () {
             selected: function (e, ui) {
               parent.show().find('img').show();
               var type = $(ui.item).data('type');
-              parent.parent.Ts.Services.Users.SetCulture(_user.UserID, type, function (result) {
-                parent.parent.Ts.System.logAction('User Info - User Date Format Changed');
+              window.parent.parent.Ts.Services.Users.SetCulture(_user.UserID, type, function (result) {
+                window.parent.parent.Ts.System.logAction('User Info - User Date Format Changed');
                 if (result !== null) {
                   $('#userDateFormat').html(result);
                   parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
@@ -1523,12 +1523,12 @@ UserPage = function () {
       e.preventDefault();
       e.stopPropagation();
 
-      parent.parent.Ts.Services.Users.SaveUserSignature(_user.UserID, $('.userSignatureText').tinymce().getContent(), function (result) {
+      window.parent.parent.Ts.Services.Users.SaveUserSignature(_user.UserID, $('.userSignatureText').tinymce().getContent(), function (result) {
         if (result.substring(0, 6) == "_error")
           alert("The signature you have specified is invalid.");
         else {
           $('#userSignature').html(result);
-          parent.parent.Ts.System.logAction('User Info - User Signature Changed');
+          window.parent.parent.Ts.System.logAction('User Info - User Signature Changed');
         }
         $('#divActionForm').hide();
         $('#userSignature').show();
@@ -1556,7 +1556,7 @@ UserPage = function () {
     	var element = $('#divActionForm');
     	if (confirm("Are you sure you want to clear this signature?"))
     	{
-    		parent.parent.Ts.Services.Users.ClearUserSignature(_user.UserID, function () {
+    		window.parent.parent.Ts.Services.Users.ClearUserSignature(_user.UserID, function () {
     			$('#userSignature').empty();
     		});
     	}
@@ -1630,7 +1630,7 @@ UserPage = function () {
   }
 
   function GetAddresses() {
-    parent.parent.Ts.Services.Users.GetUserAddresses(userID, function (addresses) {
+    window.parent.parent.Ts.Services.Users.GetUserAddresses(userID, function (addresses) {
       var addresslist = '';
 
       if (addresses.length === 0) {
@@ -1702,7 +1702,7 @@ UserPage = function () {
   }
 
   function GetPhoneNumbers() {
-    parent.parent.Ts.Services.Users.GetUserPhoneNumbers(userID, function (phones) {
+    window.parent.parent.Ts.Services.Users.GetUserPhoneNumbers(userID, function (phones) {
       var phonelist = '';
 
       if (phones.length === 0) {
@@ -1754,7 +1754,7 @@ UserPage = function () {
   }
 
   function GetGroups() {
-    parent.parent.Ts.Services.Users.GetUserGroups(userID, function (groups) {
+    window.parent.parent.Ts.Services.Users.GetUserGroups(userID, function (groups) {
       var groupslist = '';
       if (groups.length === 0) {
         groupslist = '<div>There are no groups to display.</div>';
@@ -1812,26 +1812,26 @@ UserPage = function () {
       menubar: false,
       moxiemanager_leftpanel: false,
       moxiemanager_fullscreen: false,
-      moxiemanager_title: parent.parent.Ts.System.Organization.Name,
-      moxiemanager_hidden_tools: (parent.parent.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
+      moxiemanager_title: window.parent.parent.Ts.System.Organization.Name,
+      moxiemanager_hidden_tools: (window.parent.parent.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
       paste_data_images: true,
       images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
 
       setup: function (ed) {
         ed.on('init', function (e) {
-          parent.parent.Ts.System.refreshUser(function () {
-            if (parent.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
-              ed.execCommand("FontName", false, GetTinyMCEFontName(parent.parent.Ts.System.User.FontFamily));
+          window.parent.parent.Ts.System.refreshUser(function () {
+            if (window.parent.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("FontName", false, GetTinyMCEFontName(window.parent.parent.Ts.System.User.FontFamily));
             }
-            else if (parent.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-              ed.execCommand("FontName", false, GetTinyMCEFontName(parent.parent.Ts.System.Organization.FontFamily));
+            else if (window.parent.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("FontName", false, GetTinyMCEFontName(window.parent.parent.Ts.System.Organization.FontFamily));
             }
 
-            if (parent.parent.Ts.System.User.FontSize != "0") {
-              ed.execCommand("FontSize", false, parent.parent.Ts.System.User.FontSizeDescription);
+            if (window.parent.parent.Ts.System.User.FontSize != "0") {
+              ed.execCommand("FontSize", false, window.parent.parent.Ts.System.User.FontSizeDescription);
             }
-            else if (parent.parent.Ts.System.Organization.FontSize != "0") {
-              ed.execCommand("FontSize", false, parent.parent.Ts.System.Organization.FontSizeDescription);
+            else if (window.parent.parent.Ts.System.Organization.FontSize != "0") {
+              ed.execCommand("FontSize", false, window.parent.parent.Ts.System.Organization.FontSizeDescription);
             }
           });
         });
@@ -1845,7 +1845,7 @@ UserPage = function () {
     element = $(element).html($('#divActionForm').html()).addClass('fleft');
 
     initEditor(element.find('.userSignatureText'), function (ed) {
-      parent.parent.Ts.Services.Users.GetUserSignature(userID, function (signature) {
+      window.parent.parent.Ts.Services.Users.GetUserSignature(userID, function (signature) {
         ed.setContent(signature);
       });
       //element.find('.userSignatureText').tinymce().focus();
@@ -1858,7 +1858,7 @@ UserPage = function () {
     });
 
     element.find('.signature-save').click(function () {
-      parent.parent.Ts.Services.Users.SaveUserSignature(_user.UserID, element.find('.userSignatureText').html(), function (result) {
+      window.parent.parent.Ts.Services.Users.SaveUserSignature(_user.UserID, element.find('.userSignatureText').html(), function (result) {
         if (result.substring(0, 6) == "_error")
           alert("The signature you have specified is invalid.");
         else {
@@ -1881,7 +1881,7 @@ UserPage = function () {
   var execGetProductFamily = null;
   function getProductFamilies(request, response) {
     if (execGetProductFamily) { execGetProductFamily._executor.abort(); }
-    execGetProductFamily = parent.parent.Ts.Services.Products.SearchProductFamily(request.term, function (result) { response(result); });
+    execGetProductFamily = window.parent.parent.Ts.Services.Products.SearchProductFamily(request.term, function (result) { response(result); });
   }
 
   $('#divAddProductFamily input')
@@ -1901,9 +1901,9 @@ UserPage = function () {
     var input = $('#divAddProductFamily input').val('');
     var item = input.data('o');
     if (!item) return;
-    parent.parent.Ts.Services.Users.AddUserProductFamily(_user.UserID, item.id, appendProductFamilies, function () { alert('There was a problem adding the product line.'); });
+    window.parent.parent.Ts.Services.Users.AddUserProductFamily(_user.UserID, item.id, appendProductFamilies, function () { alert('There was a problem adding the product line.'); });
     input.removeData();
-    parent.parent.Ts.System.logAction('User - Product Line Added');
+    window.parent.parent.Ts.System.logAction('User - Product Line Added');
   });
 
   $('#divProductFamilies').delegate('.removable-item .ui-icon-close', 'click', function (e) {
@@ -1911,8 +1911,8 @@ UserPage = function () {
     e.stopPropagation();
     var item = $(this).parent();
     var data = item.data('data');
-    parent.parent.Ts.Services.Users.RemoveUserProductFamily(_user.UserID, data.ProductFamilyID, appendProductFamilies, function () { alert('There was a problem removing the product line from the user.'); });
-    parent.parent.Ts.System.logAction('User - Product Line Removed');
+    window.parent.parent.Ts.Services.Users.RemoveUserProductFamily(_user.UserID, data.ProductFamilyID, appendProductFamilies, function () { alert('There was a problem removing the product line from the user.'); });
+    window.parent.parent.Ts.System.logAction('User - Product Line Removed');
   });
 
   function appendProductFamilies(productFamilies) {
@@ -1935,9 +1935,9 @@ UserPage = function () {
       .addClass('ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        parent.parent.Ts.MainPage.openNewProductFamily(productFamily.ProductFamilyID);
+        window.parent.parent.Ts.MainPage.openNewProductFamily(productFamily.ProductFamilyID);
       })
-      .text(parent.parent.Ts.Utils.ellipseString(productFamily.Name, 30))
+      .text(window.parent.parent.Ts.Utils.ellipseString(productFamily.Name, 30))
       .appendTo(title);
 
     $('<span>')
@@ -1952,7 +1952,7 @@ UserPage = function () {
   var execGetCustomer = null;
   function getCustomers(request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
-    execGetCustomer = parent.parent.Ts.Services.Organizations.SearchOrganization(request.term, function (result) { response(result); });
+    execGetCustomer = window.parent.parent.Ts.Services.Organizations.SearchOrganization(request.term, function (result) { response(result); });
   }
 
   $('#divAddCustomer input')
@@ -1972,9 +1972,9 @@ UserPage = function () {
     var input = $('#divAddCustomer input').val('');
     var item = input.data('o');
     if (!item) return;
-    parent.parent.Ts.Services.Users.AddUserCustomer(_user.UserID, item.id, appendCustomers, function () { alert('There was a problem adding the customer.'); });
+    window.parent.parent.Ts.Services.Users.AddUserCustomer(_user.UserID, item.id, appendCustomers, function () { alert('There was a problem adding the customer.'); });
     input.removeData();
-    parent.parent.Ts.System.logAction('User - Customer Added');
+    window.parent.parent.Ts.System.logAction('User - Customer Added');
   });
 
   $('#divCustomers').delegate('.removable-item .ui-icon-close', 'click', function (e) {
@@ -1982,8 +1982,8 @@ UserPage = function () {
     e.stopPropagation();
     var item = $(this).parent();
     var data = item.data('data');
-    parent.parent.Ts.Services.Users.RemoveUserCustomer(_user.UserID, data.OrganizationID, appendCustomers, function () { alert('There was a problem removing the customer from the user.'); });
-    parent.parent.Ts.System.logAction('User - Customer Removed');
+    window.parent.parent.Ts.Services.Users.RemoveUserCustomer(_user.UserID, data.OrganizationID, appendCustomers, function () { alert('There was a problem removing the customer from the user.'); });
+    window.parent.parent.Ts.System.logAction('User - Customer Removed');
   });
 
   function appendCustomers(customers) {
@@ -2006,9 +2006,9 @@ UserPage = function () {
       .addClass('ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        parent.parent.Ts.MainPage.openNewCustomer(customer.OrganizationID);
+        window.parent.parent.Ts.MainPage.openNewCustomer(customer.OrganizationID);
       })
-      .text(parent.parent.Ts.Utils.ellipseString(customer.Name, 30))
+      .text(window.parent.parent.Ts.Utils.ellipseString(customer.Name, 30))
       .appendTo(title);
 
     $('<span>')
@@ -2041,13 +2041,13 @@ UserPage = function () {
             .appendTo(div);
 
       switch (field.FieldType) {
-        case parent.parent.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-        case parent.parent.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
-        case parent.parent.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
-        case parent.parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
-        case parent.parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
-        case parent.parent.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
-        case parent.parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+        case window.parent.parent.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+        case window.parent.parent.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+        case window.parent.parent.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+        case window.parent.parent.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+        case window.parent.parent.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+        case window.parent.parent.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+        case window.parent.parent.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
         default:
       }
 
@@ -2093,8 +2093,8 @@ UserPage = function () {
                 else {
                   result.parent().removeClass('ui-state-error-custom ui-corner-all');
                 }
-                parent.parent.Ts.System.logAction('User - Custom Value Set');
-                parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                window.parent.parent.Ts.System.logAction('User - Custom Value Set');
+                window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
                   parent.find('img').hide().next().show().delay(800).fadeOut(400);
                   parent.closest('.user-name-value').data('field', result);
                   parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
@@ -2156,7 +2156,7 @@ UserPage = function () {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
 
-                  parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                  window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
                     parent.find('img').hide().next().show().delay(800).fadeOut(400);
                     parent.closest('.user-name-value').data('field', result);
                     parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
@@ -2196,7 +2196,7 @@ UserPage = function () {
             var parent = $(this).parent();
             var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
             parent.find('img').show();
-            parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+            window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
               parent.find('img').hide().next().show().delay(800).fadeOut(400);
               parent.closest('.user-name-value').data('field', result);
               parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
@@ -2251,7 +2251,7 @@ UserPage = function () {
                   else {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
-                  parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                  window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
                     parent.find('img').hide().next().show().delay(800).fadeOut(400);
                     parent.closest('.user-name-value').data('field', result);
                     parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
@@ -2277,10 +2277,10 @@ UserPage = function () {
   }
 
   function appendCustomEditDate(field, element) {
-    var date = field.Value == null ? null : parent.parent.Ts.Utils.getMsDate(field.Value);
+    var date = field.Value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
     var result = $('<a>')
         .attr('href', '#')
-        .text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getDatePattern())))
+        .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern())))
         .addClass('value ui-state-default ts-link')
         .appendTo(element)
         .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
@@ -2302,14 +2302,14 @@ UserPage = function () {
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
                   .appendTo(container)
                   .datepicker()
-            //.datetimepicker('setDate', parent.parent.Ts.Utils.getMsDate(fieldValue))
+            //.datetimepicker('setDate', window.parent.parent.Ts.Utils.getMsDate(fieldValue))
                   .focus();
 
             $('<span>')
                 .addClass('ts-icon ts-icon-save')
                 .click(function (e) {
                   parent.show().find('img').show();
-                  var value = parent.parent.Ts.Utils.getMsDate(input.datepicker('getDate'));
+                  var value = window.parent.parent.Ts.Utils.getMsDate(input.datepicker('getDate'));
                   container.remove();
                   if (field.IsRequired && (value === null || $.trim(value) === '')) {
                     result.parent().addClass('ui-state-error-custom ui-corner-all');
@@ -2317,11 +2317,11 @@ UserPage = function () {
                   else {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
-                  parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                  window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
                     parent.find('img').hide().next().show().delay(800).fadeOut(400);
                     parent.closest('.user-name-value').data('field', result);
-                    var date = result.Value === null ? null : parent.parent.Ts.Utils.getMsDate(result.Value);
-                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getDatePattern()))).show();
+                    var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern()))).show();
 
                   }, function () {
                     alert("There was a problem saving your user property.");
@@ -2345,10 +2345,10 @@ UserPage = function () {
   }
 
   function appendCustomEditTime(field, element) {
-    var date = field.Value == null ? null : parent.parent.Ts.Utils.getMsDate(field.Value);
+    var date = field.Value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
     var result = $('<a>')
         .attr('href', '#')
-        .text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getTimePattern())))
+        .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getTimePattern())))
         .addClass('value ui-state-default ts-link')
         .appendTo(element)
         .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
@@ -2370,7 +2370,7 @@ UserPage = function () {
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
                   .appendTo(container)
                   .timepicker()
-                  .timepicker('setDate', parent.parent.Ts.Utils.getMsDate(fieldValue))
+                  .timepicker('setDate', window.parent.parent.Ts.Utils.getMsDate(fieldValue))
                   .focus();
 
             $('<span>')
@@ -2380,7 +2380,7 @@ UserPage = function () {
                   var time = new Date("January 1, 1970 00:00:00");
                   time.setHours(input.timepicker('getDate')[0].value.substring(0, 2));
                   time.setMinutes(input.timepicker('getDate')[0].value.substring(3, 5));
-                  var value = parent.parent.Ts.Utils.getMsDate(time);
+                  var value = window.parent.parent.Ts.Utils.getMsDate(time);
                   container.remove();
                   if (field.IsRequired && (value === null || $.trim(value) === '')) {
                     result.parent().addClass('ui-state-error-custom ui-corner-all');
@@ -2388,11 +2388,11 @@ UserPage = function () {
                   else {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
-                  parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                  window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
                     parent.find('img').hide().next().show().delay(800).fadeOut(400);
                     parent.closest('.user-name-value').data('field', result);
-                    var date = result.Value === null ? null : parent.parent.Ts.Utils.getMsDate(result.Value);
-                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getTimePattern()))).show();
+                    var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getTimePattern()))).show();
 
                   }, function () {
                     alert("There was a problem saving your user property.");
@@ -2416,10 +2416,10 @@ UserPage = function () {
   }
 
   function appendCustomEditDateTime(field, element) {
-    var date = field.Value == null ? null : parent.parent.Ts.Utils.getMsDate(field.Value);
+    var date = field.Value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
     var result = $('<a>')
         .attr('href', '#')
-        .text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getDateTimePattern())))
+        .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())))
         .addClass('value ui-state-default ts-link')
         .appendTo(element)
         .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
@@ -2441,14 +2441,14 @@ UserPage = function () {
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
                   .appendTo(container)
                   .datetimepicker()
-                  .datetimepicker('setDate', parent.parent.Ts.Utils.getMsDate(fieldValue))
+                  .datetimepicker('setDate', window.parent.parent.Ts.Utils.getMsDate(fieldValue))
                   .focus();
 
             $('<span>')
                 .addClass('ts-icon ts-icon-save')
                 .click(function (e) {
                   parent.show().find('img').show();
-                  var value = parent.parent.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
+                  var value = window.parent.parent.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
                   container.remove();
                   if (field.IsRequired && (value === null || $.trim(value) === '')) {
                     result.parent().addClass('ui-state-error-custom ui-corner-all');
@@ -2456,11 +2456,11 @@ UserPage = function () {
                   else {
                     result.parent().removeClass('ui-state-error-custom ui-corner-all');
                   }
-                  parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                  window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
                     parent.find('img').hide().next().show().delay(800).fadeOut(400);
                     parent.closest('.user-name-value').data('field', result);
-                    var date = result.Value === null ? null : parent.parent.Ts.Utils.getMsDate(result.Value);
-                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(parent.parent.Ts.Utils.getDateTimePattern()))).show();
+                    var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()))).show();
 
                   }, function () {
                     alert("There was a problem saving your user property.");
@@ -2482,7 +2482,7 @@ UserPage = function () {
       result.parent().addClass('ui-state-error-custom ui-corner-all');
     }
   }
-  parent.parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
+  window.parent.parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 };
 
 
