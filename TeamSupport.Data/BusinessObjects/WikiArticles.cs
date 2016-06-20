@@ -73,7 +73,7 @@ namespace TeamSupport.Data
 																FROM WikiArticles 
 																WHERE [OrganizationID] = @OrganizationID
 																	AND IsNull(IsDeleted,0)=0
-																	
+																	AND PortalView = 1
 																ORDER BY ArticleName";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
