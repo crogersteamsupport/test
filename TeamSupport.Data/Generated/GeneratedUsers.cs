@@ -1017,7 +1017,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("MenuItems", SqlDbType.VarChar, 1000);
+		tempParameter = updateCommand.Parameters.Add("MenuItems", SqlDbType.VarChar, 4000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1606,7 +1606,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("MenuItems", SqlDbType.VarChar, 1000);
+		tempParameter = insertCommand.Parameters.Add("MenuItems", SqlDbType.VarChar, 4000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
