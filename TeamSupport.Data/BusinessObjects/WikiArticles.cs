@@ -56,7 +56,7 @@ namespace TeamSupport.Data
 																FROM WikiArticles 
 																WHERE [OrganizationID] = @OrganizationID
 																	AND IsNull(IsDeleted,0)=0
-																
+																AND PortalView = 1
 																	AND ParentID IS NULL
 																ORDER BY ArticleName";
         command.CommandType = CommandType.Text;
