@@ -612,11 +612,11 @@ namespace TSWebServices
             command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
             result.account.customFieldCount = (int)SqlExecutor.ExecuteScalar(loginUser, command);
 
-            command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE OrganizationID = @OrganizationID");
+            command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE OrganizationID = @OrganizationID AND MarkDeleted = 0");
             command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
             result.account.actualUsers = (int)SqlExecutor.ExecuteScalar(loginUser, command);
 
-            command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE OrganizationID = @OrganizationID AND IsSystemAdmin = 1");
+            command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE OrganizationID = @OrganizationID AND IsSystemAdmin = 1 AND MarkDeleted = 0");
             command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
             result.account.adminCount = (int)SqlExecutor.ExecuteScalar(loginUser, command);
 
