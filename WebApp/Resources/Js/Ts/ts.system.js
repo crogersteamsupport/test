@@ -152,58 +152,17 @@ var _startDate = new Date();
 
     function setupLogTracking()
     {
-      //https://teamsupport.apptegic.com/scripts/apptegic-tw.js
-        var user = Ts.System.User;
-        var org = Ts.System.Organization;
-        var diffDays = Math.round(Math.abs((org.DateCreated.getTime() - (new Date()).getTime()) / (24 * 60 * 60 * 1000)));
-        var orgStatus = diffDays > 14 ? 'Paying' : 'Trial';
-        // Please use Strings, Numbers, or Bools for value types.
-        window.pendo_options = {
-            apiKey: '6af64640-2a96-4767-4bd8-f480c3f1ac37',
-
-            // If you load your user info asynchronously, set this to true
-            usePendoAgentAPI: false,
-
-            visitor: {
-                id: user.UserID,   // Required if user is logged in
-                email: user.Email,
-                role: user.Title,
-                name: user.Name
-            },
-
-            account: {
-                id: org.OrganizationID,
-                name: org.Name,
-                planLevel: orgStatus,
-                creationDate: org.DateCreated
-            }
-        };
-        (function () {
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.async = true;
-            script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'd3accju1t3mngt.cloudfront.net/js/pa.min.js';
-            var firstScript = document.getElementsByTagName('script')[0];
-            firstScript.parentNode.insertBefore(script, firstScript);
-        })();
-        /*
-      _aaq.push(['setEvergageAccount', _evergageAccount], ['setDataset', _evergageDataset], ['setUseSiteConfig', true]);
-      
-      //_aaq.push(['setUser', user.FirstName + ' ' + user.LastName + ' (' + user.UserID + ')']);
-      _aaq.push(['setUser', user.Email]);
-      _aaq.push(['setCompany', org.Name]);
-      
-      _aaq.push(['setAccountType', diffDays > 14 ? 'Paying' : 'Trial']);
-      // _aaq.push(['setCustomField', SET_FIELD, SET_VALUE, SET_CONTEXT]);
-       _aaq.push(['setCustomField', 'userName', user.FirstName + ' ' + user.LastName, 'visit']);
-       _aaq.push(['setCustomField', 'userEmail', user.Email, 'visit']);
-       _aaq.push(['setCustomField', 'extUserId', user.UserID, 'visit']);
-       _aaq.push(['setCustomField', 'company', org.Name, 'visit']);
-       _aaq.push(['setCustomField', 'extCompanyID', org.OrganizationID, 'visit']);
-
-       _aaq.push(['setCustomField', 'IsAdmin', user.IsSystemAdmin, 'visit']);
-
-      _aaq.push(['trackAction', 'Login']);*/
+        Ts.Services.System.GetPendoOptions(function (options) {
+            window.pendo_options = JSON.parse(options);
+            (function () {
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.async = true;
+                script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'd3accju1t3mngt.cloudfront.net/js/pa.min.js';
+                var firstScript = document.getElementsByTagName('script')[0];
+                firstScript.parentNode.insertBefore(script, firstScript);
+            })();
+        });
     }
 
   }

@@ -509,6 +509,128 @@ namespace TSWebServices
     }
 
     [WebMethod(false)]
+    public string GetPendoOptions()
+    {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = Users.GetUser(loginUser, TSAuthentication.UserID);
+            Organization org = Organizations.GetOrganization(loginUser, TSAuthentication.OrganizationID);
+            SqlCommand command;
+            DataTable table;
+
+            dynamic result = new ExpandoObject();
+            result.apiKey = SystemSettings.ReadString(loginUser, "PendoKey", "NO API IN SYSTEMSETTINGS");
+            result.usePendoAgentAPI = false;
+            result.visitor = new ExpandoObject();
+            result.visitor.id = user.UserID;
+            result.visitor.email = user.Email;
+            result.visitor.role = user.Title;
+            result.visitor.name = user.FirstLastName;
+            result.visitor.dateCreated = user.DateCreated;
+            //result.visitor.lastLogin = 
+            result.visitor.isAdmin = user.IsSystemAdmin;
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Tickets WHERE OrganizationID = @OrganizationID AND UserID = @UserID");
+            command.Parameters.AddWithValue("UserID", user.UserID);
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.visitor.assignedTickets = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Tickets WHERE OrganizationID = @OrganizationID AND CreatorID = @UserID");
+            command.Parameters.AddWithValue("UserID", user.UserID);
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.visitor.ticketsCreated = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Actions WHERE CreatorID = @UserID");
+            command.Parameters.AddWithValue("UserID", user.UserID);
+            //result.visitor.actionsCreated = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            //result.visitor.groups = 
+            result.visitor.isChatUser = user.IsChatUser;
+            
+            result.account = new ExpandoObject();
+            result.account.id = org.OrganizationID;
+            result.account.name = org.Name;
+            result.account.planLevel = (DateTime.UtcNow - org.DateCreated).TotalDays > 14 ? "Trial" : "Paying";
+            result.account.creationDate = org.DateCreated;
+            result.account.isActive = org.IsActive;
+            //result.account.lastLogin =
+            result.account.seatCount = org.UserSeats;
+            command = new SqlCommand(
+                @"SELECT COUNT(*) AS Cnt, TicketSource FROM Tickets 
+                WHERE OrganizationID = @OrganizationID
+                AND TicketSource IS NOT NULL
+                AND TicketSource <> ''
+                GROUP BY TicketSource
+                ");
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            table = SqlExecutor.ExecuteQuery(loginUser, command);
+            result.account.ticketsCreatedByEmail = 0;
+            result.account.ticketsCreatedByFaceBook = 0;
+            result.account.ticketsCreatedByAgent = 0;
+            result.account.ticketsCreatedByForum = 0;
+            result.account.ticketsCreatedByWeb = 0;
+            result.account.ticketsCreatedByChatOffline = 0;
+            result.account.ticketsCreatedByMobile = 0;
+            result.account.ticketsCreatedByChat = 0;
+
+            foreach (DataRow row in table.Rows)
+            {
+                try
+                {
+                    switch (row[1].ToString().ToLower())
+                    {
+                        case "forum": result.account.ticketsCreatedByForum = (int)row[0]; break;
+                        case "agent": result.account.ticketsCreatedByAgent = (int)row[0]; break;
+                        case "web": result.account.ticketsCreatedByWeb = (int)row[0]; break;
+                        case "facebook": result.account.ticketsCreatedByFaceBook = (int)row[0]; break;
+                        case "chatoffline": result.account.ticketsCreatedByChatOffline = (int)row[0]; break;
+                        case "mobile": result.account.ticketsCreatedByMobile = (int)row[0]; break;
+                        case "email": result.account.ticketsCreatedByEmail = (int)row[0]; break;
+                        case "chat": result.account.ticketsCreatedByChat = (int)row[0]; break;
+                        default:
+                            break;
+                    }
+
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Tickets WHERE OrganizationID = @OrganizationID AND IsKnowledgeBase = 1");
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.account.kbCount = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Tickets WHERE OrganizationID = @OrganizationID");
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.account.ticketCount = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Organizations WHERE ParentID = @OrganizationID");
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.account.customerCount = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            command = new SqlCommand("SELECT COUNT(*) FROM CustomFields WHERE OrganizationID = @OrganizationID");
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.account.customFieldCount = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE OrganizationID = @OrganizationID");
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.account.actualUsers = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE OrganizationID = @OrganizationID AND IsSystemAdmin = 1");
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.account.adminCount = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            command = new SqlCommand("SELECT COUNT(*) FROM Imports WHERE OrganizationID = @OrganizationID");
+            command.Parameters.AddWithValue("OrganizationID", org.OrganizationID);
+            result.account.importCount = (int)SqlExecutor.ExecuteScalar(loginUser, command);
+
+            result.account.podName = SystemSettings.GetPodName();
+            result.account.productType = org.ProductType.ToString();
+            return JsonConvert.SerializeObject(result);
+
+    }
+
+    [WebMethod(false)]
     public void UpdateLastActivity()
     {
       TSAuthentication.SlideExpiration();
