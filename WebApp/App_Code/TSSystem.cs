@@ -549,7 +549,7 @@ namespace TSWebServices
             result.account = new ExpandoObject();
             result.account.id = org.OrganizationID;
             result.account.name = org.Name;
-            result.account.planLevel = (DateTime.UtcNow - org.DateCreated).TotalDays > 14 ? "Trial" : "Paying";
+            result.account.planLevel = org.UserSeats == 100 ? "Trial" : "Paying";
             result.account.creationDate = org.DateCreated;
             result.account.isActive = org.IsActive;
             //result.account.lastLogin =
