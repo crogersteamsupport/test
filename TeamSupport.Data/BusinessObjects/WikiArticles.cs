@@ -107,7 +107,7 @@ namespace TeamSupport.Data
 																FROM WikiArticles 
 																WHERE [ParentID] = @ParentID
 																	AND IsNull(IsDeleted,0)=0
-											
+																	AND PortalView = 1
 																ORDER BY ArticleName";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ParentID", parentID);
