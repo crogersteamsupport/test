@@ -150,7 +150,56 @@ ORDER BY u.LastName, u.FirstName";
       }
     }
 
-    public void CustomerLoadByLikeName(int organizationID, string name, int startIndex, bool filterByUserRights, bool active = true)
+        public void LoadByLikeNameExceptGiven(int organizationID, string name, int max, bool filterByUserRights, int givenUserID, bool active = true)
+        {
+            if (name.Trim().Length < 2) return;
+            User user = Users.GetUser(LoginUser, LoginUser.UserID);
+            bool doFilter = filterByUserRights && user.TicketRights == TicketRightType.Customers;
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText =
+                    @"SELECT
+                        TOP (@MaxRows) u.*
+                    FROM 
+                        UsersView u
+                        LEFT JOIN Organizations o1
+                            ON o1.OrganizationID = u.OrganizationID
+                        LEFT JOIN Organizations o2 
+                            ON o2.OrganizationID = o1.ParentID
+                    WHERE
+                        (
+                            (RTRIM(u.FirstName) +' '+ RTRIM(u.LastName) LIKE '%'+@Name+'%') 
+                            OR (RTRIM(RTRIM(u.LastName)) +' '+ RTRIM(u.FirstName) LIKE '%'+@Name+'%') 
+                            OR (RTRIM(u.LastName) +', '+ RTRIM(u.FirstName) LIKE '%'+@Name+'%') 
+                            OR (RTRIM(u.LastName) +','+ RTRIM(u.FirstName) LIKE '%'+@Name+'%') 
+                            OR (RTRIM(u.LastName) LIKE '%'+@Name+'%') 
+                            OR (RTRIM(u.FirstName) LIKE '%'+@Name+'%') 
+                            OR (RTRIM(o1.Name) LIKE '%'+@Name+'%') 
+                            OR (u.email LIKE '%'+@Name+'%')
+                        )
+                        AND (u.UserID <> @GivenUserID)  
+                        AND (o2.OrganizationID = @OrganizationID)  
+                        AND (u.MarkDeleted = 0)
+                        AND (@ActiveOnly = 0 OR o1.IsActive = 1) 
+                        AND (@ActiveOnly = 0 OR u.IsActive = 1) 
+                        AND (@UseFilter=0 OR (u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = @UserID)))
+                    ORDER BY 
+                        u.LastName
+                        , u.FirstName";
+                command.CommandType = CommandType.Text;
+
+                command.Parameters.AddWithValue("@GivenUserID", givenUserID);
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@MaxRows", max);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
+                command.Parameters.AddWithValue("@UseFilter", doFilter);
+                command.Parameters.AddWithValue("@ActiveOnly", active);
+                Fill(command);
+            }
+        }
+
+        public void CustomerLoadByLikeName(int organizationID, string name, int startIndex, bool filterByUserRights, bool active = true)
     {
         if (name.Trim().Length < 2 && name != "") return;
         User user = Users.GetUser(LoginUser, LoginUser.UserID);

@@ -177,7 +177,7 @@ $(document).ready(function () {
 
     function getContacts(request, response) {
     	if (_execGetContact) { _execGetContact._executor.abort(); }
-    	_execGetContact = window.parent.parent.Ts.Services.Organizations.GetContacts(request.term, function (result) { response(result); });
+    	_execGetContact = window.parent.parent.Ts.Services.Organizations.GetContactsExceptGiven(request.term, userID, function (result) { response(result); });
     	isModified(true);
     }
 
@@ -1265,7 +1265,7 @@ $(document).ready(function () {
                                             " + ((address[i].Addr2 != null ) ? "<p class='form-control-static pt0'>" + address[i].Addr2 + "</p>" : "") + " \
                                             " + ((address[i].Addr3 != null ) ? "<p class='form-control-static pt0'>" + address[i].Addr3 + "</p>" : "") + " \
                                             " + ((address[i].City != null) ? "<p class='form-control-static pt0'>" + address[i].City + ((address[i].State != null) ? ", " + address[i].State : "") + ((address[i].Zip != null) ? " " + address[i].Zip : "") + "</p>" : "") + " \
-                                            " + ((address[i].Country.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
+                                            " + ((address[i].City != null && address[i].Country.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
                                         </div> \
                                         <div id='editmenu' class='col-md-2 hiddenmenu'> \
                                             <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='fa fa-pencil'></span></a>\

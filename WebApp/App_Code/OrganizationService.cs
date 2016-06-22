@@ -962,6 +962,21 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public AutocompleteItem[] GetContactsExceptGiven(string searchTerm, int givenUserID)
+        {
+            UsersView users = new UsersView(TSAuthentication.GetLoginUser());
+            users.LoadByLikeNameExceptGiven(TSAuthentication.OrganizationID, searchTerm, 50, false, givenUserID, true);
+
+            List<AutocompleteItem> list = new List<AutocompleteItem>();
+            foreach (UsersViewItem user in users)
+            {
+                list.Add(new AutocompleteItem(String.Format("{0}, {1} [{2}]", user.LastName, user.FirstName, user.Organization), user.UserID.ToString(), "u"));
+            }
+
+            return list.ToArray();
+        }
+
+        [WebMethod]
         public AutocompleteItem[] GetCompanies(string searchTerm)
         {
             Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
