@@ -221,16 +221,21 @@ function loadSignalR(url) {
 
         if ($('.main-ticket-' + ticketNum).length > 0) {
             if ($('.main-ticket-' + ticketNum).is(":visible")){
-                window.top.ticketSocket.server.ticketViewingAdd(ticketNum, top.Ts.System.User.UserID);
+            	window.top.ticketSocket.server.ticketViewingAdd(ticketNum, top.Ts.System.User.UserID);
+            	console.log("Requesting all the users viewing ticket " + ticketNum);
             }
         }
     };
 
+    ticketSocket.client.consoleDebug = function (msg) {
+    			console.log(msg);
+    };
 
     ticketSocket.client.ticketViewingAdd = function (ticketNum, userID) {
         if ($('.main-ticket-' + ticketNum).length > 0) {
-            if ($('.main-ticket-' + ticketNum).is(":visible")) {
-                $('.main-ticket-' + ticketNum).find('iframe')[0].contentWindow.addUserViewing(userID);
+        	if ($('.main-ticket-' + ticketNum).is(":visible")) {
+        		console.log("adding user to chat window " + userID);
+            	$('.main-ticket-' + ticketNum).find('iframe')[0].contentWindow.addUserViewing(userID);
             }
         }
 
