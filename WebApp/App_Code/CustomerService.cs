@@ -840,25 +840,27 @@ namespace TSWebServices
         public string LoadCustomControls(ReferenceType refType){
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.OrganizationID, refType, -1);
-            int count = 0;
+            //int count = 0;
             CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
             cats.LoadByRefType(refType, -1);
 
             StringBuilder htmltest = new StringBuilder("");
 
-            htmltest.Append("<div class='form-group'>");
+            //htmltest.Append("<div class='form-group'>");
 
             foreach (CustomField field in fields)
             {
-                if (count == 0)
-                {
-                    htmltest.Append("<div class='row'>");
-                    count++;
-                }
+                //if (count == 0)
+                //{
+                //    htmltest.Append("<div class='row'>");
+                //    count++;
+                //}
 
                 if (field.CustomFieldCategoryID == null)
                 {
-                    htmltest.AppendFormat("<div class='col-xs-4'><label for='{0}' class='col-xs-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
+                    htmltest.Append("<div class='form-group'>");
+                    htmltest.Append("<div class='row'>");
+                    htmltest.AppendFormat("<div class='col-xs-12'><label for='{0}' class='col-xs-3 control-label'>{1}</label>", field.CustomFieldID, field.Name);
                     switch (field.FieldType)
                     {
                         case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
@@ -871,41 +873,45 @@ namespace TSWebServices
                         default: break;
                     }
                     htmltest.Append("</div>");
-                    count++;
-                }
-
-                if (count % 4 == 0)
-                {
+                    //count++;
                     htmltest.Append("</div>"); //end row
-                    count = 0;
+                    htmltest.Append("</div>"); //end form-group
                 }
-            }
-            if (count != 0)
-            {
-                count = 0;
-                htmltest.Append("</div>"); // end row if not closed
-            }
-            htmltest.Append("</div>"); //end form-group
 
-            count = 0;
+                //if (count % 4 == 0)
+                //{
+                //    htmltest.Append("</div>"); //end row
+                //    count = 0;
+                //}
+            }
+            //if (count != 0)
+            //{
+            //    count = 0;
+            //    htmltest.Append("</div>"); // end row if not closed
+            //}
+            //htmltest.Append("</div>"); //end form-group
+
+            //count = 0;
 
             foreach (CustomFieldCategory cat in cats)
             {
 
                 htmltest.AppendFormat("<h3>{0}</h3>",cat.Category);
-                htmltest.Append("<div class='form-group'>");
+                //htmltest.Append("<div class='form-group'>");
 
                 foreach (CustomField field in fields)
                 {
-                    if (count == 0)
-                    {
-                        htmltest.Append("<div class='row'>");
-                        count++;
-                    }
+                    //if (count == 0)
+                    //{
+                    //    htmltest.Append("<div class='row'>");
+                    //    count++;
+                    //}
 
                     if (field.CustomFieldCategoryID == cat.CustomFieldCategoryID)
                     {
-                        htmltest.AppendFormat("<div class='col-xs-4'><label for='{0}' class='col-xs-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
+                        htmltest.Append("<div class='form-group'>");
+                        htmltest.Append("<div class='row'>");
+                        htmltest.AppendFormat("<div class='col-xs-12'><label for='{0}' class='col-xs-3 control-label'>{1}</label>", field.CustomFieldID, field.Name);
                         switch (field.FieldType)
                         {
                             case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
@@ -917,19 +923,21 @@ namespace TSWebServices
                             default: break;
                         }
                         htmltest.Append("</div>");
-                        count++;
+                        //count++;
+                        htmltest.Append("</div>");
+                        htmltest.Append("</div>");
                     }
 
-                    if (count % 4 == 0)
-                    {
-                        htmltest.Append("</div>");
-                        count = 0;
-                    }
+                    //if (count % 4 == 0)
+                    //{
+                    //    htmltest.Append("</div>");
+                    //    count = 0;
+                    //}
                 }
-                if (count != 0){
-                    count = 0;
-                    htmltest.Append("</div>");
-                }
+                //if (count != 0){
+                //    count = 0;
+                //    htmltest.Append("</div>");
+                //}
                 htmltest.Append("</div>");
             }
 
@@ -939,24 +947,25 @@ namespace TSWebServices
         [WebMethod]
         public string LoadCustomContactControls()
         {
-            int count = 0;
+            //int count = 0;
             StringBuilder htmltest = new StringBuilder("");
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Contacts, -1);
 
             if (fields.Count > 0)
-                htmltest.Append("<div class='form-group'>");
+                //htmltest.Append("<div class='form-group'>");
 
                 foreach (CustomField field in fields)
                 {
-                    if (count == 0)
-                    {
-                        htmltest.Append("<div class='row'>");
-                        count++;
-                    }
+                    //if (count == 0)
+                    //{
+                    //    htmltest.Append("<div class='row'>");
+                    //    count++;
+                    //}
 
-
-                    htmltest.AppendFormat("<div class='col-xs-4'><label for='{0}' class='col-xs-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
+                    htmltest.Append("<div class='form-group'>");
+                    htmltest.Append("<div class='row'>");
+                    htmltest.AppendFormat("<div class='col-xs-12'><label for='{0}' class='col-xs-3 control-label'>{1}</label>", field.CustomFieldID, field.Name);
                     switch (field.FieldType)
                     {
                         case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
@@ -969,20 +978,22 @@ namespace TSWebServices
                         default: break;
                     }
                     htmltest.Append("</div>");
-                    count++;
+                    //count++;
 
 
-                    if (count % 4 == 0)
-                    {
-                        htmltest.Append("</div>");
-                        count = 0;
-                    }
-                }
-                if (count != 0)
-                {
-                    count = 0;
+                    //if (count % 4 == 0)
+                    //{
+                    //    htmltest.Append("</div>");
+                    //    count = 0;
+                    //}
+                    htmltest.Append("</div>");
                     htmltest.Append("</div>");
                 }
+            //if (count != 0)
+            //    {
+            //        count = 0;
+            //        htmltest.Append("</div>");
+            //    }
                 htmltest.Append("</div>");
 
             return htmltest.ToString();
@@ -4095,15 +4106,15 @@ SELECT
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
-                                        <div class='col-xs-8'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-9'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value  );
             }
             else
             {
-                html.AppendFormat("<div class='col-xs-8'><input class='form-control col-xs-10 customField {1}' id='{0}' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required":"");
+                html.AppendFormat("<div class='col-xs-9'><input class='form-control col-xs-10 customField {1}' id='{0}' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required":"");
             }
             return html.ToString();
         }
@@ -4115,14 +4126,14 @@ SELECT
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
-                                        <div class='col-xs-8'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-9'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
-                html.AppendFormat("<div class='col-xs-8'><input class='form-control col-xs-10 customField number {1}' id='{0}'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+                html.AppendFormat("<div class='col-xs-9'><input class='form-control col-xs-10 customField number {1}' id='{0}'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
 
             return html.ToString();
         }
@@ -4134,14 +4145,14 @@ SELECT
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
-                                        <div class='col-xs-8'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-3'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
-                html.AppendFormat("<div class='col-xs-8'><input class='form-control datepicker col-xs-10 customField {1}' id='{0}' type='date' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+                html.AppendFormat("<div class='col-xs-3'><input class='form-control datepicker col-xs-10 customField {1}' id='{0}' type='date' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
 
             return html.ToString();
         }
@@ -4153,14 +4164,14 @@ SELECT
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
-                                        <div class='col-xs-8'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-3'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
-                html.AppendFormat("<div class='col-xs-8'><input class='form-control timepicker col-xs-10 customField {1}' id='{0}' type='time'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+                html.AppendFormat("<div class='col-xs-3'><input class='form-control timepicker col-xs-10 customField {1}' id='{0}' type='time'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
 
             return html.ToString();
         }
@@ -4172,14 +4183,14 @@ SELECT
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
-                                        <div class='col-xs-8'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-3'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
-                html.AppendFormat("<div class='col-xs-8'><input class='form-control datetimepicker col-xs-10 customField {1}' id='{0}' type='datetime'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+                html.AppendFormat("<div class='col-xs-3'><input class='form-control datetimepicker col-xs-10 customField {1}' id='{0}' type='datetime'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
             
             return html.ToString();
         }
@@ -4191,8 +4202,8 @@ SELECT
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
-                                        <div class='col-xs-8'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-9'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
@@ -4212,15 +4223,15 @@ SELECT
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
-                                        <div class='col-xs-8'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-9'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='select'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
             {
-                html.AppendFormat("<div class='col-xs-8'><select class='form-control customField' id='{0}'  name='{0}' type='picklist'>", field.CustomFieldID);
+                html.AppendFormat("<div class='col-xs-9'><select class='form-control customField' id='{0}'  name='{0}' type='picklist'>", field.CustomFieldID);
                 foreach (string item in items)
                 {
                     html.AppendFormat("<option value='{0}'>{1}</option>", item, item);
