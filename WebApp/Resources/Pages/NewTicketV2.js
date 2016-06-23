@@ -427,6 +427,10 @@ function SetupTicketProperties() {
     $('#ticket-visible').prop('checked', true);
   }
 
+  if (!parent.Ts.System.User.IsSystemAdmin && !parent.Ts.System.User.ChangeTicketVisibility) {
+      $('#ticket-visible').prop('disabled', true);
+  };
+
   $('#ticket-properties-area').on('click', 'span.tagRemove', function (e) {
     var tag = $(this).parent();
     tag.remove();

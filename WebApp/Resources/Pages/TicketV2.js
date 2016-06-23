@@ -455,6 +455,10 @@ function SetupTicketProperties() {
       });
     };
 
+    if (!window.parent.Ts.System.User.IsSystemAdmin && !window.parent.Ts.System.User.ChangeTicketVisibility) {
+        $('#ticket-visible').prop('disabled', true);
+    };
+
   	 //set the url for the copy paste button
     //var ticketURLLink = ""
     var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
