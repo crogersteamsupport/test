@@ -374,6 +374,9 @@ namespace TeamSupport.Data
 				case ReferenceType.Assets:
 					result = "AssetsView.AssetID";
 					break;
+				case ReferenceType.ProductFamilies:
+					result = "ProductFamilies.ProductFamilyID";
+					break;
 				default:
 					result = "";
 					break;
