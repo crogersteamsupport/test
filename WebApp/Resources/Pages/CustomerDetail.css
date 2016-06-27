@@ -315,3 +315,11 @@ div.tag-item {
 .productLineRow {
     margin-bottom: 20px;
 }
+
+div[data-toggle="collapse"] .ui-icon { 
+    float: left;
+}
+
+.collapsedCustomCategory {
+    padding: 15px !important;
+}

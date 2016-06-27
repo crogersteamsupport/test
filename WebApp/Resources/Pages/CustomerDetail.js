@@ -2952,9 +2952,10 @@ var appendCustomValues = function (fields) {
             var custom = $('<div>').insertBefore($('#customPropRow'));
 
             var box = $('<div>').addClass('box').appendTo(custom);
-            var header = $('<div>').addClass('box-header').appendTo(box);
+            var header = $('<div>').addClass('box-header').attr('data-toggle', 'collapse').attr('data-target', '#cat' + c).appendTo(box);
+            $('<span>').addClass('ui-icon ui-icon-triangle-1-s').appendTo(header);
             var h3title = $('<h3>').text(categories[c].Category).appendTo(header);
-            var boxcontent = $('<div>').addClass('box-content').appendTo(box);
+            var boxcontent = $('<div>').addClass('box-content in').attr('id', 'cat' + c).appendTo(box);
             var boxrow = $('<div>').addClass('row').appendTo(boxcontent);
             var formh = $('<form>').addClass('form-horizontal').appendTo(boxrow);
             var colxsL = $('<div>').addClass('col-xs-6 customProperties').appendTo(formh);
@@ -2998,6 +2999,21 @@ var appendCustomValues = function (fields) {
             }
         }
         $('.customProperties p').toggleClass("editable");
+        //$('.box-content').addClass("collapse, in");
+        $('[data-toggle="collapse"]').click(function (e) {
+            e.preventDefault();
+            if ($(this).next().is(':visible')) {
+                $(this).find('.ui-icon').addClass('ui-icon-triangle-1-e').removeClass('ui-icon-triangle-1-s');
+                $(this).addClass('collapsedCustomCategory');
+            }
+            else {
+                $(this).find('.ui-icon').addClass('ui-icon-triangle-1-s').removeClass('ui-icon-triangle-1-e');
+                $(this).removeClass('collapsedCustomCategory');
+            }
+            var target_element = $(this).attr("data-target");
+            $(target_element).collapse('toggle');
+            return false;
+        });
     });
 
 
