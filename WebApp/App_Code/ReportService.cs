@@ -131,7 +131,7 @@ namespace TSWebServices
       {
         List<AutocompleteItem> result = new List<AutocompleteItem>();
         Reports reports = new Reports(TSAuthentication.GetLoginUser());
-        reports.Search(TSAuthentication.OrganizationID, term, 10);
+        reports.Search(TSAuthentication.OrganizationID, TSAuthentication.UserID, term, 10);
         foreach (Report report in reports)
         {
           result.Add(new AutocompleteItem(report.Name, report.ReportID.ToString()));

@@ -2284,7 +2284,7 @@ ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.R
 FROM Reports r
 LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
 LEFT JOIN Users u2 ON u2.UserID = r.EditorID
-WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL))
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL)) AND (r.CreatorID = @UserID OR r.IsPrivate = 0)
 AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
 ORDER BY r.Name
 ";
@@ -2380,14 +2380,14 @@ ORDER BY r.Name
       }
     }
 
-    public void Search(int organizationID, string term, int top = 25)
+    public void Search(int organizationID, int userID, string term, int top = 25)
     {
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"
 SELECT TOP {0:D} r.*
 FROM Reports r
-WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL))
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL)) AND (r.CreatorID = @UserID AND r.IsPrivate = 1)
 AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
 AND r.Name LIKE '%' + @Term + '%'
 ORDER BY r.Name
@@ -2396,7 +2396,8 @@ ORDER BY r.Name
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@Term", term);
-        Fill(command);
+				command.Parameters.AddWithValue("@UserID", userID);
+				Fill(command);
       }
     }
 

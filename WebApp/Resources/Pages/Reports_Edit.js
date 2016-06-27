@@ -47,8 +47,9 @@ $(document).ready(function () {
             }
 
             $('.report-name').val(report.Name);
-            $('.report-privacy').val(report.IsPrivate.toString());
+            
             initReport();
+            $('.report-privacy').val(report.IsPrivate.toString());
         });
     } else if (_reportType != null) {
         initReport();
@@ -97,6 +98,7 @@ $(document).ready(function () {
         }
         $('.report-class-item.' + _typeClass).show();
         $('.report-setup').show();
+        $('.report-class-tickets-privacy').show();
         if (type == 2) {
             if (_report && _report.ReportDef) {
                 $('#external-url').val(_report.ReportDef);
@@ -104,7 +106,7 @@ $(document).ready(function () {
             $('.action-back, .action-next').hide();
             $('.action-save').show();
             $('.action-cancel').css('float', 'none');
-            $('.report-privacy').val(false);
+            $('.report-privacy').val('false');
         }
         else if (type == 5) {
 
@@ -135,7 +137,7 @@ $(document).ready(function () {
                 _report.Def = JSON.parse(_report.ReportDef);
             }
             parent.Ts.Services.Reports.GetCategories(loadCats);
-            $('.report-privacy').val(false);
+            $('.report-privacy').val('false');
         }
 
         $('.action-cancel').click(function (e) {
@@ -501,12 +503,12 @@ $(document).ready(function () {
         $('.action-save').click(function (e) {
             e.preventDefault();
             var data = null;
-            var isPrivate = false;
+            var isPrivate = $('.report-privacy').val();
             switch (_reportType) {
                 case 0: data = JSON.stringify(getTabularObject()); break;
                 case 1: data = JSON.stringify(getChartObject()); break;
                 case 4: data = JSON.stringify(getSummaryObject('.report-summary-fields', $('.report-filter').reportFilter('getObject'))); break;
-                case 5: data = JSON.stringify(getTabularObject()); isPrivate = $('.report-privacy').val(); break;
+                case 5: data = JSON.stringify(getTabularObject()); break;
                 case 2:
                     data = $('#external-url').val();
                     if (data.indexOf('https://') < 0) data = 'https://' + data;
