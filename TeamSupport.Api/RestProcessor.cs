@@ -606,8 +606,7 @@ namespace TeamSupport.Api
         case "/customers/{id}/tickets/":
         case "/contacts/{id}/tickets/":
           result = "{\"Ticket\":";
-		  squareBracketIndex = input.IndexOf("[");
-
+		  squareBracketIndex = "{\"Tickets\":{\"Ticket\":".Length;
 		  objectIDLabel = "TicketID";
           break;
         case "/zapier/properties/ticketseverities/":
