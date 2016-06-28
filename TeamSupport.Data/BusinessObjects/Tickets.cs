@@ -2744,6 +2744,31 @@ AND u.OrganizationID = @OrganizationID
             }
         }
 
+        public void LoadByRecentKnowledgeBase(int organizationID, int customerID, int top)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT TOP " + top.ToString() + @" tickets.*
+																FROM tickets as tickets
+																WHERE tickets.organizationid = @OrganizationID
+																	AND tickets.isknowledgebase = 1
+																	AND tickets.isvisibleonportal = 1
+																	AND (
+																					tickets.ProductID IS NULL
+																					OR tickets.ProductID IN (
+																						SELECT productid
+																						FROM organizationproducts
+																						WHERE organizationid = @CustomerID
+																						)
+																				)
+																ORDER BY tickets.DateModified DESC";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@CustomerID", customerID);
+                Fill(command);
+            }
+        }
+
         public void LoadByTicketNumber(int organizationID, int ticketNumber)
         {
             using (SqlCommand command = new SqlCommand())
