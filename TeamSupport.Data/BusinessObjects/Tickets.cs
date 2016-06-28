@@ -2742,7 +2742,7 @@ AND u.OrganizationID = @OrganizationID
 								command.Parameters.AddWithValue("@CustomerID", customerID);
 				Fill(command);
             }
-        }
+        } 
 
         public void LoadByRecentKnowledgeBase(int organizationID, int customerID, int top)
         {
