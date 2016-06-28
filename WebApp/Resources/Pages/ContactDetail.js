@@ -743,6 +743,7 @@ $(document).ready(function () {
     });
 
     $('#fileToggle').click(function (e) {
+    	  e.preventDefault();
         window.parent.parent.Ts.System.logAction('Contact Detail - Toggle File Form');
         $('#fileForm').toggle();
     });

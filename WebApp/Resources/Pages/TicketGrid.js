@@ -188,7 +188,15 @@ TicketGrid = function (options) {
 
 	$('.tickets-new').click(function (e) {
 		e.preventDefault();
-		mainFrame.Ts.MainPage.newTicket();
+		var gridUserID = top.Ts.Utils.getQueryValue('tf_ContactID', window);
+		var gridCompanyID = top.Ts.Utils.getQueryValue('tf_CustomerID', window);
+		if (gridUserID != null)
+			mainFrame.Ts.MainPage.newTicket("?contactID=" + gridUserID);
+		else if (gridCompanyID != null)
+			mainFrame.Ts.MainPage.newTicket("?customerID=" + gridCompanyID);
+		else
+			mainFrame.Ts.MainPage.newTicket();
+
 		mainFrame.Ts.System.logAction('Ticket Grid - New Ticket');
 	});
 

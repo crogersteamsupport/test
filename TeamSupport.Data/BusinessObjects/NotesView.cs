@@ -15,6 +15,28 @@ namespace TeamSupport.Data
   
   public partial class NotesView
   {
+		public void LoadbyCustomerID(int customerID)
+	  {
+		  using (SqlCommand command = new SqlCommand())
+		  {
+			  command.CommandText = "SET NOCOUNT OFF; SELECT TOP 5 [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateModified], [DateCreated], [NeedsIndexing], [CreatorName], [ModifierName], [ParentOrganizationID], [OrganizationName], [ContactName] FROM [dbo].[NotesView] WHERE ([RefID] = @RefID) and Reftype=9 order by DateModified desc;";
+			  command.CommandType = CommandType.Text;
+			  command.Parameters.AddWithValue("RefID", customerID);
+			  Fill(command);
+		  }
+	  }
+
+		public void LoadbyContactID(int customerID)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "SET NOCOUNT OFF; SELECT TOP 5 [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateModified], [DateCreated], [NeedsIndexing], [CreatorName], [ModifierName], [ParentOrganizationID], [OrganizationName], [ContactName] FROM [dbo].[NotesView] WHERE ([RefID] = @RefID) and Reftype=22 order by DateModified desc;";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("RefID", customerID);
+				Fill(command);
+			}
+		}
+
     public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
     {
       using (SqlCommand command = new SqlCommand())
