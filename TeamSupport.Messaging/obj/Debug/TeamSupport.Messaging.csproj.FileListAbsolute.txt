@@ -1,9 +1,0 @@
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\bin\Debug\TeamSupport.Messaging.dll
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\bin\Debug\TeamSupport.Messaging.pdb
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\bin\Debug\RestSharp.dll
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\bin\Debug\Twilio.Api.dll
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\bin\Debug\RestSharp.xml
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\bin\Debug\Twilio.Api.pdb
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\bin\Debug\Twilio.Api.xml
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\obj\Debug\TeamSupport.Messaging.dll
-C:\Development\Repositories\ts-app\trunk\TeamSupport.Messaging\obj\Debug\TeamSupport.Messaging.pdb

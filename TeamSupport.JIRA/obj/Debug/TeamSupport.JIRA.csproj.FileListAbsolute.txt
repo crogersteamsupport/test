@@ -1,8 +1,0 @@
-C:\Development\Repositories\ts-app\trunk\TeamSupport.JIRA\bin\Debug\TeamSupport.JIRA.dll
-C:\Development\Repositories\ts-app\trunk\TeamSupport.JIRA\bin\Debug\TeamSupport.JIRA.pdb
-C:\Development\Repositories\ts-app\trunk\TeamSupport.JIRA\bin\Debug\Newtonsoft.Json.dll
-C:\Development\Repositories\ts-app\trunk\TeamSupport.JIRA\bin\Debug\RestSharp.dll
-C:\Development\Repositories\ts-app\trunk\TeamSupport.JIRA\bin\Debug\Newtonsoft.Json.xml
-C:\Development\Repositories\ts-app\trunk\TeamSupport.JIRA\bin\Debug\RestSharp.xml
-C:\Development\Repositories\ts-app\trunk\TeamSupport.JIRA\obj\Debug\TeamSupport.JIRA.dll
-C:\Development\Repositories\ts-app\trunk\TeamSupport.JIRA\obj\Debug\TeamSupport.JIRA.pdb
