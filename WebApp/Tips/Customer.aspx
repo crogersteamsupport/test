@@ -45,6 +45,11 @@
             <div><span class="ticket-item">#1234</span><span class="ticket-item">Closed</span><span class="ticket-item">Ticket name blah blah</span></div>
             <div><span class="ticket-item">#1234</span><span class="ticket-item">Closed</span><span class="ticket-item">Ticket name blah blah</span></div>
         </div>
+
+    <div class="ui-widget-content ts-separator"></div>
+        <span class="title">Notes</span>
+        <div id="tipNotes" runat="server">
+        </div>
     <div class="ui-helper-clearfix"></div>
   </div>
 </body>
