@@ -516,9 +516,11 @@ function CreateNewActionLI() {
   $('#action-add-public').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    if ($(this).attr('disabled'))
+    if ($(this).hasClass('click-disabled')) {
     	return false;
-    $('#action-add-public').attr('disabled', true);
+    } else {
+    	$(this).addClass('click-disabled');
+    }
     var editor = $('#action-new-editor');
     if (_suggestedSolutionDefaultInput == '') {
         window.parent.Ts.Services.TicketPage.GetSuggestedSolutionDefaultInput(_ticketID, function (result) {
@@ -548,9 +550,11 @@ function CreateNewActionLI() {
   $('#action-add-private').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    if ($(this).attr('disabled'))
+    if ($(this).hasClass('click-disabled')) {
     	return false;
-    $('#action-add-private').attr('disabled', true);
+    } else {
+    	$(this).addClass('click-disabled');
+    }
     var editor = $('#action-new-editor');
     SetupActionEditor(editor);
     SetupActionTypeSelect();
@@ -583,10 +587,10 @@ function CreateNewActionLI() {
     	}
     });
     window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
-    $('#action-add-public').attr('disabled', false);
-    $('#action-add-private').attr('disabled', false);
+    $('#action-add-public').removeClass('click-disabled');
+    $('#action-add-private').removeClass('click-disabled');
     $("a.action-option-edit").each(function () {
-    	$(this).attr('disabled', false);
+    	$(this).removeClass('click-disabled');
     });
     $('#recorder').remove();
   });
@@ -600,10 +604,10 @@ function CreateNewActionLI() {
   		e.preventDefault();
   		e.stopPropagation();
   		DisableCreateBtns();
-  		$('#action-add-public').attr('disabled', false);
-  		$('#action-add-private').attr('disabled', false);
+  		$('#action-add-public').removeClass('click-disabled');
+  		$('#action-add-private').removeClass('click-disabled');
   		$("a.action-option-edit").each(function () {
-  			$(this).attr('disabled', false);
+  			$(this).removeClass('click-disabled');
   		});
   		var self = $(this);
   		_oldActionID = self.data('actionid');
@@ -1200,6 +1204,8 @@ function SetupActionTimers() {
     else {
       $(this).find(':first-child').css('color', 'red');
       clearTimeout(_timerid);
+      counter = 0;
+      _timerElapsed = 0;
     }
     $(this).data('hasstarted', !hasStarted);
   });
@@ -1956,9 +1962,14 @@ function SetupCustomerSection() {
         }
       },
       create: function (input, callback) {
-        $('#NewCustomerModal').modal('show');
-        callback(null);
-        $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
+      	if ((top.Ts.System.User.CanCreateContact && top.Ts.System.User.CanCreateCompany) || top.Ts.System.User.IsSystemAdmin) {
+      		$('#NewCustomerModal').modal('show');
+      		callback(null);
+      		$('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
+      	}
+      	else {
+      		alert("You do not have the right permissions to create contacts");
+      	}
       },
       onItemAdd: function (value, $item) {
         if (this.settings.initData === false) {
@@ -3187,7 +3198,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
 
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
           var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
-          dateLink.text((value === null ? '' : value.localeFormat(window.parent.Ts.Utils.getDatePattern()))).show();
+          dateLink.text((value === null ? 'unassigned' : value.localeFormat(window.parent.Ts.Utils.getDatePattern()))).show();
           window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
         }, function () {
           alert("There was a problem saving your ticket property.");
@@ -3601,7 +3612,7 @@ var SetupDueDateField = function (duedate) {
 
     var theinput = $('<input type="text">')
       .addClass('form-control')
-      .val(duedate === null ? '' : duedate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))
+      .val('')
       .datetimepicker({ pickTime: true })
       .appendTo(container1)
       .focus();
@@ -4270,9 +4281,11 @@ function CreateTimeLineDelegates() {
     e.preventDefault();
     e.stopPropagation();
 
-    if ($(this).attr('disabled'))
+    if ($(this).hasClass('click-disabled')) {
     	return false;
-    $(this).attr('disabled', true);
+    } else {
+    	$(this).addClass('click-disabled');
+    }
 
     var self = $(this);
     var action = self.closest('li').data().action;
@@ -5152,7 +5165,7 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
 
 var addUserViewing = function (userID) {
   $('#ticket-now-viewing').show();
-  $('#ticket-viewing-users').empty();
+
   if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
     window.parent.Ts.Services.Users.GetUser(userID, function (user) {
       var fullName = user.FirstName + " " + user.LastName;
@@ -5172,17 +5185,12 @@ var addUserViewing = function (userID) {
 
 var removeUserViewing = function (ticketNum, userID) {
   if (ticketNum != _ticketNumber) {
-    var usersViewing = $('.ticket-viewer');
-    for (i = 0; i < usersViewing.length; i++) {
-      var ChatUserID = usersViewing.data('ChatID');
-      if (ChatUserID == userID) {
-        usersViewing[i].remove();
-      }
-    }
-
-    if ($('.ticket-viewer').length < 1) {
-      $('#ticket-now-viewing').hide();
-    }
+  	if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
+  		$('.ticket-viewer:data(ChatID=' + userID + ')').remove();
+  		if ($('.ticket-viewer').length < 1) {
+  			$('#ticket-now-viewing').hide();
+  		}
+  	}
   }
 }
 
