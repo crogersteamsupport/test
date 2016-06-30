@@ -719,7 +719,7 @@ namespace TSWebServices
             SqlCommand command = new SqlCommand();
             command.CommandText = @"
             SELECT
-                dbo.stripHTML(Description)
+                Description
             FROM
                 Actions 
             WHERE
@@ -733,7 +733,7 @@ namespace TSWebServices
                 StringBuilder result = new StringBuilder();
                 for(int i = 0; i < table.Rows.Count; i++)
                 {
-                    result.AppendLine(table.Rows[i][0].ToString());
+                    result.AppendLine(HtmlUtility.StripHTML2(table.Rows[i][0].ToString()));
                 }
                 return result.ToString();
             }
