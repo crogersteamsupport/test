@@ -84,7 +84,20 @@ public partial class Tips_User : System.Web.UI.Page
 
 		tipRecent.InnerHtml = recent.ToString();
 
+		// Customer Notes
+		StringBuilder notesString = new StringBuilder();
+		NotesView notes = new NotesView(TSAuthentication.GetLoginUser());
+		notes.LoadbyContactID(user.UserID);
 
+		foreach (NotesViewItem t in notes)
+		{
+			notesString.Append(string.Format("<div><a href='#' target='_blank' onclick='top.Ts.MainPage.openNewContactNote({0},{1}); return false;'><span class='ticket-tip-name'>{2}</span></a></div>", t.RefID, t.NoteID, t.Title.Length > 17 ? t.Title.Substring(0, 15) + "..." : t.Title));
+		}
+
+		if (notesString.Length == 0)
+			notesString.Append("");
+
+		tipNotes.InnerHtml = notesString.ToString();
 
     }
 

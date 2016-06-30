@@ -988,7 +988,7 @@ function updateLikes (likes, messageID, messageParentID) {
 function updateattachments (message) {
         var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + message.Message.MessageID + ')');
         var tixHasAtt = false;
-        parentThread.find('.topicHistory').remove();
+        parentThread.find('.fa-info-circle').remove();
 
         var tixatt = message.Tickets;
         var tixattstr = "";
@@ -1037,7 +1037,7 @@ function updateattachments (message) {
 
         if (tixHasAtt == true) {
             $('<span>')
-            .addClass('topicHistory someClass')
+            .addClass('fa fa-info-circle someClass')
             .attr('title', tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr)
             .tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true })
             .prependTo(parentThread.find('.topicAttachments'));
@@ -1257,7 +1257,7 @@ function createThread(thread) {
 
         if (tixHasAtt == true) {
             $('<span>')
-            .addClass('topicHistory someClass')
+            .addClass('fa fa-info-circle someClass')
             .attr('title', tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr)
             .tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true })
             .appendTo(sptprel);

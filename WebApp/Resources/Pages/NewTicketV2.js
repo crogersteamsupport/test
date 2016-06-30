@@ -776,7 +776,7 @@ function isFormValid(callback) {
         });
 
         if ($('#ticket-Customer > .tag-error').length > 0) {
-        	InsertCreateError("An inactive contact can not be added to the ticket");
+        	InsertCreateError("An inactive contact or customer with expired Service Level Agreement can not be added to the ticket");
         	result = false;
         }
 
@@ -2622,26 +2622,6 @@ function setInitialValue() {
         }
       });
       break;
-    case 'mnicustomers':
-      parent.Ts.Services.Settings.ReadUserSetting('SelectedOrganizationID', -1, function (organizationID) {
-        if (organizationID > -1) {
-          parent.Ts.Services.Settings.ReadUserSetting('SelectedContactID', -1, function (contactID) {
-            if (contactID > -1) {
-              var org = new Object();
-              org.value = contactID;
-              org.type = "u";
-              AddCustomers(org);
-            }
-            else if (organizationID > -1) {
-              var org = new Object();
-              org.value = organizationID;
-              org.type = "o";
-              AddCustomers(org);
-            }
-          })
-        }
-      });
-      break;
     case 'mnikb':
       if (canEdit) {
         $('#ticket-isKB').prop('checked', true);
@@ -2660,6 +2640,20 @@ function setInitialValue() {
         SetType(ticketTypeID);
         showCustomFields();
         _lastTicketTypeID = ticketTypeID;
+      }
+      var contactID = top.Ts.Utils.getQueryValue('contactID', window);
+      var companyID = top.Ts.Utils.getQueryValue('customerID', window);
+      if (contactID != null) {
+      	var org = new Object();
+      	org.value = contactID;
+      	org.type = "u";
+      	AddCustomers(org);
+      }
+      else if (companyID != null) {
+      	var org = new Object();
+      	org.value = companyID;
+      	org.type = "o";
+      	AddCustomers(org);
       }
   }
 
