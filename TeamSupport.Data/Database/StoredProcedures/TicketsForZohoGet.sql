@@ -9,17 +9,10 @@ GO
  
 CREATE PROC [dbo].[TicketsForZohoGet]
 	@OrganizationID		int,
-	@LastMod			datetime,
-	@Url						varchar(200) = NULL
+	@LastMod			datetime
 AS
 BEGIN
-	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	SET NOCOUNT ON;
- 
-	IF (@Url IS NULL)
-		SET @Url = 'https://app.teamsupport.com'
-		
-	SET @Url = @Url + '?ticketid=';
  
 	WITH TicketIDs AS (
 		SELECT
@@ -33,7 +26,8 @@ BEGIN
  
 	SELECT
 		TicketNumber,
-		@Url + CAST(tv.TicketID as varchar(30)) as [TicketUrl],
+		--I'm sending back the ticketID as TicketURL to actually build the URL in the service for the csv needed for ZohoReports
+		tv.TicketID AS [TicketURL],
 		Name,
 		TicketTypeName,
 		TicketSource,

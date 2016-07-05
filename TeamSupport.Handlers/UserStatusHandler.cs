@@ -85,7 +85,7 @@ namespace TeamSupport.Handlers
 
       try
       {
-        update.IsDebug = TSAuthentication.OrganizationID == 1078 || TSAuthentication.IsBackdoor;
+        update.IsDebug = TSAuthentication.OrganizationID == 1078 || TSAuthentication.IsBackdoor || TSAuthentication.OrganizationID == 13679;//vv
         update.IsExpired = false;
 
         using (SqlConnection connection = new SqlConnection(LoginUser.Anonymous.ConnectionString))
