@@ -12,13 +12,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Database" Type="System.String" Scope="User">
-      <Value Profile="(Default)">TeamSupport</Value>
-    </Setting>
-    <Setting Name="UserName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">dev</Value>
-    </Setting>
-    <Setting Name="Password" Type="System.String" Scope="User">
-      <Value Profile="(Default)">TsDev2015!</Value>
+      <Value Profile="(Default)">TeamSupportVictor</Value>
     </Setting>
     <Setting Name="LastSchema" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -58,6 +52,12 @@
     </Setting>
     <Setting Name="DevelopmentPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="UserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Dev-Sql-WebApp</Value>
+    </Setting>
+    <Setting Name="Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TeamSupportDev</Value>
     </Setting>
   </Settings>
 </SettingsFile>

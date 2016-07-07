@@ -32,6 +32,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierId", "ModifierId", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
       _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
+      _fieldMap.AddMap("LockProcessId", "LockProcessId", false, false, false);
             
     }
   }

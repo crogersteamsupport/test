@@ -64,6 +64,12 @@ namespace TeamSupport.Data
       set { Row["ModifierId"] = CheckValue("ModifierId", value); }
     }
     
+    public int? LockProcessId
+    {
+      get { return Row["LockProcessId"] != DBNull.Value ? (int?)Row["LockProcessId"] : null; }
+      set { Row["LockProcessId"] = CheckValue("LockProcessId", value); }
+    }
+    
 
     
     public int CreatorId
@@ -262,7 +268,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ScheduledReports] SET     [EmailSubject] = @EmailSubject,    [EmailBody] = @EmailBody,    [EmailRecipients] = @EmailRecipients,    [ReportId] = @ReportId,    [OrganizationId] = @OrganizationId,    [RunCount] = @RunCount,    [IsActive] = @IsActive,    [StartDate] = @StartDate,    [RecurrencyId] = @RecurrencyId,    [Every] = @Every,    [Weekday] = @Weekday,    [Monthday] = @Monthday,    [LastRun] = @LastRun,    [NextRun] = @NextRun,    [CreatorId] = @CreatorId,    [ModifierId] = @ModifierId,    [DateModified] = @DateModified  WHERE ([Id] = @Id);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ScheduledReports] SET     [EmailSubject] = @EmailSubject,    [EmailBody] = @EmailBody,    [EmailRecipients] = @EmailRecipients,    [ReportId] = @ReportId,    [OrganizationId] = @OrganizationId,    [RunCount] = @RunCount,    [IsActive] = @IsActive,    [StartDate] = @StartDate,    [RecurrencyId] = @RecurrencyId,    [Every] = @Every,    [Weekday] = @Weekday,    [Monthday] = @Monthday,    [LastRun] = @LastRun,    [NextRun] = @NextRun,    [CreatorId] = @CreatorId,    [ModifierId] = @ModifierId,    [DateModified] = @DateModified,    [LockProcessId] = @LockProcessId  WHERE ([Id] = @Id);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("Id", SqlDbType.Int, 4);
@@ -391,13 +397,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("LockProcessId", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ScheduledReports] (    [EmailSubject],    [EmailBody],    [EmailRecipients],    [ReportId],    [OrganizationId],    [RunCount],    [IsActive],    [StartDate],    [RecurrencyId],    [Every],    [Weekday],    [Monthday],    [LastRun],    [NextRun],    [CreatorId],    [ModifierId],    [DateCreated],    [DateModified]) VALUES ( @EmailSubject, @EmailBody, @EmailRecipients, @ReportId, @OrganizationId, @RunCount, @IsActive, @StartDate, @RecurrencyId, @Every, @Weekday, @Monthday, @LastRun, @NextRun, @CreatorId, @ModifierId, @DateCreated, @DateModified); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ScheduledReports] (    [EmailSubject],    [EmailBody],    [EmailRecipients],    [ReportId],    [OrganizationId],    [RunCount],    [IsActive],    [StartDate],    [RecurrencyId],    [Every],    [Weekday],    [Monthday],    [LastRun],    [NextRun],    [CreatorId],    [ModifierId],    [DateCreated],    [DateModified],    [LockProcessId]) VALUES ( @EmailSubject, @EmailBody, @EmailRecipients, @ReportId, @OrganizationId, @RunCount, @IsActive, @StartDate, @RecurrencyId, @Every, @Weekday, @Monthday, @LastRun, @NextRun, @CreatorId, @ModifierId, @DateCreated, @DateModified, @LockProcessId); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("LockProcessId", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -637,7 +657,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [Id], [EmailSubject], [EmailBody], [EmailRecipients], [ReportId], [OrganizationId], [RunCount], [IsActive], [StartDate], [RecurrencyId], [Every], [Weekday], [Monthday], [LastRun], [NextRun], [CreatorId], [ModifierId], [DateCreated], [DateModified] FROM [dbo].[ScheduledReports] WHERE ([Id] = @Id);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [Id], [EmailSubject], [EmailBody], [EmailRecipients], [ReportId], [OrganizationId], [RunCount], [IsActive], [StartDate], [RecurrencyId], [Every], [Weekday], [Monthday], [LastRun], [NextRun], [CreatorId], [ModifierId], [DateCreated], [DateModified], [LockProcessId] FROM [dbo].[ScheduledReports] WHERE ([Id] = @Id);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("Id", id);
         Fill(command);
