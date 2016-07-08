@@ -109,9 +109,9 @@ namespace TeamSupport.ServiceLibrary
                 // email.Attempts = email.Attempts + 1;
                 // email.Collection.Save();
                 // Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
-                string report = ""; //vv this should be the generated report, saved as file and attached to the email
-                MailMessage message = scheduledReport.GetMailMessage(report);
-                Logs.WriteEventFormat("Report file to attach: {0}", report);
+                string reportFile = ""; //vv this should be the generated report, saved as file and attached to the email
+                MailMessage message = scheduledReport.GetMailMessage(reportFile);
+                Logs.WriteEventFormat("Report file to attach: {0}", reportFile);
 
                 if (_isDebug == true)
                 {
@@ -190,7 +190,7 @@ namespace TeamSupport.ServiceLibrary
 
                 Logs.WriteEvent("Sending email");
 
-                AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { report });
+                AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportFile });
             }
             catch (Exception ex)
             {

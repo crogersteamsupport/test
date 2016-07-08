@@ -166,7 +166,7 @@
 			// 
 			// button3
 			// 
-			this.button3.Location = new System.Drawing.Point(13, 337);
+			this.button3.Location = new System.Drawing.Point(13, 376);
 			this.button3.Name = "button3";
 			this.button3.Size = new System.Drawing.Size(220, 23);
 			this.button3.TabIndex = 32;
@@ -178,7 +178,7 @@
 			// 
 			this.btnReportSender.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnReportSender.ForeColor = System.Drawing.Color.Green;
-			this.btnReportSender.Location = new System.Drawing.Point(12, 366);
+			this.btnReportSender.Location = new System.Drawing.Point(12, 336);
 			this.btnReportSender.Name = "btnReportSender";
 			this.btnReportSender.Size = new System.Drawing.Size(221, 29);
 			this.btnReportSender.TabIndex = 33;

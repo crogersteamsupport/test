@@ -44,7 +44,7 @@ namespace TeamSupport.Service
         case "TSImportProcessor": result = new ImportProcessor(); break;
         case "TSWebHooks": result = new WebHooks(); break;
         case "TSCustomerInsights": result = new CustomerInsightsProcessor(); break;
-        case "TSReportSender": result = new ReportSender(); break;
+        case "TSReportSender": result = new ServiceThreadPool<ReportSender>("ReportSender"); break;
         default: result = null; break;
       }
 

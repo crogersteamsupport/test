@@ -27,7 +27,7 @@ namespace TeamSupport.ServiceTestApplication
     ImportProcessor _importProcessor;
     WebHooks _webhooks;
     CustomerInsightsProcessor _cip;
-	ReportSender _reportSender;
+	ServiceThreadPool<ReportSender> _reportSender;
     
     public Form1()
     {
@@ -201,7 +201,7 @@ namespace TeamSupport.ServiceTestApplication
 
 		private void btnReportSender_Click(object sender, EventArgs e)
 		{
-			if (_reportSender == null || _reportSender.IsStopped) StartProcess(_reportSender = new ReportSender(), sender as Button); else StopProcess(_reportSender, sender as Button);
+			if (_reportSender == null || _reportSender.IsStopped) StartProcess(_reportSender = new ServiceThreadPool<ReportSender>("ReportSender"), sender as Button); else StopProcess(_reportSender, sender as Button);
 		}
 	}
 }
