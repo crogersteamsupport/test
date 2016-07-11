@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Data;
+using System.Data.SqlClient;
 using System.Net.Mail;
 using System.Text;
 using System.Threading;
@@ -98,6 +101,24 @@ namespace TeamSupport.ServiceLibrary
 			Emails.UnlockAll(LoginUser);
 		}
 
+        public static string[] GetReportColumnNames(LoginUser scheduledReportCreator, int reportID)
+        {
+            List<string> result = new List<string>();
+            ReportColumn[] columns = GetReportColumns(scheduledReportCreator, reportID);
+            foreach (ReportColumn column in columns)
+            {
+                result.Add(column.Name);
+            }
+            return result.ToArray();
+        }
+
+        public static ReportColumn[] GetReportColumns(LoginUser scheduledReportCreator, int reportID)
+        {
+            Report report = Reports.GetReport(scheduledReportCreator, reportID);
+            if (report.ReportDefType == ReportType.Table || report.ReportDefType == ReportType.TicketView) return report.GetTabularColumns();
+            return report.GetSqlColumns();
+        }
+
         private void QueueEmail(ScheduledReport scheduledReport)
         {
             Logs.WriteLine();
@@ -109,9 +130,12 @@ namespace TeamSupport.ServiceLibrary
                 // email.Attempts = email.Attempts + 1;
                 // email.Collection.Save();
                 // Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
-                string reportFile = ""; //vv this should be the generated report, saved as file and attached to the email
-                MailMessage message = scheduledReport.GetMailMessage(reportFile);
-                Logs.WriteEventFormat("Report file to attach: {0}", reportFile);
+                LoginUser scheduledReportCreator = new LoginUser(scheduledReport.CreatorId, scheduledReport.OrganizationId);
+                Report report = Reports.GetReport(scheduledReportCreator, scheduledReport.ReportId, LoginUser.UserID);
+                string reportAttachmentFile = GetReportDataToFile(scheduledReportCreator, report, scheduledReport.Id, "", false, true);
+                Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
+                MailMessage message = scheduledReport.GetMailMessage(reportAttachmentFile, organization);
+                Logs.WriteEventFormat("Report file to attach: {0}", reportAttachmentFile);
 
                 if (_isDebug == true)
                 {
@@ -190,7 +214,7 @@ namespace TeamSupport.ServiceLibrary
 
                 Logs.WriteEvent("Sending email");
 
-                AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportFile });
+                AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
             }
             catch (Exception ex)
             {
@@ -287,6 +311,74 @@ namespace TeamSupport.ServiceLibrary
             return new MailAddress(FixMailAddress(address), FixMailName(displayName), displayNameEncoding);
         }
 
+        private static string GetReportDataToFile(LoginUser scheduledReportCreator, Report report, int scheduledReportId, string sortField, bool isDesc, bool useUserFilter)
+        {
+            DataTable dataTable = GetReportTableAll(scheduledReportCreator, report, sortField, isDesc, useUserFilter, true);
+            StringBuilder stringBuilder = new StringBuilder();
+
+            IEnumerable<string> columnNames = dataTable.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+            stringBuilder.AppendLine(string.Join(",", columnNames));
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                IEnumerable<string> fields = row.ItemArray.Select(field => string.Concat("\"", field.ToString().Replace("\"", "\"\""), "\""));
+                stringBuilder.AppendLine(string.Join(",", fields));
+            }
+
+            string reportAttachmentPath = AttachmentPath.GetPath(scheduledReportCreator, scheduledReportCreator.OrganizationID, AttachmentPath.Folder.ScheduledReports);
+            string fileName = string.Format("{0}\\{1}_{2}.csv", reportAttachmentPath, scheduledReportId, report.ReportID);
+
+            File.WriteAllText(fileName, stringBuilder.ToString());
+
+
+            //GridResult result = new GridResult();
+            //result.From = 0;
+            //result.To = table.Rows.Count - 1;
+            //result.Total = table.Rows.Count;
+            //result.Data = table;
+            return fileName;
+        }
+
+        private static DataTable GetReportTableAll(LoginUser scheduledReportCreator, Report report, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        {
+            SqlCommand command = new SqlCommand();
+
+            report.GetCommand(command, includeHiddenFields, false, useUserFilter);
+            if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
+            {
+                if (string.IsNullOrWhiteSpace(sortField))
+                {
+                    sortField = GetReportColumnNames(scheduledReportCreator, report.ReportID)[0];
+                    isDesc = false;
+                }
+                command.CommandText = command.CommandText + " ORDER BY [" + sortField + (isDesc ? "] DESC" : "] ASC");
+            }
+
+            report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
+            report.Collection.Save();
+            //vv maybe not needed. FixCommandParameters(command);
+
+            DataTable table = new DataTable();
+            using (SqlConnection connection = new SqlConnection(scheduledReportCreator.ConnectionString))
+            {
+                connection.Open();
+                command.Connection = connection;
+                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                {
+                    try
+                    {
+                        adapter.Fill(table);
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionLogs.LogException(scheduledReportCreator, ex, "Report Data");
+                        throw;
+                    }
+                }
+                connection.Close();
+            }
+            return table;
+        }
 
         /*
 		  _isDebug = Settings.ReadBool("Debug", false);

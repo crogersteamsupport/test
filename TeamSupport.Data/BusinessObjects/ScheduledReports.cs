@@ -138,10 +138,10 @@ namespace TeamSupport.Data
 			}
 		}
 
-        public MailMessage GetMailMessage(string attachment)
+        public MailMessage GetMailMessage(string attachment, Organization organization)
         {
             MailMessage message = new MailMessage();
-            message.From = GetEmailAddressFromString(""); //vv FROM?
+            message.From = GetEmailAddressFromString(organization.GetReplyToAddress().Trim());
             AddEmailAddressesFromString(message.To, EmailRecipients);
             message.Subject = EmailSubject;
             message.Body = EmailBody;
@@ -207,13 +207,13 @@ namespace TeamSupport.Data
         private void AddEmailAddressesFromString(MailAddressCollection collection, string text)
         {
             if (string.IsNullOrEmpty(text.Trim())) return;
-            string[] list = text.Split('|');
+            string[] list = text.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
             foreach (string s in list)
             {
                 MailAddress address = GetEmailAddressFromString(s);
                 if (address != null) collection.Add(address);
             }
-
         }
     }
 
@@ -247,7 +247,7 @@ OUTPUT Inserted.*
 WHERE Id IN (
   SELECT TOP 1 Id 
 FROM ScheduledReports 
-WHERE 
+WHERE
 	LockProcessID IS NULL 
 	AND NextRun IS NOT NULL 
 	AND ISNULL(NextRun,0) > ISNULL(LastRun,0)
