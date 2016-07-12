@@ -207,7 +207,7 @@ namespace TeamSupport.Data
         private void AddEmailAddressesFromString(MailAddressCollection collection, string text)
         {
             if (string.IsNullOrEmpty(text.Trim())) return;
-            string[] list = text.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] list = text.Split(new[] { ',', ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string s in list)
             {
@@ -266,7 +266,20 @@ WHERE
 			else
 				return scheduledReports[0];
 		}
-	}
+
+        public static void UnlockThread(LoginUser loginUser, int thread)
+        {
+            ScheduledReports scheduledReports = new ScheduledReports(loginUser);
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE ScheduledReports SET LockProcessId = NULL WHERE LockProcessId = @id";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("id", thread);
+                scheduledReports.ExecuteNonQuery(command);
+            }
+        }
+    }
 
 	[DataContract]
 	public class ScheduledReportItem

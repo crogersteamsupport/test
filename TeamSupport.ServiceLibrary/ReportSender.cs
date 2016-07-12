@@ -19,28 +19,26 @@ namespace TeamSupport.ServiceLibrary
 		private bool _isDebug = false;
 		private static object _staticLock = new object();
 		private MailAddressCollection _debugAddresses;
+        private ReportSenderPublicLog _publicLog;
 
-		public ReportSender()
+        public ReportSender()
 		{
 		  _debugAddresses = new MailAddressCollection();
 		}
 
 		public override void Run()
 		{
-			while (!IsStopped)
-			{
-				/*
-				 1) check scheduled reports that are due to be created/emailed (NextRun)
-				 2) Process one by one. Order By nextRun ascending
-				 3) Process report
-				 4) Create/save file
-				 5) Send email
-				 */
+            ScheduledReports.UnlockThread(LoginUser, (int)_threadPosition);
 
-				Logs.WriteHeader("Starting Run");
+            while (!IsStopped)
+			{
+                Logs.WriteHeader("Starting Run");
 
 				try
 				{
+                    int waitBeforeLoggingWithoutScheduledReportsDue = 15;
+                    DateTime noScheduledReportsDue = DateTime.UtcNow;
+
 					while (true)
 					{
 						try
@@ -57,23 +55,37 @@ namespace TeamSupport.ServiceLibrary
 								break;
 							}
 
-							ScheduledReport scheduleReport = GetNextScheduledReport(LoginUser.ConnectionString, (int)_threadPosition);
+                            ScheduledReport scheduledReport = GetNextScheduledReport(LoginUser.ConnectionString, (int)_threadPosition, Logs);
 
-							if (scheduleReport == null)
+                            if (scheduledReport != null)
+                            {
+                                string path = AttachmentPath.GetPath(LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
+                                _publicLog = new ReportSenderPublicLog(path, scheduledReport.Id);
+                                QueueEmail(scheduledReport);
+                                noScheduledReportsDue = DateTime.UtcNow;
+                            }
+                            else
 							{
+                                if (DateTime.UtcNow.Subtract(noScheduledReportsDue).Minutes >= waitBeforeLoggingWithoutScheduledReportsDue)
+                                {
+                                    Log(string.Format("No scheduled reports due found in the last {0} minutes", waitBeforeLoggingWithoutScheduledReportsDue));
+                                    noScheduledReportsDue = DateTime.UtcNow;
+                                }
+
 								Thread.Sleep(10000);
 								continue;
 							}
-
-                            QueueEmail(scheduleReport);
 						}
 						catch (Exception ex)
 						{
-							Logs.WriteEvent("Error sending report email - Ending Thread");
+                            Log("Error sending report email - Ending Thread");
 							Logs.WriteException(ex);
 							ExceptionLogs.LogException(LoginUser, ex, "ReportSender", "Error sending report email");
-							return;
 						}
+                        finally
+                        {
+                            UpdateHealth();
+                        }
 					}
 				}
 				catch (Exception ex)
@@ -87,11 +99,15 @@ namespace TeamSupport.ServiceLibrary
 			}
 		}
 
-		private static ScheduledReport GetNextScheduledReport(string connectionString, int lockID)
+		private static ScheduledReport GetNextScheduledReport(string connectionString, int lockID, Logs logs = null)
 		{
 			ScheduledReport result;
 			LoginUser loginUser = new LoginUser(connectionString, -1, -1, null);
-			lock (_staticLock) { result = ScheduledReports.GetNextWaiting(loginUser, lockID.ToString()); }
+
+			lock (_staticLock)
+            {
+                result = ScheduledReports.GetNextWaiting(loginUser, lockID.ToString());
+            }
 
 			return result;
 		}
@@ -121,21 +137,27 @@ namespace TeamSupport.ServiceLibrary
 
         private void QueueEmail(ScheduledReport scheduledReport)
         {
-            Logs.WriteLine();
-            Logs.WriteHeader("Processing Scheduled Report");
-            Logs.WriteEventFormat("Scheduled Report Id: {0}, Report Id: {1}", scheduledReport.Id.ToString(), scheduledReport.ReportId.ToString());
+            Log(string.Format("Scheduled Report Id: {0}, Report Id: {1}, Organization {2}", scheduledReport.Id.ToString(), scheduledReport.ReportId, scheduledReport.OrganizationId));
+            Log(string.Format("Set to start on: {0}", scheduledReport.NextRun), LogType.Both);
 
             try
             {
-                // email.Attempts = email.Attempts + 1;
-                // email.Collection.Save();
-                // Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
                 LoginUser scheduledReportCreator = new LoginUser(scheduledReport.CreatorId, scheduledReport.OrganizationId);
+                Log(string.Format("Creator: {0} ({1})", scheduledReportCreator.GetUserFullName(), scheduledReportCreator.UserID));
+
+                Log("Getting report");
                 Report report = Reports.GetReport(scheduledReportCreator, scheduledReport.ReportId, LoginUser.UserID);
-                string reportAttachmentFile = GetReportDataToFile(scheduledReportCreator, report, scheduledReport.Id, "", false, true);
+                Log(string.Format("Report \"{0}\" settings loaded", report.Name), LogType.Both);
+
+                Log("Generating Report", LogType.Both);
+                string reportAttachmentFile = GetReportDataToFile(scheduledReportCreator, report, scheduledReport.Id, "", false, true, Logs);
+                Log(string.Format("Report generated and file attachment created: {0}", Path.GetFileName(reportAttachmentFile)), LogType.Public);
+                Log(string.Format("Report file to attach: {0}", reportAttachmentFile));
+
                 Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
                 MailMessage message = scheduledReport.GetMailMessage(reportAttachmentFile, organization);
-                Logs.WriteEventFormat("Report file to attach: {0}", reportAttachmentFile);
+                Log("Email message created", LogType.Both);
+                Log(string.Format("Email Recipients: {0}", string.Join(",", message.To.Select(p => p.Address).ToArray())), LogType.Both);
 
                 if (_isDebug == true)
                 {
@@ -212,13 +234,28 @@ namespace TeamSupport.ServiceLibrary
                     message.Subject = string.Format("[{0}] {1}", Settings.ReadString("Debug Email Subject", "TEST MODE"), message.Subject);
                 }
 
-                Logs.WriteEvent("Sending email");
-
+                Log("Queueing email(s)", LogType.Both);
                 AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
+                Log("Email was queued to Emails for the emailprocessor");
+
+                scheduledReport.RunCount = scheduledReport.RunCount != null ? (short)(scheduledReport.RunCount + 1) : (short)1;
+                scheduledReport.LastRun = DateTime.UtcNow;
+                scheduledReport.LockProcessId = null;
+
+                if ((ScheduledReportFrequency)scheduledReport.RecurrencyId == ScheduledReportFrequency.Once)
+                {
+                    scheduledReport.NextRun = null;
+                }
+                else
+                {
+                    scheduledReport.SetNextRun();
+                }
+
+                scheduledReport.Collection.Save();
+                Log(string.Format("Set next run to: {0}", scheduledReport.NextRun == null ? "Never" : scheduledReport.NextRun.ToString()), LogType.Both);
             }
             catch (Exception ex)
             {
-                Logs.WriteEvent("Error sending email");
                 Logs.WriteException(ex);
                 ExceptionLogs.LogException(LoginUser, ex, _threadPosition.ToString() + " - Report Sender", scheduledReport.Row);
                 StringBuilder builder = new StringBuilder();
@@ -286,6 +323,7 @@ namespace TeamSupport.ServiceLibrary
                 Logs.WriteEvent(string.Format("Queueing email [{0}] - {1}  Subject: {2}", description, address.ToString(), message.Subject));
             }
         }
+
         private MailAddress GetMailAddress(string address, string displayName)
         {
             return new MailAddress(FixMailAddress(address), FixMailName(displayName));
@@ -311,9 +349,20 @@ namespace TeamSupport.ServiceLibrary
             return new MailAddress(FixMailAddress(address), FixMailName(displayName), displayNameEncoding);
         }
 
-        private static string GetReportDataToFile(LoginUser scheduledReportCreator, Report report, int scheduledReportId, string sortField, bool isDesc, bool useUserFilter)
+        private static string GetReportDataToFile(LoginUser scheduledReportCreator, Report report, int scheduledReportId, string sortField, bool isDesc, bool useUserFilter, Logs logs = null)
         {
-            DataTable dataTable = GetReportTableAll(scheduledReportCreator, report, sortField, isDesc, useUserFilter, true);
+            if (logs != null)
+            {
+                logs.WriteEvent("GetReportTableAll");
+            }
+            
+            DataTable dataTable = GetReportTableAll(scheduledReportCreator, report, sortField, isDesc, useUserFilter, false);
+
+            if (logs != null)
+            {
+                logs.WriteEventFormat("dataTable created with {0} rows and {1} columns", dataTable.Rows.Count, dataTable.Columns.Count);
+            }
+
             StringBuilder stringBuilder = new StringBuilder();
 
             IEnumerable<string> columnNames = dataTable.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
@@ -330,12 +379,11 @@ namespace TeamSupport.ServiceLibrary
 
             File.WriteAllText(fileName, stringBuilder.ToString());
 
+            if (logs != null)
+            {
+                logs.WriteEvent("File.WriteAllText completed");
+            }
 
-            //GridResult result = new GridResult();
-            //result.From = 0;
-            //result.To = table.Rows.Count - 1;
-            //result.Total = table.Rows.Count;
-            //result.Data = table;
             return fileName;
         }
 
@@ -344,6 +392,7 @@ namespace TeamSupport.ServiceLibrary
             SqlCommand command = new SqlCommand();
 
             report.GetCommand(command, includeHiddenFields, false, useUserFilter);
+
             if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
             {
                 if (string.IsNullOrWhiteSpace(sortField))
@@ -351,18 +400,20 @@ namespace TeamSupport.ServiceLibrary
                     sortField = GetReportColumnNames(scheduledReportCreator, report.ReportID)[0];
                     isDesc = false;
                 }
+
                 command.CommandText = command.CommandText + " ORDER BY [" + sortField + (isDesc ? "] DESC" : "] ASC");
             }
 
             report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
             report.Collection.Save();
-            //vv maybe not needed. FixCommandParameters(command);
 
             DataTable table = new DataTable();
+
             using (SqlConnection connection = new SqlConnection(scheduledReportCreator.ConnectionString))
             {
                 connection.Open();
                 command.Connection = connection;
+
                 using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                 {
                     try
@@ -375,9 +426,74 @@ namespace TeamSupport.ServiceLibrary
                         throw;
                     }
                 }
+
                 connection.Close();
             }
+
             return table;
+        }
+
+        [Flags]
+        private enum LogType
+        {
+            None = 0,
+            Internal = 1,
+            Public = 2,
+            Both = Internal | Public
+        }
+
+        private void Log(string message, LogType logType = LogType.Internal)
+        {
+            switch (logType)
+            {
+                case LogType.Internal:
+                    Logs.WriteEvent(message);
+                    break;
+                case LogType.Public:
+                    _publicLog.Write(message);
+                    break;
+                case LogType.Both:
+                    Logs.WriteEvent(message);
+                    _publicLog.Write(message);
+                    break;
+                default:
+                    Logs.WriteEvent(message);
+                    break;
+            }
+        }
+
+        public class ReportSenderPublicLog
+        {
+            private string _logPath;
+            private string _fileName;
+
+            public ReportSenderPublicLog(string path, int scheduledReportID)
+            {
+                _logPath = path;
+                _fileName = scheduledReportID.ToString() + ".txt";
+
+                if (!Directory.Exists(_logPath))
+                {
+                    Directory.CreateDirectory(_logPath);
+                }
+            }
+
+            public void Write(string text)
+            {
+                if (!File.Exists(_logPath + @"\" + _fileName))
+                {
+                    foreach (string oldFileName in Directory.GetFiles(_logPath))
+                    {
+                        if (File.GetLastWriteTime(oldFileName).AddDays(30) < DateTime.Today)
+                        {
+                            File.Delete(oldFileName);
+                        }
+                    }
+                }
+
+                int timeOffset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours;
+                File.AppendAllText(_logPath + @"\" + _fileName, string.Format("{0} {1} ({2}): {3}{4}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), timeOffset, text, Environment.NewLine));
+            }
         }
 
         /*
