@@ -980,6 +980,13 @@ namespace TeamSupport.Services
 
    
     [WebMethod(true)]
+    public void DeleteEmail(int emailID)
+    {
+      EmailAddresses emails = new EmailAddresses(UserSession.LoginUser);
+      emails.DeleteFromDB(emailID);
+    }
+   
+    [WebMethod(true)]
     public void DeletePhone(int phoneID)
     {
       PhoneNumbers phoneNumbers = new PhoneNumbers(UserSession.LoginUser);
