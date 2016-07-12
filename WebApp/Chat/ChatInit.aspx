@@ -12,11 +12,6 @@
 
 </head>
 <body>
-<%--    <form id="form1" runat="server">
-        <div>
-    
-        </div>
-    </form>--%>
             <div class="panel panel-default">
                 <div class="panel-heading">How can we help you today?</div>
                 <div class="panel-body">
@@ -38,12 +33,15 @@
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <div class="input-group">
-                        <input type="text" class="form-control" />
-                        <span class="input-group-btn">
-                        <button class="btn btn-default" type="button">Send</button>
-                        </span>
-                    </div>
+                    <form id="message" action="">
+                        <div class="input-group">
+                            <input type="text" class="form-control" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Send</button>
+                            </span>
+                        </div>
+                    </form>
+
                 </div>
             </div>
 </body>
