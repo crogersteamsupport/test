@@ -1,5 +1,6 @@
 ﻿var reportPage = null;
 var _isScheduledReportsSelected = false;
+var _openLog = false;
 
 $(document).ready(function () {
     reportPage = new ReportPage();
@@ -25,7 +26,6 @@ ReportPage = function () {
     this.refresh = function () {
         getReports();
     }
-
 
     $('.report-refresh').click(
     function (e) {
@@ -60,9 +60,7 @@ ReportPage = function () {
 
         getReports();
     });
-
-
-
+    
     parent.Ts.Services.Reports.GetFolders(function (folders) {
         parent.Ts.Settings.User.read('reports-folder', '[]', function (userFolders) {
             var savedIDs = JSON.parse(userFolders);
@@ -159,9 +157,7 @@ ReportPage = function () {
         $(this).addClass('active');
         getReports();
     });
-
-
-
+    
     $('.modal-folder-name').modal({ show: false, "backdrop": 'static' });
     $('.modal-folder-move').modal({ show: false, "backdrop": 'static' });
 
@@ -187,8 +183,7 @@ ReportPage = function () {
         });
 
     });
-
-
+    
     $('.report-list th.report-list-selection').click(function (e) {
         e.preventDefault();
         var check = $(this).find('i');
@@ -231,43 +226,47 @@ ReportPage = function () {
         
         e.stopPropagation();
     });
-
+    
     $('.report-list').on('click', 'tr.report-item', function (e) {
-        e.preventDefault();
-        var row = $(this);
+        if (!_openLog) {
+            e.preventDefault();
+            var row = $(this);
 
-        if (e.ctrlKey) {
-            if (row.hasClass('report-selected')) {
-                row.removeClass('report-selected').find('.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+            if (e.ctrlKey) {
+                if (row.hasClass('report-selected')) {
+                    row.removeClass('report-selected').find('.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+                }
+                else {
+                    row.addClass('report-selected').find('.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
+                }
+
+                if ($('.report-item:visible').length == $('.report-selected.report-item:visible').length) {
+                    $('.report-list th.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
+                }
+                else {
+                    $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+                }
+
+                if (document.selection)
+                    document.selection.empty();
+                else if (window.getSelection)
+                    window.getSelection().removeAllRanges();
             }
             else {
-                row.addClass('report-selected').find('.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
+                if (!_isScheduledReportsSelected) {
+                    $('.report-selected').removeClass('report-selected').find('.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+                    $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+                    row.addClass('report-selected').find('.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
+                }
             }
 
-            if ($('.report-item:visible').length == $('.report-selected.report-item:visible').length) {
-                $('.report-list th.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
-            }
-            else {
-                $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
-            }
-
-            if (document.selection)
-                document.selection.empty();
-            else if (window.getSelection)
-                window.getSelection().removeAllRanges();
+            $('.report-active').removeClass('report-active');
+            row.addClass('report-active');
+            updateToolbar();
+            e.stopPropagation();
         }
-        else {
-        	if (!_isScheduledReportsSelected) {
-            $('.report-selected').removeClass('report-selected').find('.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
-            $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
-            row.addClass('report-selected').find('.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
-        }
-        }
-
-        $('.report-active').removeClass('report-active');
-        row.addClass('report-active');
-        updateToolbar();
-        e.stopPropagation();
+        
+        _openLog = false;
     });
 
 
@@ -467,7 +466,6 @@ ReportPage = function () {
         filterReport();
     });
 
-
     $('.report-list-header').click(function (e) {
         e.preventDefault();
         var item = $(this);
@@ -480,7 +478,6 @@ ReportPage = function () {
         writeSettings(_settings);
         sortReports();
     });
-
 
     function sortReports() {
         var item = $('.report-list-header .fa');
@@ -512,7 +509,6 @@ ReportPage = function () {
         }
     }
 
-
     function getReports() {
         var item = $('.report-menu-item.active');
 		_isScheduledReportsSelected = item.hasClass('menu-scheduled');//vv
@@ -534,6 +530,7 @@ ReportPage = function () {
     }
 
     function loadReports(data) {
+        $('.report-list-log').removeClass("show").addClass("hide");//vv
     	$('.report-list table').find(".report-list-header.report-list-lastviewed").text("Last Viewed");
     	$('.report-list table').find(".report-list-header.report-list-nextrun").remove();
         var reports = JSON.parse(data);
@@ -591,6 +588,7 @@ ReportPage = function () {
     	$('.report-move').addClass('disabled');
     	$('.report-schedule').addClass('disabled');
     	$('.report-list table').find(".report-list-header.report-list-lastviewed").text("Last Run");
+    	$('.report-list-log').removeClass("hide").addClass("show");//vv
 
     	if ($('.report-list table').find(".report-list-header.report-list-nextrun").length == 0) {
     		$("<th class='report-list-header report-list-nextrun' data-sortfield='LastRun'><span>Next Run</span> <i></i></th>").insertAfter(".report-list-header.report-list-lastviewed");//vv
@@ -629,6 +627,15 @@ ReportPage = function () {
     	item.find('.report-list-lastrun').text(report.LastRun ? parent.Ts.Utils.getDateString(report.LastRun, true, true, false) : "Never");
     	item.find('.report-list-nextrun').text(report.NextRun ? parent.Ts.Utils.getDateString(report.NextRun, true, true, false) : "Never");
 
+    	var logFileName = report.Id + '.txt';
+    	var logFileLink = '<a href="../../../dc/' + report.OrganizationId + '/scheduledreportlog/' + report.Id + '" title="Log File" onclick="_openLog = true; return true;">' + logFileName + '</a>';
+
+    	if (report.LastRun == null) {
+    	    logFileLink = 'Not started';
+    	}
+
+        item.find('.report-list-log').html(logFileLink);
+
     	if (report.IsActive) {
     		item.find('.report-list-star i').removeClass('fa-clock-o color-gray').addClass('fa-clock-o color-green');
     	} else {
@@ -638,8 +645,6 @@ ReportPage = function () {
     	item.data('o', report);
     }
 }
-
-
 
 if (!Date.prototype.toISOString) {
     (function () {

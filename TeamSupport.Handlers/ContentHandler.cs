@@ -84,7 +84,8 @@ namespace TeamSupport.Handlers
 						case "contactavatar": ProcessContactAvatar(context, segments.ToArray(), organizationID); break;
 						case "importlog": ProcessImportLog(context, int.Parse(segments[2])); break;
                         case "screenrecordingsettings": ProcessScreenRecordingSettings(context); break;
-						default: context.Response.End(); break;
+                        case "scheduledreportlog": ProcessScheduledReportLog(context, int.Parse(segments[2])); break;//vv
+                        default: context.Response.End(); break;
 					}
 				}
 				else
@@ -1421,6 +1422,47 @@ namespace TeamSupport.Handlers
             context.Response.ContentType = "application/json; charset=utf-8";
             context.Response.Write(JsonConvert.SerializeObject(result));
 
+        }
+
+        private void ProcessScheduledReportLog(HttpContext context, int scheduledReportId)
+        {
+            HttpBrowserCapabilities browser = context.Request.Browser;
+            if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
+            ScheduledReport scheduledReport = ScheduledReports.GetScheduledReport(LoginUser.Anonymous, scheduledReportId);
+            Organization organization = Organizations.GetOrganization(scheduledReport.Collection.LoginUser, scheduledReport.OrganizationId);
+            User user = null;
+            bool isAuthenticated = scheduledReport.OrganizationId == TSAuthentication.OrganizationID;
+
+
+            if (isAuthenticated)
+            {
+                user = Users.GetUser(scheduledReport.Collection.LoginUser, TSAuthentication.UserID);
+            }
+            else
+            {
+                context.Response.Write("Unauthorized");
+                context.Response.ContentType = "text/html";
+                return;
+            }
+
+            string logPath = AttachmentPath.GetPath(scheduledReport.Collection.LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
+            string fileName = scheduledReport.Id.ToString() + ".txt";
+            logPath = Path.Combine(logPath, fileName);
+
+            if (!File.Exists(logPath))
+            {
+                context.Response.Write("Invalid log file.");
+                context.Response.ContentType = "text/html";
+                return;
+            }
+
+            string openType = "attachment";
+            string fileType = "text/plain";
+
+            context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + fileName + "\"");
+            context.Response.ContentType = fileType;
+            context.Response.WriteFile(logPath);
         }
     }
 }
