@@ -428,461 +428,461 @@ AND ot.TicketID = @TicketID
             }
         }
 
-		public Ticket Clone()
-		{
-			int cloneTicketId = 0;
-			LoginUser loginUser = Collection.LoginUser;
-			Tickets tickets = new Tickets(loginUser);
-			Ticket clone = tickets.AddNewTicket();
-			ClonePropertiesTo(clone);
-
-			clone.Collection.Save();
-			cloneTicketId = clone.TicketID;
-
-			DeleteEmailPostsByTicketId(cloneTicketId);
-
-			string actionLog = string.Format("{0} cloned ticket {1} into {2}.", loginUser.GetUserFullName(), this.TicketNumber, clone.TicketNumber);
-			ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-
-			Actions clonedActions = new Actions(loginUser);
-			Actions originalActions = new Actions(loginUser);
-
-			try
-			{
-				//Clone Ticket's actions
-				originalActions.LoadByTicketID(this.TicketID);
-
-				foreach (Action action in originalActions.OrderBy(o => o.DateCreated).ToList())
-				{
-					Action clonedAction = clonedActions.AddNewAction();
-					action.ClonePropertiesTo(clonedAction);
-					clonedAction.TicketID = cloneTicketId;
-				}
-
-				clonedActions.BulkSave();
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Actions into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Actions");
-			}
-
-			try
-			{
-				TicketRelationships originalTicketRelationships = new TicketRelationships(loginUser);
-				originalTicketRelationships.LoadByTicketID(this.TicketID);
-				TicketRelationships clonedTicketRelationships = new TicketRelationships(loginUser);
-
-				foreach (TicketRelationship relationship in originalTicketRelationships)
-				{
-					TicketRelationship clonedRelationship = clonedTicketRelationships.AddNewTicketRelationship();
-					clonedRelationship.OrganizationID = relationship.OrganizationID;
-					clonedRelationship.Ticket1ID = relationship.Ticket1ID == this.TicketID ? cloneTicketId : relationship.Ticket1ID;
-					clonedRelationship.Ticket2ID = relationship.Ticket2ID == this.TicketID ? cloneTicketId : relationship.Ticket2ID;
-					clonedRelationship.CreatorID = relationship.CreatorID;
-					clonedRelationship.DateCreated = relationship.DateCreatedUtc;
-				}
-
-				clonedTicketRelationships.BulkSave();
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Relationships into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Relationships");
-			}
-
-			try
-			{
-				ContactsView originalTicketContacts = new ContactsView(loginUser);
-				originalTicketContacts.LoadByTicketID(this.TicketID);
-
-				foreach (ContactsViewItem contact in originalTicketContacts)
-				{
-					clone.Collection.AddContact(contact.UserID, cloneTicketId);
-				}
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-
-				Organizations originalTicketOrganizations = new Organizations(loginUser);
-				originalTicketOrganizations.LoadByNotContactTicketID(this.TicketID);
-
-				foreach (Organization organization in originalTicketOrganizations)
-				{
-					if (!originalTicketContacts.Where(p => p.OrganizationID == organization.OrganizationID).Any())
-					{
-						clone.Collection.AddOrganization(organization.OrganizationID, cloneTicketId);
-					}
-				}
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Contacts/Companies into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Contacts/Companies");
-			}
-
-			try
-			{
-				ForumTickets originalTicketForums = new ForumTickets(loginUser);
-				originalTicketForums.LoadByTicketID(this.TicketID);
-
-				foreach (int forumCategoryId in originalTicketForums.Select(p => p.ForumCategory))
-				{
-					clone.AddCommunityTicket((int)forumCategoryId);
-				}
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Community into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Community");
-			}
-
-			try
-			{
-				TagLinks originalTicketTags = new TagLinks(loginUser);
-				originalTicketTags.LoadByReference(ReferenceType.Tickets, this.TicketID);
-				TagLinks clonedTicketTags = new TagLinks(loginUser);
-
-				foreach (TagLink tag in originalTicketTags)
-				{
-					TagLink clonedTicketTag = clonedTicketTags.AddNewTagLink();
-					clonedTicketTag.TagID = tag.TagID;
-					clonedTicketTag.RefType = ReferenceType.Tickets;
-					clonedTicketTag.RefID = cloneTicketId;
-					clonedTicketTag.CreatorID = tag.CreatorID;
-					clonedTicketTag.DateCreated = tag.DateCreatedUtc;
-				}
-
-				clonedTicketTags.BulkSave();
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Tags into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Tags");
-			}
-
-			try
-			{
-				CustomValues originalTicketCustomValues = new CustomValues(loginUser);
-				originalTicketCustomValues.LoadExistingOnlyByReferenceType(this.OrganizationID, ReferenceType.Tickets, this.TicketID);
-				CustomValues clonedCustomValues = new CustomValues(loginUser);
-
-				foreach (CustomValue customValue in originalTicketCustomValues)
-				{
-					CustomValue clonedTicketCustomValue = clonedCustomValues.AddNewCustomValue();
-					clonedTicketCustomValue.CustomFieldID = customValue.CustomFieldID;
-					clonedTicketCustomValue.RefID = cloneTicketId;
-					clonedTicketCustomValue.Value = customValue.Value.ToString();
-					clonedTicketCustomValue.CreatorID = customValue.CreatorID;
-					clonedTicketCustomValue.ModifierID = customValue.ModifierID;
-					clonedTicketCustomValue.DateCreated = customValue.DateCreatedUtc;
-					clonedTicketCustomValue.DateModified = customValue.DateModifiedUtc;
-				}
-
-				clonedCustomValues.BulkSave();
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Custom Values into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Custom Values");
-			}
-			
-			try
-			{
-				UsersView originalTicketSubscribers = new UsersView(loginUser);
-				originalTicketSubscribers.LoadBySubscription(this.TicketID, ReferenceType.Tickets);
-
-				foreach (UsersViewItem subscriber in originalTicketSubscribers)
-				{
-					Subscriptions.AddSubscription(loginUser, subscriber.UserID, ReferenceType.Tickets, cloneTicketId);
-				}
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Subscribers into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Subscribers");
-			}
-
-			try
-			{
-				UsersView originalTicketQueuers = new UsersView(loginUser);
-				originalTicketQueuers.LoadByTicketQueue(this.TicketID);
-
-				foreach (UsersViewItem queuer in originalTicketQueuers)
-				{
-					TicketQueue.Enqueue(loginUser, cloneTicketId, queuer.UserID);
-				}
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Queuers into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Queuers");
-			}
-
-			try
-			{
-				Reminders clonedTicketReminders = new Reminders(loginUser);
-				clonedTicketReminders.LoadByItemAll(ReferenceType.Tickets, this.TicketID, null);
-				Reminders reminders = new Reminders(loginUser);
-
-				foreach (Reminder reminder in clonedTicketReminders)
-				{
-					Reminder clonedTicketReminder = reminders.AddNewReminder();
-					clonedTicketReminder.OrganizationID = this.OrganizationID;
-					clonedTicketReminder.RefID = cloneTicketId;
-					clonedTicketReminder.RefType = ReferenceType.Tickets;
-					clonedTicketReminder.Description = reminder.Description;
-					clonedTicketReminder.DueDate = reminder.DueDateUtc;
-					clonedTicketReminder.UserID = reminder.UserID;
-					clonedTicketReminder.IsDismissed = reminder.IsDismissed;
-					clonedTicketReminder.HasEmailSent = reminder.HasEmailSent;
-					clonedTicketReminder.CreatorID = reminder.CreatorID;
-					clonedTicketReminder.DateCreated = reminder.DateCreatedUtc;
-				}
-
-				reminders.BulkSave();
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Reminders into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Reminders");
-			}
-
-			try
-			{
-				Assets originalTicketAssets = new Assets(loginUser);
-				originalTicketAssets.LoadByTicketID(this.TicketID);
-
-				foreach (Asset asset in originalTicketAssets)
-				{
-					clone.Collection.AddAsset(asset.AssetID, cloneTicketId);
-				}
-
-				DeleteEmailPostsByTicketId(cloneTicketId);
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Assets into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Assets");
-			}
-
-			try
-			{
-				TicketLinkToJira linkToJira = new TicketLinkToJira(loginUser);
-				linkToJira.LoadByTicketID(this.TicketID);
-
-				if (linkToJira.Count > 0)
-				{
-					TicketLinkToJiraItemProxy originalTicketJiraLink = linkToJira[0].GetProxy();
-					TicketLinkToJira clonedTicketJiraLink = new TicketLinkToJira(loginUser);
-					TicketLinkToJiraItem clonedJiraLink = clonedTicketJiraLink.AddNewTicketLinkToJiraItem();
-					clonedJiraLink.TicketID = cloneTicketId;
-					clonedJiraLink.SyncWithJira = originalTicketJiraLink.SyncWithJira;
-					clonedJiraLink.JiraID = originalTicketJiraLink.JiraID;
-					clonedJiraLink.JiraKey = originalTicketJiraLink.JiraKey;
-					clonedJiraLink.JiraLinkURL = originalTicketJiraLink.JiraLinkURL;
-					clonedJiraLink.JiraStatus = originalTicketJiraLink.JiraStatus;
-					clonedJiraLink.CreatorID = originalTicketJiraLink.CreatorID;
-					clonedJiraLink.CrmLinkID = originalTicketJiraLink.CrmLinkID;
-
-					DateTime dt;
-
-					if (DateTime.TryParse((originalTicketJiraLink.DateModifiedByJiraSync.ToString()).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-					{
-						clonedJiraLink.DateModifiedByJiraSync = dt.ToUniversalTime();
-					}
-
-					clonedJiraLink.Collection.Save();
-
-					DeleteEmailPostsByTicketId(cloneTicketId);
-				}
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Jira Link into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - JiraLink");
-			}
-
-			try
-			{
-				//attachments!!!
-				if (clonedActions.Any() && originalActions.Any())
-				{
-					Attachments originalAttachments = new Attachments(loginUser);
-					originalAttachments.LoadByTicketId(this.TicketID);
-					Attachments clonedAttachments = new Attachments(loginUser);
-					clonedActions.LoadByTicketID(cloneTicketId);
-
-					foreach (Attachment attachment in originalAttachments)
-					{
-						Attachment clonedAttachment = clonedAttachments.AddNewAttachment();
-						clonedAttachment.OrganizationID = attachment.OrganizationID;
-						clonedAttachment.FileType = attachment.FileType;
-						clonedAttachment.FileSize = attachment.FileSize;
-						clonedAttachment.Description = attachment.Description;
-						clonedAttachment.DateCreated = attachment.DateCreatedUtc;
-						clonedAttachment.DateModified = attachment.DateModifiedUtc;
-						clonedAttachment.CreatorID = attachment.CreatorID;
-						clonedAttachment.ModifierID = attachment.ModifierID;
-						clonedAttachment.RefType = attachment.RefType;
-						clonedAttachment.SentToJira = attachment.SentToJira;
-						clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
-						clonedAttachment.FileName = attachment.FileName;
-
-						//these need to be for the new ticket
-						Action originalAction = originalActions.Where(a => a.ActionID == attachment.RefID).FirstOrDefault();
-						Action matchingClone = clonedActions.Where(c => c.ActionTypeID == originalAction.ActionTypeID
-																							&& c.SystemActionTypeID == originalAction.SystemActionTypeID
-																							&& c.IsVisibleOnPortal == originalAction.IsVisibleOnPortal
-																							&& c.IsKnowledgeBase == originalAction.IsKnowledgeBase
-																							&& c.Pinned == originalAction.Pinned
-																							&& c.IsClean == originalAction.IsClean
-																							&& c.TimeSpent == originalAction.TimeSpent
-																							&& c.ActionSource + "" == originalAction.ActionSource + ""
-																							&& c.Description == originalAction.Description
-																							&& c.Name == originalAction.Name).FirstOrDefault();
-
-						clonedAttachment.RefID = matchingClone.ActionID;
-
-						string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
-															+ matchingClone.ActionID
-															+ attachment.Path.Substring(attachment.Path.IndexOf(originalAction.ActionID.ToString()) + originalAction.ActionID.ToString().Length);
-
-						if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
-						{
-							Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
-						}
-
-						clonedAttachment.Path = clonedActionAttachmentPath;
-
-						File.Copy(attachment.Path, clonedAttachment.Path);
-					}
-
-					clonedAttachments.BulkSave();
-
-					DeleteEmailPostsByTicketId(cloneTicketId);
-				}
-			}
-			catch (Exception ex)
-			{
-				actionLog = string.Format("Failed to clone ticket {0} Attachments into {1}.", this.TicketNumber, clone.TicketNumber);
-				ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-				ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Attachments");
-			}
-
-			//The SLA datetime values were modified by the added Actions, so they need to be reset to the original Ticket values
-			clone.SlaViolationInitialResponse = this.SlaViolationInitialResponseUtc;
-			clone.SlaViolationLastAction = this.SlaViolationLastActionUtc;
-			clone.SlaViolationTimeClosed = this.SlaViolationTimeClosedUtc;
-			clone.SlaWarningInitialResponse = this.SlaWarningInitialResponseUtc;
-			clone.SlaWarningLastAction = this.SlaWarningLastActionUtc;
-			clone.SlaWarningTimeClosed = this.SlaWarningTimeClosedUtc;
-			clone.Collection.Save();
-
-			//Delete the EmailPost of the SLA values updated
-			DeleteEmailPostsByTicketId(cloneTicketId);
-
-			ActionLogs cloneActionLogs = new ActionLogs(loginUser);
-			cloneActionLogs.LoadByTicketID(cloneTicketId);
-
-			foreach(ActionLog log in cloneActionLogs)
-			{
-				if (!log.Description.StartsWith("Failed to clone")
-					&& !log.Description.Contains(string.Format("cloned ticket {0} into {1}", this.TicketNumber, clone.TicketNumber)))
-				{
-					log.Delete();
-				}
-			}
-
-			cloneActionLogs.Save();
-
-			return clone;
-		}
-
-		/// <summary>
-		/// This will clone all Ticket object writable properties using reflection. This way we make sure that if there are more fields added (or deleted) in this table this will still work.
-		/// This was the easier way to do this due to the amount of properties to process and the high possibility of this table scheme being updated often.
-		/// I wanted to do this with serialization (JsonConvert.Deserialize/Serialize object), but didn't work due to how our Data objects are generated (Collections in them), and the primary key.
-		/// </summary>
-		/// <param name="clone">The empty initialized Ticket object to clone to.</param>
-		private void ClonePropertiesTo(Ticket clone)
-		{
-			foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
-			{
-				if (sourcePropertyInfo.CanWrite
-					&& sourcePropertyInfo.Name.ToLower() != "basecollection"
-					&& sourcePropertyInfo.Name.ToLower() != "ticketnumber"
-					&& sourcePropertyInfo.PropertyType != typeof(DateTime)
-					&& sourcePropertyInfo.PropertyType != typeof(DateTime?))
-				{
-					System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name);
-
-					destPropertyInfo.SetValue(
-						clone,
-						sourcePropertyInfo.GetValue(this, null),
-						null);
-				}
-			}
-
-			//DateTime properties are special it needs to be the UTC value. The DateTime (and DateTime?) properties always have a UTC version
-			foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
-			{
-				if (sourcePropertyInfo.CanRead
-					&& sourcePropertyInfo.Name.Substring(sourcePropertyInfo.Name.Length - 3).ToLower() == "utc"
-					&& (sourcePropertyInfo.PropertyType == typeof(DateTime)
-						|| sourcePropertyInfo.PropertyType == typeof(DateTime?)))
-				{
-					System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name.Substring(0, sourcePropertyInfo.Name.Length - 3));
-
-					destPropertyInfo.SetValue(
-						clone,
-						sourcePropertyInfo.GetValue(this, null),
-						null);
-				}
-			}
-
-
-			clone.Name = string.Format("{0} (Clone)", this.Name);
-			clone.DateCreated = DateTime.UtcNow;
-			clone.DateModified = DateTime.UtcNow;
-			clone.NeedsIndexing = true;
-		}
-
-		private void DeleteEmailPostsByTicketId(int ticketId)
-		{
-			EmailPosts emailPost = new EmailPosts(Collection.LoginUser);
-			emailPost.LoadByTicketId(ticketId);
-			emailPost.DeleteAll();
-			emailPost.Save();
-		}
-
-	}
-
-	public partial class Tickets
+        public Ticket Clone()
+        {
+            int cloneTicketId = 0;
+            LoginUser loginUser = Collection.LoginUser;
+            Tickets tickets = new Tickets(loginUser);
+            Ticket clone = tickets.AddNewTicket();
+            ClonePropertiesTo(clone);
+
+            clone.Collection.Save();
+            cloneTicketId = clone.TicketID;
+
+            DeleteEmailPostsByTicketId(cloneTicketId);
+
+            string actionLog = string.Format("{0} cloned ticket {1} into {2}.", loginUser.GetUserFullName(), this.TicketNumber, clone.TicketNumber);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+
+            Actions clonedActions = new Actions(loginUser);
+            Actions originalActions = new Actions(loginUser);
+
+            try
+            {
+                //Clone Ticket's actions
+                originalActions.LoadByTicketID(this.TicketID);
+
+                foreach (Action action in originalActions.OrderBy(o => o.DateCreated).ToList())
+                {
+                    Action clonedAction = clonedActions.AddNewAction();
+                    action.ClonePropertiesTo(clonedAction);
+                    clonedAction.TicketID = cloneTicketId;
+                }
+
+                clonedActions.BulkSave();
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Actions into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Actions");
+            }
+
+            try
+            {
+                TicketRelationships originalTicketRelationships = new TicketRelationships(loginUser);
+                originalTicketRelationships.LoadByTicketID(this.TicketID);
+                TicketRelationships clonedTicketRelationships = new TicketRelationships(loginUser);
+
+                foreach (TicketRelationship relationship in originalTicketRelationships)
+                {
+                    TicketRelationship clonedRelationship = clonedTicketRelationships.AddNewTicketRelationship();
+                    clonedRelationship.OrganizationID = relationship.OrganizationID;
+                    clonedRelationship.Ticket1ID = relationship.Ticket1ID == this.TicketID ? cloneTicketId : relationship.Ticket1ID;
+                    clonedRelationship.Ticket2ID = relationship.Ticket2ID == this.TicketID ? cloneTicketId : relationship.Ticket2ID;
+                    clonedRelationship.CreatorID = relationship.CreatorID;
+                    clonedRelationship.DateCreated = relationship.DateCreatedUtc;
+                }
+
+                clonedTicketRelationships.BulkSave();
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Relationships into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Relationships");
+            }
+
+            try
+            {
+                ContactsView originalTicketContacts = new ContactsView(loginUser);
+                originalTicketContacts.LoadByTicketID(this.TicketID);
+
+                foreach (ContactsViewItem contact in originalTicketContacts)
+                {
+                    clone.Collection.AddContact(contact.UserID, cloneTicketId);
+                }
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+
+                Organizations originalTicketOrganizations = new Organizations(loginUser);
+                originalTicketOrganizations.LoadByNotContactTicketID(this.TicketID);
+
+                foreach (Organization organization in originalTicketOrganizations)
+                {
+                    if (!originalTicketContacts.Where(p => p.OrganizationID == organization.OrganizationID).Any())
+                    {
+                        clone.Collection.AddOrganization(organization.OrganizationID, cloneTicketId);
+                    }
+                }
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Contacts/Companies into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Contacts/Companies");
+            }
+
+            try
+            {
+                ForumTickets originalTicketForums = new ForumTickets(loginUser);
+                originalTicketForums.LoadByTicketID(this.TicketID);
+
+                foreach (int forumCategoryId in originalTicketForums.Select(p => p.ForumCategory))
+                {
+                    clone.AddCommunityTicket((int)forumCategoryId);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Community into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Community");
+            }
+
+            try
+            {
+                TagLinks originalTicketTags = new TagLinks(loginUser);
+                originalTicketTags.LoadByReference(ReferenceType.Tickets, this.TicketID);
+                TagLinks clonedTicketTags = new TagLinks(loginUser);
+
+                foreach (TagLink tag in originalTicketTags)
+                {
+                    TagLink clonedTicketTag = clonedTicketTags.AddNewTagLink();
+                    clonedTicketTag.TagID = tag.TagID;
+                    clonedTicketTag.RefType = ReferenceType.Tickets;
+                    clonedTicketTag.RefID = cloneTicketId;
+                    clonedTicketTag.CreatorID = tag.CreatorID;
+                    clonedTicketTag.DateCreated = tag.DateCreatedUtc;
+                }
+
+                clonedTicketTags.BulkSave();
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Tags into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Tags");
+            }
+
+            try
+            {
+                CustomValues originalTicketCustomValues = new CustomValues(loginUser);
+                originalTicketCustomValues.LoadExistingOnlyByReferenceType(this.OrganizationID, ReferenceType.Tickets, this.TicketID);
+                CustomValues clonedCustomValues = new CustomValues(loginUser);
+
+                foreach (CustomValue customValue in originalTicketCustomValues)
+                {
+                    CustomValue clonedTicketCustomValue = clonedCustomValues.AddNewCustomValue();
+                    clonedTicketCustomValue.CustomFieldID = customValue.CustomFieldID;
+                    clonedTicketCustomValue.RefID = cloneTicketId;
+                    clonedTicketCustomValue.Value = customValue.Value.ToString();
+                    clonedTicketCustomValue.CreatorID = customValue.CreatorID;
+                    clonedTicketCustomValue.ModifierID = customValue.ModifierID;
+                    clonedTicketCustomValue.DateCreated = customValue.DateCreatedUtc;
+                    clonedTicketCustomValue.DateModified = customValue.DateModifiedUtc;
+                }
+
+                clonedCustomValues.BulkSave();
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Custom Values into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Custom Values");
+            }
+
+            try
+            {
+                UsersView originalTicketSubscribers = new UsersView(loginUser);
+                originalTicketSubscribers.LoadBySubscription(this.TicketID, ReferenceType.Tickets);
+
+                foreach (UsersViewItem subscriber in originalTicketSubscribers)
+                {
+                    Subscriptions.AddSubscription(loginUser, subscriber.UserID, ReferenceType.Tickets, cloneTicketId);
+                }
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Subscribers into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Subscribers");
+            }
+
+            try
+            {
+                UsersView originalTicketQueuers = new UsersView(loginUser);
+                originalTicketQueuers.LoadByTicketQueue(this.TicketID);
+
+                foreach (UsersViewItem queuer in originalTicketQueuers)
+                {
+                    TicketQueue.Enqueue(loginUser, cloneTicketId, queuer.UserID);
+                }
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Queuers into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Queuers");
+            }
+
+            try
+            {
+                Reminders clonedTicketReminders = new Reminders(loginUser);
+                clonedTicketReminders.LoadByItemAll(ReferenceType.Tickets, this.TicketID, null);
+                Reminders reminders = new Reminders(loginUser);
+
+                foreach (Reminder reminder in clonedTicketReminders)
+                {
+                    Reminder clonedTicketReminder = reminders.AddNewReminder();
+                    clonedTicketReminder.OrganizationID = this.OrganizationID;
+                    clonedTicketReminder.RefID = cloneTicketId;
+                    clonedTicketReminder.RefType = ReferenceType.Tickets;
+                    clonedTicketReminder.Description = reminder.Description;
+                    clonedTicketReminder.DueDate = reminder.DueDateUtc;
+                    clonedTicketReminder.UserID = reminder.UserID;
+                    clonedTicketReminder.IsDismissed = reminder.IsDismissed;
+                    clonedTicketReminder.HasEmailSent = reminder.HasEmailSent;
+                    clonedTicketReminder.CreatorID = reminder.CreatorID;
+                    clonedTicketReminder.DateCreated = reminder.DateCreatedUtc;
+                }
+
+                reminders.BulkSave();
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Reminders into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Reminders");
+            }
+
+            try
+            {
+                Assets originalTicketAssets = new Assets(loginUser);
+                originalTicketAssets.LoadByTicketID(this.TicketID);
+
+                foreach (Asset asset in originalTicketAssets)
+                {
+                    clone.Collection.AddAsset(asset.AssetID, cloneTicketId);
+                }
+
+                DeleteEmailPostsByTicketId(cloneTicketId);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Assets into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Assets");
+            }
+
+            try
+            {
+                TicketLinkToJira linkToJira = new TicketLinkToJira(loginUser);
+                linkToJira.LoadByTicketID(this.TicketID);
+
+                if (linkToJira.Count > 0)
+                {
+                    TicketLinkToJiraItemProxy originalTicketJiraLink = linkToJira[0].GetProxy();
+                    TicketLinkToJira clonedTicketJiraLink = new TicketLinkToJira(loginUser);
+                    TicketLinkToJiraItem clonedJiraLink = clonedTicketJiraLink.AddNewTicketLinkToJiraItem();
+                    clonedJiraLink.TicketID = cloneTicketId;
+                    clonedJiraLink.SyncWithJira = originalTicketJiraLink.SyncWithJira;
+                    clonedJiraLink.JiraID = originalTicketJiraLink.JiraID;
+                    clonedJiraLink.JiraKey = originalTicketJiraLink.JiraKey;
+                    clonedJiraLink.JiraLinkURL = originalTicketJiraLink.JiraLinkURL;
+                    clonedJiraLink.JiraStatus = originalTicketJiraLink.JiraStatus;
+                    clonedJiraLink.CreatorID = originalTicketJiraLink.CreatorID;
+                    clonedJiraLink.CrmLinkID = originalTicketJiraLink.CrmLinkID;
+
+                    DateTime dt;
+
+                    if (DateTime.TryParse((originalTicketJiraLink.DateModifiedByJiraSync.ToString()).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+                    {
+                        clonedJiraLink.DateModifiedByJiraSync = dt.ToUniversalTime();
+                    }
+
+                    clonedJiraLink.Collection.Save();
+
+                    DeleteEmailPostsByTicketId(cloneTicketId);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Jira Link into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - JiraLink");
+            }
+
+            try
+            {
+                //attachments!!!
+                if (clonedActions.Any() && originalActions.Any())
+                {
+                    Attachments originalAttachments = new Attachments(loginUser);
+                    originalAttachments.LoadByTicketId(this.TicketID);
+                    Attachments clonedAttachments = new Attachments(loginUser);
+                    clonedActions.LoadByTicketID(cloneTicketId);
+
+                    foreach (Attachment attachment in originalAttachments)
+                    {
+                        Attachment clonedAttachment = clonedAttachments.AddNewAttachment();
+                        clonedAttachment.OrganizationID = attachment.OrganizationID;
+                        clonedAttachment.FileType = attachment.FileType;
+                        clonedAttachment.FileSize = attachment.FileSize;
+                        clonedAttachment.Description = attachment.Description;
+                        clonedAttachment.DateCreated = attachment.DateCreatedUtc;
+                        clonedAttachment.DateModified = attachment.DateModifiedUtc;
+                        clonedAttachment.CreatorID = attachment.CreatorID;
+                        clonedAttachment.ModifierID = attachment.ModifierID;
+                        clonedAttachment.RefType = attachment.RefType;
+                        clonedAttachment.SentToJira = attachment.SentToJira;
+                        clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
+                        clonedAttachment.FileName = attachment.FileName;
+
+                        //these need to be for the new ticket
+                        Action originalAction = originalActions.Where(a => a.ActionID == attachment.RefID).FirstOrDefault();
+                        Action matchingClone = clonedActions.Where(c => c.ActionTypeID == originalAction.ActionTypeID
+                                                                                            && c.SystemActionTypeID == originalAction.SystemActionTypeID
+                                                                                            && c.IsVisibleOnPortal == originalAction.IsVisibleOnPortal
+                                                                                            && c.IsKnowledgeBase == originalAction.IsKnowledgeBase
+                                                                                            && c.Pinned == originalAction.Pinned
+                                                                                            && c.IsClean == originalAction.IsClean
+                                                                                            && c.TimeSpent == originalAction.TimeSpent
+                                                                                            && c.ActionSource + "" == originalAction.ActionSource + ""
+                                                                                            && c.Description == originalAction.Description
+                                                                                            && c.Name == originalAction.Name).FirstOrDefault();
+
+                        clonedAttachment.RefID = matchingClone.ActionID;
+
+                        string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
+                                                            + matchingClone.ActionID
+                                                            + attachment.Path.Substring(attachment.Path.IndexOf(originalAction.ActionID.ToString()) + originalAction.ActionID.ToString().Length);
+
+                        if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
+                        }
+
+                        clonedAttachment.Path = clonedActionAttachmentPath;
+
+                        File.Copy(attachment.Path, clonedAttachment.Path);
+                    }
+
+                    clonedAttachments.BulkSave();
+
+                    DeleteEmailPostsByTicketId(cloneTicketId);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Attachments into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Attachments");
+            }
+
+            //The SLA datetime values were modified by the added Actions, so they need to be reset to the original Ticket values
+            clone.SlaViolationInitialResponse = this.SlaViolationInitialResponseUtc;
+            clone.SlaViolationLastAction = this.SlaViolationLastActionUtc;
+            clone.SlaViolationTimeClosed = this.SlaViolationTimeClosedUtc;
+            clone.SlaWarningInitialResponse = this.SlaWarningInitialResponseUtc;
+            clone.SlaWarningLastAction = this.SlaWarningLastActionUtc;
+            clone.SlaWarningTimeClosed = this.SlaWarningTimeClosedUtc;
+            clone.Collection.Save();
+
+            //Delete the EmailPost of the SLA values updated
+            DeleteEmailPostsByTicketId(cloneTicketId);
+
+            ActionLogs cloneActionLogs = new ActionLogs(loginUser);
+            cloneActionLogs.LoadByTicketID(cloneTicketId);
+
+            foreach (ActionLog log in cloneActionLogs)
+            {
+                if (!log.Description.StartsWith("Failed to clone")
+                    && !log.Description.Contains(string.Format("cloned ticket {0} into {1}", this.TicketNumber, clone.TicketNumber)))
+                {
+                    log.Delete();
+                }
+            }
+
+            cloneActionLogs.Save();
+
+            return clone;
+        }
+
+        /// <summary>
+        /// This will clone all Ticket object writable properties using reflection. This way we make sure that if there are more fields added (or deleted) in this table this will still work.
+        /// This was the easier way to do this due to the amount of properties to process and the high possibility of this table scheme being updated often.
+        /// I wanted to do this with serialization (JsonConvert.Deserialize/Serialize object), but didn't work due to how our Data objects are generated (Collections in them), and the primary key.
+        /// </summary>
+        /// <param name="clone">The empty initialized Ticket object to clone to.</param>
+        private void ClonePropertiesTo(Ticket clone)
+        {
+            foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
+            {
+                if (sourcePropertyInfo.CanWrite
+                    && sourcePropertyInfo.Name.ToLower() != "basecollection"
+                    && sourcePropertyInfo.Name.ToLower() != "ticketnumber"
+                    && sourcePropertyInfo.PropertyType != typeof(DateTime)
+                    && sourcePropertyInfo.PropertyType != typeof(DateTime?))
+                {
+                    System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name);
+
+                    destPropertyInfo.SetValue(
+                        clone,
+                        sourcePropertyInfo.GetValue(this, null),
+                        null);
+                }
+            }
+
+            //DateTime properties are special it needs to be the UTC value. The DateTime (and DateTime?) properties always have a UTC version
+            foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
+            {
+                if (sourcePropertyInfo.CanRead
+                    && sourcePropertyInfo.Name.Substring(sourcePropertyInfo.Name.Length - 3).ToLower() == "utc"
+                    && (sourcePropertyInfo.PropertyType == typeof(DateTime)
+                        || sourcePropertyInfo.PropertyType == typeof(DateTime?)))
+                {
+                    System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name.Substring(0, sourcePropertyInfo.Name.Length - 3));
+
+                    destPropertyInfo.SetValue(
+                        clone,
+                        sourcePropertyInfo.GetValue(this, null),
+                        null);
+                }
+            }
+
+
+            clone.Name = string.Format("{0} (Clone)", this.Name);
+            clone.DateCreated = DateTime.UtcNow;
+            clone.DateModified = DateTime.UtcNow;
+            clone.NeedsIndexing = true;
+        }
+
+        private void DeleteEmailPostsByTicketId(int ticketId)
+        {
+            EmailPosts emailPost = new EmailPosts(Collection.LoginUser);
+            emailPost.LoadByTicketId(ticketId);
+            emailPost.DeleteAll();
+            emailPost.Save();
+        }
+
+    }
+
+    public partial class Tickets
     {
         private string _actionLogInstantMessage = null;
 
@@ -1344,11 +1344,11 @@ AND ts.IsClosed = 0";
             }
         }
 
-		public void LoadTopXKBByCategoryID(int categoryID, int organizationID, int limit)
-		{
-			using (SqlCommand command = new SqlCommand())
-			{
-				command.CommandText = @"SELECT TOP (@Limit) TicketID, NAME
+        public void LoadTopXKBByCategoryID(int categoryID, int organizationID, int limit)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT TOP (@Limit) TicketID, NAME
 																FROM Tickets
 																WHERE 
 																	OrganizationID              = @OrganizationID 
@@ -1357,29 +1357,29 @@ AND ts.IsClosed = 0";
 																	AND KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
 																ORDER BY 
 																	DateModified desc";
-				command.CommandType = CommandType.Text;
-				command.Parameters.AddWithValue("@OrganizationID", organizationID);
-				command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
-				command.Parameters.AddWithValue("@Limit", limit);
-				Fill(command, "Tickets");
-			}
-		}
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
+                command.Parameters.AddWithValue("@Limit", limit);
+                Fill(command, "Tickets");
+            }
+        }
 
-		public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
-		{
-			using (SqlCommand command = new SqlCommand())
-			{
-				StringBuilder builder = new StringBuilder();
-				builder.Append(@"SELECT t.TicketID, NAME
+        public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.Append(@"SELECT t.TicketID, NAME
 																FROM Tickets as T
 																WHERE 
 																	t.OrganizationID              = @OrganizationID 
 																	AND t.IsKnowledgeBase         = 1
 																	AND t.IsVisibleOnPortal         = 1
 																	AND t.KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID");
-				if (customerID > 0)
-				{
-					builder.Append(@" AND(
+                if (customerID > 0 && enforceCustomerProduct)
+                {
+                    builder.Append(@" AND(
 																						T.ProductID IS NULL
 																						OR T.ProductID IN(
 																								SELECT productid
@@ -1387,38 +1387,36 @@ AND ts.IsClosed = 0";
 																								WHERE organizationid = @CustomerID
 																							)");
 
-					if (contactID > 0 && enforceCustomerProduct)
-					{
-						builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
-					}
-					builder.Append(")");
-				}
-				builder.Append(@" ORDER BY t.DateModified desc");
-				command.CommandText = builder.ToString();
-				command.CommandType = CommandType.Text;
-				command.Parameters.AddWithValue("@OrganizationID", organizationID);
-				command.Parameters.AddWithValue("@CustomerID", customerID);
-				command.Parameters.AddWithValue("@ContactID", contactID);
-				command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
-				Fill(command, "Tickets");
-			}
-		}
+                    builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
 
-		public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
-		{
-			using (SqlCommand command = new SqlCommand())
-			{
-				StringBuilder builder = new StringBuilder();
-				builder.Append(@"SELECT t.TicketID, NAME
+                    builder.Append(")");
+                }
+                builder.Append(@" ORDER BY t.DateModified desc");
+                command.CommandText = builder.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@CustomerID", customerID);
+                command.Parameters.AddWithValue("@ContactID", contactID);
+                command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
+                Fill(command, "Tickets");
+            }
+        }
+
+        public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.Append(@"SELECT t.TicketID, NAME
 																FROM Tickets as T
 																WHERE 
 																	t.OrganizationID              = @OrganizationID 
 																	AND t.IsKnowledgeBase         = 1
 																	AND t.IsVisibleOnPortal         = 1
 																	AND t.KnowledgeBaseCategoryID IS NULL");
-				if (customerID > 0)
-				{
-					builder.Append(@" AND(
+                if (customerID > 0)
+                {
+                    builder.Append(@" AND(
 																						T.ProductID IS NULL
 																						OR T.ProductID IN(
 																								SELECT productid
@@ -1426,23 +1424,23 @@ AND ts.IsClosed = 0";
 																								WHERE organizationid = @CustomerID
 																							)");
 
-					if (contactID > 0 && enforceCustomerProduct)
-					{
-						builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
-					}
-					builder.Append(")");
-				}
-				builder.Append(@" ORDER BY t.DateModified desc");
-				command.CommandText = builder.ToString();
-				command.CommandType = CommandType.Text;
-				command.Parameters.AddWithValue("@OrganizationID", organizationID);
-				command.Parameters.AddWithValue("@CustomerID", customerID);
-				command.Parameters.AddWithValue("@ContactID", contactID);
-				Fill(command, "Tickets");
-			}
-		}
+                    if (contactID > 0 && enforceCustomerProduct)
+                    {
+                        builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
+                    }
+                    builder.Append(")");
+                }
+                builder.Append(@" ORDER BY t.DateModified desc");
+                command.CommandText = builder.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@CustomerID", customerID);
+                command.Parameters.AddWithValue("@ContactID", contactID);
+                Fill(command, "Tickets");
+            }
+        }
 
-		public void LoadPortalUserTickets(int userID, bool isClosed)
+        public void LoadPortalUserTickets(int userID, bool isClosed)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -2223,7 +2221,7 @@ WHERE tgv.OrganizationID = @OrganizationID"
 
         }
 
-		public void LoadByDescription(int organizationID, string description)
+        public void LoadByDescription(int organizationID, string description)
         {
             LoadByDescription(organizationID, description, 0);
         }
@@ -2739,10 +2737,10 @@ AND u.OrganizationID = @OrganizationID
 																ORDER BY ticketratings.VIEWS DESC";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
-								command.Parameters.AddWithValue("@CustomerID", customerID);
-				Fill(command);
+                command.Parameters.AddWithValue("@CustomerID", customerID);
+                Fill(command);
             }
-        } 
+        }
 
         public void LoadByRecentKnowledgeBase(int organizationID, int customerID, int top)
         {
