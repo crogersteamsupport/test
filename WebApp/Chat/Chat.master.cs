@@ -18,7 +18,7 @@ public partial class Chat_Chat : System.Web.UI.MasterPage
     {
       Organizations organizations = new Organizations(LoginUser.Anonymous);
       organizations.LoadByChatID(new Guid(Request["uid"]));
-      if (organizations.IsEmpty) throw new Exception();
+      if (organizations.IsEmpty) throw new Exception("ChatID not found");
       _organization = organizations[0];
     }
 
