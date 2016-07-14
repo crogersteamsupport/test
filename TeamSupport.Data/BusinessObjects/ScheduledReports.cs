@@ -340,5 +340,22 @@ WHERE
 		public DateTime DateCreated { get; set; }
 		[DataMember]
 		public DateTime? DateModified { get; set; }
+        [DataMember]
+        public bool HasLogFile
+        {
+            get
+            {
+                bool hasLogFile = false;
+
+                if (OrganizationId != null && Id > 0)
+                {
+                    string path = AttachmentPath.GetPath(LoginUser.Anonymous, (int)OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
+                    string fileName = Id.ToString() + ".txt";
+                    hasLogFile = System.IO.File.Exists(System.IO.Path.Combine(path, fileName));
+                }
+
+                return hasLogFile;
+            }
+        }
 	}
 }

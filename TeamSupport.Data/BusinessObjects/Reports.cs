@@ -2387,7 +2387,7 @@ ORDER BY r.Name
         command.CommandText = @"
 SELECT TOP {0:D} r.*
 FROM Reports r
-WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL)) AND (r.CreatorID = @UserID AND r.IsPrivate = 1)
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL))  AND (r.CreatorID = @UserID OR r.IsPrivate = 0)
 AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
 AND r.Name LIKE '%' + @Term + '%'
 ORDER BY r.Name

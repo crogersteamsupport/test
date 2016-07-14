@@ -632,6 +632,8 @@ ReportPage = function () {
 
     	if (report.LastRun == null) {
     	    logFileLink = 'Not started';
+    	} else if (!report.HasLogFile) {
+    	    logFileLink = 'N/A';
     	}
 
         item.find('.report-list-log').html(logFileLink);
