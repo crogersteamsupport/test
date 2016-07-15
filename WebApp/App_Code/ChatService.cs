@@ -5,6 +5,7 @@ using PusherServer;
 using Newtonsoft.Json;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
+using System.Web.Script.Serialization;
 
 namespace TSWebServices
 {
@@ -23,14 +24,17 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void AddMessage(string message, string channelName)
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string AddMessage(string channelName, string message)
         {
 
-            var result = pusher.Trigger(channelName, "NewMessage", new { message = message });
+            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = loginUser.GetUserFullName() });
+            return true.ToString();
         }
 
         [WebMethod]
-        public string Auth(string channel_name, string socket_id)
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void Auth(string channel_name, string socket_id)
         {
             var channelData = new PresenceChannelData()
             {
@@ -44,9 +48,7 @@ namespace TSWebServices
 
             var auth = pusher.Authenticate(channel_name, socket_id, channelData);
             var json = auth.ToJson();
-            var returnObject = new { Content = json, ContentType = "application/json" };
-
-            return JsonConvert.SerializeObject(returnObject, Formatting.Indented);
+            Context.Response.Write(json);
         }
     }
 }

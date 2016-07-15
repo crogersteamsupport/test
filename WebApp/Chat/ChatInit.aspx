@@ -15,7 +15,21 @@
             <div class="panel panel-default">
                 <div class="panel-heading">How can we help you today?</div>
                 <div class="panel-body">
-                    <div class="row message-bubble">
+                    <ul id="message-list" class="list-group">
+                        <li class="list-group-item message-bubble">
+                            <p class="text-muted">Matt Townsen</p>
+                            <p>Why is yo shit so broke?</p>
+                        </li>
+                        <li class="list-group-item message-bubble">
+                            <p class="text-muted">Matt Townsen</p>
+                            <p>Why is yo shit so broke?</p>
+                        </li>
+                        <li class="list-group-item message-bubble">
+                            <p class="text-muted">Matt Townsen</p>
+                            <p>Why is yo shit so broke?</p>
+                        </li>
+                    </ul>
+<%--                    <div class="row message-bubble">
                         <p class="text-muted">Matt Townsen</p>
                         <p>Why is yo shit so broke?</p>
                     </div>
@@ -30,12 +44,12 @@
                     <div class="row message-bubble">
                         <p class="text-muted">Matt Townsen</p>
                         <p>Test message</p>
-                    </div>
+                    </div>--%>
                 </div>
                 <div class="panel-footer">
-                    <form id="message" action="">
+                    <form id="message-form" action="">
                         <div class="input-group">
-                            <input type="text" class="form-control" />
+                            <input id="message" type="text" class="form-control" />
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="submit">Send</button>
                             </span>

@@ -1,26 +1,70 @@
 ﻿$(document).ready(function () {
-    var pusher = new Pusher('0cc6bf2df4f20b16ba4d', { authEndpoint: '../Services/ChatService.asmx/Auth' });
-    var privateChannel = pusher.subscribe('presence-test');
+    var channelName = 'presence-test';
+    var pusher = new Pusher('0cc6bf2df4f20b16ba4d', { authEndpoint: service + 'Auth' });
+    var channel = pusher.subscribe(channelName);
     
-    privateChannel.bind('pusher:subscription_succeeded', function () {alert('test')
-        var me = privateChannel.members.me;
-        var userId = me.id;
-        var userInfo = me.info;
-        alert(me)
+    channel.bind('pusher:subscription_succeeded', function () {
+        console.log(channel.members);
     });
 
-    privateChannel.bind('pusher:subscription_error', function (status) {
-        alert(status)
-
+    channel.bind('pusher:subscription_error', function (status) {
+        console.log(status);
     });
+
+    channel.bind('new-comment', function (data) {
+        console.log(data);
+        createMessageElement(data)
+        //console.log(data);
+        //alert(data.message)
+    });
+    
     
 
 
-    $("#message").submit(function (e) {
+    $("#message-form").submit(function (e) {
         e.preventDefault();
-        var message = $('#messageinput').val();
-        var triggered = channel.trigger(eventName, message);
+
+        var messageData = { channelName: 'presence-test', message: $('#message').val() };
+        
+        IssueAjaxRequest("AddMessage", messageData,
+        function (result) {
+
+        },
+        function (error) {
+
+        });
 
     });
   
 });
+
+function createMessageElement(messageData) {
+    $('#message-list').append('<li class="list-group-item message-bubble"> '+
+                            '<p class="text-muted">' + messageData.userName + '</p> ' +
+                            '<p>' + messageData.message + '</p></li>')
+}
+
+var service = '../Services/ChatService.asmx/';
+function IssueAjaxRequest(method, data, successCallback, errorCallback) {
+    $.ajax({
+        type: "POST",
+        url: service + method,
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        cache: false,
+        dataFilter: function (data) {
+            var jsonResult = eval('(' + data + ')');
+            if (jsonResult.hasOwnProperty('d'))
+                return jsonResult.d;
+            else
+                return jsonResult;
+        },
+        success: function (jsonResult) {
+            successCallback(jsonResult);
+        },
+        error: function (error, errorStatus, errorThrown) {
+            if (errorCallback) errorCallback(error);
+        }
+    });
+}
