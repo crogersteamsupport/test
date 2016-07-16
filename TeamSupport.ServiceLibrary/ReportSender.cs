@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Data;
@@ -15,18 +16,18 @@ namespace TeamSupport.ServiceLibrary
 	[Serializable]
 	public class ReportSender : ServiceThreadPoolProcess
 	{
-		private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
 		private bool _isDebug = false;
 		private static object _staticLock = new object();
 		private MailAddressCollection _debugAddresses;
         private ReportSenderPublicLog _publicLog;
+        public const string PHANTOMJSCOMMAND = @"phantomjs highcharts-convert.js -infile {0}\{1} -outfile {2}";
 
         public ReportSender()
 		{
 		  _debugAddresses = new MailAddressCollection();
 		}
 
-		public override void Run()
+        public override void Run()
 		{
             ScheduledReports.UnlockThread(LoginUser, (int)_threadPosition);
 
@@ -34,7 +35,7 @@ namespace TeamSupport.ServiceLibrary
 			{
                 Logs.WriteHeader("Starting Run");
 
-				try
+                try
 				{
                     int waitBeforeLoggingWithoutScheduledReportsDue = 15;
                     DateTime noScheduledReportsDue = DateTime.UtcNow;
@@ -59,8 +60,8 @@ namespace TeamSupport.ServiceLibrary
 
                             if (scheduledReport != null)
                             {
-                                string path = AttachmentPath.GetPath(LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
-                                _publicLog = new ReportSenderPublicLog(path, scheduledReport.Id);
+                                string publicLogPath = AttachmentPath.GetPath(LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
+                                _publicLog = new ReportSenderPublicLog(publicLogPath, scheduledReport.Id);
                                 QueueEmail(scheduledReport);
                                 noScheduledReportsDue = DateTime.UtcNow;
                             }
@@ -135,6 +136,77 @@ namespace TeamSupport.ServiceLibrary
             return report.GetSqlColumns();
         }
 
+        private string GetReportChartFile(ScheduledReport scheduledReport)
+        {
+            string path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            string chartOptionsFilesDirectory = "ChartOptionsFiles";
+            string chartOptionsFilesPath = Path.Combine(path, chartOptionsFilesDirectory);
+
+            if (!Directory.Exists(chartOptionsFilesPath))
+            {
+                Directory.CreateDirectory(chartOptionsFilesPath);
+            }
+
+            //ToDo //vv generate the JS file with the chart options and data!!
+            string optionsFileData = string.Empty;
+
+            string optionsFile = string.Format("{0}_{1}.js", scheduledReport.Id, scheduledReport.ReportId);
+            optionsFile = Path.Combine(chartOptionsFilesPath, optionsFile);
+            File.WriteAllText(optionsFile, optionsFileData);
+
+            string outputImagePath = AttachmentPath.GetPath(_loginUser, 13679, AttachmentPath.Folder.ScheduledReports);
+            string outputImage = string.Format("{0}\\{1}_{2}.png", outputImagePath, scheduledReport.Id, scheduledReport.ReportId);
+
+            //Create Batch File
+            string batchFile = string.Format("thread_{0}.bat", _threadPosition);
+            string batchFileCommand = string.Format(PHANTOMJSCOMMAND, chartOptionsFilesDirectory, optionsFile, outputImage);
+            string batchFileFullPath = Path.Combine(path, batchFile);
+            File.WriteAllText(batchFileFullPath, batchFileCommand);
+
+            bool isImageCreated = ExecuteCommand(batchFileFullPath);
+
+            if (!isImageCreated)
+            {
+                outputImage = string.Empty;
+            }
+
+            return outputImage;
+        }
+
+        private static bool ExecuteCommand(string command)
+        {
+            bool isSuccessful = false;
+            int exitCode;
+            ProcessStartInfo processInfo;
+            Process process;
+
+            processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            // *** Redirect the output ***
+            processInfo.RedirectStandardError = true;
+            processInfo.RedirectStandardOutput = true;
+
+            process = System.Diagnostics.Process.Start(processInfo);
+            process.WaitForExit();
+
+            // *** Read the streams ***
+            // Warning: This approach can lead to deadlocks, see Edit #2
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+
+            exitCode = process.ExitCode;
+
+            Console.WriteLine("output>>" + (String.IsNullOrEmpty(output) ? "(none)" : output));
+            Console.WriteLine("error>>" + (String.IsNullOrEmpty(error) ? "(none)" : error));
+            Console.WriteLine("ExitCode: " + exitCode.ToString(), "ExecuteCommand");
+            process.Close();
+
+            isSuccessful = exitCode == 0 && string.IsNullOrEmpty(error);
+
+            return isSuccessful;
+        }
+
         private void QueueEmail(ScheduledReport scheduledReport)
         {
             Log(string.Format("Scheduled Report Id: {0}, Report Id: {1}, Organization {2}", scheduledReport.Id.ToString(), scheduledReport.ReportId, scheduledReport.OrganizationId));
@@ -148,9 +220,19 @@ namespace TeamSupport.ServiceLibrary
                 Log("Getting report");
                 Report report = Reports.GetReport(scheduledReportCreator, scheduledReport.ReportId, LoginUser.UserID);
                 Log(string.Format("Report \"{0}\" settings loaded", report.Name), LogType.Both);
+                Log(string.Format("Generating {0} Report", report.ReportDefType.ToString()), LogType.Both);
 
-                Log("Generating Report", LogType.Both);
-                string reportAttachmentFile = GetReportDataToFile(scheduledReportCreator, report, scheduledReport.Id, "", false, true, Logs);
+                string reportAttachmentFile = "";
+
+                if (report.ReportDefType == ReportType.Chart)
+                {
+                    reportAttachmentFile = GetReportChartFile();
+                }
+                else
+                {
+                    reportAttachmentFile = GetReportDataToFile(scheduledReportCreator, report, scheduledReport.Id, "", false, true, Logs);
+                }
+
                 Log(string.Format("Report generated and file attachment created: {0}", Path.GetFileName(reportAttachmentFile)), LogType.Public);
                 Log(string.Format("Report file to attach: {0}", reportAttachmentFile));
 

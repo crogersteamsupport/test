@@ -99,10 +99,24 @@ namespace TeamSupport.Handlers
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Report report = Reports.GetReport(loginUser, GetIntFromArgs(args["reportID"]), TSAuthentication.UserID);
-      Reports.UpdateReportView(loginUser, report.ReportID);
-      SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
-      DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), summaryReport, true, report);
-      return Reports.BuildChartData(loginUser, table, summaryReport);
+      bool isScheduledReport = args["scheduledreportid"] != null;
+
+        if (isScheduledReport)
+        {
+            int scheduledReportId = (int)args["scheduledreportid"];
+            ScheduledReport scheduledReport = ScheduledReports.GetScheduledReport(loginUser, scheduledReportId);
+            loginUser = new LoginUser(scheduledReport.CreatorId, scheduledReport.OrganizationId, null);
+            report = Reports.GetReport(loginUser, GetIntFromArgs(args["reportID"]), loginUser.UserID);
+        }
+        else
+        {
+            Reports.UpdateReportView(loginUser, report.ReportID);
+        }
+        
+        SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
+        DataTable table = Reports.GetSummaryData(loginUser, summaryReport, true, report);
+
+        return Reports.BuildChartData(loginUser, table, summaryReport);
     }
 
     private static int GetIntFromArgs(JToken arg)
