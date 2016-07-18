@@ -927,8 +927,8 @@ namespace TeamSupport.ServiceLibrary
                             {
                                 AgentRatingsOptions options = new AgentRatingsOptions(_loginUser);
                                 options.LoadByOrganizationID(ticket.OrganizationID);
-                                string baseUrl = SystemSettings.ReadString(_loginUser, "AppDomain", "https://app.teamsupport.com");
-                                string externalUrl = "https://portal.teamsupport.com/rating.aspx";
+                                string baseUrl = SystemSettings.GetAppUrl();
+                                string externalUrl = SystemSettings.GetPortalUrl() + "/rating.aspx";
                                 string positiveUrl = baseUrl + "/vcr/1_9_0/images/face-positive.png";
                                 string neutralUrl = baseUrl + "/vcr/1_9_0/images/face-neutral.png";
                                 string negativeUrl = baseUrl + "/vcr/1_9_0/images/face-negative.png";

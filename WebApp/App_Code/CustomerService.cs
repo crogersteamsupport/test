@@ -3883,6 +3883,20 @@ SELECT
 
 			  try
 			  {
+				  contact.Collection.MergeUpdateActions(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+			  }
+			  catch (Exception e)
+			  {
+				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+				  log.ExceptionName = "Merge Exception " + e.Source;
+				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+				  log.Collection.Save();
+				  errLocation = string.Format("Error merging contact actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+			  }
+
+			  try
+			  {
 				  contact.Collection.MergeUpdateTickets(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
 			  }
 			  catch (Exception e)
