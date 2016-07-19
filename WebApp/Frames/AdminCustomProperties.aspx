@@ -114,7 +114,7 @@
             <div id="divProductVersionStatus">
               <asp:CheckBox ID="cbIsShipping" runat="server" Text="Is Shipping" />&nbsp&nbsp<asp:CheckBox
                 ID="cbIsDiscontinued" runat="server" Text="Is Discontinued" /></div>
-            <div id="divTicketTypeProductFamily" style="display: none" runat="server">
+            <div id="divTicketTypeProductFamily">
                 <div style="padding-bottom: 3px;">
                 Product Line:</div>
                 <div>
@@ -162,6 +162,7 @@
       var _type = '0';
       var _ticketType = '-1';
       var _editID = -1;
+      var _useProductFamilies = false;
 
       function onShow() {
         parent.parent.Ts.Settings.User.read('SelectedCustomPropertyValue', 0, function (value) {
@@ -239,8 +240,9 @@
       }
 
       function loadTypes() {
-        PageMethods.GetTypesHtml(_type, _ticketType, function(result) {
-          $('#divTypes').html(result);
+        PageMethods.GetTypesHtml2(_type, _ticketType, function(result) {
+            $('#divTypes').html(result.Html);
+            _useProductFamilies = result.UseProductFamilies;
         });
       }
 
@@ -287,7 +289,12 @@
           case '5': $('#divTicketTypeIcon').show(); break;
         }
 
-
+        if (_useProductFamilies && _type == 5) {
+            $('#divTicketTypeProductFamily').show();
+        }
+        else {
+            $('#divTicketTypeProductFamily').hide();
+        }
 
         $find('<%= wndEditType.ContentContainer.FindControl("textName").ClientID %>').set_value('');
         $find('<%= wndEditType.ContentContainer.FindControl("textDescription").ClientID %>').set_value('');
