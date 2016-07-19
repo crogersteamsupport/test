@@ -379,6 +379,7 @@ function SetupTicketPage() {
     SetupTicketProperties();
   });
 
+          return;
   //if (window.parent.Ts.System.Organization.SetNewActionsVisibleToCustomers == false) {
   //	$('#action-add-private').insertBefore('#action-add-public');
   //}
@@ -2046,6 +2047,9 @@ function SetupCustomerSection() {
       $($dropdown).prev().find('input').blur();
     },
 	 create: true,
+            callback(null);
+        }
+    },
     closeAfterSelect: true,
     plugins: {
       'sticky_placeholder': {},
