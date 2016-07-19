@@ -41,6 +41,25 @@
             function (error) {
                 alert(error);
             });
+
+            var username = '13679';
+            var password = 'e4fd0a31-8c8b-494a-aea6-7d24ca3d3528';
+            usename = '1007010';
+            password = 'beb57627-1be2-4ed8-8ade-3478d04ee942';
+
+            $.ajax({
+                url: "https://app.na2.teamsupport.com/api/json/Tickets/993",
+                type: "GET",
+                headers: {
+                    "Authorization": "Basic " + btoa(username + ":" + password)
+                },
+                success: function (data) {
+                    alert(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(thrownError);
+                }
+            });
         });        
     </script>
     <title></title>

@@ -8,8 +8,8 @@ using System.Data.SqlClient;
 using System.Net.Mail;
 using System.Text;
 using System.Threading;
+using Newtonsoft.Json;
 using TeamSupport.Data;
-using Quiksoft.EasyMail.SMTP;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -20,7 +20,7 @@ namespace TeamSupport.ServiceLibrary
 		private static object _staticLock = new object();
 		private MailAddressCollection _debugAddresses;
         private ReportSenderPublicLog _publicLog;
-        public const string PHANTOMJSCOMMAND = @"phantomjs highcharts-convert.js -infile {0}\{1} -outfile {2}";
+        public const string PHANTOMJSCOMMAND = @"phantomjs highcharts-convert.js -infile {0} -outfile {1}";
 
         public ReportSender()
 		{
@@ -136,7 +136,7 @@ namespace TeamSupport.ServiceLibrary
             return report.GetSqlColumns();
         }
 
-        private string GetReportChartFile(ScheduledReport scheduledReport)
+        private string GetReportChartFile(LoginUser scheduledReportCreator, ScheduledReport scheduledReport, Report report)
         {
             string path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             string chartOptionsFilesDirectory = "ChartOptionsFiles";
@@ -148,18 +148,24 @@ namespace TeamSupport.ServiceLibrary
             }
 
             //ToDo //vv generate the JS file with the chart options and data!!
-            string optionsFileData = string.Empty;
+            DataTable dataTable = GetReportTableAll(scheduledReportCreator, report, "", false, true, false);
+            ReportItem reportItem = new ReportItem(report, true);
+
+            SummaryReport summaryReport = Newtonsoft.Json.JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
+            DataTable table = Reports.GetSummaryData(scheduledReportCreator, summaryReport, true, report);
+            string reportData = Reports.BuildChartData(scheduledReportCreator, table, summaryReport);
+            string optionsFileData = GetChartOptionsAndData(report.ReportDef, reportData);
 
             string optionsFile = string.Format("{0}_{1}.js", scheduledReport.Id, scheduledReport.ReportId);
             optionsFile = Path.Combine(chartOptionsFilesPath, optionsFile);
             File.WriteAllText(optionsFile, optionsFileData);
 
-            string outputImagePath = AttachmentPath.GetPath(_loginUser, 13679, AttachmentPath.Folder.ScheduledReports);
+            string outputImagePath = AttachmentPath.GetPath(_loginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReports);
             string outputImage = string.Format("{0}\\{1}_{2}.png", outputImagePath, scheduledReport.Id, scheduledReport.ReportId);
 
             //Create Batch File
             string batchFile = string.Format("thread_{0}.bat", _threadPosition);
-            string batchFileCommand = string.Format(PHANTOMJSCOMMAND, chartOptionsFilesDirectory, optionsFile, outputImage);
+            string batchFileCommand = string.Format(PHANTOMJSCOMMAND, optionsFile, outputImage);
             string batchFileFullPath = Path.Combine(path, batchFile);
             File.WriteAllText(batchFileFullPath, batchFileCommand);
 
@@ -171,6 +177,215 @@ namespace TeamSupport.ServiceLibrary
             }
 
             return outputImage;
+        }
+
+        private static string GetChartOptionsAndData(string reportDef, string recordsData)
+        {
+            dynamic reportDefObject = new System.Dynamic.ExpandoObject();
+            reportDefObject.Def = JsonConvert.DeserializeObject(reportDef);
+
+            dynamic options = new System.Dynamic.ExpandoObject();
+            options = JsonConvert.DeserializeObject(reportDefObject.Def.Chart.ToString());
+            dynamic records = new System.Dynamic.ExpandoObject();
+            records = JsonConvert.DeserializeObject(recordsData);
+
+            string[] old = { "#3276B1", "#193b58", "#78A300", "#e72b19", "#008080", "#E57B3A", "#bd4cff", "#FFC312", "#BA55D3" };
+            string[] berry = { "#8A2BE2", "#BA55D3", "#4169E1", "#C71585", "#0000FF", "#8019E0", "#DA70D6", "#7B68EE", "#C000C0", "#0000CD", "#800080" };
+            string[] bright = { "#008000", "#0000FF", "#800080", "#800080", "#FF00FF", "#008080", "#FFFF00", "#808080", "#00FFFF", "#000080", "#800000", "#FF3939", "#7F7F00", "#C0C0C0", "#FF6347", "#FFE4B5" };
+            string[] brightPastel = { "#418CF0", "#FCB441", "#DF3A02", "#056492", "#BFBFBF", "#1A3B69", "#FFE382", "#129CDD", "#CA6B4B", "#005CDB", "#F3D288", "#506381", "#F1B9A8", "#E0830A", "#7893BE" };
+            string[] chocolate = { "#A0522D", "#D2691E", "#8B0000", "#CD853F", "#A52A2A", "#F4A460", "#8B4513", "#C04000", "#B22222", "#B65C3A" };
+            string[] earthTones = { "#33023", "#B8860B", "#C04000", "#6B8E23", "#CD853F", "#C0C000", "#228B22", "#D2691E", "#808000", "#20B2AA", "#F4A460", "#00C000", "#8FBC8B", "#B22222", "#843A05", "#C00000"};
+            string[] excel = { "#9999FF", "#993366", "#FFFFCC", "#CCFFFF", "#660066", "#FF8080", "#0063CB", "#CCCCFF", "#000080", "#FF00FF", "#FFFF00", "#00FFFF", "#800080", "#800000", "#007F7F", "#0000FF" };
+            string[] fire = { "#FFD700", "#FF0000", "#FF1493", "#DC143C", "#FF8C00", "#FF00FF", "#FFFF00", "#FF4500", "#C71585", "#DDE221" };
+            string[] grayScale = { "#C8C8C8", "#BDBDBD", "#B2B2B2", "#A7A7A7", "#9C9C9C", "#919191", "#868686", "#7A7A7A", "#707070", "#656565", "#565656", "#4F4F4F", "#424242", "#393939", "#2E2E2E", "#232323" };
+            string[] light = { "#E6E6FA", "#FFF0F5", "#FFDAB9", "#", "#FFFACD", "#", "#FFE4E1", "#F0FFF0", "#F0F8FF", "#F5F5F5", "#FAEBD7", "#E0FFFF" };
+            string[] pastel = { "#87CEEB", "#32CD32", "#BA55D3", "#F08080", "#4682B4", "#9ACD32", "#40E0D0", "#FF69B4", "#F0E68C", "#D2B48C", "#8FBC8B", "#6495ED", "#DDA0DD", "#5F9EA0", "#FFDAB9", "#FFA07A" };
+            string[] seaGreen = { "#2E8B57", "#66CDAA", "#4682B4", "#008B8B", "#5F9EA0", "#38B16E", "#48D1CC", "#B0C4DE", "#8FBC8B", "#87CEEB" };
+            string[] semiTransparent = { "#FF6969", "#69FF69", "#6969FF", "#FFFF5D", "#69FFFF", "#FF69FF", "#CDB075", "#FFAFAF", "#AFFFAF", "#AFAFFF", "#FFFFAF", "#AFFFFF", "#FFAFFF", "#E4D5B5", "#A4B086", "#819EC1" };
+
+            options.colors = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(brightPastel));
+            string series = string.Empty;
+
+            if (options.ts.chartType == "pie")
+            {
+                if (records.Count > 2)
+                {
+                    return "Please do not select a series field to plot a pie chart.";
+                }
+
+                int total = 0;
+
+                for (int i = 0; i < records[1].data.Count; i++)
+                {
+                    total += (int)records[1].data[i];
+                }
+
+                string seriesFormat = "[{{ type: 'pie', name: '" + options.ts.seriesTitle.ToString() + "', data: [{0}]}}]";
+                List<string> seriesData = new List<string>();
+
+                for (var i = 0; i < records[1].data.Count; i++)
+                {
+                    float val = (float)(records[1].data[i]) / total * 100;
+                    seriesData.Add("['" + fixBlankSeriesName(records[0].data[i].ToString()) + "', " + val.ToString("#.00") + "]");
+                }
+
+                if (seriesData.Any() && seriesData.Count > 0)
+                {
+                    series = string.Format(seriesFormat, string.Join(",", seriesData.ToArray()));
+                }
+                else
+                {
+                    series = string.Format(seriesFormat, "");
+                }
+            }
+            else if ((records[0].fieldType == "datetime" && records[0].format == "date") || (records[1].fieldType == "datetime" && records[1].format == "date"))
+            {
+                options.series = new string[1];//vv
+                options.xAxis = "{ type: 'datetime' }";
+
+                if (records.Count == 3)
+                {
+
+                    for (var i = 0; i<records[0].data.Count; i++)
+                    {
+                        var val = records[0].data[i];
+                        series = "";//vv findSeries(options, val);
+
+                        if (string.IsNullOrEmpty(series))
+                        {
+                            series = "{ name: fixBlankSeriesName(fixRecordName(records[0], i)), value: val, data: []"; //vv
+                        };
+
+                            options.series.push(series);
+                    }
+
+                    List<string> item = new List<string>();
+                    //vv item.push(records[2].data[i]);
+
+                    if (item[0] != null)
+                    {
+                        if (item[1] == null) item[1] = "0";
+                    }
+                }
+                else if (records.Count = 2)
+                {
+                    options.series.push("{ name: records[1].name, data: [] }");
+
+                    for (var i = 0; i<records[0].data.length; i++)
+                    {
+                        List<string> item = new List<string>();
+                        //vv item.push(Date.parse(records[0].data[i]));
+                        //vv item.push(records[1].data[i]);
+
+                        if (item[0] != null)
+                        {
+                            if (item[1] == null) item[1] = "0";
+                            options.series[0].data.push(item);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                options.series = new List<string>(); //vv [];
+
+                if (records.Count == 3)
+                {
+                    options.xAxis = "{ categories: [] }";
+
+                    // build categories
+                    for (var i = 0; i<records[1].data.length; i++)
+                    {
+                        var name = fixRecordName(records[1], i);
+
+                        if (indexOfCategory(options, name) < 0)
+                        {
+                            options.xAxis.categories.push(name);
+                        }
+                    }
+
+                    for (var i = 0; i<records[0].data.length; i++)
+                    {
+                        var val = records[0].data[i];
+                        series = findSeries(options, val);
+                
+                        if (!string.IsNullOrEmpty(series))
+                        {
+                            series = "{ name: " + fixBlankSeriesName(fixRecordName(records[0], i)) + ", value: val, data: createDataArray() }";
+                            options.series.push(series);
+                        }
+
+                        var catIndex = indexOfCategory(options, fixRecordName(records[1], i));
+                        //vv if (records[2].data[i]) series.data[catIndex] = records[2].data[i];
+                    }
+
+                }
+                else if (records.Count = 2)
+                {
+                    options.xAxis = "{ categories: records[0].data }";
+                    //vv options.series.push("{ name: records[1].name, data: records[1].data }");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(series) && records[1].data.Count > 1000)
+            {
+                return "Your series has " + records[1].data.Count + " items. This might cause issues rendering the chart, please try filtering your data to less than 1000.";
+            }
+
+            string jsonOptionsAndData = JsonConvert.SerializeObject(options);
+            jsonOptionsAndData = jsonOptionsAndData.Substring(0, jsonOptionsAndData.Length - 1) + ", series: " + series + "}";
+
+            return jsonOptionsAndData;
+        }
+
+        private static string fixRecordName(dynamic record, int index)
+        {
+            if (record.fieldType == "bool")
+            {
+                return record.name + (record.data[index] == true ? " = True" : " = False");
+            }
+
+            return record.data[index];
+        }
+
+        private static string fixBlankSeriesName(string val)
+        {
+            return string.IsNullOrEmpty(val) ? "Unknown" : val + "";
+        }
+
+        private static string createDataArray(dynamic options)
+        {
+            List<int> result = new List<int>();
+
+            for (var i = 0; i < options.xAxis.categories.length; i++)
+            {
+                result.Add(0);
+            }
+
+            return result.ToString();
+        }
+
+        private static string findSeries(dynamic options, string value)
+        {
+            for (var i = 0; i < options.series.length; i++)
+            {
+                if (options.series[i].value == value) return options.series[i];
+            }
+
+            return null;
+        }
+
+        private static int indexOfCategory(dynamic options, string name)
+        {
+            for (var i = 0; i < options.xAxis.categories.length; i++)
+            {
+                if (options.xAxis.categories[i] == name)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         private static bool ExecuteCommand(string command)
@@ -226,7 +441,7 @@ namespace TeamSupport.ServiceLibrary
 
                 if (report.ReportDefType == ReportType.Chart)
                 {
-                    reportAttachmentFile = GetReportChartFile();
+                    reportAttachmentFile = GetReportChartFile(scheduledReportCreator, scheduledReport, report);
                 }
                 else
                 {
