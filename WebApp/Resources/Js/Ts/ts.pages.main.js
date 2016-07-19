@@ -1363,7 +1363,9 @@ Ts.Pages.Main.prototype = {
         });
     },
     newTicket: function (query) {
-
+        var mi = this.MainTabs.getSelected();
+        if (mi.getTabType() == "contact" || mi.getTabType() == "company")
+            query = mi.getData();
         this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTicket, 'new', 'New Ticket', true, true, true, null, null, query, null);
     },
     closeNewTicketTab: function () {
