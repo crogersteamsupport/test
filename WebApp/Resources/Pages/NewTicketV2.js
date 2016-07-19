@@ -2643,6 +2643,8 @@ function setInitialValue() {
       }
       var contactID = top.Ts.Utils.getQueryValue('contactID', window);
       var companyID = top.Ts.Utils.getQueryValue('customerID', window);
+      var organizationID = top.Ts.Utils.getQueryValue('organizationID', window);
+      var userID = top.Ts.Utils.getQueryValue('user', window);
       if (contactID != null) {
       	var org = new Object();
       	org.value = contactID;
@@ -2654,6 +2656,19 @@ function setInitialValue() {
       	org.value = companyID;
       	org.type = "o";
       	AddCustomers(org);
+      }
+
+      if (userID != null) {
+          var org = new Object();
+          org.value = userID;
+          org.type = "u";
+          AddCustomers(org);
+      }
+      else if (organizationID != null) {
+          var org = new Object();
+          org.value = organizationID;
+          org.type = "o";
+          AddCustomers(org);
       }
   }
 
