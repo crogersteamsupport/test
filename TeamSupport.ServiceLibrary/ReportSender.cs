@@ -179,6 +179,13 @@ namespace TeamSupport.ServiceLibrary
             return outputImage;
         }
 
+        /// <summary>
+        /// Unfortunately we need to recreate the UI process that generates the reports including the JS function that append the json needed.
+        /// This needs to match (in its C# version) to the addChartData function in ..\WebApp\Resources\Pages\ReportCharts.js !!!!!!!!!!!!! 
+        /// </summary>
+        /// <param name="reportDef"></param>
+        /// <param name="recordsData"></param>
+        /// <returns></returns>
         private static string GetChartOptionsAndData(string reportDef, string recordsData)
         {
             dynamic reportDefObject = new System.Dynamic.ExpandoObject();
@@ -205,6 +212,7 @@ namespace TeamSupport.ServiceLibrary
 
             options.colors = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(brightPastel));
             string series = string.Empty;
+            string xAxis = string.Empty;
 
             if (options.ts.chartType == "pie")
             {
@@ -253,7 +261,7 @@ namespace TeamSupport.ServiceLibrary
 
                         if (string.IsNullOrEmpty(series))
                         {
-                            series = "{ name: fixBlankSeriesName(fixRecordName(records[0], i)), value: val, data: []"; //vv
+                            series = "{ name: " + fixBlankSeriesName(fixRecordName(records[0], i)) + ", value: val, data: []"; //vv
                         };
 
                             options.series.push(series);
@@ -287,7 +295,7 @@ namespace TeamSupport.ServiceLibrary
             }
             else
             {
-                options.series = new List<string>(); //vv [];
+                //options.series = new List<string>(); //vv [];
 
                 if (records.Count == 3)
                 {
@@ -320,10 +328,26 @@ namespace TeamSupport.ServiceLibrary
                     }
 
                 }
-                else if (records.Count = 2)
+                else if (records.Count == 2)
                 {
-                    options.xAxis = "{ categories: records[0].data }";
-                    //vv options.series.push("{ name: records[1].name, data: records[1].data }");
+                    List<string> list = new List<string>();
+
+                    for (int i = 0; i < records[0].data.Count; i++)
+                    {
+                        list.Add(records[0].data[i].ToString());
+                    }
+
+                    xAxis = "{ categories: [" + (list.Any() ? string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToArray()) : "") + "]}";
+
+                    string seriesFormat = "[{{ name: '" + records[1].name.ToString() + "', data: [{0}]}}]";
+                    list = new List<string>();
+
+                    for (int i = 0; i < records[1].data.Count; i++)
+                    {
+                        list.Add(records[1].data[i].ToString());
+                    }
+
+                    series = string.Format(seriesFormat, (list.Any() ? string.Join(",", list.ToArray()) : ""));
                 }
             }
 
@@ -333,6 +357,12 @@ namespace TeamSupport.ServiceLibrary
             }
 
             string jsonOptionsAndData = JsonConvert.SerializeObject(options);
+
+            if (options.ts.chartType == "stackedcolumn")
+            {
+                jsonOptionsAndData = jsonOptionsAndData.Substring(0, jsonOptionsAndData.Length - 1) + ", xAxis: " + xAxis + "}";
+            }
+
             jsonOptionsAndData = jsonOptionsAndData.Substring(0, jsonOptionsAndData.Length - 1) + ", series: " + series + "}";
 
             return jsonOptionsAndData;

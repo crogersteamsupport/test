@@ -255,7 +255,7 @@ WHERE
     ORDER BY NextRun
     )
 ";
-
+                command.CommandText = "SELECT * FROM ScheduledReports WHERE lockProcessId = 99";//vv delete this line
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ProcessID", processID);
                 scheduledReports.Fill(command);
