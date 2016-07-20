@@ -379,6 +379,18 @@ function SetupTicketPage() {
     SetupTicketProperties();
   });
 
+  $('#NewCustomerModal').on('shown.bs.modal', function () {
+      if ((top.Ts.System.User.CanCreateContact) || top.Ts.System.User.IsSystemAdmin) {
+          return;
+      }
+      else {
+          $('#customer-email-input').prop("disabled", true);
+          $('#customer-fname-input').prop("disabled", true);
+          $('#customer-lname-input').prop("disabled", true);
+          $('#customer-phone-input').prop("disabled", true);
+      }
+  })
+
           return;
   //if (window.parent.Ts.System.Organization.SetNewActionsVisibleToCustomers == false) {
   //	$('#action-add-private').insertBefore('#action-add-public');
@@ -1963,14 +1975,9 @@ function SetupCustomerSection() {
         }
       },
       create: function (input, callback) {
-      	if ((top.Ts.System.User.CanCreateContact && top.Ts.System.User.CanCreateCompany) || top.Ts.System.User.IsSystemAdmin) {
-      		$('#NewCustomerModal').modal('show');
-      		callback(null);
-      		$('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
-      	}
-      	else {
-      		alert("You do not have the right permissions to create contacts");
-      	}
+          $('#NewCustomerModal').modal('show');
+          callback(null);
+          $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
       },
       onItemAdd: function (value, $item) {
         if (this.settings.initData === false) {
