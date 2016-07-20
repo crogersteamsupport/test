@@ -2046,7 +2046,12 @@ function SetupCustomerSection() {
     onDropdownClose: function ($dropdown) {
       $($dropdown).prev().find('input').blur();
     },
-	 create: true,
+    create: function (input, callback) {
+        if ((top.Ts.System.User.CanCreateContact && top.Ts.System.User.CanCreateCompany) || top.Ts.System.User.IsSystemAdmin) {
+            callback(null);
+        }
+        else {
+            alert("You do not have rights to create new companies.  You can create new contacts and associate them to existing companies however.  Please type in the name of an existing company to associate the new contact with, or leave the company name field blank to only create the new contact.  If you have any questions about your user rights, please contact your account admin. ");
             callback(null);
         }
     },
