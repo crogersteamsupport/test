@@ -84,7 +84,7 @@ namespace TeamSupport.Handlers
 						case "contactavatar": ProcessContactAvatar(context, segments.ToArray(), organizationID); break;
 						case "importlog": ProcessImportLog(context, int.Parse(segments[2])); break;
                         case "screenrecordingsettings": ProcessScreenRecordingSettings(context); break;
-                        case "scheduledreportlog": ProcessScheduledReportLog(context, int.Parse(segments[2])); break;//vv
+                        case "scheduledreportlog": ProcessScheduledReportLog(context, int.Parse(segments[2])); break;
                         default: context.Response.End(); break;
 					}
 				}

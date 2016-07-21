@@ -182,9 +182,8 @@
 		});
 		$('.frequencyList').val(report.RecurrencyId);
 		$('.numberList').val(report.Every);
-		//vv report.Weekday var weekday = (($('.frequencyList').val() == 1) ? $('#weeksOn').val() : $('#dayOfMonth').val());
 		$('#weeksOn').val(report.Weekday);
-		$('#dayOfMonth').val(report.Weekday);
+		$('#dayOfMonth').val(report.Weekday || 0);
 		$('.monthDayList').val(report.Monthday);
 
 		if (report.IsActive) {

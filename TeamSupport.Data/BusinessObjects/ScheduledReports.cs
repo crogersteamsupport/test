@@ -52,7 +52,7 @@ namespace TeamSupport.Data
 
 			if (LastRunUtc != null)
 			{
-				dateOnly = StartDateUtc > LastRunUtc ? StartDateUtc : (DateTime)LastRunUtc;
+				dateOnly = StartDateUtc > LastRunUtc ? StartDateUtc.Date : ((DateTime)LastRunUtc).Date;
 			}
 
 			switch ((ScheduledReportFrequency)RecurrencyId)
@@ -61,7 +61,7 @@ namespace TeamSupport.Data
 					NextRun = StartDateUtc;
 					break;
 				case ScheduledReportFrequency.Weekly:
-					//vv we need: startdate, every, weekday (1:Sun, ..., 7:Sat)
+					//we need: startdate, every, weekday (1:Sun, ..., 7:Sat)
 					while (dateOnly < DateTime.UtcNow)
 					{
 						int totalDaysInAWeek = 7;
@@ -82,7 +82,7 @@ namespace TeamSupport.Data
 
 					break;
 				case ScheduledReportFrequency.Monthly:
-					//vv we need: startdate, every, weekday (1:Sun, ..., 7:Sat), 
+					//we need: startdate, every, weekday (1:Sun, ..., 7:Sat), 
 					//				monthday (if < 5 then weekday can have a value: the 1st monday.. the 3rd wednesday, etc;
 					//						else weekday has to be null: the 5th of the month, the 20th of the month, etc)
 
@@ -125,8 +125,8 @@ namespace TeamSupport.Data
 								}
 							}
 
-							//Add the rest of the Every "N" months, the first one was calculated above.
-							dateOnly.AddMonths((byte)Every - 1);
+                            //Add the rest of the Every "N" months, the first one was calculated above.
+                            dateOnly = dateOnly.AddMonths((byte)Every - 1);
 						}
 					}
 
@@ -145,14 +145,6 @@ namespace TeamSupport.Data
             AddEmailAddressesFromString(message.To, EmailRecipients);
             message.Subject = EmailSubject;
             message.Body = EmailBody;
-
-            //vv ? message.IsBodyHtml = IsHtml;
-            bool isHtml = false; //vv ??
-            if (isHtml)
-            {
-                //string img = "<div><img src=\"http://integrate.teamsupport.com/MailRead.aspx?OrganizationID={0}&EmailID={1}\" alt=\"\" width=\"0\" height=\"0\" style=\"width: 0px; height: 0px, border: 0px;\"/></div>";
-                //message.Body = Body + string.Format(img, OrganizationID, EmailID);
-            }
 
             if (!string.IsNullOrEmpty(attachment))
             {
@@ -255,7 +247,6 @@ WHERE
     ORDER BY NextRun
     )
 ";
-                command.CommandText = "SELECT * FROM ScheduledReports WHERE lockProcessId = 99";//vv delete this line
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ProcessID", processID);
                 scheduledReports.Fill(command);

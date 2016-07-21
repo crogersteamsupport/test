@@ -288,25 +288,24 @@ ReportPage = function () {
 
     function updateToolbar() {
     	if (!_isScheduledReportsSelected) {
-        if ($('.report-active:visible').length > 0) {
-            $('.report-clone').removeClass('disabled');
-        } else {
-            $('.report-clone').addClass('disabled');
-        }
-        if ($('.report-selected:visible').length > 0) {
-            $('.report-delete').removeClass('disabled');
-            $('.report-move').removeClass('disabled');
-        } else {
-            $('.report-delete').addClass('disabled');
-            $('.report-move').addClass('disabled');
-        }
+            if ($('.report-active:visible').length > 0) {
+                $('.report-clone').removeClass('disabled');
+            } else {
+                $('.report-clone').addClass('disabled');
+            }
+            if ($('.report-selected:visible').length > 0) {
+                $('.report-delete').removeClass('disabled');
+                $('.report-move').removeClass('disabled');
+            } else {
+                $('.report-delete').addClass('disabled');
+                $('.report-move').addClass('disabled');
+            }
 
-    		//vv
-    		if ($('.report-selected:visible').length == 1) {
-    			$('.report-schedule').removeClass('disabled');
-    		} else {
-    			$('.report-schedule').addClass('disabled');
-    		}
+            if ($('.report-selected:visible').length == 1) {
+                $('.report-schedule').removeClass('disabled');
+            } else {
+                $('.report-schedule').addClass('disabled');
+            }
     	}
     }
 
@@ -355,7 +354,6 @@ ReportPage = function () {
         });
     });
 
-	//vv
     $('.report-schedule').click(function (e) {
     	e.preventDefault();
     	var button = $(this);
@@ -511,10 +509,10 @@ ReportPage = function () {
 
     function getReports() {
         var item = $('.report-menu-item.active');
-		_isScheduledReportsSelected = item.hasClass('menu-scheduled');//vv
+		_isScheduledReportsSelected = item.hasClass('menu-scheduled');
         if (item.hasClass('menu-all')) { parent.Ts.Services.Reports.GetAllReports(loadReports); }
         else if (item.hasClass('menu-starred')) { parent.Ts.Services.Reports.GetStarredReports(loadReports); }
-		else if (item.hasClass('menu-scheduled')) { parent.Ts.Services.Reports.GetScheduledReports(loadScheduledReports); }//vv
+		else if (item.hasClass('menu-scheduled')) { parent.Ts.Services.Reports.GetScheduledReports(loadScheduledReports); }
         else if (item.hasClass('menu-tablular')) { parent.Ts.Services.Reports.GetReportsByReportType(0, loadReports); }
         else if (item.hasClass('menu-summary')) { parent.Ts.Services.Reports.GetReportsByReportType(4, loadReports); }
         else if (item.hasClass('menu-charts')) { parent.Ts.Services.Reports.GetReportsByReportType(1, loadReports); }
@@ -530,7 +528,7 @@ ReportPage = function () {
     }
 
     function loadReports(data) {
-        $('.report-list-log').removeClass("show").addClass("hide");//vv
+        $('.report-list-log').hide();
     	$('.report-list table').find(".report-list-header.report-list-lastviewed").text("Last Viewed");
     	$('.report-list table').find(".report-list-header.report-list-nextrun").remove();
         var reports = JSON.parse(data);
@@ -588,10 +586,10 @@ ReportPage = function () {
     	$('.report-move').addClass('disabled');
     	$('.report-schedule').addClass('disabled');
     	$('.report-list table').find(".report-list-header.report-list-lastviewed").text("Last Run");
-    	$('.report-list-log').removeClass("hide").addClass("show");//vv
+    	$('.report-list-log').show();
 
     	if ($('.report-list table').find(".report-list-header.report-list-nextrun").length == 0) {
-    		$("<th class='report-list-header report-list-nextrun' data-sortfield='LastRun'><span>Next Run</span> <i></i></th>").insertAfter(".report-list-header.report-list-lastviewed");//vv
+    		$("<th class='report-list-header report-list-nextrun' data-sortfield='LastRun'><span>Next Run</span> <i></i></th>").insertAfter(".report-list-header.report-list-lastviewed");
     	}
 
     	var reports = JSON.parse(data);

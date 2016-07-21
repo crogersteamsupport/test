@@ -61,7 +61,8 @@ namespace TeamSupport.ServiceLibrary
                             if (scheduledReport != null)
                             {
                                 string publicLogPath = AttachmentPath.GetPath(LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
-                                _publicLog = new ReportSenderPublicLog(publicLogPath, scheduledReport.Id);
+                                _publicLog = new ReportSenderPublicLog(publicLogPath, scheduledReport.Id, scheduledReport.OrganizationId);
+                                Log(string.Format("Date and times used for this log entries are in TimeZone {0}", _publicLog.OrganizationTimeZoneInfo.DisplayName), LogType.Public);
                                 QueueEmail(scheduledReport);
                                 noScheduledReportsDue = DateTime.UtcNow;
                             }
@@ -147,32 +148,50 @@ namespace TeamSupport.ServiceLibrary
                 Directory.CreateDirectory(chartOptionsFilesPath);
             }
 
-            //ToDo //vv generate the JS file with the chart options and data!!
             DataTable dataTable = GetReportTableAll(scheduledReportCreator, report, "", false, true, false);
             ReportItem reportItem = new ReportItem(report, true);
+            Log("dataTable generated");
 
-            SummaryReport summaryReport = Newtonsoft.Json.JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
+            SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
             DataTable table = Reports.GetSummaryData(scheduledReportCreator, summaryReport, true, report);
             string reportData = Reports.BuildChartData(scheduledReportCreator, table, summaryReport);
             string optionsFileData = GetChartOptionsAndData(report.ReportDef, reportData);
 
             string optionsFile = string.Format("{0}_{1}.js", scheduledReport.Id, scheduledReport.ReportId);
             optionsFile = Path.Combine(chartOptionsFilesPath, optionsFile);
+            Log("Writing chart options to: " + optionsFile);
             File.WriteAllText(optionsFile, optionsFileData);
+            Log("Options written.");
 
             string outputImagePath = AttachmentPath.GetPath(_loginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReports);
             string outputImage = string.Format("{0}\\{1}_{2}.png", outputImagePath, scheduledReport.Id, scheduledReport.ReportId);
+            Log("outputImage: " + outputImage);
 
             //Create Batch File
             string batchFile = string.Format("thread_{0}.bat", _threadPosition);
             string batchFileCommand = string.Format(PHANTOMJSCOMMAND, optionsFile, outputImage);
             string batchFileFullPath = Path.Combine(path, batchFile);
+            Log("batchFile: " + batchFileFullPath);
+
             File.WriteAllText(batchFileFullPath, batchFileCommand);
+            Log("Command written: " + batchFileCommand);
 
-            bool isImageCreated = ExecuteCommand(batchFileFullPath);
-
-            if (!isImageCreated)
+            if (File.Exists(outputImage))
             {
+                File.Delete(outputImage);
+                Log("Old chart image deleted.");
+            }
+
+            bool commandIsSuccessful = ExecuteCommand(batchFileFullPath);
+
+            if (!commandIsSuccessful)
+            {
+                outputImage = string.Empty;
+                Log("ExecuteCommand failed");
+            }
+            else if (!File.Exists(outputImage))
+            {
+                Log("outputImage not created/found");
                 outputImage = string.Empty;
             }
 
@@ -248,50 +267,51 @@ namespace TeamSupport.ServiceLibrary
             }
             else if ((records[0].fieldType == "datetime" && records[0].format == "date") || (records[1].fieldType == "datetime" && records[1].format == "date"))
             {
-                options.series = new string[1];//vv
-                options.xAxis = "{ type: 'datetime' }";
+                //vv It does not look like this is used. At least not that I found.
+                //options.series = new string[1];//vv
+                //options.xAxis = "{ type: 'datetime' }";
 
-                if (records.Count == 3)
-                {
+                //if (records.Count == 3)
+                //{
 
-                    for (var i = 0; i<records[0].data.Count; i++)
-                    {
-                        var val = records[0].data[i];
-                        series = "";//vv findSeries(options, val);
+                //    for (var i = 0; i<records[0].data.Count; i++)
+                //    {
+                //        var val = records[0].data[i];
+                //        series = "";//vv findSeries(options, val);
 
-                        if (string.IsNullOrEmpty(series))
-                        {
-                            series = "{ name: " + fixBlankSeriesName(fixRecordName(records[0], i)) + ", value: val, data: []"; //vv
-                        };
+                //        if (string.IsNullOrEmpty(series))
+                //        {
+                //            series = "{ name: " + fixBlankSeriesName(fixRecordName(records[0], i)) + ", value: val, data: []"; //vv
+                //        };
 
-                            options.series.push(series);
-                    }
+                //            options.series.push(series);
+                //    }
 
-                    List<string> item = new List<string>();
-                    //vv item.push(records[2].data[i]);
+                //    List<string> item = new List<string>();
+                //    //vv item.push(records[2].data[i]);
 
-                    if (item[0] != null)
-                    {
-                        if (item[1] == null) item[1] = "0";
-                    }
-                }
-                else if (records.Count = 2)
-                {
-                    options.series.push("{ name: records[1].name, data: [] }");
+                //    if (item[0] != null)
+                //    {
+                //        if (item[1] == null) item[1] = "0";
+                //    }
+                //}
+                //else if (records.Count = 2)
+                //{
+                //    options.series.push("{ name: records[1].name, data: [] }");
 
-                    for (var i = 0; i<records[0].data.length; i++)
-                    {
-                        List<string> item = new List<string>();
-                        //vv item.push(Date.parse(records[0].data[i]));
-                        //vv item.push(records[1].data[i]);
+                //    for (var i = 0; i<records[0].data.length; i++)
+                //    {
+                //        List<string> item = new List<string>();
+                //        //vv item.push(Date.parse(records[0].data[i]));
+                //        //vv item.push(records[1].data[i]);
 
-                        if (item[0] != null)
-                        {
-                            if (item[1] == null) item[1] = "0";
-                            options.series[0].data.push(item);
-                        }
-                    }
-                }
+                //        if (item[0] != null)
+                //        {
+                //            if (item[1] == null) item[1] = "0";
+                //            options.series[0].data.push(item);
+                //        }
+                //    }
+                //}
             }
             else
             {
@@ -299,33 +319,34 @@ namespace TeamSupport.ServiceLibrary
 
                 if (records.Count == 3)
                 {
-                    options.xAxis = "{ categories: [] }";
+                    //vv It does not look like this is used. At least not that I found.
+                    //xAxis = "{ categories: [] }";
 
-                    // build categories
-                    for (var i = 0; i<records[1].data.length; i++)
-                    {
-                        var name = fixRecordName(records[1], i);
+                    //// build categories
+                    //for (var i = 0; i<records[1].data.length; i++)
+                    //{
+                    //    var name = fixRecordName(records[1], i);
 
-                        if (indexOfCategory(options, name) < 0)
-                        {
-                            options.xAxis.categories.push(name);
-                        }
-                    }
+                    //    if (indexOfCategory(options, name) < 0)
+                    //    {
+                    //        options.xAxis.categories.push(name);
+                    //    }
+                    //}
 
-                    for (var i = 0; i<records[0].data.length; i++)
-                    {
-                        var val = records[0].data[i];
-                        series = findSeries(options, val);
-                
-                        if (!string.IsNullOrEmpty(series))
-                        {
-                            series = "{ name: " + fixBlankSeriesName(fixRecordName(records[0], i)) + ", value: val, data: createDataArray() }";
-                            options.series.push(series);
-                        }
+                    //for (var i = 0; i<records[0].data.length; i++)
+                    //{
+                    //    var val = records[0].data[i];
+                    //    series = findSeries(options, val);
 
-                        var catIndex = indexOfCategory(options, fixRecordName(records[1], i));
-                        //vv if (records[2].data[i]) series.data[catIndex] = records[2].data[i];
-                    }
+                    //    if (!string.IsNullOrEmpty(series))
+                    //    {
+                    //        series = "{ name: " + fixBlankSeriesName(fixRecordName(records[0], i)) + ", value: val, data: " + createDataArray(options) + " }";
+                    //        options.series.push(series);
+                    //    }
+
+                    //    var catIndex = indexOfCategory(options, fixRecordName(records[1], i));
+                    //    //vv if (records[2].data[i]) series.data[catIndex] = records[2].data[i];
+                    //}
 
                 }
                 else if (records.Count == 2)
@@ -358,12 +379,18 @@ namespace TeamSupport.ServiceLibrary
 
             string jsonOptionsAndData = JsonConvert.SerializeObject(options);
 
-            if (options.ts.chartType == "stackedcolumn")
+            if (!string.IsNullOrEmpty(xAxis))
             {
                 jsonOptionsAndData = jsonOptionsAndData.Substring(0, jsonOptionsAndData.Length - 1) + ", xAxis: " + xAxis + "}";
             }
 
             jsonOptionsAndData = jsonOptionsAndData.Substring(0, jsonOptionsAndData.Length - 1) + ", series: " + series + "}";
+
+            //Add width and height. This might or not be the right decision here.
+            if (jsonOptionsAndData.Contains("{\"chart\":{"))
+            {
+                jsonOptionsAndData = jsonOptionsAndData.Replace("{\"chart\":{", "{\"chart\":{width: 1000, height: 800,");
+            }
 
             return jsonOptionsAndData;
         }
@@ -383,42 +410,45 @@ namespace TeamSupport.ServiceLibrary
             return string.IsNullOrEmpty(val) ? "Unknown" : val + "";
         }
 
-        private static string createDataArray(dynamic options)
-        {
-            List<int> result = new List<int>();
+        //vv It does not look like this is used. At least not that I found.
+        //private static string createDataArray(dynamic options)
+        //{
+        //    List<int> result = new List<int>();
 
-            for (var i = 0; i < options.xAxis.categories.length; i++)
-            {
-                result.Add(0);
-            }
+        //    for (var i = 0; i < options.xAxis.categories.length; i++)
+        //    {
+        //        result.Add(0);
+        //    }
 
-            return result.ToString();
-        }
+        //    return result.ToString();
+        //}
 
-        private static string findSeries(dynamic options, string value)
-        {
-            for (var i = 0; i < options.series.length; i++)
-            {
-                if (options.series[i].value == value) return options.series[i];
-            }
+        //vv It does not look like this is used. At least not that I found.
+        //private static string findSeries(dynamic options, string value)
+        //{
+        //    for (var i = 0; i < options.series.length; i++)
+        //    {
+        //        if (options.series[i].value == value) return options.series[i];
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        private static int indexOfCategory(dynamic options, string name)
-        {
-            for (var i = 0; i < options.xAxis.categories.length; i++)
-            {
-                if (options.xAxis.categories[i] == name)
-                {
-                    return i;
-                }
-            }
+        //vv It does not look like this is used. At least not that I found.
+        //private static int indexOfCategory(dynamic options, string name)
+        //{
+        //    for (var i = 0; i < options.xAxis.categories.length; i++)
+        //    {
+        //        if (options.xAxis.categories[i] == name)
+        //        {
+        //            return i;
+        //        }
+        //    }
 
-            return -1;
-        }
+        //    return -1;
+        //}
 
-        private static bool ExecuteCommand(string command)
+        private bool ExecuteCommand(string command)
         {
             bool isSuccessful = false;
             int exitCode;
@@ -431,23 +461,51 @@ namespace TeamSupport.ServiceLibrary
             // *** Redirect the output ***
             processInfo.RedirectStandardError = true;
             processInfo.RedirectStandardOutput = true;
-
+            Log("Starting to process the command...");
             process = System.Diagnostics.Process.Start(processInfo);
-            process.WaitForExit();
 
-            // *** Read the streams ***
-            // Warning: This approach can lead to deadlocks, see Edit #2
-            string output = process.StandardOutput.ReadToEnd();
-            string error = process.StandardError.ReadToEnd();
+            List<string> output = new List<string>();
+            List<string> error = new List<string>();
+
+            process.OutputDataReceived += (object sender, DataReceivedEventArgs e) => 
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    output.Add(e.Data);
+                }
+            };
+            process.BeginOutputReadLine();
+            process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    error.Add(e.Data);
+                }
+            };
+
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            Log("Done!");
 
             exitCode = process.ExitCode;
-
-            Console.WriteLine("output>>" + (String.IsNullOrEmpty(output) ? "(none)" : output));
-            Console.WriteLine("error>>" + (String.IsNullOrEmpty(error) ? "(none)" : error));
-            Console.WriteLine("ExitCode: " + exitCode.ToString(), "ExecuteCommand");
             process.Close();
 
-            isSuccessful = exitCode == 0 && string.IsNullOrEmpty(error);
+            isSuccessful = exitCode == 0 && !error.Any() && error.Count == 0 && !output.Where(p => p.Contains("Error:")).Any();
+
+            if (!isSuccessful)
+            {
+                foreach(string outputLine in output.Where(p => !string.IsNullOrEmpty(p)))
+                {
+                    Log("Output: " + outputLine);
+                }
+
+                foreach (string errorLine in error.Where(p => !string.IsNullOrEmpty(p)))
+                {
+                    Log("Error: " + errorLine);
+                }
+                
+                Log("ExitCode: " + exitCode);
+            }
 
             return isSuccessful;
         }
@@ -467,7 +525,7 @@ namespace TeamSupport.ServiceLibrary
                 Log(string.Format("Report \"{0}\" settings loaded", report.Name), LogType.Both);
                 Log(string.Format("Generating {0} Report", report.ReportDefType.ToString()), LogType.Both);
 
-                string reportAttachmentFile = "";
+                string reportAttachmentFile = string.Empty;
 
                 if (report.ReportDefType == ReportType.Chart)
                 {
@@ -478,96 +536,102 @@ namespace TeamSupport.ServiceLibrary
                     reportAttachmentFile = GetReportDataToFile(scheduledReportCreator, report, scheduledReport.Id, "", false, true, Logs);
                 }
 
-                Log(string.Format("Report generated and file attachment created: {0}", Path.GetFileName(reportAttachmentFile)), LogType.Public);
-                Log(string.Format("Report file to attach: {0}", reportAttachmentFile));
-
-                Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
-                MailMessage message = scheduledReport.GetMailMessage(reportAttachmentFile, organization);
-                Log("Email message created", LogType.Both);
-                Log(string.Format("Email Recipients: {0}", string.Join(",", message.To.Select(p => p.Address).ToArray())), LogType.Both);
-
-                if (_isDebug == true)
+                if (!string.IsNullOrEmpty(reportAttachmentFile))
                 {
-                    string debugWhiteList = Settings.ReadString("Debug Email White List", "");
-                    string debugDomains = Settings.ReadString("Debug Email Domains", "");
-                    string debugAddresses = Settings.ReadString("Debug Email Address", "");
+                    Log(string.Format("Report generated and file attachment created: {0}", Path.GetFileName(reportAttachmentFile)), LogType.Public);
+                    Log(string.Format("Report file to attach: {0}", reportAttachmentFile));
 
-                    if (!string.IsNullOrWhiteSpace(debugWhiteList))
+                    Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
+                    MailMessage message = scheduledReport.GetMailMessage(reportAttachmentFile, organization);
+                    Log("Email message created", LogType.Both);
+                    Log(string.Format("Email Recipients: {0}", string.Join(",", message.To.Select(p => p.Address).ToArray())), LogType.Both);
+
+                    if (_isDebug == true)
                     {
-                        Logs.WriteEvent("DEBUG Whitelist: " + debugWhiteList);
-                        string[] addresses = debugWhiteList.Replace(';', ',').Split(',');
-                        List<MailAddress> mailAddresses = new List<MailAddress>();
+                        string debugWhiteList = Settings.ReadString("Debug Email White List", "");
+                        string debugDomains = Settings.ReadString("Debug Email Domains", "");
+                        string debugAddresses = Settings.ReadString("Debug Email Address", "");
 
-                        foreach (MailAddress mailAddress in message.To)
+                        if (!string.IsNullOrWhiteSpace(debugWhiteList))
                         {
-                            foreach (string address in addresses)
+                            Logs.WriteEvent("DEBUG Whitelist: " + debugWhiteList);
+                            string[] addresses = debugWhiteList.Replace(';', ',').Split(',');
+                            List<MailAddress> mailAddresses = new List<MailAddress>();
+
+                            foreach (MailAddress mailAddress in message.To)
                             {
-                                if (mailAddress.Address.ToLower().IndexOf(address.ToLower()) > -1)
+                                foreach (string address in addresses)
                                 {
-                                    mailAddresses.Add(mailAddress);
+                                    if (mailAddress.Address.ToLower().IndexOf(address.ToLower()) > -1)
+                                    {
+                                        mailAddresses.Add(mailAddress);
+                                    }
                                 }
                             }
-                        }
 
-                        message.To.Clear();
+                            message.To.Clear();
 
-                        foreach (MailAddress mailAddress in mailAddresses)
-                        {
-                            message.To.Add(mailAddress);
-                        }
-                    }
-                    else if (!string.IsNullOrWhiteSpace(debugDomains))
-                    {
-                        Logs.WriteEvent("DEBUG Domains: " + debugDomains);
-                        string[] domains = debugDomains.Replace(';', ',').Split(',');
-                        List<MailAddress> mailAddresses = new List<MailAddress>();
-
-                        foreach (MailAddress mailAddress in message.To)
-                        {
-                            foreach (string domain in domains)
+                            foreach (MailAddress mailAddress in mailAddresses)
                             {
-                                if (mailAddress.Address.ToLower().IndexOf(domain.ToLower()) > -1)
-                                {
-                                    mailAddresses.Add(mailAddress);
-                                }
+                                message.To.Add(mailAddress);
                             }
                         }
-
-                        message.To.Clear();
-
-                        foreach (MailAddress mailAddress in mailAddresses)
+                        else if (!string.IsNullOrWhiteSpace(debugDomains))
                         {
-                            message.To.Add(mailAddress);
+                            Logs.WriteEvent("DEBUG Domains: " + debugDomains);
+                            string[] domains = debugDomains.Replace(';', ',').Split(',');
+                            List<MailAddress> mailAddresses = new List<MailAddress>();
+
+                            foreach (MailAddress mailAddress in message.To)
+                            {
+                                foreach (string domain in domains)
+                                {
+                                    if (mailAddress.Address.ToLower().IndexOf(domain.ToLower()) > -1)
+                                    {
+                                        mailAddresses.Add(mailAddress);
+                                    }
+                                }
+                            }
+
+                            message.To.Clear();
+
+                            foreach (MailAddress mailAddress in mailAddresses)
+                            {
+                                message.To.Add(mailAddress);
+                            }
                         }
-                    }
-                    else if (!string.IsNullOrWhiteSpace(debugAddresses))
-                    {
-                        Logs.WriteEvent("DEBUG Addresses: " + debugAddresses);
-                        message.To.Clear();
-                        message.To.Add(debugAddresses.Replace(';', ','));
-                    }
-                    else
-                    {
-                        Logs.WriteEvent("NO DEBUG FILTERS SET");
-                        return;
+                        else if (!string.IsNullOrWhiteSpace(debugAddresses))
+                        {
+                            Logs.WriteEvent("DEBUG Addresses: " + debugAddresses);
+                            message.To.Clear();
+                            message.To.Add(debugAddresses.Replace(';', ','));
+                        }
+                        else
+                        {
+                            Logs.WriteEvent("NO DEBUG FILTERS SET");
+                            return;
+                        }
+
+                        if (message.To.Count < 1)
+                        {
+                            Logs.WriteEvent("No Debug Address specified.");
+                            return;
+                        }
+
+                        message.Subject = string.Format("[{0}] {1}", Settings.ReadString("Debug Email Subject", "TEST MODE"), message.Subject);
                     }
 
-                    if (message.To.Count < 1)
-                    {
-                        Logs.WriteEvent("No Debug Address specified.");
-                        return;
-                    }
+                    Log("Queueing email(s)", LogType.Both);
+                    AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
+                    Log("Email was queued to Emails for the emailprocessor");
 
-                    message.Subject = string.Format("[{0}] {1}", Settings.ReadString("Debug Email Subject", "TEST MODE"), message.Subject);
+                    scheduledReport.RunCount = scheduledReport.RunCount != null ? (short)(scheduledReport.RunCount + 1) : (short)1;
+                    scheduledReport.LastRun = DateTime.UtcNow;                    
                 }
-
-                Log("Queueing email(s)", LogType.Both);
-                AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
-                Log("Email was queued to Emails for the emailprocessor");
-
-                scheduledReport.RunCount = scheduledReport.RunCount != null ? (short)(scheduledReport.RunCount + 1) : (short)1;
-                scheduledReport.LastRun = DateTime.UtcNow;
-                scheduledReport.LockProcessId = null;
+                else
+                {
+                    Log("Report could not be generated and emailed, please contact TeamSupport", LogType.Public);
+                }
 
                 if ((ScheduledReportFrequency)scheduledReport.RecurrencyId == ScheduledReportFrequency.Once)
                 {
@@ -578,6 +642,7 @@ namespace TeamSupport.ServiceLibrary
                     scheduledReport.SetNextRun();
                 }
 
+                scheduledReport.LockProcessId = null;
                 scheduledReport.Collection.Save();
                 Log(string.Format("Set next run to: {0}", scheduledReport.NextRun == null ? "Never" : scheduledReport.NextRun.ToString()), LogType.Both);
             }
@@ -793,11 +858,23 @@ namespace TeamSupport.ServiceLibrary
         {
             private string _logPath;
             private string _fileName;
+            private Organization _organization;
+            private TimeZoneInfo _timeZoneInfo;
+            private DateTime _organizationDateTime = DateTime.Now;
+            private int? _timeOffset = null;
 
-            public ReportSenderPublicLog(string path, int scheduledReportID)
+            public ReportSenderPublicLog(string path, int scheduledReportId, int organizationId)
             {
                 _logPath = path;
-                _fileName = scheduledReportID.ToString() + ".txt";
+                _fileName = scheduledReportId.ToString() + ".txt";
+                _organization = Organizations.GetOrganization(LoginUser.Anonymous, organizationId);
+                _timeOffset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours;
+
+                if (_organization != null && _organization.TimeZoneID != null && _organization.TimeZoneID != "")
+                {
+                    _timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(_organization.TimeZoneID);
+                    _timeOffset = null;
+                }
 
                 if (!Directory.Exists(_logPath))
                 {
@@ -817,171 +894,30 @@ namespace TeamSupport.ServiceLibrary
                         }
                     }
                 }
+                
+                if (_timeZoneInfo != null)
+                {
+                    _organizationDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _timeZoneInfo);
+                }
+                else
+                {
+                    _organizationDateTime = DateTime.Now;
+                }
 
-                int timeOffset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours;
-                File.AppendAllText(_logPath + @"\" + _fileName, string.Format("{0} {1} ({2}): {3}{4}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), timeOffset, text, Environment.NewLine));
+                File.AppendAllText(_logPath + @"\" + _fileName, string.Format("{0} {1}{2}: {3}{4}", _organizationDateTime.ToShortDateString(),
+                                                                                                       _organizationDateTime.ToLongTimeString(),
+                                                                                                       (_timeOffset == null ? "" : " (" + _timeOffset.ToString() + ")"),
+                                                                                                       text,
+                                                                                                       Environment.NewLine));
+            }
+
+            public TimeZoneInfo OrganizationTimeZoneInfo
+            {
+                get
+                {
+                    return _timeZoneInfo;
+                }
             }
         }
-
-        /*
-		  _isDebug = Settings.ReadBool("Debug", false);
-		  _debugAddresses.Clear();
-
-		  try
-		  {
-			string[] addresses = Settings.ReadString("Debug Email Address").Split(';');
-			foreach (string item in addresses) { _debugAddresses.Add(new MailAddress(item.Trim())); }
-		  }
-		  catch (Exception)
-		  {
-		  }
-
-
-			EmailPosts emailPosts = new EmailPosts(LoginUser);
-			emailPosts.LoadReportEmails();
-
-			foreach (EmailPost emailPost in emailPosts)
-			{
-			  if (emailPost.EmailPostType != EmailPostType.SendReport) continue;
-
-			  if (DateTime.UtcNow > ((DateTime)emailPost.Row["DateCreated"]).AddSeconds(emailPost.HoldTime) || _isDebug)
-			  {
-				try
-				{
-				  SetTimeZone(emailPost);
-				  ProcessEmail(emailPost);
-				}
-				catch (Exception ex)
-				{
-				  ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
-				}
-				emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
-			  }
-			  System.Threading.Thread.Sleep(0);
-			  if (IsStopped) break;
-			}
-		  }
-		  catch (Exception ex)
-		  {
-			ExceptionLogs.LogException(LoginUser, ex, "Email", "Error processing emails");
-		  }
-
-		  try
-		  {
-			SendEmails();
-		  }
-		  catch (Exception ex)
-		  {
-			ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending emails");
-		  }*/
     }
-
-    /*
-    public void ProceesReportEmail(int reportID, int userID)
-    {
-      User user = Users.GetUser(LoginUser, userID);
-      Report report = Reports.GetReport(LoginUser, reportID);
-
-      if (report == null || (report.OrganizationID != LoginUser.OrganizationID && report.OrganizationID != null)) { return; }
-
-      string sql = report.GetSql(false);
-      SqlCommand command = new SqlCommand(sql);
-      Report.CreateParameters(LoginUser, command, userID);
-      string text = DataUtils.CommandToCsv(LoginUser, command, false);
-      /*
-      MemoryStream stream = new MemoryStream();
-      ZipOutputStream zip = new ZipOutputStream(stream);
-      zip.SetLevel(9);
-      zip.PutNextEntry(new ZipEntry(report.Name + ".csv"));
-      Byte[] bytes = Encoding.UTF8.GetBytes(text);
-      zip.Write(bytes, 0, bytes.Length);
-      zip.CloseEntry();
-      zip.Finish();
-      stream.WriteTo(context.Response.OutputStream);
-      //context.Response.ContentType = "application/x-zip-compressed";
-      context.Response.ContentType = "application/octet-stream";
-      context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + report.Name + ".zip\"");
-      context.Response.AddHeader("Content-Length", stream.Length.ToString());
-      zip.Close();* /
-
-      context.Response.Write(text);
-      context.Response.ContentType = "application/octet-stream";
-      context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + report.Name + ".csv\"");
-      //context.Response.AddHeader("Content-Length", text.Length.ToString());
-      
-      
-      MailMessage message = new MailMessage();
-      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
-      message.From = new MailAddress("support@teamsupport.com");
-      message.IsBodyHtml = true;
-      message.Body = "Test";
-      message.Subject = "Test";
-
-
-      MemoryStream stream = new MemoryStream();
-      ZipOutputStream zip = new ZipOutputStream(stream);
-      zip.SetLevel(9);
-      zip.PutNextEntry(new ZipEntry(report.Name + ".csv"));
-      Byte[] bytes = Encoding.UTF8.GetBytes(text);
-      zip.Write(bytes, 0, bytes.Length);
-      zip.CloseEntry();
-      zip.Finish();
-      message.Attachments.Add(new System.Net.Mail.Attachment(stream, report.Name));
-
-      
-      zip.Close();
-      
-
-      
-    }
-
-    private void SendEmails()
-    {
-      Emails emails = new Emails(LoginUser);
-      emails.LoadTop100Waiting();
-      if (emails.IsEmpty) return;
-
-      SmtpClient client = new SmtpClient();
-      client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
-      string username = Settings.ReadString("SMTP UserName", "");
-      if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
-
-      foreach (Email email in emails)
-      {
-        if (IsStopped) break;
-        try
-        {
-          if (email.NextAttempt < DateTime.UtcNow)
-          {
-
-            email.Attempts = email.Attempts + 1;
-            email.Collection.Save();
-            MailMessage message = email.GetMailMessage();
-            message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
-            message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
-            client.Send(message);
-            email.IsSuccess = true;
-            email.IsWaiting = false;
-            email.Body = "";
-            email.DateSent = DateTime.UtcNow;
-            email.Collection.Save();
-          }
-        }
-        catch (Exception ex)
-        {
-          StringBuilder builder = new StringBuilder();
-          builder.AppendLine(ex.Message);
-          builder.AppendLine("<br />");
-          builder.AppendLine("<br />");
-          builder.AppendLine("<br />");
-          builder.AppendLine(ex.StackTrace);
-          email.NextAttempt = DateTime.UtcNow.AddMinutes(_nextAttempts[email.Attempts - 1] * email.Attempts);
-          email.LastFailedReason = builder.ToString();
-          email.IsSuccess = false;
-          email.IsWaiting = (email.Attempts < _nextAttempts.Length);
-          email.Collection.Save();
-        }
-      }
-    }
-*/    
 }

@@ -9,27 +9,32 @@ namespace TeamSupport.Data
 
   public class AttachmentPath
   {
-    /*
-    private LoginUser _loginUser;
-    private string _root;
-    private string _defaultRoot;
-    private int _organizationID;
-
-    public AttachmentPath(LoginUser loginUser, int organizationID)
+    public enum Folder
     {
-      _loginUser = loginUser;
-      _organizationID = organizationID;
-      _root = GetRootAttachmentPath(loginUser, _organizationID);
-      _defaultRoot = GetDefaultRootAttachmentPath(loginUser);
-    }
-
-    public int OrganizationID { get { return _organizationID; } }
-    public LoginUser LoginUser { get { return _loginUser; } }
-    public string Root { get { return _root; } }
-    public string DefaultRoot { get { return _defaultRoot; } }
-    */
-
-    public enum Folder { None, Images, Styles, ChatImages, ChatStyles, TicketTypeImages, Products, Actions, Organizations, ProfileImages, WaterCooler, OrganizationAttachments, UserAttachments, AgentRating, AssetAttachments, Imports, OrganizationsLogo, ContactImages, ImportLogs, TempImages, CustomerHubLogo, ScheduledReports, ScheduledReportsLogs };
+        None,
+        Images,
+        Styles,
+        ChatImages,
+        ChatStyles,
+        TicketTypeImages,
+        Products,
+        Actions,
+        Organizations,
+        ProfileImages,
+        WaterCooler,
+        OrganizationAttachments,
+        UserAttachments,
+        AgentRating,
+        AssetAttachments,
+        Imports,
+        OrganizationsLogo,
+        ContactImages,
+        ImportLogs,
+        TempImages,
+        CustomerHubLogo,
+        ScheduledReports,
+        ScheduledReportsLogs
+    };
 
     /// <summary>
     /// Gets the root path for attachments as specified in the SystemSettings table
@@ -121,8 +126,8 @@ namespace TeamSupport.Data
         case Folder.ContactImages: result = "Images\\Avatars\\Contacts"; break;
         case Folder.TempImages: result = "Images\\Temp"; break;
 		case Folder.CustomerHubLogo: result = "Images\\HubLogo"; break;
-        case Folder.ScheduledReports: result = "ScheduledReports"; break;//vv
-        case Folder.ScheduledReportsLogs: result = "ScheduledReports\\Logs"; break;//vv
+        case Folder.ScheduledReports: result = "ScheduledReports"; break;
+        case Folder.ScheduledReportsLogs: result = "ScheduledReports\\Logs"; break;
 		default: result = ""; break;
       }
       return result;
