@@ -200,6 +200,7 @@
     <None Include="ReportSenderTools\resources.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ReportSenderTools\highcharts-convert.js" />
     <Content Include="ReportSenderTools\js\highcharts\highcharts.js" />
     <Content Include="ReportSenderTools\js\jquery-latest.min.js" />
     <Content Include="ReportSenderTools\phantomjs.exe" />
