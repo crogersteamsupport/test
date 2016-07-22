@@ -20,7 +20,7 @@ namespace TeamSupport.ServiceLibrary
 		private static object _staticLock = new object();
 		private MailAddressCollection _debugAddresses;
         private ReportSenderPublicLog _publicLog;
-        public const string PHANTOMJSCOMMAND = @"{0}\phantomjs highcharts-convert.js -infile {1} -outfile {2}";
+        public const string PHANTOMJSCOMMAND = @"phantomjs highcharts-convert.js -infile {0} -outfile {1}";
 
         public ReportSender()
 		{
@@ -169,7 +169,8 @@ namespace TeamSupport.ServiceLibrary
 
             //Create Batch File
             string batchFile = string.Format("thread_{0}.bat", _threadPosition);
-            string batchFileCommand = string.Format(PHANTOMJSCOMMAND, Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), optionsFile, outputImage);
+            string batchFileCommand = "chdir " + Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + Environment.NewLine;
+            batchFileCommand += string.Format(PHANTOMJSCOMMAND, optionsFile, outputImage);
             string batchFileFullPath = Path.Combine(path, batchFile);
             Log("batchFile: " + batchFileFullPath);
 
@@ -543,6 +544,8 @@ namespace TeamSupport.ServiceLibrary
 
                     Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
                     MailMessage message = scheduledReport.GetMailMessage(reportAttachmentFile, organization);
+                    Log("ScheduledReport body: " + scheduledReport.EmailBody);
+                    Log("mailmessage body: " + message.Body);
                     Log("Email message created", LogType.Both);
                     Log(string.Format("Email Recipients: {0}", string.Join(",", message.To.Select(p => p.Address).ToArray())), LogType.Both);
 
@@ -624,9 +627,6 @@ namespace TeamSupport.ServiceLibrary
                     Log("Queueing email(s)", LogType.Both);
                     AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
                     Log("Email was queued to Emails for the emailprocessor");
-
-                    scheduledReport.RunCount = scheduledReport.RunCount != null ? (short)(scheduledReport.RunCount + 1) : (short)1;
-                    scheduledReport.LastRun = DateTime.UtcNow;                    
                 }
                 else
                 {
@@ -642,6 +642,8 @@ namespace TeamSupport.ServiceLibrary
                     scheduledReport.SetNextRun();
                 }
 
+                scheduledReport.RunCount = scheduledReport.RunCount != null ? (short)(scheduledReport.RunCount + 1) : (short)1;
+                scheduledReport.LastRun = DateTime.UtcNow;
                 scheduledReport.LockProcessId = null;
                 scheduledReport.Collection.Save();
                 Log(string.Format("Set next run to: {0}", scheduledReport.NextRun == null ? "Never" : scheduledReport.NextRun.ToString()), LogType.Both);
