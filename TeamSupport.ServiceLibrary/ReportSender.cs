@@ -20,7 +20,7 @@ namespace TeamSupport.ServiceLibrary
 		private static object _staticLock = new object();
 		private MailAddressCollection _debugAddresses;
         private ReportSenderPublicLog _publicLog;
-        public const string PHANTOMJSCOMMAND = @"phantomjs highcharts-convert.js -infile {0} -outfile {1}";
+        public const string PHANTOMJSCOMMAND = @"{0}\phantomjs highcharts-convert.js -infile {1} -outfile {2}";
 
         public ReportSender()
 		{
@@ -169,7 +169,7 @@ namespace TeamSupport.ServiceLibrary
 
             //Create Batch File
             string batchFile = string.Format("thread_{0}.bat", _threadPosition);
-            string batchFileCommand = string.Format(PHANTOMJSCOMMAND, optionsFile, outputImage);
+            string batchFileCommand = string.Format(PHANTOMJSCOMMAND, Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), optionsFile, outputImage);
             string batchFileFullPath = Path.Combine(path, batchFile);
             Log("batchFile: " + batchFileFullPath);
 
