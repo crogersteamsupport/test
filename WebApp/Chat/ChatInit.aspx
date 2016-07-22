@@ -67,5 +67,6 @@
     <script src="../Resources/Js/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="../Resources/Js/jquery.placeholder.js" type="text/javascript"></script>
     <script src="../Resources/Js/bootstrap3.min.js" type="text/javascript"></script>
+    <script src="../Resources/Js/Ts/ts.utils.js"></script>
     <script src="../Resources/Pages/CustomerChat.js"></script>
 </html>

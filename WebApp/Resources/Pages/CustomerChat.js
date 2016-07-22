@@ -2,7 +2,8 @@
     var channelName = 'presence-test';
     var pusher = new Pusher('0cc6bf2df4f20b16ba4d', { authEndpoint: service + 'Auth' });
     var channel = pusher.subscribe(channelName);
-    
+    var chatID = Ts.Utils.getQueryValue("uid", window);
+
     channel.bind('pusher:subscription_succeeded', function () {
         console.log(channel.members);
     });
@@ -19,6 +20,16 @@
     $("#newChatForm").submit(function (e) {
         e.preventDefault();
 
+        var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val() };
+
+        IssueAjaxRequest("GetContact", contactInfo,
+        function (result) {debugger
+            console.log(result)
+        },
+        function (error) {
+            debugger
+            console.log(error)
+        });
     });
 
 
