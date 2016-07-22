@@ -13,12 +13,13 @@
 
     channel.bind('new-comment', function (data) {
         console.log(data);
-        createMessageElement(data)
-        //console.log(data);
-        //alert(data.message)
+        createMessageElement(data);
     });
     
-    
+    $("#newChatForm").submit(function (e) {
+        e.preventDefault();
+
+    });
 
 
     $("#message-form").submit(function (e) {
@@ -39,9 +40,9 @@
 });
 
 function createMessageElement(messageData) {
-    $('#message-list').append('<li class="list-group-item message-bubble"> '+
+    $('#message-list').append('<li class="list-group-item message-bubble"> ' +
                             '<p class="text-muted">' + messageData.userName + '</p> ' +
-                            '<p>' + messageData.message + '</p></li>')
+                            '<p>' + messageData.message + '</p></li>');
 }
 
 var service = '../Services/ChatService.asmx/';

@@ -15,8 +15,27 @@
             <div class="panel panel-default">
                 <div class="panel-heading">How can we help you today?</div>
                 <div class="panel-body">
-                    <ul id="message-list" class="list-group">
-                        <li class="list-group-item message-bubble">
+                    <form id="newChatForm">
+                        <div class="form-group">
+                            <label for="userFirstName">First Name</label>
+                            <input type="text" class="form-control" id="userFirstName" placeholder="First Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="userLastName">Last Name</label>
+                            <input type="text" class="form-control" id="userLastName" placeholder="Last Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">Email address</label>
+                            <input type="email" class="form-control" id="userEmail" placeholder="Email">
+                        </div>
+                        <div class="form-group">
+                            <label for="userIssue">What is your questions?</label>
+                            <textarea class="form-control" id="userIssue" rows="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                    <ul id="message-list" class="list-group" style="display:none;">
+<%--                        <li class="list-group-item message-bubble">
                             <p class="text-muted">Matt Townsen</p>
                             <p>Why is yo shit so broke?</p>
                         </li>
@@ -27,26 +46,10 @@
                         <li class="list-group-item message-bubble">
                             <p class="text-muted">Matt Townsen</p>
                             <p>Why is yo shit so broke?</p>
-                        </li>
+                        </li>--%>
                     </ul>
-<%--                    <div class="row message-bubble">
-                        <p class="text-muted">Matt Townsen</p>
-                        <p>Why is yo shit so broke?</p>
-                    </div>
-                    <div class="row message-bubble">
-                        <p class="text-muted">Matt Townsen</p>
-                        <p>It Isn't'</p>
-                    </div>
-                    <div class="row message-bubble">
-                        <p class="text-muted">Matt Townsen</p>
-                        <p>Umm yes it is</p>
-                    </div>
-                    <div class="row message-bubble">
-                        <p class="text-muted">Matt Townsen</p>
-                        <p>Test message</p>
-                    </div>--%>
                 </div>
-                <div class="panel-footer">
+                <div class="panel-footer form-footer" style="display:none;">
                     <form id="message-form" action="">
                         <div class="input-group">
                             <input id="message" type="text" class="form-control" />
