@@ -35,7 +35,7 @@ namespace TSWebServices
         {
 
             var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = loginUser.GetUserFullName() });
-            return true.ToString();
+            return JsonConvert.SerializeObject(true);
         }
 
         [WebMethod]

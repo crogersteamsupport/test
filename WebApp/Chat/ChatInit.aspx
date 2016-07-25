@@ -18,15 +18,15 @@
                     <form id="newChatForm">
                         <div class="form-group">
                             <label for="userFirstName">First Name</label>
-                            <input type="text" class="form-control" id="userFirstName" placeholder="First Name">
+                            <input type="text" class="form-control" id="userFirstName" placeholder="First Name" value="Matt">
                         </div>
                         <div class="form-group">
                             <label for="userLastName">Last Name</label>
-                            <input type="text" class="form-control" id="userLastName" placeholder="Last Name">
+                            <input type="text" class="form-control" id="userLastName" placeholder="Last Name" value="Townsen">
                         </div>
                         <div class="form-group">
                             <label for="userEmail">Email address</label>
-                            <input type="email" class="form-control" id="userEmail" placeholder="Email">
+                            <input type="email" class="form-control" id="userEmail" placeholder="Email" value="thunderfan1984@gmail.com">
                         </div>
                         <div class="form-group">
                             <label for="userIssue">What is your questions?</label>
@@ -35,18 +35,9 @@
                         <button type="submit" class="btn btn-default">Submit</button>
                     </form>
                     <ul id="message-list" class="list-group" style="display:none;">
-<%--                        <li class="list-group-item message-bubble">
-                            <p class="text-muted">Matt Townsen</p>
-                            <p>Why is yo shit so broke?</p>
+                        <li id="scopeMessage" class="list-group-item message-bubble">
+                            <p>waiting on operator...</p>
                         </li>
-                        <li class="list-group-item message-bubble">
-                            <p class="text-muted">Matt Townsen</p>
-                            <p>Why is yo shit so broke?</p>
-                        </li>
-                        <li class="list-group-item message-bubble">
-                            <p class="text-muted">Matt Townsen</p>
-                            <p>Why is yo shit so broke?</p>
-                        </li>--%>
                     </ul>
                 </div>
                 <div class="panel-footer form-footer" style="display:none;">

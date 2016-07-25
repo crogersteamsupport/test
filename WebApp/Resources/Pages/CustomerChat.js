@@ -6,6 +6,19 @@
 
     channel.bind('pusher:subscription_succeeded', function () {
         console.log(channel.members);
+        if(channel.members.count > 1)
+        {
+            $('#scopeMessage').remove();
+        }
+
+        //$.each(channel.members, function (index) {
+        //    createMessage(channel.members[index].name + ' joined the chat.')
+        //});
+    });
+
+    channel.bind('pusher:member_added', function (member) {
+        $('#scopeMessage').remove();
+        createMessage(member.info.name + ' joined the chat.')
     });
 
     channel.bind('pusher:subscription_error', function (status) {
@@ -23,11 +36,13 @@
         var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val() };
 
         IssueAjaxRequest("GetContact", contactInfo,
-        function (result) {debugger
-            console.log(result)
+        function (result) {
+            //console.log(result)
+            $("#newChatForm").hide();
+            $("#message-list").show();
+            $(".form-footer").show();
         },
-        function (error) {
-            debugger
+        function (error) { 
             console.log(error)
         });
     });
@@ -40,7 +55,7 @@
         
         IssueAjaxRequest("AddMessage", messageData,
         function (result) {
-
+            $('#message').val('');
         },
         function (error) {
 
@@ -49,6 +64,11 @@
     });
   
 });
+
+function createMessage(message)
+{
+    $('#message-list').append('<li class="list-group-item message-bubble"> <p>' + message + '</p></li>');
+}
 
 function createMessageElement(messageData) {
     $('#message-list').append('<li class="list-group-item message-bubble"> ' +
