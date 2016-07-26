@@ -1,43 +1,15 @@
 ﻿$(document).ready(function () {
-    var channelName = 'presence-test';
-    var pusher = new Pusher('0cc6bf2df4f20b16ba4d', { authEndpoint: service + 'Auth' });
-    var channel = pusher.subscribe(channelName);
     var chatID = Ts.Utils.getQueryValue("uid", window);
-
-    channel.bind('pusher:subscription_succeeded', function () {
-        console.log(channel.members);
-        if(channel.members.count > 1)
-        {
-            $('#scopeMessage').remove();
-        }
-
-        //$.each(channel.members, function (index) {
-        //    createMessage(channel.members[index].name + ' joined the chat.')
-        //});
-    });
-
-    channel.bind('pusher:member_added', function (member) {
-        $('#scopeMessage').remove();
-        createMessage(member.info.name + ' joined the chat.')
-    });
-
-    channel.bind('pusher:subscription_error', function (status) {
-        console.log(status);
-    });
-
-    channel.bind('new-comment', function (data) {
-        console.log(data);
-        createMessageElement(data);
-    });
-    
     $("#newChatForm").submit(function (e) {
         e.preventDefault();
 
-        var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val() };
+        var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val(), description: $('#userIssue').val() };
 
-        IssueAjaxRequest("GetContact", contactInfo,
+        IssueAjaxRequest("RequestChat", contactInfo,
         function (result) {
             //console.log(result)
+            var name = $('#userFirstName').val() + ' ' + $('#userLastName').val();
+            setupChat($('#userEmail').val(), chatID, name);
             $("#newChatForm").hide();
             $("#message-list").show();
             $(".form-footer").show();
@@ -74,6 +46,45 @@ function createMessageElement(messageData) {
     $('#message-list').append('<li class="list-group-item message-bubble"> ' +
                             '<p class="text-muted">' + messageData.userName + '</p> ' +
                             '<p>' + messageData.message + '</p></li>');
+}
+
+function setupChat(email, chatID, name) {
+    var channelName = 'presence-test';
+    var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
+        authEndpoint: service + 'Auth', auth: {
+            params: {
+                chatGuid: chatID,
+                email: email,
+                name: name
+            }
+        }
+    });
+    var channel = pusher.subscribe(channelName);
+
+    channel.bind('pusher:subscription_succeeded', function () {
+        console.log(channel.members);
+        if (channel.members.count > 1) {
+            $('#scopeMessage').remove();
+        }
+
+        //$.each(channel.members, function (index) {
+        //    createMessage(channel.members[index].name + ' joined the chat.')
+        //});
+    });
+
+    channel.bind('pusher:member_added', function (member) {
+        $('#scopeMessage').remove();
+        createMessage(member.info.name + ' joined the chat.')
+    });
+
+    channel.bind('pusher:subscription_error', function (status) {
+        console.log(status);
+    });
+
+    channel.bind('new-comment', function (data) {
+        console.log(data);
+        createMessageElement(data);
+    });
 }
 
 var service = '../Services/ChatService.asmx/';

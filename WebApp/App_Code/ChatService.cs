@@ -31,6 +31,39 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string RequestChat(string chatGuid, string fName, string lName, string email, string description)
+        {
+            Organization org = GetOrganization(chatGuid);
+            string test = Context.Request.UserHostAddress;
+            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress);
+            return JsonConvert.SerializeObject(request.GetProxy());
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void Auth(string channel_name, string socket_id, string chatGuid, string email, string name)
+        {
+            Organization org = GetOrganization(chatGuid);
+            Users users = new Users(loginUser);
+            users.LoadByEmail(org.OrganizationID, email);
+
+            var channelData = new PresenceChannelData()
+            {
+                user_id = (users.IsEmpty) ? "-1": users[0].UserID.ToString(),
+                user_info = new
+                {
+                    name = name
+                }
+
+            };
+
+            var auth = pusher.Authenticate(channel_name, socket_id, channelData);
+            var json = auth.ToJson();
+            Context.Response.Write(json);
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string AddMessage(string channelName, string message)
         {
 
@@ -48,25 +81,6 @@ namespace TSWebServices
 
             if (users.IsEmpty) return null;
             else return JsonConvert.SerializeObject(users[0].GetProxy());
-        }
-
-        [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public void Auth(string channel_name, string socket_id)
-        {
-            var channelData = new PresenceChannelData()
-            {
-                user_id = loginUser.UserID.ToString(),
-                user_info = new
-                {
-                    name = loginUser.GetUserFullName()
-                }
-
-            };
-
-            var auth = pusher.Authenticate(channel_name, socket_id, channelData);
-            var json = auth.ToJson();
-            Context.Response.Write(json);
         }
 
         private Organization GetOrganization(string orgGuid)

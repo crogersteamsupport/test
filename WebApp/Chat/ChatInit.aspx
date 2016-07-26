@@ -8,7 +8,7 @@
     <%-- CSS --%>
     <link href="../Resources/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
     <link href="../Resources/Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="../Resources/Pages/CustomerChat.css" rel="stylesheet" />
+    <link href="../Resources/Pages/CustomerChatInit.css" rel="stylesheet" />
 
 </head>
 <body>
@@ -59,5 +59,5 @@
     <script src="../Resources/Js/jquery.placeholder.js" type="text/javascript"></script>
     <script src="../Resources/Js/bootstrap3.min.js" type="text/javascript"></script>
     <script src="../Resources/Js/Ts/ts.utils.js"></script>
-    <script src="../Resources/Pages/CustomerChat.js"></script>
+    <script src="../Resources/Pages/CustomerChatInit.js"></script>
 </html>
