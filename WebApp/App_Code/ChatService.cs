@@ -91,5 +91,14 @@ namespace TSWebServices
             if (organizations.IsEmpty) return null;
             else return organizations[0];
         }
+
+        private Chat GetChat(int chatID)
+        {
+            Chats chats = new Chats(loginUser);
+            chats.LoadByChatID(chatID);
+
+            if (chats.IsEmpty) return chats[0];
+            else return null;
+        }
     }
 }

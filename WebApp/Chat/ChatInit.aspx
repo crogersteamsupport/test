@@ -34,22 +34,6 @@
                         </div>
                         <button type="submit" class="btn btn-default">Submit</button>
                     </form>
-                    <ul id="message-list" class="list-group" style="display:none;">
-                        <li id="scopeMessage" class="list-group-item message-bubble">
-                            <p>waiting on operator...</p>
-                        </li>
-                    </ul>
-                </div>
-                <div class="panel-footer form-footer" style="display:none;">
-                    <form id="message-form" action="">
-                        <div class="input-group">
-                            <input id="message" type="text" class="form-control" />
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit">Send</button>
-                            </span>
-                        </div>
-                    </form>
-
                 </div>
             </div>
 </body>

@@ -1,24 +1,7 @@
-﻿.message-bubble 
-{
-    padding: 0px 0px 0px 20px;
-}
-
-.message-bubble:nth-child(even) { background-color: #F5F5F5; }
-
-.message-bubble > *
-{
-    margin: 0px;
-    padding: 5px;
+﻿#newChatForm {
+    padding: 10px;
 }
 
 .panel-body { padding: 0px; }
 
 .panel-heading { background-color: #3d6da7 !important; color: white !important; }
-
-.list-group { padding-left: 0;  margin-bottom: 0; }
-
-.list-group-item { border: none; }
-
-#newChatForm {
-    padding: 10px;
-}

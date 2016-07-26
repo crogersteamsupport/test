@@ -7,85 +7,14 @@
 
         IssueAjaxRequest("RequestChat", contactInfo,
         function (result) {
-            //console.log(result)
-            var name = $('#userFirstName').val() + ' ' + $('#userLastName').val();
-            setupChat($('#userEmail').val(), chatID, name);
-            $("#newChatForm").hide();
-            $("#message-list").show();
-            $(".form-footer").show();
+            console.log(result)
         },
         function (error) { 
             console.log(error)
         });
     });
-
-
-    $("#message-form").submit(function (e) {
-        e.preventDefault();
-
-        var messageData = { channelName: 'presence-test', message: $('#message').val() };
-        
-        IssueAjaxRequest("AddMessage", messageData,
-        function (result) {
-            $('#message').val('');
-        },
-        function (error) {
-
-        });
-
-    });
   
 });
-
-function createMessage(message)
-{
-    $('#message-list').append('<li class="list-group-item message-bubble"> <p>' + message + '</p></li>');
-}
-
-function createMessageElement(messageData) {
-    $('#message-list').append('<li class="list-group-item message-bubble"> ' +
-                            '<p class="text-muted">' + messageData.userName + '</p> ' +
-                            '<p>' + messageData.message + '</p></li>');
-}
-
-function setupChat(email, chatID, name) {
-    var channelName = 'presence-test';
-    var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
-        authEndpoint: service + 'Auth', auth: {
-            params: {
-                chatGuid: chatID,
-                email: email,
-                name: name
-            }
-        }
-    });
-    var channel = pusher.subscribe(channelName);
-
-    channel.bind('pusher:subscription_succeeded', function () {
-        console.log(channel.members);
-        if (channel.members.count > 1) {
-            $('#scopeMessage').remove();
-        }
-
-        //$.each(channel.members, function (index) {
-        //    createMessage(channel.members[index].name + ' joined the chat.')
-        //});
-    });
-
-    channel.bind('pusher:member_added', function (member) {
-        $('#scopeMessage').remove();
-        createMessage(member.info.name + ' joined the chat.')
-    });
-
-    channel.bind('pusher:subscription_error', function (status) {
-        console.log(status);
-    });
-
-    channel.bind('new-comment', function (data) {
-        console.log(data);
-        createMessageElement(data);
-    });
-}
 
 var service = '../Services/ChatService.asmx/';
 function IssueAjaxRequest(method, data, successCallback, errorCallback) {
