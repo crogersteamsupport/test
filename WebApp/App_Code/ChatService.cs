@@ -41,18 +41,17 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public void Auth(string channel_name, string socket_id, string chatGuid, string email, string name)
+        public void Auth(string channel_name, string socket_id, int chatId, int participantID)
         {
-            Organization org = GetOrganization(chatGuid);
-            Users users = new Users(loginUser);
-            users.LoadByEmail(org.OrganizationID, email);
+            ChatClient client = ChatClients.GetChatClient(loginUser, participantID);
 
             var channelData = new PresenceChannelData()
             {
-                user_id = (users.IsEmpty) ? "-1": users[0].UserID.ToString(),
+                user_id = client.ChatClientID.ToString(),
                 user_info = new
                 {
-                    name = name
+                    name = client.FirstName +  ' ' + client.LastName,
+                    company = client.CompanyName
                 }
 
             };

@@ -8,6 +8,7 @@
         IssueAjaxRequest("RequestChat", contactInfo,
         function (result) {
             console.log(result)
+            window.location.replace('Chat.html?chatid=' + result.ChatID + '&pid=' + result.RequestorID);
         },
         function (error) { 
             console.log(error)

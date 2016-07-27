@@ -6,9 +6,9 @@
 <head runat="server">
     <title></title>
     <%-- CSS --%>
-    <link href="../Resources/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
-    <link href="../Resources/Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="../Resources/Pages/CustomerChatInit.css" rel="stylesheet" />
+    <link href="../vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
+    <link href="../vcr/1_9_0/Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../vcr/1_9_0/Pages/CustomerChatInit.css" rel="stylesheet" />
 
 </head>
 <body>
@@ -39,9 +39,9 @@
 </body>
     <%-- JS --%>
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
-    <script src="../Resources/Js/jquery-1.11.0.min.js" type="text/javascript"></script>
-    <script src="../Resources/Js/jquery.placeholder.js" type="text/javascript"></script>
-    <script src="../Resources/Js/bootstrap3.min.js" type="text/javascript"></script>
-    <script src="../Resources/Js/Ts/ts.utils.js"></script>
-    <script src="../Resources/Pages/CustomerChatInit.js"></script>
+    <script src="../vcr/1_9_0/Js/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="../vcr/1_9_0/Js/jquery.placeholder.js" type="text/javascript"></script>
+    <script src="../vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
+    <script src="../vcr/1_9_0/Js/Ts/ts.utils.js"></script>
+    <script src="../vcr/1_9_0/Pages/CustomerChatInit.js"></script>
 </html>

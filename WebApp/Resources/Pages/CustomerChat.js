@@ -1,6 +1,8 @@
 ﻿$(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("chatid", window);
+    var participantID = Ts.Utils.getQueryValue("pid", window);
 
+    setupChat(chatID, participantID);
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
@@ -30,14 +32,13 @@ function createMessageElement(messageData) {
                             '<p>' + messageData.message + '</p></li>');
 }
 
-function setupChat(email, chatID, name) {
+function setupChat(chatID, participantID) {
     var channelName = 'presence-test';
     var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
         authEndpoint: service + 'Auth', auth: {
             params: {
-                chatGuid: chatID,
-                email: email,
-                name: name
+                chatID: chatID,
+                participantID: participantID
             }
         }
     });
@@ -54,6 +55,11 @@ function setupChat(email, chatID, name) {
 
     channel.bind('pusher:subscription_error', function (status) {
         console.log(status);
+    });
+
+    channel.bind('agent-joined', function (data) {
+        //console.log(data);
+        $('#scopeMessage').remove();
     });
 
     channel.bind('new-comment', function (data) {
