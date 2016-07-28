@@ -1,10 +1,12 @@
 ﻿$(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("uid", window);
-
+    var chatOffline = false;
     var chatGuid = { chatGuid: chatID };
+
     IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID },
     function (result) {
         //console.log(result)
+        chatOffline = result;
         if (result) $('.chatRequestForm').show();
         else {
             $('.chatRequestLabel').show();
