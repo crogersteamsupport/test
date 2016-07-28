@@ -31,11 +31,23 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public bool CheckChatStatus(string chatGuid)
+        {
+            Organization org = GetOrganization(chatGuid);
+            bool isAvailable = ChatRequests.IsOperatorAvailable(LoginUser.Anonymous, org.OrganizationID);
+            return isAvailable;
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string RequestChat(string chatGuid, string fName, string lName, string email, string description)
         {
             Organization org = GetOrganization(chatGuid);
-            string test = Context.Request.UserHostAddress;
-            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress);
+
+            //TODO:  Need to add some type of routing here to account for when no agents are online.
+
+            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress); 
+            pusher.Trigger("chat-requests", "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName) });
             return JsonConvert.SerializeObject(request.GetProxy());
         }
 
@@ -66,7 +78,7 @@ namespace TSWebServices
         public string AddMessage(string channelName, string message)
         {
 
-            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = loginUser.GetUserFullName() });
+            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = "" });
             return JsonConvert.SerializeObject(true);
         }
 
