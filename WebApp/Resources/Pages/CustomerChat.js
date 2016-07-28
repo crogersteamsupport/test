@@ -1,8 +1,10 @@
 ﻿$(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("chatid", window);
     var participantID = Ts.Utils.getQueryValue("pid", window);
+    var chatObject;
 
     setupChat(chatID, participantID);
+    loadInitialMessages(chatID);
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
@@ -65,6 +67,22 @@ function setupChat(chatID, participantID) {
     channel.bind('new-comment', function (data) {
         console.log(data);
         createMessageElement(data);
+    });
+}
+
+function loadInitialMessages(chatID) {
+    var chatObject = { chatID: chatID };
+
+    IssueAjaxRequest("GetChatInfo", chatObject,
+    function (result) {
+        console.log(result);
+        chatObject = result;
+        createMessage('Initiated On: ' + result.Chat.DateCreated);
+        createMessage('Initiated By: ' + result.Initiator.FirstName + ' ' + result.Initiator.LastName + ', ' + result.Initiator.CompanyName + ' (' + result.Initiator.Email + ')');
+        createMessage('Description:' + result.Chat.Message);
+    },
+    function (error) {
+
     });
 }
 

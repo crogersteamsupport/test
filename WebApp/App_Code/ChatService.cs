@@ -38,6 +38,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string GetChatInfo(int chatID)
+        {
+            ChatViewObject model = new ChatViewObject();
+            model.Chat = GetChatRequest(chatID).GetProxy();
+            model.Initiator = GetParticipant(model.Chat.RequestorID).GetProxy();
+            return JsonConvert.SerializeObject(model);
+        }
+
+        [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string RequestChat(string chatGuid, string fName, string lName, string email, string description)
         {
@@ -104,8 +113,26 @@ namespace TSWebServices
             Chats chats = new Chats(loginUser);
             chats.LoadByChatID(chatID);
 
-            if (chats.IsEmpty) return chats[0];
+            if (!chats.IsEmpty) return chats[0];
             else return null;
+        }
+
+        private ChatClient GetParticipant(int participantID)
+        {
+            return ChatClients.GetChatClient(loginUser, participantID);
+        }
+
+        private ChatRequest GetChatRequest(int chatID)
+        {
+            ChatRequests requests = new ChatRequests(loginUser);
+            requests.LoadByChatID(chatID, ChatRequestType.External);
+            return requests[0];
+        }
+
+        public class ChatViewObject
+        {
+            public ChatRequestProxy Chat { get; set; }
+            public ChatClientProxy Initiator { get; set; }
         }
     }
 }
