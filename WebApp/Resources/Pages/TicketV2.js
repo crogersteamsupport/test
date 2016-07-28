@@ -375,8 +375,7 @@ function SetupTicketPage() {
   $("input[type=text], textarea").autoGrow();
 
   window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
-    jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
-    SetupTicketProperties();
+      SetupTicketProperties(order);
   });
 
   $('#NewCustomerModal').on('shown.bs.modal', function () {
@@ -415,12 +414,20 @@ function SetupTicketPage() {
 
 function AddTicketProperty(item) {
   if ($("#ticket-group-" + item.CatID).length > 0) {
-    var compiledTemplate = Handlebars.compile($("#ticket-group-" + item.CatID).html());
-    $('#ticket-properties-area').append(compiledTemplate);
+      var compiledTemplate = Handlebars.compile($("#ticket-group-" + item.CatID).html());
+      if (item.CatID == "Attachments")
+      {
+        var context = { Attachments: _ticketInfo.Attachments };
+        var html = compiledTemplate(context);
+        $('#ticket-properties-area').append(html);
+      }
+      else
+          $('#ticket-properties-area').append(compiledTemplate);
+
   }
 };
 
-function SetupTicketProperties() {
+function SetupTicketProperties(order) {
   window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
     if (info == null) {
       var url = window.location.href;
@@ -449,6 +456,8 @@ function SetupTicketProperties() {
     window.parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 
     if (info == null) alert('no ticket');
+
+    jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
 
     if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserID === _ticketInfo.UserID) {
       $('.ticket-menu-actions').append('<li><a id="Ticket-Delete">Delete</a></li>');
@@ -509,6 +518,7 @@ function SetupTicketProperties() {
     if (typeof refresh === "undefined") {
       window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
+
 
   });
 };

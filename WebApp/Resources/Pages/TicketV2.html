@@ -735,10 +735,20 @@
                 </div>
               </div>
             </script>
+            <script id="ticket-group-Attachments" type="text/x-handlebars-template">
+                <div class="form-group ticket-group">
+                    <div class="tagContainer">
+                        {{#each Attachments}}
+                        <a target="_blank" href="../../../dc/1/attachments/{{AttachmentID}}"><i class="glyphicon glyphicon-paperclip"></i>{{FileName}}</a><br />
+                        {{/each}}
+                    </div>
+                </div>
+            </script>
             <script id="ticket-group-CustomFields" type="text/x-handlebars-template">
               <div id="ticket-group-custom-fields">
               </div>
             </script>
+            
         </div>
       </div>
     </div>
