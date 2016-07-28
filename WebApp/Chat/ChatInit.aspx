@@ -12,10 +12,15 @@
 
 </head>
 <body>
-            <div class="panel panel-default">
+            <div class="panel panel-default chatRequestForm" style="display:none;">
                 <div class="panel-heading">How can we help you today?</div>
                 <div class="panel-body">
+                    
                     <form id="newChatForm">
+                        <div class="alert alert-info chatRequestLabel" role="alert">
+                            <strong>A chat operator is not available.</strong><br />
+                            Please submit your question and we will get back with you.
+                        </div>
                         <div class="form-group">
                             <label for="userFirstName">First Name</label>
                             <input type="text" class="form-control" id="userFirstName" placeholder="First Name" value="Matt">

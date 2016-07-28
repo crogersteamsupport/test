@@ -1,5 +1,21 @@
 ﻿$(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("uid", window);
+
+    var chatGuid = { chatGuid: chatID };
+    IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID },
+    function (result) {
+        //console.log(result)
+        if (result) $('.chatRequestForm').show();
+        else {
+            $('.chatRequestLabel').show();
+            $('.chatRequestForm').show();
+        }
+    },
+    function (error) {
+        console.log(error)
+    });
+
+
     $("#newChatForm").submit(function (e) {
         e.preventDefault();
 
