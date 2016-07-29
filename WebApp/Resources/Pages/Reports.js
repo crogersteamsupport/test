@@ -4,7 +4,7 @@ var _openLog = false;
 
 $(document).ready(function () {
     reportPage = new ReportPage();
-    
+
 	var returningFrom = parent.Ts.Utils.getQueryValue('ReturnFrom', window);
 	
 	if (returningFrom != undefined && returningFrom != null && returningFrom.toLowerCase() == "scheduledreports") {
@@ -204,24 +204,24 @@ ReportPage = function () {
         e.preventDefault();
 
     	if (!_isScheduledReportsSelected) {
-        var row = $(this).closest('.report-item');
-        if (row.hasClass('report-selected')) {
-            row.removeClass('report-selected').find('.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
-        }
-        else {
-            row.addClass('report-selected').find('.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
-        }
+            var row = $(this).closest('.report-item');
+            if (row.hasClass('report-selected')) {
+                row.removeClass('report-selected').find('.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+            }
+            else {
+                row.addClass('report-selected').find('.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
+            }
 
-        if ($('.report-item:visible').length == $('.report-selected.report-item:visible').length) {
-            $('.report-list th.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
-        }
-        else {
-            $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
-        }
+            if ($('.report-item:visible').length == $('.report-selected.report-item:visible').length) {
+                $('.report-list th.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
+            }
+            else {
+                $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+            }
 
-        $('.report-active').removeClass('report-active');
-        row.addClass('report-active');
-        updateToolbar();
+            $('.report-active').removeClass('report-active');
+            row.addClass('report-active');
+            updateToolbar();
     	}
         
         e.stopPropagation();
@@ -275,10 +275,10 @@ ReportPage = function () {
         var report = $(this).parents('.report-item').data('o');
 
         if (!_isScheduledReportsSelected) {
-        if (report.ReportType == 5) {
-        		parent.Ts.MainPage.openTicketView(report.ReportID, report.IsPrivate);
-        }
-        else {
+            if (report.ReportType == 5) {
+        		    parent.Ts.MainPage.openTicketView(report.ReportID, report.IsPrivate);
+            }
+            else {
         		parent.Ts.MainPage.openReport($(this).parents('.report-item').data('o'));
         	}
         } else {
@@ -301,7 +301,14 @@ ReportPage = function () {
                 $('.report-move').addClass('disabled');
             }
 
-            if ($('.report-selected:visible').length == 1) {
+            var item = $('.report-menu-item.active');
+            var isExternal = false;
+
+            if (item.hasClass('menu-external')) {
+                isExternal = true;
+            }
+
+            if ($('.report-selected:visible').length == 1 && !isExternal) {
                 $('.report-schedule').removeClass('disabled');
             } else {
                 $('.report-schedule').addClass('disabled');
@@ -482,6 +489,25 @@ ReportPage = function () {
         var fieldname = item.closest('th').data('sortfield')
         var asc = !item.hasClass('fa-angle-down');
 
+        if (_isScheduledReportsSelected) {
+            switch (fieldname) {
+                case "Name":
+                    fieldname = "ReportName";
+                    break;
+                case "Status":
+                    fieldname = "IsSuccessful";
+                    break;
+                case "DateEdited":
+                    fieldname = "DateModified";
+                    break;
+                case "Log":
+                    fieldname = "Id";
+                    break;
+                default:
+                    break;
+            }
+        }
+
         if (asc == true) {
             $('.report-list table .report-item').sortElements(function (a, b) {
                 var val1 = $(a).data('o')[fieldname];
@@ -524,15 +550,17 @@ ReportPage = function () {
             var folder = item.data('o');
             parent.Ts.Services.Reports.GetReportsByFolder(folder.FolderID, loadReports);
         }
-
     }
 
     function loadReports(data) {
         $('.report-list-log').hide();
-    	$('.report-list table').find(".report-list-header.report-list-lastviewed").text("Last Viewed");
-    	$('.report-list table').find(".report-list-header.report-list-nextrun").remove();
+        $('.report-list-nextrun').hide();
+        $('.report-list-status').hide();
+        $('.report-list-lastrun').hide();
+        $('.report-list-lastviewed').show();
         var reports = JSON.parse(data);
         $('.report-list .report-item').remove();
+
         for (var i = 0; i < reports.length; i++) {
             $('.report-list table').append(getNewReportItem(reports[i]));
         }
@@ -546,6 +574,7 @@ ReportPage = function () {
                 _rowClone.helper = ui.helper;
             }
         });
+
         filterReport();
     }
 
@@ -577,7 +606,6 @@ ReportPage = function () {
         }
 
         item.data('o', report);
-
     }
 
     function loadScheduledReports(data) {
@@ -585,15 +613,15 @@ ReportPage = function () {
     	$('.report-delete').addClass('disabled');
     	$('.report-move').addClass('disabled');
     	$('.report-schedule').addClass('disabled');
-    	$('.report-list table').find(".report-list-header.report-list-lastviewed").text("Last Run");
+    	$('.report-list-lastrun').show();
+    	$('.report-list-lastviewed').hide();
+    	$('.report-list-status').show();
+    	$('.report-list-nextrun').show();
     	$('.report-list-log').show();
-
-    	if ($('.report-list table').find(".report-list-header.report-list-nextrun").length == 0) {
-    		$("<th class='report-list-header report-list-nextrun' data-sortfield='LastRun'><span>Next Run</span> <i></i></th>").insertAfter(".report-list-header.report-list-lastviewed");
-    	}
 
     	var reports = JSON.parse(data);
     	$('.report-list .report-item').remove();
+
     	for (var i = 0; i < reports.length; i++) {
     		$('.report-list table').append(getNewScheduledReportItem(reports[i]));
     	}
@@ -607,6 +635,7 @@ ReportPage = function () {
     			_rowClone.helper = ui.helper;
     		}
     	});
+
     	filterReport();
     }
 
@@ -640,6 +669,14 @@ ReportPage = function () {
     		item.find('.report-list-star i').removeClass('fa-clock-o color-gray').addClass('fa-clock-o color-green');
     	} else {
     		item.find('.report-list-star i').removeClass('fa-clock-o color-green').addClass('fa-clock-o color-gray');
+    	}
+
+    	if (report.IsSuccessful == null) {
+    	    item.find('.report-list-status i').removeClass('fa fa-check color-green').removeClass('fa fa-times color-red').addClass('fa fa-check color-gray');
+    	} else if (report.IsSuccessful) {
+    	    item.find('.report-list-status i').removeClass('fa fa-check color-gray').removeClass('fa fa-times color-red').addClass('fa fa-check color-green');
+    	} else {
+    	    item.find('.report-list-status i').removeClass('fa fa-check color-green').removeClass('fa fa-check color-gray').addClass('fa fa-times color-red');
     	}
     	
     	item.data('o', report);

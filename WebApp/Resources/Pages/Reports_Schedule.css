@@ -125,3 +125,19 @@
 	text-align: right;
 	margin-right: 10px;
 }
+
+#StartDateTimePicker {
+    width: 1px;
+    border: none;
+    opacity: 0.00;
+}
+
+.activeLabel {
+    float: left;
+    padding-top: 5px;
+}
+
+#active,
+#runNow {
+    padding-left: 3px;
+}
