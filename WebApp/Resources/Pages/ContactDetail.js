@@ -677,7 +677,13 @@ $(document).ready(function () {
               .click(function (e) {
                   var neworgID = $(this).prev().find('input').data('item');
                   if(neworgID != undefined){
-                  window.parent.parent.Ts.Services.Customers.SetContactCompany(userID, neworgID, function (result) {
+                  window.parent.parent.Ts.Services.Customers.SetContactCompany2(userID, neworgID, function (result) {
+                      if (result == 'email already exists') {
+                          header.show();
+                          alert('A contact with the same email already exists in the new company.');
+                          $('#contactEdit').removeClass("disabled");
+                          return;
+                      }
                       header.text(result);
                       header.attr('orgid', neworgID);
                       $('#contactEdit').removeClass("disabled");
