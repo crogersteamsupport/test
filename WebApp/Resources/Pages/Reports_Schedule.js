@@ -256,7 +256,8 @@
 		            return 'Reports_View_Chart.html?ReportID=' + _reportIdToSchedule;
 		        case 2:
 		            return 'Reports_View_External.html?ReportID=' + _reportIdToSchedule;
-		        case 4:
+				  case 3:
+				  case 4:
 		            return 'Reports_View_Tabular.html?ReportID=' + _reportIdToSchedule;
 		        case 5:
 		            return 'TicketView.html?ReportID=' + _reportIdToSchedule;

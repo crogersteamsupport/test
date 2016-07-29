@@ -288,7 +288,7 @@ WHERE
 			this.RunCount = scheduledReport.RunCount ?? 0;
 			this.IsActive = scheduledReport.IsActive;
 			this.LastRun = scheduledReport.LastRun;
-            this.IsSuccessful = scheduledReport.IsSuccessful;
+         this.IsSuccessful = scheduledReport.IsSuccessful;
 			this.NextRun = scheduledReport.NextRun;
 			this.CreatorId = scheduledReport.CreatorId;
 			this.Creator = scheduledReport.Creator ?? "Unknown";
