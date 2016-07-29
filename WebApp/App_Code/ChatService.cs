@@ -80,10 +80,13 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string AddMessage(string channelName, string message)
+        public string AddMessage(string channelName, string message, int chatID, int userID)
         {
+            Chat chat = GetChat(chatID);
+            ChatClient client = ChatClients.GetChatClient(loginUser, userID);
 
-            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = "" });
+
+            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = client.FirstName + "  " +  client.LastName, userID = client.LinkedUserID });
             return JsonConvert.SerializeObject(true);
         }
 

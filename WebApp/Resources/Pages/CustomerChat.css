@@ -1,14 +1,14 @@
 ﻿.message-bubble 
 {
-    padding: 0px 0px 0px 20px;
+    padding: 0px 0px 0px 0px;
 }
 
 .message-bubble:nth-child(even) { background-color: #F5F5F5; }
 
 .message-bubble > *
 {
-    margin: 0px;
-    padding: 5px;
+    margin: 8px;
+    padding: 0px;
 }
 
 .panel-body { padding: 0px; }
@@ -18,3 +18,9 @@
 .list-group { padding-left: 0;  margin-bottom: 0; }
 
 .list-group-item { border: none; }
+
+.user-avatar {     
+    float: left;
+    margin: 0px;
+    padding-right: 10px;
+}

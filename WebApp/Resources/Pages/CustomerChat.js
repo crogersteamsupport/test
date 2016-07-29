@@ -2,14 +2,17 @@
     var chatID = Ts.Utils.getQueryValue("chatid", window);
     var participantID = Ts.Utils.getQueryValue("pid", window);
     var chatObject;
+    var channel;
 
-    setupChat(chatID, participantID);
+    setupChat(chatID, participantID, function (channelObject) {
+        channel = channelObject;
+    });
     loadInitialMessages(chatID);
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
-
-        var messageData = { channelName: 'presence-test', message: $('#message').val() };
+        console.log(channel.members.me);
+        var messageData = { channelName: 'presence-test', message: $('#message').val(), chatID: chatID, userID: participantID };
         
         IssueAjaxRequest("AddMessage", messageData,
         function (result) {
@@ -34,7 +37,7 @@ function createMessageElement(messageData) {
                             '<p>' + messageData.message + '</p></li>');
 }
 
-function setupChat(chatID, participantID) {
+function setupChat(chatID, participantID, callback) {
     var channelName = 'presence-test';
     var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
         authEndpoint: service + 'Auth', auth: {
@@ -44,30 +47,32 @@ function setupChat(chatID, participantID) {
             }
         }
     });
-    var channel = pusher.subscribe(channelName);
+    var pressenceChannel = pusher.subscribe(channelName);
 
-    channel.bind('pusher:subscription_succeeded', function () {
-        console.log(channel.members);
+    pressenceChannel.bind('pusher:subscription_succeeded', function () {
+        //console.log(channel.members);
     });
 
-    channel.bind('pusher:member_added', function (member) {
+    pressenceChannel.bind('pusher:member_added', function (member) {
         $('#scopeMessage').remove();
         createMessage(member.info.name + ' joined the chat.')
     });
 
-    channel.bind('pusher:subscription_error', function (status) {
+    pressenceChannel.bind('pusher:subscription_error', function (status) {
         console.log(status);
     });
 
-    channel.bind('agent-joined', function (data) {
+    pressenceChannel.bind('agent-joined', function (data) {
         //console.log(data);
         $('#scopeMessage').remove();
     });
 
-    channel.bind('new-comment', function (data) {
-        console.log(data);
+    pressenceChannel.bind('new-comment', function (data) {
+        //console.log(data);
         createMessageElement(data);
     });
+
+    callback(pressenceChannel);
 }
 
 function loadInitialMessages(chatID) {
@@ -75,7 +80,7 @@ function loadInitialMessages(chatID) {
 
     IssueAjaxRequest("GetChatInfo", chatObject,
     function (result) {
-        console.log(result);
+        //console.log(result);
         chatObject = result;
         createMessage('Initiated On: ' + result.Chat.DateCreated);
         createMessage('Initiated By: ' + result.Initiator.FirstName + ' ' + result.Initiator.LastName + ', ' + result.Initiator.CompanyName + ' (' + result.Initiator.Email + ')');
