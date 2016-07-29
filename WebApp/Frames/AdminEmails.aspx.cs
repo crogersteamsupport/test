@@ -79,7 +79,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
       
       EmailTemplates templates = new EmailTemplates(UserSession.LoginUser);
 
-      templates.LoadAll((UserSession.LoginUser.OrganizationID == 1078 || UserSession.LoginUser.OrganizationID == 13679) && UserSession.CurrentUser.IsSystemAdmin); //vv do not commit this change
+      templates.LoadAll((UserSession.LoginUser.OrganizationID == 1078) && UserSession.CurrentUser.IsSystemAdmin);
 
       foreach (EmailTemplate template in templates)
       {
