@@ -1408,14 +1408,14 @@ AND ts.IsClosed = 0";
             {
                 StringBuilder builder = new StringBuilder();
                 builder.Append(@"
-                                SELECT t.TicketID, t.Name
+                                SELECT t.TicketID, t.Name, t.DateModified
                                 FROM Tickets as T
                                 Inner Join ForumTickets as FT on T.TicketID = FT.TicketID
                                 Inner Join ForumCategories as FC on FT.ForumCategory = FC.CategoryID
                                 WHERE 
 	                                t.OrganizationID         = @OrganizationID 
 	                                --AND t.IsKnowledgeBase    = 1
-	                                --AND t.IsVisibleOnPortal  = 1
+	                                AND t.IsVisibleOnPortal  = 1
 	                                AND FT.ForumCategory = @ForumCategoryID");
                 //if (customerID > 0 && enforceCustomerProduct)
                 //{
