@@ -35,13 +35,13 @@
 							<ul>
 								<li class="schedule-cond">
 									<label>Email Subject</label>
-									<input type="text" class="form-control schedule-email-subject" placeholder="Enter email subject…"
+									<input type="text" class="form-control schedule-email-subject"
 											data-title="Scheduling Report" data-placement="top" data-content="You must enter a email subject before moving on."
 											data-trigger="manual" required>
 								</li>
 								<li class="schedule-cond">
 									<label>Email Body</label>
-									<textarea class="form-control schedule-email-body" rows="5" placeholder="Enter email body..." 
+									<textarea class="form-control schedule-email-body" rows="5"
 											data-title="Scheduling Report" data-placement="top"
 											data-content="You must enter a email body before moving on." data-trigger="manual" required></textarea>
 								</li>
@@ -53,14 +53,20 @@
 								</li>
 								<li class="schedule-cond">
 									<label>Start On</label>
-									<input type="text" id="StartDateTimePicker" class="form-control" placeholder="Start date and time..." required />
+									<input type="text" id="StartOn" class="form-control" placeholder="Start date and time..." required />
+                                    <input type="text" id="StartDateTimePicker" hidden="hidden" />
 								</li>
 								<li class="schedule-cond scheduleOptions">
 									<label class="frequencyLabel">Frequency</label>
 
 									<div id="OptionsContainer">
 										<select class="form-control schedule-comp frequencyList"></select>
-											
+	
+                                        <div id="runNowOption" class="scheduleOption">
+                                            <label class="everyLabel">Run Now?</label>
+                                            <i id="runNow" class="fa fa-square-o"></i>
+                                        </div>
+
 										<div id="Every" class="scheduleOption">
 											<label class="everyLabel">Every</label>
 											<input type="number" class="form-control bfh-number schedule-comp numberList" min="1" max="999" value="1" />
@@ -82,8 +88,8 @@
 									</div>
 								</li>
 								<li class="schedule-cond">
-									<label style="float: left; padding-top: 5px;">Active</label>
-									<i id="active" class="fa fa-square-o" style="padding-left: 3px;"></i>
+									<label class="activeLabel">Active</label>
+									<i id="active" class="fa fa-square-o"></i>
 								</li>
 							</ul>
 						</fieldset>

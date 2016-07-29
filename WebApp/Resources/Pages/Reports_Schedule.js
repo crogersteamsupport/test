@@ -4,6 +4,7 @@
 	var _reportIdToScheduleName = parent.Ts.Utils.getQueryValue('ReportName', window);
 	var _editingScheduledId = parent.Ts.Utils.getQueryValue('ScheduledReportId', window);
 	var _returnTo = parent.Ts.Utils.getQueryValue('ReturnTo', window);
+	var _reportTypeOpened = parent.Ts.Utils.getQueryValue('ReportTypeOpened', window);
 
 	if (_editingScheduledId != undefined
 		&& _editingScheduledId != null
@@ -32,14 +33,26 @@
 		var emailSubject = $('.schedule-email-subject').val();
 		var emailBody = $('.schedule-email-body').val();
 		var emailAddresses = $('.schedule-email-addresses').val();
-		var startOn = $('#StartDateTimePicker').val();
+		var startOn = $('#StartDateTimePicker').data("StartOnDate");
 		var startOnValue = '';
+
+		if ($("#runNow").hasClass('fa-check-square-o')) {
+		    runNow = true;
+		}
+
+		if (runNow) {
+		    var addMinutes = 2;
+		    startOn = new Date().today() + " " + new Date().timeNow(addMinutes);
+		}
+
 		startOnValue = parent.Ts.Utils.getMsDate(startOn);
+
 		var frequency = $('.frequencyList').val();
 		var every = $('.numberList').val();
 		var weekday = (($('.frequencyList').val() == 1) ? $('#weeksOn').val() : $('#dayOfMonth').val());
 		var dayOfMonth = $('.monthDayList').val() || 0;
 		var isActive = false;
+		var runNow = false;
 
 		//3: Once
 		if (frequency == 3) {
@@ -107,6 +120,19 @@
 		$(this).popover('hide').parent('.schedule-cond').removeClass('has-error');
 	});
 
+	$("#runNow").click(function (e) {
+	    e.preventDefault();
+	    var check = $(this);
+
+	    if (check.hasClass('fa-square-o')) {
+	        check.removeClass('fa-square-o').addClass('fa-check-square-o');
+	        $("#StartOn").prop('disabled', 'disabled');
+	    } else {
+	        check.removeClass('fa-check-square-o').addClass('fa-square-o');
+	        $("#StartOn").prop('disabled', false);
+	    }
+	});
+
 	$("#active").click(function (e) {
 		e.preventDefault();
 		var check = $(this);
@@ -162,12 +188,32 @@
 			dateNow.setHours(dateNow.getHours() + 1);
 
 			$('#StartDateTimePicker').datetimepicker({
-				defaultDate: dateNow
+			    defaultDate: dateNow,
+			    pickTime: true
 			});
 		}
 
 		PopulateFrequencyList();
 	}
+
+	$('#StartOn').focus(function () {
+	    $('#StartDateTimePicker').datetimepicker({
+	        pickTime: true
+	    });
+        
+	    $('#StartDateTimePicker').show();
+	    $('#StartDateTimePicker').focus();
+	});
+
+	$('#StartDateTimePicker').change(function() {
+	    var thisDateTime = this.value;
+	    $('#StartOn').val(parent.Ts.Utils.getDateString(thisDateTime, true, true, false));
+	    $('#StartDateTimePicker').data("StartOnDate", thisDateTime);
+	});
+
+	$('#StartDateTimePicker').focusout(function() {
+	    $('#StartDateTimePicker').hide();
+	});
 
 	function LoadReportData(report) {
 		SetScheduleOptions(report.RecurrencyId);
@@ -175,11 +221,7 @@
 		$('.schedule-email-body').val(report.EmailBody);
 		$('.schedule-email-addresses').val(report.EmailRecipients);
 		var startOn = report.StartDate.localeFormat(parent.Ts.Utils.getDateTimePattern());
-		$('#StartDateTimePicker').val(startOn);
-		$('#StartDateTimePicker').datetimepicker({
-			setDate: startOn,
-			pickTime: true
-		});
+		$('#StartOn').val(startOn);
 		$('.frequencyList').val(report.RecurrencyId);
 		$('.numberList').val(report.Every);
 		$('#weeksOn').val(report.Weekday);
@@ -204,7 +246,31 @@
 			returnToOption = "?ReturnFrom=" + _returnTo;
 		}
 
-		var result = '/vcr/1_9_0/pages/reports.html' + returnToOption;
+		var result = '/vcr/1_9_0/pages/';
+
+		function getReportUrl() {
+		    switch (_reportTypeOpened) {
+		        case 0:
+		            return 'Reports_View_Tabular.html?ReportID=' + _reportIdToSchedule;
+		        case 1:
+		            return 'Reports_View_Chart.html?ReportID=' + _reportIdToSchedule;
+		        case 2:
+		            return 'Reports_View_External.html?ReportID=' + _reportIdToSchedule;
+		        case 4:
+		            return 'Reports_View_Tabular.html?ReportID=' + _reportIdToSchedule;
+		        case 5:
+		            return 'TicketView.html?ReportID=' + _reportIdToSchedule;
+		    }
+		}
+
+		if (_reportTypeOpened != undefined && _reportTypeOpened != null && _reportTypeOpened != "undefined") // go back to report
+		{
+		    _reportTypeOpened = parseInt(_reportTypeOpened);
+		    result = result + getReportUrl();
+		} else { // go back to list
+		    result = result + 'reports.html' + returnToOption;
+		}
+
 		location.assign(result);
 	};
 
@@ -223,6 +289,7 @@
 	}
 
 	function SetWeeklyOptions() {
+	    $('#runNowOption').hide();
 		$('#Every').show();
 		$('#WeeklyOptions').show();
 		$('#MonthlyOptions').hide();
@@ -231,6 +298,7 @@
 	}
 
 	function SetMonthlyOptions() {
+	    $('#runNowOption').hide();
 		$('#Every').show();
 		$('#WeeklyOptions').hide();
 		$('#MonthlyOptions').show();
@@ -240,6 +308,7 @@
 	}
 
 	function SetOnceOptions() {
+	    $('#runNowOption').show();
 		$('#Every').hide();
 		$('#WeeklyOptions').hide();
 		$('#MonthlyOptions').hide();
@@ -351,5 +420,20 @@
 						   .attr("value", key)
 						   .text(value));
 		});
+	}
+
+	Date.prototype.today = function () {
+	    return (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "/" + ((this.getDate() < 10) ? "0" : "") + this.getDate() + "/" + this.getFullYear();
+	}
+
+	Date.prototype.timeNow = function (addMinutes) {
+	    if (addMinutes == undefined) {
+	        addMinutes = 0;
+	    }
+
+	    var minutes = this.getMinutes();
+	    minutes = minutes + addMinutes;
+
+	    return ((this.getHours() < 10) ? "0" : "") + this.getHours() + ":" + ((minutes < 10) ? "0" : "") + minutes + ":" + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds();
 	}
 });

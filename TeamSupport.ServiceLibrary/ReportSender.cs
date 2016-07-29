@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Data;
 using System.Data.SqlClient;
@@ -37,7 +38,7 @@ namespace TeamSupport.ServiceLibrary
 
                 try
 				{
-                    int waitBeforeLoggingWithoutScheduledReportsDue = 15;
+                    int waitBeforeLoggingWithoutScheduledReportsDue = 30;
                     DateTime noScheduledReportsDue = DateTime.UtcNow;
 
 					while (true)
@@ -159,7 +160,7 @@ namespace TeamSupport.ServiceLibrary
 
             string optionsFile = string.Format("{0}_{1}.js", scheduledReport.Id, scheduledReport.ReportId);
             optionsFile = Path.Combine(chartOptionsFilesPath, optionsFile);
-            Log("Writing chart options to: " + optionsFile);
+            Log("Writting chart options to: " + optionsFile);
             File.WriteAllText(optionsFile, optionsFileData);
             Log("Options written.");
 
@@ -206,7 +207,7 @@ namespace TeamSupport.ServiceLibrary
         /// <param name="reportDef"></param>
         /// <param name="recordsData"></param>
         /// <returns></returns>
-        private static string GetChartOptionsAndData(string reportDef, string recordsData)
+        private string GetChartOptionsAndData(string reportDef, string recordsData)
         {
             dynamic reportDefObject = new System.Dynamic.ExpandoObject();
             reportDefObject.Def = JsonConvert.DeserializeObject(reportDef);
@@ -233,6 +234,7 @@ namespace TeamSupport.ServiceLibrary
             options.colors = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(brightPastel));
             string series = string.Empty;
             string xAxis = string.Empty;
+            Log("Chart Type: " + options.ts.chartType);
 
             if (options.ts.chartType == "pie")
             {
@@ -254,7 +256,7 @@ namespace TeamSupport.ServiceLibrary
                 for (var i = 0; i < records[1].data.Count; i++)
                 {
                     float val = (float)(records[1].data[i]) / total * 100;
-                    seriesData.Add("['" + fixBlankSeriesName(records[0].data[i].ToString()) + "', " + val.ToString("#.00") + "]");
+                    seriesData.Add("['" + FixBlankSeriesName(records[0].data[i].ToString()) + "', " + val.ToString("#.00") + "]");
                 }
 
                 if (seriesData.Any() && seriesData.Count > 0)
@@ -268,6 +270,7 @@ namespace TeamSupport.ServiceLibrary
             }
             else if ((records[0].fieldType == "datetime" && records[0].format == "date") || (records[1].fieldType == "datetime" && records[1].format == "date"))
             {
+                Log("//vv Unknown chart case until know");
                 //vv It does not look like this is used. At least not that I found.
                 //options.series = new string[1];//vv
                 //options.xAxis = "{ type: 'datetime' }";
@@ -278,11 +281,11 @@ namespace TeamSupport.ServiceLibrary
                 //    for (var i = 0; i<records[0].data.Count; i++)
                 //    {
                 //        var val = records[0].data[i];
-                //        series = "";//vv findSeries(options, val);
+                //        series = "";//vv FindSeries(options, val);
 
                 //        if (string.IsNullOrEmpty(series))
                 //        {
-                //            series = "{ name: " + fixBlankSeriesName(fixRecordName(records[0], i)) + ", value: val, data: []"; //vv
+                //            series = "{ name: " + FixBlankSeriesName(FixRecordName(records[0], i)) + ", value: val, data: []"; //vv
                 //        };
 
                 //            options.series.push(series);
@@ -320,35 +323,65 @@ namespace TeamSupport.ServiceLibrary
 
                 if (records.Count == 3)
                 {
-                    //vv It does not look like this is used. At least not that I found.
-                    //xAxis = "{ categories: [] }";
+                    List<string> categoriesList = new List<string>();
 
                     //// build categories
-                    //for (var i = 0; i<records[1].data.length; i++)
-                    //{
-                    //    var name = fixRecordName(records[1], i);
+                    for (int i = 0; i < records[1].data.Count; i++)
+                    {
+                        string name = FixRecordName(records[1], i);
 
-                    //    if (indexOfCategory(options, name) < 0)
-                    //    {
-                    //        options.xAxis.categories.push(name);
-                    //    }
-                    //}
+                        if (!categoriesList.Where(p => p == name).Any())
+                        {
+                            categoriesList.Add(name);
+                        }
+                    }
 
-                    //for (var i = 0; i<records[0].data.length; i++)
-                    //{
-                    //    var val = records[0].data[i];
-                    //    series = findSeries(options, val);
+                    xAxis = "{ categories: [" + (categoriesList.Any() ? string.Join(",", categoriesList.Select(x => string.Format("'{0}'", x)).ToArray()) : "") + "]}";
+                    List<SeriesValues> seriesValues = new List<SeriesValues>();
 
-                    //    if (!string.IsNullOrEmpty(series))
-                    //    {
-                    //        series = "{ name: " + fixBlankSeriesName(fixRecordName(records[0], i)) + ", value: val, data: " + createDataArray(options) + " }";
-                    //        options.series.push(series);
-                    //    }
+                    for (int i = 0; i < records[0].data.Count; i++)
+                    {
+                        string val = records[0].data[i];
+                        SeriesValues values = new SeriesValues();
 
-                    //    var catIndex = indexOfCategory(options, fixRecordName(records[1], i));
-                    //    //vv if (records[2].data[i]) series.data[catIndex] = records[2].data[i];
-                    //}
+                        if (!seriesValues.Where(p => p.Name == val).Any())
+                        {
+                            values.Name = string.IsNullOrEmpty(val) ? "Unknown" : val + "";
+                            values.Value = val;
 
+                            for(int x = 0; x < categoriesList.Count; x++)
+                            {
+                                values.Data.Add("0");
+                            }
+
+                            seriesValues.Add(values);
+                        }
+                        else
+                        {
+                            values = seriesValues.Where(p => p.Name == val).FirstOrDefault();
+                        }
+
+                        string findCategory = records[1].data[i].ToString();
+
+                        for (int x = 0; x < categoriesList.Count; x++)
+                        {
+                            if (categoriesList[x] == findCategory)
+                            {
+                                values.Data[x] = records[2].data[i];
+                                break;
+                            }
+                        }
+                    }
+
+                    string seriesFormat = "{{'name': '{0}','value': '{1}','data': [{2}]}},";
+
+                    foreach(SeriesValues serie in seriesValues)
+                    {
+                        series += "" + string.Format(seriesFormat, serie.Name, serie.Value, (serie.Data.Any() ? string.Join(",", serie.Data.ToArray()) : ""));
+                        //series = "[{ name: '" + FixBlankSeriesName(FixRecordName(records[0], i)) + "', value: '" + list[i] + "', data: " + (list2.Any() ? string.Join(",", list2.Select(x => string.Format("'{0}'", x)).ToArray()) : "") + " }]";
+                    }
+
+                    series = "[" + series.Substring(0, series.Length - 1) + "]";
                 }
                 else if (records.Count == 2)
                 {
@@ -396,7 +429,7 @@ namespace TeamSupport.ServiceLibrary
             return jsonOptionsAndData;
         }
 
-        private static string fixRecordName(dynamic record, int index)
+        private static string FixRecordName(dynamic record, int index)
         {
             if (record.fieldType == "bool")
             {
@@ -406,7 +439,7 @@ namespace TeamSupport.ServiceLibrary
             return record.data[index];
         }
 
-        private static string fixBlankSeriesName(string val)
+        private static string FixBlankSeriesName(string val)
         {
             return string.IsNullOrEmpty(val) ? "Unknown" : val + "";
         }
@@ -424,30 +457,28 @@ namespace TeamSupport.ServiceLibrary
         //    return result.ToString();
         //}
 
-        //vv It does not look like this is used. At least not that I found.
-        //private static string findSeries(dynamic options, string value)
-        //{
-        //    for (var i = 0; i < options.series.length; i++)
-        //    {
-        //        if (options.series[i].value == value) return options.series[i];
-        //    }
+        private static string FindSeries(dynamic options, string value)
+        {
+            for (int i = 0; i < options.series.Count; i++)
+            {
+                if (options.series[i].value == value) return options.series[i];
+            }
 
-        //    return null;
-        //}
+            return null;
+        }
 
-        //vv It does not look like this is used. At least not that I found.
-        //private static int indexOfCategory(dynamic options, string name)
-        //{
-        //    for (var i = 0; i < options.xAxis.categories.length; i++)
-        //    {
-        //        if (options.xAxis.categories[i] == name)
-        //        {
-        //            return i;
-        //        }
-        //    }
+        private static int IndexOfCategory(dynamic options, string name)
+        {
+            for (int i = 0; i < options.xAxis.categories.Count; i++)
+            {
+                if (options.xAxis.categories[i] == name)
+                {
+                    return i;
+                }
+            }
 
-        //    return -1;
-        //}
+            return -1;
+        }
 
         private bool ExecuteCommand(string command)
         {
@@ -539,13 +570,65 @@ namespace TeamSupport.ServiceLibrary
 
                 if (!string.IsNullOrEmpty(reportAttachmentFile))
                 {
+                    if (report.ReportDefType != ReportType.Chart)
+                    {
+                        try
+                        {
+                            string zipFileName = reportAttachmentFile.Replace(".csv", ".zip");
+
+                            if (File.Exists(zipFileName))
+                            {
+                                try
+                                {
+                                    File.Delete(zipFileName);
+                                }
+                                catch (IOException ioEx)
+                                {
+                                    DateTime zipFileNamesuffix = scheduledReport.NextRun != null ? (DateTime)scheduledReport.NextRun : DateTime.UtcNow;
+                                    zipFileName = zipFileName.Replace(".zip", string.Format("_{0}.zip", zipFileNamesuffix.ToString("yyyyMMddHHmm")));
+                                    Log("Previous zip file could not be deleted. Naming the new one: ");
+                                    Log(ioEx.Message + Environment.NewLine + ioEx.StackTrace);
+                                }
+                            }
+
+                            using (ZipArchive zip = ZipFile.Open(zipFileName, ZipArchiveMode.Create))
+                            {
+                                zip.CreateEntryFromFile(reportAttachmentFile, Path.GetFileName(reportAttachmentFile));
+                            }
+
+                            if (File.Exists(zipFileName))
+                            {
+                                Log("CSV File zipped", LogType.Both);
+
+                                try
+                                {
+                                    File.Delete(reportAttachmentFile);
+                                }
+                                catch (IOException ioEx)
+                                {
+                                    Log("CSV file could not be deleted.");
+                                    Log(ioEx.Message + Environment.NewLine + ioEx.StackTrace);
+                                }
+
+                                reportAttachmentFile = zipFileName;
+                            }
+                            else
+                            {
+                                Log("CSV zipped file was not found!");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Error when zipping the CSV file.");
+                            Log(ex.Message + Environment.NewLine + ex.StackTrace);
+                        }
+                    }
+
                     Log(string.Format("Report generated and file attachment created: {0}", Path.GetFileName(reportAttachmentFile)), LogType.Public);
                     Log(string.Format("Report file to attach: {0}", reportAttachmentFile));
 
                     Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
                     MailMessage message = scheduledReport.GetMailMessage(reportAttachmentFile, organization);
-                    Log("ScheduledReport body: " + scheduledReport.EmailBody);
-                    Log("mailmessage body: " + message.Body);
                     Log("Email message created", LogType.Both);
                     Log(string.Format("Email Recipients: {0}", string.Join(",", message.To.Select(p => p.Address).ToArray())), LogType.Both);
 
@@ -626,7 +709,7 @@ namespace TeamSupport.ServiceLibrary
 
                     Log("Queueing email(s)", LogType.Both);
                     AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
-                    Log("Email was queued to Emails for the emailprocessor");
+                    Log("Email was queued to [Emails] table.");
                 }
                 else
                 {
@@ -825,6 +908,18 @@ namespace TeamSupport.ServiceLibrary
             }
 
             return table;
+        }
+
+        private class SeriesValues
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+            public List<string> Data { get; set; }
+
+            public SeriesValues()
+            {
+                Data = new List<string>();
+            }
         }
 
         [Flags]

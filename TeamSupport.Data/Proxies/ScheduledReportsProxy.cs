@@ -27,6 +27,7 @@ namespace TeamSupport.Data
     [DataMember] public byte? Weekday { get; set; }
     [DataMember] public byte? Monthday { get; set; }
     [DataMember] public DateTime? LastRun { get; set; }
+    [DataMember] public bool? IsSuccessful { get; set; }
     [DataMember] public DateTime? NextRun { get; set; }
     [DataMember] public int CreatorId { get; set; }
     [DataMember] public int? ModifierId { get; set; }
@@ -44,6 +45,7 @@ namespace TeamSupport.Data
       result.LockProcessId = this.LockProcessId;
       result.ModifierId = this.ModifierId;
       result.CreatorId = this.CreatorId;
+      result.IsSuccessful = this.IsSuccessful;
       result.Monthday = this.Monthday;
       result.Weekday = this.Weekday;
       result.Every = this.Every;

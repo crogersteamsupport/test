@@ -351,7 +351,7 @@ namespace TSWebServices
         int[] ids = JsonConvert.DeserializeObject<int[]>(reportIDs);
         for (int i = 0; i < ids.Length; i++)
         {
-          int reportID = ids[i];// int.Parse(reportIDs[i]);
+          int reportID = ids[i];
           Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
           if (report.OrganizationID == null && TSAuthentication.IsSystemAdmin)
           {

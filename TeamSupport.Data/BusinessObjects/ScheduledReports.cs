@@ -288,6 +288,7 @@ WHERE
 			this.RunCount = scheduledReport.RunCount ?? 0;
 			this.IsActive = scheduledReport.IsActive;
 			this.LastRun = scheduledReport.LastRun;
+            this.IsSuccessful = scheduledReport.IsSuccessful;
 			this.NextRun = scheduledReport.NextRun;
 			this.CreatorId = scheduledReport.CreatorId;
 			this.Creator = scheduledReport.Creator ?? "Unknown";
@@ -318,6 +319,8 @@ WHERE
 		[DataMember]
 		public DateTime? LastRun { get; set; }
 		[DataMember]
+		public bool? IsSuccessful { get; set; }
+		[DataMember]
 		public DateTime? NextRun { get; set; }
 		[DataMember]
 		public int CreatorId { get; set; }
@@ -331,22 +334,22 @@ WHERE
 		public DateTime DateCreated { get; set; }
 		[DataMember]
 		public DateTime? DateModified { get; set; }
-        [DataMember]
-        public bool HasLogFile
-        {
-            get
-            {
-                bool hasLogFile = false;
+		[DataMember]
+		public bool HasLogFile
+		{
+			get
+			{
+					bool hasLogFile = false;
 
-                if (OrganizationId != null && Id > 0)
-                {
-                    string path = AttachmentPath.GetPath(LoginUser.Anonymous, (int)OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
-                    string fileName = Id.ToString() + ".txt";
-                    hasLogFile = System.IO.File.Exists(System.IO.Path.Combine(path, fileName));
-                }
+					if (OrganizationId != null && Id > 0)
+					{
+						string path = AttachmentPath.GetPath(LoginUser.Anonymous, (int)OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
+						string fileName = Id.ToString() + ".txt";
+						hasLogFile = System.IO.File.Exists(System.IO.Path.Combine(path, fileName));
+					}
 
-                return hasLogFile;
-            }
-        }
+					return hasLogFile;
+			}
+		}
 	}
 }
