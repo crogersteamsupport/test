@@ -351,6 +351,18 @@ function SetupTicketProperties() {
       },
     });
 
+    $('#NewCustomerModal').on('shown.bs.modal', function () {
+        if ((top.Ts.System.User.CanCreateContact) || top.Ts.System.User.IsSystemAdmin) {
+            return;
+        }
+        else {
+            $('#customer-email-input').prop("disabled", true);
+            $('#customer-fname-input').prop("disabled", true);
+            $('#customer-lname-input').prop("disabled", true);
+            $('#customer-phone-input').prop("disabled", true);
+        }
+    });
+
     var selectize = $("#ticket-assigned")[0].selectize;
     selectize.addOption({ value: -1, text: 'Unassigned', data: '' });
 
@@ -1402,7 +1414,15 @@ function SetupCustomerSection() {
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
       },
-		create: true,
+      create: function (input, callback) {
+          if ((top.Ts.System.User.CanCreateContact && top.Ts.System.User.CanCreateCompany) || top.Ts.System.User.IsSystemAdmin) {
+              callback(null);
+          }
+          else {
+              alert("You do not have rights to create new companies.  You can create new contacts and associate them to existing companies however.  Please type in the name of an existing company to associate the new contact with, or leave the company name field blank to only create the new contact.  If you have any questions about your user rights, please contact your account admin. ");
+              callback(null);
+          }
+      },
       closeAfterSelect: true,
       plugins: {
         'sticky_placeholder': {},
