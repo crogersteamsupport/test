@@ -33,6 +33,7 @@ function createMessage(message)
 
 function createMessageElement(messageData) {
     $('#message-list').append('<li class="list-group-item message-bubble"> ' +
+                            '<img  class="user-avatar" alt="user image" src="../dc/1078/UserAvatar/' + messageData.userID + '/48/1469829040429">' +
                             '<p class="text-muted">' + messageData.userName + '</p> ' +
                             '<p>' + messageData.message + '</p></li>');
 }
