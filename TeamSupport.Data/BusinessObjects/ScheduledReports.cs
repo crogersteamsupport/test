@@ -258,7 +258,18 @@ WHERE
 				return scheduledReports[0];
 		}
 
-        public static void UnlockThread(LoginUser loginUser, int thread)
+		public static void UnlockAll(LoginUser loginUser)
+		{
+			ScheduledReports scheduledReports = new ScheduledReports(loginUser);
+
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "UPDATE ScheduledReports SET LockProcessID = NULL";
+				command.CommandType = CommandType.Text;
+				scheduledReports.ExecuteNonQuery(command);
+			}
+		}
+		public static void UnlockThread(LoginUser loginUser, int thread)
         {
             ScheduledReports scheduledReports = new ScheduledReports(loginUser);
 

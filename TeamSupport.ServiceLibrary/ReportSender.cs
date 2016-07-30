@@ -117,7 +117,7 @@ namespace TeamSupport.ServiceLibrary
 
 		public override void ReleaseAllLocks()
 		{
-			Emails.UnlockAll(LoginUser);
+			ScheduledReports.UnlockAll(LoginUser);
 		}
 
         public static string[] GetReportColumnNames(LoginUser scheduledReportCreator, int reportID)
