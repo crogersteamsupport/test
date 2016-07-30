@@ -473,7 +473,8 @@ namespace TeamSupport.Data
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (o.ParentID = @ParentID)
                                 AND (u.Email = @Email)
-                                AND (u.MarkDeleted = 0)";
+                                AND (u.MarkDeleted = 0)
+                                ORDER BY o.IsActive desc, u.IsActive desc";
 
 
                 command.CommandType = CommandType.Text;

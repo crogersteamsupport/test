@@ -113,6 +113,7 @@ $(document).ready(function () {
         window.parent.parent.Ts.System.logAction('Contact Detail - Edit Contact');
         $('.userProperties p').toggleClass("editable");
         $('.customProperties p').toggleClass("editable");
+        $("#emailPanel #editmenu").toggleClass("hiddenmenu");
         $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         $("#addressPanel #editmenu").toggleClass("hiddenmenu");
 
@@ -307,6 +308,9 @@ $(document).ready(function () {
             $('.userProperties #fieldName').attr("last", user.LastName);
             parent.privateServices.SetUserSetting('SelectedOrganizationID', user.OrganizationID);
             parent.privateServices.SetUserSetting('SelectedContactID', user.UserID);
+            if (user.Email != '') {
+                LoadEmails();
+            }
         });
         }
 
@@ -431,6 +435,12 @@ $(document).ready(function () {
                   window.parent.parent.Ts.Services.Customers.SetContactEmail(userID, $(this).prev().find('input').val(), function (result) {
                       header.text(result);
                       $('#contactEdit').removeClass("disabled");
+                      if (result != 'Empty') {
+                          $('#contactEmailButton').show();
+                      }
+                      else {
+                          $('#contactEmailButton').hide();
+                      }
                   },
                   function (error) {
                       header.show();
@@ -770,6 +780,26 @@ $(document).ready(function () {
             LoadRatings('', 1);
     })
 
+    $('#emailPanel').on('click', '.delEmail', function (e) {
+        e.preventDefault();
+        if (confirm('Are you sure you would like to remove this email?')) {
+            window.parent.parent.Ts.System.logAction('Contact Detail - Delete Email');
+            parent.privateServices.DeleteEmail($(this).attr('id'), function (e) {
+                LoadEmails(1);
+            });
+        }
+    });
+
+    $("#emailPanel").on("click", '.editEmail', function (e) {
+        e.preventDefault();
+        window.parent.parent.Ts.System.logAction('Contact Detail - Edit Email');
+        window.parent.parent.Ts.Services.Customers.LoadEmail($(this).attr('id'), function (email) {
+            $('#email').val(email[0].Email);
+            $('#emailID').val(email[0].Id);
+            $('#modalEmail').modal('show');
+        });
+    });
+
     $('#phonePanel').on('click', '.delphone', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this phone number?')) {
@@ -818,6 +848,26 @@ $(document).ready(function () {
             $('#addressID').val(phone[0].AddressID);
             $('#modalAddress').modal('show');
         });
+    });
+
+    $("#btnEmailSave").click(function (e) {
+        var emailInfo = new Object();
+        window.parent.parent.Ts.System.logAction('Contact Detail - Save Email');
+        emailInfo.Email = $('#email').val();
+        emailInfo.EmailID = $('#emailID').val() != "" ? $('#emailID').val() : "-1";
+        var inEditmode = $('#contactEdit').hasClass("btn-success")
+        window.parent.parent.Ts.Services.Customers.SaveEmail(parent.JSON.stringify(emailInfo), userID, window.parent.parent.Ts.ReferenceTypes.Users, function (f) {
+            $('#email').val('');
+            $('#emailID').val('-1');
+            $('#modalEmail').modal('hide');
+            if (inEditmode)
+                LoadEmails(1);
+            else
+                LoadEmails();
+        }, function () {
+            alert('There was an error saving this phone number.  Please try again.');
+        });
+
     });
 
     $("#btnPhoneSave").click(function (e) {
@@ -1233,6 +1283,29 @@ $(document).ready(function () {
         }
     }
 
+    function LoadEmails(reload) {
+        $('#emailPanel').empty();
+        window.parent.parent.Ts.Services.Customers.LoadEmails(userID, window.parent.parent.Ts.ReferenceTypes.Users, function (emails) {
+            for (var i = 0; i < emails.length; i++) {
+                var emailNumber = i + 2;
+                $('#emailPanel').append("<div class='form-group content'> \
+                                        <label for='inputName' class='col-xs-4 control-label'>Email " + emailNumber + "</label> \
+                                        <div class='col-md-5 '> \
+                                            <p class='form-control-static '>" + emails[i].Email + "</p> \
+                                        </div> \
+                                        <div id='editmenu' class='col-md-2 hiddenmenu'> \
+                                            <p class='form-control-static'> \
+                                            <a href='' id='" + emails[i].Id + "' class='editEmail'><span class='fa fa-pencil'></span></a>\
+                                            <a href='' id='" + emails[i].Id + "' class='delEmail'><span class='fa fa-trash-o'></span></a/>\
+                                            </p> \
+                                        </div> \
+                                    </div>");
+            }
+            if (reload != undefined)
+                $("#emailPanel #editmenu").toggleClass("hiddenmenu");
+        });
+    }
+
     function LoadPhoneNumbers(reload) {
         $('#phonePanel').empty();
         window.parent.parent.Ts.Services.Customers.LoadPhoneNumbers(userID,window.parent.parent.Ts.ReferenceTypes.Users, function (phone) {
@@ -1307,6 +1380,7 @@ $(document).ready(function () {
             {
                 $('.userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
                 $('.userProperties #fieldEmail').addClass("link");
+                $('#contactEmailButton').show();
             }
 
             window.parent.parent.Ts.Services.Customers.GetUser(userID, function (user1) {

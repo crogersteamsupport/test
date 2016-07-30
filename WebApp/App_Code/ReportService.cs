@@ -288,7 +288,7 @@ namespace TSWebServices
       [WebMethod]
       public int? AdminCloneReport(int reportID, string name)
       {
-        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return null;
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 1839999) return null;
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         return report.CloneReport(name);
       }
@@ -296,7 +296,7 @@ namespace TSWebServices
       [WebMethod]
       public void AdminRenameReport(int reportID, string name)
       {
-        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 1839999) return;
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         report.Name = name;
         report.Collection.Save();
@@ -305,7 +305,7 @@ namespace TSWebServices
       [WebMethod]
       public void AdminChangeOrg(int reportID, string orgID)
       {
-        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 1839999) return;
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         report.OrganizationID = orgID.ToUpper() == "ALL" ? null : (int?)int.Parse(orgID);
         report.Collection.Save();
@@ -323,7 +323,7 @@ namespace TSWebServices
       [WebMethod]
       public void AdminTestQuery(int reportID, string query)
       {
-        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 1839999) return;
         if (!string.IsNullOrWhiteSpace(query))
         {
           Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
@@ -531,7 +531,7 @@ namespace TSWebServices
 
         if (isStock)
         {
-          if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 43 && TSAuthentication.UserID != 47) return null;
+          if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 43 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 1839999) return null;
           report.OrganizationID = null;
         }
         else

@@ -150,28 +150,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int kBRatingID)
     {
-      BeforeDBDelete(kBRatingID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[KBRatings] WHERE ([KBRatingID] = @KBRatingID);";
         deleteCommand.Parameters.Add("KBRatingID", SqlDbType.Int);
         deleteCommand.Parameters["KBRatingID"].Value = kBRatingID;
 
+        BeforeDBDelete(kBRatingID);
         BeforeRowDelete(kBRatingID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(kBRatingID);
-      }
-      AfterDBDelete(kBRatingID);
-      
-    }
+        AfterDBDelete(kBRatingID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("KBRatingsSave");
@@ -225,7 +215,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Comment", SqlDbType.NVarChar, 1);
+		tempParameter = updateCommand.Parameters.Add("Comment", SqlDbType.NVarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -240,7 +230,7 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[KBRatings] (    [TicketID],    [UserID],    [IP],    [Rating],    [DateUpdated],    [Comment]) VALUES ( @TicketID, @UserID, @IP, @Rating, @DateUpdated, @Comment); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("Comment", SqlDbType.NVarChar, 1);
+		tempParameter = insertCommand.Parameters.Add("Comment", SqlDbType.NVarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

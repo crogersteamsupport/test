@@ -1474,6 +1474,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public EmailAddressProxy[] LoadEmails(int refID, ReferenceType refType)
+        {
+            EmailAddresses emails = new EmailAddresses(TSAuthentication.GetLoginUser());
+            emails.LoadByRefID(refID, refType);
+
+            return emails.GetEmailAddressProxies();
+        }
+
+        [WebMethod]
         public PhoneNumberProxy[] LoadPhoneNumbers(int refID, ReferenceType refType)
         {
             PhoneNumbers phoneNumbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
@@ -1734,6 +1743,15 @@ namespace TSWebServices
           }
 
           return custfield;
+        }
+
+        [WebMethod]
+        public EmailAddressProxy[] LoadEmail(int emailID)
+        {
+            EmailAddresses emails = new EmailAddresses(TSAuthentication.GetLoginUser());
+            emails.LoadById(emailID);
+
+            return emails.GetEmailAddressProxies();
         }
 
         [WebMethod]
@@ -2354,6 +2372,42 @@ SELECT
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Users, user.UserID, description);
 
             return user.UserID;
+        }
+
+        [WebMethod]
+        public void SaveEmail(string data, int refID, ReferenceType refType)
+        {
+            EmailSave info;
+            info = Newtonsoft.Json.JsonConvert.DeserializeObject<EmailSave>(data);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            EmailAddresses emails = new EmailAddresses(loginUser);
+
+            if (info.EmailID != -1)
+            {
+                emails.LoadById((int)info.EmailID);
+                if (!emails.IsEmpty)
+                {
+                    EmailAddress email = emails[0];
+                    string description = String.Format("{0} modified email from {1} to {2} ", user.FirstLastName, email.Email, info.Email);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, refType, refID, description);
+                    email.Email = info.Email;
+                    email.ModifierID = loginUser.UserID;
+                }
+
+            }
+            else
+            {
+                EmailAddress email = emails.AddNewEmailAddress();
+                email.RefID = refID;
+                email.RefType = (int)refType;
+                email.Email = info.Email;
+                email.CreatorID = loginUser.UserID;
+                email.ModifierID = loginUser.UserID;
+                string description = String.Format("{0} added email {1} ", user.FirstLastName, info.Email);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, refType, refID, description);
+            }
+            emails.Save();
         }
 
         [WebMethod]
@@ -4411,6 +4465,15 @@ SELECT
             [DataMember] public bool SyncPhone { get; set; }
             [DataMember] public bool EmailPortalPW { get; set; }
             [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
+        }
+
+        public class EmailSave
+        {
+            public EmailSave() { }
+            [DataMember]
+            public string Email { get; set; }
+            [DataMember]
+            public int? EmailID { get; set; }
         }
 
         public class PhoneSave

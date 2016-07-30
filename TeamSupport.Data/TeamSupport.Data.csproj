@@ -163,6 +163,7 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -252,6 +253,7 @@
     <Compile Include="BusinessObjects\DeflectionLog.cs" />
     <Compile Include="BusinessObjects\DeletedIndexItems.cs" />
     <Compile Include="BusinessObjects\EMailActions.cs" />
+    <Compile Include="BusinessObjects\EmailAddresses.cs" />
     <Compile Include="BusinessObjects\EMailAlternateInbound.cs" />
     <Compile Include="BusinessObjects\EmailPostHistory.cs" />
     <Compile Include="BusinessObjects\EmailPosts.cs" />
@@ -369,6 +371,7 @@
     <Compile Include="FieldMaps\CustomPortalColumnsFieldMap.cs" />
     <Compile Include="FieldMaps\DeflectionLogFieldMap.cs" />
     <Compile Include="FieldMaps\DeletedIndexItemsFieldMap.cs" />
+    <Compile Include="FieldMaps\EmailAddressesFieldMap.cs" />
     <Compile Include="FieldMaps\EMailAlternateInboundFieldMap.cs" />
     <Compile Include="FieldMaps\EmailPostHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\EmailTemplateParametersFieldMap.cs" />
@@ -623,6 +626,7 @@
     <Compile Include="Generated\GeneratedDeflectionLog.cs" />
     <Compile Include="Generated\GeneratedDeletedIndexItems.cs" />
     <Compile Include="Generated\GeneratedEmailActions.cs" />
+    <Compile Include="Generated\GeneratedEmailAddresses.cs" />
     <Compile Include="Generated\GeneratedEMailAlternateInbound.cs" />
     <Compile Include="Generated\GeneratedEmailPostHistory.cs" />
     <Compile Include="Generated\GeneratedEmailPosts.cs" />
@@ -755,6 +759,7 @@
     <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
     <Compile Include="Proxies\CustomPortalColumnsProxy.cs" />
     <Compile Include="Proxies\DeflectionLogProxy.cs" />
+    <Compile Include="Proxies\EmailAddressesProxy.cs" />
     <Compile Include="Proxies\FullContactUpdatesProxy.cs" />
     <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
     <Compile Include="Proxies\ImportFieldsProxy.cs" />

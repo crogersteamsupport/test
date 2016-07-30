@@ -622,8 +622,10 @@ function GetTinyMCEFontName(fontFamily) {
 
 function suggestedSolutions(defaultInput, callback) {
     $('.dialog-select-ticket2').find('input').val('');
-    $('.dialog-select-ticket2').find('input').focus();
     $('#SuggestedSolutionsModal').modal('show');
+    $('#SuggestedSolutionsModal').on('shown.bs.modal', function () {
+        $("#dialog-select-ticket2-input").focus();
+    })
     if (execSuggestedSolutions) {
         return;
     }

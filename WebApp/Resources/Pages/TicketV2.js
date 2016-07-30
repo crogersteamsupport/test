@@ -391,7 +391,6 @@ function SetupTicketPage() {
       }
   })
 
-          return;
   //if (window.parent.Ts.System.Organization.SetNewActionsVisibleToCustomers == false) {
   //	$('#action-add-private').insertBefore('#action-add-public');
   //}
@@ -1975,9 +1974,9 @@ function SetupCustomerSection() {
         }
       },
       create: function (input, callback) {
-          $('#NewCustomerModal').modal('show');
-          callback(null);
-          $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
+        $('#NewCustomerModal').modal('show');
+        callback(null);
+        $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
       },
       onItemAdd: function (value, $item) {
         if (this.settings.initData === false) {
