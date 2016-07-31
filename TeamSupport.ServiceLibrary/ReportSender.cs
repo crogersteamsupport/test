@@ -544,6 +544,7 @@ namespace TeamSupport.ServiceLibrary
 
         private void QueueEmail(ScheduledReport scheduledReport)
         {
+				scheduledReport.IsSuccessful = false;
             Log(string.Format("Scheduled Report Id: {0}, Report Id: {1}, Organization {2}", scheduledReport.Id.ToString(), scheduledReport.ReportId, scheduledReport.OrganizationId));
             Log(string.Format("Set to start on: {0}", scheduledReport.NextRun), LogType.Both);
 
@@ -707,13 +708,14 @@ namespace TeamSupport.ServiceLibrary
                         message.Subject = string.Format("[{0}] {1}", Settings.ReadString("Debug Email Subject", "TEST MODE"), message.Subject);
                     }
 
-                    Log("Queueing email(s)", LogType.Both);
-                    AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
-                    Log("Email was queued to [Emails] table.");
+							Log("Queueing email(s)", LogType.Both);
+							AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
+							Log("Email was queued to [Emails] table.");
+							scheduledReport.IsSuccessful = true;
                 }
                 else
                 {
-                    Log("Report could not be generated and emailed, please contact TeamSupport", LogType.Public);
+							Log("Report could not be generated and emailed, please contact TeamSupport", LogType.Public);
                 }
 
                 if ((ScheduledReportFrequency)scheduledReport.RecurrencyId == ScheduledReportFrequency.Once)
