@@ -49,6 +49,12 @@ namespace TeamSupport.ServiceLibrary
         + " " + address.Country);
       }
 
+      EmailAddresses emailAddresses = new EmailAddresses(_loginUser);
+      emailAddresses.LoadByRefID(contact.UserID, ReferenceType.Users);
+      foreach (EmailAddress emailAddress in emailAddresses)
+      {
+        builder.AppendLine(Regex.Replace(emailAddress.Email, "[,.]+", ""));
+      }
 
       _docFields.Clear();
       AddDocField("UserID", contact.UserID);
