@@ -11,7 +11,6 @@ CREATE PROC [dbo].[TicketsMinutesSinceFirstSyncedGet]
 	@OrganizationID int
 AS
 BEGIN
-	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	DECLARE @TopID int;
 	 
 	SELECT TOP 1 @TopID = t.TicketID 
