@@ -629,7 +629,9 @@ namespace TeamSupport.ServiceLibrary
                     Log(string.Format("Report file to attach: {0}", reportAttachmentFile));
 
                     Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
-                    MailMessage message = scheduledReport.GetMailMessage(reportAttachmentFile, organization);
+							MailMessage message = EmailTemplates.GetScheduledReport(LoginUser, scheduledReport);
+							scheduledReport.SetRecipientsAndAttachment(message, reportAttachmentFile, organization);
+
                     Log("Email message created", LogType.Both);
                     Log(string.Format("Email Recipients: {0}", string.Join(",", message.To.Select(p => p.Address).ToArray())), LogType.Both);
 
