@@ -27,7 +27,7 @@
 
 
 .col-inside-lg {
-    padding: 20px;
+    padding: 10px;
 }
 .chat {
     /*height: calc(100vh - 180px);*/
@@ -100,6 +100,13 @@
     text-overflow: ellipsis;
 }
 
+/*****************CHAT INTRO *******************/
+.chat-intro {
+    background: #ebebeb;
+    color: #333333;
+    padding:10px;
+}
+
 /*****************CHAT BODY *******************/
 .chat-body h6 {
     font-size: 20px;
@@ -148,9 +155,9 @@
     border-radius: 8px 8px 8px 0;
 }
 .chat-body .answer .text {
-    padding: 12px;
-    font-size: 16px;
-    line-height: 26px;
+    padding: 10px;
+    font-size: 14px;
+    line-height: 20px;
     position: relative;
 }
 .chat-body .answer.left .text:before {
@@ -171,15 +178,15 @@
     color: #333333;
 }
 .chat-body .answer .time {
-    font-size: 16px;
-    line-height: 36px;
+    font-size: 14px;
+    line-height: 25px;
     position: relative;
     padding-bottom: 1px;
 }
 /*RIGHT*/
 .chat-body .answer.right {
     padding: 0 58px 0 0;
-    text-align: right;
+    text-align: left;
     float: right;
 }
 
