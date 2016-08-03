@@ -151,8 +151,6 @@ namespace TeamSupport.ServiceLibrary
 
             DataTable dataTable = GetReportTableAll(scheduledReportCreator, report, "", false, true, false);
             ReportItem reportItem = new ReportItem(report, true);
-            Log("dataTable generated");
-
             SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
             DataTable table = Reports.GetSummaryData(scheduledReportCreator, summaryReport, true, report);
             string reportData = Reports.BuildChartData(scheduledReportCreator, table, summaryReport);
@@ -162,10 +160,7 @@ namespace TeamSupport.ServiceLibrary
             optionsFile = Path.Combine(chartOptionsFilesPath, optionsFile);
             Log("Writting chart options to: " + optionsFile);
             File.WriteAllText(optionsFile, optionsFileData);
-            Log("Options written.");
-
-            string outputImagePath = AttachmentPath.GetPath(_loginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReports);
-            string outputImage = string.Format("{0}\\{1}_{2}.png", outputImagePath, scheduledReport.Id, scheduledReport.ReportId);
+            string outputImage = GenerateCleanOutputFileName(_loginUser, scheduledReport.OrganizationId, report.Name, "png");
             Log("outputImage: " + outputImage);
 
             //Create Batch File
@@ -189,7 +184,6 @@ namespace TeamSupport.ServiceLibrary
             if (!commandIsSuccessful)
             {
                 outputImage = string.Empty;
-                Log("ExecuteCommand failed");
             }
             else if (!File.Exists(outputImage))
             {
@@ -234,7 +228,6 @@ namespace TeamSupport.ServiceLibrary
             options.colors = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(brightPastel));
             string series = string.Empty;
             string xAxis = string.Empty;
-            Log("Chart Type: " + options.ts.chartType);
 
             if (options.ts.chartType == "pie")
             {
@@ -517,8 +510,6 @@ namespace TeamSupport.ServiceLibrary
 
             process.BeginErrorReadLine();
             process.WaitForExit();
-            Log("Done!");
-
             exitCode = process.ExitCode;
             process.Close();
 
@@ -542,20 +533,42 @@ namespace TeamSupport.ServiceLibrary
             return isSuccessful;
         }
 
+        private static string GenerateCleanOutputFileName(LoginUser loginUser, int organizationId, string reportName, string extension)
+        {
+            string fileName = string.Empty;
+            string outputImagePath = AttachmentPath.GetPath(loginUser, organizationId, AttachmentPath.Folder.ScheduledReports);
+            fileName = string.Format("{0}\\{1}.{2}", outputImagePath, RemoveSpecialCharacters(reportName), extension);
+
+            return fileName;
+        }
+
+        private static string RemoveSpecialCharacters(string input)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in input)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_' || c == '-')
+                {
+                    sb.Append(c);
+                }
+                else if (c == ' ')
+                {
+                    sb.Append('_');
+                }
+            }
+            return sb.ToString();
+        }
+
         private void QueueEmail(ScheduledReport scheduledReport)
         {
 				scheduledReport.IsSuccessful = false;
             Log(string.Format("Scheduled Report Id: {0}, Report Id: {1}, Organization {2}", scheduledReport.Id.ToString(), scheduledReport.ReportId, scheduledReport.OrganizationId));
-            Log(string.Format("Set to start on: {0}", scheduledReport.NextRun), LogType.Both);
+            Log(string.Format("Set to start on: {0}", scheduledReport.NextRun), LogType.Public);
 
             try
             {
                 LoginUser scheduledReportCreator = new LoginUser(scheduledReport.CreatorId, scheduledReport.OrganizationId);
-                Log(string.Format("Creator: {0} ({1})", scheduledReportCreator.GetUserFullName(), scheduledReportCreator.UserID));
-
-                Log("Getting report");
                 Report report = Reports.GetReport(scheduledReportCreator, scheduledReport.ReportId, LoginUser.UserID);
-                Log(string.Format("Report \"{0}\" settings loaded", report.Name), LogType.Both);
                 Log(string.Format("Generating {0} Report", report.ReportDefType.ToString()), LogType.Both);
 
                 string reportAttachmentFile = string.Empty;
@@ -625,14 +638,13 @@ namespace TeamSupport.ServiceLibrary
                         }
                     }
 
-                    Log(string.Format("Report generated and file attachment created: {0}", Path.GetFileName(reportAttachmentFile)), LogType.Public);
-                    Log(string.Format("Report file to attach: {0}", reportAttachmentFile));
+                    Log(string.Format("Report generated and file attachment created: {0}", Path.GetFileName(reportAttachmentFile)));
 
                     Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
-							MailMessage message = EmailTemplates.GetScheduledReport(LoginUser, scheduledReport);
-							scheduledReport.SetRecipientsAndAttachment(message, reportAttachmentFile, organization);
+                    MailMessage message = EmailTemplates.GetScheduledReport(LoginUser, scheduledReport);
+                    scheduledReport.SetRecipientsAndAttachment(message, organization);
 
-                    Log("Email message created", LogType.Both);
+                    Log("Email message created", LogType.Public);
                     Log(string.Format("Email Recipients: {0}", string.Join(",", message.To.Select(p => p.Address).ToArray())), LogType.Both);
 
                     if (_isDebug == true)
@@ -710,14 +722,13 @@ namespace TeamSupport.ServiceLibrary
                         message.Subject = string.Format("[{0}] {1}", Settings.ReadString("Debug Email Subject", "TEST MODE"), message.Subject);
                     }
 
-							Log("Queueing email(s)", LogType.Both);
-							AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
-							Log("Email was queued to [Emails] table.");
-							scheduledReport.IsSuccessful = true;
+						Log("Queueing email(s)", LogType.Public);
+						AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
+						scheduledReport.IsSuccessful = true;
                 }
                 else
                 {
-							Log("Report could not be generated and emailed, please contact TeamSupport", LogType.Public);
+						Log("Report could not be generated and emailed, please contact TeamSupport", LogType.Public);
                 }
 
                 if ((ScheduledReportFrequency)scheduledReport.RecurrencyId == ScheduledReportFrequency.Once)
@@ -750,8 +761,8 @@ namespace TeamSupport.ServiceLibrary
         {
             Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
             string replyAddress = organization.GetReplyToAddress(replyToAddress).Trim();
-
             int i = 0;
+
             while (i < message.To.Count)
             {
                 MailAddress address = message.To[i];
@@ -778,15 +789,13 @@ namespace TeamSupport.ServiceLibrary
             foreach (MailAddress address in addresses)
             {
                 message.To.Clear();
-                Logs.WriteEvent(string.Format("Adding email address [{0}]", address.ToString()));
                 message.To.Add(GetMailAddress(address.Address, address.DisplayName));
                 Logs.WriteEvent(string.Format("Successfuly added email address [{0}]", address.ToString()));
                 message.HeadersEncoding = Encoding.UTF8;
                 message.Body = body;
                 message.Subject = subject;
-
-                Logs.WriteEvent(string.Format("Adding ReplyTo Address[{0}]", replyAddress.Replace("<", "").Replace(">", "")));
                 MailAddress replyMailAddress = null;
+
                 try
                 {
                     replyMailAddress = GetMailAddress(replyAddress);
@@ -796,12 +805,13 @@ namespace TeamSupport.ServiceLibrary
                     replyMailAddress = GetMailAddress(organization.GetReplyToAddress());
                 }
 
+                Logs.WriteEvent(string.Format("ReplyTo Address[{0}]", replyAddress.Replace("<", "").Replace(">", "")));
+
                 message.From = replyMailAddress;
                 EmailTemplates.ReplaceMailAddressParameters(message);
                 Emails.AddEmail(LoginUser, organizationID, null, description, message, attachments, timeToSend);
 
                 if (message.Subject == null) message.Subject = "";
-                Logs.WriteEvent(string.Format("Queueing email [{0}] - {1}  Subject: {2}", description, address.ToString(), message.Subject));
             }
         }
 
@@ -855,9 +865,7 @@ namespace TeamSupport.ServiceLibrary
                 stringBuilder.AppendLine(string.Join(",", fields));
             }
 
-            string reportAttachmentPath = AttachmentPath.GetPath(scheduledReportCreator, scheduledReportCreator.OrganizationID, AttachmentPath.Folder.ScheduledReports);
-            string fileName = string.Format("{0}\\{1}_{2}.csv", reportAttachmentPath, scheduledReportId, report.ReportID);
-
+            string fileName = GenerateCleanOutputFileName(scheduledReportCreator, scheduledReportCreator.OrganizationID, report.Name, "csv");
             File.WriteAllText(fileName, stringBuilder.ToString());
 
             if (logs != null)

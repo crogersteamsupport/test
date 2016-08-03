@@ -138,24 +138,10 @@ namespace TeamSupport.Data
 			}
 		}
 
-        public void SetRecipientsAndAttachment(MailMessage message, string attachment, Organization organization)
+        public void SetRecipientsAndAttachment(MailMessage message, Organization organization)
         {
             message.From = GetEmailAddressFromString(organization.GetReplyToAddress().Trim());
             AddEmailAddressesFromString(message.To, EmailRecipients);
-
-            if (!string.IsNullOrEmpty(attachment))
-            {
-                foreach (string fileName in attachment.Split(';'))
-                {
-                    try
-                    {
-                        message.Attachments.Add(new System.Net.Mail.Attachment(fileName));
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-            }
         }
 
         private MailAddress GetEmailAddressFromString(string text)

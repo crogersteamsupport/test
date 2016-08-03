@@ -27,6 +27,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Weekday", "Weekday", false, false, false);
       _fieldMap.AddMap("Monthday", "Monthday", false, false, false);
       _fieldMap.AddMap("LastRun", "LastRun", false, false, false);
+      _fieldMap.AddMap("IsSuccessful", "IsSuccessful", false, false, false);
       _fieldMap.AddMap("NextRun", "NextRun", false, false, false);
       _fieldMap.AddMap("CreatorId", "CreatorId", false, false, false);
       _fieldMap.AddMap("ModifierId", "ModifierId", false, false, false);
