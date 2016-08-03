@@ -11,7 +11,11 @@
     padding: 0px;
 }*/
 
-.panel-body { padding: 0px; }
+body {
+    overflow:hidden;
+}
+
+.panel-body { padding: 0px; height: calc(100vh - 95px); overflow-y:auto; }
 
 .panel-heading { background-color: #3d6da7 !important; color: white !important; }
 
