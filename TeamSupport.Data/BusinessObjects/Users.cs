@@ -473,7 +473,8 @@ namespace TeamSupport.Data
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (o.ParentID = @ParentID)
                                 AND (u.Email = @Email)
-                                AND (u.MarkDeleted = 0)";
+                                AND (u.MarkDeleted = 0)
+                                ORDER BY o.IsActive desc, u.IsActive desc";
 
 
                 command.CommandType = CommandType.Text;
@@ -1828,7 +1829,29 @@ SET IDENTITY_INSERT Users Off
 			  return errLocation;
 		  }
 
-		  public void MergeUpdateTickets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+        public void MergeUpdateActions(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+			 UPDATE
+				Actions 
+			 SET
+				CreatorID = @winningUserID 
+				, ModifierID = -5
+			 WHERE
+				CreatorID = @losingUserID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@winningUserID", winningUserID);
+                command.Parameters.AddWithValue("@losingUserID", losingUserID);
+                ExecuteNonQuery(command, "Actions");
+            }
+            string description = "Merged '" + contactName + "' Actions.";
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Actions, winningUserID, description);
+        }
+
+        public void MergeUpdateTickets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
 		  {
 			  LoginUser noEmailPostLoginUser = new LoginUser(loginUser.ConnectionString, -5, loginUser.OrganizationID, null);
 			  Tickets tickets = new Tickets(noEmailPostLoginUser);

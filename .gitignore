@@ -32,3 +32,4 @@ _ReSharper*/
 *.user
 *.userosscache
 *.sln.docstates
+/.vs/config/applicationhost.config

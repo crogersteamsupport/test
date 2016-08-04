@@ -48,10 +48,6 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
 
       spanNewType.Visible = UserSession.CurrentUser.IsSystemAdmin;
       Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-      if (organization.UseProductFamilies)
-      {
-          divTicketTypeProductFamily.Style["display"] = "block";
-      }
     }
   }
 
@@ -222,12 +218,111 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return list.ToArray();
   }
 
-  /// <summary>
-  /// Generates the HTML Table to be returned client side.
-  /// </summary>
-  /// <param name="type"></param>
-  /// <returns></returns>
-  [WebMethod(true)]
+    /// <summary>
+    /// Generates the HTML Table to be returned client side.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    [WebMethod(true)]
+    public static TypesHtmlResult GetTypesHtml2(SelectedType type, string arg)
+    {
+        Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+        DataTable table = new DataTable();
+        table.Columns.Add("ID");
+        table.Columns.Add("Name");
+        table.Columns.Add("Description");
+        //string result = "";
+        switch (type)
+        {
+            case SelectedType.ActionTypes:
+                ActionTypes actionTypes = new ActionTypes(UserSession.LoginUser);
+                actionTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                table.Columns.Add("Is Timed");
+                foreach (ActionType actionType in actionTypes)
+                {
+                    table.Rows.Add(new string[] { actionType.ActionTypeID.ToString(), actionType.Name, actionType.Description, actionType.IsTimed.ToString() });
+                }
+                break;
+            case SelectedType.PhoneTypes:
+                PhoneTypes phoneTypes = new PhoneTypes(UserSession.LoginUser);
+                phoneTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                foreach (PhoneType phoneType in phoneTypes)
+                {
+                    table.Rows.Add(new string[] { phoneType.PhoneTypeID.ToString(), phoneType.Name, phoneType.Description });
+                }
+                break;
+            case SelectedType.ProductVersionStatuses:
+                ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(UserSession.LoginUser);
+                productVersionStatuses.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                table.Columns.Add("Is Shipping");
+                table.Columns.Add("Is Discontinued");
+                foreach (ProductVersionStatus productVersionStatus in productVersionStatuses)
+                {
+                    table.Rows.Add(new string[] { productVersionStatus.ProductVersionStatusID.ToString(), productVersionStatus.Name, productVersionStatus.Description, productVersionStatus.IsShipping.ToString(), productVersionStatus.IsDiscontinued.ToString() });
+                }
+                break;
+            case SelectedType.TicketSeverities:
+                TicketSeverities ticketSeverities = new TicketSeverities(UserSession.LoginUser);
+                ticketSeverities.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                foreach (TicketSeverity ticketSeverity in ticketSeverities)
+                {
+                    table.Rows.Add(new string[] { ticketSeverity.TicketSeverityID.ToString(), ticketSeverity.Name, ticketSeverity.Description });
+                }
+                break;
+            case SelectedType.TicketStatuses:
+                TicketStatuses ticketStatuses = new TicketStatuses(UserSession.LoginUser);
+                ticketStatuses.LoadAllPositions(int.Parse(arg));
+
+                table.Columns.Add("Is Closed");
+                table.Columns.Add("Closed Email");
+                table.Columns.Add("Email Response");
+                foreach (TicketStatus ticketStatus in ticketStatuses)
+                {
+                    table.Rows.Add(new string[] { ticketStatus.TicketStatusID.ToString(), ticketStatus.Name, ticketStatus.Description, ticketStatus.IsClosed.ToString(), ticketStatus.IsClosedEmail.ToString(), ticketStatus.IsEmailResponse.ToString() });
+                }
+                break;
+            case SelectedType.TicketTypes:
+                table.Columns.Add("Icon");
+                table.Columns.Add("Visible on Portal");
+                string icon = "<img src=\"../{0}\" />";
+                if (organization.UseProductFamilies)
+                {
+                    TicketTypesView ticketTypes = new TicketTypesView(UserSession.LoginUser);
+                    ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                    table.Columns.Add("Product Line");
+                    foreach (TicketTypesViewItem ticketType in ticketTypes)
+                    {
+                        table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString(), ticketType.ProductFamilyName });
+                    }
+                }
+                else
+                {
+                    TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
+                    ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                    foreach (TicketType ticketType in ticketTypes)
+                    {
+                        table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString() });
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        TypesHtmlResult result = new TypesHtmlResult();
+        result.Html = BuildTable(table);
+        result.UseProductFamilies = organization.UseProductFamilies;
+
+        return result;
+
+    }
+
+    /// <summary>
+    /// Generates the HTML Table to be returned client side.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    [WebMethod(true)]
   public static string GetTypesHtml(SelectedType type, string arg)
   {
       Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
@@ -767,4 +862,11 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     public int ProductFamilyID { get; set; }
 
   }
+
+    [Serializable]
+    public class TypesHtmlResult
+    {
+        public string Html { get; set; }
+        public bool UseProductFamilies { get; set; }
+    }
 }

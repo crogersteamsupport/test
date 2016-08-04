@@ -154,6 +154,7 @@
                         <div class="box">
                             <div class="box-header"><h3>Contact Info</h3>
                                         <div class="pull-right">
+                                            <button class="btn-link btn-sm btn-primary" data-toggle="modal" data-target="#modalEmail" id="contactEmailButton" style="display:none;"><i class="fa fa-plus"></i> Email</button>
                                             <button class="btn-link btn-sm btn-primary" data-toggle="modal" data-target="#modalPhone" id="contactPhoneButton"><i class="fa fa-plus"></i> Phone</button>
                                             <button class="btn-link btn-sm btn-primary" data-toggle="modal" data-target="#modalAddress" id="contactAddressButton"><i class="fa fa-plus"></i> Address</button>
                                         </div>
@@ -164,6 +165,8 @@
                                  <div class="row">
                                         <div class="col-md-12">
                                             <div id="userInfo" class="userProperties"></div>
+                                            <div id="emailPanel">
+                                            </div>
                                             <div id="phonePanel">
                                             </div>
                                             <div id="addressPanel">
@@ -593,6 +596,44 @@
           </div>
         </div><!-- /.modal-content -->
       </div>
+    </div>
+
+    <div class="modal fade" id="modalEmail">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Email</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <!--<div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">Phone Type</label>
+                            <div class="col-md-8">
+                                <select class="form-control" id="phoneType"></select>
+                            </div>
+                        </div>-->
+                        <div class="form-group">
+                            <label for="phoneNumber" class="col-md-4 control-label">Email</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control" id="email">
+                            </div>
+                        </div>
+                        <!--<div class="form-group">
+                            <label for="phoneExt" class="col-md-4 control-label">Ext</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="phoneExt">
+                            </div>
+                        </div>-->
+                        <input type="hidden" id="emailID" value="-1"></input>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnEmailSave">Save</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
     </div>
 
     <div class="modal fade" id="modalPhone">
