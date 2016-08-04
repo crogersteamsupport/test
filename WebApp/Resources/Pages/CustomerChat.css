@@ -1,17 +1,4 @@
-﻿/*.message-bubble 
-{
-    padding: 0px 0px 0px 0px;
-}
-
-.message-bubble:nth-child(even) { background-color: #F5F5F5; }
-
-.message-bubble > *
-{
-    margin: 8px;
-    padding: 0px;
-}*/
-
-body {
+﻿body {
     overflow:hidden;
 }
 
@@ -19,23 +6,12 @@ body {
 
 .panel-heading { background-color: #3d6da7 !important; color: white !important; }
 
-/*.list-group { padding-left: 0;  margin-bottom: 0; }
-
-.list-group-item { border: none; }
-
-.user-avatar {     
-    float: left;
-    margin: 0px;
-    padding-right: 10px;
-}*/
-
 
 .col-inside-lg {
     padding: 10px;
 }
 .chat {
-    /*height: calc(100vh - 180px);*/
-        padding: 0px;
+    padding: 0px;
     margin: 0px;
 }
 .decor-default {
@@ -213,63 +189,4 @@ body {
 .chat-body .answer.right .time {
     padding-right: 12px;
     color: #333333;
-}
-
-/**************ADD FORM ***************/
-.chat-body .answer-add {
-    clear: both;
-    position: relative;
-    margin: 20px -20px -20px;
-    padding: 20px;
-    background: #46be8a;
-}
-.chat-body .answer-add input {
-    border: none;
-    background: none;
-    display: block;
-    width: 100%;
-    font-size: 16px;
-    line-height: 20px;
-    padding: 0;
-    color: #ffffff;
-}
-.chat input {
-    -webkit-appearance: none;
-    border-radius: 0;
-}
-.chat-body .answer-add .answer-btn-1 {
-    background: url("http://91.234.35.26/iwiki-admin/v1.0.0/admin/img/icon-40.png") 50% 50% no-repeat;
-    right: 56px;
-}
-.chat-body .answer-add .answer-btn {
-    display: block;
-    cursor: pointer;
-    width: 36px;
-    height: 36px;
-    position: absolute;
-    top: 50%;
-    margin-top: -18px;
-}
-.chat-body .answer-add .answer-btn-2 {
-    background: url("http://91.234.35.26/iwiki-admin/v1.0.0/admin/img/icon-41.png") 50% 50% no-repeat;
-    right: 20px;
-}
-.chat input::-webkit-input-placeholder {
-   color: #fff;
-}
-
-.chat input:-moz-placeholder { /* Firefox 18- */
-   color: #fff;  
-}
-
-.chat input::-moz-placeholder {  /* Firefox 19+ */
-   color: #fff;  
-}
-
-.chat input:-ms-input-placeholder {  
-   color: #fff;  
-}
-.chat input {
-    -webkit-appearance: none;
-    border-radius: 0;
 }
