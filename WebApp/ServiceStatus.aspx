@@ -8,7 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" />
-
     <title></title>
 </head>
 <body>
@@ -64,5 +63,9 @@
         </div>
     </form>
     <script src="vcr/1_9_0/Js/bootstrap3.min.js"></script>
+    <script type="text/javascript" language="javascript">    
+        var list = document.getElementsByClassName("page-header")[0];
+        list.innerHTML = "Milk";
+    </script>
 </body>
 </html>

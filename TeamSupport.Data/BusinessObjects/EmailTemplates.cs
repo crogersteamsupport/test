@@ -615,7 +615,16 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetTicketAssignmentGroup(LoginUser loginUser, string assignor, TicketsViewItem ticket)
+		public static MailMessage GetScheduledReport(LoginUser loginUser, ScheduledReport scheduledReport)
+		{
+			int scheduledReportTemplateId = 34;
+			EmailTemplate template = GetTemplate(loginUser, scheduledReport.OrganizationId, scheduledReportTemplateId, -1);
+			template.ReplaceCommonParameters().ReplaceFields("ScheduledReports", scheduledReport);
+
+			return template.GetMessage();
+		}
+
+		  public static MailMessage GetTicketAssignmentGroup(LoginUser loginUser, string assignor, TicketsViewItem ticket)
         {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);

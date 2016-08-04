@@ -339,4 +339,12 @@ namespace TeamSupport.Data
 		[Description("36pt")]
 		Seven36pt = 7
 	}
+
+	public enum ScheduledReportFrequency
+	{
+		Unknown = 0,
+		Weekly = 1,
+		Monthly = 2,
+		Once = 3
+	}
 }
