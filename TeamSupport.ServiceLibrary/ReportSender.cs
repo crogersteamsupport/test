@@ -160,7 +160,7 @@ namespace TeamSupport.ServiceLibrary
             optionsFile = Path.Combine(chartOptionsFilesPath, optionsFile);
             Log("Writting chart options to: " + optionsFile);
             File.WriteAllText(optionsFile, optionsFileData);
-            string outputImage = GenerateCleanOutputFileName(_loginUser, scheduledReport.OrganizationId, report.Name, "png");
+            string outputImage = GenerateCleanOutputFileName(_loginUser, scheduledReport, report.Name, "png");
             Log("outputImage: " + outputImage);
 
             //Create Batch File
@@ -533,11 +533,19 @@ namespace TeamSupport.ServiceLibrary
             return isSuccessful;
         }
 
-        private static string GenerateCleanOutputFileName(LoginUser loginUser, int organizationId, string reportName, string extension)
+        private static string GenerateCleanOutputFileName(LoginUser loginUser, ScheduledReport scheduledReport, string reportName, string extension)
         {
+            int organizationId = scheduledReport.OrganizationId;
             string fileName = string.Empty;
             string outputImagePath = AttachmentPath.GetPath(loginUser, organizationId, AttachmentPath.Folder.ScheduledReports);
-            fileName = string.Format("{0}\\{1}.{2}", outputImagePath, RemoveSpecialCharacters(reportName), extension);
+            string reportNameForFile = RemoveSpecialCharacters(reportName);
+
+            if (string.IsNullOrEmpty(reportNameForFile))
+            {
+                reportNameForFile = string.Format("{0}_{1}", scheduledReport.Id, scheduledReport.ReportId);
+            }
+
+            fileName = string.Format("{0}\\{1}.{2}", outputImagePath, reportNameForFile, extension);
 
             return fileName;
         }
@@ -579,7 +587,7 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else
                 {
-                    reportAttachmentFile = GetReportDataToFile(scheduledReportCreator, report, scheduledReport.Id, "", false, true, Logs);
+                    reportAttachmentFile = GetReportDataToFile(scheduledReportCreator, report, scheduledReport, "", false, true, Logs);
                 }
 
                 if (!string.IsNullOrEmpty(reportAttachmentFile))
@@ -840,7 +848,7 @@ namespace TeamSupport.ServiceLibrary
             return new MailAddress(FixMailAddress(address), FixMailName(displayName), displayNameEncoding);
         }
 
-        private static string GetReportDataToFile(LoginUser scheduledReportCreator, Report report, int scheduledReportId, string sortField, bool isDesc, bool useUserFilter, Logs logs = null)
+        private static string GetReportDataToFile(LoginUser scheduledReportCreator, Report report, ScheduledReport scheduledReport, string sortField, bool isDesc, bool useUserFilter, Logs logs = null)
         {
             if (logs != null)
             {
@@ -865,7 +873,7 @@ namespace TeamSupport.ServiceLibrary
                 stringBuilder.AppendLine(string.Join(",", fields));
             }
 
-            string fileName = GenerateCleanOutputFileName(scheduledReportCreator, scheduledReportCreator.OrganizationID, report.Name, "csv");
+            string fileName = GenerateCleanOutputFileName(scheduledReportCreator, scheduledReport, report.Name, "csv");
             File.WriteAllText(fileName, stringBuilder.ToString());
 
             if (logs != null)
@@ -879,17 +887,23 @@ namespace TeamSupport.ServiceLibrary
         private static DataTable GetReportTableAll(LoginUser scheduledReportCreator, Report report, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
         {
             SqlCommand command = new SqlCommand();
-
             report.GetCommand(command, includeHiddenFields, false, useUserFilter);
+
+            if (string.IsNullOrWhiteSpace(sortField))
+            {
+                sortField = GetReportColumnNames(scheduledReportCreator, report.ReportID)[0];
+                isDesc = false;
+            }
+
+            //need to append the extra stuff for custom and summary reports here. See Reports.cs line 2115
+            if (report.ReportDefType == ReportType.Custom)
+            {
+                string query = @"WITH {0}, r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q) SELECT  *{3} FROM r ";
+                command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC", "");
+            }
 
             if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
             {
-                if (string.IsNullOrWhiteSpace(sortField))
-                {
-                    sortField = GetReportColumnNames(scheduledReportCreator, report.ReportID)[0];
-                    isDesc = false;
-                }
-
                 command.CommandText = command.CommandText + " ORDER BY [" + sortField + (isDesc ? "] DESC" : "] ASC");
             }
 
