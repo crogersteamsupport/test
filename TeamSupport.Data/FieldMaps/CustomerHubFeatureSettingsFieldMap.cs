@@ -28,6 +28,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DefaultGroupTypeID", "DefaultGroupTypeID", false, false, false);
       _fieldMap.AddMap("EnableCustomerProductAssociation", "EnableCustomerProductAssociation", false, false, false);
       _fieldMap.AddMap("EnableChat", "EnableChat", false, false, false);
+      _fieldMap.AddMap("EnableCommunity", "EnableCommunity", false, false, false);
             
     }
   }
