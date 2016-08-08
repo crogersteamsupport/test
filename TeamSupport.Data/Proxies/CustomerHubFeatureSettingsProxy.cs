@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public int? DefaultGroupTypeID { get; set; }
     [DataMember] public bool EnableCustomerProductAssociation { get; set; }
     [DataMember] public bool EnableChat { get; set; }
+    [DataMember] public bool EnableCommunity { get; set; }
           
   }
   
@@ -36,6 +37,7 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.EnableCommunity = this.EnableCommunity;
       result.EnableChat = this.EnableChat;
       result.EnableCustomerProductAssociation = this.EnableCustomerProductAssociation;
       result.DefaultGroupTypeID = this.DefaultGroupTypeID;

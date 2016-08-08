@@ -1414,23 +1414,8 @@ AND ts.IsClosed = 0";
                                 Inner Join ForumCategories as FC on FT.ForumCategory = FC.CategoryID
                                 WHERE 
 	                                t.OrganizationID         = @OrganizationID 
-	                                --AND t.IsKnowledgeBase    = 1
 	                                AND t.IsVisibleOnPortal  = 1
 	                                AND FT.ForumCategory = @ForumCategoryID");
-                //if (customerID > 0 && enforceCustomerProduct)
-                //{
-                //    builder.Append(@" AND(
-                //						T.ProductID IS NULL
-                //						OR T.ProductID IN(
-                //								SELECT productid
-                //								FROM organizationproducts
-                //								WHERE organizationid = @CustomerID
-                //							)");
-
-                //    builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
-
-                //    builder.Append(")");
-                //}
                 builder.Append(@" ORDER BY t.DateModified desc");
                 command.CommandText = builder.ToString();
                 command.CommandType = CommandType.Text;

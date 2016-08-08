@@ -902,7 +902,7 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        public void LoadHubCommunityTopicByID(int ticketID, int organizationID, int customerID)
+        public void LoadHubForumTopicByID(int ticketID, int organizationID, int customerID)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -913,21 +913,8 @@ ORDER BY TicketNumber DESC";
 								WHERE 
 									t.ticketid = @ticketID
 									AND t.OrganizationID              = @OrganizationID 
-									--AND t.IsKnowledgeBase         = 1
 									AND t.IsVisibleOnPortal         = 1");
-                if (customerID > 0)
-                {
-                    builder.Append(@" AND(
-									    T.ProductID IS NULL
-									    OR T.ProductID IN(
-										    SELECT productid
-												FROM organizationproducts
-												WHERE organizationid = @CustomerID
-										    )
-									    )");
-                }
                 builder.Append(@" ORDER BY t.DateModified desc");
-
 
                 command.CommandText = builder.ToString();
                 command.CommandType = CommandType.Text;

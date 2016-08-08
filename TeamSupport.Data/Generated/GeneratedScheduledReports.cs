@@ -284,21 +284,21 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("EmailSubject", SqlDbType.VarChar, 200);
+		tempParameter = updateCommand.Parameters.Add("EmailSubject", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("EmailBody", SqlDbType.VarChar, 1000);
+		tempParameter = updateCommand.Parameters.Add("EmailBody", SqlDbType.NVarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("EmailRecipients", SqlDbType.VarChar, 2000);
+		tempParameter = updateCommand.Parameters.Add("EmailRecipients", SqlDbType.NVarChar, 2000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -544,21 +544,21 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("EmailRecipients", SqlDbType.VarChar, 2000);
+		tempParameter = insertCommand.Parameters.Add("EmailRecipients", SqlDbType.NVarChar, 2000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("EmailBody", SqlDbType.VarChar, 1000);
+		tempParameter = insertCommand.Parameters.Add("EmailBody", SqlDbType.NVarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("EmailSubject", SqlDbType.VarChar, 200);
+		tempParameter = insertCommand.Parameters.Add("EmailSubject", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
