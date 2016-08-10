@@ -53,8 +53,9 @@
 								</li>
 								<li class="schedule-cond">
 									<label>Start On</label>
-									<input type="text" id="StartOn" class="form-control" placeholder="Start date and time..." required />
                                     <input type="text" id="StartDateTimePicker" hidden="hidden" />
+                                    <input type="text" id="StartOn" class="form-control" placeholder="Start date..." required />
+                                    <input type="text" id="StartOnTime" class="form-control" placeholder="Start time..." required />
 								</li>
 								<li class="schedule-cond scheduleOptions">
 									<label class="frequencyLabel">Frequency</label>
@@ -89,7 +90,7 @@
 								</li>
 								<li class="schedule-cond">
 									<label class="activeLabel">Active</label>
-									<i id="active" class="fa fa-square-o"></i>
+									<i id="active" class="fa fa-check-square-o"></i>
 								</li>
 							</ul>
 						</fieldset>
