@@ -33,7 +33,8 @@
 		var emailSubject = $('.schedule-email-subject').val();
 		var emailBody = $('.schedule-email-body').val();
 		var emailAddresses = $('.schedule-email-addresses').val();
-		var startOn = $('#StartDateTimePicker').data("StartOnDate");
+		var startOnTime = $('#StartOnTime').val();
+		var startOn = $('#StartDateTimePicker').data("StartOnDate") + ' ' + startOnTime;
 		var startOnValue = '';
 
 		if ($("#runNow").hasClass('fa-check-square-o')) {
@@ -180,7 +181,7 @@
 		$('#ReportTitleSpan').text(_reportIdToScheduleName);
 
 		if (_isEditing) {
-			parent.Ts.Services.Reports.GetScheduledReport(_editingScheduledId, LoadReportData);
+		    parent.Ts.Services.Reports.GetScheduledReport(_editingScheduledId, LoadReportData);
 		} else {
 			SetScheduleOptions(1);
 
@@ -189,16 +190,23 @@
 
 			$('#StartDateTimePicker').datetimepicker({
 			    defaultDate: dateNow,
-			    pickTime: true
-			});
+			    pickTime: false,
+                orientation: "bottom left"
+			});   
 		}
+
+		$('#StartOnTime').datetimepicker({
+		    pickTime: true,
+		    pickDate: false
+		});
 
 		PopulateFrequencyList();
 	}
 
 	$('#StartOn').focus(function () {
 	    $('#StartDateTimePicker').datetimepicker({
-	        pickTime: true
+	        pickTime: false,
+	        orientation: "bottom left"
 	    });
         
 	    $('#StartDateTimePicker').show();
@@ -207,7 +215,7 @@
 
 	$('#StartDateTimePicker').change(function() {
 	    var thisDateTime = this.value;
-	    $('#StartOn').val(parent.Ts.Utils.getDateString(thisDateTime, true, true, false));
+	    $('#StartOn').val(parent.Ts.Utils.getDateString(thisDateTime, true, false, false));
 	    $('#StartDateTimePicker').data("StartOnDate", thisDateTime);
 	});
 
@@ -220,8 +228,13 @@
 		$('.schedule-email-subject').val(report.EmailSubject);
 		$('.schedule-email-body').val(report.EmailBody);
 		$('.schedule-email-addresses').val(report.EmailRecipients);
-		var startOn = report.StartDate.localeFormat(parent.Ts.Utils.getDateTimePattern());
+		var startOn = report.StartDate.localeFormat(parent.Ts.Utils.getDatePattern());
 		$('#StartOn').val(startOn);
+		$('#StartDateTimePicker').data("StartOnDate", startOn);
+
+		var startOnTime = report.StartDate.localeFormat(parent.Ts.Utils.getTimePattern());
+		$('#StartOnTime').val(startOnTime);
+
 		$('.frequencyList').val(report.RecurrencyId);
 		$('.numberList').val(report.Every);
 		$('#weeksOn').val(report.Weekday);
