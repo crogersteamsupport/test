@@ -39,7 +39,7 @@
 }
 
 .schedule-cond input {
-	width: 175px;
+	width: 8%;
 }
 
 .schedule-cond a {
@@ -130,6 +130,8 @@
     width: 1px;
     border: none;
     opacity: 0.00;
+    position: absolute;
+    z-index: 1;
 }
 
 .activeLabel {
