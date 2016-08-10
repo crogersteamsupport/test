@@ -686,6 +686,17 @@ ORDER BY TicketNumber DESC";
             }
         }
 
+        public void LoadForumPostsByUserID(int userID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "Select tv.* from TicketsView as tv inner join ForumTickets ft on tv.TicketID = ft.ticketid where tv.ticketID in (select ticketid from actions where CreatorID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                Fill(command);
+            }
+        }
+
         public void LoadByContactID(int userID)
         {
             LoadByContactID(userID, "TicketNumber");
