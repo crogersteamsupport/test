@@ -453,7 +453,14 @@ ReportPage = function () {
 
         if ($('.report-list .report-item:visible').length < 1) {
             $('.report-list table:visible').hide();
-            $('.report-list .no-reports span').text(term.length > 0 ? ('There are no reports to display with "' + term + '" in the name.') : 'There are no reports to display.')
+
+            var noRecordsMessage = 'There are no reports to display.';
+
+            if (_isScheduledReportsSelected) {
+                noRecordsMessage = 'To schedule a report to be emailed, select the report then click the clock icon in the menu above.';
+            }
+
+            $('.report-list .no-reports span').text(term.length > 0 ? ('There are no reports to display with "' + term + '" in the name.') : noRecordsMessage)
             $('.report-list .no-reports:hidden').show();
         }
     }
