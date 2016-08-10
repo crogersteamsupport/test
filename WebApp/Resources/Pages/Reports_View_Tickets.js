@@ -655,6 +655,6 @@
     	var button = $(this);
     	if (button.hasClass('disabled')) return;
 
-    	window.location.assign("Reports_Schedule.html?ReportId=" + _reportID + "&ReportName=" + _report.Name + "&ReportTypeOpened=" + _report.ReportType, "_self");
+    	window.location.assign("Reports_Schedule.html?ReportId=" + _reportID + "&ReportName=" + _report.Name + "&ReportTypeOpened=" + _report.ReportType);
     });
 });
