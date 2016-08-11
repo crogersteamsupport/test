@@ -1214,10 +1214,10 @@ ORDER BY TicketNumber DESC";
         ),
 
         PageQuery AS (
-          SELECT  * FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
+          SELECT  *, (SELECT MAX(RowNum) FROM RowQuery) AS 'TotalRecords' FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
         )
 
-        SELECT PageQuery.RowNum, {3}
+        SELECT PageQuery.RowNum, PageQuery.TotalRecords, {3}
         FROM PageQuery
         INNER JOIN UserTicketsView tv ON tv.TicketID = PageQuery.TicketID 
         WHERE tv.ViewerID = @ViewerID

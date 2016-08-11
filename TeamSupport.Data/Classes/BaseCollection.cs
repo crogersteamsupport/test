@@ -414,9 +414,32 @@ namespace TeamSupport.Data
 			get
 			{
 				string apiTotalRecordsElementName = "TotalRecords";
+
 				if (Row.Table.Columns.Contains(apiTotalRecordsElementName) && Row[apiTotalRecordsElementName] != DBNull.Value)
 				{
-					return (int)Row[apiTotalRecordsElementName];
+                    int totalRecords = 0;
+
+                    try
+                    {
+                        totalRecords = (int)Row[apiTotalRecordsElementName];
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.Message.Contains("cast") && ex.Message.Contains("not valid"))
+                        {
+                            string totalRecordsString = Convert.ToString(Row[apiTotalRecordsElementName]);
+
+                            if (!string.IsNullOrEmpty(totalRecordsString))
+                            {
+                                if (!int.TryParse(totalRecordsString, out totalRecords))
+                                {
+                                    totalRecords = 0;
+                                }
+                            }
+                        }
+                    }
+
+                    return totalRecords;
 				}
 				else return 0;
 			}

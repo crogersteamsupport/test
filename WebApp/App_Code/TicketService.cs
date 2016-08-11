@@ -49,7 +49,15 @@ namespace TSWebServices
             TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
             if (filter == null) filter = new TicketLoadFilter();
             tickets.LoadByFilter(pageIndex, pageSize, filter);
-            return new TicketPage(pageIndex, pageSize, tickets.GetFilterCount(filter), tickets.GetTicketsViewItemProxies(), filter);
+
+            int totalRecords = 0;
+
+            if (tickets.Any() && tickets.Count > 0)
+            {
+                totalRecords = tickets[0].TotalRecords;
+            }
+
+            return new TicketPage(pageIndex, pageSize, totalRecords, tickets.GetTicketsViewItemProxies(), filter);
         }
 
         [WebMethod]
@@ -57,9 +65,10 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             GridResult result = new GridResult();
+            string totalRecords = string.Empty;
             result.From = from;
             result.To = to;
-            result.Total = TicketsView.GetFilterCount(loginUser, filter);
+            result.Total = 0;
             List<TicketsViewItemProxy> list = new List<TicketsViewItemProxy>();
             using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
             {
@@ -139,6 +148,8 @@ namespace TSWebServices
                         item.IsEnqueued = reader["IsEnqueued"] as bool? ?? false;
                         item.ViewerID = reader["ViewerID"] as int?;
                         list.Add(item);
+
+                        totalRecords = Convert.ToString(reader["TotalRecords"]);
                     }
                 }
                 finally
@@ -148,10 +159,13 @@ namespace TSWebServices
 
                 result.Data = list;
 
+                if (!string.IsNullOrEmpty(totalRecords))
+                {
+                    result.Total = int.Parse(totalRecords);
+                }
+
                 return result;
             }
-
-
         }
 
         private DateTime? GetReaderNullableDate(object o)
