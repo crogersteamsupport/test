@@ -301,6 +301,32 @@ namespace TeamSupport.Data
             return this;
         }
 
+		//Replace {{ModifierImage}}
+		public EmailTemplate ReplaceModifierAvatar(TicketsViewItem ticket, bool byCreator = false)
+		{
+			if (DoesParameterExist("ModifierImage"))
+			{
+				try
+				{
+					int userId = ticket.ModifierID;
+
+					if (byCreator)
+					{
+						userId = ticket.CreatorID;
+					}
+
+					string avatarImage = "<img src=\"{0}/dc/{1}/UserAvatar/{2}/48\" style=\"border-radius: 50%; -webkit-border-radius: 50%; \" />";
+					avatarImage = string.Format(avatarImage, SystemSettings.GetAppUrl(), ticket.OrganizationID, ticket.ModifierID);
+					ReplaceParameter("ModifierImage", avatarImage);
+				}
+				catch (Exception)
+				{
+				}
+			}
+
+			return this;
+		}
+
         public MailMessage GetMessage()
         {
             Organization organization = Organizations.GetOrganization(BaseCollection.LoginUser, _organizationID);
@@ -556,7 +582,9 @@ namespace TeamSupport.Data
             template.ReplaceParameter("CreatorAddress", creatorAddress.ToString());
             template.ReplaceActions(ticket, true);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket, byCreator: true);
+
+			return template.GetMessage();
         }
 
         public static MailMessage GetNewTicketAdvPortal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
@@ -573,7 +601,9 @@ namespace TeamSupport.Data
             template.ReplaceActions(ticket, true);
             if (creator != null) template.ReplaceFields("Creator", creator);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket, byCreator: true);
+
+			return template.GetMessage();
         }
 
         public static MailMessage GetNewTicketInternal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
@@ -590,7 +620,9 @@ namespace TeamSupport.Data
             if (creator != null) template.ReplaceFields("Creator", creator);
             template.ReplaceActions(ticket, false);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket, byCreator: true);
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetTicketAssignmentUser(LoginUser loginUser, string assignor, TicketsViewItem ticket)
@@ -612,10 +644,21 @@ namespace TeamSupport.Data
 
             template.ReplaceActions(ticket, false).ReplaceParameter("Assignor", assignor);
             template.ReplaceContacts(ticket);
+				template.ReplaceModifierAvatar(ticket);
+
             return template.GetMessage();
         }
 
-        public static MailMessage GetTicketAssignmentGroup(LoginUser loginUser, string assignor, TicketsViewItem ticket)
+		public static MailMessage GetScheduledReport(LoginUser loginUser, ScheduledReport scheduledReport)
+		{
+			int scheduledReportTemplateId = 34;
+			EmailTemplate template = GetTemplate(loginUser, scheduledReport.OrganizationId, scheduledReportTemplateId, -1);
+			template.ReplaceCommonParameters().ReplaceFields("ScheduledReports", scheduledReport);
+
+			return template.GetMessage();
+		}
+
+		  public static MailMessage GetTicketAssignmentGroup(LoginUser loginUser, string assignor, TicketsViewItem ticket)
         {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
@@ -634,7 +677,9 @@ namespace TeamSupport.Data
 
             template.ReplaceActions(ticket, false).ReplaceParameter("Assignor", assignor);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket);
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetTicketUpdateUser(LoginUser loginUser, string modifierName, TicketsViewItem ticket, string changeText, bool includeActions)
@@ -653,7 +698,9 @@ namespace TeamSupport.Data
             template.ReplaceActions(ticket, false);
             template.ReplaceParameter("Changes", changeText);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket);
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetTicketUpdateBasicPortal(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
@@ -671,7 +718,9 @@ namespace TeamSupport.Data
             template.ReplaceParameter("ModifierName", modifierName);
             template.ReplaceActions(ticket, true);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket);
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetTicketUpdateAdvPortal(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
@@ -689,7 +738,9 @@ namespace TeamSupport.Data
             template.ReplaceParameter("ModifierName", modifierName);
             template.ReplaceActions(ticket, true);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket);
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetTicketClosed(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
@@ -707,7 +758,9 @@ namespace TeamSupport.Data
             template.ReplaceParameter("ModifierName", modifierName);
             template.ReplaceActions(ticket, true);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket);
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetWelcomePortalUser(LoginUser loginUser, UsersViewItem portalUser, string password)
@@ -809,7 +862,9 @@ namespace TeamSupport.Data
             if (requestor != null) template.ReplaceFields("Requestor", requestor);
             template.ReplaceActions(ticket, false);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket);
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetTicketSendEmail(LoginUser loginUser, UsersViewItem sender, TicketsViewItem ticket, string recipient, string introduction)
@@ -826,7 +881,9 @@ namespace TeamSupport.Data
             template.ReplaceIntroduction(introduction);
             template.ReplaceActions(ticket, true).ReplaceParameter("Recipient", recipient); ;
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+				template.ReplaceModifierAvatar(ticket);
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetReminderTicketEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, TicketsViewItem ticket)
@@ -843,7 +900,8 @@ namespace TeamSupport.Data
             template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
             template.ReplaceActions(ticket, false);
             template.ReplaceContacts(ticket);
-            return template.GetMessage();
+
+				return template.GetMessage();
         }
 
         public static MailMessage GetReminderCustomerEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, OrganizationsViewItem company)

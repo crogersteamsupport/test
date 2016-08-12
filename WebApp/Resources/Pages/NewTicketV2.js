@@ -351,6 +351,18 @@ function SetupTicketProperties() {
       },
     });
 
+    $('#NewCustomerModal').on('shown.bs.modal', function () {
+        if ((top.Ts.System.User.CanCreateContact) || top.Ts.System.User.IsSystemAdmin) {
+            return;
+        }
+        else {
+            $('#customer-email-input').prop("disabled", true);
+            $('#customer-fname-input').prop("disabled", true);
+            $('#customer-lname-input').prop("disabled", true);
+            $('#customer-phone-input').prop("disabled", true);
+        }
+    });
+
     var selectize = $("#ticket-assigned")[0].selectize;
     selectize.addOption({ value: -1, text: 'Unassigned', data: '' });
 
@@ -1385,6 +1397,11 @@ function SetupCustomerSection() {
       closeAfterSelect: true
     });
 
+    var canCreateCustomers = false;
+    if ((top.Ts.System.User.CanCreateContact && top.Ts.System.User.CanCreateCompany) || top.Ts.System.User.IsSystemAdmin) {
+        canCreateCustomers = true;
+    }
+
     $('#customer-company-input').selectize({
       valueField: 'label',
       labelField: 'label',
@@ -1402,7 +1419,7 @@ function SetupCustomerSection() {
       onDropdownClose: function ($dropdown) {
         $($dropdown).prev().find('input').blur();
       },
-		create: true,
+      create: canCreateCustomers,
       closeAfterSelect: true,
       plugins: {
         'sticky_placeholder': {},

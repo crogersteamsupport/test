@@ -746,6 +746,14 @@
          padding: 0px 5px 2px 9px;
     }
 
+    .tagContainer a{
+        font-size: 12px;
+    }
+
+    .tagContainer i{
+        margin-right: 5px;
+    }
+
     #ticket-Customer > a {
         text-align:left;
         padding: .25em .5em;

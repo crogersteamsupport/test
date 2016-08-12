@@ -277,6 +277,58 @@ namespace TSWebServices
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return organization.Name != "" ? organization.Name : "Empty";
         }
+
+        [WebMethod]
+        public string SetContactCompany2(int userID, int value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            User u = Users.GetUser(loginUser, userID);
+
+            Users users = new Users(loginUser);
+            users.LoadByOrganizationID(value, false);
+            foreach(User user in users)
+            {
+                if(user.Email.ToLower() == u.Email.ToLower())
+                {
+                    return "email already exists";
+                }
+            }
+
+            u.PortalAutoReg = false;
+            u.OrganizationID = value;
+            u.Collection.Save();
+
+            Tickets t = new Tickets(loginUser);
+            t.LoadByContact(userID);
+
+            foreach (Ticket tix in t)
+            {
+                tix.Collection.RemoveContact(userID, tix.TicketID);
+            }
+
+            foreach (Ticket tix in t)
+            {
+                tix.Collection.AddContact(userID, tix.TicketID);
+
+            }
+
+            EmailPosts ep = new EmailPosts(loginUser);
+            ep.LoadByRecentUserID(userID);
+            ep.DeleteAll();
+            ep.Save();
+
+
+            //User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            //u.OrganizationID = value;
+            //u.Collection.Save();
+
+            Organization organization = Organizations.GetOrganization(loginUser, value);
+            string description = String.Format("{0} set contact company to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, organization.Name);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, userID, description);
+            return organization.Name != "" ? organization.Name : "Empty";
+        }
+
         [WebMethod]
         public string SetContactTitle(int userID, string title)
         {

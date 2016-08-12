@@ -351,7 +351,7 @@ namespace TSWebServices
         int[] ids = JsonConvert.DeserializeObject<int[]>(reportIDs);
         for (int i = 0; i < ids.Length; i++)
         {
-          int reportID = ids[i];// int.Parse(reportIDs[i]);
+          int reportID = ids[i];
           Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
           if (report.OrganizationID == null && TSAuthentication.IsSystemAdmin)
           {
@@ -709,9 +709,171 @@ namespace TSWebServices
       return result;
     }
 
+		//Scheduled Report methods
+		[WebMethod]
+		public string GetScheduledReports()
+		{
+			List<ScheduledReportItem> result = new List<ScheduledReportItem>();
+			ScheduledReports reports = new ScheduledReports(TSAuthentication.GetLoginUser());
+
+			try
+			{
+				reports.LoadAll(TSAuthentication.OrganizationID);
+
+				foreach (ScheduledReport report in reports)
+				{
+					result.Add(new ScheduledReportItem(report));
+				}
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "ReportService.GetScheduledReports");
+			}
+
+			return JsonConvert.SerializeObject(result);
+		}
+
+		[WebMethod]
+		public ScheduledReportProxy GetScheduledReport(int id)
+		{
+			ScheduledReportProxy proxy = new ScheduledReportProxy();
+			try
+			{
+				ScheduledReport scheduledReport = ScheduledReports.GetScheduledReport(TSAuthentication.GetLoginUser(), id);
+				proxy = scheduledReport.GetProxy();
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "ReportService.GetScheduledReport");
+			}
+			
+			return proxy;
+		}
+
+		[WebMethod]
+		public int SaveScheduledReport(int scheduledReportId,
+											int reportId,
+											string emailSubject,
+											string emailBody,
+											string emailAddresses,
+											Object startOn,
+											ScheduledReportFrequency frequency,
+											int every,
+											int weekday,
+											int dayOfMonth,
+											bool isActive)
+		{
+			try
+			{
+				LoginUser loginUser = TSAuthentication.GetLoginUser();
+				ScheduledReports scheduledReports = new ScheduledReports(loginUser);
+
+				if (scheduledReportId == 0)
+				{
+					ScheduledReport scheduledReport = scheduledReports.AddNewScheduledReport();
+					scheduledReport.ReportId = reportId;
+					scheduledReport.EmailSubject = emailSubject;
+					scheduledReport.EmailBody = emailBody;
+					scheduledReport.EmailRecipients = emailAddresses;
+					scheduledReport.OrganizationId = TSAuthentication.OrganizationID;
+					scheduledReport.IsActive = true;
+					scheduledReport.StartDate = (DateTime)startOn;
+					scheduledReport.RecurrencyId = (byte)frequency;
+					scheduledReport.Every = (byte)every;
+					scheduledReport.Weekday = (byte)weekday;
+					scheduledReport.Monthday = (byte)dayOfMonth;
+					scheduledReport.IsActive = isActive;
   
+					if (isActive)
+					{
+						scheduledReport.SetNextRun();
+					}
+					else
+					{
+						scheduledReport.NextRun = null;
+					}
+					
+					scheduledReport.CreatorId = loginUser.UserID;
+					scheduledReport.Collection.Save();
 
+					scheduledReportId = scheduledReport.Id;
+				}
+				else
+				{
+					scheduledReports.LoadById(scheduledReportId);
 
+					if (scheduledReports != null && scheduledReports.Any())
+					{
+						scheduledReports[0].EmailSubject = emailSubject;
+						scheduledReports[0].EmailBody = emailBody;
+						scheduledReports[0].EmailRecipients = emailAddresses;
+						scheduledReports[0].IsActive = true;
+						scheduledReports[0].StartDate = (DateTime)startOn;
+						scheduledReports[0].RecurrencyId = (byte)frequency;
+						scheduledReports[0].Every = (byte)every;
+						scheduledReports[0].Weekday = (byte)weekday;
+						scheduledReports[0].Monthday = (byte)dayOfMonth;
+						scheduledReports[0].IsActive = isActive;
+
+						if (isActive)
+						{
+							scheduledReports[0].SetNextRun();
+						}
+						else
+						{
+							scheduledReports[0].NextRun = null;
+						}
+
+						scheduledReports[0].ModifierId = loginUser.UserID;
+						scheduledReports.Save();
+					}
+				}
+
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "ReportService.SaveScheduledReport");
+			}
+
+			return scheduledReportId;
+		}
+
+		[WebMethod]
+		public bool SetScheduledReportIsActive (int scheduledReportId, bool isActive)
+		{
+			bool isSuccessful = false;
+
+			try
+			{
+				LoginUser loginUser = TSAuthentication.GetLoginUser();
+				ScheduledReports scheduledReports = new ScheduledReports(loginUser);
+				scheduledReports.LoadById(scheduledReportId);
+
+				if (scheduledReports != null && scheduledReports.Any())
+				{
+					scheduledReports[0].IsActive = isActive;
+
+					if (!isActive) {
+						scheduledReports[0].NextRun = null;
+					}
+					else
+					{
+						scheduledReports[0].SetNextRun();
+					}
+
+					scheduledReports[0].ModifierId = loginUser.UserID;
+					scheduledReports.Save();
+					isSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				isSuccessful = false;
+				ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "ReportService.SetScheduledReportIsActive");
+			}
+
+			return isSuccessful;
+		}
 
       [DataContract]
       public class ReportFieldItem

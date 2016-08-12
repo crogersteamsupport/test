@@ -649,4 +649,12 @@
         return selectedRowIds;
 
     }
+
+    $('.reports-schedule').click(function (e) {
+    	e.preventDefault();
+    	var button = $(this);
+    	if (button.hasClass('disabled')) return;
+
+    	window.location.assign("Reports_Schedule.html?ReportId=" + _reportID + "&ReportName=" + _report.Name + "&ReportTypeOpened=" + _report.ReportType);
+    });
 });

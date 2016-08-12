@@ -5365,6 +5365,7 @@ namespace TeamSupport.ServiceLibrary
 			 user.CreatorID = -5;
 			 user.ModifierID = -5;
 			 user.ImportFileID = import.ImportID;
+			 user.IsClassicView = true;
 
 			 _importLog.Write(messagePrefix + "User " + importID + " added to bulk insert.");
 			 count++;

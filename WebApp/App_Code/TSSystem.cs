@@ -554,6 +554,7 @@ namespace TSWebServices
             result.account.isActive = org.IsActive;
             //result.account.lastLogin =
             result.account.seatCount = org.UserSeats;
+            result.account.apiEnabled = org.IsApiEnabled;
             command = new SqlCommand(
                 @"SELECT COUNT(*) AS Cnt, TicketSource FROM Tickets 
                 WHERE OrganizationID = @OrganizationID

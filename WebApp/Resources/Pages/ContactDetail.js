@@ -677,7 +677,13 @@ $(document).ready(function () {
               .click(function (e) {
                   var neworgID = $(this).prev().find('input').data('item');
                   if(neworgID != undefined){
-                  window.parent.parent.Ts.Services.Customers.SetContactCompany(userID, neworgID, function (result) {
+                  window.parent.parent.Ts.Services.Customers.SetContactCompany2(userID, neworgID, function (result) {
+                      if (result == 'email already exists') {
+                          header.show();
+                          alert('A contact with the same email already exists in the new company.');
+                          $('#contactEdit').removeClass("disabled");
+                          return;
+                      }
                       header.text(result);
                       header.attr('orgid', neworgID);
                       $('#contactEdit').removeClass("disabled");
@@ -1339,7 +1345,7 @@ $(document).ready(function () {
                                             " + ((address[i].Addr2 != null ) ? "<p class='form-control-static pt0'>" + address[i].Addr2 + "</p>" : "") + " \
                                             " + ((address[i].Addr3 != null ) ? "<p class='form-control-static pt0'>" + address[i].Addr3 + "</p>" : "") + " \
                                             " + ((address[i].City != null) ? "<p class='form-control-static pt0'>" + address[i].City + ((address[i].State != null) ? ", " + address[i].State : "") + ((address[i].Zip != null) ? " " + address[i].Zip : "") + "</p>" : "") + " \
-                                            " + ((address[i].City != null && address[i].Country.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
+                                            " + ((address[i].Country != null && address[i].Country.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
                                         </div> \
                                         <div id='editmenu' class='col-md-2 hiddenmenu'> \
                                             <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='fa fa-pencil'></span></a>\

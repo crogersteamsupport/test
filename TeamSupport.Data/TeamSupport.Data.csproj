@@ -163,6 +163,7 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -287,6 +288,7 @@
     <Compile Include="BusinessObjects\ReportFolders.cs" />
     <Compile Include="BusinessObjects\ReportTicketsView.cs" />
     <Compile Include="BusinessObjects\ReportViews.cs" />
+    <Compile Include="BusinessObjects\ScheduledReports.cs" />
     <Compile Include="BusinessObjects\SearchCustomFilters.cs" />
     <Compile Include="BusinessObjects\SearchSorters.cs" />
     <Compile Include="BusinessObjects\SearchStandardFilters.cs" />
@@ -402,6 +404,8 @@
     <Compile Include="FieldMaps\ReportFoldersFieldMap.cs" />
     <Compile Include="FieldMaps\ReportTicketsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ReportViewsFieldMap.cs" />
+    <Compile Include="FieldMaps\ScheduledReportsFieldMap.cs" />
+    <Compile Include="FieldMaps\ScheduledReportsRecurrencyFieldMap.cs" />
     <Compile Include="FieldMaps\SearchCustomFiltersFieldMap.cs" />
     <Compile Include="FieldMaps\SearchSortersFieldMap.cs" />
     <Compile Include="FieldMaps\SearchStandardFiltersFieldMap.cs" />
@@ -687,6 +691,8 @@
     <Compile Include="Generated\GeneratedReportTables.cs" />
     <Compile Include="Generated\GeneratedReportTicketsView.cs" />
     <Compile Include="Generated\GeneratedReportViews.cs" />
+    <Compile Include="Generated\GeneratedScheduledReports.cs" />
+    <Compile Include="Generated\GeneratedScheduledReportsRecurrency.cs" />
     <Compile Include="Generated\GeneratedSearchCustomFilters.cs" />
     <Compile Include="Generated\GeneratedSearchSorters.cs" />
     <Compile Include="Generated\GeneratedSearchStandardFilters.cs" />
@@ -768,6 +774,8 @@
     <Compile Include="Proxies\JiraInstanceProductsProxy.cs" />
     <Compile Include="Proxies\KBRatingsProxy.cs" />
     <Compile Include="Proxies\ProductFamiliesProxy.cs" />
+    <Compile Include="Proxies\ScheduledReportsProxy.cs" />
+    <Compile Include="Proxies\ScheduledReportsRecurrencyProxy.cs" />
     <Compile Include="Proxies\SimpleImportFieldsViewProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
     <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />
@@ -953,6 +961,10 @@
     <Content Include="bin\x86\Debug\TeamSupport.Data.pdb" />
     <Content Include="bin\x86\Debug\TidyNet.dll" />
     <Content Include="bin\x86\Debug\TidyNet.pdb" />
+    <Content Include="Database\StoredProcedures\OrganizationsViewGet.sql" />
+    <Content Include="Database\StoredProcedures\TicketsForZohoGet.sql" />
+    <Content Include="Database\StoredProcedures\TicketsMinutesSinceFirstSyncedGet.sql" />
+    <Content Include="Database\StoredProcedures\TicketsToJiraGet.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />

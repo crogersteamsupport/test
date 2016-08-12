@@ -1001,6 +1001,7 @@ namespace TeamSupport.Data
 				else
 					user.IsPasswordExpired = true;
 			user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
+            user.PasswordCreatedUtc = DateTime.UtcNow;
 			try
 			{
 				if (isPortalUser)
