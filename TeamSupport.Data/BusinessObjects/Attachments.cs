@@ -333,6 +333,27 @@ order by o.Name, a.DateCreated desc
       return result;
     }
     
+    public void LoadKBByTicketID(int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+            SELECT 
+                at.*
+            FROM 
+                Attachments at 
+                JOIN Actions ac 
+                    ON at.RefID = ac.ActionID 
+            WHERE 
+                at.RefType = 0
+                AND ac.TicketID = @TicketID
+                AND ac.IsKnowledgeBase = 1
+            ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        Fill(command);
+      }
+    }
 
   }
 }

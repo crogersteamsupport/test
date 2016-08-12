@@ -58,7 +58,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
 
                       if(postinit) postinit();
                     });
-                    
+                    _insertedKBTicketID = null;
                 });
 
                 //ed.on('paste', function (ed, e) {
@@ -300,6 +300,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                                     var ticket = result[0];
                                     var actions = result[1];
 
+                                    _insertedKBTicketID = ticket.TicketID;
                                     var html = '<div>';
 
                                     if (actions.length == 0) {

@@ -29,6 +29,7 @@ var _suggestedSolutionDefaultInput = '';
 
 var _timerid;
 var _timerElapsed = 0;
+var _insertedKBTicketID = null;
 var speed = 50, counter = 0, start;
 var reminderClose = false;
 var userFullName = window.parent.Ts.System.User.FirstName + " " + window.parent.Ts.System.User.LastName;
@@ -1430,17 +1431,30 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   }
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
-  window.parent.Ts.Services.TicketPage.UpdateAction(action, function (result) {
-    _newAction = result;
-    window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
-    if (actionType !== null) {
-      result.item.MessageType = actionType.Name;
-    }
-    callback(result)
-  }, function (error) {
-    callback(null);
-  });
-
+  if (_insertedKBTicketID) {
+      window.parent.Ts.Services.TicketPage.UpdateActionCopyingAttachment(action, _insertedKBTicketID, function (result) {
+        _newAction = result;
+        window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        if (actionType !== null) {
+          result.item.MessageType = actionType.Name;
+        }
+        callback(result)
+      }, function (error) {
+        callback(null);
+      });
+  }
+  else {
+      window.parent.Ts.Services.TicketPage.UpdateAction(action, function (result) {
+        _newAction = result;
+        window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        if (actionType !== null) {
+          result.item.MessageType = actionType.Name;
+        }
+        callback(result)
+      }, function (error) {
+        callback(null);
+      });
+  }
   window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
     _ticketInfo = info;
     setSLAInfo();
