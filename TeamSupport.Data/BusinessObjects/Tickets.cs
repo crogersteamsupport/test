@@ -1402,6 +1402,31 @@ AND ts.IsClosed = 0";
             }
         }
 
+        public void LoadForumByCategoryID(int forumCategoryID, int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.Append(@"
+                                SELECT t.TicketID, t.Name, t.DateModified
+                                FROM Tickets as T
+                                Inner Join ForumTickets as FT on T.TicketID = FT.TicketID
+                                Inner Join ForumCategories as FC on FT.ForumCategory = FC.CategoryID
+                                WHERE 
+	                                t.OrganizationID         = @OrganizationID 
+	                                AND t.IsVisibleOnPortal  = 1
+	                                AND FT.ForumCategory = @ForumCategoryID");
+                builder.Append(@" ORDER BY t.DateModified desc");
+                command.CommandText = builder.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@CustomerID", customerID);
+                command.Parameters.AddWithValue("@ContactID", contactID);
+                command.Parameters.AddWithValue("@ForumCategoryID", forumCategoryID);
+                Fill(command, "Tickets");
+            }
+        }
+
         public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
         {
             using (SqlCommand command = new SqlCommand())

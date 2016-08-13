@@ -48,7 +48,11 @@ namespace TeamSupport.JIRA
 				reader.Close();
 
 				errorsResponse = JsonConvert.DeserializeObject<JiraErrorsResponse>(content);
-				errorsResponse.Errors.CustomFields = GetCustomFieldsErrors(content);
+
+                if (errorsResponse != null && errorsResponse.Errors != null)
+                {
+                    errorsResponse.Errors.CustomFields = GetCustomFieldsErrors(content);
+                }
 			}
 
 			return errorsResponse;

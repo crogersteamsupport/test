@@ -1,0 +1,110 @@
+﻿<!--based on Reports_Edit.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
+	<link href="../Css/bootstrap-datepicker.css" rel="stylesheet" type="text/css" />
+	<link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+	<link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
+	<!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
+	<link href="reports_schedule.css" rel="stylesheet" type="text/css" />
+	<script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+	<script src="../Js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
+	<script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
+	<script src="../Js/jquery.numeric.js" type="text/javascript"></script>
+	<script src="../Js/moment.min.js" type="text/javascript"></script>
+	<script src="../Js/bootstrap-datepicker.js" type="text/javascript"></script>
+	<script src="../Js/bootstrap-datetimepicker.js" type="text/javascript"></script>
+	<script src="reports_schedule.js" type="text/javascript"></script>
+	<title>Schedule Report</title>
+</head>
+<body>
+	<div class="container frame-container">
+		<div class="wrap">
+			<div class="reports-header">
+				<i class="fa"></i>&nbsp;&nbsp;<span id="ReportTitleSpan" class="report-title">Schedule Report</span>
+			</div>
+			<form role="form">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Schedule the report</h3>
+					</div>
+					<div class="schedule-panel-body">
+						<fieldset>
+							<ul>
+								<li class="schedule-cond">
+									<label>Email Subject</label>
+									<input type="text" class="form-control schedule-email-subject"
+											data-title="Scheduling Report" data-placement="top" data-content="You must enter a email subject before moving on."
+											data-trigger="manual" required>
+								</li>
+								<li class="schedule-cond">
+									<label>Email Body</label>
+									<textarea class="form-control schedule-email-body" rows="5"
+											data-title="Scheduling Report" data-placement="top"
+											data-content="You must enter a email body before moving on." data-trigger="manual" required></textarea>
+								</li>
+								<li class="schedule-cond">
+									<label>Email Recipients</label>
+									<input type="text" class="form-control schedule-email-addresses" placeholder="Enter comma separated email addresses…"
+											data-title="Scheduling Report" data-placement="top" 
+											data-content="You must enter at least one email recipient before moving on." data-trigger="manual" required>
+								</li>
+								<li class="schedule-cond">
+									<label>Start On</label>
+                                    <input type="text" id="StartDateTimePicker" hidden="hidden" />
+                                    <input type="text" id="StartOn" class="form-control" placeholder="Start date..." required />
+                                    <input type="text" id="StartOnTime" class="form-control" placeholder="Start time..." required />
+								</li>
+								<li class="schedule-cond scheduleOptions">
+									<label class="frequencyLabel">Frequency</label>
+
+									<div id="OptionsContainer">
+										<select class="form-control schedule-comp frequencyList"></select>
+	
+                                        <div id="runNowOption" class="scheduleOption">
+                                            <label class="everyLabel">Run Now?</label>
+                                            <i id="runNow" class="fa fa-square-o"></i>
+                                        </div>
+
+										<div id="Every" class="scheduleOption">
+											<label class="everyLabel">Every</label>
+											<input type="number" class="form-control bfh-number schedule-comp numberList" min="1" max="999" value="1" />
+										</div>
+
+										<div id="WeeklyOptions" class="scheduleOption">
+											<label class="weeksOnLabel">Weeks on</label>
+											<select id="weeksOn" class="form-control schedule-comp weekdayList"></select>
+										</div>
+
+										<div id="MonthlyOptions" class="scheduleOption">
+											<label class="monthsOnTheLabel">Months on the</label>
+											<select class="form-control schedule-comp monthDayList"></select>
+										</div>
+
+										<div id="WeekdayList" class="scheduleOption">
+											<select id="dayOfMonth" class="form-control schedule-comp weekdayList"></select>
+										</div>
+									</div>
+								</li>
+								<li class="schedule-cond">
+									<label class="activeLabel">Active</label>
+									<i id="active" class="fa fa-check-square-o"></i>
+								</li>
+							</ul>
+						</fieldset>
+					</div>
+				</div>
+				<div class="form-actions clearfix">
+					<button class="btn btn-primary action-save">Save</button>
+					<button class="btn btn-default action-cancel">Cancel</button>
+				</div>
+				<div class="alert alert-warning text-center">
+                    Actual delivery can take several minutes depending on many factors including report type and size.
+                </div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

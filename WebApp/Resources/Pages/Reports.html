@@ -95,6 +95,8 @@
               </i></button>
               <button class="btn btn-default report-clone disabled" type="button" data-toggle="tooltip" title="Make a copy of the active report"><i class="fa fa-copy">
               </i></button>
+			  <button class="btn btn-default report-schedule disabled" type="button" data-toggle="tooltip" title="Schedule this report"><i class="fa fa-clock-o">
+              </i></button>
               <button class="btn btn-default report-refresh" type="button" data-toggle="tooltip" title="Refresh"><i class="fa fa-refresh">
               </i></button>
             </div>
@@ -116,7 +118,11 @@
                 <th class="report-list-header report-list-title" data-sortfield="Name"><span>Report</span> <i class="fa fa-angle-up"></i></th>
                 <th class="report-list-header report-list-owner" data-sortfield="Creator"><span>Owner</span> <i></i></th>
                 <th class="report-list-header report-list-lastviewed" data-sortfield="LastViewed"><span>Last Viewed</span> <i></i></th>
+                <th class="report-list-header report-list-lastrun" data-sortfield="LastRun"><span>Last Run</span> <i></i></th>
+                <th class="report-list-header report-list-status" data-sortfield="Status"><span>Status</span> <i></i></th>
+                <th class="report-list-header report-list-nextrun" data-sortfield="NextRun"><span>Next Run</span> <i></i></th>
                 <th class="report-list-header report-list-modified" data-sortfield="DateEdited"><span>Last Modified</span> <i></i></th>
+                <th class="report-list-header report-list-log" data-sortfield="Log"><span>Log</span> <i></i></th>
               </tr>
             </thead>
             <tbody>
@@ -128,6 +134,7 @@
         <ul class="nav nav-pills nav-stacked">
           <li class="menu-starred report-menu-item active"><a href="#"><i class="fa fa-star"></i>&nbsp;Starred</a></li>
           <li class="menu-all report-menu-item"><a href="#"><i class="fa fa-asterisk"></i>&nbsp;All Reports</a></li>
+		    <li class="menu-scheduled report-menu-item"><a href="#"><i class="fa fa-clock-o"></i>&nbsp;Scheduled Reports</a></li>
           <li class="menu-tablular report-menu-item"><a href="#"><i class="fa fa-table"></i>&nbsp;Tabular</a></li>
           <li class="menu-summary report-menu-item"><a href="#"><i class="fa fa-tasks"></i>&nbsp;Summary</a></li>
           <li class="menu-charts report-menu-item"><a href="#"><i class="fa fa-bar-chart-o"></i>&nbsp;Charts</a></li>
@@ -165,6 +172,23 @@
         </tr>
       </table>
     </div>
+
+  	<div class="reportscheduled-row-template">
+  		<table>
+  			<tr>
+  				<td class="report-list-active"></td>
+  				<td class="report-list-selection"><i class="fa fa-square-o"></i></td>
+  				<td class="report-list-star"><i class="fa"></i></td>
+  				<td class="report-list-title"><i class="fa"></i>&nbsp;&nbsp;<a href="#"></a></td>
+  				<td class="report-list-owner"></td>
+  				<td class="report-list-lastrun"></td>
+                <td class="report-list-status"><i class="fa fa-check color-green"></i></td>
+			  	<td class="report-list-nextrun"></td>
+  				<td class="report-list-modified"></td>
+                <td class="report-list-log"></td>
+  			</tr>
+  		</table>
+  	</div>
   </div>
 
 <div class="modal modal-folder-name">
