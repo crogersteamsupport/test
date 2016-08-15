@@ -232,12 +232,12 @@ namespace TSWebServices
         [WebMethod]
         public string SetContactLinkedIn(int userID, string linkedin)
         {
-          User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-          u.LinkedIn = linkedin;
-          u.Collection.Save();
-          string description = String.Format("{0} set contact linkedin to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, linkedin);
-          ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
-          return linkedin != "" ? linkedin : "Empty";
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            u.LinkedIn = linkedin;
+            u.Collection.Save();
+            string description = String.Format("{0} set contact linkedin to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, linkedin);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
+            return linkedin != "" ? linkedin : "Empty";
         }
 
         [WebMethod]
@@ -287,9 +287,9 @@ namespace TSWebServices
 
             Users users = new Users(loginUser);
             users.LoadByOrganizationID(value, false);
-            foreach(User user in users)
+            foreach (User user in users)
             {
-                if(user.Email.ToLower() == u.Email.ToLower())
+                if (user.Email.ToLower() == u.Email.ToLower())
                 {
                     return "email already exists";
                 }
@@ -388,7 +388,7 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), u.OrganizationID);
             if (value == true)
             {
-                if(o.HasPortalAccess == false)
+                if (o.HasPortalAccess == false)
                     return 2;
                 else
                     return 1;
@@ -542,12 +542,12 @@ namespace TSWebServices
             sanitizer.AllowedAttributes.Add("id");
             contact[0] = (contactInfo.ToString());
             contact[1] = (html.ToString());
-            
+
             return contact;
 
         }
 
-        public string CreateFormElement(string fieldTitle, object fieldValue, string editable="")
+        public string CreateFormElement(string fieldTitle, object fieldValue, string editable = "")
         {
             StringBuilder form = new StringBuilder("");
 
@@ -560,158 +560,158 @@ namespace TSWebServices
 
             }
 
-            if(editable == "db")
-            form.AppendFormat(@"<div class='form-group'>
+            if (editable == "db")
+                form.AppendFormat(@"<div class='form-group'>
                                 <label class='col-xs-4 control-label' for='field{0}'>{1}</label>
                                 <div class='col-xs-8'>
                                 <span class='form-control-static {3}' id='field{0}'>{2}</span>
                                 </div>
-                                </div>",fieldTitle.Replace(" ",""), fieldTitle, fieldValue != null ? fieldValue : "Empty", editable );
+                                </div>", fieldTitle.Replace(" ", ""), fieldTitle, fieldValue != null ? fieldValue : "Empty", editable);
             else
                 form.AppendFormat(@"<div class='form-group'>
                                 <label class='col-xs-4 control-label' for='field{0}'>{1}</label>
                                 <div class='col-xs-8'>
                                 <p class='form-control-static {3}' id='field{0}'>{2}</p>
                                 </div>
-                                </div>", fieldTitle.Replace(" ", ""), fieldTitle, (fieldValue != null && fieldValue !="" ) ? fieldValue : "Empty", editable);
+                                </div>", fieldTitle.Replace(" ", ""), fieldTitle, (fieldValue != null && fieldValue != "") ? fieldValue : "Empty", editable);
 
             return form.ToString();
         }
-      /*
-        [WebMethod]
-        public string[] GetSearchResults(string filter, int startIndex = 1)
-        {
-            StringBuilder builder = new StringBuilder();
-            SearchService s = new SearchService();
-            if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
+        /*
+          [WebMethod]
+          public string[] GetSearchResults(string filter, int startIndex = 1)
+          {
+              StringBuilder builder = new StringBuilder();
+              SearchService s = new SearchService();
+              if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
 
-            CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, true, true);
+              CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, true, true);
 
-            if (test.Items.Length > 0)
-            {
-                foreach (CompanyOrContact item in test.Items)
-                {
-                    if(item.ReferenceType == ReferenceType.Organizations)
-                        builder.Append(CreateCompanyBox(item.Id));
-                    else if(item.ReferenceType == ReferenceType.Contacts)
-                        builder.Append(CreateContactBox(item.Id));
-                }
-
-                return builder.ToString();
-            }
-            else { return ""; }
-
-        }
-
-        [WebMethod]
-        public string GetCompanies(string filter, int startIndex = 1)
-        {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            StringBuilder builder = new StringBuilder();
-            Organizations organizations = new Organizations(loginUser);
-            int i = 0;
-
-            //organizations.CustomerLoadByLikeOrganizationName(loginUser.OrganizationID, filter, false, startIndex, true);
-
-            SearchService s = new SearchService();
-            if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
-            CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, true, false);
-
-            if (test.Items.Length > 0)
-            {
-                foreach (CompanyOrContact item in test.Items)
-                {
-                    builder.Append(CreateCompanyBox(item.Id));
-                }
-
-                return builder.ToString();
-            }
-            else { return ""; }
-          //if (organizations.Count > 0)
-            //{
-
-            //    foreach (Organization item in organizations)
-            //    {
-            //            builder.Append(CreateCompanyBox(item));
-            //    }
-
-            //    return builder.ToString();
-            //}
-            //else
-            //{
-            //    return CreateNoResults();
-            //}
-            
-        }
-
-        [WebMethod]
-        public string GetContacts(string filter, int startIndex = 1)
-        {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            StringBuilder builder = new StringBuilder();
-            UsersView users = new UsersView(loginUser);
-
-            if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
-
-            SearchService s = new SearchService();
-            CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, false, true);
-
-            if (test.Items.Length > 0)
-            {
-              foreach (CompanyOrContact item in test.Items)
+              if (test.Items.Length > 0)
               {
-                builder.Append(CreateContactBox(item.Id));
+                  foreach (CompanyOrContact item in test.Items)
+                  {
+                      if(item.ReferenceType == ReferenceType.Organizations)
+                          builder.Append(CreateCompanyBox(item.Id));
+                      else if(item.ReferenceType == ReferenceType.Contacts)
+                          builder.Append(CreateContactBox(item.Id));
+                  }
+
+                  return builder.ToString();
+              }
+              else { return ""; }
+
+          }
+
+          [WebMethod]
+          public string GetCompanies(string filter, int startIndex = 1)
+          {
+              LoginUser loginUser = TSAuthentication.GetLoginUser();
+              StringBuilder builder = new StringBuilder();
+              Organizations organizations = new Organizations(loginUser);
+              int i = 0;
+
+              //organizations.CustomerLoadByLikeOrganizationName(loginUser.OrganizationID, filter, false, startIndex, true);
+
+              SearchService s = new SearchService();
+              if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
+              CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, true, false);
+
+              if (test.Items.Length > 0)
+              {
+                  foreach (CompanyOrContact item in test.Items)
+                  {
+                      builder.Append(CreateCompanyBox(item.Id));
+                  }
+
+                  return builder.ToString();
+              }
+              else { return ""; }
+            //if (organizations.Count > 0)
+              //{
+
+              //    foreach (Organization item in organizations)
+              //    {
+              //            builder.Append(CreateCompanyBox(item));
+              //    }
+
+              //    return builder.ToString();
+              //}
+              //else
+              //{
+              //    return CreateNoResults();
+              //}
+
+          }
+
+          [WebMethod]
+          public string GetContacts(string filter, int startIndex = 1)
+          {
+              LoginUser loginUser = TSAuthentication.GetLoginUser();
+              StringBuilder builder = new StringBuilder();
+              UsersView users = new UsersView(loginUser);
+
+              if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
+
+              SearchService s = new SearchService();
+              CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, false, true);
+
+              if (test.Items.Length > 0)
+              {
+                foreach (CompanyOrContact item in test.Items)
+                {
+                  builder.Append(CreateContactBox(item.Id));
+                }
+
+                return builder.ToString();
+              }
+              else { return ""; }
+
+
+              //users.CustomerLoadByLikeName(loginUser.OrganizationID, filter, startIndex, true);
+
+              //if (users.Count > 0)
+              //{            
+
+              //    foreach (UsersViewItem item in users)
+              //    {
+              //            builder.Append(CreateContactBox(item));
+              //    }
+
+              //    return builder.ToString();
+              //}
+              //else
+              //{
+              //    return CreateNoResults();
+              //}
+
+          }
+
+          [WebMethod]
+          public string GetMoreResults(string filterType, string filter, int startIndex)
+          {
+              string results = "";
+
+              switch (filterType)
+              {
+                  case "all":
+                      results = GetSearchResults(filter, startIndex);
+                      break;
+                  case "customers":
+                      results = GetCompanies(filter, startIndex);
+                      break;
+                  case "contacts":
+                      results = GetContacts(filter, startIndex);
+                      break;
+
               }
 
-              return builder.ToString();
-            }
-            else { return ""; }
-
-
-            //users.CustomerLoadByLikeName(loginUser.OrganizationID, filter, startIndex, true);
-
-            //if (users.Count > 0)
-            //{            
-            
-            //    foreach (UsersViewItem item in users)
-            //    {
-            //            builder.Append(CreateContactBox(item));
-            //    }
-
-            //    return builder.ToString();
-            //}
-            //else
-            //{
-            //    return CreateNoResults();
-            //}
-
-        }
-
-        [WebMethod]
-        public string GetMoreResults(string filterType, string filter, int startIndex)
-        {
-            string results = "";
-
-            switch (filterType)
-            {
-                case "all":
-                    results = GetSearchResults(filter, startIndex);
-                    break;
-                case "customers":
-                    results = GetCompanies(filter, startIndex);
-                    break;
-                case "contacts":
-                    results = GetContacts(filter, startIndex);
-                    break;
-                
-            }
-
-            if (results.Contains("No Search Results Found!"))
-                return "";
-            else
-                return results;
-        }
-       */
+              if (results.Contains("No Search Results Found!"))
+                  return "";
+              else
+                  return results;
+          }
+         */
 
         [WebMethod]
         public string UpdateRecentlyViewed(string viewid)
@@ -724,10 +724,10 @@ namespace TSWebServices
                 refType = 1;
 
             refID = Convert.ToInt32(viewid.Substring(1));
-            
+
             RecentlyViewedItem recent = (new RecentlyViewedItems(TSAuthentication.GetLoginUser()).AddNewRecentlyViewedItem());
-            
-            
+
+
             recent.RefID = refID;
             recent.RefType = refType;
             recent.DateViewed = DateTime.UtcNow;
@@ -747,13 +747,13 @@ namespace TSWebServices
             builder.Append(@"<ul class=""recent-list"">");
             foreach (RecentlyViewedItem item in recent)
             {
-              builder.Append(CreateRecentlyViewed(item));
+                builder.Append(CreateRecentlyViewed(item));
             }
             builder.Append("</ul>");
             var sanitizer = new HtmlSanitizer();
             sanitizer.AllowedAttributes.Add("class");
             sanitizer.AllowedAttributes.Add("data-organizationid");
-            
+
             return (builder.ToString());
         }
 
@@ -840,16 +840,19 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string LoadCustomProperties(int refID, ReferenceType refType){
+        public string LoadCustomProperties(int refID, ReferenceType refType)
+        {
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.OrganizationID, refType, -1);
-            
+
             CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
             cats.LoadByRefType(refType, -1);
 
             StringBuilder htmltest = new StringBuilder("");
-            foreach (CustomField field in fields){
-                if (field.CustomFieldCategoryID == null){
+            foreach (CustomField field in fields)
+            {
+                if (field.CustomFieldCategoryID == null)
+                {
                     switch (field.FieldType)
                     {
                         case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field, true, refID)); break;
@@ -864,7 +867,8 @@ namespace TSWebServices
                 }
             }
 
-            foreach (CustomFieldCategory cat in cats){
+            foreach (CustomFieldCategory cat in cats)
+            {
 
                 foreach (CustomField field in fields)
                 {
@@ -889,7 +893,8 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string LoadCustomControls(ReferenceType refType){
+        public string LoadCustomControls(ReferenceType refType)
+        {
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.OrganizationID, refType, -1);
             //int count = 0;
@@ -948,7 +953,7 @@ namespace TSWebServices
             foreach (CustomFieldCategory cat in cats)
             {
 
-                htmltest.AppendFormat("<h3>{0}</h3>",cat.Category);
+                htmltest.AppendFormat("<h3>{0}</h3>", cat.Category);
                 //htmltest.Append("<div class='form-group'>");
 
                 foreach (CustomField field in fields)
@@ -1046,7 +1051,7 @@ namespace TSWebServices
             //        count = 0;
             //        htmltest.Append("</div>");
             //    }
-                htmltest.Append("</div>");
+            htmltest.Append("</div>");
 
             return htmltest.ToString();
         }
@@ -1059,7 +1064,7 @@ namespace TSWebServices
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.OrganizationProducts);
             int count = 0;
-           
+
 
             foreach (CustomField field in fields)
             {
@@ -1067,7 +1072,7 @@ namespace TSWebServices
                 columns.Add(field.Name);
                 count++;
             }
-            
+
 
             return columns.ToArray();
         }
@@ -1075,22 +1080,22 @@ namespace TSWebServices
         [WebMethod]
         public string[] LoadcustomContactProductHeaders()
         {
-          List<string> columns = new List<string>();
-          string col;
-          CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
-          fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.UserProducts);
-          int count = 0;
+            List<string> columns = new List<string>();
+            string col;
+            CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+            fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.UserProducts);
+            int count = 0;
 
 
-          foreach (CustomField field in fields)
-          {
-            if (count >= 25) break;
-            columns.Add(field.Name);
-            count++;
-          }
+            foreach (CustomField field in fields)
+            {
+                if (count >= 25) break;
+                columns.Add(field.Name);
+                count++;
+            }
 
 
-          return columns.ToArray();
+            return columns.ToArray();
         }
 
         [WebMethod]
@@ -1156,7 +1161,7 @@ namespace TSWebServices
                 if (cust.UserID.HasValue)
                 {
                     note = LoadAlert((int)cust.UserID, ReferenceType.Users);
-                    if(note == null)
+                    if (note == null)
                         note = LoadAlert(cust.OrganizationID, ReferenceType.Organizations);
                 }
                 else
@@ -1243,7 +1248,7 @@ namespace TSWebServices
                     }
                     else
                         return null;
-                        
+
 
                 }
 
@@ -1256,7 +1261,7 @@ namespace TSWebServices
                 // if so return null
                 // else return note notes[0].NoteID
 
-                
+
             }
         }
 
@@ -1273,7 +1278,7 @@ namespace TSWebServices
             {
                 UserNoteSetting u = new UserNoteSettings(TSAuthentication.GetLoginUser()).AddNewUserNoteSetting();
                 u.RefID = notes[0].NoteID;
-                u.RefType =  refType;
+                u.RefType = refType;
                 u.UserID = TSAuthentication.GetLoginUser().UserID;
                 u.SnoozeTime = DateTime.Now;
                 u.IsSnoozed = true;
@@ -1356,7 +1361,7 @@ namespace TSWebServices
                 OrganizationCustomProduct test = new OrganizationCustomProduct();
                 test.ProductName = row["Product"].ToString();
                 test.VersionNumber = row["VersionNumber"].ToString();
-                test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(),(((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
+                test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(), (((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
                 test.VersionStatus = row["VersionStatus"].ToString();
                 test.IsReleased = row["IsReleased"].ToString();
                 test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
@@ -1437,8 +1442,8 @@ namespace TSWebServices
                 test.CustomFields = new List<string>();
                 foreach (CustomField field in fields)
                 {
-                  CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.UserProductID);
-                  test.CustomFields.Add(customValue.Value);
+                    CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.UserProductID);
+                    test.CustomFields.Add(customValue.Value);
                 }
 
 
@@ -1478,7 +1483,7 @@ namespace TSWebServices
             }
             return result;
         }
-        
+
         [WebMethod]
         public OrganizationCustomProduct LoadProduct(int productID)
         {
@@ -1505,24 +1510,24 @@ namespace TSWebServices
         [WebMethod]
         public UserCustomProduct LoadContactProduct(int productID)
         {
-          UserProduct userProduct = (UserProduct)UserProducts.GetUserProduct(TSAuthentication.GetLoginUser(), productID);
-          UserCustomProduct userProd = new UserCustomProduct();
+            UserProduct userProduct = (UserProduct)UserProducts.GetUserProduct(TSAuthentication.GetLoginUser(), productID);
+            UserCustomProduct userProd = new UserCustomProduct();
 
-          userProd.ProductName = userProduct.ProductID.ToString();
-          userProd.VersionNumber = userProduct.ProductVersionID.HasValue ? userProduct.ProductVersionID.ToString() : "-1";
+            userProd.ProductName = userProduct.ProductID.ToString();
+            userProd.VersionNumber = userProduct.ProductVersionID.HasValue ? userProduct.ProductVersionID.ToString() : "-1";
 
-          if (userProduct.SupportExpiration.HasValue)
-            userProd.SupportExpiration = ((DateTime)userProduct.SupportExpiration).ToString(GetDateFormatNormal());
-          else
-            userProd.SupportExpiration = "";
+            if (userProduct.SupportExpiration.HasValue)
+                userProd.SupportExpiration = ((DateTime)userProduct.SupportExpiration).ToString(GetDateFormatNormal());
+            else
+                userProd.SupportExpiration = "";
 
-          userProd.VersionStatus = "";
-          userProd.IsReleased = "";
-          userProd.ReleaseDate = null;
-          userProd.UserProductID = userProduct.UserProductID;
-          userProd.ProductID = userProduct.ProductID;
+            userProd.VersionStatus = "";
+            userProd.IsReleased = "";
+            userProd.ReleaseDate = null;
+            userProd.UserProductID = userProduct.UserProductID;
+            userProd.ProductID = userProduct.ProductID;
 
-          return userProd;
+            return userProd;
         }
 
         [WebMethod]
@@ -1573,44 +1578,44 @@ namespace TSWebServices
         [WebMethod]
         public string LoadAssets(int refID, ReferenceType referenceType)
         {
-          StringBuilder htmlresults = new StringBuilder("");
-          AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
-          assets.LoadByRefID(refID, referenceType);
+            StringBuilder htmlresults = new StringBuilder("");
+            AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
+            assets.LoadByRefID(refID, referenceType);
 
-          StringBuilder productVersionNumberDisplayName;
-          StringBuilder serialNumberDisplayValue;
-          StringBuilder warrantyExpirationDisplayValue;
+            StringBuilder productVersionNumberDisplayName;
+            StringBuilder serialNumberDisplayValue;
+            StringBuilder warrantyExpirationDisplayValue;
 
-          foreach (AssetsViewItem asset in assets)
-          {
-            productVersionNumberDisplayName = new StringBuilder();
-            serialNumberDisplayValue = new StringBuilder();
-            warrantyExpirationDisplayValue = new StringBuilder();
-
-            if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+            foreach (AssetsViewItem asset in assets)
             {
-              productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
-            }
+                productVersionNumberDisplayName = new StringBuilder();
+                serialNumberDisplayValue = new StringBuilder();
+                warrantyExpirationDisplayValue = new StringBuilder();
 
-            if (string.IsNullOrEmpty(asset.SerialNumber))
-            {
-              serialNumberDisplayValue.Append("Empty");
-            }
-            else
-            {
-              serialNumberDisplayValue.Append(asset.SerialNumber);
-            }
+                if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+                {
+                    productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
+                }
 
-            if (asset.WarrantyExpiration == null)
-            {
-              warrantyExpirationDisplayValue.Append("Empty");
-            }
-            else
-            {
-              warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
-            }
+                if (string.IsNullOrEmpty(asset.SerialNumber))
+                {
+                    serialNumberDisplayValue.Append("Empty");
+                }
+                else
+                {
+                    serialNumberDisplayValue.Append(asset.SerialNumber);
+                }
 
-            htmlresults.AppendFormat(@"<div class='list-group-item'>
+                if (asset.WarrantyExpiration == null)
+                {
+                    warrantyExpirationDisplayValue.Append("Empty");
+                }
+                else
+                {
+                    warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
+                }
+
+                htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
                             <div class='row'>
                                 <div class='col-xs-8'>
@@ -1625,15 +1630,15 @@ namespace TSWebServices
                             </div>
                             </div>"
 
-                , asset.AssetID
-                , asset.DisplayName
-                , asset.ProductName
-                , productVersionNumberDisplayName
-                , serialNumberDisplayValue
-                , warrantyExpirationDisplayValue);
-          }
+                    , asset.AssetID
+                    , asset.DisplayName
+                    , asset.ProductName
+                    , productVersionNumberDisplayName
+                    , serialNumberDisplayValue
+                    , warrantyExpirationDisplayValue);
+            }
 
-          return htmlresults.ToString();
+            return htmlresults.ToString();
         }
 
         [WebMethod]
@@ -1705,44 +1710,44 @@ namespace TSWebServices
         [WebMethod]
         public string LoadContactAssets(int organizationID)
         {
-          StringBuilder htmlresults = new StringBuilder("");
-          AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
-          assets.LoadAssignedToContactsByOrganizationID(organizationID);
+            StringBuilder htmlresults = new StringBuilder("");
+            AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
+            assets.LoadAssignedToContactsByOrganizationID(organizationID);
 
-          StringBuilder productVersionNumberDisplayName;
-          StringBuilder serialNumberDisplayValue;
-          StringBuilder warrantyExpirationDisplayValue;
+            StringBuilder productVersionNumberDisplayName;
+            StringBuilder serialNumberDisplayValue;
+            StringBuilder warrantyExpirationDisplayValue;
 
-          foreach (AssetsViewItem asset in assets)
-          {
-            productVersionNumberDisplayName = new StringBuilder();
-            serialNumberDisplayValue = new StringBuilder();
-            warrantyExpirationDisplayValue = new StringBuilder();
-
-            if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+            foreach (AssetsViewItem asset in assets)
             {
-              productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
-            }
+                productVersionNumberDisplayName = new StringBuilder();
+                serialNumberDisplayValue = new StringBuilder();
+                warrantyExpirationDisplayValue = new StringBuilder();
 
-            if (string.IsNullOrEmpty(asset.SerialNumber))
-            {
-              serialNumberDisplayValue.Append("Empty");
-            }
-            else
-            {
-              serialNumberDisplayValue.Append(asset.SerialNumber);
-            }
+                if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+                {
+                    productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
+                }
 
-            if (asset.WarrantyExpiration == null)
-            {
-              warrantyExpirationDisplayValue.Append("Empty");
-            }
-            else
-            {
-              warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
-            }
+                if (string.IsNullOrEmpty(asset.SerialNumber))
+                {
+                    serialNumberDisplayValue.Append("Empty");
+                }
+                else
+                {
+                    serialNumberDisplayValue.Append(asset.SerialNumber);
+                }
 
-            htmlresults.AppendFormat(@"<div class='list-group-item'>
+                if (asset.WarrantyExpiration == null)
+                {
+                    warrantyExpirationDisplayValue.Append("Empty");
+                }
+                else
+                {
+                    warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
+                }
+
+                htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
                             <div class='row'>
                                 <div class='col-xs-8'>
@@ -1756,15 +1761,15 @@ namespace TSWebServices
                             </div>
                             </div>"
 
-                , asset.AssetID
-                , asset.DisplayName
-                , asset.ProductName
-                , productVersionNumberDisplayName
-                , serialNumberDisplayValue
-                , warrantyExpirationDisplayValue);
-          }
+                    , asset.AssetID
+                    , asset.DisplayName
+                    , asset.ProductName
+                    , productVersionNumberDisplayName
+                    , serialNumberDisplayValue
+                    , warrantyExpirationDisplayValue);
+            }
 
-          return htmlresults.ToString();
+            return htmlresults.ToString();
         }
 
         [WebMethod]
@@ -1785,16 +1790,16 @@ namespace TSWebServices
         [WebMethod]
         public List<CustomValueProxy> LoadCustomContactProductFields(int productID)
         {
-          CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
-          List<CustomValueProxy> custfield = new List<CustomValueProxy>();
-          fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.UserProducts);
-          foreach (CustomField field in fields)
-          {
-            CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, productID);
-            custfield.Add(customValue.GetProxy());
-          }
+            CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+            List<CustomValueProxy> custfield = new List<CustomValueProxy>();
+            fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.UserProducts);
+            foreach (CustomField field in fields)
+            {
+                CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, productID);
+                custfield.Add(customValue.GetProxy());
+            }
 
-          return custfield;
+            return custfield;
         }
 
         [WebMethod]
@@ -1870,12 +1875,12 @@ namespace TSWebServices
 
             orgProp.SAED = organizations[0].SAExpirationDate == null ? "[None]" : ((DateTime)organizations[0].SAExpirationDate).ToShortDateString();
             if (organizations[0].SlaLevelID == null)
-                orgProp.SLA="[None]";
+                orgProp.SLA = "[None]";
             else
             {
-              SlaLevel level = SlaLevels.GetSlaLevel(TSAuthentication.GetLoginUser(), (int)organizations[0].SlaLevelID);
-              if (level != null) 
-                  orgProp.SLA = level.Name;
+                SlaLevel level = SlaLevels.GetSlaLevel(TSAuthentication.GetLoginUser(), (int)organizations[0].SlaLevelID);
+                if (level != null)
+                    orgProp.SLA = level.Name;
             }
             string primaryUser = "Empty";
             if (organizations[0].PrimaryUserID != null && organizations[0].PrimaryUserID != -1)
@@ -1925,32 +1930,32 @@ namespace TSWebServices
         [WebMethod]
         public OrganizationContactCard GetCustomerCard(int organizationID)
         {
-          OrganizationContactCard result = new OrganizationContactCard();
+            OrganizationContactCard result = new OrganizationContactCard();
 
-          Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
-          if (organization == null) return null;
-          result.orgproxy = organization.GetProxy();
+            Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
+            if (organization == null) return null;
+            result.orgproxy = organization.GetProxy();
 
-          PhoneNumbersView numbers = new PhoneNumbersView(organization.Collection.LoginUser);
-          numbers.LoadByID(organization.OrganizationID, ReferenceType.Organizations);
-          result.phoneNumbers = numbers.GetPhoneNumbersViewItemProxies();
+            PhoneNumbersView numbers = new PhoneNumbersView(organization.Collection.LoginUser);
+            numbers.LoadByID(organization.OrganizationID, ReferenceType.Organizations);
+            result.phoneNumbers = numbers.GetPhoneNumbersViewItemProxies();
 
-          TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
-          tickets.LoadLatest5Tickets(organizationID);
-          result.tickets = tickets.GetTicketsViewItemProxies();
+            TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+            tickets.LoadLatest5Tickets(organizationID);
+            result.tickets = tickets.GetTicketsViewItemProxies();
 
-          return result;
+            return result;
         }
 
         public class OrganizationContactCard
         {
-          [DataMember]
-          public OrganizationProxy orgproxy { get; set; }
-          [DataMember]
-          public PhoneNumbersViewItemProxy[] phoneNumbers { get; set; }
-          [DataMember]
-          public TicketsViewItemProxy[] tickets { get; set; }
-          //also need support hours info
+            [DataMember]
+            public OrganizationProxy orgproxy { get; set; }
+            [DataMember]
+            public PhoneNumbersViewItemProxy[] phoneNumbers { get; set; }
+            [DataMember]
+            public TicketsViewItemProxy[] tickets { get; set; }
+            //also need support hours info
         }
 
         [WebMethod]
@@ -2081,7 +2086,8 @@ SELECT
         }
 
         [WebMethod]
-        public string LoadContacts(int organizationID, bool isActive){
+        public string LoadContacts(int organizationID, bool isActive)
+        {
             StringBuilder htmlresults = new StringBuilder("");
             StringBuilder phoneResults = new StringBuilder("");
             Users users = new Users(TSAuthentication.GetLoginUser());
@@ -2095,10 +2101,10 @@ SELECT
 
                 foreach (PhoneNumber p in phoneNumbers)
                 {
-                  phoneResults.AppendFormat("<p class='list-group-item-text'><span class=\"text-muted\">{0}</span>: <a href=\"tel:{1}\" target=\"_blank\">{1}</a> {2}</p>", p.PhoneTypeName, p.Number, string.IsNullOrWhiteSpace(p.Extension) ? "" : "Ext:" + p.Extension);
+                    phoneResults.AppendFormat("<p class='list-group-item-text'><span class=\"text-muted\">{0}</span>: <a href=\"tel:{1}\" target=\"_blank\">{1}</a> {2}</p>", p.PhoneTypeName, p.Number, string.IsNullOrWhiteSpace(p.Extension) ? "" : "Ext:" + p.Extension);
                 }
-                
-                var ts = DateTime.UtcNow - new DateTime(1970,1,1,0,0,0,DateTimeKind.Utc);
+
+                var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
                 htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <div class='row'>
@@ -2297,7 +2303,7 @@ SELECT
 
             info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewContactSave>(data);
 
-            if(info.Company != null)
+            if (info.Company != null)
                 newOrgID = int.Parse(info.Company);
             else
                 newOrgID = Organizations.GetUnknownCompanyID(TSAuthentication.GetLoginUser());
@@ -2383,7 +2389,7 @@ SELECT
 
             foreach (CustomFieldSaveInfo field in info.Fields)
             {
-                        CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, user.UserID);
+                CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, user.UserID);
                 if (field.Value == null)
                 {
                     customValue.Value = "";
@@ -2671,7 +2677,7 @@ SELECT
                 customValue.Collection.Save();
 
             }
-                
+
 
         }
 
@@ -2724,29 +2730,29 @@ SELECT
 
             foreach (CustomFieldSaveInfo field in info.Fields)
             {
-              CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, userProduct.UserProductID);
-              if (field.Value == null)
-              {
-                customValue.Value = "";
-              }
-              else
-              {
-                if (customValue.FieldType == CustomFieldType.DateTime)
+                CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, userProduct.UserProductID);
+                if (field.Value == null)
                 {
-                  //customValue.Value = ((DateTime)field.Value).ToString();
-                  DateTime dt;
-                  if (DateTime.TryParse(((string)field.Value).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-                  {
-                    customValue.Value = dt.ToUniversalTime().ToString();
-                  }
+                    customValue.Value = "";
                 }
                 else
                 {
-                  customValue.Value = field.Value.ToString();
-                }
+                    if (customValue.FieldType == CustomFieldType.DateTime)
+                    {
+                        //customValue.Value = ((DateTime)field.Value).ToString();
+                        DateTime dt;
+                        if (DateTime.TryParse(((string)field.Value).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+                        {
+                            customValue.Value = dt.ToUniversalTime().ToString();
+                        }
+                    }
+                    else
+                    {
+                        customValue.Value = field.Value.ToString();
+                    }
 
-              }
-              customValue.Collection.Save();
+                }
+                customValue.Collection.Save();
 
             }
 
@@ -2781,108 +2787,108 @@ SELECT
         [WebMethod]
         public void AssignAllCustomersToVersion(int productVersionID)
         {
-          LoginUser loginUser = TSAuthentication.GetLoginUser();
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-          ProductVersionsView productVersionsView = new ProductVersionsView(loginUser);
-          productVersionsView.LoadByProductVersionID(productVersionID);
+            ProductVersionsView productVersionsView = new ProductVersionsView(loginUser);
+            productVersionsView.LoadByProductVersionID(productVersionID);
 
-          OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
-          existingOrganizationProducts.LoadByParentOrganizationIDAndVersionID(loginUser.OrganizationID, productVersionID);
+            OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
+            existingOrganizationProducts.LoadByParentOrganizationIDAndVersionID(loginUser.OrganizationID, productVersionID);
 
-          Organizations allCustomers = new Organizations(loginUser);
-          allCustomers.LoadByParentID(loginUser.OrganizationID, true);
+            Organizations allCustomers = new Organizations(loginUser);
+            allCustomers.LoadByParentID(loginUser.OrganizationID, true);
 
-          foreach(Organization customer in allCustomers)
-          {
-            OrganizationProduct existingOrganizationProduct = existingOrganizationProducts.FindByOrganizationID(customer.OrganizationID);
-
-            if (existingOrganizationProduct == null)
+            foreach (Organization customer in allCustomers)
             {
-              OrganizationProduct organizationProduct = (new OrganizationProducts(loginUser)).AddNewOrganizationProduct();
-              organizationProduct.OrganizationID = customer.OrganizationID;
-              organizationProduct.ProductID = productVersionsView[0].ProductID;
-              organizationProduct.ProductVersionID = productVersionID;
-              organizationProduct.Collection.Save();
+                OrganizationProduct existingOrganizationProduct = existingOrganizationProducts.FindByOrganizationID(customer.OrganizationID);
 
-              string description = String.Format("{0} added product version association to version number {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productVersionsView[0].VersionNumber);
-              ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, customer.OrganizationID, description);
+                if (existingOrganizationProduct == null)
+                {
+                    OrganizationProduct organizationProduct = (new OrganizationProducts(loginUser)).AddNewOrganizationProduct();
+                    organizationProduct.OrganizationID = customer.OrganizationID;
+                    organizationProduct.ProductID = productVersionsView[0].ProductID;
+                    organizationProduct.ProductVersionID = productVersionID;
+                    organizationProduct.Collection.Save();
+
+                    string description = String.Format("{0} added product version association to version number {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productVersionsView[0].VersionNumber);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, customer.OrganizationID, description);
+                }
             }
-          }
         }
 
         [WebMethod]
         public void UnassignAllCustomersFromVersion(int productVersionID)
         {
-          LoginUser loginUser = TSAuthentication.GetLoginUser();
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-          ProductVersionsView productVersionsView = new ProductVersionsView(loginUser);
-          productVersionsView.LoadByProductVersionID(productVersionID);
-          if (productVersionsView.Count > 0 && productVersionsView[0].OrganizationID == loginUser.OrganizationID)
-          {           
-            OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
-            existingOrganizationProducts.LoadByProductVersionID(loginUser.OrganizationID);
-
-            OrganizationProducts.DeleteAllOrganizationsByProductVersionID(loginUser, productVersionID);
-            
-            foreach (OrganizationProduct organizationProduct in existingOrganizationProducts)
+            ProductVersionsView productVersionsView = new ProductVersionsView(loginUser);
+            productVersionsView.LoadByProductVersionID(productVersionID);
+            if (productVersionsView.Count > 0 && productVersionsView[0].OrganizationID == loginUser.OrganizationID)
             {
-              string description = String.Format("{0} deleted product version association to version number {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productVersionsView[0].VersionNumber);
-              ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, organizationProduct.OrganizationID, description);
+                OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
+                existingOrganizationProducts.LoadByProductVersionID(loginUser.OrganizationID);
+
+                OrganizationProducts.DeleteAllOrganizationsByProductVersionID(loginUser, productVersionID);
+
+                foreach (OrganizationProduct organizationProduct in existingOrganizationProducts)
+                {
+                    string description = String.Format("{0} deleted product version association to version number {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productVersionsView[0].VersionNumber);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, organizationProduct.OrganizationID, description);
+                }
             }
-          }
         }
 
         [WebMethod]
         public void AssignAllCustomersToProduct(int productID)
         {
-          LoginUser loginUser = TSAuthentication.GetLoginUser();
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-          Products products = new Products(loginUser);
-          products.LoadByProductID(productID);
+            Products products = new Products(loginUser);
+            products.LoadByProductID(productID);
 
-          OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
-          existingOrganizationProducts.LoadByParentOrganizationIDAndProductID(loginUser.OrganizationID, productID);
+            OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
+            existingOrganizationProducts.LoadByParentOrganizationIDAndProductID(loginUser.OrganizationID, productID);
 
-          Organizations allCustomers = new Organizations(loginUser);
-          allCustomers.LoadByParentID(loginUser.OrganizationID, true);
+            Organizations allCustomers = new Organizations(loginUser);
+            allCustomers.LoadByParentID(loginUser.OrganizationID, true);
 
-          foreach (Organization customer in allCustomers)
-          {
-            OrganizationProduct existingOrganizationProduct = existingOrganizationProducts.FindByOrganizationID(customer.OrganizationID);
-
-            if (existingOrganizationProduct == null)
+            foreach (Organization customer in allCustomers)
             {
-              OrganizationProduct organizationProduct = (new OrganizationProducts(loginUser)).AddNewOrganizationProduct();
-              organizationProduct.OrganizationID = customer.OrganizationID;
-              organizationProduct.ProductID = products[0].ProductID;
-              organizationProduct.Collection.Save();
+                OrganizationProduct existingOrganizationProduct = existingOrganizationProducts.FindByOrganizationID(customer.OrganizationID);
 
-              string description = String.Format("{0} added customer association to product {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, products[0].Name);
-              ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, customer.OrganizationID, description);
+                if (existingOrganizationProduct == null)
+                {
+                    OrganizationProduct organizationProduct = (new OrganizationProducts(loginUser)).AddNewOrganizationProduct();
+                    organizationProduct.OrganizationID = customer.OrganizationID;
+                    organizationProduct.ProductID = products[0].ProductID;
+                    organizationProduct.Collection.Save();
+
+                    string description = String.Format("{0} added customer association to product {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, products[0].Name);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, customer.OrganizationID, description);
+                }
             }
-          }
         }
 
         [WebMethod]
         public void UnassignAllCustomersFromProduct(int productID)
         {
-          LoginUser loginUser = TSAuthentication.GetLoginUser();
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-          Products products = new Products(loginUser);
-          products.LoadByProductID(productID);
-          if (products.Count > 0 && products[0].OrganizationID == loginUser.OrganizationID)
-          {
-            OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
-            existingOrganizationProducts.LoadByProductVersionID(loginUser.OrganizationID);
-
-            OrganizationProducts.DeleteAllOrganizationsByProductID(loginUser, productID);
-
-            foreach (OrganizationProduct organizationProduct in existingOrganizationProducts)
+            Products products = new Products(loginUser);
+            products.LoadByProductID(productID);
+            if (products.Count > 0 && products[0].OrganizationID == loginUser.OrganizationID)
             {
-              string description = String.Format("{0} deleted customer association to product {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, products[0].Name);
-              ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, organizationProduct.OrganizationID, description);
+                OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
+                existingOrganizationProducts.LoadByProductVersionID(loginUser.OrganizationID);
+
+                OrganizationProducts.DeleteAllOrganizationsByProductID(loginUser, productID);
+
+                foreach (OrganizationProduct organizationProduct in existingOrganizationProducts)
+                {
+                    string description = String.Format("{0} deleted customer association to product {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, products[0].Name);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, organizationProduct.OrganizationID, description);
+                }
             }
-          }
         }
 
         [WebMethod]
@@ -2924,15 +2930,15 @@ SELECT
             foreach (TicketType ticketType in ticketTypes)
             {
                 int count;
-                if(open)
-                     count = Tickets.GetOrganizationOpenTicketCount(TSAuthentication.GetLoginUser(), organizationID, ticketType.TicketTypeID);
+                if (open)
+                    count = Tickets.GetOrganizationOpenTicketCount(TSAuthentication.GetLoginUser(), organizationID, ticketType.TicketTypeID);
                 else
                     count = Tickets.GetOrganizationClosedTicketCount(TSAuthentication.GetLoginUser(), organizationID, ticketType.TicketTypeID);
                 total += count;
 
                 if (count > 0)
                     chartString.AppendFormat("{0},{1},", ticketType.Name.Replace(",", ""), count.ToString().Replace(",", ""));
-                    //chartString.AppendFormat("['{0}',{1}],",ticketType.Name, count.ToString());
+                //chartString.AppendFormat("['{0}',{1}],",ticketType.Name, count.ToString());
             }
             if (chartString.ToString().EndsWith(","))
             {
@@ -3011,7 +3017,7 @@ SELECT
         }
 
         [WebMethod]
-        public string GetDateFormat(bool lower=false)
+        public string GetDateFormat(bool lower = false)
         {
             CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
             if (lower)
@@ -3023,7 +3029,7 @@ SELECT
         public string GetDateFormatNormal()
         {
             CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
-                return us.DateTimeFormat.ShortDatePattern;
+            return us.DateTimeFormat.ShortDatePattern;
         }
 
         [WebMethod]
@@ -3045,7 +3051,7 @@ SELECT
 
             int unknownID = Organizations.GetUnknownCompanyID(TSAuthentication.GetLoginUser());
             Users u = new Users(TSAuthentication.GetLoginUser());
-            u.UpdateDeletedOrg(organizationID,unknownID);
+            u.UpdateDeletedOrg(organizationID, unknownID);
 
             return;
         }
@@ -3073,15 +3079,49 @@ SELECT
                 }
                 else
                 {
-						  users[0].IsPasswordExpired = true;
-						  users[0].Collection.Save();
+                    users[0].IsPasswordExpired = true;
+                    users[0].Collection.Save();
                     if (DataUtils.ResetPassword(TSAuthentication.GetLoginUser(), users[0], !(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)))
                     {
-                        return("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
+                        return ("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
                     }
                 }
             }
-            return("There was an error sending the password.");
+            return ("There was an error sending the password.");
+        }
+
+        [WebMethod]
+        public string ChubPasswordReset(int userID)
+        {
+            Users users = new Users(TSAuthentication.GetLoginUser());
+            users.LoadByUserID(userID);
+            if (!users.IsEmpty)
+            {
+                if (users[0].CryptedPassword == "")
+                {
+                    string password = DataUtils.GenerateRandomPassword();
+                    users[0].CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
+                    users[0].IsPasswordExpired = true;
+                    users[0].Collection.Save();
+                    if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)
+                        EmailPosts.SendWelcomeTSUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
+                    else
+                        EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
+
+                    return ("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
+
+                }
+                else
+                {
+                    users[0].IsPasswordExpired = true;
+                    users[0].Collection.Save();
+                    if (DataUtils.ResetPassword(TSAuthentication.GetLoginUser(), users[0], !(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null), true))
+                    {
+                        return ("A customer hub password reset email has been sent to " + users[0].FirstName + " " + users[0].LastName);
+                    }
+                }
+            }
+            return ("There was an error sending the password.");
         }
 
         public string CreateCompanyBox(int orgID) //Organization org
@@ -3109,12 +3149,12 @@ SELECT
                                </tr>";
 
             return string.Format(
-              boxhtml, 
+              boxhtml,
               org.OrganizationID,
-              (string.IsNullOrWhiteSpace(org.Name) ? "Unnamed" : org.Name), 
-              phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:"+ phone[0].Number+"\">" + phone[0].Number + "</a></li>",
-              org.HasPortalAccess ? "<p class=\"\">Has portal access</p>" : "<p class=\"\">Does not have portal access</p>", 
-              string.IsNullOrWhiteSpace(org.Website) ? "" : "<li><a href=\""+org.Website+" \">"+ org.Website+"</a></li>" , 
+              (string.IsNullOrWhiteSpace(org.Name) ? "Unnamed" : org.Name),
+              phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:" + phone[0].Number + "\">" + phone[0].Number + "</a></li>",
+              org.HasPortalAccess ? "<p class=\"\">Has portal access</p>" : "<p class=\"\">Does not have portal access</p>",
+              string.IsNullOrWhiteSpace(org.Website) ? "" : "<li><a href=\"" + org.Website + " \">" + org.Website + "</a></li>",
               GetCustomerOpenTickets(org));
         }
 
@@ -3142,18 +3182,18 @@ SELECT
                                   </td>
                                </tr>";
 
-            
+
             return string.Format(
-              boxhtml, 
+              boxhtml,
               user.UserID,
-              (string.IsNullOrWhiteSpace(user.FirstName) && string.IsNullOrWhiteSpace(user.LastName) ? "Unnamed" : user.FirstName + " " + user.LastName), 
-              "", 
-              "", 
-              "<li><a href='mailto:" + user.Email + "'>" + user.Email + "</a></li>", 
+              (string.IsNullOrWhiteSpace(user.FirstName) && string.IsNullOrWhiteSpace(user.LastName) ? "Unnamed" : user.FirstName + " " + user.LastName),
+              "",
+              "",
+              "<li><a href='mailto:" + user.Email + "'>" + user.Email + "</a></li>",
               phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:" + phone[0].Number + "\">" + phone[0].Number + "</a></li>",
               user.IsPortalUser ? "<p class=\"\">Has portal access</p>" : "<p class=\"\">Does not have portal access</p>",
               GetContactTickets(user.UserID, 0),
-              string.IsNullOrWhiteSpace(user.Title) ? org.Name != "_Unknown Company" ? "<li><a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : "" : org.Name != "_Unknown Company" ? "<li>"+ user.Title +" at <a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : ""
+              string.IsNullOrWhiteSpace(user.Title) ? org.Name != "_Unknown Company" ? "<li><a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : "" : org.Name != "_Unknown Company" ? "<li>" + user.Title + " at <a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : ""
               );
         }
 
@@ -3162,7 +3202,8 @@ SELECT
             string recentHTML;
             string phoneStr;
             //user
-            if(recent.RefType == 0){
+            if (recent.RefType == 0)
+            {
                 Users u = new Users(TSAuthentication.GetLoginUser());
                 u.LoadByUserID(recent.RefID);
                 PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
@@ -3179,7 +3220,8 @@ SELECT
                 phoneStr = phone.IsEmpty ? "" : string.Format("<li><a href=\"tel:{0}\" target=\"_blank\">{0}</a></li>", phone[0].Number);
                 return string.Format(recentHTML, u[0].FirstLastName, u[0].Email, phoneStr, u[0].UserID);
             }
-            else{
+            else
+            {
                 Organizations org = new Organizations(TSAuthentication.GetLoginUser());
                 org.LoadByOrganizationID(recent.RefID);
                 PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
@@ -3243,7 +3285,7 @@ SELECT
         [WebMethod]
         public int[] LoadRatingPercents(int organizationID, ReferenceType type)
         {
-                List<int> results = new List<int>();
+            List<int> results = new List<int>();
 
             AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
             if (type == ReferenceType.Organizations)
@@ -3463,7 +3505,7 @@ SELECT
             {
                 CustomRatingClass ratingclass = new CustomRatingClass();
                 ratingclass.rating = a.GetProxy();
-            
+
                 AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
                 agents.LoadByAgentRatingID(a.AgentRatingID);
 
@@ -3541,7 +3583,7 @@ SELECT
         [WebMethod]
         public void DeleteAgentRating(int ratingID)
         {
-            
+
             AgentRatingUsers users = new AgentRatingUsers(TSAuthentication.GetLoginUser());
             users.LoadByAgentRatingID(ratingID);
 
@@ -3676,547 +3718,547 @@ SELECT
             return list.ToArray();
         }
 
-		  [WebMethod]
-		  public string MergeCompanies(int winningOrganizationID, int losingOrganizationID)
-		  {
-			  LoginUser loginUser = TSAuthentication.GetLoginUser();
-			  Organization company = Organizations.GetOrganization(loginUser, winningOrganizationID);
-			  Organization loosingCompany = Organizations.GetOrganization(loginUser, losingOrganizationID);
-			  string lossingCompanyNameForHistoryEntries = loosingCompany.Name + " (" + loosingCompany.OrganizationID.ToString() + ")";
-			  String errLocation = "";
-
-			  try
-			  {
-				  company.Collection.MergeUpdateContacts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-				  errLocation = string.Format("Error merging company contacts. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateTickets(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-				  errLocation = string.Format("Error merging company tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateNotes(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateFiles(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateProducts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateAssets(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateWaterCoolerMessages(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company water cooler messages. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateRatings(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateCalendar(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company calendar events. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.MergeUpdateCustomValues(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			try
-			{
-				PhoneNumbers winnerOrganizationPhoneNumbers = new PhoneNumbers(loginUser);
-				winnerOrganizationPhoneNumbers.LoadByID(winningOrganizationID, ReferenceType.Organizations);
-				PhoneNumbers loserOrganizationPhoneNumbers = new PhoneNumbers(loginUser);
-				loserOrganizationPhoneNumbers.LoadByID(losingOrganizationID, ReferenceType.Organizations);
-
-				if (winnerOrganizationPhoneNumbers.Count == 0 && loserOrganizationPhoneNumbers.Count > 0)
-				{
-					for (int i = 0; i < loserOrganizationPhoneNumbers.Count; i++)
-					{
-						PhoneNumber phoneNumber = loserOrganizationPhoneNumbers[i];
-						phoneNumber.RefID = winningOrganizationID;
-						phoneNumber.RefType = ReferenceType.Organizations;
-						phoneNumber.Extension = loserOrganizationPhoneNumbers[i].Extension;
-						phoneNumber.Number = loserOrganizationPhoneNumbers[i].Number;
-						phoneNumber.PhoneTypeID = loserOrganizationPhoneNumbers[i].PhoneTypeID;
-						loserOrganizationPhoneNumbers.Save();
-					}
-
-					string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Phone Numbers.";
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
-				}
-			}
-			catch (Exception e)
-			{
-				ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				log.ExceptionName = "Merge Exception " + e.Source;
-				log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				log.Collection.Save();
-
-				errLocation = string.Format("Error merging organization phone numbers. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			}
-
-			try
-			{
-				Addresses winnerOrganizationAddresses = new Addresses(loginUser);
-				winnerOrganizationAddresses.LoadByID(winningOrganizationID, ReferenceType.Organizations);
-				Addresses loserOrganizationAddresses = new Addresses(loginUser);
-				loserOrganizationAddresses.LoadByID(losingOrganizationID, ReferenceType.Organizations);
-
-				if (((winnerOrganizationAddresses.Count > 0
-						&& winnerOrganizationAddresses.Count(p => p.Description != null
-																	&& !string.IsNullOrEmpty(p.Description)) == 0)
-						|| winnerOrganizationAddresses.Count == 0)
-					&& loserOrganizationAddresses.Count > 0)
-				{
-					for (int i = 0; i < loserOrganizationAddresses.Count; i++)
-					{
-						Address address = loserOrganizationAddresses[i];
-						address.RefID = winningOrganizationID;
-						address.RefType = ReferenceType.Organizations;
-						address.Addr1 = loserOrganizationAddresses[i].Addr1;
-						address.Addr2 = loserOrganizationAddresses[i].Addr2;
-						address.Addr3 = loserOrganizationAddresses[i].Addr3;
-						address.City = loserOrganizationAddresses[i].City;
-						address.Country = loserOrganizationAddresses[i].Country;
-						address.Description = loserOrganizationAddresses[i].Description;
-						address.State = loserOrganizationAddresses[i].State;
-						address.Zip = loserOrganizationAddresses[i].Zip;
-						loserOrganizationAddresses.Save();
-					}
-
-					string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Addresses.";
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
-				}
-			}
-			catch (Exception e)
-			{
-				ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				log.ExceptionName = "Merge Exception " + e.Source;
-				log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				log.Collection.Save();
-
-				errLocation = string.Format("Error merging organization addresses. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			}
-
-			try
-			{
-				List<int> winnerOrganizationSubscriptions = Subscriptions.GetByOrganizationId(loginUser, winningOrganizationID);
-				List<int> loserOrganizationSubscriptions = Subscriptions.GetByOrganizationId(loginUser, losingOrganizationID);
-
-				if (winnerOrganizationSubscriptions.Count == 0 && loserOrganizationSubscriptions.Count > 0)
-				{
-					for (int i = 0; i < loserOrganizationSubscriptions.Count; i++)
-					{
-						Subscriptions.SetByOrganizationId(loginUser, winningOrganizationID, losingOrganizationID);
-					}
-
-					string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Subscriptions.";
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
-				}
-			}
-			catch (Exception e)
-			{
-				ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				log.ExceptionName = "Merge Exception " + e.Source;
-				log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				log.Collection.Save();
-
-				errLocation = string.Format("Error merging organization subscriptions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			}
-
-			try
-			  {
-				  company.Collection.DeleteRecentlyViewItems(losingOrganizationID);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error deleting company from recently viewed items. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  company.Collection.DeleteFromDB(losingOrganizationID);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  company.NeedsIndexing = true;
-			  company.Collection.Save();
-
-			  return errLocation;
-		  }
-
-		  [WebMethod]
-		  public string MergeContacts(int winningUserID, int losingUserID)
-		  {
-			  LoginUser loginUser = TSAuthentication.GetLoginUser();
-			  User contact = Users.GetUser(loginUser, winningUserID);
-			  User loosingContact = Users.GetUser(loginUser, losingUserID);
-			  string lossingContactNameForHistoryEntries = loosingContact.FirstLastName + " (" + loosingContact.UserID.ToString() + ")";
-			  String errLocation = "";
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateActions(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-				  errLocation = string.Format("Error merging contact actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateTickets(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-				  errLocation = string.Format("Error merging contact tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateNotes(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateFiles(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateProducts(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateAssets(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateRatings(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateCustomValues(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			try
-			{
-				PhoneNumbers winnerUserPhoneNumbers = new PhoneNumbers(loginUser);
-				winnerUserPhoneNumbers.LoadByID(winningUserID, ReferenceType.Users);
-				PhoneNumbers loserUserPhoneNumbers = new PhoneNumbers(loginUser);
-				loserUserPhoneNumbers.LoadByID(losingUserID, ReferenceType.Users);
-
-				if (winnerUserPhoneNumbers.Count == 0 && loserUserPhoneNumbers.Count > 0)
-				{
-					for (int i = 0; i < loserUserPhoneNumbers.Count; i++)
-					{
-						PhoneNumber phoneNumber = loserUserPhoneNumbers[i];
-						phoneNumber.RefID		= winningUserID;
-						phoneNumber.RefType		= ReferenceType.Users;
-						phoneNumber.Extension	= loserUserPhoneNumbers[i].Extension;
-						phoneNumber.Number		= loserUserPhoneNumbers[i].Number;
-						phoneNumber.PhoneTypeID = loserUserPhoneNumbers[i].PhoneTypeID;
-						loserUserPhoneNumbers.Save();
-					}
-
-					string description = "Merged '" + lossingContactNameForHistoryEntries + "' Phone Numbers.";
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningUserID, description);
-				}
-			}
-			catch (Exception e)
-			{
-				ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				log.ExceptionName = "Merge Exception " + e.Source;
-				log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				log.Collection.Save();
-
-				errLocation = string.Format("Error merging contact phone numbers. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			}
-
-			try
-			{
-				Addresses winnerUserAddresses = new Addresses(loginUser);
-				winnerUserAddresses.LoadByID(winningUserID, ReferenceType.Users);
-				Addresses loserUserAddresses = new Addresses(loginUser);
-				loserUserAddresses.LoadByID(losingUserID, ReferenceType.Users);
-
-				if (winnerUserAddresses.Count == 0 && loserUserAddresses.Count > 0)
-				{
-					for (int i = 0; i < loserUserAddresses.Count; i++)
-					{
-						Address address		= loserUserAddresses[i];
-						address.RefID		= winningUserID;
-						address.RefType		= ReferenceType.Users;
-						address.Addr1		= loserUserAddresses[i].Addr1;
-						address.Addr2		= loserUserAddresses[i].Addr2;
-						address.Addr3		= loserUserAddresses[i].Addr3;
-						address.City		= loserUserAddresses[i].City;
-						address.Country		= loserUserAddresses[i].Country;
-						address.Description = loserUserAddresses[i].Description;
-						address.State		= loserUserAddresses[i].State;
-						address.Zip			= loserUserAddresses[i].Zip;
-						loserUserAddresses.Save();
-					}
-
-					string description = "Merged '" + lossingContactNameForHistoryEntries + "' Addresses.";
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
-					ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningUserID, description);
-				}
-			}
-			catch (Exception e)
-			{
-				ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				log.ExceptionName = "Merge Exception " + e.Source;
-				log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				log.Collection.Save();
-
-				errLocation = string.Format("Error merging contact addresses. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			}
-
-			try
-			  {
-				  contact.Collection.DeleteRecentlyViewItems(losingUserID);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.DeleteFromDB(losingUserID);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  contact.NeedsIndexing = true;
-			  contact.Collection.Save();
-
-			  return errLocation;
-		  }
+        [WebMethod]
+        public string MergeCompanies(int winningOrganizationID, int losingOrganizationID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Organization company = Organizations.GetOrganization(loginUser, winningOrganizationID);
+            Organization loosingCompany = Organizations.GetOrganization(loginUser, losingOrganizationID);
+            string lossingCompanyNameForHistoryEntries = loosingCompany.Name + " (" + loosingCompany.OrganizationID.ToString() + ")";
+            String errLocation = "";
+
+            try
+            {
+                company.Collection.MergeUpdateContacts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+                errLocation = string.Format("Error merging company contacts. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateTickets(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+                errLocation = string.Format("Error merging company tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateNotes(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateFiles(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateProducts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateAssets(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateWaterCoolerMessages(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company water cooler messages. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateRatings(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateCalendar(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company calendar events. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.MergeUpdateCustomValues(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                PhoneNumbers winnerOrganizationPhoneNumbers = new PhoneNumbers(loginUser);
+                winnerOrganizationPhoneNumbers.LoadByID(winningOrganizationID, ReferenceType.Organizations);
+                PhoneNumbers loserOrganizationPhoneNumbers = new PhoneNumbers(loginUser);
+                loserOrganizationPhoneNumbers.LoadByID(losingOrganizationID, ReferenceType.Organizations);
+
+                if (winnerOrganizationPhoneNumbers.Count == 0 && loserOrganizationPhoneNumbers.Count > 0)
+                {
+                    for (int i = 0; i < loserOrganizationPhoneNumbers.Count; i++)
+                    {
+                        PhoneNumber phoneNumber = loserOrganizationPhoneNumbers[i];
+                        phoneNumber.RefID = winningOrganizationID;
+                        phoneNumber.RefType = ReferenceType.Organizations;
+                        phoneNumber.Extension = loserOrganizationPhoneNumbers[i].Extension;
+                        phoneNumber.Number = loserOrganizationPhoneNumbers[i].Number;
+                        phoneNumber.PhoneTypeID = loserOrganizationPhoneNumbers[i].PhoneTypeID;
+                        loserOrganizationPhoneNumbers.Save();
+                    }
+
+                    string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Phone Numbers.";
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging organization phone numbers. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                Addresses winnerOrganizationAddresses = new Addresses(loginUser);
+                winnerOrganizationAddresses.LoadByID(winningOrganizationID, ReferenceType.Organizations);
+                Addresses loserOrganizationAddresses = new Addresses(loginUser);
+                loserOrganizationAddresses.LoadByID(losingOrganizationID, ReferenceType.Organizations);
+
+                if (((winnerOrganizationAddresses.Count > 0
+                        && winnerOrganizationAddresses.Count(p => p.Description != null
+                                                                    && !string.IsNullOrEmpty(p.Description)) == 0)
+                        || winnerOrganizationAddresses.Count == 0)
+                    && loserOrganizationAddresses.Count > 0)
+                {
+                    for (int i = 0; i < loserOrganizationAddresses.Count; i++)
+                    {
+                        Address address = loserOrganizationAddresses[i];
+                        address.RefID = winningOrganizationID;
+                        address.RefType = ReferenceType.Organizations;
+                        address.Addr1 = loserOrganizationAddresses[i].Addr1;
+                        address.Addr2 = loserOrganizationAddresses[i].Addr2;
+                        address.Addr3 = loserOrganizationAddresses[i].Addr3;
+                        address.City = loserOrganizationAddresses[i].City;
+                        address.Country = loserOrganizationAddresses[i].Country;
+                        address.Description = loserOrganizationAddresses[i].Description;
+                        address.State = loserOrganizationAddresses[i].State;
+                        address.Zip = loserOrganizationAddresses[i].Zip;
+                        loserOrganizationAddresses.Save();
+                    }
+
+                    string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Addresses.";
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging organization addresses. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                List<int> winnerOrganizationSubscriptions = Subscriptions.GetByOrganizationId(loginUser, winningOrganizationID);
+                List<int> loserOrganizationSubscriptions = Subscriptions.GetByOrganizationId(loginUser, losingOrganizationID);
+
+                if (winnerOrganizationSubscriptions.Count == 0 && loserOrganizationSubscriptions.Count > 0)
+                {
+                    for (int i = 0; i < loserOrganizationSubscriptions.Count; i++)
+                    {
+                        Subscriptions.SetByOrganizationId(loginUser, winningOrganizationID, losingOrganizationID);
+                    }
+
+                    string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Subscriptions.";
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging organization subscriptions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.DeleteRecentlyViewItems(losingOrganizationID);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error deleting company from recently viewed items. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                company.Collection.DeleteFromDB(losingOrganizationID);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            company.NeedsIndexing = true;
+            company.Collection.Save();
+
+            return errLocation;
+        }
+
+        [WebMethod]
+        public string MergeContacts(int winningUserID, int losingUserID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User contact = Users.GetUser(loginUser, winningUserID);
+            User loosingContact = Users.GetUser(loginUser, losingUserID);
+            string lossingContactNameForHistoryEntries = loosingContact.FirstLastName + " (" + loosingContact.UserID.ToString() + ")";
+            String errLocation = "";
+
+            try
+            {
+                contact.Collection.MergeUpdateActions(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+                errLocation = string.Format("Error merging contact actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.MergeUpdateTickets(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+                errLocation = string.Format("Error merging contact tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.MergeUpdateNotes(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging contact notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.MergeUpdateFiles(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging contact files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.MergeUpdateProducts(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging contact products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.MergeUpdateAssets(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging contact assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.MergeUpdateRatings(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging contact ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.MergeUpdateCustomValues(losingUserID, winningUserID, lossingContactNameForHistoryEntries, loginUser);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging contact custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                PhoneNumbers winnerUserPhoneNumbers = new PhoneNumbers(loginUser);
+                winnerUserPhoneNumbers.LoadByID(winningUserID, ReferenceType.Users);
+                PhoneNumbers loserUserPhoneNumbers = new PhoneNumbers(loginUser);
+                loserUserPhoneNumbers.LoadByID(losingUserID, ReferenceType.Users);
+
+                if (winnerUserPhoneNumbers.Count == 0 && loserUserPhoneNumbers.Count > 0)
+                {
+                    for (int i = 0; i < loserUserPhoneNumbers.Count; i++)
+                    {
+                        PhoneNumber phoneNumber = loserUserPhoneNumbers[i];
+                        phoneNumber.RefID = winningUserID;
+                        phoneNumber.RefType = ReferenceType.Users;
+                        phoneNumber.Extension = loserUserPhoneNumbers[i].Extension;
+                        phoneNumber.Number = loserUserPhoneNumbers[i].Number;
+                        phoneNumber.PhoneTypeID = loserUserPhoneNumbers[i].PhoneTypeID;
+                        loserUserPhoneNumbers.Save();
+                    }
+
+                    string description = "Merged '" + lossingContactNameForHistoryEntries + "' Phone Numbers.";
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningUserID, description);
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging contact phone numbers. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                Addresses winnerUserAddresses = new Addresses(loginUser);
+                winnerUserAddresses.LoadByID(winningUserID, ReferenceType.Users);
+                Addresses loserUserAddresses = new Addresses(loginUser);
+                loserUserAddresses.LoadByID(losingUserID, ReferenceType.Users);
+
+                if (winnerUserAddresses.Count == 0 && loserUserAddresses.Count > 0)
+                {
+                    for (int i = 0; i < loserUserAddresses.Count; i++)
+                    {
+                        Address address = loserUserAddresses[i];
+                        address.RefID = winningUserID;
+                        address.RefType = ReferenceType.Users;
+                        address.Addr1 = loserUserAddresses[i].Addr1;
+                        address.Addr2 = loserUserAddresses[i].Addr2;
+                        address.Addr3 = loserUserAddresses[i].Addr3;
+                        address.City = loserUserAddresses[i].City;
+                        address.Country = loserUserAddresses[i].Country;
+                        address.Description = loserUserAddresses[i].Description;
+                        address.State = loserUserAddresses[i].State;
+                        address.Zip = loserUserAddresses[i].Zip;
+                        loserUserAddresses.Save();
+                    }
+
+                    string description = "Merged '" + lossingContactNameForHistoryEntries + "' Addresses.";
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
+                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningUserID, description);
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging contact addresses. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.DeleteRecentlyViewItems(losingUserID);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            try
+            {
+                contact.Collection.DeleteFromDB(losingUserID);
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
+            contact.NeedsIndexing = true;
+            contact.Collection.Save();
+
+            return errLocation;
+        }
 
         public string CreateTextControl(CustomField field, bool isEditable = false, int organizationID = -1)
         {
@@ -4230,11 +4272,11 @@ SELECT
                                         <div class='col-xs-9'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
-                                    </div>", field.CustomFieldID, field.Name, value.Value  );
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
             {
-                html.AppendFormat("<div class='col-xs-9'><input class='form-control col-xs-10 customField {1}' id='{0}' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required":"");
+                html.AppendFormat("<div class='col-xs-9'><input class='form-control col-xs-10 customField {1}' id='{0}' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
             }
             return html.ToString();
         }
@@ -4311,7 +4353,7 @@ SELECT
             }
             else
                 html.AppendFormat("<div class='col-xs-3'><input class='form-control datetimepicker col-xs-10 customField {1}' id='{0}' type='datetime'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
-            
+
             return html.ToString();
         }
 
@@ -4423,100 +4465,139 @@ SELECT
             ActionLogs.AddActionLog(loginUser, ActionLogType.Delete, ReferenceType.Organizations, childID, description);
         }
 
-			[WebMethod]
-			public bool CanAccessCustomer(int customerID)
-			{
-				int userID = TSAuthentication.GetLoginUser().UserID;
-				bool result = false;
-				Users u = new Users(TSAuthentication.GetLoginUser());
-				u.LoadByUserID(userID);
+        [WebMethod]
+        public bool CanAccessCustomer(int customerID)
+        {
+            int userID = TSAuthentication.GetLoginUser().UserID;
+            bool result = false;
+            Users u = new Users(TSAuthentication.GetLoginUser());
+            u.LoadByUserID(userID);
 
-				if (u[0].TicketRights == TicketRightType.Customers)
+            if (u[0].TicketRights == TicketRightType.Customers)
             {
-					using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
-					{
-						connection.Open();
+                using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+                {
+                    connection.Open();
 
-						SqlCommand command = new SqlCommand();
-						command.Connection = connection;
-						command.CommandText = "SELECT * FROM UserRightsOrganizations WHERE (UserID=@UserID) AND (OrganizationID=@OrganizationID)";
-						command.CommandType = CommandType.Text;
-						command.Parameters.AddWithValue("@UserID", userID);
-						command.Parameters.AddWithValue("@OrganizationID", customerID);
+                    SqlCommand command = new SqlCommand();
+                    command.Connection = connection;
+                    command.CommandText = "SELECT * FROM UserRightsOrganizations WHERE (UserID=@UserID) AND (OrganizationID=@OrganizationID)";
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@UserID", userID);
+                    command.Parameters.AddWithValue("@OrganizationID", customerID);
 
-						SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow);
-						if (reader.Read())
-						{
-							result = true;
-						}
-						else
-							result = false;
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow);
+                    if (reader.Read())
+                    {
+                        result = true;
+                    }
+                    else
+                        result = false;
 
-						reader.Close();
-						connection.Close();
-						return result;
-					}
-				}
-				else
-				{
-					return true;
-				}
+                    reader.Close();
+                    connection.Close();
+                    return result;
+                }
+            }
+            else
+            {
+                return true;
+            }
 
-				return true;
-			}
+            return true;
+        }
 
         public class NewCustomerSave
         {
             public NewCustomerSave() { }
-            [DataMember] public string Name{ get; set; }
-            [DataMember] public string Website{ get; set; }
-            [DataMember] public string CompanyDomains{ get; set; }
-            [DataMember] public int? DefaultSupportUserID{ get; set; }
-            [DataMember] public int? DefaultSupportGroupID{ get; set; }
-            [DataMember] public string TimeZoneID{ get; set; }
-            [DataMember] public DateTime? SAExpirationDate{ get; set; }
-            [DataMember] public int? SlaLevelID{ get; set; }
-            [DataMember] public int SupportHoursMonth{ get; set; }
-            [DataMember] public bool Active{ get; set; }
-            [DataMember] public bool PortalAccess{ get; set; }
-            [DataMember] public bool APIEnabled{ get; set; }
-            [DataMember] public string InactiveReason{ get; set; }
-            [DataMember] public string Description{ get; set; }
-            [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
+            [DataMember]
+            public string Name { get; set; }
+            [DataMember]
+            public string Website { get; set; }
+            [DataMember]
+            public string CompanyDomains { get; set; }
+            [DataMember]
+            public int? DefaultSupportUserID { get; set; }
+            [DataMember]
+            public int? DefaultSupportGroupID { get; set; }
+            [DataMember]
+            public string TimeZoneID { get; set; }
+            [DataMember]
+            public DateTime? SAExpirationDate { get; set; }
+            [DataMember]
+            public int? SlaLevelID { get; set; }
+            [DataMember]
+            public int SupportHoursMonth { get; set; }
+            [DataMember]
+            public bool Active { get; set; }
+            [DataMember]
+            public bool PortalAccess { get; set; }
+            [DataMember]
+            public bool APIEnabled { get; set; }
+            [DataMember]
+            public string InactiveReason { get; set; }
+            [DataMember]
+            public string Description { get; set; }
+            [DataMember]
+            public List<CustomFieldSaveInfo> Fields { get; set; }
         }
 
         public class NewProductSave
         {
             public NewProductSave() { }
-            [DataMember] public string OrganizationID { get; set; }
-            [DataMember] public string UserID { get; set; }
-            [DataMember] public string ProductID { get; set; }
-            [DataMember] public int Version { get; set; }
-            [DataMember] public string SupportExpiration { get; set; }
-            [DataMember] public int OrganizationProductID { get; set; }
-            [DataMember] public int UserProductID { get; set; }
-            [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
+            [DataMember]
+            public string OrganizationID { get; set; }
+            [DataMember]
+            public string UserID { get; set; }
+            [DataMember]
+            public string ProductID { get; set; }
+            [DataMember]
+            public int Version { get; set; }
+            [DataMember]
+            public string SupportExpiration { get; set; }
+            [DataMember]
+            public int OrganizationProductID { get; set; }
+            [DataMember]
+            public int UserProductID { get; set; }
+            [DataMember]
+            public List<CustomFieldSaveInfo> Fields { get; set; }
         }
 
         public class NewContactSave
         {
             public NewContactSave() { }
-            [DataMember] public string Company { get; set; }
-            [DataMember] public bool Active { get; set; }
-            [DataMember] public string Email { get; set; }
-            [DataMember] public string FirstName { get; set; }
-            [DataMember] public string LastName { get; set; }
-            [DataMember] public string Title { get; set; }
-            [DataMember] public string MiddleName { get; set; }
-            [DataMember] public bool BlockInboundEmail { get; set; }
-            [DataMember] public bool BlockEmailFromCreatingOnly { get; set; }
-            [DataMember] public bool IsPortalUser { get; set; }
-            [DataMember] public bool IsSystemAdmin { get; set; }
-            [DataMember] public bool IsFinanceAdmin { get; set; }
-            [DataMember] public bool SyncAddress { get; set; }
-            [DataMember] public bool SyncPhone { get; set; }
-            [DataMember] public bool EmailPortalPW { get; set; }
-            [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
+            [DataMember]
+            public string Company { get; set; }
+            [DataMember]
+            public bool Active { get; set; }
+            [DataMember]
+            public string Email { get; set; }
+            [DataMember]
+            public string FirstName { get; set; }
+            [DataMember]
+            public string LastName { get; set; }
+            [DataMember]
+            public string Title { get; set; }
+            [DataMember]
+            public string MiddleName { get; set; }
+            [DataMember]
+            public bool BlockInboundEmail { get; set; }
+            [DataMember]
+            public bool BlockEmailFromCreatingOnly { get; set; }
+            [DataMember]
+            public bool IsPortalUser { get; set; }
+            [DataMember]
+            public bool IsSystemAdmin { get; set; }
+            [DataMember]
+            public bool IsFinanceAdmin { get; set; }
+            [DataMember]
+            public bool SyncAddress { get; set; }
+            [DataMember]
+            public bool SyncPhone { get; set; }
+            [DataMember]
+            public bool EmailPortalPW { get; set; }
+            [DataMember]
+            public List<CustomFieldSaveInfo> Fields { get; set; }
         }
 
         public class EmailSave
@@ -4544,7 +4625,8 @@ SELECT
         public class AddressSave
         {
             public AddressSave() { }
-            [DataMember] public string Addr1 { get; set; }
+            [DataMember]
+            public string Addr1 { get; set; }
             [DataMember]
             public string Addr2 { get; set; }
             [DataMember]
@@ -4581,7 +4663,8 @@ SELECT
 
         public class OrganizationCustomProduct
         {
-            [DataMember] public string ProductName { get; set; }
+            [DataMember]
+            public string ProductName { get; set; }
             [DataMember]
             public string VersionNumber { get; set; }
             [DataMember]
@@ -4659,7 +4742,7 @@ SELECT
             public UserProxy reporter;
             [DataMember]
             public OrganizationProxy org;
-    
+
         }
 
     }

@@ -125,7 +125,7 @@ namespace TeamSupport.Data
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = @"SELECT * FROM Attachments WHERE RefID IN (SELECT ActionID FROM Actions WHERE TicketID = @ticketId)";
+				command.CommandText = @"SELECT * FROM Attachments WHERE RefID IN (SELECT ActionID FROM Actions WHERE TicketID = @ticketId) order by datecreated desc";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ticketId", ticketId);
 				Fill(command);
