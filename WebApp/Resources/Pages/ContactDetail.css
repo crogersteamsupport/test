@@ -11,7 +11,7 @@
 
 .box-content {font-size: 12px}
 
-.header-nav { height: 49px; overflow:hidden; white-space:nowrap; }
+.header-nav { height: 49px; white-space:nowrap; }
 .pageheader .btn-toolbar { margin: 10px 20px 0 0; }
 .main-nav { margin-top: 0; }
 

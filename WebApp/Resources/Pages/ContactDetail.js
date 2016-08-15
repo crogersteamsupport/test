@@ -97,8 +97,10 @@ $(document).ready(function () {
         }
     });
 
+    $('.ui-layout-north').css('zIndex', 3000);
+
     //if (window.parent.parent.Ts.System.User.OrganizationID != 1078 && window.parent.parent.Ts.System.User.OrganizationID != 13679 && window.parent.parent.Ts.System.User.OrganizationID != 1088) {
-        //$('#ratingsTab').hide();
+    //$('#ratingsTab').hide();
     //}
 
     $(".maincontainer").on("keypress", "input", (function (evt) {
@@ -123,17 +125,17 @@ $(document).ready(function () {
             $(".userProperties #fieldEmail").addClass("link");
 
         if ($(".userProperties #fieldLinkedIn").hasClass('editable'))
-          $(".userProperties #fieldLinkedIn").removeClass("link");
+            $(".userProperties #fieldLinkedIn").removeClass("link");
         else if ($(".userProperties #fieldLinkedIn").text() != "Empty")
-          $(".userProperties #fieldLinkedIn").addClass("link");
+            $(".userProperties #fieldLinkedIn").addClass("link");
 
         $(".userProperties #fieldCompany").toggleClass("link");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         if ($(this).hasClass("btn-primary"))
-        	$(this).html('<i class="fa fa-pencil"></i> Edit');
+            $(this).html('<i class="fa fa-pencil"></i> Edit');
         else
-        	$(this).html('<i class="fa fa-pencil"></i> Save');
+            $(this).html('<i class="fa fa-pencil"></i> Save');
         //$('#contactName').toggleClass("editable");
         $('#contactTabs a:first').tab('show');
     });
@@ -150,17 +152,16 @@ $(document).ready(function () {
         $('#contactTabs a:first').tab('show');
     }
 
-    if (!_isAdmin && !window.parent.parent.Ts.System.User.CanEditContact)
-    {
+    if (!_isAdmin && !window.parent.parent.Ts.System.User.CanEditContact) {
         $('#contactEdit').hide();
         $('#contactPhoneButton').hide();
         $('#contactAddressButton').hide();
     }
 
     if (!_isAdmin) {
-    	$('#contactDelete').hide();
-    	$('#Contact-Merge').hide();
-	 }
+        $('#contactDelete').hide();
+        $('#Contact-Merge').hide();
+    }
 
     if (!window.parent.parent.Ts.System.Organization.IsInventoryEnabled) {
         $('#contactTabs a[href="#contact-products"]').hide();
@@ -177,77 +178,77 @@ $(document).ready(function () {
     });
 
     function getContacts(request, response) {
-    	if (_execGetContact) { _execGetContact._executor.abort(); }
-    	_execGetContact = window.parent.parent.Ts.Services.Organizations.GetContactsExceptGiven(request.term, userID, function (result) { response(result); });
-    	isModified(true);
+        if (_execGetContact) { _execGetContact._executor.abort(); }
+        _execGetContact = window.parent.parent.Ts.Services.Organizations.GetContactsExceptGiven(request.term, userID, function (result) { response(result); });
+        isModified(true);
     }
 
     $("#Contact-Merge-search").autocomplete({
-    	minLength: 2,
-    	source: getContacts,
-    	select: function (event, ui) {
-    		if (ui.item.id == userID) {
-    			alert("Sorry, but you can not merge this contact into itself.");
-    			return;
-    		}
+        minLength: 2,
+        source: getContacts,
+        select: function (event, ui) {
+            if (ui.item.id == userID) {
+                alert("Sorry, but you can not merge this contact into itself.");
+                return;
+            }
 
-    		$(this).data('userid', ui.item.id).removeClass('ui-autocomplete-loading');
+            $(this).data('userid', ui.item.id).removeClass('ui-autocomplete-loading');
 
-    		try {
-    			window.parent.parent.Ts.Services.Organizations.GetUser(ui.item.id, function (info) {
-    				var contactPreviewName = "<div><strong>Contact Name:</strong> " + info.FirstName + " " + info.MiddleName + " " + info.LastName + "</div>";
-    				var contactPreviewEmail = "<div><strong>Contact Email:</strong> " + info.Email + "</div>";
+            try {
+                window.parent.parent.Ts.Services.Organizations.GetUser(ui.item.id, function (info) {
+                    var contactPreviewName = "<div><strong>Contact Name:</strong> " + info.FirstName + " " + info.MiddleName + " " + info.LastName + "</div>";
+                    var contactPreviewEmail = "<div><strong>Contact Email:</strong> " + info.Email + "</div>";
 
-    				$('#contactmerge-preview-details').after(contactPreviewName + contactPreviewEmail);
-    				$('#dialog-contactmerge-preview').show();
-    				$('#dialog-contactmerge-warning').show();
-    				$(".dialog-contactmerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
-    			})
-    		}
-    		catch (e) {
-    			alert("Sorry, there was a problem loading the information for that contact.");
-    		}
-    	},
-    	position: { my: "right top", at: "right bottom", collision: "fit flip" }
+                    $('#contactmerge-preview-details').after(contactPreviewName + contactPreviewEmail);
+                    $('#dialog-contactmerge-preview').show();
+                    $('#dialog-contactmerge-warning').show();
+                    $(".dialog-contactmerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
+                })
+            }
+            catch (e) {
+                alert("Sorry, there was a problem loading the information for that contact.");
+            }
+        },
+        position: { my: "right top", at: "right bottom", collision: "fit flip" }
     });
 
     $('#contact-merge-complete').click(function (e) {
-    	e.preventDefault();
-    	$('#contact-merge-complete').attr('disabled', 'disabled');
-    	if ($('#Contact-Merge-search').val() == "") {
-    		alert("Please select a valid contact to merge");
-    		$('#contact-merge-complete').removeAttr('disabled');
-    		return;
-    	}
+        e.preventDefault();
+        $('#contact-merge-complete').attr('disabled', 'disabled');
+        if ($('#Contact-Merge-search').val() == "") {
+            alert("Please select a valid contact to merge");
+            $('#contact-merge-complete').removeAttr('disabled');
+            return;
+        }
 
-    	if ($('#dialog-contactmerge-confirm').prop("checked")) {
-    		var winningID = $('#Contact-Merge-search').data('userid');
-    		//var winningContactName = $('#Contact-Merge-search').data('username');
-    		var JSTop = top;
-    		//var window = window;
-    		$('.merge-processing').show();
-    		window.parent.parent.Ts.Services.Customers.MergeContacts(winningID, userID, function (result) {
-    			$('.merge-processing').hide();
-    			$('#contact-merge-complete').removeAttr('disabled');
-    			if (result != "")
-    				alert(result);
-    			else {
-    				$('#MergeModal').modal('hide');
-    				JSwindow.parent.parent.Ts.MainPage.closeNewContactTab(userID);
-    				JSwindow.parent.parent.Ts.MainPage.openNewContact(winningID);
-    				//window.location = window.location;
-    				//window.parent.ticketSocket.server.ticketUpdate(userID + "," + winningID, "merge", userFullName);
-    			}
-    		});
-    		//window.parent.parent.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
-    		//  function () {
-    		//  $('#merge-error').show();
-    		//});
-    	}
-    	else {
-    		alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
-    		$('#contact-merge-complete').removeAttr('disabled');
-		 }
+        if ($('#dialog-contactmerge-confirm').prop("checked")) {
+            var winningID = $('#Contact-Merge-search').data('userid');
+            //var winningContactName = $('#Contact-Merge-search').data('username');
+            var JSTop = top;
+            //var window = window;
+            $('.merge-processing').show();
+            window.parent.parent.Ts.Services.Customers.MergeContacts(winningID, userID, function (result) {
+                $('.merge-processing').hide();
+                $('#contact-merge-complete').removeAttr('disabled');
+                if (result != "")
+                    alert(result);
+                else {
+                    $('#MergeModal').modal('hide');
+                    JSwindow.parent.parent.Ts.MainPage.closeNewContactTab(userID);
+                    JSwindow.parent.parent.Ts.MainPage.openNewContact(winningID);
+                    //window.location = window.location;
+                    //window.parent.ticketSocket.server.ticketUpdate(userID + "," + winningID, "merge", userFullName);
+                }
+            });
+            //window.parent.parent.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+            //  function () {
+            //  $('#merge-error').show();
+            //});
+        }
+        else {
+            alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+            $('#contact-merge-complete').removeAttr('disabled');
+        }
     });
 
     $('#historyToggle').on('click', function () {
@@ -260,7 +261,7 @@ $(document).ready(function () {
 
     $('#historyRefresh').on('click', function () {
         window.parent.parent.Ts.System.logAction('Contact Detail - Refresh History');
-            LoadHistory(1);
+        LoadHistory(1);
     });
 
     $("#btnSaveReminder").click(function (e) {
@@ -287,7 +288,7 @@ $(document).ready(function () {
         }
     });
 
-    function GetUser(){
+    function GetUser() {
         window.parent.parent.Ts.Services.Customers.GetUser(userID, function (user) {
             var firstLast = user.FirstName + " " + user.LastName;
             $('#contactName').text(user.FirstName + " " + user.LastName);
@@ -295,11 +296,11 @@ $(document).ready(function () {
             var hasCustomerInsights = window.parent.parent.Ts.System.Organization.IsCustomerInsightsActive;
 
             if (hasCustomerInsights) {
-              var userAvatarPath = "../../../dc/" + user.OrganizationID + "/contactavatar/" + userID + "/48";
-              $('#contactAvatar').attr("src", userAvatarPath);
+                var userAvatarPath = "../../../dc/" + user.OrganizationID + "/contactavatar/" + userID + "/48";
+                $('#contactAvatar').attr("src", userAvatarPath);
             }
             else {
-              $('#contactAvatar').hide();
+                $('#contactAvatar').hide();
             }
 
             $('.userProperties #fieldName').text(firstLast.length > 1 ? user.FirstName + " " + user.LastName : "Unassigned");
@@ -312,9 +313,9 @@ $(document).ready(function () {
                 LoadEmails();
             }
         });
-        }
+    }
 
-    
+
     $('#reminderDate').datetimepicker({});
 
     var execGetCompany = null;
@@ -327,7 +328,7 @@ $(document).ready(function () {
     $('.userProperties').on('click', '#fieldName', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        else{
+        else {
             e.preventDefault();
             var fname, mname, lastname;
             var header = $(this).hide();
@@ -345,7 +346,7 @@ $(document).ready(function () {
                 $('<input type="text">')
                   .addClass('form-control')
                   .val(user.FirstName)
-                  .attr('placeholder','First Name')
+                  .attr('placeholder', 'First Name')
                   .appendTo(container1)
                   .focus();
                 $('<input type="text">')
@@ -455,56 +456,56 @@ $(document).ready(function () {
         }
     });
     $('.userProperties').on('click', '#fieldLinkedIn', function (e) {
-      if ($(this).hasClass('link')) {
-        window.open($(this).text(), '_blank');
-        return;
-      }
-      else {
-        e.preventDefault();
-        if (!$(this).hasClass('editable'))
-          return false;
+        if ($(this).hasClass('link')) {
+            window.open($(this).text(), '_blank');
+            return;
+        }
+        else {
+            e.preventDefault();
+            if (!$(this).hasClass('editable'))
+                return false;
 
-        window.parent.parent.Ts.System.logAction('Contact Detail - Edit Contact LinkedIn');
-        var header = $(this).hide();
-        var container = $('<div>')
-          .insertAfter(header);
+            window.parent.parent.Ts.System.logAction('Contact Detail - Edit Contact LinkedIn');
+            var header = $(this).hide();
+            var container = $('<div>')
+              .insertAfter(header);
 
-        var container1 = $('<div>')
-            .addClass('col-md-9')
-          .appendTo(container);
+            var container1 = $('<div>')
+                .addClass('col-md-9')
+              .appendTo(container);
 
-        var test = $('<input type="text">')
-          .addClass('col-md-10 form-control')
-          .val($(this).text() == "Empty" ? "" : $(this).text())
-          .appendTo(container1)
-          .focus();
+            var test = $('<input type="text">')
+              .addClass('col-md-10 form-control')
+              .val($(this).text() == "Empty" ? "" : $(this).text())
+              .appendTo(container1)
+              .focus();
 
-        $('<i>')
-          .addClass('col-md-1 fa fa-times')
-          .click(function (e) {
-            $(this).closest('div').remove();
-            header.show();
-            $('#contactEdit').removeClass("disabled");
-          })
-          .insertAfter(container1);
-        $('<i>')
-          .addClass('col-md-1 fa fa-check')
-          .click(function (e) {
-            window.parent.parent.Ts.Services.Customers.SetContactLinkedIn(userID, $(this).prev().find('input').val(), function (result) {
-              header.text(result);
-              $('#contactEdit').removeClass("disabled");
-            },
-            function (error) {
-              header.show();
-              alert('There was an error saving the customer linkedin.');
-              $('#contactEdit').removeClass("disabled");
-            });
-            $(this).closest('div').remove();
-            header.show();
-          })
-          .insertAfter(container1);
-        $('#contactEdit').addClass("disabled");
-      }
+            $('<i>')
+              .addClass('col-md-1 fa fa-times')
+              .click(function (e) {
+                  $(this).closest('div').remove();
+                  header.show();
+                  $('#contactEdit').removeClass("disabled");
+              })
+              .insertAfter(container1);
+            $('<i>')
+              .addClass('col-md-1 fa fa-check')
+              .click(function (e) {
+                  window.parent.parent.Ts.Services.Customers.SetContactLinkedIn(userID, $(this).prev().find('input').val(), function (result) {
+                      header.text(result);
+                      $('#contactEdit').removeClass("disabled");
+                  },
+                  function (error) {
+                      header.show();
+                      alert('There was an error saving the customer linkedin.');
+                      $('#contactEdit').removeClass("disabled");
+                  });
+                  $(this).closest('div').remove();
+                  header.show();
+              })
+              .insertAfter(container1);
+            $('#contactEdit').addClass("disabled");
+        }
     });
     $('.userProperties').on('click', '#fieldTitle', function (e) {
         e.preventDefault();
@@ -573,15 +574,17 @@ $(document).ready(function () {
         window.parent.parent.Ts.Services.Customers.SetContactPortalUser(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldPortalUser').text((result == 0 ? 'No' : 'Yes'));
             window.parent.parent.Ts.System.logAction('Contact Detail - Edit Contact Portal User');
-            if (result == 1 || _isAdmin || window.parent.parent.Ts.System.User.CanEditContact)
-                $('#btnSendNewPW').show();
-            else
-                $('#btnSendNewPW').hide();
+            if (result == 1 || _isAdmin || window.parent.parent.Ts.System.User.CanEditContact) {
+                $('#passwordResetBtnGroup').show();
+            }
+            else {
+                $('#passwordResetBtnGroup').hide();
+            }
 
             if (result == 2)
                 if (confirm("This users company does not have portal access enabled. Would you like to enable it now?"))
                     window.parent.parent.Ts.Services.Customers.SetCompanyPortalAccessUser(userID);
-                
+
         },
         function (error) {
             header.show();
@@ -676,23 +679,23 @@ $(document).ready(function () {
               .addClass('col-md-1 fa fa-check')
               .click(function (e) {
                   var neworgID = $(this).prev().find('input').data('item');
-                  if(neworgID != undefined){
-                  window.parent.parent.Ts.Services.Customers.SetContactCompany2(userID, neworgID, function (result) {
-                      if (result == 'email already exists') {
-                          header.show();
-                          alert('A contact with the same email already exists in the new company.');
+                  if (neworgID != undefined) {
+                      window.parent.parent.Ts.Services.Customers.SetContactCompany2(userID, neworgID, function (result) {
+                          if (result == 'email already exists') {
+                              header.show();
+                              alert('A contact with the same email already exists in the new company.');
+                              $('#contactEdit').removeClass("disabled");
+                              return;
+                          }
+                          header.text(result);
+                          header.attr('orgid', neworgID);
                           $('#contactEdit').removeClass("disabled");
-                          return;
-                      }
-                      header.text(result);
-                      header.attr('orgid', neworgID);
-                      $('#contactEdit').removeClass("disabled");
-                  },
-                  function (error) {
-                      header.show();
-                      alert('There was an error saving the customer company.');
-                      $('#contactEdit').removeClass("disabled");
-                  });
+                      },
+                      function (error) {
+                          header.show();
+                          alert('There was an error saving the customer company.');
+                          $('#contactEdit').removeClass("disabled");
+                      });
                   }
                   $(this).closest('div').remove();
                   header.show();
@@ -759,7 +762,7 @@ $(document).ready(function () {
     });
 
     $('#fileToggle').click(function (e) {
-    	  e.preventDefault();
+        e.preventDefault();
         window.parent.parent.Ts.System.logAction('Contact Detail - Toggle File Form');
         $('#fileForm').toggle();
     });
@@ -828,16 +831,16 @@ $(document).ready(function () {
         });
     });
 
-        $('#addressPanel').on('click', '.deladdress', function (e) {
-            e.preventDefault();
-            if (confirm('Are you sure you would like to remove this address?')) {
-                window.parent.parent.Ts.System.logAction('Contact Detail - Delete Address');
-                parent.privateServices.DeleteAddress($(this).attr('id'), function (e) {
-                    LoadAddresses(1);
-                });
-                
-            }
-        });
+    $('#addressPanel').on('click', '.deladdress', function (e) {
+        e.preventDefault();
+        if (confirm('Are you sure you would like to remove this address?')) {
+            window.parent.parent.Ts.System.logAction('Contact Detail - Delete Address');
+            parent.privateServices.DeleteAddress($(this).attr('id'), function (e) {
+                LoadAddresses(1);
+            });
+
+        }
+    });
 
     $("#addressPanel").on("click", '.editaddress', function (e) {
         e.preventDefault();
@@ -957,7 +960,7 @@ $(document).ready(function () {
             parent.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
                 LoadFiles();
             });
-            
+
         }
     });
 
@@ -1176,6 +1179,13 @@ $(document).ready(function () {
         });
     });
 
+    $('#btnResetChubPW').click(function (e) {
+        window.parent.parent.Ts.System.logAction('Contact Detail - Reset Hub Password');
+        window.parent.parent.Ts.Services.Customers.ChubPasswordReset(userID, function (msg) {
+            alert(msg);
+        });
+    })
+
     window.parent.parent.Ts.Services.Customers.GetContactTickets(userID, 0, function (e) {
         $('#openTicketCount').text("Open Tickets: " + e);
     });
@@ -1314,7 +1324,7 @@ $(document).ready(function () {
 
     function LoadPhoneNumbers(reload) {
         $('#phonePanel').empty();
-        window.parent.parent.Ts.Services.Customers.LoadPhoneNumbers(userID,window.parent.parent.Ts.ReferenceTypes.Users, function (phone) {
+        window.parent.parent.Ts.Services.Customers.LoadPhoneNumbers(userID, window.parent.parent.Ts.ReferenceTypes.Users, function (phone) {
             for (var i = 0; i < phone.length; i++) {
                 $('#phonePanel').append("<div class='form-group content'> \
                                         <label for='inputName' class='col-xs-4 control-label'>" + phone[i].PhoneTypeName + "</label> \
@@ -1341,9 +1351,9 @@ $(document).ready(function () {
                 $('#addressPanel').append("<div class='form-group content'> \
                                         <label for='inputName' class='col-xs-4 control-label'>" + address[i].Description + "</label> \
                                         <div class='col-md-5'> \
-                                            " + ((address[i].Addr1 != null ) ? "<p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a> " + address[i].Addr1 + "</p>" : "") + " \
-                                            " + ((address[i].Addr2 != null ) ? "<p class='form-control-static pt0'>" + address[i].Addr2 + "</p>" : "") + " \
-                                            " + ((address[i].Addr3 != null ) ? "<p class='form-control-static pt0'>" + address[i].Addr3 + "</p>" : "") + " \
+                                            " + ((address[i].Addr1 != null) ? "<p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a> " + address[i].Addr1 + "</p>" : "") + " \
+                                            " + ((address[i].Addr2 != null) ? "<p class='form-control-static pt0'>" + address[i].Addr2 + "</p>" : "") + " \
+                                            " + ((address[i].Addr3 != null) ? "<p class='form-control-static pt0'>" + address[i].Addr3 + "</p>" : "") + " \
                                             " + ((address[i].City != null) ? "<p class='form-control-static pt0'>" + address[i].City + ((address[i].State != null) ? ", " + address[i].State : "") + ((address[i].Zip != null) ? " " + address[i].Zip : "") + "</p>" : "") + " \
                                             " + ((address[i].Country != null && address[i].Country.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
                                         </div> \
@@ -1366,8 +1376,7 @@ $(document).ready(function () {
         });
     }
 
-    function LoadProperties()
-    {
+    function LoadProperties() {
         window.parent.parent.Ts.Services.Customers.LoadContactProperties(userID, function (user) {
 
             $('#userInfo').html(user[0]);
@@ -1382,8 +1391,7 @@ $(document).ready(function () {
             else
                 $('#btnSendNewPW').hide();
 
-            if($('#fieldEmail').text() != "Empty")
-            {
+            if ($('#fieldEmail').text() != "Empty") {
                 $('.userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
                 $('.userProperties #fieldEmail').addClass("link");
                 $('#contactEmailButton').show();
@@ -1394,9 +1402,8 @@ $(document).ready(function () {
                 $('.userProperties #fieldCompany').addClass("link");
             });
 
-            if ($('#fieldLinkedIn').text() != "Empty")
-            {
-              $('.userProperties #fieldLinkedIn').addClass("link");
+            if ($('#fieldLinkedIn').text() != "Empty") {
+                $('.userProperties #fieldLinkedIn').addClass("link");
             }
         });
 
@@ -1411,7 +1418,7 @@ $(document).ready(function () {
     }
 
     function UpdateRecentView() {
-        window.parent.parent.Ts.Services.Customers.UpdateRecentlyViewed("u"+userID, function (resultHtml) {
+        window.parent.parent.Ts.Services.Customers.UpdateRecentlyViewed("u" + userID, function (resultHtml) {
             if (window.parent.document.getElementById('iframe-mniCustomers'))
                 window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
         });
@@ -1422,7 +1429,7 @@ $(document).ready(function () {
         var users = window.parent.parent.Ts.Cache.getUsers();
         if (users != null) {
             for (var i = 0; i < users.length; i++) {
-                var option =  $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('#reminderUsers');
+                var option = $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('#reminderUsers');
                 if (window.parent.parent.Ts.System.User.UserID === users[i].UserID) { option.attr('selected', 'selected'); }
             }
         }
@@ -1508,7 +1515,7 @@ $(document).ready(function () {
         var max = 5;
         if (tickets.length < 5)
             max = tickets.length;
-        
+
 
         for (var i = 0; i < max; i++) {
             var div = $('<div>')
@@ -1549,7 +1556,7 @@ $(document).ready(function () {
     function LoadHistory(start) {
 
         if (start == 1)
-        $('#tblHistory tbody').empty();
+            $('#tblHistory tbody').empty();
         window.parent.parent.Ts.Services.Customers.LoadContactHistory(userID, start, function (history) {
             for (var i = 0; i < history.length; i++) {
                 $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
@@ -1584,61 +1591,61 @@ $(document).ready(function () {
                 //chartData.pop();
                 //chartData.push(["No Open Tickets", 1]);
                 //$('#openChart').text("No Open Tickes").addClass("text-center");
-                $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center chart-header").attr("title","No Open Tickets");
+                $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center chart-header").attr("title", "No Open Tickets");
             }
             else {
                 for (var i = 0; i < chartData.length; i++) {
                     openCount = openCount + chartData[i][1];
                 }
-            $('#openChart').highcharts({
-                chart: {
-                    plotBackgroundColor: null,
-                    plotBorderWidth: null,
-                    plotShadow: false,
-                    height: 250,
-                },
-                credits: {
-                    enabled: false
-                },
-                title: {
-                    text: 'Open Tickets ' + openCount,
-                    style: {
-                        "fontSize": "14px"
-                    }
-                },
-                tooltip: {
-                    //formatter: function() {
-                    //    var tooltip;
-                    //    if (this.y == 0) {
-                    //        tooltip = this.series.name + ": 0 - <b>100%</b>";
-                    //    }
-                    //    else {
-                    //        tooltip = this.series.name + ": " + this.y + " - <b>"+ this.percentage +"</b>";
-                    //        //tooltip =  '<span style="color:' + this.series.color + '">' + this.series.name + '</span>: <b>' + this.y + '</b><br/>';
-                    //    }
-                    //    return tooltip;
-                    //}
-
-                    pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: false
+                $('#openChart').highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        height: 250,
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Open Tickets ' + openCount,
+                        style: {
+                            "fontSize": "14px"
                         }
-                    }
-                },
-                series: [{
-                    type: 'pie',
-                    name: 'Open Tickets',
-                    data: []
-                }]
-            });
+                    },
+                    tooltip: {
+                        //formatter: function() {
+                        //    var tooltip;
+                        //    if (this.y == 0) {
+                        //        tooltip = this.series.name + ": 0 - <b>100%</b>";
+                        //    }
+                        //    else {
+                        //        tooltip = this.series.name + ": " + this.y + " - <b>"+ this.percentage +"</b>";
+                        //        //tooltip =  '<span style="color:' + this.series.color + '">' + this.series.name + '</span>: <b>' + this.y + '</b><br/>';
+                        //    }
+                        //    return tooltip;
+                        //}
 
-            var chart = $('#openChart').highcharts();
-            chart.series[0].setData(chartData);
+                        pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: 'Open Tickets',
+                        data: []
+                    }]
+                });
+
+                var chart = $('#openChart').highcharts();
+                chart.series[0].setData(chartData);
             }
         });
 
@@ -1663,48 +1670,48 @@ $(document).ready(function () {
                 for (var i = 0; i < chartData.length; i++) {
                     closedCount = closedCount + chartData[i][1];
                 }
-            $('#closedChart').highcharts({
-                chart: {
-                    plotBackgroundColor: null,
-                    plotBorderWidth: null,
-                    plotShadow: false,
-                    height: 250,
-                },
-                credits: {
-                    enabled: false
-                },
-                title: {
-                    text: 'Closed Tickets ' + closedCount,
-                    style: {
-                        "fontSize": "14px"
-                    }
-                },
-                tooltip: {
-                    pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: false
+                $('#closedChart').highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        height: 250,
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Closed Tickets ' + closedCount,
+                        style: {
+                            "fontSize": "14px"
                         }
-                    }
-                },
-                series: [{
-                    type: 'pie',
-                    name: 'Closed Tickets',
-                    data: []
-                }]
-            });
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: 'Closed Tickets',
+                        data: []
+                    }]
+                });
 
-            var chart = $('#closedChart').highcharts();
-            chart.series[0].setData(chartData);
+                var chart = $('#closedChart').highcharts();
+                chart.series[0].setData(chartData);
             }
         });
     }
     $('.userProperties p').toggleClass("editable");
-    
+
     window.parent.parent.Ts.Services.Customers.LoadAlert(userID, window.parent.parent.Ts.ReferenceTypes.Users, function (note) {
         if (note != null) {
             $('#modalAlertMessage').html(note.Description);
@@ -2000,62 +2007,62 @@ $(document).ready(function () {
     });
 
     var getAssets = function (request, response) {
-      if (_execGetAsset) { _execGetAsset._executor.abort(); }
-      _execGetAsset = window.parent.parent.Ts.Services.Organizations.GetWarehouseAssets(request.term, function (result) { response(result); });
+        if (_execGetAsset) { _execGetAsset._executor.abort(); }
+        _execGetAsset = window.parent.parent.Ts.Services.Organizations.GetWarehouseAssets(request.term, function (result) { response(result); });
     }
 
     $('#inputAsset').autocomplete({
-      open: function () {
-        $('.ui-menu').width($('#inputAsset').width());
-      },
-      minLength: 2,
-      source: getAssets,
-      select: function (event, ui) {
-        $(this).data('item', ui.item);
-      }
+        open: function () {
+            $('.ui-menu').width($('#inputAsset').width());
+        },
+        minLength: 2,
+        source: getAssets,
+        select: function (event, ui) {
+            $(this).data('item', ui.item);
+        }
     });
 
     $('#btnSaveAssign').click(function (e) {
-      if ($('#inputAsset').data('item') && $('#dateShipped').val()) {
-        var assetAssignmentInfo = new Object();
+        if ($('#inputAsset').data('item') && $('#dateShipped').val()) {
+            var assetAssignmentInfo = new Object();
 
-        assetAssignmentInfo.RefID = userID;
-        assetAssignmentInfo.RefType = 32;
-        assetAssignmentInfo.DateShipped = $('#dateShipped').val();
-        assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
-        assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
-        assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
-        assetAssignmentInfo.Comments = $('#comments').val();
-        assetAssignmentInfo.AssigneeName = $('#contactName').text() + ' [' + $('#fieldCompany').text() + ']';
+            assetAssignmentInfo.RefID = userID;
+            assetAssignmentInfo.RefType = 32;
+            assetAssignmentInfo.DateShipped = $('#dateShipped').val();
+            assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
+            assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
+            assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
+            assetAssignmentInfo.Comments = $('#comments').val();
+            assetAssignmentInfo.AssigneeName = $('#contactName').text() + ' [' + $('#fieldCompany').text() + ']';
 
-        window.parent.parent.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, parent.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
-          window.parent.parent.Ts.System.logAction('Contact Detail - Asset Assigned');
-          $('#modalAssign').modal('hide');
-          $('.assetList').prepend(assetHtml);
-        }, function () {
-          alert('There was an error assigning this asset.  Please try again.');
-        });
-      }
-      else {
-        if (!$('#inputAsset').data('item')) {
-          alert("Please select a valid asset to assign to this customer.");
+            window.parent.parent.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, parent.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
+                window.parent.parent.Ts.System.logAction('Contact Detail - Asset Assigned');
+                $('#modalAssign').modal('hide');
+                $('.assetList').prepend(assetHtml);
+            }, function () {
+                alert('There was an error assigning this asset.  Please try again.');
+            });
         }
         else {
-          alert("Please enter a valid date shipped.");
+            if (!$('#inputAsset').data('item')) {
+                alert("Please select a valid asset to assign to this customer.");
+            }
+            else {
+                alert("Please enter a valid date shipped.");
+            }
         }
-      }
-      //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-      //      window.parent.parent.Ts.Services.System.EditReminder(null, window.parent.parent.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), window.parent.parent.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
-      //      $('#modalReminder').modal('hide');
-      //    }
-      //    else
-      //      alert("Please fill in all the fields");
+        //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
+        //      window.parent.parent.Ts.Services.System.EditReminder(null, window.parent.parent.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), window.parent.parent.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+        //      $('#modalReminder').modal('hide');
+        //    }
+        //    else
+        //      alert("Please fill in all the fields");
     });
 
     function LoadProducts() {
 
         if (!_productHeadersAdded) {
-          window.parent.parent.Ts.Services.Customers.LoadcustomContactProductHeaders(function (headers) {
+            window.parent.parent.Ts.Services.Customers.LoadcustomContactProductHeaders(function (headers) {
                 for (var i = 0; i < headers.length; i++) {
                     $('#tblProducts th:last').after('<th>' + headers[i] + '</th>');
                 }
@@ -2077,10 +2084,10 @@ $(document).ready(function () {
                 var html;
 
                 if (window.parent.parent.Ts.System.User.CanEditCompany || _isAdmin) {
-                  html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
+                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
                 else {
-                  html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
+                    html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
                 var tr = $('<tr>')
                 .attr('id', product[i].UserProductID)
@@ -2101,13 +2108,13 @@ $(document).ready(function () {
     }
 
     function LoadCustomControls(refType) {
-      window.parent.parent.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
-        $('#customProductsControls').append(html);
+        window.parent.parent.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
+            $('#customProductsControls').append(html);
 
-        $('#customProductsControls .datepicker').datetimepicker({ pickTime: false });
-        $('#customProductsControls .datetimepicker').datetimepicker({});
-        $('#customProductsControls .timepicker ').datetimepicker({ pickDate: false });
-      });
+            $('#customProductsControls .datepicker').datetimepicker({ pickTime: false });
+            $('#customProductsControls .datetimepicker').datetimepicker({});
+            $('#customProductsControls .timepicker ').datetimepicker({ pickDate: false });
+        });
     }
 
     function LoadInventory() {
@@ -2286,7 +2293,7 @@ var appendCustomValues = function (fields) {
             containerR.append(div);
         else
             containerL.append(div);
-        
+
     }
     $('.customProperties p').toggleClass("editable");
     //$('#contactName').toggleClass("editable");
@@ -2458,7 +2465,7 @@ var appendCustomEditBool = function (field, element) {
 }
 
 var appendCustomEdit = function (field, element) {
-    
+
     var div = $('<div>')
     .addClass('col-md-8')
     .appendTo(element);
@@ -2492,8 +2499,8 @@ var appendCustomEdit = function (field, element) {
                 .focus();
 
               if (field.Mask) {
-                input.mask(field.Mask);
-                input.attr("placeholder", field.Mask);
+                  input.mask(field.Mask);
+                  input.attr("placeholder", field.Mask);
               }
 
               $('<i>')
@@ -2768,61 +2775,61 @@ function openNote(noteID) {
 }
 
 function GetTinyMCEFontName(fontFamily) {
-  var result = '';
-  switch (fontFamily) {
-    case 1:
-      result = "'andale mono', times";
-      break;
-    case 2:
-      result = "arial, helvetica, sans-serif";
-      break;
-    case 3:
-      result = "'arial black', 'avant garde'";
-      break;
-    case 4:
-      result = "'book antiqua', palatino";
-      break;
-    case 5:
-      result = "'comic sans ms', sans-serif";
-      break;
-    case 6:
-      result = "'courier new', courier";
-      break;
-    case 7:
-      result = "georgia, palatino";
-      break;
-    case 8:
-      result = "helvetica";
-      break;
-    case 9:
-      result = "impact, chicago";
-      break;
-    case 10:
-      result = "symbol";
-      break;
-    case 11:
-      result = "tahoma, arial, helvetica, sans-serif";
-      break;
-    case 12:
-      result = "terminal, monaco";
-      break;
-    case 13:
-      result = "'times new roman', times";
-      break;
-    case 14:
-      result = "'trebuchet ms', geneva";
-      break;
-    case 15:
-      result = "verdana, geneva";
-      break;
-    case 16:
-      result = "webdings";
-      break;
-    case 17:
-      result = "wingdings, 'zapf dingbats'";
-      break;
-  }
-  return result;
+    var result = '';
+    switch (fontFamily) {
+        case 1:
+            result = "'andale mono', times";
+            break;
+        case 2:
+            result = "arial, helvetica, sans-serif";
+            break;
+        case 3:
+            result = "'arial black', 'avant garde'";
+            break;
+        case 4:
+            result = "'book antiqua', palatino";
+            break;
+        case 5:
+            result = "'comic sans ms', sans-serif";
+            break;
+        case 6:
+            result = "'courier new', courier";
+            break;
+        case 7:
+            result = "georgia, palatino";
+            break;
+        case 8:
+            result = "helvetica";
+            break;
+        case 9:
+            result = "impact, chicago";
+            break;
+        case 10:
+            result = "symbol";
+            break;
+        case 11:
+            result = "tahoma, arial, helvetica, sans-serif";
+            break;
+        case 12:
+            result = "terminal, monaco";
+            break;
+        case 13:
+            result = "'times new roman', times";
+            break;
+        case 14:
+            result = "'trebuchet ms', geneva";
+            break;
+        case 15:
+            result = "verdana, geneva";
+            break;
+        case 16:
+            result = "webdings";
+            break;
+        case 17:
+            result = "wingdings, 'zapf dingbats'";
+            break;
+    }
+    return result;
 }
 
 function LoadProductFamilies() {
