@@ -1,6 +1,7 @@
 ﻿var execSuggestedSolutions = null;
 
 var initEditorV2 = function (element, callback) {
+    _insertedKBTicketID = null;
     execSuggestedSolutions = null;
 	top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
 		element.summernote({
@@ -172,6 +173,7 @@ var initEditorV2 = function (element, callback) {
 			                var ticket = result[0];
 			                var actions = result[1];
 
+			                _insertedKBTicketID = ticket.TicketID;
 			                var html = '<div>';
 
 			                if (actions.length == 0) {

@@ -345,6 +345,7 @@ public partial class Dialogs_User : BaseDialogPage
             string password = DataUtils.GenerateRandomPassword();
             user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
             user.IsPasswordExpired = true;
+            user.PasswordCreatedUtc = DateTime.UtcNow;
             user.Collection.Save();
             if (cbEmail.Checked) EmailPosts.SendWelcomeTSUser(UserSession.LoginUser, user.UserID, password);
 

@@ -3724,6 +3724,24 @@ WHERE t.TicketID = @TicketID
 
                 errLocation = string.Format("Error deleting losing ticket from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
             }
+
+            try
+            {
+                ticket.ModifierID = TSAuthentication.GetLoginUser().UserID;
+                ticket.DateModified = DateTime.UtcNow;
+                ticket.Collection.Save();
+            }
+            catch (Exception e)
+            {
+                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
+                log.ExceptionName = "Merge Exception " + e.Source;
+                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                log.Collection.Save();
+
+                errLocation = string.Format("Error updating winning ticket modifier and date modified. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+            }
+
             return errLocation;
         }
 
