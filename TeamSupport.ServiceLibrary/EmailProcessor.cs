@@ -742,6 +742,8 @@ namespace TeamSupport.ServiceLibrary
                     return;
                 }
 
+                //If is IsClosedEmail and modifier is Portal user then do not exclude on email
+                bool removeModifier = true;
                 List<UserEmail> userList;
                 List<UserEmail> advUsers = new List<UserEmail>();
                 AddAdvancedPortalUsers(advUsers, ticket);
@@ -814,30 +816,13 @@ namespace TeamSupport.ServiceLibrary
                 }
 
                 TicketStatus status = TicketStatuses.GetTicketStatus(LoginUser, ticket.TicketStatusID);
-
-                //If is IsClosedEmail and modifier is Portal user then do not exclude on email
-                bool removeModifier = true;
-
-                if (status.IsClosedEmail && modifierID > 0)
-                {
-                    ContactsView contacts = new ContactsView(LoginUser);
-                    contacts.LoadByUserID(modifierID);
-                    ContactsViewItem contact = contacts.Where(p => p.OrganizationParentID == ticketOrganization.OrganizationID).FirstOrDefault();
-
-                    if (contact != null)
-                    {
-                        removeModifier = !contacts[0].IsPortalUser;
-                    }
-                }
+                User modifierUser = AddPortalModifierIfClosing(userList, ticket, isBasic, status);
+                removeModifier = modifierUser == null;
 
                 if (removeModifier)
                 {
                     RemoveUser(userList, modifierID);
                     Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
-                }
-                else
-                {
-                    Logs.WriteEvent(string.Format("Modifier ({0}) is a Portal user so it won't be removed, so he/she can receive the closed email.", modifierName));
                 }
 
 
@@ -912,7 +897,7 @@ namespace TeamSupport.ServiceLibrary
                             Logs.WriteEvent("Excluding creator off the modified ticket email when it is New.");
                         }
 
-                        if (userEmail != null && modifierID != userEmail.UserID && !excludeCreator)
+                        if (userEmail != null && (modifierID != userEmail.UserID || (modifierID == userEmail.UserID && !removeModifier)) && !excludeCreator)
                         {
                             message.Body = body;
                             message.Subject = subject;
@@ -1588,6 +1573,39 @@ namespace TeamSupport.ServiceLibrary
                     Logs.WriteEventFormat("{0} ({1}) <{2}> advanced portal user was not added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
                 }
             }
+        }
+
+        private User AddPortalModifierIfClosing(List<UserEmail> userList, Ticket ticket, bool isProcessingBasicPortal, TicketStatus status)
+        {
+            Users users;
+            User user = null;
+
+            if (status.IsClosedEmail && ticket.ModifierID > 0)
+            {
+                users = new Users(LoginUser);
+                users.LoadByUserID(ticket.ModifierID);
+
+                if (users != null && users.Count > 0)
+                {
+                    user = users.FirstOrDefault();
+
+                    if ((user.IsPortalUser && !isProcessingBasicPortal) || (!user.IsPortalUser && isProcessingBasicPortal))
+                    {
+                        AddUser(userList, user);
+                        Logs.WriteEventFormat("{0} ({1}) <{2}> modifier user was added to the list if it wasn't there already.", user.DisplayName, user.UserID.ToString(), user.Email);
+                    }
+                    else
+                    {
+                        Logs.WriteEventFormat("{0} ({1}) <{2}> modifier user is not a Portal User, not added to the list.", user.DisplayName, user.UserID.ToString(), user.Email);
+                    }
+                }
+                else
+                {
+                    Logs.WriteEventFormat("ModifierId {0} was not found", ticket.ModifierID.ToString());
+                }
+            }
+
+            return user;
         }
 
         private void AddUsersToAddresses(MailAddressCollection collection, List<UserEmail> users, int modifierID)
