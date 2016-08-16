@@ -29,6 +29,8 @@ namespace TSWebServices
             //parentOrganizationID = (parentOrganization != null) ? parentOrganization.OrganizationID : 0;
         }
 
+        #region ClientServices
+
         [WebMethod]
         public bool CheckChatStatus(string chatGuid)
         {
@@ -102,6 +104,16 @@ namespace TSWebServices
             else return JsonConvert.SerializeObject(users[0].GetProxy());
         }
 
+        #endregion
+
+        #region AgentServices
+
+
+
+        #endregion
+
+        #region PrivateMethods
+
         private Organization GetOrganization(string orgGuid)
         {
             Organizations organizations = new Organizations(LoginUser.Anonymous);
@@ -132,10 +144,15 @@ namespace TSWebServices
             return requests[0];
         }
 
+        #endregion
+
+        #region Classes
+
         public class ChatViewObject
         {
             public ChatRequestProxy Chat { get; set; }
             public ChatClientProxy Initiator { get; set; }
         }
+        #endregion
     }
 }
