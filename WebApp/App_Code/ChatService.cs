@@ -66,7 +66,7 @@ namespace TSWebServices
                 user_id = client.ChatClientID.ToString(),
                 user_info = new
                 {
-                    name = client.FirstName +  ' ' + client.LastName,
+                    name = client.FirstName + ' ' + client.LastName,
                     company = client.CompanyName
                 }
 
@@ -119,6 +119,75 @@ namespace TSWebServices
         {
             int chatID = ChatRequests.AcceptRequest(loginUser, loginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
             return chatID;
+        }
+
+        [WebMethod]
+        public int AddTicket(int chatID, int ticketID)
+        {
+            Chat chat = Chats.GetChat(loginUser, chatID);
+            if (chat != null)
+            {
+                Actions actions = new Actions(loginUser);
+                TeamSupport.Data.Action chatAction = actions.AddNewAction();
+                chatAction.ActionTypeID = null;
+                chatAction.Name = "Chat";
+                chatAction.ActionSource = "Chat";
+                chatAction.SystemActionTypeID = SystemActionType.Chat;
+                chatAction.Description = chat.GetHtml(true, loginUser.OrganizationCulture);
+                chatAction.IsVisibleOnPortal = false;
+                chatAction.IsKnowledgeBase = false;
+                chatAction.TicketID = ticketID;
+                actions.Save();
+                chat.ActionID = chatAction.ActionID;
+                chat.Collection.Save();
+
+                (new Tickets(loginUser).AddContact(chat.GetInitiatorLinkedUserID(), ticketID);
+            }
+            return ticketID;
+        }
+
+        [WebMethod]
+        public void RequestTransfer(int chatID, int userID)
+        {
+            ChatRequests.RequestTransfer(loginUser, chatID, userID);
+        }
+
+        [WebMethod]
+        public void RequestInvite(int chatID, int userID)
+        {
+            ChatRequests.RequestInvite(loginUser, chatID, userID);
+        }
+
+        [WebMethod]
+        public void PostMessage(string message, int chatID)
+        {
+            Chat chat = Chats.GetChat(loginUser, chatID);
+            if (chat.OrganizationID != loginUser.OrganizationID) return;
+            ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
+            chatMessage.Message = message;
+            chatMessage.ChatID = chatID;
+            chatMessage.PosterID = loginUser.UserID;
+            chatMessage.PosterType = ChatParticipantType.User;
+            chatMessage.Collection.Save();
+            Users.UpdateUserActivityTime(loginUser, loginUser.UserID);
+        }
+
+        [WebMethod]
+        public bool CloseChat(int chatID)
+        {
+            Chat chat = Chats.GetChat(loginUser, chatID);
+            if (chat.OrganizationID != loginUser.OrganizationID) return false;
+            Chats.LeaveChat(loginUser, loginUser.UserID, ChatParticipantType.User, chatID);
+            return true;
+        }
+
+        [WebMethod]
+        public bool ToggleAvailable()
+        {
+            ChatUserSetting setting = ChatUserSettings.GetSetting(loginUser, loginUser.UserID);
+            setting.IsAvailable = !setting.IsAvailable;
+            setting.Collection.Save();
+            return setting.IsAvailable;
         }
 
         #endregion
