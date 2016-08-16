@@ -1,6 +1,8 @@
 ﻿$(document).ready(function () {
     //apiKey = "45228242";
 
+    SetupChatRequests();
+
     $('.page-loading').hide().next().show();
 
     $(".chat-request").click(function (e) {
@@ -13,5 +15,11 @@
                          '<button class="btn btn-default">Accept</button>')
                          .addClass('open-request');
     });
+
+    function SetupChatRequests() {
+        parent.Ts.Services.Chat.GetChats(function (data) {
+            console.log(data);
+        });
+    }
 
 });
