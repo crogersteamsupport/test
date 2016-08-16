@@ -19,14 +19,11 @@ namespace TSWebServices
         PusherOptions options = new PusherOptions();
         Pusher pusher;
         LoginUser loginUser;
-        //Organization parentOrganization;
-        //int parentOrganizationID;
+        Organization parentOrganization;
         public ChatService() {
             options.Encrypted = true;
             pusher = new Pusher("223753", "0cc6bf2df4f20b16ba4d", "119f91ed19272f096383", options);
             loginUser = TSAuthentication.GetLoginUser();
-            //parentOrganization = GetOrganization();
-            //parentOrganizationID = (parentOrganization != null) ? parentOrganization.OrganizationID : 0;
         }
 
         #region ClientServices
@@ -108,7 +105,21 @@ namespace TSWebServices
 
         #region AgentServices
 
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string GetChats()
+        {
+            ChatRequests requests = new ChatRequests(loginUser);
+            requests.LoadWaitingRequests(loginUser.UserID, loginUser.OrganizationID);
+            return JsonConvert.SerializeObject(requests.GetChatRequestProxies());
+        }
 
+        [WebMethod]
+        public int AcceptRequest(int chatRequestID)
+        {
+            int chatID = ChatRequests.AcceptRequest(loginUser, loginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
+            return chatID;
+        }
 
         #endregion
 
