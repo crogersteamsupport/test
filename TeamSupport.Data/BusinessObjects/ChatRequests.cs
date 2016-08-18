@@ -107,12 +107,47 @@ ORDER BY cr.DateCreated ASC
       }
     }
 
-    /// <summary>
-    /// Load chat requests for a user
-    /// </summary>
-    /// <param name="userID">The user</param>
-    /// <param name="organizationID">The user's organization</param>
-    public int GetLastRequestID(int userID, int organizationID)
+        /// <summary>
+        /// Load chat requests for a user
+        /// </summary>
+        /// <param name="userID">The user</param>
+        /// <param name="organizationID">The user's organization</param>
+        public void LoadPendingRequests(int userID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"  
+                                        SELECT *
+                                        FROM ChatRequests cr
+                                        WHERE cr.IsAccepted = 0
+	                                        AND cr.OrganizationID = @OrganizationID
+	                                        AND (
+		                                        cr.GroupID IS NULL
+		                                        OR cr.GroupID IN (
+			                                        SELECT GroupID
+			                                        FROM GroupUsers
+			                                        WHERE UserID = @UserID
+			                                        )
+		                                        )
+	                                        AND (
+		                                        cr.TargetUserID IS NULL
+		                                        OR cr.TargetUserID = @UserID
+		                                        )
+                                        ORDER BY cr.DateCreated ASC
+                                        ";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
+
+        /// <summary>
+        /// Load chat requests for a user
+        /// </summary>
+        /// <param name="userID">The user</param>
+        /// <param name="organizationID">The user's organization</param>
+        public int GetLastRequestID(int userID, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
       {

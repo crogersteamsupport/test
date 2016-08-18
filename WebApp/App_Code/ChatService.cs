@@ -8,6 +8,7 @@ using TeamSupport.WebUtils;
 using System.Web.Script.Serialization;
 using System;
 using System.Web;
+using System.Collections.Generic;
 
 namespace TSWebServices
 {
@@ -107,11 +108,27 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string GetChats()
+        public List<ChatViewObject> GetChats()
         {
+            List<ChatViewObject> pendingChats = new List<ChatViewObject>();
             ChatRequests requests = new ChatRequests(loginUser);
-            requests.LoadWaitingRequests(loginUser.UserID, loginUser.OrganizationID);
-            return JsonConvert.SerializeObject(requests.GetChatRequestProxies());
+            requests.LoadPendingRequests(loginUser.UserID, loginUser.OrganizationID);
+
+            if(!requests.IsEmpty)
+            {
+                foreach (ChatRequest request in requests)
+                {
+                    ChatViewObject vm = new ChatViewObject
+                    {
+                        Chat = request.GetProxy(),
+                        Initiator = GetParticipant(request.RequestorID).GetProxy()
+                    };
+
+                    pendingChats.Add(vm);
+                }
+            }
+
+            return pendingChats;
         }
 
         [WebMethod]
