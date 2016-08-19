@@ -138,6 +138,27 @@ namespace TSWebServices
             return chatID;
         }
 
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void AgentAuth(string channel_name, string socket_id, int chatId)
+        {
+            var channelData = new PresenceChannelData()
+            {
+                user_id = loginUser.UserID.ToString(),
+                user_info = new
+                {
+                    name = loginUser.GetUserFullName(),
+                    isAgent = true
+                }
+
+            };
+
+            var auth = pusher.Authenticate(channel_name, socket_id, channelData);
+            var json = auth.ToJson();
+            Context.Response.Write(json);
+        }
+
         [WebMethod]
         public int AddTicket(int chatID, int ticketID)
         {

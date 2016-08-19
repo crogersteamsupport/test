@@ -12,7 +12,7 @@
     $("#message-form").submit(function (e) {
         e.preventDefault();
         console.log(channel.members.me);
-        var messageData = { channelName: 'presence-test', message: $('#message').val(), chatID: chatID, userID: participantID };
+        var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
         
         IssueAjaxRequest("AddMessage", messageData,
         function (result) {
@@ -39,7 +39,7 @@ function createMessageElement(messageData) {
 }
 
 function setupChat(chatID, participantID, callback) {
-    var channelName = 'presence-test';
+    var channelName = 'presence-' + chatID;
     var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
         authEndpoint: service + 'Auth', auth: {
             params: {

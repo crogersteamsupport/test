@@ -44,6 +44,10 @@
 
     function AcceptRequest(ChatRequestID, innerString, parentEl)  {
         parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, function (chatId) {
+            setupChat(chatId, function () {
+                console.log('')
+            });
+
             parentEl.remove();
             MoveAcceptedRequest(innerString, chatId);
         });
