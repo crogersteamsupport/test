@@ -1225,14 +1225,16 @@ ORDER BY TicketNumber DESC";
         ),
 
         PageQuery AS (
-          SELECT  * FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
+          SELECT  *, (SELECT MAX(RowNum) FROM RowQuery) AS 'TotalRecords' FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
         )
 
-        SELECT PageQuery.RowNum, {3}
-        FROM PageQuery
-        INNER JOIN UserTicketsView tv ON tv.TicketID = PageQuery.TicketID 
+        SELECT * INTO #Tickets FROM PageQuery;
+
+        SELECT Result.RowNum, Result.TotalRecords, {3}
+        FROM #Tickets AS Result
+        INNER JOIN UserTicketsView tv ON tv.TicketID = Result.TicketID
         WHERE tv.ViewerID = @ViewerID
-        ORDER BY PageQuery.RowNum ASC
+        ORDER BY Result.RowNum ASC
         ";
 
             command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);
