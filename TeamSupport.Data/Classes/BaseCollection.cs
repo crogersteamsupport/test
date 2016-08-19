@@ -144,23 +144,45 @@ namespace TeamSupport.Data
                 }
             }
 
-            // Ticket 15640
-            // Per a skype conversation with Jesus adding AMCO Sales (797841)
-            if ((_baseCollection.LoginUser.OrganizationID == 566596 || _baseCollection.LoginUser.OrganizationID == 797841) && _baseCollection.TableName == "TicketsView")
+            if (_baseCollection.TableName == "TicketsView")
             {
                 Organizations customers = new Organizations(_baseCollection.LoginUser);
                 customers.LoadByTicketIDOrderedByDateCreated((int)Row["TicketID"]);
                 string customerID = string.Empty;
+
+                writer.WriteStartElement("Customers");
+
                 for (int i = 0; i < customers.Count; i++)
                 {
-                    // Per a skype conversation with Jesus their _Unknown Company needs to be excluded. 
+                    // Per a skype conversation with Jesus (AMCO) their _Unknown Company needs to be excluded. This part originally requested and working for them since Ticket 15640
                     if (customers[i].OrganizationID != 624447)
                     {
                         customerID = customers[i].OrganizationID.ToString();
-                        break;
+                        writer.WriteStartElement("Customer");
+                        writer.WriteElementString("CustomerID", customerID);
+                        writer.WriteElementString("CustomerName", customers[i].Name);
+                        writer.WriteEndElement();
                     }
                 }
-                writer.WriteElementString("CustomerID", customerID);
+
+                writer.WriteEndElement();
+
+                ContactsView contacts = new ContactsView(_baseCollection.LoginUser);
+                contacts.LoadByTicketIDOrderedByDateCreated((int)Row["TicketID"]);
+                string contactId = string.Empty;
+
+                writer.WriteStartElement("Contacts");
+
+                for (int i =0; i < contacts.Count; i++)
+                {
+                    contactId = contacts[i].UserID.ToString();
+                    writer.WriteStartElement("Contact");
+                    writer.WriteElementString("ContactID", contactId);
+                    writer.WriteElementString("ContactName", contacts[i].Name);
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
             }
 
             if (includeCustomFields)
