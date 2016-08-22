@@ -1408,7 +1408,7 @@ AND ts.IsClosed = 0";
             {
                 StringBuilder builder = new StringBuilder();
                 builder.Append(@"
-                                SELECT t.TicketID, t.Name, t.DateModified
+                                SELECT t.TicketID, t.Name, t.DateModified, t.TicketStatusID, t.IsKnowledgeBase
                                 FROM Tickets as T
                                 Inner Join ForumTickets as FT on T.TicketID = FT.TicketID
                                 Inner Join ForumCategories as FC on FT.ForumCategory = FC.CategoryID
