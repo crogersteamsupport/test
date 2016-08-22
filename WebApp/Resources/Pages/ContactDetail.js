@@ -164,7 +164,7 @@ $(document).ready(function () {
         $('#contactTabs a:first').tab('show');
     }
 
-    if (!_isAdmin && !_mainFrame.Ts.System.User.CanEditContact)
+    if (!_isAdmin && !_mainFrame.Ts.System.User.CanEditContact) {
         $('#contactEdit').hide();
         $('#contactPhoneButton').hide();
         $('#contactAddressButton').hide();
