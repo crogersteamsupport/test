@@ -2214,7 +2214,7 @@ namespace TSWebServices
                     //We tried to add the customers and or contacts assigned to the asset, but if something goes wrong, we just move on.
                 }
             }
-            else if (asset.Location == "2")
+            else if (asset.Location == "2" && account.AutoAssignCustomerWithAssetOnTickets)
             {
                 bool assignAssetFlag = false;
                 int? assignedTo = null;
