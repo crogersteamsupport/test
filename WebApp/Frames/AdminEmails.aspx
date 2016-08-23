@@ -257,7 +257,7 @@
         <fieldset class="ts-fieldset">
           <label for="lnkSystem">System Email Address: </label>
           <a id="lnkSystem" class="ts-link value" href="#"></a>
-          <p> This is your company's dropbox account. We recommend you forward your companies support address to this address and make sure you share it with the rest of your team.  <strong>Forward</strong> any email to your dropbox and TeamSupport will either create a new ticket or update an existing ticket.  If the email comes from your customer and we know who they are in TeamSupport, we will associate that contact to the ticket and include any attachments. BCC or CC your dropbox when you send an email and include the ticket number in brackets on the subject line and the email will be attached to that ticket.</p>
+          <p> This is your company's dropbox account. We recommend you forward your company's support address to this address and make sure you share it with the rest of your team.  <strong>Forward</strong> any email to your dropbox and TeamSupport will either create a new ticket or update an existing ticket.  If the email comes from your customer and we know who they are in TeamSupport, we will associate that contact to the ticket and include any attachments. BCC or CC your dropbox when you send an email and include the ticket number in brackets on the subject line and the email will be attached to that ticket.</p>
           <label for="textReply" class="text">Organization Reply to Address</label>
           <telerik:RadTextBox ID="textReply" runat="server" CssClass="text" name="textReply"
             Width="300px">

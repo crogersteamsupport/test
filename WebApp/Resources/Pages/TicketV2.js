@@ -641,26 +641,22 @@ function CreateNewActionLI() {
   						alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
   					SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
   						if (result) {
-  							_isCreatingAction = true;
-  							$('#action-new-editor').parent().fadeOut('normal', function () {
-  								if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-  									tinymce.activeEditor.destroy();
-  								}
-  							});
-  							if ($('.upload-queue li').length > 0) {
-  								UploadAttachments(result);
-  							}
-  							else {
-  								_newAction = null;
-  								if (_oldActionID === -1) {
-  									_actionTotal = _actionTotal + 1;
-  									var actionElement = CreateActionElement(result, false);
-  									actionElement.find('.ticket-action-number').text(_actionTotal);
-  								}
-  								else {
-  									UpdateActionElement(result, false);
-  								}
-  							}
+  						    _isCreatingAction = true;
+  						    if ($('.upload-queue li').length > 0) {
+  						        UploadAttachments(result);
+  						    }
+  						    else {
+  						        _newAction = null;
+  						        if (_oldActionID === -1) {
+  						            _actionTotal = _actionTotal + 1;
+  						            var actionElement = CreateActionElement(result, false);
+  						            actionElement.find('.ticket-action-number').text(_actionTotal);
+  						        }
+  						        else {
+  						            UpdateActionElement(result, false);
+  						        }
+  						        clearTicketEditor();
+  						    }
   						}
   						else {
   							alert("There was a error creating your action.  Please try again.");
@@ -919,6 +915,7 @@ function SetupActionEditor(elem, action) {
       window.parent.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
         _newAction.Attachments = attachments;
         if (_oldActionID === -1) {
+          clearTicketEditor();
           _actionTotal = _actionTotal + 1;
           var actionElement = CreateActionElement(_newAction, false);
           actionElement.find('.ticket-action-number').text(_actionTotal);
@@ -1483,7 +1480,7 @@ function UploadAttachments(newAction) {
       $(o).data('data', data);
     });
   }
-  $('.upload-queue').empty();
+  //$('.upload-queue').empty();
 }
 
 function tickettimer() {
@@ -2193,6 +2190,17 @@ function AddCustomers(customers) {
       newelement.data('orgid', customers[i].OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
     }
   };
+}
+
+function clearTicketEditor()
+{
+    $('#action-new-editor').parent().fadeOut('normal', function () {
+        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+            tinymce.activeEditor.destroy();
+        }
+    });
+    $('.upload-queue').empty();
+
 }
 
 function SetupTagsSection() {

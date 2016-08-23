@@ -1319,6 +1319,8 @@ AND u.IsPortalUser = 1";
             User user = Users.GetUser(loginUser, userID);
             if (user != null)
             {
+                user.AppChatID = "";
+                user.AppChatStatus = false;
                 user.MarkDeleted = true;
                 user.Collection.Save();
             }
