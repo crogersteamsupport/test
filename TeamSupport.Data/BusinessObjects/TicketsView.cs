@@ -1510,6 +1510,9 @@ ORDER BY TicketNumber DESC";
             {
                 builder.Append(" AND (tv.ForumCategory IS NOT NULL)");
             }
+            else if (filter.ForumCategoryID == null){
+                builder.Append(" AND (tv.ForumCategory IS NULL)");
+            }
 
             if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)
             {
