@@ -74,7 +74,7 @@
       }
 
       function RemoveUser(userID, groupID) {
-        parent.privateServices.DeleteGroupUser(groupID, userID, RefreshPage);
+        parent.parent.privateServices.DeleteGroupUser(groupID, userID, RefreshPage);
         parent.Ts.System.logAction('Group Info - User Removed');
 
       }
