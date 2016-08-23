@@ -164,7 +164,7 @@ $(document).ready(function () {
         $('#contactTabs a:first').tab('show');
     }
 
-    if (!_isAdmin && !_mainFrame.Ts.System.User.CanEditContact)
+    if (!_isAdmin && !_mainFrame.Ts.System.User.CanEditContact) {
         $('#contactEdit').hide();
         $('#contactPhoneButton').hide();
         $('#contactAddressButton').hide();
@@ -586,7 +586,7 @@ $(document).ready(function () {
         _mainFrame.Ts.Services.Customers.SetContactPortalUser(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldPortalUser').text((result == 0 ? 'No' : 'Yes'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Portal User');
-            if (result == 1 || _isAdmin || _mainFrame.Ts.System.User.CanEditContact)
+            if (result == 1 || _isAdmin || _mainFrame.Ts.System.User.CanEditContact) {
                 $('#passwordResetBtnGroup').show();
             }
             else {
@@ -1191,13 +1191,14 @@ $(document).ready(function () {
         });
     });
 
-    _mainFrame.Ts.Services.Customers.GetContactTickets(userID, 0, function (e) {
+    $('#btnResetChubPW').click(function (e) {
         window.parent.parent.Ts.System.logAction('Contact Detail - Reset Hub Password');
         window.parent.parent.Ts.Services.Customers.ChubPasswordReset(userID, function (msg) {
             alert(msg);
         });
     })
 
+    _mainFrame.Ts.Services.Customers.GetContactTickets(userID, 0, function (e) {
         $('#openTicketCount').text("Open Tickets: " + e);
     });
 
