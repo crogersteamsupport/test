@@ -123,9 +123,9 @@
                     <div class="row current-chat-footer">
                         <div class="panel-footer">
                             <div class="input-group">
-                                <input type="text" class="form-control">
+                                <input id="message" type="text" class="form-control">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">Send</button>
+                                    <button id="new-message" class="btn btn-default" type="button">Send</button>
                                 </span>
                             </div>
                         </div>
@@ -134,5 +134,25 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Templates -->
+    <script id="message-template" type="text/x-custom-template">
+        <li class="media">
+            <div class="media-body">
+                <div class="media">
+                    <a class="pull-{{MessageDirection}}" href="#">
+                        <img class="media-object img-circle " src="{{Avatar}}">
+                    </a>
+                    <div class="media-body">
+                        {{Message}}
+                        <br>
+                        <small class="text-muted">{{UserName}} | {{Date}}</small>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </script>
 </body>
 </html>

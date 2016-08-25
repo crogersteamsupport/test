@@ -1,4 +1,4 @@
-﻿function setupChat(chatID, callback) {
+﻿function setupChat(chatID, newCommentCallback, callback) {
     var channelName = 'presence-' + chatID;
     var service = '/Services/ChatService.asmx/';
     var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
@@ -25,7 +25,7 @@
 
     channel.bind('new-comment', function (data) {
         console.log(data);
-        //createMessageElement(data);
+        newCommentCallback(data);
     });
 
     callback(channel);

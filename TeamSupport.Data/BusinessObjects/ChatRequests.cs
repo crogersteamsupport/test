@@ -133,7 +133,7 @@ ORDER BY cr.DateCreated ASC
 		                                        cr.TargetUserID IS NULL
 		                                        OR cr.TargetUserID = @UserID
 		                                        )
-                                        ORDER BY cr.DateCreated ASC
+                                        ORDER BY cr.DateCreated DESC
                                         ";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@UserID", userID);
@@ -231,7 +231,27 @@ ORDER BY cr.DateCreated ASC";
       // SetLastRequestID(userID, organizationID);
     }
 
-    public static int GetRequestCountInLastDays(LoginUser loginUser, int organizationID, int days)
+    public void LoadActiveChatsByUserId(int userID, int organizationID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT DISTINCT c.* FROM ChatRequests c 
+                LEFT JOIN ChatParticipants cp ON cp.ChatID = c.ChatID
+                WHERE cp.ParticipantID = @UserID
+                AND cp.ParticipantType = 0
+                AND c.OrganizationID = @OrganizationID
+                AND cp.DateLeft IS NULL
+                ORDER BY C.DATECREATED DESC
+                ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            Fill(command);
+        }
+    }
+
+        public static int GetRequestCountInLastDays(LoginUser loginUser, int organizationID, int days)
     { 
       SqlCommand command = new SqlCommand();
       command.CommandText = "SELECT COUNT(*) FROM ChatRequests cr WHERE cr.OrganizationID = @OrganizationID AND DATEDIFF(day, DateCreated, GETUTCDATE()) < @Days";

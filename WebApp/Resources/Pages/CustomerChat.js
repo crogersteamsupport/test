@@ -28,7 +28,7 @@
 
 function createMessage(message)
 {
-    $('#message-list').append('<li class="list-group-item message-bubble"> <p>' + message + '</p></li>');
+    $('.chat-intro').append('<p>'+ message +'</p>');
 }
 
 function createMessageElement(messageData) {
@@ -71,6 +71,7 @@ function setupChat(chatID, participantID, callback) {
     pressenceChannel.bind('new-comment', function (data) {
         console.log(data);
         createMessageElement(data);
+        $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
 
     callback(pressenceChannel);
@@ -85,7 +86,15 @@ function loadInitialMessages(chatID) {
         chatObject = result;
         createMessage('Initiated On: ' + result.Chat.DateCreated);
         createMessage('Initiated By: ' + result.Initiator.FirstName + ' ' + result.Initiator.LastName + ', ' + result.Initiator.CompanyName + ' (' + result.Initiator.Email + ')');
-        createMessage('Description:' + result.Chat.Message);
+
+        var descriptionMessage = new Object();
+        descriptionMessage.message = "test";
+        descriptionMessage.userID = 1839999;;
+        descriptionMessage.userName = "Matt T";
+
+        createMessageElement(descriptionMessage);
+
+        $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     },
     function (error) {
 

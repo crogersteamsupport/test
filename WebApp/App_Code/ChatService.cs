@@ -108,7 +108,7 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public List<ChatViewObject> GetChats()
+        public List<ChatViewObject> GetChatRequests()
         {
             List<ChatViewObject> pendingChats = new List<ChatViewObject>();
             ChatRequests requests = new ChatRequests(loginUser);
@@ -129,6 +129,33 @@ namespace TSWebServices
             }
 
             return pendingChats;
+        }
+
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public List<ChatViewObject> GetActiveChats()
+        {
+            List<ChatViewObject> activeChats = new List<ChatViewObject>();
+
+            ChatRequests requests = new ChatRequests(loginUser);
+            requests.LoadActiveChatsByUserId(loginUser.UserID, loginUser.OrganizationID);
+
+            if (!requests.IsEmpty)
+            {
+                foreach (ChatRequest request in requests)
+                {
+                    ChatViewObject vm = new ChatViewObject
+                    {
+                        Chat = request.GetProxy(),
+                        Initiator = GetParticipant(request.RequestorID).GetProxy()
+                    };
+
+                    activeChats.Add(vm);
+                }
+            }
+
+            return activeChats;
         }
 
         [WebMethod]
@@ -158,6 +185,19 @@ namespace TSWebServices
             var auth = pusher.Authenticate(channel_name, socket_id, channelData);
             var json = auth.ToJson();
             Context.Response.Write(json);
+        }
+
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string AddAgentMessage(string channelName, string message, int chatID)
+        {
+            Chat chat = GetChat(chatID);
+            ChatClient client = ChatClients.GetChatClient(loginUser, loginUser.UserID);
+
+
+            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = client.FirstName + "  " + client.LastName, userID = client.LinkedUserID });
+            return JsonConvert.SerializeObject(true);
         }
 
         [WebMethod]
