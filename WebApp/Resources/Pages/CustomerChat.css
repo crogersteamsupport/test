@@ -93,7 +93,7 @@
     margin: 0 0 20px;
 }
 .chat-body .answer.left {
-    padding: 0 0 0 58px;
+    padding: 0 0 0 50px;
     text-align: left;
     float: left;
 }
@@ -107,7 +107,7 @@
     left: 0;
 }
 .chat-body .answer .avatar {
-    bottom: 36px;
+    bottom: 25px;
 }
 .chat .avatar {
     width: 40px;
@@ -165,7 +165,7 @@
 }
 /*RIGHT*/
 .chat-body .answer.right {
-    padding: 0 58px 0 0;
+    padding: 0 50px 0 0;
     text-align: left;
     float: right;
 }

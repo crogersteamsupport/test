@@ -135,6 +135,7 @@ namespace TSWebServices
         public int AcceptRequest(int chatRequestID)
         {
             int chatID = ChatRequests.AcceptRequest(loginUser, loginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
+            var result = pusher.Trigger("presence" + chatID, "agent-joined", null);
             return chatID;
         }
 

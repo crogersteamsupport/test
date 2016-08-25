@@ -32,10 +32,8 @@ function createMessage(message)
 }
 
 function createMessageElement(messageData) {
-    $('#message-list').append('<li class="list-group-item message-bubble"> ' +
-                            '<img  class="user-avatar" alt="user image" src="../dc/1078/UserAvatar/' + messageData.userID + '/48/1469829040429">' +
-                            '<p class="text-muted">' + messageData.userName + '</p> ' +
-                            '<p>' + messageData.message + '</p></li>');
+    $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../dc/' + 1078 + '/UserAvatar/' + messageData.userID + '/48/1469829040429" alt="User name">  </div>' +
+                        '<div class="name">' + messageData.userName + '</div>  <div class="text">' + messageData.message + '</div> <div class="time">5 min ago</div></div>');
 }
 
 function setupChat(chatID, participantID, callback) {
@@ -55,7 +53,8 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('pusher:member_added', function (member) {
-        $('#scopeMessage').remove();
+        console.log(member.info.name);
+        $('#operator-message').remove();
         createMessage(member.info.name + ' joined the chat.')
     });
 
@@ -64,12 +63,13 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('agent-joined', function (data) {
-        //console.log(data);
-        $('#scopeMessage').remove();
+        console.log(data);
+        alert('Agent Joined!')
+        $('#operator-message').remove();
     });
 
     pressenceChannel.bind('new-comment', function (data) {
-        //console.log(data);
+        console.log(data);
         createMessageElement(data);
     });
 
