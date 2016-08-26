@@ -201,6 +201,9 @@ namespace TeamSupport.ServiceLibrary
 			 case ReferenceType.Notes:
 				ImportCustomerNotes(import);
 				break;
+			 case ReferenceType.ContactNotes:
+				ImportContactNotes(import);
+				break;
 			 default:
             Logs.WriteEvent("ERROR: Unknown Reference Type");
             break;
@@ -5764,6 +5767,104 @@ namespace TeamSupport.ServiceLibrary
 		 notes.BulkSave();
 		 UpdateImportCount(import, count);
 		 _importLog.Write(count.ToString() + " organization notes imported.");
+	 }
+
+	 private void ImportContactNotes(Import import)
+	 {
+		 //Users users = new Users(_loginUser);
+		 //users.LoadByOrganizationID(_organizationID, false);
+
+        SortedList<string, int> contactList = null;
+        contactList = GetContactList();
+
+		 Notes notes = new Notes(_loginUser);
+		 int count = 0;
+		 while (_csv.ReadNextRecord())
+		 {
+			 long rowNumber = _csv.CurrentRecordIndex + 1;
+			 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
+
+			 int contactID = ReadInt("ContactID");
+			 if (contactID != 0)
+			 {
+                if (!contactList.ContainsValue(contactID))
+                {
+	                _importLog.Write(messagePrefix + "Skipped. No contact matching ContactID " + contactID.ToString() + " was found for notes.");
+	                continue;
+                }
+			 }
+
+			 if (contactID == 0)
+			 {
+			    string contactImportID = ReadString("ContactImportID", string.Empty);
+			    if (contactImportID != string.Empty)
+			    {
+				    Users existingContact = new Users(_importUser);
+				    existingContact.LoadByImportID(_organizationID, contactImportID);
+				    if (existingContact.Count == 1)
+				    {
+				        contactID = existingContact[0].UserID;
+				    }
+				    else if (existingContact.Count > 1)
+				    {
+				        _importLog.Write(messagePrefix + "Skipped. More than one contact matching the ContactImportID " + contactImportID+ " was found.");
+				        continue;
+				    }
+				    else
+				    {
+					    _importLog.Write(messagePrefix + "Skipped. No contact matching the ContactImportID " + contactImportID + " was found.");
+					    continue;
+				    }
+			    }
+			 }
+
+			 if (contactID == 0)
+			 {
+				 _importLog.Write(messagePrefix + "Skipped. No contact matching either the ContactID or the ContactImportID was found.");
+				 continue;
+			 }
+
+			 Note note = notes.AddNewNote();
+			 DateTime? dateCreated = ReadDateNull("DateCreated", note.DateCreated.ToString());
+			 if (dateCreated != null)
+			 {
+				 note.DateCreated = (DateTime)dateCreated;
+			 }
+			 //int creatorID = -5;
+			 //if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
+			 //{
+				// User creator = users.FindByUserID(creatorID);
+				// if (creator != null)
+				// {
+				//	 creatorID = creator.UserID;
+				// }
+			 //}
+			 note.CreatorID = -5;
+			 note.Description = ConvertHtmlLineBreaks(ReadString("Description", string.Empty));
+			 note.RefID = contactID;
+			 note.RefType = ReferenceType.Users;
+			 note.Title = ReadString("Title", string.Empty).Trim();
+            if (note.Title == string.Empty)
+            {
+	            _importLog.Write(messagePrefix + "Skipped. Title is required.");
+	            continue;
+            }
+			 note.ModifierID = -5;
+			 note.ImportFileID = import.ImportID;
+
+			 _importLog.Write(messagePrefix + "Contact " + contactID.ToString() + " - Note added to bulk insert.");
+			 count++;
+
+			 if (count % BULK_LIMIT == 0)
+			 {
+				 notes.BulkSave();
+				 notes = new Notes(_importUser);
+				 UpdateImportCount(import, count);
+			 }
+		 }
+		 notes.BulkSave();
+		 UpdateImportCount(import, count);
+		 _importLog.Write(count.ToString() + " contact notes imported.");
 	 }
 
 	 private bool IsTicketRelated(Ticket ticket1, Ticket ticket2)

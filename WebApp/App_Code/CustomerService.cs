@@ -344,6 +344,11 @@ namespace TSWebServices
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.IsActive = value;
+            if(!value)
+            {
+                u.AppChatStatus = false;
+                u.AppChatID = "";
+            }
             u.Collection.Save();
             string description = String.Format("{0} set contact active to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
