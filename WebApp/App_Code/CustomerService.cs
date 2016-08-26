@@ -295,10 +295,6 @@ namespace TSWebServices
                 }
             }
 
-            u.PortalAutoReg = false;
-            u.OrganizationID = value;
-            u.Collection.Save();
-
             Tickets t = new Tickets(loginUser);
             t.LoadByContact(userID);
 
@@ -306,6 +302,10 @@ namespace TSWebServices
             {
                 tix.Collection.RemoveContact(userID, tix.TicketID);
             }
+
+            u.PortalAutoReg = false;
+            u.OrganizationID = value;
+            u.Collection.Save();
 
             foreach (Ticket tix in t)
             {
