@@ -101,6 +101,14 @@
         $('.media-list').append(compiledTemplate);
     }
 
+    function SetActiveChat(chatID) {
+        parent.Ts.Services.Chat.GetChatDetails(ChatID, function (chat) {
+
+            $('#').append('<p>Initiated On: 2016-08-26T15:46:18.09Z</p>');
+            $('#').append('<p>Initiated By: Matt Townsen, _Unknown Company (thunderfan1984@gmail.com)</p>');
+        });
+    }
+
     $("#new-message").click(function (e) {
         e.preventDefault();
         alert('clicked');

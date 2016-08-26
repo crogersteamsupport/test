@@ -323,16 +323,18 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
         client.LinkedUserID = users[0].UserID;
         try
         {
-          client.CompanyName = Organizations.GetOrganization(loginUser, users[0].OrganizationID).Name;
+            client.CompanyName = Organizations.GetOrganization(loginUser, users[0].OrganizationID).Name;
         }
         catch (Exception)
         {
-          client.CompanyName = "";
+            client.CompanyName = "";
         }
       }
       else
-      { 
-        client.CompanyName = "";
+      {
+        string emailDomain = email.Substring(email.LastIndexOf('@') + 1);
+        Organization org = Organization.GetCompanyByDomain(organizationID, emailDomain, loginUser);
+        client.CompanyName = (org == null) ? org.Name : "";
       }
       client.Collection.Save();
 

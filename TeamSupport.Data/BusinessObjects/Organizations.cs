@@ -46,7 +46,7 @@ namespace TeamSupport.Data
       }
     }
 
-    public bool IsInBusinessHours(DateTime utcDateTime)
+        public bool IsInBusinessHours(DateTime utcDateTime)
     {
       
       if (IsDayInBusinessHours(utcDateTime.DayOfWeek))
@@ -301,7 +301,60 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       if (organizations.IsEmpty) return null;
       else return organizations[0].OrganizationID;
     }
-  }
+
+    public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser)
+    {
+        Organization result = null;
+
+        Organizations organizations = new Organizations(loginUser);
+        organizations.LoadByParentID(parentOrganizationID, true);
+
+        if (organizations.Any())
+        {
+            List<KeyValuePair<int, string>> organizationSubDomainList = new List<KeyValuePair<int, string>>();
+
+            //Takes all the suborganizations of the parent org and parses out the subdomains into a list for comparison
+            foreach (var org in organizations.Distinct())
+            {
+                if (!String.IsNullOrEmpty(org.CompanyDomains))
+                {
+                    List<string> companydomains = org.CompanyDomains.Split(',').ToList();
+
+                    foreach (var domain in companydomains)
+                    {
+                        organizationSubDomainList.Add(new KeyValuePair<int, string>(org.OrganizationID, domain));
+                    }
+                }
+            }
+
+            //assigns subdomain of organization if match is found
+            if (organizationSubDomainList.Any())
+            {
+                var subOrgList = organizationSubDomainList.Where(m => m.Value.Trim() == emailDomain);
+
+                if (subOrgList.Any())
+                {
+                    result = organizations.Where(m => m.OrganizationID == subOrgList.First().Key).First();
+                }
+            }
+        }
+
+        //if we still don't have a suborganizationID assigned to result check if there is unknown company, otherwise create one
+        if (result == null)
+        {
+            if (organizations.Any())
+            {
+                var unknownCompanies = organizations.Where(m => m.Name.Contains("_Unknown Company"));
+                if (unknownCompanies.Any())
+                {
+                    result = unknownCompanies.First();
+                }
+            }
+        }
+
+        return result;
+    }
+    }
 
   public class SignUpParams
   {
@@ -1655,23 +1708,23 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Organizations, organization.OrganizationID, description);
     }
 
-    public void LoadByEmail(string email)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"SELECT o.* 
+        public void LoadByEmail(string email)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT o.* 
 																FROM Organizations o 
 																WHERE ((o.ParentID = 1) OR (o.ParentID is null)) 
 																AND o.IsActive = 1
 																AND EXISTS(SELECT * FROM Users u WHERE (u.MarkDeleted = 0) AND (u.Email = @Email) AND u.OrganizationID = o.OrganizationID) 
 																ORDER BY o.Name";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@Email", email);
-        Fill(command, "Organizations,Users");
-      }
-    }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@Email", email);
+                Fill(command, "Organizations,Users");
+            }
+        }
 
-		public void LoadByEmailExcludeInActive(string email)
+        public void LoadByEmailExcludeInActive(string email)
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
@@ -1801,40 +1854,40 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         }
     }
 
-    public void LoadByLikeOrganizationName(int parentID, string name, bool loadOnlyActive, int maxRows, bool filterByUserRights)
-    {
-      User user = Users.GetUser(LoginUser, LoginUser.UserID);
-      bool doFilter = filterByUserRights && user.TicketRights == TicketRightType.Customers;
+        public void LoadByLikeOrganizationName(int parentID, string name, bool loadOnlyActive, int maxRows, bool filterByUserRights)
+        {
+            User user = Users.GetUser(LoginUser, LoginUser.UserID);
+            bool doFilter = filterByUserRights && user.TicketRights == TicketRightType.Customers;
 
-      using (SqlCommand command = new SqlCommand())
-      {
-        StringBuilder text = new StringBuilder(@"
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder text = new StringBuilder(@"
 SELECT TOP (@MaxRows) * 
 FROM Organizations 
 WHERE (ParentID = @ParentID) 
 AND (@ActiveOnly = 0 OR IsActive = 1) 
 AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = @UserID)))
 ");
-        if (name.Trim() != "")
-        {
-          text.Append(" AND ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) ");
+                if (name.Trim() != "")
+                {
+                    text.Append(" AND ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) ");
+                }
+
+                text.Append(" ORDER BY Name ");
+                command.CommandText = text.ToString();
+                command.CommandType = CommandType.Text;
+
+                command.Parameters.AddWithValue("@Name", name.Trim());
+                command.Parameters.AddWithValue("@ParentID", parentID);
+                command.Parameters.AddWithValue("@MaxRows", maxRows);
+                command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+                command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
+                command.Parameters.AddWithValue("@UseFilter", doFilter);
+                Fill(command);
+            }
         }
 
-        text.Append(" ORDER BY Name ");
-        command.CommandText = text.ToString();
-        command.CommandType = CommandType.Text;
-
-        command.Parameters.AddWithValue("@Name", name.Trim());
-        command.Parameters.AddWithValue("@ParentID", parentID);
-        command.Parameters.AddWithValue("@MaxRows", maxRows);
-        command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
-        command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
-        command.Parameters.AddWithValue("@UseFilter", doFilter);
-        Fill(command);
-      }
-    }
-
-    public void LoadByParentID(int parentID, bool loadOnlyActive)
+        public void LoadByParentID(int parentID, bool loadOnlyActive)
     {
       using (SqlCommand command = new SqlCommand())
       {

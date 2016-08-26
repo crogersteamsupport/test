@@ -48,6 +48,13 @@
     margin-bottom: 10px;
 }
 
+.chat-intro {
+    background: #ebebeb;
+    color: #333333;
+    padding:10px;
+    margin: -15px -15px 15px -15px;
+}
+
 .current-chat-area {
     padding-top: 10px;
     overflow: auto;

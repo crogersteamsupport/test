@@ -31,8 +31,8 @@ function createMessage(message)
     $('.chat-intro').append('<p>'+ message +'</p>');
 }
 
-function createMessageElement(messageData) {
-    $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../dc/' + 1078 + '/UserAvatar/' + messageData.userID + '/48/1469829040429" alt="User name">  </div>' +
+function createMessageElement(messageData, direction) {
+    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="../dc/' + 1078 + '/UserAvatar/' + messageData.userID + '/48/1469829040429" alt="User name">  </div>' +
                         '<div class="name">' + messageData.userName + '</div>  <div class="text">' + messageData.message + '</div> <div class="time">5 min ago</div></div>');
 }
 
@@ -70,7 +70,7 @@ function setupChat(chatID, participantID, callback) {
 
     pressenceChannel.bind('new-comment', function (data) {
         console.log(data);
-        createMessageElement(data);
+        createMessageElement(data, 'left');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
 
@@ -88,11 +88,11 @@ function loadInitialMessages(chatID) {
         createMessage('Initiated By: ' + result.Initiator.FirstName + ' ' + result.Initiator.LastName + ', ' + result.Initiator.CompanyName + ' (' + result.Initiator.Email + ')');
 
         var descriptionMessage = new Object();
-        descriptionMessage.message = "test";
-        descriptionMessage.userID = 1839999;;
-        descriptionMessage.userName = "Matt T";
+        descriptionMessage.message = result.Chat.Message;
+        descriptionMessage.userID = result.Initiator.LinkedUserID;;
+        descriptionMessage.userName = result.Initiator.FirstName + ' ' + result.Initiator.LastName;
 
-        createMessageElement(descriptionMessage);
+        createMessageElement(descriptionMessage, 'right');
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     },

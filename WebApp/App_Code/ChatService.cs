@@ -187,6 +187,14 @@ namespace TSWebServices
             Context.Response.Write(json);
         }
 
+        [WebMethod]
+        public ChatProxy GetChatDetails(int chatID)
+        {
+            //TODO:  Info to collect:  Chat details (date created, requester info, etc.  Chat messages posted.
+            Chats chats = new Chats(loginUser);
+            chats.LoadByChatID(chatID);
+            return chats[0].GetProxy();
+        }
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
