@@ -143,6 +143,8 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Product Version Required on ticket:", organization.ProductVersionRequired.ToString() });
     
     table.Rows.Add(new string[] { "Only show products for the customers of a ticket:", Settings.OrganizationDB.ReadBool("ShowOnlyCustomerProducts", false).ToString() });
+    table.Rows.Add(new string[] { "Auto Assign Customer with Asset On Tickets:", organization.AutoAssignCustomerWithAssetOnTickets.ToString() });
+    table.Rows.Add(new string[] { "Auto Associate Customer To Ticket based on Asset Assignment:", organization.AutoAssociateCustomerToTicketBasedOnAssetAssignment.ToString() });
     table.Rows.Add(new string[] { "Require customer for new ticket:", Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false).ToString() });
     table.Rows.Add(new string[] { "Require time spent on timed actions:", organization.TimedActionsRequired.ToString() });
     table.Rows.Add(new string[] { "Disable ticket status update emails:", Settings.OrganizationDB.ReadBool("DisableStatusNotification", false).ToString() });

@@ -94,6 +94,14 @@
             <asp:CheckBox ID="cbRequireCustomer" runat="server" Text="Require customer for new ticket."/>
           </td>
         </tr>
+        <tr>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbAutoAssignCustomerWithAssetOnTickets" runat="server" Text="Auto Assign Customer With Asset On Tickets."/>
+          </td>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbAutoAssociateCustomerToTicketBasedOnAssetAssignment" runat="server" Text="Auto Associate Customer To Ticket Based On Asset Assignment."/>
+          </td>
+        </tr>
 
         <tr>
           <td class="labelColTD" colspan="2">

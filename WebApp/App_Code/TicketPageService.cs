@@ -422,6 +422,73 @@ namespace TSWebServices
             return GetActionTimelineItem(action);
         }
 
+        [WebMethod]
+        public TimeLineItem UpdateActionCopyingAttachment(ActionProxy proxy, int insertedKBTicketID)
+        {
+            TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+
+            if (action == null)
+            {
+                action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+                action.TicketID = proxy.TicketID;
+                action.CreatorID = TSAuthentication.UserID;
+                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
+                {
+                    if (!proxy.Description.Contains(user.Signature))
+                    {
+                        action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                    }
+                    else
+                    {
+                        action.Description = proxy.Description;
+                    }
+                }
+                else
+                {
+                    action.Description = proxy.Description;
+                }
+            }
+            else
+            {
+                if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
+                {
+                    if (!string.IsNullOrWhiteSpace(user.Signature))
+                    {
+                        if (!action.Description.Contains(user.Signature.Replace(" />", ">")))
+                        {
+                            action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                        }
+                        else
+                        {
+                            action.Description = proxy.Description;
+                        }
+                    }
+                    else
+                    {
+                        action.Description = proxy.Description;
+                    }
+                }
+                else
+                {
+                    action.Description = proxy.Description;
+                }
+            }
+
+            if (!CanEditAction(action)) return null;
+
+
+            action.ActionTypeID = proxy.ActionTypeID;
+            action.DateStarted = proxy.DateStarted;
+            action.TimeSpent = proxy.TimeSpent;
+            action.IsKnowledgeBase = proxy.IsKnowledgeBase;
+            action.IsVisibleOnPortal = proxy.IsVisibleOnPortal;
+            action.Collection.Save();
+
+            CopyInsertedKBAttachments(action.ActionID, insertedKBTicketID);
+
+            return GetActionTimelineItem(action);
+        }
 
         [WebMethod]
         public bool SetActionPortal(int actionID, bool isVisibleOnPortal)
@@ -1076,5 +1143,50 @@ namespace TSWebServices
 
 			return GetActionTimelineItem(action);
 		}
-	}
+
+        private void CopyInsertedKBAttachments(int actionID, int insertedKBTicketID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadKBByTicketID(insertedKBTicketID);
+            if (attachments.Count > 0)
+            {
+                Attachments clonedAttachments = new Attachments(loginUser);
+                foreach (Attachment attachment in attachments)
+                {
+                    Attachment clonedAttachment = clonedAttachments.AddNewAttachment();
+                    clonedAttachment.OrganizationID = attachment.OrganizationID;
+                    clonedAttachment.FileType = attachment.FileType;
+                    clonedAttachment.FileSize = attachment.FileSize;
+                    clonedAttachment.Description = attachment.Description;
+                    clonedAttachment.DateCreated = attachment.DateCreatedUtc;
+                    clonedAttachment.DateModified = attachment.DateModifiedUtc;
+                    clonedAttachment.CreatorID = attachment.CreatorID;
+                    clonedAttachment.ModifierID = attachment.ModifierID;
+                    clonedAttachment.RefType = attachment.RefType;
+                    clonedAttachment.SentToJira = attachment.SentToJira;
+                    clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
+                    clonedAttachment.FileName = attachment.FileName;
+                    clonedAttachment.RefID = actionID;
+
+                    string originalAttachmentRefID = attachment.RefID.ToString();
+                    string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
+                                                        + actionID.ToString()
+                                                        + attachment.Path.Substring(attachment.Path.IndexOf(originalAttachmentRefID) + originalAttachmentRefID.Length);
+
+                    if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
+                    }
+
+                    clonedAttachment.Path = clonedActionAttachmentPath;
+
+                    File.Copy(attachment.Path, clonedAttachment.Path);
+
+                }
+                clonedAttachments.BulkSave();
+
+            }
+        }
+    }
 }
