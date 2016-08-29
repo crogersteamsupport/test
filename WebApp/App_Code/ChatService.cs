@@ -41,8 +41,8 @@ namespace TSWebServices
         public string GetChatInfo(int chatID)
         {
             ChatViewObject model = new ChatViewObject();
-            model.Chat = GetChatRequest(chatID).GetProxy();
-            model.Initiator = GetParticipant(model.Chat.RequestorID).GetProxy();
+            model.Chat = GetChatRequest(chatID);
+            model.Initiator = GetParticipant(model.Chat.RequestorID);
             return JsonConvert.SerializeObject(model);
         }
 
@@ -121,7 +121,7 @@ namespace TSWebServices
                     ChatViewObject vm = new ChatViewObject
                     {
                         Chat = request.GetProxy(),
-                        Initiator = GetParticipant(request.RequestorID).GetProxy()
+                        Initiator = GetParticipant(request.RequestorID)
                     };
 
                     pendingChats.Add(vm);
@@ -148,7 +148,7 @@ namespace TSWebServices
                     ChatViewObject vm = new ChatViewObject
                     {
                         Chat = request.GetProxy(),
-                        Initiator = GetParticipant(request.RequestorID).GetProxy()
+                        Initiator = GetParticipant(request.RequestorID)
                     };
 
                     activeChats.Add(vm);
@@ -188,12 +188,14 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public ChatProxy GetChatDetails(int chatID)
+        public ChatViewObject GetChatDetails(int chatID)
         {
-            //TODO:  Info to collect:  Chat details (date created, requester info, etc.  Chat messages posted.
-            Chats chats = new Chats(loginUser);
-            chats.LoadByChatID(chatID);
-            return chats[0].GetProxy();
+            ChatViewObject model = new ChatViewObject();
+            model.Chat = GetChatRequest(chatID);
+            model.Initiator = GetParticipant(model.Chat.RequestorID);
+            model.Messages = GetChatMessages(chatID);
+
+            return model;
         }
 
         [WebMethod]
@@ -299,16 +301,24 @@ namespace TSWebServices
             else return null;
         }
 
-        private ChatClient GetParticipant(int participantID)
+        private ChatClientProxy GetParticipant(int participantID)
         {
-            return ChatClients.GetChatClient(loginUser, participantID);
+            ChatClient client = ChatClients.GetChatClient(loginUser, participantID);
+            return (client == null) ? null : client.GetProxy();
         }
 
-        private ChatRequest GetChatRequest(int chatID)
+        private ChatRequestProxy GetChatRequest(int chatID)
         {
             ChatRequests requests = new ChatRequests(loginUser);
             requests.LoadByChatID(chatID, ChatRequestType.External);
-            return requests[0];
+            return (requests.IsEmpty) ? null : requests[0].GetProxy();
+        }
+
+        private ChatMessageProxy[] GetChatMessages(int chatID)
+        {
+            ChatMessages messages = new ChatMessages(loginUser);
+            messages.LoadByChatID(chatID);
+            return (messages.IsEmpty) ? null : messages.GetChatMessageProxies();
         }
 
         #endregion
@@ -319,6 +329,11 @@ namespace TSWebServices
         {
             public ChatRequestProxy Chat { get; set; }
             public ChatClientProxy Initiator { get; set; }
+            public ChatMessageProxy[] Messages { get; set; }
+            public ChatViewObject()
+            {
+                //Messages = new List<ChatMessageProxy>();
+            }
         }
         #endregion
     }

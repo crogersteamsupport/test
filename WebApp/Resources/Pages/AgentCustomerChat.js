@@ -55,7 +55,7 @@
         var anchor = $('<a id="' + chat.ChatID + '" href="#" class="list-group-item">' + innerString + '</a>').click(function (e) {
             e.preventDefault();
             activeChatID = chat.ChatID;
-
+            SetActiveChat(activeChatID);
         });
 
         $('#chats-accepted').append(anchor);
@@ -102,10 +102,23 @@
     }
 
     function SetActiveChat(chatID) {
-        parent.Ts.Services.Chat.GetChatDetails(ChatID, function (chat) {
+        parent.Ts.Services.Chat.GetChatDetails(chatID, function (chat) {
+            console.log(chat);
+            $('.media-list').empty();
+            $('.chat-intro').empty();
+            $('.chat-intro').append('<p>Initiated On: ' + chat.Chat.DateCreated + '</p>');
+            $('.chat-intro').append('<p>Initiated By: ' + chat.Initiator.FirstName + ' ' + chat.Initiator.LastName + ', ' + chat.Initiator.CompanyName + ' (' + chat.Initiator.Email + ')</p>');
 
-            $('#').append('<p>Initiated On: 2016-08-26T15:46:18.09Z</p>');
-            $('#').append('<p>Initiated By: Matt Townsen, _Unknown Company (thunderfan1984@gmail.com)</p>');
+            for(i = 0; i <  chat.Messages.length; i++)
+            {
+                var message = chat.Messages[i];
+                var messageData = {};
+                messageData.userName = "matt townsen";
+                messageData.userID = message.PosterID;
+                messageData.OrganizationID = chat.Chat.OrganizationID;
+                messageData.message = message.Message;
+                createMessageElement(messageData);
+            }
         });
     }
 
@@ -113,7 +126,7 @@
         e.preventDefault();
         alert('clicked');
         parent.Ts.Services.Chat.AddAgentMessage('presence-' + activeChatID, $('#message').val(), activeChatID, function (data) {
-            alert('posted')
+            //alert('posted')
         });
 
     });
