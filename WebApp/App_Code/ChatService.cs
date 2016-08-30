@@ -40,9 +40,8 @@ namespace TSWebServices
         [WebMethod]
         public string GetChatInfo(int chatID)
         {
-            ChatViewObject model = new ChatViewObject();
-            model.Chat = GetChatRequest(chatID);
-            model.Initiator = GetParticipant(model.Chat.RequestorID);
+            ChatRequestProxy request =  GetChatRequest(chatID);
+            ChatViewObject model = new ChatViewObject(request, GetParticipant(request.RequestorID), null);
             return JsonConvert.SerializeObject(model);
         }
 
@@ -118,12 +117,7 @@ namespace TSWebServices
             {
                 foreach (ChatRequest request in requests)
                 {
-                    ChatViewObject vm = new ChatViewObject
-                    {
-                        Chat = request.GetProxy(),
-                        Initiator = GetParticipant(request.RequestorID)
-                    };
-
+                    ChatViewObject vm = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID), null);
                     pendingChats.Add(vm);
                 }
             }
@@ -145,12 +139,7 @@ namespace TSWebServices
             {
                 foreach (ChatRequest request in requests)
                 {
-                    ChatViewObject vm = new ChatViewObject
-                    {
-                        Chat = request.GetProxy(),
-                        Initiator = GetParticipant(request.RequestorID)
-                    };
-
+                    ChatViewObject vm = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID), null);
                     activeChats.Add(vm);
                 }
             }
@@ -190,11 +179,8 @@ namespace TSWebServices
         [WebMethod]
         public ChatViewObject GetChatDetails(int chatID)
         {
-            ChatViewObject model = new ChatViewObject();
-            model.Chat = GetChatRequest(chatID);
-            model.Initiator = GetParticipant(model.Chat.RequestorID);
-            model.Messages = GetChatMessages(chatID);
-
+            ChatRequestProxy request = GetChatRequest(chatID);
+            ChatViewObject model = new ChatViewObject(request, GetParticipant(request.RequestorID), GetChatMessages(chatID));
             return model;
         }
 
@@ -324,15 +310,56 @@ namespace TSWebServices
         #endregion
 
         #region Classes
-
         public class ChatViewObject
         {
-            public ChatRequestProxy Chat { get; set; }
-            public ChatClientProxy Initiator { get; set; }
-            public ChatMessageProxy[] Messages { get; set; }
-            public ChatViewObject()
+            public int ChatID { get; set; }
+            public int ChatRequestID { get; set; }
+            public int OrganizationID { get; set; }
+            public int? InitiatorUserID { get; set; }
+            public DateTime DateCreated { get; set; }
+            public string InitiatorMessage { get; set; }
+            public string InitiatorDisplayName { get; set; }
+            public string InitiatorEmail { get; set; }
+            public string Description { get; set; }
+            List<ChatViewMessage> Messages { get; set; }
+
+            public ChatViewObject(ChatRequestProxy request, ChatClientProxy initiator, ChatMessageProxy[] messages)
             {
-                //Messages = new List<ChatMessageProxy>();
+                ChatID = request.ChatID;
+                ChatRequestID = request.ChatRequestID;
+                OrganizationID = request.OrganizationID;
+                InitiatorUserID = initiator.LinkedUserID;
+                DateCreated = request.DateCreated;
+                InitiatorMessage = string.Format("{0} {1}, {2} ({3})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
+                InitiatorDisplayName = string.Format("{0} {1}", initiator.FirstName, initiator.LastName);
+                Description = request.Message;
+                Messages = new List<ChatViewMessage>();
+                if (messages != null)
+                {
+                    foreach (ChatMessageProxy message in messages)
+                    {
+                        Messages.Add(new ChatViewMessage(message));
+                    }
+                }
+            }
+        }
+
+        public class ChatViewMessage
+        {
+            public int MessageID { get; set; }
+            public int CreatorID { get; set; }
+            public ChatParticipantType CreatorType { get; set; }
+            public string CreatorDisplayName { get; set; }
+            public DateTime DateCreated { get; set; }
+            public string Message { get; set; }
+            public ChatViewMessage(ChatMessageProxy message)
+            {
+                MessageID = message.ChatMessageID;
+                DateCreated = message.DateCreated;
+                CreatorID = message.PosterID;
+                CreatorType = message.PosterType;
+                CreatorDisplayName = "test testerson";
+                Message = message.Message;
             }
         }
         #endregion

@@ -83,14 +83,13 @@ function loadInitialMessages(chatID) {
     IssueAjaxRequest("GetChatInfo", chatObject,
     function (result) {
         //console.log(result);
-        chatObject = result;
-        createMessage('Initiated On: ' + result.Chat.DateCreated);
-        createMessage('Initiated By: ' + result.Initiator.FirstName + ' ' + result.Initiator.LastName + ', ' + result.Initiator.CompanyName + ' (' + result.Initiator.Email + ')');
+        createMessage('Initiated On: ' + result.DateCreated);
+        createMessage('Initiated By: ' + result.InitiatorDisplayName);
 
         var descriptionMessage = new Object();
-        descriptionMessage.message = result.Chat.Message;
-        descriptionMessage.userID = result.Initiator.LinkedUserID;;
-        descriptionMessage.userName = result.Initiator.FirstName + ' ' + result.Initiator.LastName;
+        descriptionMessage.message = result.Description;
+        descriptionMessage.userID = result.InitiatorUserID;
+        descriptionMessage.userName = result.InitiatorDisplayName;
 
         createMessageElement(descriptionMessage, 'right');
 

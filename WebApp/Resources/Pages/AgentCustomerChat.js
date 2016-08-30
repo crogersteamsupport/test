@@ -11,7 +11,7 @@
             //console.log(data);
             for (i = 0; i < data.length; i++)
             {
-                SetupPendingRequest(data[i].Chat, data[i].Initiator, (i == 0));
+                SetupPendingRequest(data[i], (i == 0));
             }
 
         });
@@ -19,13 +19,13 @@
         parent.Ts.Services.Chat.GetActiveChats(function (data) {
             //console.log(data);
             for (a = 0; a < data.length; a++) {
-                SetupActiveRequest(data[a].Chat, data[a].Initiator, (a == 0));
+                SetupActiveRequest(data[a], (a == 0));
             }
         });
     }
 
-    function SetupPendingRequest(chat, user, shouldTrigger) {
-        var innerString = user.FirstName + ' ' + user.LastName + ' - ' + user.CompanyName
+    function SetupPendingRequest(chat, shouldTrigger) {
+        var innerString = chat.InitiatorDisplayName;
         var anchor = $('<a id="' + chat.ChatRequestID + '" href="#" class="list-group-item chat-request">' + innerString + '</a>').click(function (e) {
             e.preventDefault();
 
@@ -37,9 +37,9 @@
             });
 
             $(this).html('<p class="userName">' + innerString + '</p>' +
-                             '<p>Email:  ' + user.Email + '</p>' +
+                             '<p>Email:  ' + chat.InitiatorEmail + '</p>' +
                              '<p>Time:  ' + chat.DateCreated + '</p>' +
-                             '<p>Message:  ' + chat.Message + '</p>')
+                             '<p>Message:  ' + chat.Description + '</p>')
                              .append(acceptBtn)
                              .addClass('open-request');
         });
@@ -49,8 +49,8 @@
 
     }
 
-    function SetupActiveRequest(chat, user, shouldTrigger) {
-        var innerString = user.FirstName + ' ' + user.LastName + ' - ' + user.CompanyName
+    function SetupActiveRequest(chat, shouldTrigger) {
+        var innerString = chat.InitiatorDisplayName;
 
         var anchor = $('<a id="' + chat.ChatID + '" href="#" class="list-group-item">' + innerString + '</a>').click(function (e) {
             e.preventDefault();
@@ -103,19 +103,19 @@
 
     function SetActiveChat(chatID) {
         parent.Ts.Services.Chat.GetChatDetails(chatID, function (chat) {
-            console.log(chat);
+            //console.log(chat);
             $('.media-list').empty();
             $('.chat-intro').empty();
-            $('.chat-intro').append('<p>Initiated On: ' + chat.Chat.DateCreated + '</p>');
-            $('.chat-intro').append('<p>Initiated By: ' + chat.Initiator.FirstName + ' ' + chat.Initiator.LastName + ', ' + chat.Initiator.CompanyName + ' (' + chat.Initiator.Email + ')</p>');
+            $('.chat-intro').append('<p>Initiated On: ' + chat.DateCreated + '</p>');
+            $('.chat-intro').append('<p>Initiated By: ' + chat.InitiatorMessage + '</p>');
 
             for(i = 0; i <  chat.Messages.length; i++)
             {
                 var message = chat.Messages[i];
                 var messageData = {};
-                messageData.userName = "matt townsen";
-                messageData.userID = message.PosterID;
-                messageData.OrganizationID = chat.Chat.OrganizationID;
+                messageData.userName = message.CreatorDisplayName;
+                messageData.userID = message.CreatorID;
+                messageData.OrganizationID = chat.OrganizationID;
                 messageData.message = message.Message;
                 createMessageElement(messageData);
             }
