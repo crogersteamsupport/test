@@ -1397,11 +1397,11 @@ $(document).ready(function () {
             $('.userProperties p').toggleClass("editable");
 
             if ($('#fieldPortalUser').text() == "No")
-                $('#btnSendNewPW').hide();
+                $('#passwordResetBtnGroup').hide();
             else if ($('#fieldPortalUser').text() == "Yes" || _isAdmin || _mainFrame.Ts.System.User.CanEditContact)
-                $('#btnSendNewPW').show();
+                $('#passwordResetBtnGroup').show();
             else
-                $('#btnSendNewPW').hide();
+                $('#passwordResetBtnGroup').hide();
 
             if ($('#fieldEmail').text() != "Empty") {
                 $('.userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
