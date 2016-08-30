@@ -29,6 +29,8 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableCustomerProductAssociation { get; set; }
     [DataMember] public bool EnableChat { get; set; }
     [DataMember] public bool EnableCommunity { get; set; }
+    [DataMember] public bool EnableVideoRecording { get; set; }
+    [DataMember] public bool EnableScreenRecording { get; set; }
           
   }
   
@@ -37,6 +39,8 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.EnableScreenRecording = this.EnableScreenRecording;
+      result.EnableVideoRecording = this.EnableVideoRecording;
       result.EnableCommunity = this.EnableCommunity;
       result.EnableChat = this.EnableChat;
       result.EnableCustomerProductAssociation = this.EnableCustomerProductAssociation;
