@@ -1992,13 +1992,12 @@ function createCustomFields() {
       }
     }
 
-    appendCategorizedCustomFields(result, null);
+    appendCategorizedCustomFields(result, null, parentContainer);
   });
 };
 
-var appendCategorizedCustomFields = function (fields, className) {
+var appendCategorizedCustomFields = function (fields, className, container) {
   parent.Ts.Services.CustomFields.GetAllTypesCategories(parent.Ts.ReferenceTypes.Tickets, function (categories) {
-  	var container = $('#ticket-group-custom-fields');
     for (var j = 0; j < categories.length; j++) {
       var isFirstFieldAdded = true;
       for (var i = 0; i < fields.length; i++) {
@@ -2578,7 +2577,7 @@ function AppendProductMatchingCustomFields() {
         }
       }
     }
-    appendCategorizedCustomFields(result, null);
+    appendCategorizedCustomFields(result, null, container);
   });
 };
 
