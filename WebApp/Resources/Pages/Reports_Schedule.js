@@ -56,7 +56,7 @@
 		var runNow = false;
 
 		//3: Once
-		if (frequency == 3) {
+		if (frequency == 3 || frequency == 4) {
 			every = 1;
 			weekday = 0;
 			dayOfMonth = 0;
@@ -99,6 +99,9 @@
 			case "3":
 				SetOnceOptions();
 				break;
+		    case "4":
+		        SetDailyOptions();
+		        break;
 		}
 	});
 
@@ -299,11 +302,14 @@
 			case 3:
 				SetOnceOptions();
 				break;
+		    case 4:
+		        SetDailyOptions();
+		        break;
 		}
 	}
 
 	function SetWeeklyOptions() {
-	    $('#runNowOption').hide();
+	    $('#RunNowOption').hide();
 		$('#Every').show();
 		$('#WeeklyOptions').show();
 		$('#MonthlyOptions').hide();
@@ -312,7 +318,7 @@
 	}
 
 	function SetMonthlyOptions() {
-	    $('#runNowOption').hide();
+	    $('#RunNowOption').hide();
 		$('#Every').show();
 		$('#WeeklyOptions').hide();
 		$('#MonthlyOptions').show();
@@ -322,16 +328,24 @@
 	}
 
 	function SetOnceOptions() {
-	    $('#runNowOption').show();
+	    $('#RunNowOption').show();
 		$('#Every').hide();
 		$('#WeeklyOptions').hide();
 		$('#MonthlyOptions').hide();
 		$('#WeekdayList').hide();
 	}
 
+	function SetDailyOptions() {
+	    $('#RunNowOption').hide();
+	    $('#Every').hide();
+	    $('#WeeklyOptions').hide();
+	    $('#MonthlyOptions').hide();
+	    $('#WeekdayList').hide();
+	}
+
 	function PopulateFrequencyList() {
 		$('.frequencyList').empty();
-		var selectValues = { 3: "Once", 1: "Weekly", 2: "Monthly" };
+		var selectValues = { 3: "Once", 4: "Daily", 1: "Weekly", 2: "Monthly" };
 
 		$.each(selectValues, function (key, value) {
 			$('.frequencyList')

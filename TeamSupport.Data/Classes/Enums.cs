@@ -345,6 +345,7 @@ namespace TeamSupport.Data
 		Unknown = 0,
 		Weekly = 1,
 		Monthly = 2,
-		Once = 3
+		Once = 3,
+      Daily = 4
 	}
 }
