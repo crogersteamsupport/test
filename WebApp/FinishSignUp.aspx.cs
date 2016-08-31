@@ -74,6 +74,7 @@ public partial class ChangePassword : System.Web.UI.Page
         organization.Collection.Save();
         user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
         user.IsPasswordExpired = false;
+                user.PasswordCreatedUtc = DateTime.UtcNow;
         users.Save();
         //EmailPosts.SendChangedTSPassword(loginUser, user.UserID);
         return "";

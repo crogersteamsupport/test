@@ -686,6 +686,17 @@ ORDER BY TicketNumber DESC";
             }
         }
 
+        public void LoadForumPostsByUserID(int userID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "Select tv.* from TicketsView as tv inner join ForumTickets ft on tv.TicketID = ft.ticketid where tv.ticketID in (select ticketid from actions where CreatorID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                Fill(command);
+            }
+        }
+
         public void LoadByContactID(int userID)
         {
             LoadByContactID(userID, "TicketNumber");
@@ -1214,14 +1225,16 @@ ORDER BY TicketNumber DESC";
         ),
 
         PageQuery AS (
-          SELECT  * FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
+          SELECT  *, (SELECT MAX(RowNum) FROM RowQuery) AS 'TotalRecords' FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
         )
 
-        SELECT PageQuery.RowNum, {3}
-        FROM PageQuery
-        INNER JOIN UserTicketsView tv ON tv.TicketID = PageQuery.TicketID 
+        SELECT * INTO #Tickets FROM PageQuery;
+
+        SELECT Result.RowNum, Result.TotalRecords, {3}
+        FROM #Tickets AS Result
+        INNER JOIN UserTicketsView tv ON tv.TicketID = Result.TicketID
         WHERE tv.ViewerID = @ViewerID
-        ORDER BY PageQuery.RowNum ASC
+        ORDER BY Result.RowNum ASC
         ";
 
             command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);
@@ -1496,6 +1509,9 @@ ORDER BY TicketNumber DESC";
             if (filter.ForumCategoryID != null && filter.ForumCategoryID == -1)
             {
                 builder.Append(" AND (tv.ForumCategory IS NOT NULL)");
+            }
+            else if (filter.ForumCategoryID == null){
+                builder.Append(" AND (tv.ForumCategory IS NULL)");
             }
 
             if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)

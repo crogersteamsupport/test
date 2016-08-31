@@ -3,16 +3,29 @@ $(document).ready(function () {
     $('body').layout({
         applyDemoStyles: true
     });
+
+    function getMainFrame() {
+        var result = window.parent;
+        var cnt = 0;
+        while (!(result.Ts && result.Ts.Services)) {
+            result = result.parent;
+            cnt++;
+            if (cnt > 5) return null;
+        }
+        return result;
+    }
+
+    var _mainFrame = getMainFrame();
     
-    if (!parent.parent.Ts.System.User.IsSystemAdmin) {
+    if (!_mainFrame.Ts.System.User.IsSystemAdmin) {
         $('#groupDelete').remove();
         //$('#openTab').hide();
         //$('#closedTab').hide();
     }
 
-    if (parent.parent.Ts.Utils.getQueryValue("groupID", window) != null) {    
-        groupID = parent.parent.Ts.Utils.getQueryValue("groupID", window);
-        parent.parent.Ts.Services.Organizations.GetGroupInfo(groupID, function (group) {
+    if (_mainFrame.Ts.Utils.getQueryValue("groupID", window) != null) {    
+        groupID = _mainFrame.Ts.Utils.getQueryValue("groupID", window);
+        _mainFrame.Ts.Services.Organizations.GetGroupInfo(groupID, function (group) {
             groupID = group.GroupID;
             $('#groupName').text(group.Name);
             $('#infoIframe').attr("src", "../../../Frames/GroupInformation.aspx?GroupID=" + groupID);
@@ -21,7 +34,7 @@ $(document).ready(function () {
 
     }
     else {
-        parent.parent.Ts.Services.Organizations.GetGroupInfo(null, function (group) {
+        _mainFrame.Ts.Services.Organizations.GetGroupInfo(null, function (group) {
             groupID = group.GroupID;
             $('#groupName').text(group.Name);
             $('#infoIframe').attr("src", "../../../Frames/GroupInformation.aspx?GroupID=" + groupID);
@@ -32,7 +45,7 @@ $(document).ready(function () {
 
     
 
-    parent.parent.Ts.Services.Organizations.GetGroups(function (groupsList) {
+    _mainFrame.Ts.Services.Organizations.GetGroups(function (groupsList) {
         $('.group-container').empty();
         if (groupsList.HasProductFamilies)
         {
@@ -85,14 +98,14 @@ $(document).ready(function () {
     });
 
     $('#groupNew').click(function () {
-        ShowDialog(parent.parent.GetGroupDialog());
-        parent.parent.Ts.System.logAction('Groups - New Group Dialog Opened');
+        ShowDialog(_mainFrame.GetGroupDialog());
+        _mainFrame.Ts.System.logAction('Groups - New Group Dialog Opened');
     });
 
     $('#groupDelete').click(function () {
         if (confirm("Are you sure you would like to PERMANENTLY delete this group?")) {
-            parent.parent.Ts.System.logAction('Groups - Group Deleted');
-            parent.parent.privateServices.DeleteGroup(groupID, function () {
+            _mainFrame.Ts.System.logAction('Groups - Group Deleted');
+            _mainFrame.privateServices.DeleteGroup(groupID, function () {
                 window.location = window.location;
             });
             
@@ -102,8 +115,8 @@ $(document).ready(function () {
     });
 
     $('#groupEdit').click(function () {
-        ShowDialog(parent.parent.GetGroupDialog(groupID));
-        parent.parent.Ts.System.logAction('Groups - Edit Group Dialog Opened');
+        ShowDialog(_mainFrame.GetGroupDialog(groupID));
+        _mainFrame.Ts.System.logAction('Groups - Edit Group Dialog Opened');
     });
 
     function DialogClosed(sender, args) {

@@ -29,6 +29,7 @@ var _suggestedSolutionDefaultInput = '';
 
 var _timerid;
 var _timerElapsed = 0;
+var _insertedKBTicketID = null;
 var speed = 50, counter = 0, start;
 var reminderClose = false;
 var userFullName = window.parent.Ts.System.User.FirstName + " " + window.parent.Ts.System.User.LastName;
@@ -640,26 +641,22 @@ function CreateNewActionLI() {
   						alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
   					SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
   						if (result) {
-  							_isCreatingAction = true;
-  							$('#action-new-editor').parent().fadeOut('normal', function () {
-  								if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-  									tinymce.activeEditor.destroy();
-  								}
-  							});
-  							if ($('.upload-queue li').length > 0) {
-  								UploadAttachments(result);
-  							}
-  							else {
-  								_newAction = null;
-  								if (_oldActionID === -1) {
-  									_actionTotal = _actionTotal + 1;
-  									var actionElement = CreateActionElement(result, false);
-  									actionElement.find('.ticket-action-number').text(_actionTotal);
-  								}
-  								else {
-  									UpdateActionElement(result, false);
-  								}
-  							}
+  						    _isCreatingAction = true;
+  						    if ($('.upload-queue li').length > 0) {
+  						        UploadAttachments(result);
+  						    }
+  						    else {
+  						        _newAction = null;
+  						        if (_oldActionID === -1) {
+  						            _actionTotal = _actionTotal + 1;
+  						            var actionElement = CreateActionElement(result, false);
+  						            actionElement.find('.ticket-action-number').text(_actionTotal);
+  						        }
+  						        else {
+  						            UpdateActionElement(result, false);
+  						        }
+  						        clearTicketEditor();
+  						    }
   						}
   						else {
   							alert("There was a error creating your action.  Please try again.");
@@ -918,6 +915,7 @@ function SetupActionEditor(elem, action) {
       window.parent.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
         _newAction.Attachments = attachments;
         if (_oldActionID === -1) {
+          clearTicketEditor();
           _actionTotal = _actionTotal + 1;
           var actionElement = CreateActionElement(_newAction, false);
           actionElement.find('.ticket-action-number').text(_actionTotal);
@@ -1430,17 +1428,30 @@ function SaveAction(_oldActionID, isPrivate, callback) {
   }
 
   if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
-  window.parent.Ts.Services.TicketPage.UpdateAction(action, function (result) {
-    _newAction = result;
-    window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
-    if (actionType !== null) {
-      result.item.MessageType = actionType.Name;
-    }
-    callback(result)
-  }, function (error) {
-    callback(null);
-  });
-
+  if (_insertedKBTicketID) {
+      window.parent.Ts.Services.TicketPage.UpdateActionCopyingAttachment(action, _insertedKBTicketID, function (result) {
+        _newAction = result;
+        window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        if (actionType !== null) {
+          result.item.MessageType = actionType.Name;
+        }
+        callback(result)
+      }, function (error) {
+        callback(null);
+      });
+  }
+  else {
+      window.parent.Ts.Services.TicketPage.UpdateAction(action, function (result) {
+        _newAction = result;
+        window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        if (actionType !== null) {
+          result.item.MessageType = actionType.Name;
+        }
+        callback(result)
+      }, function (error) {
+        callback(null);
+      });
+  }
   window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
     _ticketInfo = info;
     setSLAInfo();
@@ -1469,7 +1480,7 @@ function UploadAttachments(newAction) {
       $(o).data('data', data);
     });
   }
-  $('.upload-queue').empty();
+  //$('.upload-queue').empty();
 }
 
 function tickettimer() {
@@ -2179,6 +2190,17 @@ function AddCustomers(customers) {
       newelement.data('orgid', customers[i].OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
     }
   };
+}
+
+function clearTicketEditor()
+{
+    $('#action-new-editor').parent().fadeOut('normal', function () {
+        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+            tinymce.activeEditor.destroy();
+        }
+    });
+    $('.upload-queue').empty();
+
 }
 
 function SetupTagsSection() {

@@ -996,11 +996,12 @@ namespace TeamSupport.Data
 		public static bool ResetPassword(LoginUser loginUser, User user, bool isPortalUser, bool isCustomerHub = false)
 		{
 			string password = GenerateRandomPassword();
-				if (isCustomerHub)
+				if (isCustomerHub || isPortalUser)
 					user.IsPasswordExpired = false;
 				else
 					user.IsPasswordExpired = true;
 			user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
+            user.PasswordCreatedUtc = DateTime.UtcNow;
 			try
 			{
 				if (isPortalUser)

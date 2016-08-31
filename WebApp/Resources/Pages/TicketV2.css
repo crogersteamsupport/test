@@ -931,3 +931,16 @@
     height: 100%;
     min-height: 50px;
 }
+
+#ticket-number{
+    font-size:16px;
+}
+
+.attachment-label{
+     color: #808080 !important;
+    font-size: 12px !important;
+    font-weight: 300 !important;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 100%;
+}

@@ -607,7 +607,7 @@ AdminAuto = function () {
       select.next().hide();
     }
 
-    $('.action-value2').remove();
+    element.find('.action-value2').remove();
 
     switch (action.ValueList) {
       case 'TicketStatuses':
