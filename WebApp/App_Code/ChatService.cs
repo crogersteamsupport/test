@@ -21,7 +21,8 @@ namespace TSWebServices
         Pusher pusher;
         LoginUser loginUser;
         Organization parentOrganization;
-        public ChatService() {
+        public ChatService()
+        {
             options.Encrypted = true;
             pusher = new Pusher("223753", "0cc6bf2df4f20b16ba4d", "119f91ed19272f096383", options);
             loginUser = TSAuthentication.GetLoginUser();
@@ -40,8 +41,8 @@ namespace TSWebServices
         [WebMethod]
         public string GetChatInfo(int chatID)
         {
-            ChatRequestProxy request =  GetChatRequest(chatID);
-            ChatViewObject model = new ChatViewObject(request, GetParticipant(request.RequestorID), null);
+            ChatRequestProxy request = GetChatRequest(chatID);
+            ChatViewObject model = new ChatViewObject(request, GetParticipant(request.RequestorID), GetChatMessages(chatID));
             return JsonConvert.SerializeObject(model);
         }
 
@@ -50,7 +51,7 @@ namespace TSWebServices
         public string RequestChat(string chatGuid, string fName, string lName, string email, string description)
         {
             Organization org = GetOrganization(chatGuid);
-            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress); 
+            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress);
             pusher.Trigger("chat-requests", "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName) });
             return JsonConvert.SerializeObject(request.GetProxy());
         }
@@ -85,7 +86,7 @@ namespace TSWebServices
             ChatClient client = ChatClients.GetChatClient(loginUser, userID);
 
 
-            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = client.FirstName + "  " +  client.LastName, userID = client.LinkedUserID });
+            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = client.FirstName + "  " + client.LastName, userID = client.LinkedUserID });
             return JsonConvert.SerializeObject(true);
         }
 
@@ -113,7 +114,7 @@ namespace TSWebServices
             ChatRequests requests = new ChatRequests(loginUser);
             requests.LoadPendingRequests(loginUser.UserID, loginUser.OrganizationID);
 
-            if(!requests.IsEmpty)
+            if (!requests.IsEmpty)
             {
                 foreach (ChatRequest request in requests)
                 {
@@ -293,6 +294,31 @@ namespace TSWebServices
             return (client == null) ? null : client.GetProxy();
         }
 
+        public static ParticipantInfoView GetLinkedUserInfo(int participantID, ChatParticipantType type)
+        {
+            ParticipantInfoView result = null;
+            switch (type)
+            {
+                case ChatParticipantType.User:
+                    UsersViewItem user = UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), participantID);
+                    if (user != null) result = new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, user.Organization);
+                    break;
+                case ChatParticipantType.External:
+                    ChatClientsViewItem client = ChatClientsView.GetChatClientsViewItem(TSAuthentication.GetLoginUser(), participantID);
+                    if (client != null && client.LinkedUserID != null)
+                    {
+                        UsersViewItem userView = UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)client.LinkedUserID);
+                        result = new ParticipantInfoView(userView.UserID, client.FirstName, client.LastName, client.Email, client.CompanyName);
+                    }
+                    else if (client != null) result = new ParticipantInfoView(null, client.FirstName, client.LastName, client.Email, client.CompanyName);
+                    break;
+                default:
+                    break;
+            }
+            return result;
+        }
+
+
         private ChatRequestProxy GetChatRequest(int chatID)
         {
             ChatRequests requests = new ChatRequests(loginUser);
@@ -321,7 +347,12 @@ namespace TSWebServices
             public string InitiatorDisplayName { get; set; }
             public string InitiatorEmail { get; set; }
             public string Description { get; set; }
-            List<ChatViewMessage> Messages { get; set; }
+            public List<ChatViewMessage> Messages { get; set; }
+
+            public ChatViewObject()
+            {
+
+            }
 
             public ChatViewObject(ChatRequestProxy request, ChatClientProxy initiator, ChatMessageProxy[] messages)
             {
@@ -332,13 +363,14 @@ namespace TSWebServices
                 DateCreated = request.DateCreated;
                 InitiatorMessage = string.Format("{0} {1}, {2} ({3})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
                 InitiatorDisplayName = string.Format("{0} {1}", initiator.FirstName, initiator.LastName);
+                InitiatorEmail = initiator.Email;
                 Description = request.Message;
                 Messages = new List<ChatViewMessage>();
                 if (messages != null)
                 {
                     foreach (ChatMessageProxy message in messages)
                     {
-                        Messages.Add(new ChatViewMessage(message));
+                        Messages.Add(new ChatViewMessage(message, GetLinkedUserInfo(message.PosterID, message.PosterType)));
                     }
                 }
             }
@@ -347,21 +379,42 @@ namespace TSWebServices
         public class ChatViewMessage
         {
             public int MessageID { get; set; }
-            public int CreatorID { get; set; }
+            public int? CreatorID { get; set; }
             public ChatParticipantType CreatorType { get; set; }
             public string CreatorDisplayName { get; set; }
             public DateTime DateCreated { get; set; }
             public string Message { get; set; }
-            public ChatViewMessage(ChatMessageProxy message)
+            public bool IsNotification { get; set; }
+            public ChatViewMessage(ChatMessageProxy message, ParticipantInfoView userInfo)
             {
                 MessageID = message.ChatMessageID;
                 DateCreated = message.DateCreated;
-                CreatorID = message.PosterID;
+                CreatorID = userInfo.UserID;
                 CreatorType = message.PosterType;
-                CreatorDisplayName = "test testerson";
+                CreatorDisplayName = string.Format("{0} {1}", userInfo.FirstName, userInfo.LastName);
                 Message = message.Message;
+                IsNotification = message.IsNotification;
             }
         }
+
+        public class ParticipantInfoView
+        {
+            public int? UserID { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+            public string CompanyName { get; set; }
+
+            public ParticipantInfoView(int? userID, string firstName, string lastName, string email, string companyName)
+            {
+                UserID = userID;
+                FirstName = firstName;
+                LastName = lastName;
+                Email = email;
+                CompanyName = companyName;
+            }
+        }
+
         #endregion
     }
 }

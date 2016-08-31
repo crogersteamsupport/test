@@ -86,12 +86,14 @@ function loadInitialMessages(chatID) {
         createMessage('Initiated On: ' + result.DateCreated);
         createMessage('Initiated By: ' + result.InitiatorDisplayName);
 
-        var descriptionMessage = new Object();
-        descriptionMessage.message = result.Description;
-        descriptionMessage.userID = result.InitiatorUserID;
-        descriptionMessage.userName = result.InitiatorDisplayName;
+        for (i = 0; i < result.Messages.length; i++) {
+            var descriptionMessage = new Object();
+            descriptionMessage.message = result.Messages[i].Message;
+            descriptionMessage.userID = result.Messages[i].CreatorID;
+            descriptionMessage.userName = result.Messages[i].CreatorDisplayName;
 
-        createMessageElement(descriptionMessage, 'right');
+            createMessageElement(descriptionMessage, 'right');
+        }
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     },

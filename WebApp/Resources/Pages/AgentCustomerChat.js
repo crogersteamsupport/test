@@ -103,7 +103,7 @@
 
     function SetActiveChat(chatID) {
         parent.Ts.Services.Chat.GetChatDetails(chatID, function (chat) {
-            //console.log(chat);
+            console.log(chat);
             $('.media-list').empty();
             $('.chat-intro').empty();
             $('.chat-intro').append('<p>Initiated On: ' + chat.DateCreated + '</p>');
