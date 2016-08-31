@@ -60,14 +60,17 @@
 }
 
 .schedule-email-subject,
-.schedule-email-body,
 .schedule-email-addresses {
 	width: 80% !important;
-
 }
 
 .schedule-email-body {
-	vertical-align: top !important;
+    padding-left: 0;
+}
+
+.emailRecipients {
+    clear: both;
+    float: left;
 }
 
 .frequencyList {
@@ -143,3 +146,10 @@
 #runNow {
     padding-left: 3px;
 }
+
+.fa-paste   { color: #5CB85C !important}
+.fa-book    { color: #3276B1 !important}
+.fa-ticket  { color: #FEC21E !important}
+.mce-i-image{ color: #BA55D3 !important}
+.fa-dropbox { color: #3d9ae8 !important}
+.fa-circle  { color: #D9534F !important}

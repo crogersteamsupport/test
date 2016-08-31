@@ -506,6 +506,136 @@ The following steps will refresh your browser<br><br> \
     });
 }
 
+var initScheduledReportEditor = function (element, init) {
+    var editorOptions = {
+        plugins: "autoresize paste link code textcolor table",
+        toolbar1: "insertPasteImage insertTicket image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote | code | table",
+        statusbar: false,
+        gecko_spellcheck: true,
+        extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
+        content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
+        body_class: "ui-widget ui-widget-content",
+        convert_urls: true,
+        autoresize_bottom_margin: 50,
+        remove_script_host: false,
+        relative_urls: false,
+        template_external_list_url: "tinymce/jscripts/template_list.js",
+        external_link_list_url: "tinymce/jscripts/link_list.js",
+        external_image_list_url: "tinymce/jscripts/image_list.js",
+        media_external_list_url: "tinymce/jscripts/media_list.js",
+        menubar: false,
+        moxiemanager_image_settings: {
+            moxiemanager_rootpath: "/" + _mainFrame.Ts.System.Organization.OrganizationID + "/images/",
+            extensions: 'gif,jpg,jpeg,png'
+        },
+        paste_data_images: true,
+        images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
+        height: "100",
+        setup: function (ed) {
+            ed.on('init', function (e) {
+                _mainFrame.Ts.System.refreshUser(function () {
+                    if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                        ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                    }
+                    else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                        ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                    }
+
+                    if (_mainFrame.Ts.System.User.FontSize != "0") {
+                        ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
+                    }
+                    else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
+                        ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSizeDescription);
+                    }
+                });
+            });
+
+            ed.on('paste', function (ed, e) {
+                setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+            });
+
+            ed.addButton('insertTicket', {
+                title: 'Insert Ticket',
+                icon: 'awesome fa fa-ticket',
+                onclick: function () {
+                    _mainFrame.Ts.System.logAction('Ticket - Ticket Inserted');
+
+                    _mainFrame.Ts.MainPage.selectTicket(null, function (ticketID) {
+                        _mainFrame.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
+                            ed.focus();
+                            var html = '<a href="' + _mainFrame.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
+                            ed.selection.setContent(html);
+                            ed.execCommand('mceAutoResize');
+                            ed.focus();
+                        }, function () {
+                            alert('There was a problem inserting the ticket link.');
+                        });
+                    });
+                }
+            });
+
+            ed.addButton('insertPasteImage', {
+                title: 'Insert Image from Clipboard',
+                icon: 'awesome fa fa-paste',
+                onclick: function () {
+
+                    if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer' || (BrowserDetect.browser == 'Mozilla' && BrowserDetect.version < 20)) {
+                        alert("Sorry, this feature is not supported by your browser");
+                    }
+                    else {
+                        _mainFrame.Ts.MainPage.pasteImage(null, function (result) {
+                            ed.focus();
+                            if (result != "") {
+                                var html = '<img src="' + _mainFrame.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                                ed.selection.setContent(html);
+                                setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                                ed.execCommand('mceAutoResize');
+                                ed.focus();
+                            }
+                        });
+                    }
+                }
+            });
+
+            ed.addButton('insertUser', {
+                title: 'Insert Userstamp',
+                icon: 'awesome fa fa-clock-o',
+                onclick: function () {
+                    var html = Date(Date.UTC(Date.Now)) + ' ' + _mainFrame.Ts.System.User.FirstName + ' ' + _mainFrame.Ts.System.User.LastName + ' : ';
+                    ed.selection.setContent(html);
+                    ed.execCommand('mceAutoResize');
+                    ed.focus();
+                }
+            });
+
+            ed.addButton('insertDropBox', {
+                title: 'Insert DropBox',
+                icon: 'awesome fa fa-dropbox',
+                onclick: function () {
+                    var options = {
+                        linkType: "preview",
+                        success: function (files) {
+                            ed.focus();
+                            var html = '<a href=' + files[0].link + '>' + files[0].name + '</a>';
+                            ed.selection.setContent(html);
+                            ed.execCommand('mceAutoResize');
+                            ed.focus();
+                            _mainFrame.Ts.System.logAction('Ticket - Dropbox Added');
+                        },
+                        cancel: function () {
+                            alert('There was a problem inserting the dropbox file.');
+                        }
+                    };
+                    Dropbox.choose(options);
+                }
+            });
+        }
+        , oninit: init
+    };
+    $(element).tinymce(editorOptions);
+}
+
 var onScreenRecordStart = function () {
   $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
   switch (BrowserDetect.browser) {

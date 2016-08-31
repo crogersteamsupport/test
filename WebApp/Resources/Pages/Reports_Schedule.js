@@ -31,7 +31,7 @@
 		}
 
 		var emailSubject = $('.schedule-email-subject').val();
-		var emailBody = $('.schedule-email-body').val();
+		var emailBody = $('#email-body-editor').val();
 		var emailAddresses = $('.schedule-email-addresses').val();
 		var startOnTime = $('#StartOnTime').val();
 		var startOn = $('#StartDateTimePicker').data("StartOnDate") + ' ' + startOnTime;
@@ -159,13 +159,13 @@
 			$('.schedule-email-subject').popover('hide').parent('.schedule-cond').removeClass('has-error');
 		}
 
-		if ($('.schedule-email-body').val() == '') {
-			$('.schedule-email-body').popover('show').parent('.schedule-cond').addClass('has-error');
-			$('.schedule-email-body').focus();
+		if ($('#email-body-editor').val() == '') {
+		    $('#email-body-editor').popover('show').parent('.schedule-cond').addClass('has-error');
+		    $('#email-body-editor').focus();
 			return false;
 		}
 		else {
-			$('.schedule-email-body').popover('hide').parent('.schedule-cond').removeClass('has-error');
+		    $('#email-body-editor').popover('hide').parent('.schedule-cond').removeClass('has-error');
 		}
 
 		if ($('.schedule-email-addresses').val() == '') {
@@ -229,7 +229,6 @@
 	function LoadReportData(report) {
 		SetScheduleOptions(report.RecurrencyId);
 		$('.schedule-email-subject').val(report.EmailSubject);
-		$('.schedule-email-body').val(report.EmailBody);
 		$('.schedule-email-addresses').val(report.EmailRecipients);
 		var startOn = report.StartDate.localeFormat(parent.Ts.Utils.getDatePattern());
 		$('#StartOn').val(startOn);
@@ -249,6 +248,10 @@
 		} else {
 			$("#active").removeClass('fa-check-square-o').addClass('fa-square-o');
 		}
+
+		initScheduledReportEditor($('#email-body-editor'), function (ed) {
+		    $('#email-body-editor').tinymce().setContent(report.EmailBody);
+		});
 	}
 
 	function BackToList(isNew) {

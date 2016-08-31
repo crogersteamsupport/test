@@ -7,6 +7,7 @@
 	<link href="../Css/bootstrap-datepicker.css" rel="stylesheet" type="text/css" />
 	<link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 	<link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/ts.editor.css" rel="stylesheet" />
 	<!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
 	<link href="reports_schedule.css" rel="stylesheet" type="text/css" />
 	<script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
@@ -16,6 +17,11 @@
 	<script src="../Js/moment.min.js" type="text/javascript"></script>
 	<script src="../Js/bootstrap-datepicker.js" type="text/javascript"></script>
 	<script src="../Js/bootstrap-datetimepicker.js" type="text/javascript"></script>
+    <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
+    <script src="../Js/browser.js" type="text/javascript"></script>
+    <script src="../../../tinymce/tinymce.min.js" type="text/javascript"></script>
+    <script src="../../../tinymce/jquery.tinymce.min.js" type="text/javascript"></script>
+    <script src="../Js/Ts/ts.editor.js"></script>
 	<script src="reports_schedule.js" type="text/javascript"></script>
 	<title>Schedule Report</title>
 </head>
@@ -40,13 +46,17 @@
 											data-trigger="manual" required>
 								</li>
 								<li class="schedule-cond">
-									<label>Email Body</label>
-									<textarea class="form-control schedule-email-body" rows="5"
-											data-title="Scheduling Report" data-placement="top"
-											data-content="You must enter a email body before moving on." data-trigger="manual" required></textarea>
-								</li>
-								<li class="schedule-cond">
-									<label>Email Recipients</label>
+                                    <div class="form-group">
+                                        <label for="inputName" class="col-md-2 control-label">Email Body</label>
+                                        <div class="col-md-10 schedule-email-body">
+                                            <textarea class="form-control" id="email-body-editor"
+                                                      data-title="Scheduling Report" data-placement="top"
+                                                      data-content="You must enter a email body before moving on." data-trigger="manual" required></textarea>
+                                        </div>
+                                    </div>
+                                </li>
+								<li class="schedule-cond" style="clear: both;">
+									<label class="emailRecipients">Email Recipients</label>
 									<input type="text" class="form-control schedule-email-addresses" placeholder="Enter comma separated email addresses…"
 											data-title="Scheduling Report" data-placement="top" 
 											data-content="You must enter at least one email recipient before moving on." data-trigger="manual" required>
