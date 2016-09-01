@@ -29,3 +29,14 @@
 
     callback(channel);
 }
+
+function subscribeToNewChatRequest(newRequestCallback) {
+    //"chat-requests", "new-chat-request"
+
+    var pusher = new Pusher('0cc6bf2df4f20b16ba4d');
+    var request_channel = pusher.subscribe('chat-requests');
+
+    request_channel.bind('new-chat-request', function (data) {
+        newRequestCallback(data);
+    });
+}

@@ -2,6 +2,7 @@
     //apiKey = "45228242";
     var activeChatID = 0;
     var dateFormat;
+    var chatInfoObject = {};
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -18,6 +19,10 @@
             }
             dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
         }
+    });
+
+    subscribeToNewChatRequest(function (request) {
+        SetupPendingRequest(request.chatRequest, false);
     });
 
     SetupChatRequests();
@@ -56,7 +61,7 @@
 
             $(this).html('<p class="userName">' + innerString + '</p>' +
                              '<p>Email:  ' + chat.InitiatorEmail + '</p>' +
-                             '<p>Time:  ' + chat.DateCreated + '</p>' +
+                             '<p>Time:  ' + moment(chat.DateCreated).format(dateFormat + ' hh:mm A') + '</p>' +
                              '<p>Message:  ' + chat.Description + '</p>')
                              .append(acceptBtn)
                              .addClass('open-request');
@@ -68,10 +73,13 @@
     }
 
     function SetupActiveRequest(chat, shouldTrigger) {
-        var innerString = chat.InitiatorDisplayName;
-
-        var anchor = $('<a id="' + chat.ChatID + '" href="#" class="list-group-item">' + innerString + '</a>').click(function (e) {
+        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + chat.InitiatorDisplayName + '</a>').click(function (e) {
             e.preventDefault();
+
+            $('.list-group-item-success').removeClass('list-group-item-success');
+            $(this).addClass('list-group-item-success')
+                    .removeClass('list-group-item-info');
+
             activeChatID = chat.ChatID;
             SetActiveChat(activeChatID);
         });
@@ -97,6 +105,12 @@
 
             parentEl.remove();
             MoveAcceptedRequest(innerString, chatId);
+
+            $('.list-group-item-success').removeClass('list-group-item-success');
+            $(this).addClass('list-group-item-success')
+                    .removeClass('list-group-item-info');
+            activeChatID = chatId;
+            SetActiveChat(activeChatID);
         });
     }
 
@@ -107,23 +121,30 @@
 
     function createMessageElement(messageData, scrollView) {
         console.log(messageData)
-        var messageTemplate = $("#message-template").html();
-        var compiledTemplate = messageTemplate
-                                .replace('{{MessageDirection}}', 'left')
-                                .replace('{{UserName}}', messageData.CreatorDisplayName)
-                                //.replace('{{Avatar}}', (messageData.CreatorID !== null)
-                                //                                ? 'https://app.teamsupport.com/dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
-                                //                                : 'https://app.teamsupport.com/dc/1078/UserAvatar/1839999/48/1470773158079')
-                                .replace('{{Avatar}}', 'https://app.teamsupport.com/dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079')
-                                .replace('{{Message}}', messageData.Message)
-                                .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
+        if (messageData.ChatID == activeChatID) {
+            var messageTemplate = $("#message-template").html();
+            var compiledTemplate = messageTemplate
+                                    .replace('{{MessageDirection}}', 'left')
+                                    .replace('{{UserName}}', messageData.CreatorDisplayName)
+                                    //.replace('{{Avatar}}', (messageData.CreatorID !== null)
+                                    //                                ? 'https://app.teamsupport.com/dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
+                                    //                                : 'https://app.teamsupport.com/dc/1078/UserAvatar/1839999/48/1470773158079')
+                                    .replace('{{Avatar}}', 'https://app.teamsupport.com/dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079')
+                                    .replace('{{Message}}', messageData.Message)
+                                    .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
 
-        $('.media-list').append(compiledTemplate);
-        if (scrollView) ScrollMessages();
+            $('.media-list').append(compiledTemplate);
+            if (scrollView) ScrollMessages(true);
+        }
+        else 
+        {
+            $('#active-chat_' + messageData.ChatID).addClass('list-group-item-info');
+        }
     }
 
     function SetActiveChat(chatID) {
         parent.Ts.Services.Chat.GetChatDetails(chatID, function (chat) {
+            chatInfoObject = chat;
             console.log(chat);
             $('.media-list').empty();
             $('.chat-intro').empty();
@@ -134,12 +155,15 @@
             {
                 createMessageElement(chat.Messages[i], false);
             }
-            ScrollMessages();
+            ScrollMessages(false);
         });
     }
 
-    function ScrollMessages() {
-        $(".current-chat-area").animate({ scrollTop: $('.current-chat-area').prop("scrollHeight") }, 1000);
+    function ScrollMessages(animated) {
+        if (animated)
+            $(".current-chat-area").animate({ scrollTop: $('.current-chat-area').prop("scrollHeight") }, 1000);
+        else
+            $(".current-chat-area").scrollTop($('.current-chat-area').prop("scrollHeight"));
     }
 
     $("#new-message").click(function (e) {

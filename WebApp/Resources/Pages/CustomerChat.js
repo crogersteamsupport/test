@@ -3,6 +3,7 @@
     var participantID = Ts.Utils.getQueryValue("pid", window);
     var chatObject;
     var channel;
+    var chatInfoObject = {};
 
     setupChat(chatID, participantID, function (channelObject) {
         channel = channelObject;
@@ -32,7 +33,7 @@ function createMessage(message)
 }
 
 function createMessageElement(messageData, direction) {
-    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="../dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429" alt="User name">  </div>' +
+    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429" alt="User name">  </div>' +
                         '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('DD/MM/YYYY hh:mm A') + '</div></div>');
 }
 
@@ -80,12 +81,13 @@ function loadInitialMessages(chatID) {
 
     IssueAjaxRequest("GetChatInfo", chatObject,
     function (result) {
+        chatInfoObject = result;
         createMessage('Initiated On: ' + result.DateCreated);
         createMessage('Initiated By: ' + result.InitiatorDisplayName);
 
         for (i = 0; i < result.Messages.length; i++) {
             console.log(result.Messages[i])
-            createMessageElement(result.Messages[i], 'right');
+            createMessageElement(result.Messages[i], (result.Messages[i].CreatorType == 0) ? 'left' : 'right');
         }
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);

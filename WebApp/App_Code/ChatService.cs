@@ -52,7 +52,7 @@ namespace TSWebServices
         {
             Organization org = GetOrganization(chatGuid);
             ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress);
-            pusher.Trigger("chat-requests", "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName) });
+            pusher.Trigger("chat-requests", "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName), chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID), GetChatMessages(request.ChatID)) });
             return JsonConvert.SerializeObject(request.GetProxy());
         }
 
@@ -394,6 +394,7 @@ namespace TSWebServices
 
         public class ChatViewMessage
         {
+            public int ChatID { get; set; }
             public int MessageID { get; set; }
             public int? CreatorID { get; set; }
             public ChatParticipantType CreatorType { get; set; }
@@ -415,6 +416,7 @@ namespace TSWebServices
                 CreatorDisplayName = string.Format("{0} {1}", userInfo.FirstName, userInfo.LastName);
                 Message = message.Message;
                 IsNotification = message.IsNotification;
+                ChatID = message.ChatID;
             }
         }
 
