@@ -83,7 +83,6 @@ namespace TSWebServices
         public string AddMessage(string channelName, string message, int chatID, int userID)
         {
             Chat chat = GetChat(chatID);
-            //ChatClient client = ChatClients.GetChatClient(loginUser, userID);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
             chatMessage.Message = message;
@@ -160,7 +159,7 @@ namespace TSWebServices
         public int AcceptRequest(int chatRequestID)
         {
             int chatID = ChatRequests.AcceptRequest(loginUser, loginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
-            var result = pusher.Trigger("presence" + chatID, "agent-joined", null);
+            var result = pusher.Trigger("presence-" + chatID, "agent-joined", null);
             return chatID;
         }
 

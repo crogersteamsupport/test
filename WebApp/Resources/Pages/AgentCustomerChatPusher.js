@@ -24,9 +24,7 @@
     });
 
     channel.bind('new-comment', function (data) {
-        console.log('new-comment');
-        console.log(data);
-        newCommentCallback(data);
+        newCommentCallback(data, true);
     });
 
     callback(channel);

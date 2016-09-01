@@ -1,6 +1,24 @@
 ﻿$(document).ready(function () {
     //apiKey = "45228242";
     var activeChatID = 0;
+    var dateFormat;
+
+    window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
+        dateFormat = format.replace("yyyy", "yy");
+        if (dateFormat.length < 8) {
+            var dateArr = dateFormat.split('/');
+            if (dateArr[0].length < 2) {
+                dateArr[0] = dateArr[0] + dateArr[0];
+            }
+            if (dateArr[1].length < 2) {
+                dateArr[1] = dateArr[1] + dateArr[1];
+            }
+            if (dateArr[2].length < 2) {
+                dateArr[1] = dateArr[1] + dateArr[1];
+            }
+            dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
+        }
+    });
 
     SetupChatRequests();
 
@@ -62,7 +80,7 @@
         if (shouldTrigger) anchor.trigger("click");
 
         setupChat(chat.ChatID, createMessageElement, function (channel) {
-            console.log(channel)
+            //console.log(channel);
         });
 
     }
@@ -74,7 +92,7 @@
     function AcceptRequest(ChatRequestID, innerString, parentEl)  {
         parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, function (chatId) {
             setupChat(chatId, createMessageElement, function (channel) {
-                console.log(channel)
+                //console.log(channel);
             });
 
             parentEl.remove();
@@ -87,20 +105,21 @@
         $('#chats-accepted').append(anchor);
     }
 
-    function createMessageElement(messageData) {
-        console.log(messageData);
-        debugger
+    function createMessageElement(messageData, scrollView) {
+        console.log(messageData)
         var messageTemplate = $("#message-template").html();
         var compiledTemplate = messageTemplate
                                 .replace('{{MessageDirection}}', 'left')
                                 .replace('{{UserName}}', messageData.CreatorDisplayName)
-                                .replace('{{Avatar}}', (messageData.CreatorID !== null)
-                                                                ? 'https://app.teamsupport.com/dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
-                                                                : 'https://app.teamsupport.com/dc/1078/UserAvatar/1839999/48/1470773158079')
+                                //.replace('{{Avatar}}', (messageData.CreatorID !== null)
+                                //                                ? 'https://app.teamsupport.com/dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
+                                //                                : 'https://app.teamsupport.com/dc/1078/UserAvatar/1839999/48/1470773158079')
+                                .replace('{{Avatar}}', 'https://app.teamsupport.com/dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079')
                                 .replace('{{Message}}', messageData.Message)
-                                .replace('{{Date}}', messageData.DateCreated);
+                                .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
 
         $('.media-list').append(compiledTemplate);
+        if (scrollView) ScrollMessages();
     }
 
     function SetActiveChat(chatID) {
@@ -113,15 +132,20 @@
 
             for(i = 0; i <  chat.Messages.length; i++)
             {
-                createMessageElement(chat.Messages[i]);
+                createMessageElement(chat.Messages[i], false);
             }
+            ScrollMessages();
         });
+    }
+
+    function ScrollMessages() {
+        $(".current-chat-area").animate({ scrollTop: $('.current-chat-area').prop("scrollHeight") }, 1000);
     }
 
     $("#new-message").click(function (e) {
         e.preventDefault();
         parent.Ts.Services.Chat.AddAgentMessage('presence-' + activeChatID, $('#message').val(), activeChatID, function (data) {
-            $('#new-message').val('');
+            $('#message').val('');
         });
 
     });

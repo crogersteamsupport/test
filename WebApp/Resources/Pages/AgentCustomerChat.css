@@ -1,34 +1,16 @@
-﻿    body {
-        background-color:white;
-    }
+﻿body {
+    background-color:white;
+}
 
 
-    .ts-loading, .content-loading {
-      background-color: transparent;
-      background-image: url('../images/loading/loading2.gif');
-      background-repeat: no-repeat;
-      background-position: 50% 25%;
-      height: 100%;
-      min-height: 200px;
-    }
-
-    #loading-img {
-    background: url(http://preloaders.net/preloaders/360/Velocity.gif) center center no-repeat;
+.ts-loading, .content-loading {
+    background-color: transparent;
+    background-image: url('../images/loading/loading2.gif');
+    background-repeat: no-repeat;
+    background-position: 50% 25%;
     height: 100%;
-    z-index: 20;
+    min-height: 200px;
 }
-
-.overlay {
-    background: white;
-    display: none;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-}
-
 
 .chats-row { height: 100vh; background-color: #f5f5f5; }
 .chats-row div { 
