@@ -144,36 +144,50 @@ namespace TeamSupport.Data
                 }
             }
 
-            if (_baseCollection.TableName == "TicketsView")
+            // Ticket 15640
+            // Per a skype conversation with Jesus adding AMCO Sales (797841)
+            if ((_baseCollection.LoginUser.OrganizationID == 566596 || _baseCollection.LoginUser.OrganizationID == 797841) && _baseCollection.TableName == "TicketsView")
             {
                 Organizations customers = new Organizations(_baseCollection.LoginUser);
-                customers.LoadByTicketIDOrderedByDateCreated((int)Row["TicketID"]);
+                customers.LoadNameAndIdByTicketID((int)Row["TicketID"]);
+                string customerID = string.Empty;
+                for (int i = 0; i < customers.Count; i++)
+                {
+                    // Per a skype conversation with Jesus their _Unknown Company needs to be excluded. 
+                    if (customers[i].OrganizationID != 624447)
+                    {
+                        customerID = customers[i].OrganizationID.ToString();
+                        break;
+                    }
+                }
+                writer.WriteElementString("CustomerID", customerID);
+            }
+            else if (_baseCollection.TableName == "TicketsView")
+            {
+                Organizations customers = new Organizations(_baseCollection.LoginUser);
+                customers.LoadNameAndIdByTicketID((int)Row["TicketID"]);
                 string customerID = string.Empty;
 
                 writer.WriteStartElement("Customers");
 
                 for (int i = 0; i < customers.Count; i++)
                 {
-                    // Per a skype conversation with Jesus (AMCO) their _Unknown Company needs to be excluded. This part originally requested and working for them since Ticket 15640
-                    if (customers[i].OrganizationID != 624447)
-                    {
-                        customerID = customers[i].OrganizationID.ToString();
-                        writer.WriteStartElement("Customer");
-                        writer.WriteElementString("CustomerID", customerID);
-                        writer.WriteElementString("CustomerName", customers[i].Name);
-                        writer.WriteEndElement();
-                    }
+                    customerID = customers[i].OrganizationID.ToString();
+                    writer.WriteStartElement("Customer");
+                    writer.WriteElementString("CustomerID", customerID);
+                    writer.WriteElementString("CustomerName", customers[i].Name);
+                    writer.WriteEndElement();
                 }
 
                 writer.WriteEndElement();
 
                 ContactsView contacts = new ContactsView(_baseCollection.LoginUser);
-                contacts.LoadByTicketIDOrderedByDateCreated((int)Row["TicketID"]);
+                contacts.LoadNameAndIdByTicketID((int)Row["TicketID"]);
                 string contactId = string.Empty;
 
                 writer.WriteStartElement("Contacts");
 
-                for (int i =0; i < contacts.Count; i++)
+                for (int i = 0; i < contacts.Count; i++)
                 {
                     contactId = contacts[i].UserID.ToString();
                     writer.WriteStartElement("Contact");
