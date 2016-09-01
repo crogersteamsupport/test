@@ -133,6 +133,25 @@ namespace TeamSupport.Data
 					NextRun = dateOnly.Add(timeOnly.TimeOfDay);
 
 					break;
+                case ScheduledReportFrequency.Daily:
+                    DateTime now = DateTime.UtcNow;
+
+                    if (dateOnly.Add(timeOnly.TimeOfDay) < now)
+                    {
+                        dateOnly = now.Date;
+                    }
+
+                    if (dateOnly.Add(timeOnly.TimeOfDay) < now)
+                    {
+                        NextRun = dateOnly.AddDays(1).Add(timeOnly.TimeOfDay);
+                    }
+                    else
+                    {
+                        NextRun = dateOnly.Add(timeOnly.TimeOfDay);
+                    }
+
+                    
+                    break;
 				default:
 					break;
 			}
