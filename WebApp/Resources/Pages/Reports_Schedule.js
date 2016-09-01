@@ -195,7 +195,10 @@
 			    defaultDate: dateNow,
 			    pickTime: false,
                 orientation: "bottom left"
-			});   
+			});
+
+			initScheduledReportEditor($('#email-body-editor'), function (ed) {
+			});
 		}
 
 		$('#StartOnTime').datetimepicker({
