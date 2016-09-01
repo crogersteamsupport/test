@@ -514,7 +514,7 @@ var initScheduledReportEditor = function (element, init) {
         statusbar: false,
         gecko_spellcheck: true,
         extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
-        content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
+        content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css,Reports_Schedule.css",
         body_class: "ui-widget ui-widget-content",
         convert_urls: true,
         autoresize_bottom_margin: 50,
