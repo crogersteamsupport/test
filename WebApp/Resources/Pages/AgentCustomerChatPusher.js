@@ -11,7 +11,7 @@
     var channel = pusher.subscribe(channelName);
 
     channel.bind('pusher:subscription_succeeded', function () {
-        console.log(channel.members);
+        //console.log(channel.members);
     });
 
     channel.bind('pusher:member_added', function (member) {
@@ -24,6 +24,7 @@
     });
 
     channel.bind('new-comment', function (data) {
+        console.log('new-comment');
         console.log(data);
         newCommentCallback(data);
     });

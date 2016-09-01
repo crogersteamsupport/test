@@ -32,8 +32,8 @@ function createMessage(message)
 }
 
 function createMessageElement(messageData, direction) {
-    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="../dc/' + 1078 + '/UserAvatar/' + messageData.userID + '/48/1469829040429" alt="User name">  </div>' +
-                        '<div class="name">' + messageData.userName + '</div>  <div class="text">' + messageData.message + '</div> <div class="time">5 min ago</div></div>');
+    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="../dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429" alt="User name">  </div>' +
+                        '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + messageData.DateCreated + '</div></div>');
 }
 
 function setupChat(chatID, participantID, callback) {
@@ -53,7 +53,6 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('pusher:member_added', function (member) {
-        console.log(member.info.name);
         $('#operator-message').remove();
         createMessage(member.info.name + ' joined the chat.')
     });
@@ -63,13 +62,12 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('agent-joined', function (data) {
-        console.log(data);
-        alert('Agent Joined!')
         $('#operator-message').remove();
     });
 
     pressenceChannel.bind('new-comment', function (data) {
-        console.log(data);
+        console.log('new-comment-user');
+        console.log(data)
         createMessageElement(data, 'left');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
@@ -87,12 +85,12 @@ function loadInitialMessages(chatID) {
         createMessage('Initiated By: ' + result.InitiatorDisplayName);
 
         for (i = 0; i < result.Messages.length; i++) {
-            var descriptionMessage = new Object();
-            descriptionMessage.message = result.Messages[i].Message;
-            descriptionMessage.userID = result.Messages[i].CreatorID;
-            descriptionMessage.userName = result.Messages[i].CreatorDisplayName;
-
-            createMessageElement(descriptionMessage, 'right');
+            //var descriptionMessage = new Object();
+            //descriptionMessage.message = result.Messages[i].Message;
+            //descriptionMessage.userID = result.Messages[i].CreatorID;
+            //descriptionMessage.userName = result.Messages[i].CreatorDisplayName;
+            console.log(result.Messages[i])
+            createMessageElement(result.Messages[i], 'right');
         }
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);

@@ -88,15 +88,17 @@
     }
 
     function createMessageElement(messageData) {
+        console.log(messageData);
+        debugger
         var messageTemplate = $("#message-template").html();
         var compiledTemplate = messageTemplate
                                 .replace('{{MessageDirection}}', 'left')
-                                .replace('{{UserName}}', messageData.userName)
-                                .replace('{{Avatar}}', (messageData.userID !== null)
-                                                                ? 'https://app.teamsupport.com/dc/' + messageData.OrganizationID + '/UserAvatar/' + messageData.userID + '/48/1470773158079'
+                                .replace('{{UserName}}', messageData.CreatorDisplayName)
+                                .replace('{{Avatar}}', (messageData.CreatorID !== null)
+                                                                ? 'https://app.teamsupport.com/dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
                                                                 : 'https://app.teamsupport.com/dc/1078/UserAvatar/1839999/48/1470773158079')
-                                .replace('{{Message}}', messageData.message)
-                                .replace('{{Date}}', '1 min ago');
+                                .replace('{{Message}}', messageData.Message)
+                                .replace('{{Date}}', messageData.DateCreated);
 
         $('.media-list').append(compiledTemplate);
     }
@@ -111,22 +113,15 @@
 
             for(i = 0; i <  chat.Messages.length; i++)
             {
-                var message = chat.Messages[i];
-                var messageData = {};
-                messageData.userName = message.CreatorDisplayName;
-                messageData.userID = message.CreatorID;
-                messageData.OrganizationID = chat.OrganizationID;
-                messageData.message = message.Message;
-                createMessageElement(messageData);
+                createMessageElement(chat.Messages[i]);
             }
         });
     }
 
     $("#new-message").click(function (e) {
         e.preventDefault();
-        alert('clicked');
         parent.Ts.Services.Chat.AddAgentMessage('presence-' + activeChatID, $('#message').val(), activeChatID, function (data) {
-            //alert('posted')
+            $('#new-message').val('');
         });
 
     });

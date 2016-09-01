@@ -83,10 +83,18 @@ namespace TSWebServices
         public string AddMessage(string channelName, string message, int chatID, int userID)
         {
             Chat chat = GetChat(chatID);
-            ChatClient client = ChatClients.GetChatClient(loginUser, userID);
+            //ChatClient client = ChatClients.GetChatClient(loginUser, userID);
 
+            ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
+            chatMessage.Message = message;
+            chatMessage.ChatID = chatID;
+            chatMessage.PosterID = userID;
+            chatMessage.PosterType = ChatParticipantType.External;
+            chatMessage.Collection.Save();
+            //Users.UpdateUserActivityTime(loginUser, userID);
 
-            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = client.FirstName + "  " + client.LastName, userID = client.LinkedUserID });
+            ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
+            var result = pusher.Trigger(channelName, "new-comment", newMessage);
             return JsonConvert.SerializeObject(true);
         }
 
@@ -190,10 +198,19 @@ namespace TSWebServices
         public string AddAgentMessage(string channelName, string message, int chatID)
         {
             Chat chat = GetChat(chatID);
-            ChatClient client = ChatClients.GetChatClient(loginUser, loginUser.UserID);
 
+            ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
+            chatMessage.Message = message;
+            chatMessage.ChatID = chatID;
+            chatMessage.PosterID = loginUser.UserID;
+            chatMessage.PosterType = ChatParticipantType.User;
+            chatMessage.Collection.Save();
+            Users.UpdateUserActivityTime(loginUser, loginUser.UserID);
 
-            var result = pusher.Trigger(channelName, "new-comment", new { message = message, userName = client.FirstName + "  " + client.LastName, userID = client.LinkedUserID });
+            User user = loginUser.GetUser();
+            ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
+
+            var result = pusher.Trigger(channelName, "new-comment", newMessage);
             return JsonConvert.SerializeObject(true);
         }
 
@@ -385,6 +402,11 @@ namespace TSWebServices
             public DateTime DateCreated { get; set; }
             public string Message { get; set; }
             public bool IsNotification { get; set; }
+
+            public ChatViewMessage()
+            {
+
+            }
             public ChatViewMessage(ChatMessageProxy message, ParticipantInfoView userInfo)
             {
                 MessageID = message.ChatMessageID;
@@ -405,6 +427,10 @@ namespace TSWebServices
             public string Email { get; set; }
             public string CompanyName { get; set; }
 
+            public ParticipantInfoView()
+            {
+
+            }
             public ParticipantInfoView(int? userID, string firstName, string lastName, string email, string companyName)
             {
                 UserID = userID;
