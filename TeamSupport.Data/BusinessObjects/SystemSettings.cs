@@ -153,5 +153,11 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
 		{
 			return ReadString("SignalRUrl", "https://signalr.teamsupport.com/signalr");
 		}
-	}
+
+        public static string GetPusherKey()
+        {
+            return ReadString("PusherKey", "1");
+        }
+
+    }
 }

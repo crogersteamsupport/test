@@ -1,7 +1,7 @@
-﻿function setupChat(chatID, newCommentCallback, callback) {
+﻿function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     var channelName = 'presence-' + chatID;
     var service = '/Services/ChatService.asmx/';
-    var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
+    var pusher = new Pusher(pusherKey, {
         authEndpoint: service + 'AgentAuth', auth: {
             params: {
                 chatID: chatID
@@ -30,10 +30,8 @@
     callback(channel);
 }
 
-function subscribeToNewChatRequest(newRequestCallback) {
-    //"chat-requests", "new-chat-request"
-
-    var pusher = new Pusher('0cc6bf2df4f20b16ba4d');
+function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
+    var pusher = new Pusher(pusherKey);
     var request_channel = pusher.subscribe('chat-requests');
 
     request_channel.bind('new-chat-request', function (data) {

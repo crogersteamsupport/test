@@ -3,6 +3,7 @@
     var activeChatID = 0;
     var dateFormat;
     var chatInfoObject = {};
+    var pusherKey = null;
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -25,9 +26,13 @@
         SetupPendingRequest(request.chatRequest, false);
     });
 
-    SetupChatRequests();
+    top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+        pusherKey = key;
+        SetupChatRequests();
 
-    $('.page-loading').hide().next().show();
+        $('.page-loading').hide().next().show();
+    });
+
 
     function SetupChatRequests() {
         parent.Ts.Services.Chat.GetChatRequests(function (data) {
@@ -87,7 +92,7 @@
         $('#chats-accepted').append(anchor);
         if (shouldTrigger) anchor.trigger("click");
 
-        setupChat(chat.ChatID, createMessageElement, function (channel) {
+        setupChat(pusherKey, chat.ChatID, createMessageElement, function (channel) {
             //console.log(channel);
         });
 
@@ -99,23 +104,31 @@
 
     function AcceptRequest(ChatRequestID, innerString, parentEl)  {
         parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, function (chatId) {
-            setupChat(chatId, createMessageElement, function (channel) {
+            setupChat(pusherKey, chatId, createMessageElement, function (channel) {
                 //console.log(channel);
             });
 
             parentEl.remove();
             MoveAcceptedRequest(innerString, chatId);
 
-            $('.list-group-item-success').removeClass('list-group-item-success');
-            $(this).addClass('list-group-item-success')
-                    .removeClass('list-group-item-info');
             activeChatID = chatId;
             SetActiveChat(activeChatID);
         });
     }
 
     function MoveAcceptedRequest(innerString, chatID) {
-        var anchor = $('<a href="#" class="list-group-item">' + innerString + '</a>');
+        $('.list-group-item-success').removeClass('list-group-item-success');
+        var anchor = $('<a id="active-chat_' + chatID + '" href="#" class="list-group-item list-group-item-success">' + innerString + '</a>').click(function (e) {
+            e.preventDefault();
+
+            $('.list-group-item-success').removeClass('list-group-item-success');
+            $(this).addClass('list-group-item-success')
+                    .removeClass('list-group-item-info');
+
+            activeChatID = chatID;
+            SetActiveChat(activeChatID);
+        });
+
         $('#chats-accepted').append(anchor);
     }
 
@@ -126,10 +139,9 @@
             var compiledTemplate = messageTemplate
                                     .replace('{{MessageDirection}}', 'left')
                                     .replace('{{UserName}}', messageData.CreatorDisplayName)
-                                    //.replace('{{Avatar}}', (messageData.CreatorID !== null)
-                                    //                                ? 'https://app.teamsupport.com/dc/' + 1078 + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
-                                    //                                : 'https://app.teamsupport.com/dc/1078/UserAvatar/1839999/48/1470773158079')
-                                    .replace('{{Avatar}}', 'https://app.teamsupport.com/dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079')
+                                    .replace('{{Avatar}}', (messageData.CreatorID !== null)
+                                                                    ? 'https://app.teamsupport.com/dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
+                                                                    : '../images/blank_avatar.png')
                                     .replace('{{Message}}', messageData.Message)
                                     .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
 

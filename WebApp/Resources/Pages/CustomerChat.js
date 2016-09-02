@@ -33,7 +33,10 @@ function createMessage(message)
 }
 
 function createMessageElement(messageData, direction) {
-    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429" alt="User name">  </div>' +
+    var userAvatar = '../vcr/1_9_0/images/blank_avatar.png';
+    if (messageData.CreatorID !== null) userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429';
+
+    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="'+ userAvatar +'" alt="User name">  </div>' +
                         '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('DD/MM/YYYY hh:mm A') + '</div></div>');
 }
 

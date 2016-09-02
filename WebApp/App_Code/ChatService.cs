@@ -39,6 +39,12 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string GetPusherKey()
+        {
+            return SystemSettings.GetPusherKey();
+        }
+
+        [WebMethod]
         public string GetChatInfo(int chatID)
         {
             ChatRequestProxy request = GetChatRequest(chatID);
