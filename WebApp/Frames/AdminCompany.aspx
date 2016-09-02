@@ -81,7 +81,7 @@
               </div>
               <br />
               <div>
-                <asp:Button ID="btnChatOffline" runat="server" Text="Mark all chat users as Unavailable" OnClientClick="PageMethods.MarkChatOffline(); parent.Ts.System.logAction('Admin Organization - Mark All Chat Users Offline'); return false;" />
+                <asp:Button ID="btnChatOffline" runat="server" Text="Mark all chat users as Unavailable" OnClientClick="PageMethods.MarkChatOffline(); alert('All chat users have been marked as Unavailable'); return false;" />
               </div>
               
             </div>

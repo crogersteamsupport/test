@@ -1920,6 +1920,17 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
       }
     }
 
+    public void LoadNameAndIdByTicketID(int ticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT o.OrganizationID, o.Name FROM Organizations o LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID WHERE ot.TicketID = @TicketID AND o.IsActive = 1";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@TicketID", ticketID);
+            Fill(command, "Organizations,OrganizationTickets");
+        } 
+    }
+
     public void LoadSentToSalesForce(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())

@@ -29,6 +29,10 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableCustomerProductAssociation { get; set; }
     [DataMember] public bool EnableChat { get; set; }
     [DataMember] public bool EnableCommunity { get; set; }
+    [DataMember] public bool EnableVideoRecording { get; set; }
+    [DataMember] public bool EnableScreenRecording { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public int? ModifierID { get; set; }
           
   }
   
@@ -37,6 +41,9 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.ModifierID = this.ModifierID;
+      result.EnableScreenRecording = this.EnableScreenRecording;
+      result.EnableVideoRecording = this.EnableVideoRecording;
       result.EnableCommunity = this.EnableCommunity;
       result.EnableChat = this.EnableChat;
       result.EnableCustomerProductAssociation = this.EnableCustomerProductAssociation;
@@ -54,6 +61,7 @@ namespace TeamSupport.Data
       result.CustomerHubID = this.CustomerHubID;
       result.CustomerHubFeatureSettingID = this.CustomerHubFeatureSettingID;
        
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
        
       return result;

@@ -191,7 +191,7 @@ $(document).ready(function () {
 
     function getContacts(request, response) {
         if (_execGetContact) { _execGetContact._executor.abort(); }
-    	_execGetContact = _mainFrame.Ts.Services.Organizations.GetContactsExceptGiven(request.term, userID, function (result) { response(result); });
+        _execGetContact = _mainFrame.Ts.Services.Organizations.GetContactsExceptGiven(request.term, userID, function (result) { response(result); });
         isModified(true);
     }
 
@@ -207,7 +207,7 @@ $(document).ready(function () {
             $(this).data('userid', ui.item.id).removeClass('ui-autocomplete-loading');
 
             try {
-    			_mainFrame.Ts.Services.Organizations.GetUser(ui.item.id, function (info) {
+                _mainFrame.Ts.Services.Organizations.GetUser(ui.item.id, function (info) {
                     var contactPreviewName = "<div><strong>Contact Name:</strong> " + info.FirstName + " " + info.MiddleName + " " + info.LastName + "</div>";
                     var contactPreviewEmail = "<div><strong>Contact Email:</strong> " + info.Email + "</div>";
 
@@ -239,20 +239,20 @@ $(document).ready(function () {
             var JSTop = top;
             //var window = window;
             $('.merge-processing').show();
-    		_mainFrame.Ts.Services.Customers.MergeContacts(winningID, userID, function (result) {
+            _mainFrame.Ts.Services.Customers.MergeContacts(winningID, userID, function (result) {
                 $('.merge-processing').hide();
                 $('#contact-merge-complete').removeAttr('disabled');
                 if (result != "")
                     alert(result);
                 else {
                     $('#MergeModal').modal('hide');
-    				JS_mainFrame.Ts.MainPage.closeNewContactTab(userID);
-    				JS_mainFrame.Ts.MainPage.openNewContact(winningID);
+                    JS_mainFrame.Ts.MainPage.closeNewContactTab(userID);
+                    JS_mainFrame.Ts.MainPage.openNewContact(winningID);
                     //window.location = window.location;
                     //window.parent.ticketSocket.server.ticketUpdate(userID + "," + winningID, "merge", userFullName);
                 }
             });
-    		//_mainFrame.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+            //_mainFrame.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
             //  function () {
             //  $('#merge-error').show();
             //});
@@ -477,7 +477,7 @@ $(document).ready(function () {
             if (!$(this).hasClass('editable'))
                 return false;
 
-        _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact LinkedIn');
+            _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact LinkedIn');
             var header = $(this).hide();
             var container = $('<div>')
               .insertAfter(header);
@@ -503,15 +503,15 @@ $(document).ready(function () {
             $('<i>')
               .addClass('col-md-1 fa fa-check')
               .click(function (e) {
-            _mainFrame.Ts.Services.Customers.SetContactLinkedIn(userID, $(this).prev().find('input').val(), function (result) {
+                  _mainFrame.Ts.Services.Customers.SetContactLinkedIn(userID, $(this).prev().find('input').val(), function (result) {
                       header.text(result);
                       $('#contactEdit').removeClass("disabled");
                   },
-                  function (error) {
-                      header.show();
-                      alert('There was an error saving the customer linkedin.');
-                      $('#contactEdit').removeClass("disabled");
-                  });
+                        function (error) {
+                            header.show();
+                            alert('There was an error saving the customer linkedin.');
+                            $('#contactEdit').removeClass("disabled");
+                        });
                   $(this).closest('div').remove();
                   header.show();
               })
@@ -586,7 +586,7 @@ $(document).ready(function () {
         _mainFrame.Ts.Services.Customers.SetContactPortalUser(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldPortalUser').text((result == 0 ? 'No' : 'Yes'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Portal User');
-            if (result == 1 || _isAdmin || _mainFrame.Ts.System.User.CanEditContact) {
+            if (result == 1 && (_isAdmin || _mainFrame.Ts.System.User.CanEditContact)) {
                 $('#passwordResetBtnGroup').show();
             }
             else {
@@ -692,7 +692,7 @@ $(document).ready(function () {
               .click(function (e) {
                   var neworgID = $(this).prev().find('input').data('item');
                   if (neworgID != undefined) {
-                  _mainFrame.Ts.Services.Customers.SetContactCompany2(userID, neworgID, function (result) {
+                      _mainFrame.Ts.Services.Customers.SetContactCompany2(userID, neworgID, function (result) {
                           if (result == 'email already exists') {
                               header.show();
                               alert('A contact with the same email already exists in the new company.');
@@ -703,11 +703,11 @@ $(document).ready(function () {
                           header.attr('orgid', neworgID);
                           $('#contactEdit').removeClass("disabled");
                       },
-                      function (error) {
-                          header.show();
-                          alert('There was an error saving the customer company.');
-                          $('#contactEdit').removeClass("disabled");
-                      });
+                          function (error) {
+                              header.show();
+                              alert('There was an error saving the customer company.');
+                              $('#contactEdit').removeClass("disabled");
+                          });
                   }
                   $(this).closest('div').remove();
                   header.show();
@@ -846,7 +846,7 @@ $(document).ready(function () {
     $('#addressPanel').on('click', '.deladdress', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this address?')) {
-                _mainFrame.Ts.System.logAction('Contact Detail - Delete Address');
+            _mainFrame.Ts.System.logAction('Contact Detail - Delete Address');
             parent.privateServices.DeleteAddress($(this).attr('id'), function (e) {
                 LoadAddresses(1);
             });
@@ -1336,7 +1336,7 @@ $(document).ready(function () {
 
     function LoadPhoneNumbers(reload) {
         $('#phonePanel').empty();
-        _mainFrame.Ts.Services.Customers.LoadPhoneNumbers(userID,_mainFrame.Ts.ReferenceTypes.Users, function (phone) {
+        _mainFrame.Ts.Services.Customers.LoadPhoneNumbers(userID, _mainFrame.Ts.ReferenceTypes.Users, function (phone) {
             for (var i = 0; i < phone.length; i++) {
                 $('#phonePanel').append("<div class='form-group content'> \
                                         <label for='inputName' class='col-xs-4 control-label'>" + phone[i].PhoneTypeName + "</label> \
@@ -1397,11 +1397,11 @@ $(document).ready(function () {
             $('.userProperties p').toggleClass("editable");
 
             if ($('#fieldPortalUser').text() == "No")
-                $('#btnSendNewPW').hide();
+                $('#passwordResetBtnGroup').hide();
             else if ($('#fieldPortalUser').text() == "Yes" || _isAdmin || _mainFrame.Ts.System.User.CanEditContact)
-                $('#btnSendNewPW').show();
+                $('#passwordResetBtnGroup').show();
             else
-                $('#btnSendNewPW').hide();
+                $('#passwordResetBtnGroup').hide();
 
             if ($('#fieldEmail').text() != "Empty") {
                 $('.userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
@@ -1430,7 +1430,7 @@ $(document).ready(function () {
     }
 
     function UpdateRecentView() {
-        _mainFrame.Ts.Services.Customers.UpdateRecentlyViewed("u"+userID, function (resultHtml) {
+        _mainFrame.Ts.Services.Customers.UpdateRecentlyViewed("u" + userID, function (resultHtml) {
             if (window.parent.document.getElementById('iframe-mniCustomers'))
                 window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
         });
@@ -2020,7 +2020,7 @@ $(document).ready(function () {
 
     var getAssets = function (request, response) {
         if (_execGetAsset) { _execGetAsset._executor.abort(); }
-      _execGetAsset = _mainFrame.Ts.Services.Organizations.GetWarehouseAssets(request.term, function (result) { response(result); });
+        _execGetAsset = _mainFrame.Ts.Services.Organizations.GetWarehouseAssets(request.term, function (result) { response(result); });
     }
 
     $('#inputAsset').autocomplete({
@@ -2047,8 +2047,8 @@ $(document).ready(function () {
             assetAssignmentInfo.Comments = $('#comments').val();
             assetAssignmentInfo.AssigneeName = $('#contactName').text() + ' [' + $('#fieldCompany').text() + ']';
 
-        _mainFrame.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, parent.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
-          _mainFrame.Ts.System.logAction('Contact Detail - Asset Assigned');
+            _mainFrame.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, parent.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
+                _mainFrame.Ts.System.logAction('Contact Detail - Asset Assigned');
                 $('#modalAssign').modal('hide');
                 $('.assetList').prepend(assetHtml);
             }, function () {
@@ -2064,7 +2064,7 @@ $(document).ready(function () {
             }
         }
         //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-      //      _mainFrame.Ts.Services.System.EditReminder(null, _mainFrame.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), _mainFrame.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+        //      _mainFrame.Ts.Services.System.EditReminder(null, _mainFrame.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), _mainFrame.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
         //      $('#modalReminder').modal('hide');
         //    }
         //    else
@@ -2074,7 +2074,7 @@ $(document).ready(function () {
     function LoadProducts() {
 
         if (!_productHeadersAdded) {
-          _mainFrame.Ts.Services.Customers.LoadcustomContactProductHeaders(function (headers) {
+            _mainFrame.Ts.Services.Customers.LoadcustomContactProductHeaders(function (headers) {
                 for (var i = 0; i < headers.length; i++) {
                     $('#tblProducts th:last').after('<th>' + headers[i] + '</th>');
                 }
@@ -2120,7 +2120,7 @@ $(document).ready(function () {
     }
 
     function LoadCustomControls(refType) {
-      _mainFrame.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
+        _mainFrame.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
             $('#customProductsControls').append(html);
 
             $('#customProductsControls .datepicker').datetimepicker({ pickTime: false });

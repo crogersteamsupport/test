@@ -186,6 +186,17 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadNameAndIdByTicketID(int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT u.UserID, u.FirstName + ' ' + u.LastName AS Name FROM [Users] u LEFT JOIN UserTickets ut ON ut.UserID = u.UserID WHERE ut.TicketID = @TicketID AND (u.MarkDeleted = 0)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        Fill(command);
+      }
+    }
+
     public void LoadSentToSalesForce(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())

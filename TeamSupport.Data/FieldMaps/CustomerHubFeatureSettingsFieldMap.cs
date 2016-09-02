@@ -29,6 +29,10 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableCustomerProductAssociation", "EnableCustomerProductAssociation", false, false, false);
       _fieldMap.AddMap("EnableChat", "EnableChat", false, false, false);
       _fieldMap.AddMap("EnableCommunity", "EnableCommunity", false, false, false);
+      _fieldMap.AddMap("EnableVideoRecording", "EnableVideoRecording", false, false, false);
+      _fieldMap.AddMap("EnableScreenRecording", "EnableScreenRecording", false, false, false);
+      _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
+      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
             
     }
   }

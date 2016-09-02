@@ -19,6 +19,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CNameURL", "CNameURL", false, false, false);
       _fieldMap.AddMap("IsActive", "IsActive", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
+      _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
+      _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
+      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
             
     }
   }

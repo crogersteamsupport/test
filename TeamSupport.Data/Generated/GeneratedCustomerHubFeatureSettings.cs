@@ -46,7 +46,25 @@ namespace TeamSupport.Data
       set { Row["DefaultGroupTypeID"] = CheckValue("DefaultGroupTypeID", value); }
     }
     
+    public int? ModifierID
+    {
+      get { return Row["ModifierID"] != DBNull.Value ? (int?)Row["ModifierID"] : null; }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
+    }
+    
 
+    
+    public bool EnableScreenRecording
+    {
+      get { return (bool)Row["EnableScreenRecording"]; }
+      set { Row["EnableScreenRecording"] = CheckValue("EnableScreenRecording", value); }
+    }
+    
+    public bool EnableVideoRecording
+    {
+      get { return (bool)Row["EnableVideoRecording"]; }
+      set { Row["EnableVideoRecording"] = CheckValue("EnableVideoRecording", value); }
+    }
     
     public bool EnableCommunity
     {
@@ -135,6 +153,17 @@ namespace TeamSupport.Data
     
 
     
+    public DateTime DateModified
+    {
+      get { return DateToLocal((DateTime)Row["DateModified"]); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
+    }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
+    
 
     #endregion
     
@@ -219,7 +248,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubFeatureSettings] SET     [CustomerHubID] = @CustomerHubID,    [EnableKnowledgeBase] = @EnableKnowledgeBase,    [EnableProducts] = @EnableProducts,    [EnableTicketCreation] = @EnableTicketCreation,    [EnableMyTickets] = @EnableMyTickets,    [EnableOrganizationTickets] = @EnableOrganizationTickets,    [EnableWiki] = @EnableWiki,    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,    [EnableTicketProductSelection] = @EnableTicketProductSelection,    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,    [DefaultTicketTypeID] = @DefaultTicketTypeID,    [DefaultGroupTypeID] = @DefaultGroupTypeID,    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,    [EnableChat] = @EnableChat,    [EnableCommunity] = @EnableCommunity  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubFeatureSettings] SET     [CustomerHubID] = @CustomerHubID,    [EnableKnowledgeBase] = @EnableKnowledgeBase,    [EnableProducts] = @EnableProducts,    [EnableTicketCreation] = @EnableTicketCreation,    [EnableMyTickets] = @EnableMyTickets,    [EnableOrganizationTickets] = @EnableOrganizationTickets,    [EnableWiki] = @EnableWiki,    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,    [EnableTicketProductSelection] = @EnableTicketProductSelection,    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,    [DefaultTicketTypeID] = @DefaultTicketTypeID,    [DefaultGroupTypeID] = @DefaultGroupTypeID,    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,    [EnableChat] = @EnableChat,    [EnableCommunity] = @EnableCommunity,    [EnableVideoRecording] = @EnableVideoRecording,    [EnableScreenRecording] = @EnableScreenRecording,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomerHubFeatureSettingID", SqlDbType.Int, 4);
@@ -334,13 +363,69 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("EnableVideoRecording", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("EnableScreenRecording", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubFeatureSettings] (    [CustomerHubID],    [EnableKnowledgeBase],    [EnableProducts],    [EnableTicketCreation],    [EnableMyTickets],    [EnableOrganizationTickets],    [EnableWiki],    [EnableTicketGroupSelection],    [EnableTicketProductSelection],    [EnableTicketProductVersionSelection],    [DefaultTicketTypeID],    [DefaultGroupTypeID],    [EnableCustomerProductAssociation],    [EnableChat],    [EnableCommunity]) VALUES ( @CustomerHubID, @EnableKnowledgeBase, @EnableProducts, @EnableTicketCreation, @EnableMyTickets, @EnableOrganizationTickets, @EnableWiki, @EnableTicketGroupSelection, @EnableTicketProductSelection, @EnableTicketProductVersionSelection, @DefaultTicketTypeID, @DefaultGroupTypeID, @EnableCustomerProductAssociation, @EnableChat, @EnableCommunity); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubFeatureSettings] (    [CustomerHubID],    [EnableKnowledgeBase],    [EnableProducts],    [EnableTicketCreation],    [EnableMyTickets],    [EnableOrganizationTickets],    [EnableWiki],    [EnableTicketGroupSelection],    [EnableTicketProductSelection],    [EnableTicketProductVersionSelection],    [DefaultTicketTypeID],    [DefaultGroupTypeID],    [EnableCustomerProductAssociation],    [EnableChat],    [EnableCommunity],    [EnableVideoRecording],    [EnableScreenRecording],    [DateModified],    [ModifierID]) VALUES ( @CustomerHubID, @EnableKnowledgeBase, @EnableProducts, @EnableTicketCreation, @EnableMyTickets, @EnableOrganizationTickets, @EnableWiki, @EnableTicketGroupSelection, @EnableTicketProductSelection, @EnableTicketProductVersionSelection, @DefaultTicketTypeID, @DefaultGroupTypeID, @EnableCustomerProductAssociation, @EnableChat, @EnableCommunity, @EnableVideoRecording, @EnableScreenRecording, @DateModified, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("EnableScreenRecording", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("EnableVideoRecording", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("EnableCommunity", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -559,7 +644,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubFeatureSettingID], [CustomerHubID], [EnableKnowledgeBase], [EnableProducts], [EnableTicketCreation], [EnableMyTickets], [EnableOrganizationTickets], [EnableWiki], [EnableTicketGroupSelection], [EnableTicketProductSelection], [EnableTicketProductVersionSelection], [DefaultTicketTypeID], [DefaultGroupTypeID], [EnableCustomerProductAssociation], [EnableChat], [EnableCommunity] FROM [dbo].[CustomerHubFeatureSettings] WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubFeatureSettingID], [CustomerHubID], [EnableKnowledgeBase], [EnableProducts], [EnableTicketCreation], [EnableMyTickets], [EnableOrganizationTickets], [EnableWiki], [EnableTicketGroupSelection], [EnableTicketProductSelection], [EnableTicketProductVersionSelection], [DefaultTicketTypeID], [DefaultGroupTypeID], [EnableCustomerProductAssociation], [EnableChat], [EnableCommunity], [EnableVideoRecording], [EnableScreenRecording], [DateModified], [ModifierID] FROM [dbo].[CustomerHubFeatureSettings] WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomerHubFeatureSettingID", customerHubFeatureSettingID);
         Fill(command);

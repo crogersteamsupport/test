@@ -13,7 +13,7 @@
          <Tabs>
            <%--<telerik:RadTab runat="server" Text="My Company" Value="AdminCompany.aspx"></telerik:RadTab>--%>
            <telerik:RadTab runat="server" Text="My Company" Value="../vcr/1_9_0/Pages/Admin_Company.html" Visible="true"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="My Portal" Value="../vcr/1_9_0/Pages/Admin_Portal.html" Visible="true"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="My Customer Hub" Value="../vcr/1_9_0/Pages/Admin_Portal.html" Visible="true"></telerik:RadTab>
 <%--           <telerik:RadTab ID="tsHub" runat="server" Text="Customer Hub" Value="../vcr/1_9_0/Pages/Admin_Hub.html"></telerik:RadTab>--%>
            <telerik:RadTab runat="server" Selected="True" Text="Custom Fields" Value="../vcr/1_9_0/Pages/Admin_CustomFields.html"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Custom Properties" Value="AdminCustomProperties.aspx"></telerik:RadTab>
