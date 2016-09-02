@@ -58,7 +58,7 @@ namespace TSWebServices
         {
             Organization org = GetOrganization(chatGuid);
             ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress);
-            pusher.Trigger("chat-requests", "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName), chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID), GetChatMessages(request.ChatID)) });
+            pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName), title = "Chat Request", theme = "ui-state-error", chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID), GetChatMessages(request.ChatID)) });
             return JsonConvert.SerializeObject(request.GetProxy());
         }
 

@@ -133,6 +133,7 @@
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.tabs.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.menutree.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.pages.main.js" />
+        <asp:ScriptReference Path="https://js.pusher.com/3.1/pusher.min.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>

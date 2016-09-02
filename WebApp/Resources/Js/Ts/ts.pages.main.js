@@ -68,7 +68,8 @@ Ts.Pages.Main.prototype = {
             if (Ts.System.User.IsChatUser) {
                 $('.menu-chatstatus').show();
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    tmrChat = setInterval(getChatUpdates, chatInterval);
+                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    setupChatRequestUpdates();
                     $('.main-status-chat').removeClass('ui-state-disabled');
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Online');
@@ -162,7 +163,8 @@ Ts.Pages.Main.prototype = {
                 Ts.System.ChatUserSettings = setting;
                 if (tmrChat) clearInterval(tmrChat);
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    tmrChat = setInterval(getChatUpdates, chatInterval);
+                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    setupChatRequestUpdates();
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Online');
                 } else {
@@ -682,6 +684,24 @@ Ts.Pages.Main.prototype = {
                     window.focus();
                 }
             }
+        }
+
+        function setupChatRequestUpdates() {        
+            top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+                var chatGUID = top.Ts.System.Organization.ChatID;
+                var pusher = new Pusher(key);
+                var request_channel = pusher.subscribe('chat-requests-' + chatGUID);
+
+                request_channel.bind('new-chat-request', function (data) {
+                    $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
+                    $.jGrowl(data.message, {
+                        life: 5000,
+                        theme: data.theme,
+                        header: data.title
+                    });
+                });
+
+            });
         }
 
         function flashTitle() {

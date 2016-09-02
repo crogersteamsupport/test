@@ -31,8 +31,9 @@
 }
 
 function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
+    var chatGUID = top.Ts.System.Organization.ChatID;
     var pusher = new Pusher(pusherKey);
-    var request_channel = pusher.subscribe('chat-requests');
+    var request_channel = pusher.subscribe('chat-requests-' + chatGUID);
 
     request_channel.bind('new-chat-request', function (data) {
         newRequestCallback(data);
