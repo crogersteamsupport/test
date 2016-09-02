@@ -1079,7 +1079,7 @@ ORDER BY TicketNumber DESC";
         public void LoadByRange(int from, int to, TicketLoadFilter filter)
         {
             SqlCommand command = GetLoadRangeCommand(LoginUser, from, to, filter);
-            Fill(command);
+            Fill(command, "", false);
         }
 
         public static SqlCommand GetLoadExportCommand(LoginUser loginUser, TicketLoadFilter filter)

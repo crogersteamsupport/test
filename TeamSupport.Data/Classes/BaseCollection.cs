@@ -744,7 +744,7 @@ namespace TeamSupport.Data
 			}
 		}
 
-		public virtual void Fill(SqlCommand command, string tableNames)
+		public virtual void Fill(SqlCommand command, string tableNames, bool includeSchema = true)
 		{
 			FixCommandParameters(command);
 
@@ -768,7 +768,7 @@ namespace TeamSupport.Data
 				{
 					using (SqlDataAdapter adapter = new SqlDataAdapter(command))
 					{
-						adapter.FillSchema(_table, SchemaType.Source);
+						if (includeSchema) adapter.FillSchema(_table, SchemaType.Source);
 						adapter.Fill(_table);
 					}
 					transaction.Commit();
