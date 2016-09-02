@@ -19,6 +19,9 @@ namespace TeamSupport.Data
     [DataMember] public string CNameURL { get; set; }
     [DataMember] public bool IsActive { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public int? ModifierID { get; set; }
           
   }
   
@@ -27,6 +30,7 @@ namespace TeamSupport.Data
     public CustomerHubProxy GetProxy()
     {
       CustomerHubProxy result = new CustomerHubProxy();
+      result.ModifierID = this.ModifierID;
       result.ProductFamilyID = this.ProductFamilyID;
       result.IsActive = this.IsActive;
       result.CNameURL = this.CNameURL;
@@ -34,6 +38,8 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.CustomerHubID = this.CustomerHubID;
        
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
        
       return result;

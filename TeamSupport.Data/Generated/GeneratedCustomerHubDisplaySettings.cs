@@ -76,6 +76,12 @@ namespace TeamSupport.Data
       set { Row["Color5"] = CheckValue("Color5", value); }
     }
     
+    public int? ModifierID
+    {
+      get { return Row["ModifierID"] != DBNull.Value ? (int?)Row["ModifierID"] : null; }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
+    }
+    
 
     
     public int CustomerHubID
@@ -92,6 +98,17 @@ namespace TeamSupport.Data
 
     
 
+    
+    public DateTime DateModified
+    {
+      get { return DateToLocal((DateTime)Row["DateModified"]); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
+    }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
     
 
     #endregion
@@ -157,28 +174,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int customerHubDisplaySettingID)
     {
-      BeforeDBDelete(customerHubDisplaySettingID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CustomerHubDisplaySettings] WHERE ([CustomerHubDisplaySettingID] = @CustomerHubDisplaySettingID);";
         deleteCommand.Parameters.Add("CustomerHubDisplaySettingID", SqlDbType.Int);
         deleteCommand.Parameters["CustomerHubDisplaySettingID"].Value = customerHubDisplaySettingID;
 
+        BeforeDBDelete(customerHubDisplaySettingID);
         BeforeRowDelete(customerHubDisplaySettingID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(customerHubDisplaySettingID);
-      }
-      AfterDBDelete(customerHubDisplaySettingID);
-      
-    }
+        AfterDBDelete(customerHubDisplaySettingID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("CustomerHubDisplaySettingsSave");
@@ -187,7 +194,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubDisplaySettings] SET     [CustomerHubID] = @CustomerHubID,    [FontFamily] = @FontFamily,    [FontColor] = @FontColor,    [Color1] = @Color1,    [Color2] = @Color2,    [Color3] = @Color3,    [Color4] = @Color4,    [Color5] = @Color5  WHERE ([CustomerHubDisplaySettingID] = @CustomerHubDisplaySettingID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubDisplaySettings] SET     [CustomerHubID] = @CustomerHubID,    [FontFamily] = @FontFamily,    [FontColor] = @FontColor,    [Color1] = @Color1,    [Color2] = @Color2,    [Color3] = @Color3,    [Color4] = @Color4,    [Color5] = @Color5,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([CustomerHubDisplaySettingID] = @CustomerHubDisplaySettingID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomerHubDisplaySettingID", SqlDbType.Int, 4);
@@ -253,13 +260,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubDisplaySettings] (    [CustomerHubID],    [FontFamily],    [FontColor],    [Color1],    [Color2],    [Color3],    [Color4],    [Color5]) VALUES ( @CustomerHubID, @FontFamily, @FontColor, @Color1, @Color2, @Color3, @Color4, @Color5); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubDisplaySettings] (    [CustomerHubID],    [FontFamily],    [FontColor],    [Color1],    [Color2],    [Color3],    [Color4],    [Color5],    [DateModified],    [ModifierID]) VALUES ( @CustomerHubID, @FontFamily, @FontColor, @Color1, @Color2, @Color3, @Color4, @Color5, @DateModified, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("Color5", SqlDbType.VarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -429,7 +464,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubDisplaySettingID], [CustomerHubID], [FontFamily], [FontColor], [Color1], [Color2], [Color3], [Color4], [Color5] FROM [dbo].[CustomerHubDisplaySettings] WHERE ([CustomerHubDisplaySettingID] = @CustomerHubDisplaySettingID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubDisplaySettingID], [CustomerHubID], [FontFamily], [FontColor], [Color1], [Color2], [Color3], [Color4], [Color5], [DateModified], [ModifierID] FROM [dbo].[CustomerHubDisplaySettings] WHERE ([CustomerHubDisplaySettingID] = @CustomerHubDisplaySettingID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomerHubDisplaySettingID", customerHubDisplaySettingID);
         Fill(command);

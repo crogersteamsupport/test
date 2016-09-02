@@ -52,6 +52,12 @@ namespace TeamSupport.Data
       set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
     }
     
+    public int? ModifierID
+    {
+      get { return Row["ModifierID"] != DBNull.Value ? (int?)Row["ModifierID"] : null; }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
+    }
+    
 
     
     public bool IsActive
@@ -74,6 +80,28 @@ namespace TeamSupport.Data
 
     
 
+    
+    public DateTime DateModified
+    {
+      get { return DateToLocal((DateTime)Row["DateModified"]); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
+    }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
+    
+    public DateTime DateCreated
+    {
+      get { return DateToLocal((DateTime)Row["DateCreated"]); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
+    }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
+    }
     
 
     #endregion
@@ -139,28 +167,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int customerHubID)
     {
-      BeforeDBDelete(customerHubID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CustomerHubs] WHERE ([CustomerHubID] = @CustomerHubID);";
         deleteCommand.Parameters.Add("CustomerHubID", SqlDbType.Int);
         deleteCommand.Parameters["CustomerHubID"].Value = customerHubID;
 
+        BeforeDBDelete(customerHubID);
         BeforeRowDelete(customerHubID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(customerHubID);
-      }
-      AfterDBDelete(customerHubID);
-      
-    }
+        AfterDBDelete(customerHubID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("CustomerHubsSave");
@@ -169,7 +187,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubs] SET     [OrganizationID] = @OrganizationID,    [PortalName] = @PortalName,    [CNameURL] = @CNameURL,    [IsActive] = @IsActive,    [ProductFamilyID] = @ProductFamilyID  WHERE ([CustomerHubID] = @CustomerHubID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubs] SET     [OrganizationID] = @OrganizationID,    [PortalName] = @PortalName,    [CNameURL] = @CNameURL,    [IsActive] = @IsActive,    [ProductFamilyID] = @ProductFamilyID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([CustomerHubID] = @CustomerHubID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomerHubID", SqlDbType.Int, 4);
@@ -214,13 +232,48 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubs] (    [OrganizationID],    [PortalName],    [CNameURL],    [IsActive],    [ProductFamilyID]) VALUES ( @OrganizationID, @PortalName, @CNameURL, @IsActive, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubs] (    [OrganizationID],    [PortalName],    [CNameURL],    [IsActive],    [ProductFamilyID],    [DateCreated],    [DateModified],    [ModifierID]) VALUES ( @OrganizationID, @PortalName, @CNameURL, @IsActive, @ProductFamilyID, @DateCreated, @DateModified, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -369,7 +422,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubID], [OrganizationID], [PortalName], [CNameURL], [IsActive], [ProductFamilyID] FROM [dbo].[CustomerHubs] WHERE ([CustomerHubID] = @CustomerHubID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubID], [OrganizationID], [PortalName], [CNameURL], [IsActive], [ProductFamilyID], [DateCreated], [DateModified], [ModifierID] FROM [dbo].[CustomerHubs] WHERE ([CustomerHubID] = @CustomerHubID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomerHubID", customerHubID);
         Fill(command);

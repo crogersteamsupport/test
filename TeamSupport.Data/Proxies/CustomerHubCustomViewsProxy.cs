@@ -19,6 +19,8 @@ namespace TeamSupport.Data
     [DataMember] public string CustomView { get; set; }
     [DataMember] public bool IsActive { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public int? ModifierID { get; set; }
           
   }
   
@@ -27,6 +29,7 @@ namespace TeamSupport.Data
     public CustomerHubCustomViewProxy GetProxy()
     {
       CustomerHubCustomViewProxy result = new CustomerHubCustomViewProxy();
+      result.ModifierID = this.ModifierID;
       result.IsActive = this.IsActive;
       result.CustomView = this.CustomView;
       result.CustomerHubViewID = this.CustomerHubViewID;
@@ -34,6 +37,7 @@ namespace TeamSupport.Data
       result.CustomerHubCustomViewID = this.CustomerHubCustomViewID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
        
       return result;
