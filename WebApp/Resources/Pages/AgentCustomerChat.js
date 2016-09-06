@@ -4,6 +4,7 @@
     var dateFormat;
     var chatInfoObject = {};
     var pusherKey = null;
+    var contactID = null;
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -33,6 +34,7 @@
         $('.page-loading').hide().next().show();
     });
 
+    SetupToolbar();
 
     function SetupChatRequests() {
         parent.Ts.Services.Chat.GetChatRequests(function (data) {
@@ -156,8 +158,17 @@
 
     function SetActiveChat(chatID) {
         parent.Ts.Services.Chat.GetChatDetails(chatID, function (chat) {
+            //console.log(chat);
             chatInfoObject = chat;
-            console.log(chat);
+            if (chat.InitiatorUserID !== null) {
+                contactID = chat.InitiatorUserID;
+                $('#chat-customer').show();
+            }
+            else {
+                contactID = null;
+                $('#chat-customer').hide();
+            }
+
             $('.media-list').empty();
             $('.chat-intro').empty();
             $('.chat-intro').append('<p>Initiated On: ' + chat.DateCreated + '</p>');
@@ -186,4 +197,108 @@
 
     });
 
+    function SetupToolbar() {
+        //Leave Chat and remove from list of active chats
+        $('#chat-leave').click(function (e) {
+            e.preventDefault();
+            parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
+                if (success) {
+                    $('#active-chat_' + activeChatID).remove();
+                    $('.media-list').empty();
+                    $('.chat-intro').empty();
+                    activeChatID = null;
+                    //TODO:  Click next active request if possible.
+                    //$('.chats-accepted')
+                }
+                else console.log('Error closing chat.')
+            });
+        });
+
+        //TODO: Not complete.  Need ability to select from list of users.  Check old chat code. 
+        $('#chat-invite').click(function (e) {
+            e.preventDefault();
+            //parent.Ts.Services.Chat.RequestInvite(activeChatID, function (data) {
+
+            //});
+        });
+
+        //TODO: Not complete.  Need ability to select from list of users.  Check old chat code. 
+        $('#chat-transfer').click(function (e) {
+            e.preventDefault();
+            //parent.Ts.Services.Chat.RequestInvite(activeChatID, function (data) {
+
+            //});
+        });
+
+        $('#chat-customer').click(function (e) {
+            e.preventDefault();
+            parent.Ts.MainPage.openContact(contactID);
+        });
+
+        //TODO: Port over suggestion code
+        $('#chat-suggestions').click(function (e) {
+            e.preventDefault();
+            //parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
+            //    if (success) {
+
+            //    }
+            //    else console.log('Error closing chat.')
+            //});
+        });
+
+        //TODO: Create Attachment upload logic
+        $('#chat-attachment').click(function (e) {
+            e.preventDefault();
+            //parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
+            //    if (success) {
+
+            //    }
+            //    else console.log('Error closing chat.')
+            //});
+        });
+
+        //TODO:  TOK Integration
+        $('#chat-record').click(function (e) {
+            e.preventDefault();
+            //parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
+            //    if (success) {
+
+            //    }
+            //    else console.log('Error closing chat.')
+            //});
+        });
+
+        //Create a ticket with the associated chat in it.
+        $('#Ticket-Create').click(function (e) {
+            e.preventDefault();
+            parent.Ts.MainPage.newTicket('?ChatID=' + activeChatID);
+            parent.Ts.System.logAction('Chat - Ticket Created');
+        });
+
+        //Add this convo to a existing ticket
+        //TODO: Need way to lookup ticketID to associate with.
+        $('#Ticket-Add').click(function (e) {
+            e.preventDefault();
+            //parent.Ts.Services.Chat.AddTicket(activeChatID, ticketID, function (success) {
+            //    if (success) {
+
+            //    }
+            //    else console.log('Error closing chat.')
+            //});
+        });
+
+        //Open the Ticket assocaited with this chat
+        $('#Ticket-Open').click(function (e) {
+            e.preventDefault();
+            parent.Ts.Services.Chat.GetTicketID(activeChatID, function (ticketID) {
+                if (ticketID) {
+                    parent.Ts.MainPage.openTicketByID(ticketID, false);
+                }
+                else console.log('Error opening associated ticket.')
+            });
+        });
+
+
+
+    }
 });

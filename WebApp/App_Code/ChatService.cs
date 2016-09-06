@@ -219,6 +219,17 @@ namespace TSWebServices
             return JsonConvert.SerializeObject(true);
         }
 
+        [WebMethod(true)]
+        public int GetTicketID(int chatID)
+        {
+            Chat chat = Chats.GetChat(loginUser, chatID);
+            if (chat.ActionID == null) return -1;
+
+            TeamSupport.Data.Action action = Actions.GetAction(loginUser, (int)chat.ActionID);
+            if (action == null) return -1;
+            return action.TicketID;
+        }
+
         [WebMethod]
         public int AddTicket(int chatID, int ticketID)
         {
@@ -239,7 +250,7 @@ namespace TSWebServices
                 chat.ActionID = chatAction.ActionID;
                 chat.Collection.Save();
 
-                (new Tickets(UserSession.LoginUser)).AddContact(chat.GetInitiatorLinkedUserID(), ticketID);
+                (new Tickets(loginUser)).AddContact(chat.GetInitiatorLinkedUserID(), ticketID);
             }
             return ticketID;
         }
@@ -256,19 +267,19 @@ namespace TSWebServices
             ChatRequests.RequestInvite(loginUser, chatID, userID);
         }
 
-        [WebMethod]
-        public void PostMessage(string message, int chatID)
-        {
-            Chat chat = Chats.GetChat(loginUser, chatID);
-            if (chat.OrganizationID != loginUser.OrganizationID) return;
-            ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
-            chatMessage.Message = message;
-            chatMessage.ChatID = chatID;
-            chatMessage.PosterID = loginUser.UserID;
-            chatMessage.PosterType = ChatParticipantType.User;
-            chatMessage.Collection.Save();
-            Users.UpdateUserActivityTime(loginUser, loginUser.UserID);
-        }
+        //[WebMethod]
+        //public void PostMessage(string message, int chatID)
+        //{
+        //    Chat chat = Chats.GetChat(loginUser, chatID);
+        //    if (chat.OrganizationID != loginUser.OrganizationID) return;
+        //    ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
+        //    chatMessage.Message = message;
+        //    chatMessage.ChatID = chatID;
+        //    chatMessage.PosterID = loginUser.UserID;
+        //    chatMessage.PosterType = ChatParticipantType.User;
+        //    chatMessage.Collection.Save();
+        //    Users.UpdateUserActivityTime(loginUser, loginUser.UserID);
+        //}
 
         [WebMethod]
         public bool CloseChat(int chatID)
@@ -279,14 +290,14 @@ namespace TSWebServices
             return true;
         }
 
-        [WebMethod]
-        public bool ToggleAvailable()
-        {
-            ChatUserSetting setting = ChatUserSettings.GetSetting(loginUser, loginUser.UserID);
-            setting.IsAvailable = !setting.IsAvailable;
-            setting.Collection.Save();
-            return setting.IsAvailable;
-        }
+        //[WebMethod]
+        //public bool ToggleAvailable()
+        //{
+        //    ChatUserSetting setting = ChatUserSettings.GetSetting(loginUser, loginUser.UserID);
+        //    setting.IsAvailable = !setting.IsAvailable;
+        //    setting.Collection.Save();
+        //    return setting.IsAvailable;
+        //}
 
         #endregion
 
