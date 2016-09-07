@@ -3012,7 +3012,7 @@ function AppenCustomValues(fields) {
   var parentContainer = $('#ticket-group-custom-fields');
   if (fields === null || fields.length < 1) { parentContainer.empty().hide(); return; }
   parentContainer.empty()
-  parentContainer.show();
+  
   _parentFields = [];
 
   for (var i = 0; i < fields.length; i++) {
@@ -3032,6 +3032,7 @@ function AppenCustomValues(fields) {
     }
   }
   appendCategorizedCustomValues(fields);
+  parentContainer.show();
 }
 
 var appendCategorizedCustomValues = function (fields) {

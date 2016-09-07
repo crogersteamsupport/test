@@ -39,9 +39,13 @@ namespace TeamSupport.Data
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
       set { Row["Description"] = CheckValue("Description", value); }
     }
-    
 
-    
+    public bool VisibleOnPortal
+    {
+        get { return (bool)Row["VisibleOnPortal"]; }
+        set { Row["VisibleOnPortal"] = CheckValue("VisibleOnPortal", value); }
+    }
+
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
@@ -197,7 +201,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketSeverities] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([TicketSeverityID] = @TicketSeverityID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketSeverities] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID , [VisibleOnPortal] = @VisibleOnPortal WHERE ([TicketSeverityID] = @TicketSeverityID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketSeverityID", SqlDbType.Int, 4);
@@ -249,15 +253,28 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("VisibleOnPortal", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketSeverities] (    [Name],    [Description],    [Position],    [OrganizationID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @Name, @Description, @Position, @OrganizationID, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketSeverities] (    [Name],    [Description],    [Position],    [OrganizationID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID], [VisibleOnPortal]) VALUES ( @Name, @Description, @Position, @OrganizationID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @VisibleOnPortal); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+        tempParameter = insertCommand.Parameters.Add("VisibleOnPortal", SqlDbType.Bit, 1);
+        if (tempParameter.SqlDbType == SqlDbType.Float)
+        {
+            tempParameter.Precision = 255;
+            tempParameter.Scale = 255;
+        }
+
+        tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -425,7 +442,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketSeverityID], [Name], [Description], [Position], [OrganizationID], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[TicketSeverities] WHERE ([TicketSeverityID] = @TicketSeverityID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketSeverityID], [Name], [Description], [Position], [OrganizationID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [VisibleOnPortal] FROM [dbo].[TicketSeverities] WHERE ([TicketSeverityID] = @TicketSeverityID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketSeverityID", ticketSeverityID);
         Fill(command);
