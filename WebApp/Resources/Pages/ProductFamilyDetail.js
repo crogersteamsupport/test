@@ -488,7 +488,7 @@ $(document).ready(function () {
                 $('.products-more').show();
             }
             else {
-                $('.products-done').show();
+                //$('.products-done').show();
             }
 
         }
