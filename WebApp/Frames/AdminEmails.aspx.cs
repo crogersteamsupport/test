@@ -388,7 +388,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
 
                 foreach (CustomField customField in customFields)
                 {
-                    string customFieldName = reportTable.Alias + "." + customField.Name;
+                    string customFieldName = table.Alias + "." + customField.Name;
                     bool flag = false;
 
                     foreach (PlaceHolder existingPH in list)
