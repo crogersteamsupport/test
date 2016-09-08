@@ -262,6 +262,10 @@ function loadSignalR(url) {
 
     $.connection.hub.start(function () {
         chatHubClient.server.login();
+        var mainWC = $("#iframe-mniWC2");
+        try {
+            if (mainWC[0].contentWindow.updateStatusReconnected) { mainWC[0].contentWindow.updateStatusReconnected(); }
+        } catch (err) { }
     });
 
     originalTitle = document.title;
