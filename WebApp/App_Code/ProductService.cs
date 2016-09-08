@@ -900,6 +900,51 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public FamilyProduct LoadFamilyProducts2(int productFamilyID, int start)
+    {
+        StringBuilder htmlresults = new StringBuilder("");
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        Products products = new Products(loginUser);
+        products.LoadByProductFamilyIDLimit(productFamilyID, start);
+
+        foreach (Product product in products)
+        {
+            //htmlresults.AppendFormat(@"<div class='list-group-item'>
+            //                <a href='#' id='{0}' class='productlink'>
+            //                  <h4 class='list-group-item-heading'>{1}</h4>
+            //                </a>
+            //                <div class='row'>
+            //                    <div class='col-xs-6'>
+            //                        <p class='list-group-item-text'>{2} Open Tickets</p>
+            //                        <p class='list-group-item-text'>{3} Closed Tickets</p>                            
+            //                    </div>
+            //                </div>
+            //                </div>"
+
+            //    , product.ProductID
+            //    , product.Name
+            //    , GetProductTickets(product.ProductID, 0)
+            //    , GetProductTickets(product.ProductID, 1));
+            htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <a href='#' id='{0}' class='productlink'>
+                              <h4 class='list-group-item-heading'>{1}</h4>
+                            </a>
+                            </div>"
+
+                , product.ProductID
+                , product.Name);
+        }
+
+        FamilyProduct result = new FamilyProduct();
+        if (products.Count == 10)
+        {
+            result.MoreAvailable = true;
+        }
+        result.HTML = htmlresults.ToString();
+        return result;
+    }
+
+    [WebMethod]
     public AutocompleteItem[] SearchProductFamily(string searchTerm)
     {
         ProductFamilies productFamilies = new ProductFamilies(TSAuthentication.GetLoginUser());
@@ -1388,5 +1433,12 @@ namespace TSWebServices
     public string JiraInstance { get; set; }
     [DataMember]
     public int CrmLinkId { get; set; }
+  }
+
+  [DataContract]
+  public class FamilyProduct
+  {
+    [DataMember] public bool MoreAvailable { get; set; }
+    [DataMember] public string HTML { get; set; }
   }
 }
