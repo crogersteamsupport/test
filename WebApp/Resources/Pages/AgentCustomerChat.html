@@ -18,6 +18,7 @@
   <script src="AgentCustomerChat.js" type="text/javascript"></script>
   <script src="//static.opentok.com/v2/js/opentok.min.js"></script>
   <script src="../Js/moment.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
 
 </head>
 <body>
@@ -86,7 +87,48 @@
             </div>
         </div>
     </div>
+    <div id="chat-add-user-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="userModalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="userModalTitle">Invite User</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="chat-invite-user">Who do you want to invite?</label>
+                        <input class="col-md-10 form-control chat-user-list" id="chat-invite-user" placeholder="Enter partial name then select name from list">
+                        <!--<select id="ticket-user-who" class="form-control"></select>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="add-user-save" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div id="chat-transfer-user-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="userModalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="userModalTitle">Transfer User</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="chat-transfer-user">Who do you want to invite?</label>
+                        <input class="col-md-10 form-control chat-user-list" id="chat-transfer-user" placeholder="Enter partial name then select name from list">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="add-user-save" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Templates -->
     <script id="message-template" type="text/x-custom-template">

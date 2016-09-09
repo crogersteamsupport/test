@@ -214,20 +214,47 @@
             });
         });
 
-        //TODO: Not complete.  Need ability to select from list of users.  Check old chat code. 
         $('#chat-invite').click(function (e) {
             e.preventDefault();
-            //parent.Ts.Services.Chat.RequestInvite(activeChatID, function (data) {
+            $('#chat-add-user-modal').modal('show');
+        });
 
-            //});
+        var _execGetCustomer = null;
+        var getUsers = function (request, response) {
+            if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
+            _execGetCustomer = parent.Ts.Services.Chat.GetUsers(request.term, function (result) { response(result); });
+        };
+
+        $('.chat-user-list').autocomplete({
+            minLength: 2,
+            source: getUsers,
+            defaultDate: new Date(),
+            select: function (event, ui) {
+                //console.log(ui.item);
+                $(this).data('item', ui.item);
+            }
+        });
+
+        $('#add-user-save').click(function (e) {
+            e.preventDefault();
+            var userID = $('#chat-invite-user').data('item').id;
+            parent.Ts.Services.Chat.RequestInvite(activeChatID, userID, function (data) {
+
+            });
         });
 
         //TODO: Not complete.  Need ability to select from list of users.  Check old chat code. 
         $('#chat-transfer').click(function (e) {
             e.preventDefault();
-            //parent.Ts.Services.Chat.RequestInvite(activeChatID, function (data) {
+            $('#chat-transfer-user-modal').modal('show');
+        });
 
-            //});
+        $('#transfer-user-save').click(function (e) {
+            e.preventDefault();
+            var userID = $('#chat-transfer-user').data('item').id;
+            parent.Ts.Services.Chat.RequestTransfer(activeChatID, userID, function (data) {
+
+            });
         });
 
         $('#chat-customer').click(function (e) {

@@ -267,19 +267,20 @@ namespace TSWebServices
             ChatRequests.RequestInvite(loginUser, chatID, userID);
         }
 
-        //[WebMethod]
-        //public void PostMessage(string message, int chatID)
-        //{
-        //    Chat chat = Chats.GetChat(loginUser, chatID);
-        //    if (chat.OrganizationID != loginUser.OrganizationID) return;
-        //    ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
-        //    chatMessage.Message = message;
-        //    chatMessage.ChatID = chatID;
-        //    chatMessage.PosterID = loginUser.UserID;
-        //    chatMessage.PosterType = ChatParticipantType.User;
-        //    chatMessage.Collection.Save();
-        //    Users.UpdateUserActivityTime(loginUser, loginUser.UserID);
-        //}
+        [WebMethod]
+        public AutocompleteItem[] GetUsers(string searchTerm)
+        {
+            List<AutocompleteItem> list = new List<AutocompleteItem>();
+            Users users = new Users(loginUser);
+            users.LoadByName(searchTerm, loginUser.OrganizationID, true, false, true, loginUser.UserID);
+
+            foreach (User user in users)
+            {
+                list.Add(new AutocompleteItem(String.Format("{0} {1}", user.FirstName, user.LastName), user.UserID.ToString()));
+            }
+
+            return list.ToArray();
+        }
 
         [WebMethod]
         public bool CloseChat(int chatID)
