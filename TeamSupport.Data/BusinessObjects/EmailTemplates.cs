@@ -214,9 +214,9 @@ namespace TeamSupport.Data
                     CustomFields customFields = new Data.CustomFields(BaseCollection.LoginUser);
                     int auxID = baseItem.ItemAuxID;
 
-                    customFields.LoadByReferenceType(BaseCollection.LoginUser.OrganizationID, baseItem.ItemReferenceType, auxID < 0 ? null : (int?)auxID);
+                    customFields.LoadByReferenceType(orgID, baseItem.ItemReferenceType, auxID < 0 ? null : (int?)auxID);
                     CustomValues customValues = new CustomValues(BaseCollection.LoginUser);
-                    customValues.LoadByReferenceType(BaseCollection.LoginUser.OrganizationID, baseItem.ItemReferenceType, baseItem.PrimaryKeyID);
+                    customValues.LoadByReferenceType(orgID, baseItem.ItemReferenceType, baseItem.PrimaryKeyID);
                     foreach (CustomField customField in customFields)
                     {
                         CustomValue customValue = CustomValues.GetValue(BaseCollection.LoginUser, customField.CustomFieldID, baseItem.PrimaryKeyID);
