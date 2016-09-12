@@ -735,6 +735,38 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void AdminSetNextTicketNumber(int orgID, int number)
+        {
+            Organization org = GetAdminOrgTarget(orgID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Ticket ticket = (new Tickets(loginUser)).AddNewTicket();
+            ticket.OrganizationID = org.OrganizationID;
+            ticket.GroupID = org.DefaultPortalGroupID;
+            ticket.IsKnowledgeBase = false;
+            ticket.IsVisibleOnPortal = true;
+            ticket.Name = "Place holder for next ticket " + number.ToString();
+            ticket.TicketSeverityID = TicketSeverities.GetTop(loginUser, org.OrganizationID).TicketSeverityID;
+            ticket.TicketTypeID = TicketTypes.GetTop(loginUser, org.OrganizationID).TicketTypeID;
+            ticket.TicketStatusID = TicketStatuses.GetTop(loginUser, ticket.TicketTypeID).TicketStatusID;
+            ticket.TicketSource = "Staff";
+            ticket.PortalEmail = "";
+            ticket.TicketNumber = number - 1;
+            ticket.Collection.Save();
+
+
+            TeamSupport.Data.Action action = (new Actions(loginUser)).AddNewAction();
+            action.ActionTypeID = null;
+            action.SystemActionTypeID = SystemActionType.Description;
+            action.Description = "You can delete this once your next ticket has been created.";
+            action.IsKnowledgeBase = false;
+            action.IsVisibleOnPortal = true;
+            action.ActionSource = "Staff";
+            action.Name = "Description";
+            action.TicketID = ticket.TicketID;
+            action.Collection.Save();
+        }
+
+        [WebMethod]
         public void AdminUpdateProductType(int orgID, int productType)
         {
             Organization org = GetAdminOrgTarget(orgID);

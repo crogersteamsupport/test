@@ -197,6 +197,19 @@
         }
       });
 
+      $('.action-ticketnumber').click(function (e) {
+          e.preventDefault();
+          var org = $('.org-info').data('o');
+          var num = prompt("What is the next ticket number", 10000);
+          if (num != null) {
+              top.Ts.Services.Organizations.AdminSetNextTicketNumber(org.OrganizationID, num, function () {
+                  showOrgInfo(org.OrganizationID);
+              });
+          }
+      });
+
+                
+
       $('.action-delete').click(function (e) {
         e.preventDefault();
         var org = $('.org-info').data('o');
@@ -228,6 +241,7 @@
           alert("All portal users are now enabled.");
         });
       });
+
 
       $('.action-index').click(function (e) {
         e.preventDefault();
@@ -290,6 +304,7 @@
                 <button class="btn btn-default action-seats">Change Seat Count</button>
                 <button class="btn btn-default action-api">Change API Request Count</button>
                 <button class="btn btn-default action-portal">Turn all portal users on</button>
+                <button class="btn btn-default action-ticketnumber">Set Next Ticket Number</button>
               </div>
               <div>
                 <form class="form">
