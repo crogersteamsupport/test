@@ -48,7 +48,7 @@ namespace TSWebServices
         public string GetChatInfo(int chatID)
         {
             ChatRequestProxy request = GetChatRequest(chatID);
-            ChatViewObject model = new ChatViewObject(request, GetParticipant(request.RequestorID), GetChatMessages(chatID));
+            ChatViewObject model = new ChatViewObject(request, GetParticipant(request.RequestorID, chatID), GetChatMessages(chatID));
             return JsonConvert.SerializeObject(model);
         }
 
@@ -58,7 +58,7 @@ namespace TSWebServices
         {
             Organization org = GetOrganization(chatGuid);
             ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress);
-            pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName), title = "Chat Request", theme = "ui-state-error", chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID), GetChatMessages(request.ChatID)) });
+            pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName), title = "Chat Request", theme = "ui-state-error", chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID)) });
             return JsonConvert.SerializeObject(request.GetProxy());
         }
 
@@ -131,7 +131,7 @@ namespace TSWebServices
             {
                 foreach (ChatRequest request in requests)
                 {
-                    ChatViewObject vm = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID), null);
+                    ChatViewObject vm = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), null);
                     pendingChats.Add(vm);
                 }
             }
@@ -153,7 +153,7 @@ namespace TSWebServices
             {
                 foreach (ChatRequest request in requests)
                 {
-                    ChatViewObject vm = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID), null);
+                    ChatViewObject vm = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), null);
                     activeChats.Add(vm);
                 }
             }
@@ -194,7 +194,7 @@ namespace TSWebServices
         public ChatViewObject GetChatDetails(int chatID)
         {
             ChatRequestProxy request = GetChatRequest(chatID);
-            ChatViewObject model = new ChatViewObject(request, GetParticipant(request.RequestorID), GetChatMessages(chatID));
+            ChatViewObject model = new ChatViewObject(request, GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(chatID));
             return model;
         }
 
@@ -322,10 +322,31 @@ namespace TSWebServices
             else return null;
         }
 
-        private ChatClientProxy GetParticipant(int participantID)
+        //private ChatClientProxy GetParticipant(int participantID)
+        //{
+        //    ChatClient client = ChatClients.GetChatClient(loginUser, participantID);
+        //    return (client == null) ? null : client.GetProxy();
+        //}
+
+        private ParticipantInfoView GetParticipant(int participantID, int chatID)
         {
             ChatClient client = ChatClients.GetChatClient(loginUser, participantID);
-            return (client == null) ? null : client.GetProxy();
+            if (client != null)
+            {
+                return new ParticipantInfoView(client.LinkedUserID, client.FirstName, client.LastName, client.Email, client.CompanyName);
+            }
+            else
+            {
+                //todo:  NEED TO TEST THIS!!
+                UsersViewItem user = UsersView.GetUsersViewItem(loginUser, participantID);
+
+                if (user != null)
+                {
+                    return new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, user.Organization);
+                }
+
+            }
+            return null;
         }
 
         public static ParticipantInfoView GetLinkedUserInfo(int participantID, ChatParticipantType type)
@@ -388,12 +409,12 @@ namespace TSWebServices
 
             }
 
-            public ChatViewObject(ChatRequestProxy request, ChatClientProxy initiator, ChatMessageProxy[] messages)
+            public ChatViewObject(ChatRequestProxy request, ParticipantInfoView initiator, ChatMessageProxy[] messages)
             {
                 ChatID = request.ChatID;
                 ChatRequestID = request.ChatRequestID;
                 OrganizationID = request.OrganizationID;
-                InitiatorUserID = initiator.LinkedUserID;
+                InitiatorUserID = initiator.UserID;
                 DateCreated = request.DateCreated;
                 InitiatorMessage = string.Format("{0} {1}, {2} ({3})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
                 InitiatorDisplayName = string.Format("{0} {1}", initiator.FirstName, initiator.LastName);

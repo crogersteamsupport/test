@@ -242,6 +242,7 @@ ORDER BY cr.DateCreated ASC";
                 AND cp.ParticipantType = 0
                 AND c.OrganizationID = @OrganizationID
                 AND cp.DateLeft IS NULL
+                AND c.RequestType = 0
                 ORDER BY C.DATECREATED DESC
                 ";
             command.CommandType = CommandType.Text;

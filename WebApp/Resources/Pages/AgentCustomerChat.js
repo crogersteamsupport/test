@@ -239,7 +239,7 @@
             e.preventDefault();
             var userID = $('#chat-invite-user').data('item').id;
             parent.Ts.Services.Chat.RequestInvite(activeChatID, userID, function (data) {
-
+                $('#chat-add-user-modal').modal('hide');
             });
         });
 
@@ -253,7 +253,7 @@
             e.preventDefault();
             var userID = $('#chat-transfer-user').data('item').id;
             parent.Ts.Services.Chat.RequestTransfer(activeChatID, userID, function (data) {
-
+                $('#chat-transfer-user-modal').modal('hide');
             });
         });
 
