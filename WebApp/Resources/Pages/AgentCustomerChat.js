@@ -320,7 +320,7 @@
 
         $('#ticket-add-save').click(function (e) {
             e.preventDefault();
-            var ticketID = $('#chat-add-ticket').data('item').id;
+            var ticketID = $('#chat-add-ticket').data('item').data;
             parent.Ts.Services.Chat.AddTicket(activeChatID, ticketID, function () {
                 
                 $('#chat-add-ticket-modal').modal('hide');
