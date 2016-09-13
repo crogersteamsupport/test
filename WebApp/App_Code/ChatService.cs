@@ -337,7 +337,6 @@ namespace TSWebServices
             }
             else
             {
-                //todo:  NEED TO TEST THIS!!
                 UsersViewItem user = UsersView.GetUsersViewItem(loginUser, participantID);
 
                 if (user != null)

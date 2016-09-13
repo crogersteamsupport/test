@@ -207,8 +207,6 @@
                     $('.media-list').empty();
                     $('.chat-intro').empty();
                     activeChatID = null;
-                    //TODO:  Click next active request if possible.
-                    //$('.chats-accepted')
                 }
                 else console.log('Error closing chat.')
             });
@@ -230,7 +228,6 @@
             source: getUsers,
             defaultDate: new Date(),
             select: function (event, ui) {
-                //console.log(ui.item);
                 $(this).data('item', ui.item);
             }
         });
@@ -243,7 +240,6 @@
             });
         });
 
-        //TODO: Not complete.  Need ability to select from list of users.  Check old chat code. 
         $('#chat-transfer').click(function (e) {
             e.preventDefault();
             $('#chat-transfer-user-modal').modal('show');
@@ -302,16 +298,33 @@
             parent.Ts.System.logAction('Chat - Ticket Created');
         });
 
-        //Add this convo to a existing ticket
-        //TODO: Need way to lookup ticketID to associate with.
+        var execGetRelated = null;
+        var getTickets = function (request, response) {
+            if (execGetRelated) { execGetRelated._executor.abort(); }
+            execGetRelated = parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
+        }
+
+        $('.chat-tickets-list').autocomplete({
+            minLength: 2,
+            source: getTickets,
+            defaultDate: new Date(),
+            select: function (event, ui) {
+                $(this).data('item', ui.item);
+            }
+        });
+
         $('#Ticket-Add').click(function (e) {
             e.preventDefault();
-            //parent.Ts.Services.Chat.AddTicket(activeChatID, ticketID, function (success) {
-            //    if (success) {
+            $('#chat-add-ticket-modal').modal('show');
+        });
 
-            //    }
-            //    else console.log('Error closing chat.')
-            //});
+        $('#ticket-add-save').click(function (e) {
+            e.preventDefault();
+            var ticketID = $('#chat-add-ticket').data('item').id;
+            parent.Ts.Services.Chat.AddTicket(activeChatID, ticketID, function () {
+                
+                $('#chat-add-ticket-modal').modal('hide');
+            });
         });
 
         //Open the Ticket assocaited with this chat
