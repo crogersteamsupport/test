@@ -292,20 +292,6 @@ namespace TSWebServices
             return true;
         }
 
-        [WebMethod]
-        public string GetSuggestedSolutionDefaultInput(int chatID)
-        {
-            ChatMessageProxy[] messages = GetChatMessages(chatID);
-
-            StringBuilder result = new StringBuilder();
-            foreach (ChatMessageProxy message in messages)
-            {
-                if(!message.IsNotification)
-                    result.AppendLine(HtmlUtility.StripHTML2(message.Message));
-            }
-            return result.ToString();
-        }
-
         //[WebMethod]
         //public bool ToggleAvailable()
         //{
@@ -400,6 +386,19 @@ namespace TSWebServices
             ChatMessages messages = new ChatMessages(loginUser);
             messages.LoadByChatID(chatID);
             return (messages.IsEmpty) ? null : messages.GetChatMessageProxies();
+        }
+
+        private string GetSuggestedSolutionDefaultInput(int chatID)
+        {
+            ChatMessageProxy[] messages = GetChatMessages(chatID);
+
+            StringBuilder result = new StringBuilder();
+            foreach (ChatMessageProxy message in messages)
+            {
+                if (!message.IsNotification)
+                    result.AppendLine(HtmlUtility.StripHTML2(message.Message));
+            }
+            return result.ToString();
         }
 
         ///TODO: Refactor

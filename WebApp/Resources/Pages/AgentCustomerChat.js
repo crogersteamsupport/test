@@ -262,10 +262,8 @@
         var _suggestedSolutionDefaultInput = '';
         $('#chat-suggestions').click(function (e) {
             e.preventDefault();
-            parent.Ts.Services.Chat.GetSuggestedSolutionDefaultInput(activeChatID, function (result) {
-                suggestedSolutions(result, function (ticketID, isArticle) {
+            suggestedSolutions(result, function (ticketID, isArticle) {
 
-                });
             });
 
             //parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
@@ -349,8 +347,9 @@
 
     }
 
+    //TODO:  Need to refactor to new chat suggested solutions
     var execSuggestedSolutions = null;
-    function suggestedSolutions(defaultInput, callback) {
+    function suggestedSolutions(callback) {
         $('.dialog-select-ticket2').find('input').val('');
         $('#SuggestedSolutionsModal').modal('show');
         $('#SuggestedSolutionsModal').on('shown.bs.modal', function () {
