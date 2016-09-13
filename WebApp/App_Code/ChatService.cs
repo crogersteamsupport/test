@@ -9,6 +9,7 @@ using System.Web.Script.Serialization;
 using System;
 using System.Web;
 using System.Collections.Generic;
+using System.Text;
 
 namespace TSWebServices
 {
@@ -291,6 +292,20 @@ namespace TSWebServices
             return true;
         }
 
+        [WebMethod]
+        public string GetSuggestedSolutionDefaultInput(int chatID)
+        {
+            ChatMessageProxy[] messages = GetChatMessages(chatID);
+
+            StringBuilder result = new StringBuilder();
+            foreach (ChatMessageProxy message in messages)
+            {
+                if(!message.IsNotification)
+                    result.AppendLine(HtmlUtility.StripHTML2(message.Message));
+            }
+            return result.ToString();
+        }
+
         //[WebMethod]
         //public bool ToggleAvailable()
         //{
@@ -386,6 +401,56 @@ namespace TSWebServices
             messages.LoadByChatID(chatID);
             return (messages.IsEmpty) ? null : messages.GetChatMessageProxies();
         }
+
+        ///TODO: Refactor
+        //private static List<int> GetSuggestedSolutionsIDs(string searchTerm, LoginUser loginUser)
+        //{
+        //    DataTable tagList = new DataTable();
+
+        //    using (SqlCommand command = new SqlCommand())
+        //    {
+        //        StringBuilder builder = new StringBuilder();
+
+        //        builder.Append(@"
+        //            SELECT
+        //                t.TicketID
+        //                , LOWER(tlv.Value)
+        //            FROM
+        //                Tickets t
+        //                JOIN TagLinksView tlv
+        //                    ON  t.TicketID = tlv.RefID
+        //            WHERE
+        //                t.OrganizationID = @OrganizationID
+        //                AND t.IsKnowledgeBase = 1"
+        //        );
+        //        command.CommandText = builder.ToString();
+        //        command.CommandType = CommandType.Text;
+        //        command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+
+        //        using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+        //        {
+        //            connection.Open();
+        //            SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+        //            command.Connection = connection;
+        //            command.Transaction = transaction;
+        //            SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+        //            tagList.Load(reader);
+        //        }
+        //    }
+
+        //    List<int> result = new List<int>();
+        //    searchTerm = searchTerm.ToLower();
+        //    for (int i = 0; i < tagList.Rows.Count; i++)
+        //    {
+        //        //if (searchTerm.Contains(tagList.Rows[i][1].ToString()))
+        //        if (System.Text.RegularExpressions.Regex.IsMatch(searchTerm, @"\b" + tagList.Rows[i][1].ToString() + @".?\b"))
+        //        {
+        //            result.Add((int)tagList.Rows[i][0]);
+        //        }
+        //    }
+        //    return result;
+        //}
 
         #endregion
 

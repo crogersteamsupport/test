@@ -151,6 +151,32 @@
         </div>
     </div>
 
+    <div id="SuggestedSolutionsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="SuggestedSolutionModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="SuggestedSolutionsModalTitle">Insert Knowledgebase</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="dialog-select-ticket2" title="Select a Ticket">
+                            <p>Search a ticket number or description:</p>
+                            <input type="text" class="text ui-corner-all ui-widget-content" style="width:50%;" id="dialog-select-ticket2-input" />
+                        </div>
+                    </div>
+                    <p>Or select a suggested solution:</p>
+                    <iframe id="SuggestedSolutionsIFrame" class="afterSearch" src="" style="width:100%; height:350px;"></iframe>
+                </div>
+                <div class="modal-footer" style="margin-top: -16px">
+                    <button id="InsertSuggestedSolutionsLink" type="button" class="btn btn-primary afterSearch">Insert Link</button>
+                    <button id="InsertSuggestedSolutions" type="button" class="btn btn-primary afterSearch">Insert Article</button>
+                    <button type="button" class="btn btn-default afterSearch" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Templates -->
     <script id="message-template" type="text/x-custom-template">
         <li class="media">
