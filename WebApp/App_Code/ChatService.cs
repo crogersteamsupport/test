@@ -10,6 +10,7 @@ using System;
 using System.Web;
 using System.Collections.Generic;
 using System.Text;
+using System.Data.SqlClient;
 
 namespace TSWebServices
 {
@@ -292,6 +293,152 @@ namespace TSWebServices
             return true;
         }
 
+        //TODO: Refactor into data layer...
+        [WebMethod]
+        public SuggestedSolutions GetSuggestedSolutions(int chatID, int firstItemIndex, int pageSize)
+        {
+            SuggestedSolutions result = new SuggestedSolutions();
+            List<SuggestedSolutionsItem> resultItems = new List<SuggestedSolutionsItem>();
+
+            if (chatID != 0)
+            {
+                LoginUser loginUser = TSAuthentication.GetLoginUser();
+                string searchTerm = GetSuggestedSolutionDefaultInput(chatID);
+                List<int> suggestedSolutionsIDs = GetSuggestedSolutionsIDs(searchTerm, loginUser);
+                if (suggestedSolutionsIDs.Count > 0)
+                {
+                    string ticketIdsCommaList = string.Join(",", suggestedSolutionsIDs);
+
+                    DataTable suggestedSolutions = new DataTable();
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        StringBuilder builder = new StringBuilder();
+
+                        builder.Append(@"
+                            DECLARE @TempItems 
+                            TABLE
+                            ( 
+                              ID        int IDENTITY,
+                              TicketID  int 
+                            )
+
+                            INSERT INTO @TempItems 
+                            (
+                              TicketID
+                            )
+                            SELECT
+                                t.TicketID
+                            FROM
+                                Tickets t
+                            WHERE
+                                t.TicketID IN (" + ticketIdsCommaList + @")
+                            ORDER BY
+                                t.DateModified DESC
+
+                            SELECT
+                                t.TicketID
+                                , t.TicketNumber
+                                , t.Name
+                                , dbo.uspGetTags(17, t.TicketID) AS Tags
+	                            , kbc.CategoryName AS KnowledgeBaseCategoryName
+                            FROM 
+                                @TempItems ti 
+                                JOIN Tickets t
+                                    ON ti.TicketID = t.TicketID
+                                LEFT JOIN KnowledgeBaseCategories kbc
+                                    ON t.KnowledgeBaseCategoryID = kbc.CategoryID
+                            WHERE
+                                ti.ID BETWEEN @FromIndex AND @toIndex
+                            ORDER BY 
+                                ti.ID"
+                        );
+                        command.CommandText = builder.ToString();
+                        command.CommandType = CommandType.Text;
+                        command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
+                        command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
+
+                        using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                        {
+                            connection.Open();
+                            SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                            command.Connection = connection;
+                            command.Transaction = transaction;
+                            SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+                            suggestedSolutions.Load(reader);
+                        }
+                    }
+
+                    result.Count = suggestedSolutions.Rows.Count;
+                    for (int i = 0; i < suggestedSolutions.Rows.Count; i++)
+                    {
+                        SuggestedSolutionsItem item = new SuggestedSolutionsItem();
+                        item.ID = (int)suggestedSolutions.Rows[i]["TicketID"];
+                        item.DisplayName = string.Format("{0}: {1}", suggestedSolutions.Rows[i]["TicketNumber"].ToString(), suggestedSolutions.Rows[i]["Name"].ToString());
+                        item.Tags = suggestedSolutions.Rows[i]["Tags"].ToString();
+                        item.KBCategory = suggestedSolutions.Rows[i]["KnowledgeBaseCategoryName"].ToString();
+                        resultItems.Add(item);
+                    }
+                    result.Items = resultItems.ToArray();
+                }
+            }
+            else
+            {
+                result.Count = 0;
+            }
+            return result;
+        }
+
+        //TODO: Refactor into data layer...
+        private static List<int> GetSuggestedSolutionsIDs(string searchTerm, LoginUser loginUser)
+        {
+            DataTable tagList = new DataTable();
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder builder = new StringBuilder();
+
+                builder.Append(@"
+                    SELECT
+                        t.TicketID
+                        , LOWER(tlv.Value)
+                    FROM
+                        Tickets t
+                        JOIN TagLinksView tlv
+                            ON  t.TicketID = tlv.RefID
+                    WHERE
+                        t.OrganizationID = @OrganizationID
+                        AND t.IsKnowledgeBase = 1"
+                );
+                command.CommandText = builder.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+                    tagList.Load(reader);
+                }
+            }
+
+            List<int> result = new List<int>();
+            searchTerm = searchTerm.ToLower();
+            for (int i = 0; i < tagList.Rows.Count; i++)
+            {
+                //if (searchTerm.Contains(tagList.Rows[i][1].ToString()))
+                if (System.Text.RegularExpressions.Regex.IsMatch(searchTerm, @"\b" + tagList.Rows[i][1].ToString() + @".?\b"))
+                {
+                    result.Add((int)tagList.Rows[i][0]);
+                }
+            }
+            return result;
+        }
+
         //[WebMethod]
         //public bool ToggleAvailable()
         //{
@@ -349,7 +496,7 @@ namespace TSWebServices
             return null;
         }
 
-        public static ParticipantInfoView GetLinkedUserInfo(int participantID, ChatParticipantType type)
+        private static ParticipantInfoView GetLinkedUserInfo(int participantID, ChatParticipantType type)
         {
             ParticipantInfoView result = null;
             switch (type)
@@ -372,7 +519,6 @@ namespace TSWebServices
             }
             return result;
         }
-
 
         private ChatRequestProxy GetChatRequest(int chatID)
         {
@@ -401,55 +547,6 @@ namespace TSWebServices
             return result.ToString();
         }
 
-        ///TODO: Refactor
-        //private static List<int> GetSuggestedSolutionsIDs(string searchTerm, LoginUser loginUser)
-        //{
-        //    DataTable tagList = new DataTable();
-
-        //    using (SqlCommand command = new SqlCommand())
-        //    {
-        //        StringBuilder builder = new StringBuilder();
-
-        //        builder.Append(@"
-        //            SELECT
-        //                t.TicketID
-        //                , LOWER(tlv.Value)
-        //            FROM
-        //                Tickets t
-        //                JOIN TagLinksView tlv
-        //                    ON  t.TicketID = tlv.RefID
-        //            WHERE
-        //                t.OrganizationID = @OrganizationID
-        //                AND t.IsKnowledgeBase = 1"
-        //        );
-        //        command.CommandText = builder.ToString();
-        //        command.CommandType = CommandType.Text;
-        //        command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
-
-        //        using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
-        //        {
-        //            connection.Open();
-        //            SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
-
-        //            command.Connection = connection;
-        //            command.Transaction = transaction;
-        //            SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
-        //            tagList.Load(reader);
-        //        }
-        //    }
-
-        //    List<int> result = new List<int>();
-        //    searchTerm = searchTerm.ToLower();
-        //    for (int i = 0; i < tagList.Rows.Count; i++)
-        //    {
-        //        //if (searchTerm.Contains(tagList.Rows[i][1].ToString()))
-        //        if (System.Text.RegularExpressions.Regex.IsMatch(searchTerm, @"\b" + tagList.Rows[i][1].ToString() + @".?\b"))
-        //        {
-        //            result.Add((int)tagList.Rows[i][0]);
-        //        }
-        //    }
-        //    return result;
-        //}
 
         #endregion
 

@@ -1,6 +1,6 @@
-﻿$(document).ready(function () {
+﻿var _activeChatID = null;
+$(document).ready(function () {
     //apiKey = "45228242";
-    var activeChatID = 0;
     var dateFormat;
     var chatInfoObject = {};
     var pusherKey = null;
@@ -87,8 +87,8 @@
             $(this).addClass('list-group-item-success')
                     .removeClass('list-group-item-info');
 
-            activeChatID = chat.ChatID;
-            SetActiveChat(activeChatID);
+            _activeChatID = chat.ChatID;
+            SetActiveChat(_activeChatID);
         });
 
         $('#chats-accepted').append(anchor);
@@ -113,8 +113,8 @@
             parentEl.remove();
             MoveAcceptedRequest(innerString, chatId);
 
-            activeChatID = chatId;
-            SetActiveChat(activeChatID);
+            _activeChatID = chatId;
+            SetActiveChat(_activeChatID);
         });
     }
 
@@ -127,8 +127,8 @@
             $(this).addClass('list-group-item-success')
                     .removeClass('list-group-item-info');
 
-            activeChatID = chatID;
-            SetActiveChat(activeChatID);
+            _activeChatID = chatID;
+            SetActiveChat(_activeChatID);
         });
 
         $('#chats-accepted').append(anchor);
@@ -136,7 +136,7 @@
 
     function createMessageElement(messageData, scrollView) {
         console.log(messageData)
-        if (messageData.ChatID == activeChatID) {
+        if (messageData.ChatID == _activeChatID) {
             var messageTemplate = $("#message-template").html();
             var compiledTemplate = messageTemplate
                                     .replace('{{MessageDirection}}', 'left')
@@ -191,7 +191,7 @@
 
     $("#new-message").click(function (e) {
         e.preventDefault();
-        parent.Ts.Services.Chat.AddAgentMessage('presence-' + activeChatID, $('#message').val(), activeChatID, function (data) {
+        parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, $('#message').val(), _activeChatID, function (data) {
             $('#message').val('');
         });
 
@@ -201,12 +201,12 @@
         //Leave Chat and remove from list of active chats
         $('#chat-leave').click(function (e) {
             e.preventDefault();
-            parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
+            parent.Ts.Services.Chat.CloseChat(_activeChatID, function (success) {
                 if (success) {
-                    $('#active-chat_' + activeChatID).remove();
+                    $('#active-chat_' + _activeChatID).remove();
                     $('.media-list').empty();
                     $('.chat-intro').empty();
-                    activeChatID = null;
+                    _activeChatID = null;
                 }
                 else console.log('Error closing chat.')
             });
@@ -235,7 +235,7 @@
         $('#add-user-save').click(function (e) {
             e.preventDefault();
             var userID = $('#chat-invite-user').data('item').id;
-            parent.Ts.Services.Chat.RequestInvite(activeChatID, userID, function (data) {
+            parent.Ts.Services.Chat.RequestInvite(_activeChatID, userID, function (data) {
                 $('#chat-add-user-modal').modal('hide');
             });
         });
@@ -248,7 +248,7 @@
         $('#transfer-user-save').click(function (e) {
             e.preventDefault();
             var userID = $('#chat-transfer-user').data('item').id;
-            parent.Ts.Services.Chat.RequestTransfer(activeChatID, userID, function (data) {
+            parent.Ts.Services.Chat.RequestTransfer(_activeChatID, userID, function (data) {
                 $('#chat-transfer-user-modal').modal('hide');
             });
         });
@@ -262,11 +262,11 @@
         var _suggestedSolutionDefaultInput = '';
         $('#chat-suggestions').click(function (e) {
             e.preventDefault();
-            suggestedSolutions(result, function (ticketID, isArticle) {
+            suggestedSolutions(function (ticketID, isArticle) {
 
             });
 
-            //parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
+            //parent.Ts.Services.Chat.CloseChat(_activeChatID, function (success) {
             //    if (success) {
 
             //    }
@@ -277,7 +277,7 @@
         //TODO: Create Attachment upload logic
         $('#chat-attachment').click(function (e) {
             e.preventDefault();
-            //parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
+            //parent.Ts.Services.Chat.CloseChat(_activeChatID, function (success) {
             //    if (success) {
 
             //    }
@@ -288,7 +288,7 @@
         //TODO:  TOK Integration
         $('#chat-record').click(function (e) {
             e.preventDefault();
-            //parent.Ts.Services.Chat.CloseChat(activeChatID, function (success) {
+            //parent.Ts.Services.Chat.CloseChat(_activeChatID, function (success) {
             //    if (success) {
 
             //    }
@@ -299,7 +299,7 @@
         //Create a ticket with the associated chat in it.
         $('#Ticket-Create').click(function (e) {
             e.preventDefault();
-            parent.Ts.MainPage.newTicket('?ChatID=' + activeChatID);
+            parent.Ts.MainPage.newTicket('?ChatID=' + _activeChatID);
             parent.Ts.System.logAction('Chat - Ticket Created');
         });
 
@@ -326,7 +326,7 @@
         $('#ticket-add-save').click(function (e) {
             e.preventDefault();
             var ticketID = $('#chat-add-ticket').data('item').data;
-            parent.Ts.Services.Chat.AddTicket(activeChatID, ticketID, function () {
+            parent.Ts.Services.Chat.AddTicket(_activeChatID, ticketID, function () {
                 
                 $('#chat-add-ticket-modal').modal('hide');
             });
@@ -335,7 +335,7 @@
         //Open the Ticket assocaited with this chat
         $('#Ticket-Open').click(function (e) {
             e.preventDefault();
-            parent.Ts.Services.Chat.GetTicketID(activeChatID, function (ticketID) {
+            parent.Ts.Services.Chat.GetTicketID(_activeChatID, function (ticketID) {
                 if (ticketID) {
                     parent.Ts.MainPage.openTicketByID(ticketID, false);
                 }
@@ -359,7 +359,7 @@
             return;
         }
         execSuggestedSolutions = true;
-        $('#SuggestedSolutionsIFrame').attr('src', '/vcr/1_9_0/Pages/SuggestedSolutions.html');
+        $('#SuggestedSolutionsIFrame').attr('src', '/vcr/1_9_0/Pages/SuggestedSolutionsChat.html');
 
         $('.afterSearch').show();
 
