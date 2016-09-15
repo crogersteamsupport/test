@@ -439,6 +439,7 @@ namespace TSWebServices
             return result;
         }
 
+
         //[WebMethod]
         //public bool ToggleAvailable()
         //{
@@ -547,6 +548,15 @@ namespace TSWebServices
             return result.ToString();
         }
 
+        /// <summary>
+        /// TODO:  Need to take uploaded chat files associated with a chatid and then transfer to a action created for a ticket. 
+        /// Replace the refID and refType in the attachments object
+        /// </summary>
+        /// <param name="actionID"></param>
+        private void TransferChatFiles(int chatID, int actionID)
+        {
+
+        }
 
         #endregion
 

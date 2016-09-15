@@ -263,15 +263,50 @@ $(document).ready(function () {
         $('#chat-suggestions').click(function (e) {
             e.preventDefault();
             suggestedSolutions(function (ticketID, isArticle) {
+                console.log(ticketID + ' ' + isArticle);
 
+                if (isArticle) {
+                    top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+                        if (result === null) {
+                            alert('There was an error inserting your suggested solution ticket.');
+                            return;
+                        }
+                        var ticket = result[0];
+                        var actions = result[1];
+
+                        var html = '<div>';
+
+                        if (actions.length == 0) {
+                            alert('The selected ticket has no knowledgebase actions.');
+                        }
+
+                        for (var i = 0; i < actions.length; i++) {
+                            html = html + '<div>' + actions[i].Description + '</div></br>';
+                        }
+                        html = html + '</div>';
+
+                        parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, html, _activeChatID, function (data) {
+;
+                        });
+
+                        top.Ts.System.logAction('Ticket - Suggested Solution Inserted');
+                    }, function () {
+                        alert('There was an error inserting your suggested solution ticket.');
+                    });
+                }
+                else {
+                    top.Ts.Services.Admin.GetHubURLwithCName(function (url) {
+                        var link = "https://" + url + "/knowledgeBase/" + ticketID;
+                        var html = '<a href="' + link + '" target="_blank">' + link + '</a></br>';
+
+                        parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, html, _activeChatID, function (data) {
+
+                        });
+                        top.Ts.System.logAction('Ticket - Suggested Solution Link Inserted');
+                    });
+
+                }
             });
-
-            //parent.Ts.Services.Chat.CloseChat(_activeChatID, function (success) {
-            //    if (success) {
-
-            //    }
-            //    else console.log('Error closing chat.')
-            //});
         });
 
         //TODO: Create Attachment upload logic
@@ -349,6 +384,18 @@ $(document).ready(function () {
 
     //TODO:  Need to refactor to new chat suggested solutions
     var execSuggestedSolutions = null;
+    var execSelectTicket = null;
+    var selectTicket = function (request, response) {
+        if (execSelectTicket) { execSelectTicket._executor.abort(); }
+        var filter = $(this.element).data('filter');
+        if (filter === undefined) {
+            execSelectTicket = window.parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
+        }
+        else {
+            execSelectTicket = window.parent.Ts.Services.Tickets.SearchTickets(request.term, filter, function (result) { response(result); });
+        }
+    }
+
     function suggestedSolutions(callback) {
         $('.dialog-select-ticket2').find('input').val('');
         $('#SuggestedSolutionsModal').modal('show');
