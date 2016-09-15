@@ -33,6 +33,7 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableScreenRecording { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int? ModifierID { get; set; }
+    [DataMember] public bool EnableSeveritySelection { get; set; }
           
   }
   
@@ -41,6 +42,7 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.EnableSeveritySelection = this.EnableSeveritySelection;
       result.ModifierID = this.ModifierID;
       result.EnableScreenRecording = this.EnableScreenRecording;
       result.EnableVideoRecording = this.EnableVideoRecording;
