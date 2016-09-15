@@ -259,6 +259,11 @@ namespace TSWebServices
         }
 
 
+        if (org.ProductType == ProductType.Enterprise && IsMenuItemActive(user, "mniTasks"))
+        {
+            items.Add(new TsMenuItem("tasks", "mniTasks", "Tasks", "vcr/1_9_0/images/nav/20/tasks.png", string.Format(data, "vcr/1_9_0/Pages/tasks.html", "vcr/1_9_0/PaneInfo/Tasks.html")));
+        }
+
         if (user.IsSystemAdmin && IsMenuItemActive(user, "mniAdmin"))
           items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "Frames/Admin.aspx", "vcr/1_9_0/PaneInfo/Admin.html")));
         
