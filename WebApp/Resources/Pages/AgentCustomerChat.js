@@ -258,7 +258,6 @@ $(document).ready(function () {
             parent.Ts.MainPage.openContact(contactID);
         });
 
-        //TODO: Port over suggestion code
         var _suggestedSolutionDefaultInput = '';
         $('#chat-suggestions').click(function (e) {
             e.preventDefault();
@@ -382,7 +381,6 @@ $(document).ready(function () {
 
     }
 
-    //TODO:  Need to refactor to new chat suggested solutions
     var execSuggestedSolutions = null;
     var execSelectTicket = null;
     var selectTicket = function (request, response) {

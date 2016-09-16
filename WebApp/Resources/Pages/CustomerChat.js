@@ -56,22 +56,23 @@ function setupChat(chatID, participantID, callback) {
         //console.log(channel.members);
     });
 
-    pressenceChannel.bind('pusher:member_added', function (member) {
-        $('#operator-message').remove();
-        createMessage(member.info.name + ' joined the chat.')
-    });
+    //pressenceChannel.bind('pusher:member_added', function (member) {
+    //    $('#operator-message').remove();
+    //    createMessage(member.info.name + ' joined the chat.')
+    //});
 
     pressenceChannel.bind('pusher:subscription_error', function (status) {
         console.log(status);
     });
 
     pressenceChannel.bind('agent-joined', function (data) {
+        //TODO:  need to update the list of messages and load those into the dom.  Maybe we can do it through pusher?
         $('#operator-message').remove();
     });
 
     pressenceChannel.bind('new-comment', function (data) {
-        console.log('new-comment-user');
-        console.log(data)
+        //console.log('new-comment-user');
+        //console.log(data)
         createMessageElement(data, (data.CreatorType == 0) ? 'left' : 'right');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });

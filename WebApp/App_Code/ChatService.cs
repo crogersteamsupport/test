@@ -531,7 +531,7 @@ namespace TSWebServices
         private ChatMessageProxy[] GetChatMessages(int chatID)
         {
             ChatMessages messages = new ChatMessages(loginUser);
-            messages.LoadByChatID(chatID);
+            messages.LoadAllByChatID(chatID);
             return (messages.IsEmpty) ? null : messages.GetChatMessageProxies();
         }
 
