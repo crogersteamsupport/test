@@ -68,7 +68,7 @@ namespace TeamSupport.Data
 				command.Parameters.AddWithValue("@OrganizationParentId", organizationParentId);
 
                 //Hack: ContactsView has the column Email size of nvarchar(1024). We are applying this here specifically for this column, the better way should be to do it for all everytime but that might be a massive change to the base code for the data processing.
-                bool hasEmailParameter = filters.AllKeys.Where(p => p.ToLower() == "email").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("email[")).Any() && command.Parameters.Contains("@email");
+                bool hasEmailParameter = (filters.AllKeys.Where(p => p.ToLower() == "email").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("email[")).Any()) && command.Parameters.Contains("@email");
 
                 if (hasEmailParameter)
                 {
