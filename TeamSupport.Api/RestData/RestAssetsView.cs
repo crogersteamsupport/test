@@ -32,17 +32,10 @@ namespace TeamSupport.Api
       {
         //if something fails use the old method
         assetsView.LoadByOrganizationID(command.Organization.OrganizationID);
+        ExceptionLogs.LogException(command.LoginUser, ex, "API", "RestAssetsView. GetAssetsView(). SQL filtering generation failed, fell into old method.");
       }
 
-      if (command.Format == RestFormat.XML)
-      {
-        return assetsView.GetXml("Assets", "Asset", true, command.Filters);
-      }
-      else
-      {
-        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
-      }
-      
+      return assetsView.GetXml("Assets", "Asset", true, command.Filters);
     }
 
     public static string GetAssetsView(RestCommand command, int ticketIDOrTicketNumber)

@@ -743,7 +743,7 @@ namespace TeamSupport.ServiceLibrary
                 }
 
                 //If is IsClosedEmail and modifier is Portal user then do not exclude on email
-                bool removeModifier = true;
+                //vv: change for ticket 25530. Not QA approved. bool removeModifier = true;
                 List<UserEmail> userList;
                 List<UserEmail> advUsers = new List<UserEmail>();
                 AddAdvancedPortalUsers(advUsers, ticket);
@@ -816,14 +816,19 @@ namespace TeamSupport.ServiceLibrary
                 }
 
                 TicketStatus status = TicketStatuses.GetTicketStatus(LoginUser, ticket.TicketStatusID);
-                User modifierUser = AddPortalModifierIfClosing(userList, ticket, isBasic, status);
-                removeModifier = modifierUser == null;
+                //vv: change for ticket 25530. Not QA approved. Following lines commented out and re-added the original ones
+                //User modifierUser = AddPortalModifierIfClosing(userList, ticket, isBasic, status);
+                //removeModifier = modifierUser == null;
 
-                if (removeModifier)
-                {
-                    RemoveUser(userList, modifierID);
-                    Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
-                }
+                //if (removeModifier)
+                //{
+                //    RemoveUser(userList, modifierID);
+                //    Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
+                //}
+
+                //vv re-added
+                RemoveUser(userList, modifierID);
+                Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
 
 
                 if (userList.Count < 1)
@@ -897,7 +902,8 @@ namespace TeamSupport.ServiceLibrary
                             Logs.WriteEvent("Excluding creator off the modified ticket email when it is New.");
                         }
 
-                        if (userEmail != null && (modifierID != userEmail.UserID || (modifierID == userEmail.UserID && !removeModifier)) && !excludeCreator)
+                        //vv: change for ticket 25530. Not QA approved. if (userEmail != null && (modifierID != userEmail.UserID || (modifierID == userEmail.UserID && !removeModifier)) && !excludeCreator)
+                        if (userEmail != null && modifierID != userEmail.UserID && !excludeCreator)
                         {
                             message.Body = body;
                             message.Subject = subject;

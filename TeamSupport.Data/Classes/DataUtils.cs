@@ -2123,8 +2123,6 @@ namespace TeamSupport.Data
 
 			foreach (string key in filters)
 			{
-				var value = filters[key];
-
 				if (!string.IsNullOrEmpty(key))
 				{
 					filterFieldName = new StringBuilder();
@@ -2257,6 +2255,12 @@ namespace TeamSupport.Data
 
 			if (!string.IsNullOrEmpty(field))
 			{
+                if (table.Rows == null || table.Rows.Count == 0)
+                {
+                    DataRow row = table.NewRow();
+                    table.Rows.Add(row);
+                }
+				
 				BaseItem baseItem = new BaseItem(table.Rows[0], baseCollection);
 				object fieldObject = baseItem.Row[field];
 
@@ -2373,6 +2377,10 @@ namespace TeamSupport.Data
 						if (rawValues[i].ToLower().IndexOf("t") > -1 || rawValues[i].ToLower().IndexOf("1") > -1 || rawValues[i].ToLower().IndexOf("y") > -1)
 						{
 							filterValues.Add("1");
+						}
+						else if (rawValues[i].ToLower().IndexOf("f") > -1 || rawValues[i].ToLower().IndexOf("0") > -1 || rawValues[i].ToLower().IndexOf("n") > -1)
+						{
+							filterValues.Add("0");
 						}
 						if (i == 0)
 						{
