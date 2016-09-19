@@ -97,6 +97,53 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    //Tasks
+    public void LoadCreatedByUser(int userID, bool searchPending, bool searchComplete)
+    {
+        StringBuilder query = new StringBuilder("SELECT * FROM Reminders WHERE CreatorID = @UserID AND UserID <> @UserID ");
+        //Remember this will change once we add the isComplete field
+        if (searchPending && !searchComplete)
+        {
+            query.Append("AND isDismissed = 0 ");
+        }
+        else if (searchComplete && !searchPending)
+        {
+            query.Append("AND isDismissed = 1 ");
+        }
+        query.Append("ORDER BY DueDate");
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = query.ToString();
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@UserID", userID);
+        Fill(command);
+      }
+    }
+
+    public void LoadAssignedToUser(int userID, bool searchPending, bool searchComplete)
+    {
+        StringBuilder query = new StringBuilder("SELECT * FROM Reminders WHERE UserID = @UserID ");
+        //Remember this will change once we add the isComplete field
+        if (searchPending && !searchComplete)
+        {
+            query.Append("AND isDismissed = 0 ");
+        }
+        else if (searchComplete && !searchPending)
+        {
+            query.Append("AND isDismissed = 1 ");
+        }
+        query.Append("ORDER BY DueDate");
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = query.ToString();
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@UserID", userID);
+        Fill(command);
+      }
+    }
   }
   
 }

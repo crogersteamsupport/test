@@ -4,6 +4,8 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Data.SqlClient;
 
 namespace TSWebServices
 {
@@ -19,42 +21,85 @@ namespace TSWebServices
 
 
         [WebMethod]
-        public ReminderProxy[] GetTasks(int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
+        public ReminderProxy[] GetTasks(int from, int count, bool searchPending, bool searchComplete, bool searchCreated)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
 
             Reminders results = new Reminders(loginUser);
-            results.LoadByUser(loginUser.UserID);
+            if (searchCreated)
+            {
+                results.LoadCreatedByUser(loginUser.UserID, searchPending, searchComplete);
+            }
+            else
+            {
+                results.LoadAssignedToUser(loginUser.UserID, searchPending, searchComplete);
+            }
             return results.GetReminderProxies();
+        }
+
+        [WebMethod]
+        public FirstLoad GetFirstLoad()
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            FirstLoad result = new FirstLoad();
+            result.AssignedCount = GetAssignedCount(loginUser);
+            if (result.AssignedCount > 0)
+            {
+                //Load Pending
+                result.AssignedItems = GetTasks(0, 20, true, false, false);
+                if (result.AssignedItems.Length == 0)
+                {
+                    //Load Completed
+                    result.AssignedItems = GetTasks(0, 20, false, true, false);
+                }
+            }
+
+            result.CreatedCount = GetCreatedCount(loginUser);
+            if (result.CreatedCount > 0)
+            {
+                //Load Completed
+                result.CreatedItems = GetTasks(0, 20, false, true, true);
+                if (result.CreatedItems.Length == 0)
+                {
+                    //Load Pending
+                    result.CreatedItems = GetTasks(0, 20, true, false, true);
+                }
+            }
+
+            return result;
+        }
+
+        private int GetAssignedCount(LoginUser loginUser)
+        {
+            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE UserID = @UserID");
+            command.Parameters.AddWithValue("UserID", loginUser.UserID);
+            return (int)SqlExecutor.ExecuteScalar(loginUser, command);
+        }
+
+
+        private int GetCreatedCount(LoginUser loginUser)
+        {
+            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE CreatorID = @UserID AND UserID <> @UserID");
+            command.Parameters.AddWithValue("UserID", loginUser.UserID);
+            return (int)SqlExecutor.ExecuteScalar(loginUser, command);
         }
     }
 
 
 
-    //[DataContract(Namespace = "http://teamsupport.com/")]
-    //public class AdvancedSearchOptions
-    //{
-    //    [DataMember]
-    //    public int? StandardFilterID { get; set; }
-    //    [DataMember]
-    //    public bool? Tickets { get; set; }
-    //    [DataMember]
-    //    public bool? KnowledgeBase { get; set; }
-    //    [DataMember]
-    //    public bool? Wikis { get; set; }
-    //    [DataMember]
-    //    public bool? Notes { get; set; }
-    //    [DataMember]
-    //    public bool? ProductVersions { get; set; }
-    //    [DataMember]
-    //    public bool? WaterCooler { get; set; }
-    //    [DataMember]
-    //    public AutoFieldItem[] Fields { get; set; }
-    //    [DataMember]
-    //    public SearchCustomFilterProxy[] CustomFilters { get; set; }
-    //    [DataMember]
-    //    public SearchSorterProxy[] Sorters { get; set; }
-    //}
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    public class FirstLoad
+    {
+        [DataMember]
+        public int AssignedCount { get; set; }
+        [DataMember]
+        public ReminderProxy[] AssignedItems { get; set; }
+        [DataMember]
+        public int CreatedCount { get; set; }
+        [DataMember]
+        public ReminderProxy[] CreatedItems { get; set; }
+    }
 
 }

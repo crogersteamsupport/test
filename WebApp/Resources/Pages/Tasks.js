@@ -1,5 +1,32 @@
 ﻿$(document).ready(function () {
 
+    function LoadAssigned(tasks) {
+        var container = $('.assignedresults');
+        insertSearchResults(container, tasks);
+    }
+
+    function LoadCreated(tasks) {
+        var container = $('.createdresults');
+        insertSearchResults(container, tasks);
+    }
+
+    function HideAssigned() {
+        $('#assignedColumn').hide();
+        $('#createdColumn').removeClass('col-xs-6').addClass('col-xs-12');
+        $('#createdColumn').find('.tasks-header').hide();
+    }
+
+    function HideCreated() {
+        $('#createdColumn').hide();
+        $('#assignedColumn').removeClass('col-xs-6').addClass('col-xs-12');
+        $('#assignedColumn').find('.tasks-header').hide();
+    }
+
+    function ShowNoTasks() {
+        HideCreated();
+        $('#assignedColumn').find('.results-empty').show();
+    }
+
     function fetchItems(start) {
         start = start || 0;
         showLoadingIndicator();
@@ -21,13 +48,24 @@
         }
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
-        parent.Ts.Services.Task.GetTasks(start, 20, searchPending, searchComplete, false, function (items) {
+        parent.Ts.Services.Task.GetFirstLoad(function (firstLoad) {
             $('.searchresults').fadeTo(0, 1);
 
-            if (start == 0) {
-                insertSearchResults(items, searchPending, searchComplete);
-            } else {
-                appendSearchResults(items, searchPending, searchComplete);
+            if (firstLoad.AssignedCount > 0) {
+                LoadAssigned(firstLoad.AssignedItems);
+                if (firstLoad.CreatedCount > 0) {
+                    LoadCreated(firstLoad.CreatedItems);
+                }
+                else {
+                    HideCreated();
+                }
+            }
+            else if (firstLoad.CreatedCount > 0) {
+                LoadCreated(firstLoad.CreatedItems);
+                HideAssigned();
+            }
+            else {
+                ShowNoTasks();
             }
         });
     }
@@ -37,20 +75,20 @@
         $('.results-loading').show();
     }
 
-    function insertSearchResults(items, searchPending, searchComplete) {
-        $('.searchresults').empty();
+    function insertSearchResults(container, items) {
+        container.empty();
 
-        if (items.length < 1) {
-            $('.results-loading').hide();
-            $('.results-done').hide();
-            $('.results-empty').show();
-        } else {
-            appendSearchResults(items, searchPending, searchComplete);
-        }
+        //if (items.length < 1) {
+        //    $('.results-loading').hide();
+        //    $('.results-done').hide();
+        //    $('.results-empty').show();
+        //} else {
+            appendSearchResults(container, items);
+        //}
         _isLoading = false;
     }
 
-    function appendSearchResults(items, searchPending, searchComplete) {
+    function appendSearchResults(container, items) {
         $('.results-loading').hide();
         $('.results-empty').hide();
         $('.results-done').hide();
@@ -58,7 +96,7 @@
         if (items.length < 1) {
             $('.results-done').show();
         } else {
-            var container = $('.searchresults');
+            //var container = $('.searchresults');
             for (var i = 0; i < items.length; i++) {
                 appendItem(container, items[i]);
             }

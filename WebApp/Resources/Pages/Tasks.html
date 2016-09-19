@@ -26,7 +26,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-6">
+                            <div id="assignedColumn" class="col-xs-6">
                                 <div class="tasks-header">
                                     <h4 class="pull-left">Assigned</h4>
                                 </div>
@@ -40,25 +40,25 @@
                                 </div>
                                 <div class="clearfix"></div>
                                 <div class="results-wrapper">
-                                    <table class="searchresults"></table>
+                                    <table class="assignedresults"></table>
                                     <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
                                     <div class="results-done">There are no more tasks.</div>
                                     <div class="results-empty">No tasks.</div>
                                 </div>
                             </div>
-                            <div class="col-xs-6">
+                            <div id="createdColumn" class="col-xs-6">
                                 <h4 class="pull-left">Created</h4>
                                 <div class="clearfix"></div>
                                 <div class="tasks-filter">
                                     <ul class="nav nav-pills">
-                                        <li class="active"><a href="#" class="tasks-filter-pending">Pending</a></li>
-                                        <li><a href="#" class="tasks-filter-completed">Completed</a></li>
+                                        <li><a href="#" class="tasks-filter-pending">Pending</a></li>
+                                        <li class="active"><a href="#" class="tasks-filter-completed">Completed</a></li>
                                         <li><a href="#" class="tasks-filter-all">All</a></li>
                                     </ul>
                                 </div>
                                 <div class="clearfix"></div>
                                 <div class="results-wrapper">
-                                    <table class="searchresults"></table>
+                                    <table class="createdresults"></table>
                                     <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
                                     <div class="results-done">There are no more tasks.</div>
                                     <div class="results-empty">No tasks.</div>
