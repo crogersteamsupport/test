@@ -56,10 +56,10 @@ function setupChat(chatID, participantID, callback) {
         //console.log(channel.members);
     });
 
-    //pressenceChannel.bind('pusher:member_added', function (member) {
-    //    $('#operator-message').remove();
-    //    createMessage(member.info.name + ' joined the chat.')
-    //});
+    pressenceChannel.bind('pusher:member_added', function (member) {
+        $('#operator-message').remove();
+        createMessage(member.info.name + ' joined the chat.')
+    });
 
     pressenceChannel.bind('pusher:subscription_error', function (status) {
         console.log(status);
@@ -89,12 +89,12 @@ function loadInitialMessages(chatID) {
         createMessage('Initiated On: ' + result.DateCreated);
         createMessage('Initiated By: ' + result.InitiatorDisplayName);
 
-        for (i = 0; i < result.Messages.length; i++) {
-            console.log(result.Messages[i])
-            createMessageElement(result.Messages[i], (result.Messages[i].CreatorType == 0) ? 'left' : 'right');
-        }
+        //for (i = 0; i < result.Messages.length; i++) {
+        //    console.log(result.Messages[i])
+        //    createMessageElement(result.Messages[i], (result.Messages[i].CreatorType == 0) ? 'left' : 'right');
+        //}
 
-        $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
+        //$(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     },
     function (error) {
 

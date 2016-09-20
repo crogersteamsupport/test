@@ -36,8 +36,7 @@ namespace TSWebServices
         public bool CheckChatStatus(string chatGuid)
         {
             Organization org = GetOrganization(chatGuid);
-            bool isAvailable = ChatRequests.IsOperatorAvailable(LoginUser.Anonymous, org.OrganizationID);
-            return isAvailable;
+            return ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID);
         }
 
         [WebMethod]
@@ -62,6 +61,50 @@ namespace TSWebServices
             ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress);
             pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName), title = "Chat Request", theme = "ui-state-error", chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID)) });
             return JsonConvert.SerializeObject(request.GetProxy());
+        }
+
+        [WebMethod]
+        public void MissedChat(string chatGuid, string fName, string lName, string email, string description)
+        {
+            Organization _organization = GetOrganization(chatGuid);
+            Ticket ticket = (new Tickets(LoginUser.Anonymous)).AddNewTicket();
+            ticket.OrganizationID = _organization.OrganizationID;
+            ticket.GroupID = _organization.DefaultPortalGroupID;
+            ticket.IsKnowledgeBase = false;
+            ticket.IsVisibleOnPortal = true;
+            ticket.Name = "Offline Chat Question";
+            ticket.TicketSeverityID = TicketSeverities.GetTop(LoginUser.Anonymous, _organization.OrganizationID).TicketSeverityID;
+            ticket.TicketTypeID = TicketTypes.GetTop(LoginUser.Anonymous, _organization.OrganizationID).TicketTypeID;
+            ticket.TicketStatusID = TicketStatuses.GetTop(LoginUser.Anonymous, ticket.TicketTypeID).TicketStatusID;
+            ticket.TicketSource = "ChatOffline";
+            ticket.PortalEmail = email;
+            ticket.Collection.Save();
+
+            StringBuilder builder = new StringBuilder();
+            builder.Append("<h2>Offline Chat Request</h2>");
+            builder.Append("<table cellspacing=\"0\" cellpadding=\"5\" border=\"0\">");
+            builder.Append("<tr><td><strong>First Name:</strong></td><td>" + fName + "</td></tr>");
+            builder.Append("<tr><td><strong>Last Name:</strong></td><td>" + lName + "</td></tr>");
+            builder.Append("<tr><td><strong>Email:</strong></td><td><a href=\"mailto:" + email + "\">" + email + "</td></tr>");
+            builder.Append("<tr><td colspan=\"2\"><strong>Question:</strong></td></tr>");
+            builder.Append("<tr><td colspan=\"2\">" + description + "</td></tr>");
+            builder.Append("</table>");
+
+
+            TeamSupport.Data.Action action = (new Actions(LoginUser.Anonymous)).AddNewAction();
+            action.ActionTypeID = null;
+            action.SystemActionTypeID = SystemActionType.Description;
+            action.Description = builder.ToString();
+            action.IsKnowledgeBase = false;
+            action.IsVisibleOnPortal = true;
+            action.ActionSource = "ChatOffline";
+            action.Name = "Description";
+            action.TicketID = ticket.TicketID;
+            action.Collection.Save();
+
+            Users users = new Users(LoginUser.Anonymous);
+            users.LoadByEmailOrderByActive(_organization.OrganizationID, email);
+            if (!users.IsEmpty) ticket.Collection.AddContact(users[0].UserID, ticket.TicketID);
         }
 
         [WebMethod]
@@ -221,6 +264,30 @@ namespace TSWebServices
             return JsonConvert.SerializeObject(true);
         }
 
+        //TODO:  Not Complete.  Need testing
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string AddAgentUploadtMessage(string channelName, int chatID, int attachmentID)
+        {
+            Chat chat = GetChat(chatID);
+            Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+            string attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+
+            ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
+            chatMessage.Message = attachmentHTML;
+            chatMessage.ChatID = chatID;
+            chatMessage.PosterID = loginUser.UserID;
+            chatMessage.PosterType = ChatParticipantType.User;
+            chatMessage.Collection.Save();
+            Users.UpdateUserActivityTime(loginUser, loginUser.UserID);
+
+            User user = loginUser.GetUser();
+            ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
+
+            var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            return JsonConvert.SerializeObject(true);
+        }
+
         [WebMethod(true)]
         public int GetTicketID(int chatID)
         {
@@ -256,6 +323,18 @@ namespace TSWebServices
             }
             return ticketID;
         }
+
+        //private void TransferAttachments(int chatID, int actionID)
+        //{
+        //    Attachments attachments = new Attachments(loginUser);
+        //    attachments.LoadByReference(ReferenceType.ChatAttachments, chatID);
+
+        //    foreach(Attachment attachment in attachments)
+        //    {
+        //        attachment.RefType = ReferenceType.Actions;
+        //        attachment.RefID = actionID;
+        //    }
+        //}
 
         [WebMethod]
         public void RequestTransfer(int chatID, int userID)

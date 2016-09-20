@@ -206,7 +206,7 @@ ORDER BY DateCreated, PosterName
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT * FROM CHATMESSAGES WHERE ChatID = @ChatID";
+                command.CommandText = @"SELECT * FROM CHATMESSAGES WHERE ChatID = @ChatID ORDER BY DATECREATED";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ChatID", chatID);
                 Fill(command);

@@ -72,7 +72,8 @@ namespace TeamSupport.Data
 		TicketRelationships = 54,
 		AgentRating = 55,
 		PrimaryContacts = 56,
-		CustomerHubLogo = 57
+		CustomerHubLogo = 57,
+        ChatAttachments = 58
 
 	};
 

@@ -68,3 +68,8 @@
 .user-avatar {
     width: 48px;
 }
+
+
+.hover {
+  border: 3px dashed #ccc;
+}

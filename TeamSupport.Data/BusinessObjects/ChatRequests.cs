@@ -62,7 +62,27 @@ AND u.OrganizationID = @OrganizationID";
       }
     }
 
-    public void LoadByChatID(int chatID, ChatRequestType type)
+        public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID)
+        {
+            ChatRequests requests = new ChatRequests(loginUser);
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+SELECT COUNT(*) FROM ChatUserSettings cus 
+LEFT JOIN Users u ON u.UserID = cus.UserID
+WHERE cus.IsAvailable = 1
+AND u.IsChatUser = 1
+AND u.OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                object o = requests.ExecuteScalar(command);
+                int count = o == DBNull.Value ? 0 : (int)o;
+                return count > 0;
+            }
+        }
+
+        public void LoadByChatID(int chatID, ChatRequestType type)
     {
       using (SqlCommand command = new SqlCommand())
       {

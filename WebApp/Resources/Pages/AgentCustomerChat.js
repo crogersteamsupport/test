@@ -5,6 +5,7 @@ $(document).ready(function () {
     var chatInfoObject = {};
     var pusherKey = null;
     var contactID = null;
+    var uploadPath = '../../../Upload/ChatAttachments/';
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -23,13 +24,12 @@ $(document).ready(function () {
         }
     });
 
-    subscribeToNewChatRequest(function (request) {
-        SetupPendingRequest(request.chatRequest, false);
-    });
-
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
         pusherKey = key;
         SetupChatRequests();
+        subscribeToNewChatRequest(pusherKey, function (request) {
+            SetupPendingRequest(request.chatRequest, false);
+        });
 
         $('.page-loading').hide().next().show();
     });
@@ -135,7 +135,7 @@ $(document).ready(function () {
     }
 
     function createMessageElement(messageData, scrollView) {
-        console.log(messageData)
+        //console.log(messageData)
         if (messageData.ChatID == _activeChatID) {
             var messageTemplate = $("#message-template").html();
             var compiledTemplate = messageTemplate
@@ -308,15 +308,22 @@ $(document).ready(function () {
             });
         });
 
-        //TODO: Create Attachment upload logic
+        $('#hiddenAttachmentInput').fileupload({
+            dropZone: $('.current-chat'),
+            add: function (e, data) {
+                data.url = uploadPath + _activeChatID;
+                var jqXHR = data.submit()
+                    .success(function (result, textStatus, jqXHR) {
+                        var attachment = JSON.parse(result)[0];
+                        parent.Ts.Services.Chat.AddAgentUploadtMessage('presence-' + _activeChatID, _activeChatID, attachment.id);
+                    })
+                    .error(function (jqXHR, textStatus, errorThrown) { console.log(textStatus) })
+            },
+        });
+
         $('#chat-attachment').click(function (e) {
             e.preventDefault();
-            //parent.Ts.Services.Chat.CloseChat(_activeChatID, function (success) {
-            //    if (success) {
-
-            //    }
-            //    else console.log('Error closing chat.')
-            //});
+            $('#hiddenAttachmentInput').click();
         });
 
         //TODO:  TOK Integration
@@ -483,4 +490,32 @@ $(document).ready(function () {
             }
         });
     }
+});
+
+$(document).bind('dragover', function (e) {
+    var dropZone = $('.current-chat'),
+        timeout = window.dropZoneTimeout;
+    if (!timeout) {
+        dropZone.addClass('in');
+    } else {
+        clearTimeout(timeout);
+    }
+    var found = false,
+        node = e.target;
+    do {
+        if (node === dropZone[0]) {
+            found = true;
+            break;
+        }
+        node = node.parentNode;
+    } while (node != null);
+    if (found) {
+        dropZone.addClass('hover');
+    } else {
+        dropZone.removeClass('hover');
+    }
+    window.dropZoneTimeout = setTimeout(function () {
+        window.dropZoneTimeout = null;
+        dropZone.removeClass('in hover');
+    }, 100);
 });

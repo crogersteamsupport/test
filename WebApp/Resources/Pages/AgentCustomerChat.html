@@ -19,6 +19,7 @@
   <script src="//static.opentok.com/v2/js/opentok.min.js"></script>
   <script src="../Js/moment.min.js" type="text/javascript"></script>
   <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
 
 </head>
 <body>
@@ -32,7 +33,7 @@
                         <div id="chats-accepted" class="col-md-12"></div>
                     </div>
                 </div>
-                <div class="col-sm-8 col-md-9 col-lg-9 current-chat">
+                <div class="col-sm-8 col-md-9 col-lg-9 current-chat ">
                     <div class="row chat-toolbar-row">
                         <div class="col-sm-12">
                             <div class="btn-group chat-toolbar" role="group" aria-label="...">
@@ -50,6 +51,7 @@
                                 <button id="chat-suggestions" class="btn btn-default ticket-option" type="button">
                                     <i class="glyphicon glyphicon-book"></i>
                                 </button>
+                                <input id="hiddenAttachmentInput" type="file" name="somename" size="chars" style="display:none;">
                                 <button id="chat-attachment" class="btn btn-default ticket-option" type="button">
                                     <i class="glyphicon glyphicon-paperclip"></i>
                                 </button>

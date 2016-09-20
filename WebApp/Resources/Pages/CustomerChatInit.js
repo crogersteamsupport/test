@@ -5,13 +5,14 @@
 
     IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID },
     function (result) {
-        //console.log(result)
+        console.log(result)
         chatOffline = result;
-        if (result) $('.chatRequestForm').show();
-        else {
-            $('.chatRequestLabel').show();
+        if (result) 
+            $('.chatOfflineWarning').hide();
+        else 
             $('.chatRequestForm').show();
-        }
+        
+        $('.chatRequestForm').show();
     },
     function (error) {
         console.log(error)
@@ -23,14 +24,26 @@
 
         var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val(), description: $('#userIssue').val() };
 
-        IssueAjaxRequest("RequestChat", contactInfo,
-        function (result) {
-            console.log(result)
-            window.location.replace('Chat.html?chatid=' + result.ChatID + '&pid=' + result.RequestorID);
-        },
-        function (error) { 
-            console.log(error)
-        });
+        if (!chatOffline) {
+            IssueAjaxRequest("MissedChat", contactInfo,
+            function (result) {
+                console.log(result)
+                window.location.replace('ChatThankYou.html');
+            },
+            function (error) {
+                console.log(error)
+            });
+        }
+        else {
+            IssueAjaxRequest("RequestChat", contactInfo,
+            function (result) {
+                console.log(result)
+                window.location.replace('Chat.html?chatid=' + result.ChatID + '&pid=' + result.RequestorID);
+            },
+            function (error) {
+                console.log(error)
+            });
+        }
     });
   
 });
