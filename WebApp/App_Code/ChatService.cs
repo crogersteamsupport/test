@@ -364,11 +364,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool CloseChat(int chatID)
+        public bool CloseChat(string channelName, int chatID)
         {
             Chat chat = Chats.GetChat(loginUser, chatID);
             if (chat.OrganizationID != loginUser.OrganizationID) return false;
-            Chats.LeaveChat(loginUser, loginUser.UserID, ChatParticipantType.User, chatID);
+            ChatMessageProxy message = Chats.LeaveChat(loginUser, loginUser.UserID, ChatParticipantType.User, chatID);
+            User user = loginUser.GetUser();
+            ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
+
+            var result = pusher.Trigger(channelName, "new-comment", newMessage);
             return true;
         }
 
@@ -518,15 +522,6 @@ namespace TSWebServices
             return result;
         }
 
-
-        //[WebMethod]
-        //public bool ToggleAvailable()
-        //{
-        //    ChatUserSetting setting = ChatUserSettings.GetSetting(loginUser, loginUser.UserID);
-        //    setting.IsAvailable = !setting.IsAvailable;
-        //    setting.Collection.Save();
-        //    return setting.IsAvailable;
-        //}
 
         #endregion
 

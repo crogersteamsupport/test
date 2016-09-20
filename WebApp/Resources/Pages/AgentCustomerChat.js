@@ -171,7 +171,7 @@ $(document).ready(function () {
 
             $('.media-list').empty();
             $('.chat-intro').empty();
-            $('.chat-intro').append('<p>Initiated On: ' + chat.DateCreated + '</p>');
+            $('.chat-intro').append('<p>Initiated On: ' + moment(chat.DateCreated).format(dateFormat + ' hh:mm A') + '</p>');
             $('.chat-intro').append('<p>Initiated By: ' + chat.InitiatorMessage + '</p>');
 
             for(i = 0; i <  chat.Messages.length; i++)
@@ -189,7 +189,7 @@ $(document).ready(function () {
             $(".current-chat-area").scrollTop($('.current-chat-area').prop("scrollHeight"));
     }
 
-    $("#new-message").click(function (e) {
+    $("#message-form").submit(function (e) {
         e.preventDefault();
         parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, $('#message').val(), _activeChatID, function (data) {
             $('#message').val('');
@@ -201,7 +201,7 @@ $(document).ready(function () {
         //Leave Chat and remove from list of active chats
         $('#chat-leave').click(function (e) {
             e.preventDefault();
-            parent.Ts.Services.Chat.CloseChat(_activeChatID, function (success) {
+            parent.Ts.Services.Chat.CloseChat('presence-' + _activeChatID, _activeChatID, function (success) {
                 if (success) {
                     $('#active-chat_' + _activeChatID).remove();
                     $('.media-list').empty();
