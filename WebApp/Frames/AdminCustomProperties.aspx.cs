@@ -264,9 +264,10 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
             case SelectedType.TicketSeverities:
                 TicketSeverities ticketSeverities = new TicketSeverities(UserSession.LoginUser);
                 ticketSeverities.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                table.Columns.Add("Visible on Portal");
                 foreach (TicketSeverity ticketSeverity in ticketSeverities)
                 {
-                    table.Rows.Add(new string[] { ticketSeverity.TicketSeverityID.ToString(), ticketSeverity.Name, ticketSeverity.Description });
+                    table.Rows.Add(new string[] { ticketSeverity.TicketSeverityID.ToString(), ticketSeverity.Name, ticketSeverity.Description, ticketSeverity.VisibleOnPortal.ToString() });
                 }
                 break;
             case SelectedType.TicketStatuses:
@@ -365,7 +366,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         ticketSeverities.LoadAllPositions(UserSession.LoginUser.OrganizationID);
         foreach (TicketSeverity ticketSeverity in ticketSeverities)
         {
-          table.Rows.Add(new string[] { ticketSeverity.TicketSeverityID.ToString(), ticketSeverity.Name, ticketSeverity.Description });
+            table.Rows.Add(new string[] { ticketSeverity.TicketSeverityID.ToString(), ticketSeverity.Name, ticketSeverity.Description, ticketSeverity.VisibleOnPortal.ToString() });
         }
         break;
       case SelectedType.TicketStatuses:
@@ -638,6 +639,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         result.ID = ticketSeverity.TicketSeverityID;
         result.Name = ticketSeverity.Name;
         result.Description = ticketSeverity.Description;
+        result.IsVisibleOnPortal = ticketSeverity.VisibleOnPortal;
         break;
       case SelectedType.TicketStatuses:
         TicketStatus ticketStatus = TicketStatuses.GetTicketStatus(UserSession.LoginUser, id);
@@ -727,6 +729,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         ticketSeverity.Description = description;
         if (id == null) ticketSeverity.Position = ticketSeverity.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
         if (id == null) ticketSeverity.OrganizationID = UserSession.LoginUser.OrganizationID;
+        ticketSeverity.VisibleOnPortal = isVisibleOnPortal;
         ticketSeverity.Collection.Save();
         ticketSeverity.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
         break;

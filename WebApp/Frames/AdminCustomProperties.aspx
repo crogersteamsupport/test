@@ -145,8 +145,10 @@
                 <div id="divUploadResults" style="padding-top: 5px; font-weight: bold; display: none;">
                 </div>
               </div>
-                <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />&nbsp&nbsp
             </div>
+              <div id="divVisibleOnPortal">
+                  <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />&nbsp&nbsp
+              </div>
           </div>
           <div style="float: right; margin: 0px 0px 0 0;">
             <asp:Button ID="btnOk1" runat="server" Text="OK" OnClientClick="closeEditTypeWindow(true); return false;" />&nbsp
@@ -281,12 +283,14 @@
         $('#divTicketStatus').hide();
         $('#divProductVersionStatus').hide();
         $('#divTicketTypeIcon').hide();
+        $('#divVisibleOnPortal').hide();
         $('#divUploadResults').hide();
         switch (_type) {
-          case '0': $('#divActionType').show(); break;
-          case '2': $('#divProductVersionStatus').show(); break;
-          case '4': $('#divTicketStatus').show(); break;
-          case '5': $('#divTicketTypeIcon').show(); break;
+            case '0': $('#divActionType').show(); break;
+            case '2': $('#divProductVersionStatus').show(); break;
+            case '3': $('#divVisibleOnPortal').show(); break;
+            case '4': $('#divTicketStatus').show(); break;
+            case '5': $('#divTicketTypeIcon').show();$('#divVisibleOnPortal').show(); break;
         }
 
         if (_useProductFamilies && _type == 5) {

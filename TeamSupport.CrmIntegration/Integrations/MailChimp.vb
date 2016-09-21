@@ -71,7 +71,7 @@ Namespace TeamSupport
                                       Dim contactView As ContactsView = New ContactsView(User)
                                       Dim filter As Specialized.NameValueCollection = New Specialized.NameValueCollection()
                                       filter.Add("email", contact.Email)
-                                      contactView.LoadByParentOrganizationID(CRMLinkRow.OrganizationID, filter, orderBy:="DateModified DESC", limitNumber:=1)
+                                      contactView.LoadByParentOrganizationID(CRMLinkRow.OrganizationID, filter, orderBy:="DateModified DESC", limitNumber:=1, useMaxDop:=True)
 
                                       Dim contactCompany As String = String.Empty
                                       If Not contactView Is Nothing AndAlso contactView.Count > 0 Then

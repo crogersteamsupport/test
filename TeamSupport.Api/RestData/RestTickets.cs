@@ -33,39 +33,48 @@ namespace TeamSupport.Api
 
 		if (command.IsPaging)
 		{
-			TicketsView tickets = new TicketsView(command.LoginUser);
-			tickets.LoadAllTicketIds(command.Organization.OrganizationID, command.Filters, command.PageNumber, command.PageSize);
-			hasBeenFiltered = true;
-			XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
+            try
+            {
+                TicketsView tickets = new TicketsView(command.LoginUser);
+                tickets.LoadAllTicketIds(command.Organization.OrganizationID, command.Filters, command.PageNumber, command.PageSize);
+                hasBeenFiltered = true;
+                XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
 
-			foreach (int ticketTypeId in tickets.GroupBy(g => g.TicketTypeID).Select(p => p.Key).ToList())
-			{
-				try
-				{
-					TicketsView ticketsResult = new TicketsView(command.LoginUser);
-					ticketsResult.LoadByTicketIDList(command.Organization.OrganizationID, ticketTypeId, tickets.Where(w => w.TicketTypeID == ticketTypeId).Select(p => p.TicketID).ToList());
+                foreach (int ticketTypeId in tickets.GroupBy(g => g.TicketTypeID).Select(p => p.Key).ToList())
+                {
+                    try
+                    {
+                        TicketsView ticketsResult = new TicketsView(command.LoginUser);
+                        ticketsResult.LoadByTicketIDList(command.Organization.OrganizationID, ticketTypeId, tickets.Where(w => w.TicketTypeID == ticketTypeId).Select(p => p.TicketID).ToList());
 
-					foreach (DataRow row in ticketsResult.Table.Rows)
-					{
-						int ticketId = (int)row["TicketID"];
-						Tags tags = new Tags(command.LoginUser);
-						tags.LoadByReference(ReferenceType.Tickets, ticketId);
-						tags = tags ?? new Tags(command.LoginUser);
-						ticketsResult.WriteXml(writer, row, "Ticket", true, !hasBeenFiltered ? command.Filters : new System.Collections.Specialized.NameValueCollection(), tags);
-					}
-				}
-				catch (Exception ex)
-				{
-				}
-			}
+                        foreach (DataRow row in ticketsResult.Table.Rows)
+                        {
+                            int ticketId = (int)row["TicketID"];
+                            Tags tags = new Tags(command.LoginUser);
+                            tags.LoadByReference(ReferenceType.Tickets, ticketId);
+                            tags = tags ?? new Tags(command.LoginUser);
+                            ticketsResult.WriteXml(writer, row, "Ticket", true, !hasBeenFiltered ? command.Filters : new System.Collections.Specialized.NameValueCollection(), tags);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionLogs.LogException(command.LoginUser, ex, "API", "RestTickets. GetTickets(). Paging.");
+                    }
+                }
 
-			if (tickets.Count > 0)
-			{
-				totalRecords = tickets[0].TotalRecords;
-			}
+                if (tickets.Count > 0)
+                {
+                    totalRecords = tickets[0].TotalRecords;
+                }
 
-			writer.WriteElementString("TotalRecords", totalRecords.ToString());
-			xml = Tickets.EndXmlWrite(writer);
+                writer.WriteElementString("TotalRecords", totalRecords.ToString());
+                xml = Tickets.EndXmlWrite(writer);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(command.LoginUser, ex, "API", "RestTickets. GetTickets(). Paging. SQL filtering generation failed.");
+                throw new RestException(HttpStatusCode.InternalServerError, "There was an error processing your request. Please contact TeamSupport.com", ex);
+            }
 		}
 		else
 		{
@@ -87,6 +96,7 @@ namespace TeamSupport.Api
 					{
 						//if something fails use the old method
 						tickets.LoadByTicketTypeID(ticketTypeID);
+                        ExceptionLogs.LogException(command.LoginUser, ex, "API", "RestTickets. GetTickets(). No Paging. SQL filtering generation failed, fell into old method.");
 					}
           
 					xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
@@ -115,6 +125,7 @@ namespace TeamSupport.Api
 					{
 						//if something fails use the old method
 						tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
+                        ExceptionLogs.LogException(command.LoginUser, ex, "API", "RestTickets. GetTickets(). No Paging. No TicketTypeId filter. SQL filtering generation failed, fell into old method.");
 					}
 
 					foreach (DataRow row in tickets.Table.Rows)
