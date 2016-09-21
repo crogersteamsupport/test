@@ -190,3 +190,9 @@
     padding-right: 12px;
     color: #333333;
 }
+
+
+/*File Uploads*/
+.hover {
+  border: 3px dashed #ccc;
+}

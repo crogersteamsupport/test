@@ -9,6 +9,7 @@
         channel = channelObject;
     });
     loadInitialMessages(chatID);
+    SetupChatUploads(chatID, participantID);
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
@@ -24,6 +25,8 @@
         });
 
     });
+
+
   
 });
 
@@ -66,7 +69,6 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('agent-joined', function (data) {
-        //TODO:  need to update the list of messages and load those into the dom.  Maybe we can do it through pusher?
         $('#operator-message').remove();
     });
 
@@ -125,3 +127,61 @@ function IssueAjaxRequest(method, data, successCallback, errorCallback) {
         }
     });
 }
+
+function SetupChatUploads(chatID, participantID) {
+    var uploadPath = '../../../Upload/ChatAttachments/';
+    $('#hiddenAttachmentInput').fileupload({
+        dropZone: $('.panel-default'),
+        add: function (e, data) {
+            data.url = uploadPath + chatID;
+            var jqXHR = data.submit()
+                .success(function (result, textStatus, jqXHR) {
+                    var attachment = JSON.parse(result)[0];
+
+                    var messageData = { channelName: 'presence-' + chatID, chatID: chatID, attachmentID: attachment.id, userID: participantID };
+
+                    IssueAjaxRequest("AddUserUploadMessage", messageData,
+                    function (result) {
+
+                    },
+                    function (error) {
+
+                    });
+                })
+                .error(function (jqXHR, textStatus, errorThrown) { console.log(textStatus) })
+        },
+    });
+
+    $('#chat-attachment').click(function (e) {
+        e.preventDefault();
+        $('#hiddenAttachmentInput').click();
+    });
+}
+
+$(document).bind('dragover', function (e) {
+    var dropZone = $('.panel-default'),
+        timeout = window.dropZoneTimeout;
+    if (!timeout) {
+        dropZone.addClass('in');
+    } else {
+        clearTimeout(timeout);
+    }
+    var found = false,
+        node = e.target;
+    do {
+        if (node === dropZone[0]) {
+            found = true;
+            break;
+        }
+        node = node.parentNode;
+    } while (node != null);
+    if (found) {
+        dropZone.addClass('hover');
+    } else {
+        dropZone.removeClass('hover');
+    }
+    window.dropZoneTimeout = setTimeout(function () {
+        window.dropZoneTimeout = null;
+        dropZone.removeClass('in hover');
+    }, 100);
+});

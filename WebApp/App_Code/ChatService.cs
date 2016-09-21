@@ -150,6 +150,34 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string AddUserUploadMessage(string channelName, int chatID, int attachmentID, int userID)
+        {
+            Chat chat = GetChat(chatID);
+            Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+            string attachmentHTML = "";
+
+            if (attachment.FileType.StartsWith("image/"))
+                attachmentHTML = string.Format("<img src='../../../dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+            else
+                attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+
+            ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
+            chatMessage.Message = attachmentHTML;
+            chatMessage.ChatID = chatID;
+            chatMessage.PosterID = userID;
+            chatMessage.PosterType = ChatParticipantType.External;
+            chatMessage.Collection.Save();
+            //Users.UpdateUserActivityTime(loginUser, userID);
+
+            User user = loginUser.GetUser();
+            ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
+
+            var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            return JsonConvert.SerializeObject(true);
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string GetContact(string chatGuid, string fName, string lName, string email)
         {
             Organization org = GetOrganization(chatGuid);
@@ -264,14 +292,18 @@ namespace TSWebServices
             return JsonConvert.SerializeObject(true);
         }
 
-        //TODO:  Not Complete.  Need testing
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string AddAgentUploadtMessage(string channelName, int chatID, int attachmentID)
         {
             Chat chat = GetChat(chatID);
             Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
-            string attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+            string attachmentHTML = "";
+
+            if (attachment.FileType.StartsWith("image/"))
+                attachmentHTML = string.Format("<img src='../../../dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+            else 
+                attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
             chatMessage.Message = attachmentHTML;

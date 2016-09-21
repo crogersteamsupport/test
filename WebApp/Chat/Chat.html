@@ -7,8 +7,6 @@
     <link href="../vcr/1_9_0/Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link href="../vcr/1_9_0/Pages/CustomerChat.css" rel="stylesheet" />
 
-    <script src="../vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
-
 </head>
 <body>
     <div class="panel panel-default">
@@ -31,7 +29,9 @@
                 <div class="input-group">
                     <input id="message" type="text" class="form-control" />
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">Send</button>
+                        <button class="btn btn-default" type="submit" aria-label="send message">Send</button>
+                        <button id="chat-attachment" class="btn btn-default" type="button" aria-label="attach documents"><span class="glyphicon glyphicon-paperclip"></span></button>
+                        <input id="hiddenAttachmentInput" type="file" name="somename" size="chars" style="display:none;">
                     </span>
                 </div>
             </form>
@@ -44,5 +44,9 @@
     <script src="../vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
     <script src="../vcr/1_9_0/Js/Ts/ts.utils.js"></script>
     <script src="../vcr/1_9_0/Pages/CustomerChat.js"></script>
+    <script src="../vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
+    <script src="../vcr/1_9_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+    <script src="../vcr/1_9_0/Js/jquery.fileupload.js" type="text/javascript"></script>
+
 </body>
 </html>
