@@ -4,7 +4,6 @@ body {
     padding: 16px;
     background-color: #dae3ec;
     font-family: Lato;
-    overflow-y:scroll;
 }
  
 /* HEADER */
@@ -12,7 +11,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: url(../assets/header-bg.png) #457aba center;
+    background: url(../assets/header-bg.png) #2a5568 center;
     background-size: cover;
     padding: 54px 65px;
     border-top-left-radius: 4px;
