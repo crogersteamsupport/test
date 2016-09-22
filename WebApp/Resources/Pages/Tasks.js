@@ -77,14 +77,7 @@
 
     function insertSearchResults(container, items) {
         container.empty();
-
-        //if (items.length < 1) {
-        //    $('.results-loading').hide();
-        //    $('.results-done').hide();
-        //    $('.results-empty').show();
-        //} else {
-            appendSearchResults(container, items);
-        //}
+        appendSearchResults(container, items);
         _isLoading = false;
     }
 
@@ -96,7 +89,6 @@
         if (items.length < 1) {
             $('.results-done').show();
         } else {
-            //var container = $('.searchresults');
             for (var i = 0; i < items.length; i++) {
                 appendItem(container, items[i]);
             }
@@ -109,9 +101,19 @@
         var circle = $('<i>').addClass('fa fa-circle fa-stack-2x');
         var icon = $('<i>').addClass('fa fa-stack-1x fa-inverse');
 
-        $('<td>').addClass('result-icon').append(
-              $('<span>').addClass('fa-stack fa-2x').append(circle).append(icon)
+        if (parent.Ts.System.User.UserID != item.UserID) {
+            var avaspn = $('<span>')
+                .appendTo(el);
+
+            var avaimg = $('<img>')
+                .addClass('topicavatarsm')
+                    .attr("src", "/dc/" + parent.Ts.System.User.OrganizationID + "/UserAvatar/" + item.UserID + "/40/" + new Date().getTime())
+                .appendTo(avaspn);
+
+            $('<td>').addClass('widthfix').append(
+              $('<span>').append(avaspn)
             ).appendTo(el);
+        }
 
         var div = $('<div>')
               .addClass('taskinfo');
@@ -130,21 +132,34 @@
         var displayName = item.Description;
         var displayNameIsSerialNumber = false;
 
-        $('<a>')
+        if (parent.Ts.System.User.UserID == item.UserID) {
+            var checkbox = $('<input />', { type: 'checkbox', id: 'cb' + item.ReminderID, value: '' });
+            $('<div>').addClass('checkbox').append(
+                $('<a>')
+                  .attr('href', '#')
+                  .addClass('assetlink')
+                  .data('reminderid', item.ReminderID)
+                  .text(displayName)
+                  .append(checkbox)
+            ).appendTo($('<h4>').appendTo(el));
+        }
+        else {
+            $('<a>')
               .attr('href', '#')
               .addClass('assetlink')
               .data('reminderid', item.ReminderID)
               .text(displayName)
               .appendTo($('<h4>').appendTo(el));
+        }
 
         var list = $('<ul>').appendTo(el);
 
-        var firstRow = $('<li>').appendTo(list);
+        //var firstRow = $('<li>').appendTo(list);
 
-        $('<a>')
-              .attr('target', '_blank')
-              .text(item.Description)
-              .appendTo(firstRow);
+        //$('<a>')
+        //      .attr('target', '_blank')
+        //      .text(item.Description)
+        //      .appendTo(firstRow);
 
         //if (!isNullOrWhiteSpace(item.productVersionNumber)) {
         //    firstRow.append(' - ');
@@ -166,9 +181,9 @@
         //    secondRow.append(' - ');
         //}
 
-        secondRow.append('Warr. Exp.: ');
+        secondRow.append('Due Date: ');
         if (isNullOrWhiteSpace(item.DueDate)) {
-            secondRow.append('Empty');
+            secondRow.append('Unassigned');
         }
         else {
             secondRow.append(parent.Ts.Utils.getMsDate(item.DueDate).localeFormat(parent.Ts.Utils.getDatePattern()));
