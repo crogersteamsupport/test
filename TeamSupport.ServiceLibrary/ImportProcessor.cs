@@ -548,7 +548,7 @@ namespace TeamSupport.ServiceLibrary
         //}
 
         asset.OrganizationID = _organizationID;
-        asset.SerialNumber = ReadString("SerialNumber", asset.SerialNumber);
+        asset.SerialNumber = ReadString("SerialNumber", string.Empty);
         asset.Name = ReadString("Name", asset.Name);
         asset.Location = location;
         asset.Notes = ReadString("Notes", asset.Notes);
