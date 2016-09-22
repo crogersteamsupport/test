@@ -155,8 +155,14 @@ namespace TSWebServices
 		
 		}
 
+        [WebMethod]
+        public string GetMobileURL(int userID)
+        {
+            return JsonConvert.SerializeObject(SystemSettings.GetMobileURL());
+        }
 
-		[WebMethod]
+
+        [WebMethod]
 		public string CodeVerification(int userId, string codeEntered)
 		{
 			SignInResult result = new SignInResult();
