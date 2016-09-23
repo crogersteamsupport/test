@@ -98,49 +98,170 @@ namespace TeamSupport.Data
       }
     }
 
-    //Tasks
-    public void LoadCreatedByUser(int userID, bool searchPending, bool searchComplete)
+        //Tasks
+        //Inspired by SearchService.GetAllCompaniesAndContacts
+    public void LoadCreatedByUser(int from, int count, int userID, bool searchPending, bool searchComplete)
     {
-        StringBuilder query = new StringBuilder("SELECT * FROM Reminders WHERE CreatorID = @UserID AND UserID <> @UserID ");
         //Remember this will change once we add the isComplete field
-        if (searchPending && !searchComplete)
+        string pendingQuery = @"
+            SELECT 
+                *
+            FROM
+                Reminders
+            WHERE
+                CreatorID = @UserID 
+                AND UserID <> @UserID
+                AND isDismissed = 0 ";
+
+        string completeQuery = @"
+            SELECT 
+                *
+            FROM
+                Reminders
+            WHERE
+                CreatorID = @UserID 
+                AND UserID <> @UserID
+                AND isDismissed = 1 ";
+
+        string pageQuery = @"
+            WITH 
+                q AS ({0}),
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY DueDate DESC) AS 'RowNum' FROM q)
+            SELECT
+                ReminderID
+                , OrganizationID
+                , RefType
+                , RefID
+                , Description
+                , DueDate
+                , UserID
+                , IsDismissed
+                , HasEmailSent
+                , CreatorID
+                , DateCreated
+            FROM 
+                r
+            WHERE
+                RowNum BETWEEN @From AND @To";
+
+            //User user = Users.GetUser(loginUser, loginUser.UserID);
+            //if (user.TicketRights == TicketRightType.Customers)
+            //{
+            //    companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+            //    contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+            //}
+
+            //if (active != null)
+            //{
+            //    companyQuery = companyQuery + " AND o.IsActive = @IsActive";
+            //    contactQuery = contactQuery + " AND u.IsActive = @IsActive";
+            //    command.Parameters.AddWithValue("@IsActive", (bool)active);
+            //}
+
+        StringBuilder query;
+
+        if (searchPending && searchComplete)
         {
-            query.Append("AND isDismissed = 0 ");
+            query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
         }
-        else if (searchComplete && !searchPending)
+        else if (searchPending)
         {
-            query.Append("AND isDismissed = 1 ");
+            query = new StringBuilder(string.Format(pageQuery, pendingQuery));
         }
-        query.Append("ORDER BY DueDate");
+        else
+        {
+            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+        }
 
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = query.ToString();
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@UserID", userID);
+        command.Parameters.AddWithValue("@From", from + 1);
+        command.Parameters.AddWithValue("@To", from + count);
         Fill(command);
       }
     }
 
-    public void LoadAssignedToUser(int userID, bool searchPending, bool searchComplete)
+    public void LoadAssignedToUser(int from, int count, int userID, bool searchPending, bool searchComplete)
     {
-        StringBuilder query = new StringBuilder("SELECT * FROM Reminders WHERE UserID = @UserID ");
         //Remember this will change once we add the isComplete field
-        if (searchPending && !searchComplete)
+        string pendingQuery = @"
+            SELECT 
+                *
+            FROM
+                Reminders
+            WHERE
+                UserID = @UserID
+                AND isDismissed = 0 ";
+
+        string completeQuery = @"
+            SELECT 
+                *
+            FROM
+                Reminders
+            WHERE
+                UserID = @UserID
+                AND isDismissed = 1 ";
+
+        string pageQuery = @"
+            WITH 
+                q AS ({0}),
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY DueDate DESC) AS 'RowNum' FROM q)
+            SELECT
+                ReminderID
+                , OrganizationID
+                , RefType
+                , RefID
+                , Description
+                , DueDate
+                , UserID
+                , IsDismissed
+                , HasEmailSent
+                , CreatorID
+                , DateCreated
+            FROM 
+                r
+            WHERE
+                RowNum BETWEEN @From AND @To";
+
+            //User user = Users.GetUser(loginUser, loginUser.UserID);
+            //if (user.TicketRights == TicketRightType.Customers)
+            //{
+            //    companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+            //    contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+            //}
+
+            //if (active != null)
+            //{
+            //    companyQuery = companyQuery + " AND o.IsActive = @IsActive";
+            //    contactQuery = contactQuery + " AND u.IsActive = @IsActive";
+            //    command.Parameters.AddWithValue("@IsActive", (bool)active);
+            //}
+
+        StringBuilder query;
+
+        if (searchPending && searchComplete)
         {
-            query.Append("AND isDismissed = 0 ");
+            query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
         }
-        else if (searchComplete && !searchPending)
+        else if (searchPending)
         {
-            query.Append("AND isDismissed = 1 ");
+            query = new StringBuilder(string.Format(pageQuery, pendingQuery));
         }
-        query.Append("ORDER BY DueDate");
+        else
+        {
+            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+        }
 
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = query.ToString();
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@UserID", userID);
+        command.Parameters.AddWithValue("@From", from + 1);
+        command.Parameters.AddWithValue("@To", from + count);
         Fill(command);
       }
     }

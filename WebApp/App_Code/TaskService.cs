@@ -29,17 +29,17 @@ namespace TSWebServices
             Reminders results = new Reminders(loginUser);
             if (searchCreated)
             {
-                results.LoadCreatedByUser(loginUser.UserID, searchPending, searchComplete);
+                results.LoadCreatedByUser(from, count, loginUser.UserID, searchPending, searchComplete);
             }
             else
             {
-                results.LoadAssignedToUser(loginUser.UserID, searchPending, searchComplete);
+                results.LoadAssignedToUser(from, count, loginUser.UserID, searchPending, searchComplete);
             }
             return results.GetReminderProxies();
         }
 
         [WebMethod]
-        public FirstLoad GetFirstLoad()
+        public FirstLoad GetFirstLoad(int pageSize)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
@@ -48,7 +48,7 @@ namespace TSWebServices
             if (result.AssignedCount > 0)
             {
                 //Load Pending
-                result.AssignedItems = GetTasks(0, 20, true, false, false);
+                result.AssignedItems = GetTasks(0, pageSize, true, false, false);
                 if (result.AssignedItems.Length == 0)
                 {
                     //Load Completed

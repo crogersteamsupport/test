@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿var _pageSize = 10;
+
+$(document).ready(function () {
 
     function LoadAssigned(tasks) {
         var container = $('.assignedresults');
@@ -33,22 +35,39 @@
         $('.searchresults').fadeTo(200, 0.5);
         var term = $('#searchString').val();
 
-        var searchPending = false;
-        var searchComplete = false;
+        var searchAssignedPending = false;
+        var searchAssignedComplete = false;
 
-        if ($('.tasks-filter-all').parent().hasClass('active')) {
-            searchPending = true;
-            searchComplete = true;
-        } else if ($('.tasks-filter-pending').parent().hasClass('active')) {
-            searchPending = true;
-            searchComplete = false;
-        } else if ($('.tasks-filter-completed').parent().hasClass('active')) {
-            searchPending = false;
-            searchComplete = true;
+        var searchCreatedPending = false;
+        var searchCreatedComplete = false;
+
+        if ($('.assigned-tasks-filter-all').parent().hasClass('active')) {
+            searchAssignedPending = true;
+            searchAssignedComplete = true;
+        } else if ($('.assigned-tasks-filter-pending').parent().hasClass('active')) {
+            searchAssignedPending = true;
+            searchAssignedComplete = false;
+        } else if ($('.assigned-tasks-filter-completed').parent().hasClass('active')) {
+            searchAssignedPending = false;
+            searchAssignedComplete = true;
+        }
+
+        if ($('.created-tasks-filter-all').parent().hasClass('active')) {
+            searchCreatedPending = true;
+            searchCreatedComplete = true;
+        } else if ($('.created-tasks-filter-pending').parent().hasClass('active')) {
+            searchCreatedPending = true;
+            searchCreatedComplete = false;
+        } else if ($('.created-tasks-filter-completed').parent().hasClass('active')) {
+            searchCreatedPending = false;
+            searchCreatedComplete = true;
         }
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
-        parent.Ts.Services.Task.GetFirstLoad(function (firstLoad) {
+        parent.Ts.Services.Task.GetFirstLoad(_pageSize, function (firstLoad) {
+            start = start || 0;
+            //showLoadingIndicator();
+
             $('.searchresults').fadeTo(0, 1);
 
             if (firstLoad.AssignedCount > 0) {
