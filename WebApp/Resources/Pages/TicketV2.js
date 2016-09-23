@@ -3012,7 +3012,7 @@ function AppenCustomValues(fields) {
   var parentContainer = $('#ticket-group-custom-fields');
   if (fields === null || fields.length < 1) { parentContainer.empty().hide(); return; }
   parentContainer.empty()
-  parentContainer.show();
+  
   _parentFields = [];
 
   for (var i = 0; i < fields.length; i++) {
@@ -3032,6 +3032,7 @@ function AppenCustomValues(fields) {
     }
   }
   appendCategorizedCustomValues(fields);
+  parentContainer.show();
 }
 
 var appendCategorizedCustomValues = function (fields) {
@@ -3751,8 +3752,10 @@ var SetupStatusField = function (StatusId) {
     });
     var selectize = $("#ticket-status")[0].selectize;
 
-    for (var i = 0; i < statuses.length; i++) {
-      selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+    if (statuses) {
+        for (var i = 0; i < statuses.length; i++) {
+            selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+        }
     }
 
     selectize.addItem(StatusId, true);

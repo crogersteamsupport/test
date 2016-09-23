@@ -62,6 +62,7 @@ namespace TeamSupport.Data
     [DataMember] public bool DisplayFbArticles { get; set; }
     [DataMember] public bool DisplayFbKB { get; set; }
     [DataMember] public bool EnableSaExpiration { get; set; }
+    [DataMember] public bool AllowSeverityEditing { get; set; }
   }
   
   public partial class PortalOption : BaseItem
@@ -69,6 +70,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.AllowSeverityEditing = this.AllowSeverityEditing;
       result.DisplayLogout = this.DisplayLogout;
       result.EnableSaExpiration = this.EnableSaExpiration;
       result.DisablePublicMyTickets = this.DisablePublicMyTickets;

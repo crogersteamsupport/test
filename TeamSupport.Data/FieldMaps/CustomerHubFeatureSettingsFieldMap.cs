@@ -33,6 +33,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableScreenRecording", "EnableScreenRecording", false, false, false);
       _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
+      _fieldMap.AddMap("EnableTicketSeverity", "EnableTicketSeverity", false, false, false);
+      _fieldMap.AddMap("EnableTicketSeverityModification", "EnableTicketSeverityModification", false, false, false);
+      _fieldMap.AddMap("RestrictProductVersions", "RestrictProductVersions", false, false, false);
             
     }
   }
