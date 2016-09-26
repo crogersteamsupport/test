@@ -1993,8 +1993,6 @@ function createCustomFields() {
     }
 
     appendCategorizedCustomFields(result, null, parentContainer);
-    showCustomFields();
-    parentContainer.show();
   });
 };
 
@@ -2032,6 +2030,8 @@ var appendCategorizedCustomFields = function (fields, className, container) {
       }
     }
     appendConditionalFields();
+    showCustomFields();
+    container.show();
   });
 }
 
