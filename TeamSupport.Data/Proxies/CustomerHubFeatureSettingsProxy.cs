@@ -36,6 +36,7 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableTicketSeverity { get; set; }
     [DataMember] public bool EnableTicketSeverityModification { get; set; }
     [DataMember] public bool RestrictProductVersions { get; set; }
+    [DataMember] public bool EnableTicketNameModification { get; set; }
           
   }
   
@@ -44,6 +45,7 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.EnableTicketNameModification = this.EnableTicketNameModification;
       result.RestrictProductVersions = this.RestrictProductVersions;
       result.EnableTicketSeverityModification = this.EnableTicketSeverityModification;
       result.EnableTicketSeverity = this.EnableTicketSeverity;
