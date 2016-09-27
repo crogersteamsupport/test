@@ -481,6 +481,10 @@ function SetupTicketProperties(order) {
         $('#ticket-visible').prop('disabled', true);
     };
 
+    if (!window.parent.Ts.System.User.IsSystemAdmin && _ticketInfo.Ticket.IsKnowledgeBase && !window.parent.Ts.System.User.ChangeKbVisibility) {
+        $('#ticket-visible').prop('disabled', true);
+    };
+
   	 //set the url for the copy paste button
     //var ticketURLLink = ""
     var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
