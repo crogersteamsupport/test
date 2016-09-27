@@ -1,15 +1,36 @@
 ﻿var _pageSize = 10;
+var _allAssignedLoaded = false;
+var _allCreatedLoaded = false;
+var _assignedTab = -1;
+var _createdTab = -1;
+var _start = 0;
 
 $(document).ready(function () {
 
     function LoadAssigned(tasks) {
         var container = $('.assignedresults');
-        insertSearchResults(container, tasks);
+        if (tasks.length < _pageSize) {
+            _allAssignedLoaded = true;
+        }
+        if (_assignedTab == -1) {
+            insertSearchResults(container, tasks);
+        }
+        else {
+            appendSearchResults(container, tasks);
+        }
     }
 
     function LoadCreated(tasks) {
         var container = $('.createdresults');
-        insertSearchResults(container, tasks);
+        if (tasks.length < _pageSize) {
+            _allCreatedLoaded = true;
+        }
+        if (_createdTab == -1) {
+            insertSearchResults(container, tasks);
+        }
+        else {
+            appendSearchResults(container, tasks);
+        }
     }
 
     function HideAssigned() {
@@ -29,66 +50,6 @@ $(document).ready(function () {
         $('#assignedColumn').find('.results-empty').show();
     }
 
-    function fetchItems(start) {
-        start = start || 0;
-        showLoadingIndicator();
-        $('.searchresults').fadeTo(200, 0.5);
-        var term = $('#searchString').val();
-
-        var searchAssignedPending = false;
-        var searchAssignedComplete = false;
-
-        var searchCreatedPending = false;
-        var searchCreatedComplete = false;
-
-        if ($('.assigned-tasks-filter-all').parent().hasClass('active')) {
-            searchAssignedPending = true;
-            searchAssignedComplete = true;
-        } else if ($('.assigned-tasks-filter-pending').parent().hasClass('active')) {
-            searchAssignedPending = true;
-            searchAssignedComplete = false;
-        } else if ($('.assigned-tasks-filter-completed').parent().hasClass('active')) {
-            searchAssignedPending = false;
-            searchAssignedComplete = true;
-        }
-
-        if ($('.created-tasks-filter-all').parent().hasClass('active')) {
-            searchCreatedPending = true;
-            searchCreatedComplete = true;
-        } else if ($('.created-tasks-filter-pending').parent().hasClass('active')) {
-            searchCreatedPending = true;
-            searchCreatedComplete = false;
-        } else if ($('.created-tasks-filter-completed').parent().hasClass('active')) {
-            searchCreatedPending = false;
-            searchCreatedComplete = true;
-        }
-
-        //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
-        parent.Ts.Services.Task.GetFirstLoad(_pageSize, function (firstLoad) {
-            start = start || 0;
-            //showLoadingIndicator();
-
-            $('.searchresults').fadeTo(0, 1);
-
-            if (firstLoad.AssignedCount > 0) {
-                LoadAssigned(firstLoad.AssignedItems);
-                if (firstLoad.CreatedCount > 0) {
-                    LoadCreated(firstLoad.CreatedItems);
-                }
-                else {
-                    HideCreated();
-                }
-            }
-            else if (firstLoad.CreatedCount > 0) {
-                LoadCreated(firstLoad.CreatedItems);
-                HideAssigned();
-            }
-            else {
-                ShowNoTasks();
-            }
-        });
-    }
-
     function showLoadingIndicator() {
         _isLoading = true;
         $('.results-loading').show();
@@ -97,7 +58,6 @@ $(document).ready(function () {
     function insertSearchResults(container, items) {
         container.empty();
         appendSearchResults(container, items);
-        _isLoading = false;
     }
 
     function appendSearchResults(container, items) {
@@ -110,6 +70,10 @@ $(document).ready(function () {
         } else {
             for (var i = 0; i < items.length; i++) {
                 appendItem(container, items[i]);
+            }
+
+            if (items.length == _pageSize) {
+                $('.tasks-more').show();
             }
         }
         _isLoading = false;
@@ -213,6 +177,112 @@ $(document).ready(function () {
     function isNullOrWhiteSpace(str) {
         return str === null || String(str).match(/^ *$/) !== null;
     }
+
+    function GetAssignedTab() {
+        var result = -3;
+        if ($('#assignedColumn').is(':hidden')) {
+            result = -1;
+        }
+        else if (_allAssignedLoaded) {
+            result = 0;
+        }
+        else if ($('.assigned-tasks-filter-pending').parent().hasClass('active')) {
+            result = 1;
+        }
+        else if ($('.assigned-tasks-filter-completed').parent().hasClass('active')) {
+            result = 2;
+        }
+        return result;
+    }
+
+    function GetGreatedTab() {
+        var result = -3;
+        if ($('#createdColumn').is(':hidden')) {
+            result = -1;
+        }
+        else if (_allCreatedLoaded) {
+            result = 0;
+        }
+        else if ($('.created-tasks-filter-pending').parent().hasClass('active')) {
+            result = 1;
+        }
+        else if ($('.created-tasks-filter-completed').parent().hasClass('active')) {
+            result = 2;
+        }
+        return result;
+    }
+
+    function GetStart() {
+        var result = 1;
+        if ($('.assignedresults > tbody > tr').length > 0) {
+            result = $('.assignedresults > tbody > tr').length + 1;
+        }
+        if ($('.createdresults > tbody > tr').length >= result) {
+            result = $('.createdresults > tbody > tr').length + 1;
+        }
+        return result;
+    }
+
+
+    function fetchItems() {
+        showLoadingIndicator();
+        $('.searchresults').fadeTo(200, 0.5);
+        var term = $('#searchString').val();
+
+        //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
+        parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (firstLoad) {
+            $('.searchresults').fadeTo(0, 1);
+
+
+            if (_assignedTab == -1 && _createdTab == -1 && firstLoad.AssignedCount == 0 && firstLoad.CreatedCount == 0) {
+                ShowNoTasks();
+            }
+            else {
+                switch (_assignedTab) {
+                    case -1:
+                        if (firstLoad.AssignedCount > 0) {
+                            LoadAssigned(firstLoad.AssignedItems);
+                            //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
+                            //    set completed active
+                            //}
+                        }
+                        else {
+                            HideAssigned();
+                        }
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        LoadAssigned(firstLoad.AssignedItems);
+                }
+
+                switch (_createdTab) {
+                    case -1:
+                        if (firstLoad.CreatedCount > 0) {
+                            LoadCreated(firstLoad.CreatedItems);
+                            //if (fristLoad.AssignedItems[0].IsDismissed == 0) {
+                            //    set pending active
+                            //}
+                        }
+                        else {
+                            HideCreated();
+                        }
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        LoadCreated(firstLoad.CreatedItems);
+                }
+            }
+        });
+    }
+
+    $('#moreTasks').click(function (e) {
+        _assignedTab = GetAssignedTab();
+        _createdTab = GetGreatedTab();
+        _start = GetStart();
+        fetchItems();
+    });
 
     fetchItems();
 });

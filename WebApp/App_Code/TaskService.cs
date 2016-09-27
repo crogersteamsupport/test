@@ -71,6 +71,72 @@ namespace TSWebServices
             return result;
         }
 
+        [WebMethod]
+        public FirstLoad LoadPage(int start, int pageSize, int assignedTab, int createdTab)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            FirstLoad result = new FirstLoad();
+            switch (assignedTab)
+            {
+                case -1:
+                    result.AssignedCount = GetAssignedCount(loginUser);
+                    if (result.AssignedCount > 0)
+                    {
+                        //Load Pending
+                        result.AssignedItems = GetTasks(0, pageSize, true, false, false);
+                        if (result.AssignedItems.Length == 0)
+                        {
+                            //Load Completed
+                            result.AssignedItems = GetTasks(0, 20, false, true, false);
+                        }
+                    }
+                    break;
+                case 0:
+                    break;
+                case 1:
+                    result.AssignedItems = GetTasks(start, pageSize, true, false, false);
+                    break;
+                case 2:
+                    result.AssignedItems = GetTasks(start, pageSize, false, true, false);
+                    break;
+                default:
+                    result.AssignedItems = GetTasks(start, pageSize, true, true, false);
+                    break;
+            }
+
+
+            switch (createdTab)
+            {
+                case -1:
+                    result.CreatedCount = GetCreatedCount(loginUser);
+                    if (result.CreatedCount > 0)
+                    {
+                        //Load Completed
+                        result.CreatedItems = GetTasks(0, 20, false, true, true);
+                        if (result.CreatedItems.Length == 0)
+                        {
+                            //Load Pending
+                            result.CreatedItems = GetTasks(0, 20, true, false, true);
+                        }
+                    }
+                    break;
+                case 0:
+                    break;
+                case 1:
+                    result.AssignedItems = GetTasks(start, pageSize, true, false, true);
+                    break;
+                case 2:
+                    result.AssignedItems = GetTasks(start, pageSize, false, true, true);
+                    break;
+                default:
+                    result.AssignedItems = GetTasks(start, pageSize, true, true, true);
+                    break;
+            }
+
+            return result;
+        }
+
         private int GetAssignedCount(LoginUser loginUser)
         {
             SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE UserID = @UserID");
