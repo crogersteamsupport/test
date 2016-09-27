@@ -685,8 +685,8 @@ Ts.Pages.Main.prototype = {
         }
 
         function flashTitle() {
-            if (document.title != 'Team Support') {
-                document.title = 'Team Support';
+            if (document.title != 'TeamSupport') {
+                document.title = 'TeamSupport';
             } else if (chatRequestCount > 1) {
                 document.title = chatRequestCount + ' New Chat Requests';
             } else if (chatRequestCount == 1) {

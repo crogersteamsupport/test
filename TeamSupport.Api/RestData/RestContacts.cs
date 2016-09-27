@@ -58,7 +58,8 @@ namespace TeamSupport.Api
 				}
 
 				xmlString = items.GetXml("Contacts", "Contact", true, command.Filters);
-			}
+                ExceptionLogs.LogException(command.LoginUser, ex, "API", "RestContacts. GetItems(). SQL filtering generation failed, fell into old method.");
+            }
 
 			return xmlString;
 		}

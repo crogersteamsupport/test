@@ -10,12 +10,12 @@
 
 var welcomePage = null;
 $(document).ready(function () {
-  welcomePage = new WelcomePage();
-  welcomePage.refresh();
+    welcomePage = new WelcomePage();
+    welcomePage.refresh();
 });
 
 function onShow() {
-  welcomePage.refresh();
+    welcomePage.refresh();
 };
 
 
@@ -36,8 +36,8 @@ WelcomePage = function () {
 
 
 WelcomePage.prototype = {
-  constructor: WelcomePage,
-  refresh: function () {
+    constructor: WelcomePage,
+    refresh: function () {
 
-  }
+    }
 };

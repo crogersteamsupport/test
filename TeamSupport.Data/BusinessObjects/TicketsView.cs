@@ -744,8 +744,8 @@ ORDER BY TicketNumber DESC";
 
         public void LoadByTicketTypeID(int ticketTypeID, int organizationId, NameValueCollection filters)
         {
-            //Get the column names, this row will be deleted before getting the actual data
-            this.LoadOneByOrganizationId(organizationId);
+            //Get the column names
+			LoadColumns("TicketsView");
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -764,17 +764,13 @@ ORDER BY TicketNumber DESC";
                     command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
                 }
 
-                this.DeleteAll();
                 Fill(command);
             }
         }
 
         public void LoadByTicketIDList(int organizationId, int ticketTypeId, List<int> ticketIds)
         {
-            //Get the column names, this row will be deleted before getting the actual data
-            this.LoadOneByOrganizationId(organizationId);
-
-            string orderBy = "ORDER BY TicketNumber";
+			string orderBy = "ORDER BY TicketNumber";
             string sql = string.Empty;
 
             using (SqlCommand command = new SqlCommand())
@@ -789,17 +785,16 @@ ORDER BY TicketNumber DESC";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@organizationId", organizationId);
 
-                this.DeleteAll();
                 Fill(command);
             }
         }
 
         public void LoadAllTicketIds(int organizationId, NameValueCollection filters, int? PageNumber = null, int? PageSize = null)
         {
-            //Get the column names, this row will be deleted before getting the actual data
-            this.LoadOneByOrganizationId(organizationId);
+            //Get the column names
+			LoadColumns("TicketsView");
 
-            string orderBy = "ORDER BY TicketNumber";
+			string orderBy = "ORDER BY TicketNumber";
             string sql = string.Empty;
 
             using (SqlCommand command = new SqlCommand())
@@ -813,7 +808,6 @@ ORDER BY TicketNumber DESC";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@organizationId", organizationId);
 
-                this.DeleteAll();
                 Fill(command);
             }
         }

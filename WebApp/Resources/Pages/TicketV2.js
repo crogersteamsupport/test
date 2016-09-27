@@ -1663,6 +1663,13 @@ function LoadTicketControls() {
       }
   }
 
+  $('#ticket-type').selectize({
+      onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+  });
+
   SetupStatusField(_ticketInfo.Ticket.TicketStatusID);
 
   $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
@@ -1671,6 +1678,12 @@ function LoadTicketControls() {
   for (var i = 0; i < severities.length; i++) {
     AppendSelect('#ticket-severity', severities[i], 'severity', severities[i].TicketSeverityID, severities[i].Name, (_ticketInfo.Ticket.TicketSeverityID === severities[i].TicketSeverityID));
   }
+  $('#ticket-severity').selectize({
+      onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+  });
 
   $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal)
 
@@ -1764,13 +1777,6 @@ function LoadTicketControls() {
     $('#ticket-Community').closest('.form-horizontal').remove();
     //$('#ticket-Community-RO').remove();
   }
-
-  $('.ticket-select').selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
 
   setSLAInfo();
 
