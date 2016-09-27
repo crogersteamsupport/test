@@ -243,6 +243,7 @@ AdminPortal = function () {
     $('#portal_show_version').prop('checked', portalOption.DisplayProductVersion == null ? false : portalOption.DisplayProductVersion);
     $('#portal_restrict_version').prop('checked', portalOption.RestrictProductVersion == null ? false : portalOption.RestrictProductVersion);
     $('#portal_show_closed_button').prop('checked', portalOption.HideCloseButton == null ? false : !portalOption.HideCloseButton);
+    $('#portal_severity_editing').prop('checked', portalOption.AllowSeverityEditing == null ? false : portalOption.AllowSeverityEditing);
     $('#portal_theme').combobox('setValue', portalOption.Theme);
     $('#portal_header').val(portalOption.PortalHTMLHeader);
     $('#portal_footer').val(portalOption.PortalHTMLFooter);
@@ -308,6 +309,7 @@ AdminPortal = function () {
     portalOption.DisplayProductVersion = $('#portal_show_version').prop('checked');
     portalOption.RestrictProductVersion = $('#portal_restrict_version').prop('checked');
     portalOption.HideCloseButton = !$('#portal_show_closed_button').prop('checked');
+    portalOption.AllowSeverityEditing = $('#portal_severity_editing').prop('checked');
     portalOption.Theme = $('#portal_theme').val();
     portalOption.RequestGroup = $('#portal_req_group').val();
     portalOption.RequestType = $('#portal_req_tickettype').val();

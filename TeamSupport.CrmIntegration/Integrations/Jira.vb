@@ -1201,9 +1201,16 @@ Namespace TeamSupport
             Private Function GetDataLineValue(ByVal fieldKey As String, ByVal fieldType As Object, ByVal fieldValue As String, Optional ByVal issueId As Integer = 0) As String
               Dim result As String = Nothing
               Select Case fieldKey.ToLower()
-                Case "assignee", "reporter"
-                  result = "{""emailAddress"":""" + fieldValue + """}"
-                Case "issuetype", "status", "priority", "resolution"
+                Case "reporter"
+                        result = "{""emailAddress"":""" + fieldValue + """}"
+				Case "assignee"
+					'Because some orgs are mapping to the Assignee Jira field and they seem to be storing the email address then we need to leave it here, for the rest we should use the Name so it also links from TS to Jira when creating the issue
+					If (CRMLinkRow.OrganizationID = 461956 OrElse CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 884116) Then
+						result = "{""emailAddress"":""" + fieldValue + """}"
+					Else
+						result = "{""name"":""" + fieldValue + """}"
+					End If
+				Case "issuetype", "status", "priority", "resolution"
                   result = "{""name"":""" + fieldValue + """}"
                 Case "progress", "worklog"
                   result = "{""total"":""" + fieldValue + """}"
@@ -2070,7 +2077,14 @@ Namespace TeamSupport
 					"timeoriginalestimate",
 					"timespent"
 					result = field.Value.ToString()
-				Case "assignee", "reporter"
+				Case "assignee"
+					'Because some orgs are mapping to the Assignee Jira field and they seem to be storing the email address then we need to leave it here, for the rest we should use the Name so it also links from TS to Jira when creating the issue
+					If (CRMLinkRow.OrganizationID = 461956 OrElse CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 884116) Then
+						result = field.Value("emailAddress").ToString()
+					Else
+						result = field.Value("name").ToString()
+					End If
+				Case "reporter"
 					result = field.Value("emailAddress").ToString()
 				Case "issuetype", "status", "priority", "resolution"
 					result = field.Value("name").ToString()

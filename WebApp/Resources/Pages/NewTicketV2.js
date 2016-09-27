@@ -1968,7 +1968,7 @@ function createCustomFields() {
     var parentContainer = $('#ticket-group-custom-fields');
     if (result === null || result.length < 1) { parentContainer.empty().hide(); return; }
     parentContainer.empty()
-    parentContainer.show();
+    parentContainer.hide();
     _parentFields = [];
 
     for (var i = 0; i < result.length; i++) {
@@ -2031,6 +2031,7 @@ var appendCategorizedCustomFields = function (fields, className, container) {
     }
     appendConditionalFields();
     showCustomFields();
+    container.show();
   });
 }
 
