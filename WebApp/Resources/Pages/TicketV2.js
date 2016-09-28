@@ -3762,8 +3762,10 @@ var SetupStatusField = function (StatusId) {
     });
     var selectize = $("#ticket-status")[0].selectize;
 
-    for (var i = 0; i < statuses.length; i++) {
-      selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+    if (statuses) {
+        for (var i = 0; i < statuses.length; i++) {
+            selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+        }
     }
 
     selectize.addItem(StatusId, true);
