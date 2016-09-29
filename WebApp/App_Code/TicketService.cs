@@ -3352,7 +3352,7 @@ WHERE t.TicketID = @TicketID
             ticket.KnowledgeBaseCategoryID = info.KnowledgeBaseCategoryID < 0 ? null : (int?)info.KnowledgeBaseCategoryID;
 
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
-            if (ticket.IsKnowledgeBase && !user.ChangeKBVisibility)
+            if (ticket.IsKnowledgeBase && !user.ChangeKBVisibility && !user.IsSystemAdmin)
             {
                 ticket.IsVisibleOnPortal = false;
             }
