@@ -36,7 +36,7 @@ header {
 }
 /*HEADER BUTTON*/
 .btn {
-    color: white;
+   color: white;
     font-size: 12px;
     font-weight: 700;
     line-height: 35px;
@@ -46,6 +46,7 @@ header {
     border-radius: 2px;
     text-align: center;
     transition: all .2s ease-in-out;
+    will-change:background-color;
 }
 .btn:hover {
     background-color: #3aaee3;
@@ -99,10 +100,11 @@ header {
 }
 .info_card_more {
     color: #b6bec7;
-    font-size: 10.5px;
-    font-weight: 700;
-    line-height: 20px;
-    transition: all .2s ease-in-out;
+	font-size: 10.5px;
+	font-weight: 700;
+	line-height: 20px;
+	transition: all .2s ease-in-out;
+	will-change:color;
 }
 .info_card_more:hover {
     color: #249cd4;
@@ -111,16 +113,18 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: #89939e;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 27px;
-    transition: all .2s ease-in-out;
+	color: #89939e;
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 27px;
+	transition: all .2s ease-in-out;
+	will-change:color;
 }
 .info_card_options_button img {
     opacity: 0;
-    height: 10px;
-    transition: all .2s ease-in-out;
+	height: 10px;
+	transition: all .2s ease-in-out;
+	will-change:opacity;
 }
 .info_card_options_button:hover {
     color: #249cd4;
@@ -163,36 +167,42 @@ header {
 }
 .contact_card {
     display: flex;
-    flex: auto;
     padding: 0 35px;
     height: 75px;
-    max-width: 255px;
+    width: 255px;
     align-items: center;
     border: 2px solid #d8e0e8;
     border-radius: 2px;
     margin-left: 10px;
     transition: all .2s ease-in-out;
+    will-change: border-color,color;
 }
 .contact_card.one {
     margin-left: 0;
 }
+.contact_card_iconholder {
+	position: relative;
+}
 .contact_card_icon {
-    position: relative;
     height: 24px;
-    margin-right: 20px;
+	margin-right: 20px;
 }
 .contact_card_icon_hover {
     position: absolute;
-    height: 24px;
-    opacity: 0;
-    transition: all .2s ease-in-out;
+	top: 0;
+	left: 0;
+	height: 24px;
+	opacity: 0;
+	transition: all .2s ease-in-out;
+	will-change:opacity;
 }
 .contact_card_text {
     color: #7a7e83;
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 20px;
-    transition: all .2s ease-in-out;
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 20px;
+	transition: all .2s ease-in-out;
+	will-change:color;
 }
 /* CONTACT CARD HOVER EFFECTS */
 .contact_card:hover {
