@@ -120,21 +120,20 @@ $(document).ready(function () {
         circle.addClass('color-pink');
         icon.addClass('fa-check');
 
-        appendAsset(div, item);
+        appendTask(div, item);
 
         el.appendTo(container);
     }
 
-    function appendAsset(el, item) {
+    function appendTask(el, item) {
         var displayName = item.Description;
-        var displayNameIsSerialNumber = false;
 
         if (parent.Ts.System.User.UserID == item.UserID) {
             var checkbox = $('<input />', { type: 'checkbox', id: 'cb' + item.ReminderID, value: '' });
             $('<div>').addClass('checkbox').append(
                 $('<a>')
                   .attr('href', '#')
-                  .addClass('assetlink')
+                  .addClass('tasklink')
                   .data('reminderid', item.ReminderID)
                   .text(displayName)
                   .append(checkbox)
@@ -143,7 +142,7 @@ $(document).ready(function () {
         else {
             $('<a>')
               .attr('href', '#')
-              .addClass('assetlink')
+              .addClass('tasklink')
               .data('reminderid', item.ReminderID)
               .text(displayName)
               .appendTo($('<h4>').appendTo(el));
@@ -244,18 +243,18 @@ $(document).ready(function () {
         var term = $('#searchString').val();
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
-        parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (firstLoad) {
+        parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (pageData) {
             $('.searchresults').fadeTo(0, 1);
 
 
-            if (_assignedTab == -1 && _createdTab == -1 && firstLoad.AssignedCount == 0 && firstLoad.CreatedCount == 0) {
+            if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
                 ShowNoTasks();
             }
             else {
                 switch (_assignedTab) {
                     case -1:
-                        if (firstLoad.AssignedCount > 0) {
-                            LoadAssigned(firstLoad.AssignedItems);
+                        if (pageData.AssignedCount > 0) {
+                            LoadAssigned(pageData.AssignedItems);
                             //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
                             //    set completed active
                             //}
@@ -267,13 +266,13 @@ $(document).ready(function () {
                     case 0:
                         break;
                     default:
-                        LoadAssigned(firstLoad.AssignedItems);
+                        LoadAssigned(pageData.AssignedItems);
                 }
 
                 switch (_createdTab) {
                     case -1:
-                        if (firstLoad.CreatedCount > 0) {
-                            LoadCreated(firstLoad.CreatedItems);
+                        if (pageData.CreatedCount > 0) {
+                            LoadCreated(pageData.CreatedItems);
                             //if (fristLoad.AssignedItems[0].IsDismissed == 0) {
                             //    set pending active
                             //}
@@ -285,10 +284,10 @@ $(document).ready(function () {
                     case 0:
                         break;
                     default:
-                        LoadCreated(firstLoad.CreatedItems);
+                        LoadCreated(pageData.CreatedItems);
                 }
 
-                if (firstLoad.AssignedItems.length < _pageSize && firstLoad.CreatedItems < _pageSize) {
+                if (pageData.AssignedItems.length < _pageSize && pageData.CreatedItems < _pageSize) {
                     $('.tasks-more').hide();
                     //$('.results-done').show();
                 }
