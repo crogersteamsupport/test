@@ -561,33 +561,27 @@ namespace TSWebServices
         #region TOK
 
         [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string GetTOKSessionInfo()
+        public List<string> GetTOKSessionInfo()
         {
             var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
-            // Create a session that uses the OpenTok Media Router (which is required for archiving)
             var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED, archiveMode: ArchiveMode.MANUAL);
             var token = OpenTok.GenerateToken(session.Id, Role.PUBLISHER);
             var values = new List<string>();
-            // Store this sessionId in the database for later use:
             values.Add(session.Id);
             values.Add(token);
             values.Add(SystemSettings.GetTokApiKey());
-
-            return JsonConvert.SerializeObject(values);
+            return values;
         }
 
         [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string StartArchiving(string sessionId)
         {
             var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
             var archive = OpenTok.StartArchive(sessionId);
-            return JsonConvert.SerializeObject(archive.Id.ToString());
+            return archive.Id.ToString();
         }
 
         [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string StopArchiving(string archiveId)
         {
             var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
@@ -599,7 +593,7 @@ namespace TSWebServices
             }
             while (OpenTok.GetArchive(archiveId).Status != ArchiveStatus.UPLOADED);
 
-            TokStorageItem ts = (new TokStorage(loginUser)).AddNewTokStorageItem();
+            TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
             ts.AmazonPath = string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id, SystemSettings.ReadString(loginUser, "AWS-VideoBucket", ""));
             ts.CreatedDate = DateTime.Now;
             ts.CreatorID = loginUser.UserID;
@@ -607,12 +601,11 @@ namespace TSWebServices
             ts.ArchiveID = archive.Id.ToString();
             ts.Collection.Save();
 
-            return JsonConvert.SerializeObject(string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString(), SystemSettings.ReadString(loginUser, "AWS-VideoBucket", "")));
+            return string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString(), SystemSettings.ReadString(loginUser, "AWS-VideoBucket", ""));
         }
 
         [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string DeleteArchive(string archiveId)
+        public bool DeleteArchive(string archiveId)
         {
             var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
             OpenTok.DeleteArchive(archiveId);
@@ -622,7 +615,7 @@ namespace TSWebServices
             ts[0].Delete();
             ts[0].Collection.Save();
 
-            return JsonConvert.SerializeObject(true);
+            return true;
         }
 
         #endregion

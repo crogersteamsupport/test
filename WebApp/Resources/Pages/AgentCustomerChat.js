@@ -35,6 +35,7 @@ $(document).ready(function () {
     });
 
     SetupToolbar();
+    SetupTOK();
 
     function SetupChatRequests() {
         parent.Ts.Services.Chat.GetChatRequests(function (data) {
@@ -288,7 +289,7 @@ $(document).ready(function () {
 ;
                         });
 
-                        top.Ts.System.logAction('Ticket - Suggested Solution Inserted');
+                        top.Ts.System.logAction('Chat - Suggested Solution Inserted');
                     }, function () {
                         alert('There was an error inserting your suggested solution ticket.');
                     });
@@ -301,7 +302,7 @@ $(document).ready(function () {
                         parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, html, _activeChatID, function (data) {
 
                         });
-                        top.Ts.System.logAction('Ticket - Suggested Solution Link Inserted');
+                        top.Ts.System.logAction('Chat - Suggested Solution Link Inserted');
                     });
 
                 }
@@ -324,17 +325,6 @@ $(document).ready(function () {
         $('#chat-attachment').click(function (e) {
             e.preventDefault();
             $('#hiddenAttachmentInput').click();
-        });
-
-        //TODO:  TOK Integration
-        $('#chat-record').click(function (e) {
-            e.preventDefault();
-            //parent.Ts.Services.Chat.CloseChat(_activeChatID, function (success) {
-            //    if (success) {
-
-            //    }
-            //    else console.log('Error closing chat.')
-            //});
         });
 
         //Create a ticket with the associated chat in it.

@@ -88,7 +88,7 @@ function loadInitialMessages(chatID) {
     IssueAjaxRequest("GetChatInfo", chatObject,
     function (result) {
         chatInfoObject = result;
-        createMessage('Initiated On: ' + result.DateCreated);
+        createMessage('Initiated On: ' + moment(result.DateCreated).format('DD/MM/YYYY hh:mm A'));
         createMessage('Initiated By: ' + result.InitiatorDisplayName);
 
         //for (i = 0; i < result.Messages.length; i++) {
