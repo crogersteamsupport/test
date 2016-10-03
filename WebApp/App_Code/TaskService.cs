@@ -124,13 +124,13 @@ namespace TSWebServices
                 case 0:
                     break;
                 case 1:
-                    result.AssignedItems = GetTasks(start, pageSize, true, false, true);
+                    result.CreatedItems = GetTasks(start, pageSize, true, false, true);
                     break;
                 case 2:
-                    result.AssignedItems = GetTasks(start, pageSize, false, true, true);
+                    result.CreatedItems = GetTasks(start, pageSize, false, true, true);
                     break;
                 default:
-                    result.AssignedItems = GetTasks(start, pageSize, true, true, true);
+                    result.CreatedItems = GetTasks(start, pageSize, true, true, true);
                     break;
             }
 

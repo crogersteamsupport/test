@@ -12,8 +12,14 @@ $(document).ready(function () {
         if (tasks.length < _pageSize) {
             _allAssignedLoaded = true;
         }
-        if (_assignedTab == -1) {
+        if (_start == 0) {
             insertSearchResults(container, tasks);
+            if (tasks.length == 0) {
+                $('.assigned-results-empty').show();
+            }
+            else {
+                $('.assigned-results-empty').hide();
+            }
         }
         else {
             appendSearchResults(container, tasks);
@@ -25,8 +31,14 @@ $(document).ready(function () {
         if (tasks.length < _pageSize) {
             _allCreatedLoaded = true;
         }
-        if (_createdTab == -1) {
+        if (_start == 0) {
             insertSearchResults(container, tasks);
+            if (tasks.length == 0) {
+                $('.created-results-empty').show();
+            }
+            else {
+                $('.created-results-empty').hide();
+            }
         }
         else {
             appendSearchResults(container, tasks);
@@ -47,7 +59,9 @@ $(document).ready(function () {
 
     function ShowNoTasks() {
         HideCreated();
-        $('#assignedColumn').find('.results-empty').show();
+        _isLoading = false;
+        $('.results-loading').hide();
+        $('.results-empty').show();
     }
 
     function showLoadingIndicator() {
@@ -63,10 +77,10 @@ $(document).ready(function () {
     function appendSearchResults(container, items) {
         $('.results-loading').hide();
         $('.results-empty').hide();
-        $('.results-done').hide();
+        //$('.results-done').hide();
 
         if (items.length < 1) {
-            $('.results-done').show();
+            //$('.results-done').show();
         } else {
             for (var i = 0; i < items.length; i++) {
                 appendItem(container, items[i]);
@@ -215,10 +229,10 @@ $(document).ready(function () {
     function GetStart() {
         var result = 1;
         if ($('.assignedresults > tbody > tr').length > 0) {
-            result = $('.assignedresults > tbody > tr').length + 1;
+            result = $('.assignedresults > tbody > tr').length;
         }
         if ($('.createdresults > tbody > tr').length >= result) {
-            result = $('.createdresults > tbody > tr').length + 1;
+            result = $('.createdresults > tbody > tr').length;
         }
         return result;
     }
@@ -273,15 +287,73 @@ $(document).ready(function () {
                     default:
                         LoadCreated(firstLoad.CreatedItems);
                 }
+
+                if (firstLoad.AssignedItems.length < _pageSize && firstLoad.CreatedItems < _pageSize) {
+                    $('.tasks-more').hide();
+                    //$('.results-done').show();
+                }
             }
         });
     }
+
+    $('.assigned-tasks-filter').on('click', 'a', function (e) {
+        e.preventDefault();
+        $('.assigned-tasks-filter li.active').removeClass('active');
+        $(this).parent().addClass('active');
+        parent.Ts.System.logAction('Tasks Page - Change Filter');
+        _allAssignedLoaded = false;
+        _assignedTab = GetAssignedTab();
+        _createdTab = 0;
+        _start = 0;
+        fetchItems();
+    });
+
+    $('.created-tasks-filter').on('click', 'a', function (e) {
+        e.preventDefault();
+        $('.created-tasks-filter li.active').removeClass('active');
+        $(this).parent().addClass('active');
+        parent.Ts.System.logAction('Tasks Page - Change Filter');
+        _assignedTab = 0;
+        _allCreatedLoaded = false;
+        _createdTab = GetGreatedTab();
+        _start = 0;
+        fetchItems();
+    });
 
     $('#moreTasks').click(function (e) {
         _assignedTab = GetAssignedTab();
         _createdTab = GetGreatedTab();
         _start = GetStart();
         fetchItems();
+    });
+
+    $('.frame-container').bind('scroll', function () {
+        if (_isLoading == true) return;
+        //if ($('.results-done').is(':visible')) return;
+        if (_allAssignedLoaded && _allCreatedLoaded) {
+            return;
+        }
+
+        if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+            _assignedTab = GetAssignedTab();
+            _createdTab = GetGreatedTab();
+            _start = GetStart();
+            fetchItems();
+        }
+
+        if ($(this).scrollTop() > 100) {
+            $('.scrollup').fadeIn();
+        } else {
+            $('.scrollup').fadeOut();
+        }
+    });
+
+    $('.scrollup').click(function () {
+        $('.frame-container').animate({
+            scrollTop: 0
+        }, 600);
+        $('.scrollup').fadeOut();
+        return false;
     });
 
     fetchItems();

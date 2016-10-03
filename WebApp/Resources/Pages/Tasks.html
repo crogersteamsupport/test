@@ -31,7 +31,7 @@
                                     <h4 class="pull-left">Assigned</h4>
                                 </div>
                                 <div class="clearfix"></div>
-                                <div class="tasks-filter">
+                                <div class="assigned-tasks-filter">
                                     <ul class="nav nav-pills">
                                         <li class="active"><a href="#" class="assigned-tasks-filter-pending">Pending</a></li>
                                         <li><a href="#" class="assigned-tasks-filter-completed">Completed</a></li>
@@ -42,14 +42,13 @@
                                 <div class="results-wrapper">
                                     <table class="assignedresults searchresults"></table>
                                     <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                                    <div class="results-done">There are no more tasks.</div>
-                                    <div class="results-empty">No tasks.</div>
+                                    <div class="assigned-results-empty">No tasks.</div>
                                 </div>
                             </div>
                             <div id="createdColumn" class="col-xs-6">
                                 <h4 class="pull-left">Created</h4>
                                 <div class="clearfix"></div>
-                                <div class="tasks-filter">
+                                <div class="created-tasks-filter">
                                     <ul class="nav nav-pills">
                                         <li><a href="#" class="created-tasks-filter-pending">Pending</a></li>
                                         <li class="active"><a href="#" class="created-tasks-filter-completed">Completed</a></li>
@@ -60,12 +59,13 @@
                                 <div class="results-wrapper">
                                     <table class="createdresults searchresults"></table>
                                     <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                                    <div class="results-done">There are no more tasks.</div>
-                                    <div class="results-empty">No tasks.</div>
+                                    <div class="created-results-empty">No tasks.</div>
                                 </div>
                             </div>
                         </div>
                         <div class="row tasks-more" hidden><a id="moreTasks" href="#">Show more tasks.</a></div>
+                        <!--<div class="results-done">There are no more tasks.</div>-->
+                        <div class="results-empty">No tasks.</div>
                     </div>
                 </div>
                 <!-- recent task column here -->
