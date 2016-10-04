@@ -3350,7 +3350,17 @@ WHERE t.TicketID = @TicketID
             ticket.ProductID = info.ProductID < 0 ? null : (int?)info.ProductID;
             ticket.IsKnowledgeBase = info.IsKnowledgebase;
             ticket.KnowledgeBaseCategoryID = info.KnowledgeBaseCategoryID < 0 ? null : (int?)info.KnowledgeBaseCategoryID;
-            ticket.IsVisibleOnPortal = info.IsVisibleOnPortal;
+
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+            if (ticket.IsKnowledgeBase && !user.ChangeKBVisibility && !user.IsSystemAdmin)
+            {
+                ticket.IsVisibleOnPortal = false;
+            }
+            else
+            {
+                ticket.IsVisibleOnPortal = info.IsVisibleOnPortal;
+            }
+
             ticket.ParentID = info.ParentTicketID;
             ticket.DueDate = info.DueDate;
             ticket.Collection.Save();
@@ -3364,7 +3374,6 @@ WHERE t.TicketID = @TicketID
             action.ActionSource = ticket.TicketSource;
             action.Description = info.Description;
 
-            User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
             if (!string.IsNullOrWhiteSpace(user.Signature) && info.IsVisibleOnPortal)
             {
                 action.Description = action.Description + "<br/><br/>" + user.Signature;
