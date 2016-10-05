@@ -11,7 +11,7 @@
     .types td { border-top: solid 1px #A2B8CE; border-left: solid 1px #A2B8CE; }
     .types img { cursor: pointer; }
     .types td.headImage { border-left: none; width: 16px; }
-    body { background: #fff; overflow: auto; }
+    body { background: #fff; overflow: auto; } 
   </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
