@@ -228,6 +228,7 @@ namespace TSWebServices
                 fb[0].Collection.Save();
             }
 
+            option.AllowNameEditing = proxy.AllowNameEditing;
             option.AllowSeverityEditing = proxy.AllowSeverityEditing;
             option.EnableSaExpiration = proxy.EnableSaExpiration;
             option.PublicLandingPageBody = proxy.PublicLandingPageBody;
