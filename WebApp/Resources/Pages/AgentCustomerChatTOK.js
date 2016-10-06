@@ -63,17 +63,11 @@ function SetupTOK() {
             OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
 
             OT.checkScreenSharingCapability(function (response) {
-                var startScreenSharePlugin = false;
+                if (!response.supported || response.extensionRegistered === false) {
+                    alert("This browser does not support screen sharing");
+                } else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
+                    // prompt to install the response.extensionRequired extension
 
-                if (deviceDetector.browser == "ie") {
-                    alert("Currently the customer hub does not support screen sharing with internet explorer, but support will be added in the coming weeks.  Please use chrome or firefox for screen recording.");
-                    $('#screenRecordingContainer').hide();
-                }
-                else if (!response.supported || response.extensionRegistered === false) {
-                    alert("This browser does not support screen sharing, please use chrome or firefox");
-                    $('#screenRecordingContainer').hide();
-                }
-                else if (response.extensionInstalled === false && deviceDetector.browser != "ie") {
                     if (BrowserDetect.browser == "Chrome") {
                         $('#ChromeInstallModal').modal('show');
                     }
@@ -84,7 +78,7 @@ function SetupTOK() {
                     $('#screenRecordingContainer').hide();
                 }
                 else {
-                    top.Ts.Services.Chat.getSessionInfo(function (resultID) {
+                    top.Ts.Services.Chat.GetTOKSessionInfo(function (resultID) {
                         sessionId = resultID[0];
                         token = resultID[1];
                         apiKey = resultID[2];
@@ -237,13 +231,13 @@ function updateTimer(parentElement) {
 }
 
 function stopScreenRecording(e) {
-    $('#statusText').text("Processing...");
+    $('#screenRecordingStatusText').text("Processing..."); 
     top.Ts.Services.Chat.StopArchiving(archiveID, function (result) {
         $('#startScreenRecording').show();
         $('#stopScreenRecording').hide();
         $('#insertScreenRecording').show();
         $('#cancelScreenRecording').show();
-        tokService.tokurl = result;
+        tokurl = result;
         $('#screenRecordingStatusText').text("Recording Stopped");
         clearTimeout(tokTimer);
         $("#tokScreenRecordingCountdown").html("0:00");
@@ -268,8 +262,8 @@ function insertScreenRecording (e) {
 function cancelScreenRecording(e) {
     parent.Ts.System.logAction('Chat - Video Recording Cancel Clicked');
     if (archiveID) {
-        $('#statusText').text("Canceling Recording ...");
-        top.Ts.Services.Chat.CancelArchiving(archiveID, function (resultID) {
+        $('#screenRecordingStatusText').text("Canceling Recording ...");
+        top.Ts.Services.Chat.DeleteArchive(archiveID, function (resultID) {
             $("#tokScreenRecordingCountdown").html("0:00");
             $("#tokScreenRecordingCountdown").hide();
 

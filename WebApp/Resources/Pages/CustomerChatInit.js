@@ -21,7 +21,7 @@
 
     $("#newChatForm").submit(function (e) {
         e.preventDefault();
-
+        $(this).prop("disabled", true);
         var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val(), description: $('#userIssue').val() };
 
         if (!chatOffline) {

@@ -80,3 +80,10 @@
     margin-top: 0px;
     width: auto;
 }
+
+.media-list > li { margin-top: 0px; }
+
+.fa-circle  { color: #D9534F !important}
+.fa-book    { color: #3276B1 !important}
+
+video:hover{ cursor: pointer; }
