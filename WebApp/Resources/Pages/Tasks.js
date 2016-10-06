@@ -125,8 +125,19 @@ $(document).ready(function () {
         el.appendTo(container);
     }
 
+    var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
+
     function appendTask(el, item) {
-        var displayName = item.Description;
+        var displayName;
+        if (item.TaskName) {
+            displayName = ellipseString(item.TaskName, 40);
+        }
+        else if (item.Description) {
+            displayName = ellipseString(item.Description, 40);
+        }
+        else {
+            displayName = item.ReminderID;
+        }
 
         if (parent.Ts.System.User.UserID == item.UserID) {
             var checkbox = $('<input />', { type: 'checkbox', id: 'cb' + item.ReminderID, value: '' });
@@ -317,6 +328,20 @@ $(document).ready(function () {
         _createdTab = GetGreatedTab();
         _start = 0;
         fetchItems();
+    });
+
+    $('.searchresults').on('click', '.tasklink', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('Tasks Page - View Task');
+        parent.Ts.MainPage.openNewTask(id);
+
+        //parent.Ts.Services.Assets.UpdateRecentlyViewed('o' + id, function (resultHtml) {
+        //    $('.recent-container').empty();
+        //    $('.recent-container').html(resultHtml);
+        //});
+
     });
 
     $('#moreTasks').click(function (e) {

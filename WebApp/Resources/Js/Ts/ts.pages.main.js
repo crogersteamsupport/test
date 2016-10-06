@@ -787,6 +787,9 @@ Ts.Pages.Main.prototype = {
                         case Ts.Ui.Tabs.Tab.Type.ProductFamily:
                             div = $('.main-tab-ProductFamily');
                             break;
+                        case Ts.Ui.Tabs.Tab.Type.Task:
+                            div = $('.main-tab-Task');
+                            break;
                         default:
                     }
 
@@ -1202,6 +1205,51 @@ Ts.Pages.Main.prototype = {
                         div.show();
                     }
                     $('.main-info-content').load('vcr/1_9_0/PaneInfo/ProductFamily.html');
+                    break;
+
+                case Ts.Ui.Tabs.Tab.Type.NewTask:
+                    div = $('.main-tab-content .main-ticket-newTask');
+                    if (div.length < 1) {
+                        var query = '';
+                        if (tab.getData()) query = tab.getData();
+                        div = $('<div>')
+                  .addClass('main-tab-content-item main-tab-newTask main-ticket-newTask')
+                  .appendTo('.main-tab-content');
+
+                        $('<iframe>')
+                  .attr('frameborder', 0)
+                  .attr('scrolling', 'no')
+                  .appendTo(div)
+                  .attr('src', 'vcr/1_9_0/Pages/NewTask.html' + query);
+                    }
+                    else {
+                        div.show();
+                    }
+                    //$('.main-info-content').load('vcr/1_9_0/PaneInfo/Inventory.html');
+                    break;
+                case Ts.Ui.Tabs.Tab.Type.Task:
+                    var reminderID = tab.getId();
+                    div = $('.main-tab-content .main-Task-' + reminderID);
+                    if (div.length < 1) {
+                        var query = '';
+                        if (tab.getData()) query = tab.getData();
+                        div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-Task main-Task-' + reminderID)
+                    .appendTo('.main-tab-content');
+
+                        $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .attr('id', 'iframe-o-' + reminderID)
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_9_0/Pages/TaskDetail.html' + query);
+                    }
+                    else {
+                        mainFrame.privateServices.SetUserSetting('SelectedTaskID', reminderID);
+                        //                    mainFrame.privateServices.SetUserSetting('SelectedContactID', -1);
+                        div.show();
+                    }
+                    //$('.main-info-content').load('vcr/1_9_0/PaneInfo/inventory.html');
                     break;
 
                 default:
@@ -2027,6 +2075,38 @@ function () { }, function (e) { console.log(e) });
             tab.remove();
         }
     },
+
+    //newTask: function (tab, orgID) {
+    //    var query;
+    //    if (tab != undefined)
+    //        query = "?open=" + tab + "&organizationid=" + orgID;
+    //    this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
+    //},
+    //closenewTaskTab: function () {
+    //    var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
+    //    if (tab) {
+    //        this.closeTab(tab);
+    //        tab.remove();
+    //    }
+    //},
+    openNewTask: function (reminderID) {
+        var query = "?reminderid=" + reminderID;
+        mainFrame.Ts.Services.Task.GetShortNameFromID(reminderID, function (result) {
+            this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Task, reminderID, result, true, true, false, null, null, query, null);
+        });
+
+    },
+    //closeNewTask: function (reminderID) {
+    //    var div = $('.main-tab-content .main-Task-' + reminderID);
+    //    div.remove();
+    //},
+    //closeNewTaskTab: function (reminderID) {
+    //    var tab = this.MainTabs.find(reminderID, Ts.Ui.Tabs.Tab.Type.Task);
+    //    if (tab) {
+    //        this.closeTab(tab);
+    //        tab.remove();
+    //    }
+    //},
 
     AppNotify: function (title, message, options) {
 

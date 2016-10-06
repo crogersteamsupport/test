@@ -1,4 +1,5 @@
-﻿using System.Web.Script.Services;
+﻿using System;
+using System.Web.Script.Services;
 using System.Web.Services;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
@@ -135,6 +136,43 @@ namespace TSWebServices
             }
 
             return result;
+        }
+
+        [WebMethod]
+        public string GetShortNameFromID(int reminderID)
+        {
+            Reminders tasks = new Reminders(TSAuthentication.GetLoginUser());
+            tasks.LoadByReminderID(reminderID);
+
+            if (tasks.IsEmpty) return "N/A";
+
+            string result = tasks[0].ReminderID.ToString();
+
+            if (!String.IsNullOrEmpty(tasks[0].TaskName))
+            {
+                if (tasks[0].TaskName.Length > 10)
+                    result = tasks[0].TaskName.Substring(0, 10).ToString() + "...";
+                else
+                    result = tasks[0].TaskName.ToString();
+            }
+            else if (!String.IsNullOrEmpty(tasks[0].Description))
+            {
+                if (tasks[0].Description.Length > 10)
+                    result = tasks[0].Description.Substring(0, 10).ToString() + "...";
+                else
+                    result = tasks[0].Description.ToString();
+            }
+
+            return result;
+        }
+
+
+        [WebMethod]
+        public TasksViewItemProxy GetTask(int reminderID)
+        {
+            TasksViewItem task = TasksView.GetTasksViewItem(TSAuthentication.GetLoginUser(), reminderID);
+            if (task.OrganizationID != TSAuthentication.OrganizationID) return null;
+            return task.GetProxy();
         }
 
         private int GetAssignedCount(LoginUser loginUser)

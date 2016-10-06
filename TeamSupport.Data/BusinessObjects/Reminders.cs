@@ -139,6 +139,9 @@ namespace TeamSupport.Data
                 , HasEmailSent
                 , CreatorID
                 , DateCreated
+                , TaskName
+                , TaskDueDate
+                , TaskIsComplete
             FROM 
                 r
             WHERE
@@ -221,6 +224,9 @@ namespace TeamSupport.Data
                 , HasEmailSent
                 , CreatorID
                 , DateCreated
+                , TaskName
+                , TaskDueDate
+                , TaskIsComplete
             FROM 
                 r
             WHERE

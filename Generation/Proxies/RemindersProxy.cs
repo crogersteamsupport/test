@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public ReminderProxy() {}
     [DataMember] public int ReminderID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public DateTime DueDate { get; set; }
@@ -24,6 +24,9 @@ namespace TeamSupport.Data
     [DataMember] public bool HasEmailSent { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public string TaskName { get; set; }
+    [DataMember] public DateTime? TaskDueDate { get; set; }
+    [DataMember] public bool TaskIsComplete { get; set; }
           
   }
   
@@ -32,6 +35,8 @@ namespace TeamSupport.Data
     public ReminderProxy GetProxy()
     {
       ReminderProxy result = new ReminderProxy();
+      result.TaskIsComplete = this.TaskIsComplete;
+      result.TaskName = this.TaskName;
       result.CreatorID = this.CreatorID;
       result.HasEmailSent = this.HasEmailSent;
       result.IsDismissed = this.IsDismissed;
@@ -45,6 +50,7 @@ namespace TeamSupport.Data
       result.DueDate = DateTime.SpecifyKind(this.DueDateUtc, DateTimeKind.Utc);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
+      result.TaskDueDate = this.TaskDueDateUtc == null ? this.TaskDueDateUtc : DateTime.SpecifyKind((DateTime)this.TaskDueDateUtc, DateTimeKind.Utc); 
        
       return result;
     }	
