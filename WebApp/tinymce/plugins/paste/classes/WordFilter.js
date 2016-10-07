@@ -1,4 +1,19 @@
+/**
+ * WordFilter.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class parses word HTML into proper TinyMCE markup.
+ *
+ * @class tinymce.pasteplugin.WordFilter
+ * @private
+ */
 define("tinymce/pasteplugin/WordFilter", [
 	"tinymce/util/Tools",
 	"tinymce/html/DomParser",

@@ -1,4 +1,19 @@
+/**
+ * Widget.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Widget base class a widget is a control that has a tooltip and some basic states.
+ *
+ * @class tinymce.ui.Widget
+ * @extends tinymce.ui.Control
+ */
 define("tinymce/ui/Widget", [
 	"tinymce/ui/Control",
 	"tinymce/ui/Tooltip"

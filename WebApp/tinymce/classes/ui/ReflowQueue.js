@@ -1,25 +1,25 @@
+/**
+ * ReflowQueue.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class will automatically reflow controls on the next animation frame within a few milliseconds on older browsers.
+ * If the user manually reflows then the automatic reflow will be cancelled. This class is used internally when various control states
+ * changes that triggers a reflow.
+ *
+ * @class tinymce.ui.ReflowQueue
+ * @static
+ */
 define("tinymce/ui/ReflowQueue", [
-], function() {
+	"tinymce/util/Delay"
+], function(Delay) {
 	var dirtyCtrls = {}, animationFrameRequested;
-
-	function requestAnimationFrame(callback, element) {
-		var i, requestAnimationFrameFunc = window.requestAnimationFrame, vendors = ['ms', 'moz', 'webkit'];
-
-		function featurefill(callback) {
-			window.setTimeout(callback, 0);
-		}
-
-		for (i = 0; i < vendors.length && !requestAnimationFrameFunc; i++) {
-			requestAnimationFrameFunc = window[vendors[i] + 'RequestAnimationFrame'];
-		}
-
-		if (!requestAnimationFrameFunc) {
-			requestAnimationFrameFunc = featurefill;
-		}
-
-		requestAnimationFrameFunc(callback, element);
-	}
 
 	return {
 		/**
@@ -44,7 +44,7 @@ define("tinymce/ui/ReflowQueue", [
 				if (!animationFrameRequested) {
 					animationFrameRequested = true;
 
-					requestAnimationFrame(function() {
+					Delay.requestAnimationFrame(function() {
 						var id, ctrl;
 
 						animationFrameRequested = false;

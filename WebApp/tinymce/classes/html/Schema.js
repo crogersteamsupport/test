@@ -1,4 +1,27 @@
+/**
+ * Schema.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Schema validator class.
+ *
+ * @class tinymce.html.Schema
+ * @example
+ *  if (tinymce.activeEditor.schema.isValidChild('p', 'span'))
+ *    alert('span is valid child of p.');
+ *
+ *  if (tinymce.activeEditor.schema.getElementRule('p'))
+ *    alert('P is a valid element.');
+ *
+ * @class tinymce.html.Schema
+ * @version 3.4
+ */
 define("tinymce/html/Schema", [
 	"tinymce/util/Tools"
 ], function(Tools) {
@@ -376,7 +399,7 @@ define("tinymce/html/Schema", [
 						'blockquote center dir fieldset header footer article section hgroup aside nav figure');
 		blockElementsMap = createLookupTable('block_elements', 'hr table tbody thead tfoot ' +
 						'th tr td li ol ul caption dl dt dd noscript menu isindex option ' +
-						'datalist select optgroup', textBlockElementsMap);
+						'datalist select optgroup figcaption', textBlockElementsMap);
 		textInlineElementsMap = createLookupTable('text_inline_elements', 'span strong b em i font strike u var cite ' +
 										'dfn code mark q sup sub samp');
 
@@ -669,8 +692,8 @@ define("tinymce/html/Schema", [
 				});
 			}
 
-			// Add default alt attribute for images
-			elements.img.attributesDefault = [{name: 'alt', value: ''}];
+			// Add default alt attribute for images, removed since alt="" is treated as presentational.
+			// elements.img.attributesDefault = [{name: 'alt', value: ''}];
 
 			// Remove these if they are empty by default
 			each(split('ol ul sub sup blockquote span font a table tbody tr strong em b i'), function(name) {

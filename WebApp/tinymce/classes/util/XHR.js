@@ -1,4 +1,32 @@
+/**
+ * XHR.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class enables you to send XMLHTTPRequests cross browser.
+ * @class tinymce.util.XHR
+ * @mixes tinymce.util.Observable
+ * @static
+ * @example
+ * // Sends a low level Ajax request
+ * tinymce.util.XHR.send({
+ *    url: 'someurl',
+ *    success: function(text) {
+ *       console.debug(text);
+ *    }
+ * });
+ *
+ * // Add custom header to XHR request
+ * tinymce.util.XHR.on('beforeSend', function(e) {
+ *     e.xhr.setRequestHeader('X-Requested-With', 'Something');
+ * });
+ */
 define("tinymce/util/XHR", [
 	"tinymce/util/Observable",
 	"tinymce/util/Tools"
@@ -34,6 +62,8 @@ define("tinymce/util/XHR", [
 			settings.error_scope = settings.error_scope || settings.scope;
 			settings.async = settings.async === false ? false : true;
 			settings.data = settings.data || '';
+
+			XHR.fire('beforeInitialize', {settings: settings});
 
 			xhr = new XMLHttpRequest();
 

@@ -1,3 +1,12 @@
+/**
+ * plugin.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*global tinymce:true */
 
@@ -35,7 +44,11 @@ tinymce.PluginManager.add('advlist', function(editor) {
 
 			// Switch/add list type if needed
 			if (!list || list.nodeName != listName || styleValue === false) {
-				editor.execCommand(listName == 'UL' ? 'InsertUnorderedList' : 'InsertOrderedList');
+				var detail = {
+					'list-style-type': styleValue ? styleValue : ''
+				};
+
+				editor.execCommand(listName == 'UL' ? 'InsertUnorderedList' : 'InsertOrderedList', false, detail);
 			}
 
 			// Set style

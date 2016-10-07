@@ -1,20 +1,36 @@
+/**
+ * FormatControls.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Internal class containing all TinyMCE specific control types such as
+ * format listboxes, fontlist boxes, toolbar buttons etc.
+ *
+ * @class tinymce.ui.FormatControls
+ */
 define("tinymce/ui/FormatControls", [
 	"tinymce/ui/Control",
 	"tinymce/ui/Widget",
 	"tinymce/ui/FloatPanel",
 	"tinymce/util/Tools",
+	"tinymce/dom/DOMUtils",
 	"tinymce/EditorManager",
 	"tinymce/Env"
-], function(Control, Widget, FloatPanel, Tools, EditorManager, Env) {
+], function(Control, Widget, FloatPanel, Tools, DOMUtils, EditorManager, Env) {
 	var each = Tools.each;
 
 	EditorManager.on('AddEditor', function(e) {
-		if (e.editor.rtl) {
-			Control.rtl = true;
-		}
+		var editor = e.editor;
 
-		registerControls(e.editor);
+		setupRtlMode(editor);
+		registerControls(editor);
+		setupContainer(editor);
 	});
 
 	Control.translate = function(text) {
@@ -22,6 +38,20 @@ define("tinymce/ui/FormatControls", [
 	};
 
 	Widget.tooltips = !Env.iOS;
+
+	function setupContainer(editor) {
+		if (editor.settings.ui_container) {
+			Env.container = DOMUtils.DOM.select(editor.settings.ui_container)[0];
+		}
+	}
+
+	function setupRtlMode(editor) {
+		editor.on('ScriptsLoaded', function () {
+			if (editor.rtl) {
+				Control.rtl = true;
+			}
+		});
+	}
 
 	function registerControls(editor) {
 		var formatMenu;
@@ -214,21 +244,23 @@ define("tinymce/ui/FormatControls", [
 
 		formatMenu = createFormatMenu();
 
-		function initOnPostRender() {
-			var self = this;
+		function initOnPostRender(name) {
+			return function() {
+				var self = this;
 
-			// TODO: Fix this
-			if (editor.formatter) {
-				editor.formatter.formatChanged(name, function(state) {
-					self.active(state);
-				});
-			} else {
-				editor.on('init', function() {
+				// TODO: Fix this
+				if (editor.formatter) {
 					editor.formatter.formatChanged(name, function(state) {
 						self.active(state);
 					});
-				});
-			}
+				} else {
+					editor.on('init', function() {
+						editor.formatter.formatChanged(name, function(state) {
+							self.active(state);
+						});
+					});
+				}
+			};
 		}
 
 		// Simple format controls <control/format>:<UI text>
@@ -242,9 +274,7 @@ define("tinymce/ui/FormatControls", [
 		}, function(text, name) {
 			editor.addButton(name, {
 				tooltip: text,
-				onPostRender: function() {
-					initOnPostRender();
-				},
+				onPostRender: initOnPostRender(name),
 				onclick: function() {
 					toggleFormat(name);
 				}
@@ -286,9 +316,7 @@ define("tinymce/ui/FormatControls", [
 			editor.addButton(name, {
 				tooltip: item[0],
 				cmd: item[1],
-				onPostRender: function() {
-					initOnPostRender();
-				}
+				onPostRender: initOnPostRender(name)
 			});
 		});
 
@@ -303,8 +331,8 @@ define("tinymce/ui/FormatControls", [
 				}
 
 				self.disabled(!checkState());
-				editor.on('Undo Redo AddUndo TypingUndo ClearUndos', function() {
-					self.disabled(!checkState());
+				editor.on('Undo Redo AddUndo TypingUndo ClearUndos SwitchMode', function() {
+					self.disabled(editor.readonly || !checkState());
 				});
 			};
 		}

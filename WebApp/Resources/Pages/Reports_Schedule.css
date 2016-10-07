@@ -172,10 +172,5 @@
 }
 
 #email-body-editor_ifr {
-    height: 130px !important;
     width: 97% !important;
-}
-
-.ui-widget-content {
-    height: 70px !important;
 }
