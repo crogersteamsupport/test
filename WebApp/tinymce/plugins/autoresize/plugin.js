@@ -1,7 +1,23 @@
+/**
+ * plugin.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*global tinymce:true */
 /*eslint no-nested-ternary:0 */
 
+/**
+ * Auto Resize
+ *
+ * This plugin automatically resizes the content area to fit its content height.
+ * It will retain a minimum height, which is the height of the content area when
+ * it's initialized.
+ */
 tinymce.PluginManager.add('autoresize', function(editor) {
 	var settings = editor.settings, oldSize = 0;
 
@@ -90,7 +106,7 @@ tinymce.PluginManager.add('autoresize', function(editor) {
 	 * the CSS files might load async.
 	 */
 	function wait(times, interval, callback) {
-		setTimeout(function() {
+		tinymce.util.Delay.setEditorTimeout(editor, function() {
 			resize({});
 
 			if (times--) {

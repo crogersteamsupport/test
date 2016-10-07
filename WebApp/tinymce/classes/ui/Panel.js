@@ -1,4 +1,21 @@
+/**
+ * Panel.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Creates a new panel.
+ *
+ * @-x-less Panel.less
+ * @class tinymce.ui.Panel
+ * @extends tinymce.ui.Container
+ * @mixes tinymce.ui.Scrollable
+ */
 define("tinymce/ui/Panel", [
 	"tinymce/ui/Container",
 	"tinymce/ui/Scrollable"

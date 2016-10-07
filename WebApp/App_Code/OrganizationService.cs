@@ -803,6 +803,17 @@ namespace TSWebServices
             org.IsApiEnabled = value;
             org.IsInventoryEnabled = value;
             org.Collection.Save();
+
+            if (!value)
+            {
+                Users users = new Users(org.Collection.LoginUser);
+                users.LoadByOrganizationID(org.OrganizationID, false);
+                foreach (User user in users)
+                {
+                    user.IsActive = false;
+                }
+                users.Save();
+            }
         }
 
         public Organization GetAdminOrgTarget(int orgID)

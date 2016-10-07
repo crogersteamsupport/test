@@ -1,4 +1,21 @@
+/**
+ * Quirks.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class contains various fixes for browsers. These issues can not be feature
+ * detected since we have no direct control over the clipboard. However we might be able
+ * to remove some of these fixes once the browsers gets updated/fixed.
+ *
+ * @class tinymce.pasteplugin.Quirks
+ * @private
+ */
 define("tinymce/pasteplugin/Quirks", [
 	"tinymce/Env",
 	"tinymce/util/Tools",

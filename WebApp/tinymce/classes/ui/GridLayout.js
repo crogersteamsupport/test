@@ -1,4 +1,27 @@
+/**
+ * GridLayout.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This layout manager places controls in a grid.
+ *
+ * @setting {Number} spacing Spacing between controls.
+ * @setting {Number} spacingH Horizontal spacing between controls.
+ * @setting {Number} spacingV Vertical spacing between controls.
+ * @setting {Number} columns Number of columns to use.
+ * @setting {String/Array} alignH start|end|center|stretch or array of values for each column.
+ * @setting {String/Array} alignV start|end|center|stretch or array of values for each column.
+ * @setting {String} pack start|end
+ *
+ * @class tinymce.ui.GridLayout
+ * @extends tinymce.ui.AbsoluteLayout
+ */
 define("tinymce/ui/GridLayout", [
 	"tinymce/ui/AbsoluteLayout"
 ], function(AbsoluteLayout) {
@@ -12,7 +35,7 @@ define("tinymce/ui/GridLayout", [
 		 * @param {tinymce.ui.Container} container Container instance to recalc.
 		 */
 		recalc: function(container) {
-			var settings = container.settings, rows, cols, items, contLayoutRect, width, height, rect,
+			var settings, rows, cols, items, contLayoutRect, width, height, rect,
 				ctrlLayoutRect, ctrl, x, y, posX, posY, ctrlSettings, contPaddingBox, align, spacingH, spacingV, alignH, alignV, maxX, maxY,
 				colWidths = [], rowHeights = [], ctrlMinWidth, ctrlMinHeight, availableWidth, availableHeight, reverseRows, idx;
 

@@ -1,4 +1,24 @@
+/**
+ * Class.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This utilitiy class is used for easier inheritance.
+ *
+ * Features:
+ * * Exposed super functions: this._super();
+ * * Mixins
+ * * Dummy functions
+ * * Property functions: var value = object.value(); and object.value(newValue);
+ * * Static functions
+ * * Defaults settings
+ */
 define("tinymce/util/Class", [
 	"tinymce/util/Tools"
 ], function(Tools) {
@@ -68,8 +88,6 @@ define("tinymce/util/Class", [
 		// Add mixins
 		if (prop.Mixins) {
 			each(prop.Mixins, function(mixin) {
-				mixin = mixin;
-
 				for (var name in mixin) {
 					if (name !== "init") {
 						prop[name] = mixin[name];
