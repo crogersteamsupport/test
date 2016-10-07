@@ -1,140 +1,120 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-  <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <link href="Welcome.css" rel="stylesheet" type="text/css" />
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+    <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
+    <!--<link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />-->
+    <!--<link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />-->
+    <!--<link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />-->
+    <link href="Welcome.css" rel="stylesheet" type="text/css" />
 
     <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
-  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery.jplayer.min.js" type="text/javascript"></script>
-  <script src="Welcome.js" type="text/javascript"></script>
+    <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="Welcome.js" type="text/javascript"></script>
 
-  <title></title>
+    <title></title>
 
-  <style>
-    p { padding: .5em 0;}
-    .ts-section { padding: 2em 2em; font-size: 1.2em; line-height: 1.5em;}
-    .welcome-hide { margin-top: 1em; float:right;}
-  </style>
+    <style>
+        p {
+            padding: .5em 0;
+        }
+
+        .ts-section {
+            padding: 2em 2em;
+            font-size: 1.2em;
+            line-height: 1.5em;
+        }
+
+        .welcome-hide {
+            margin-top: 1em;
+            float: right;
+        }
+    </style>
 </head>
 <body>
-  <div class="ui-widget frame-content ts-color-bg-accent ui-widget" style="position: relative;">
-    <div class="ts-section ui-widget-content ui-corner-all loading-section">
-      <div class="ts-loading">
-      </div>
+    <header>
+        <div class="header_info">
+            <div class="header_info_title">Getting Started</div>
+            <div class="header_info_context">Welcome <span id="LoggedInUser"></span>. Thanks for your interest in TeamSupport!<br />We appreciate your time in evaluating our customer support solution. </div>
+        </div>
+        <a href="https://www.teamsupport.com/customer-support-software-demo" target="_blank" class="btn">Schedule a demo</a>
+    </header>
+    <div class="container">
+        <div class="info">
+            <div class="info_card one">
+                <div class="info_card_header">
+                    <div class="info_card_header_title">
+                        <img class="info_card_header_icon" src="../Images/welcome/tips.png" />
+                        Ticket Tips
+                    </div>
+                </div>
+                <ul class="info_card_options">
+                    <li><a href="http://help.teamsupport.com/1/en/topic/create-your-first-ticket" target="_blank" class="info_card_options_button">Create your first ticket<img src="../Images/welcome/right-pointer.png" /></a></li>
+                    <li><a href="http://help.teamsupport.com/1/en/topic/my-tickets-basics" target="_blank" class="info_card_options_button">Ticket Basics<img src="../Images/welcome/right-pointer.png" /></a></li>
+                    <li><a href="http://help.teamsupport.com/1/en/topic/ticket-detail-tab" target="_blank" class="info_card_options_button">Ticket detail tab<img src="../Images/welcome/right-pointer.png" /></a></li>
+                </ul>
+            </div>
+            <div class="info_card two">
+                <div class="info_card_header">
+                    <div class="info_card_header_title">
+                        <img class="info_card_header_icon" src="../Images/welcome/basics.png" />
+                        TeamSupport Basics
+                    </div>
+                </div>
+                <ul class="info_card_options">
+                    <li><a href="http://help.teamsupport.com/1/en/topic/basic-workflow" target="_blank" class="info_card_options_button">Basic Workflow<img src="../Images/welcome/right-pointer.png" /></a></li>
+                    <li><a href="http://help.teamsupport.com/1/en/topic/email-integration" target="_blank" class="info_card_options_button">Email Integration<img src="../Images/welcome/right-pointer.png" /></a></li>
+                    <li><a href="http://help.teamsupport.com/1/en/topic/add-a-fake-customer" target="_blank" class="info_card_options_button">Add a Test Customer<img src="../Images/welcome/right-pointer.png" /></a></li>
+                </ul>
+            </div>
+            <div class="info_card three">
+                <div class="info_card_header">
+                    <div class="info_card_header_title">
+                        <img class="info_card_header_icon" src="../Images/welcome/manage.png" />
+                        Managing your Account
+                    </div>
+                </div>
+                <ul class="info_card_options">
+                    <li><a href="http://help.teamsupport.com/1/en/topic/logging-in" target="_blank" class="info_card_options_button">Logging in<img src="../Images/welcome/right-pointer.png" /></a></li>
+                    <li><a href="http://help.teamsupport.com/1/en/topic/add-a-new-user" target="_blank" class="info_card_options_button">Adding a new user<img src="../Images/welcome/right-pointer.png" /></a></li>
+                    <li><a href="http://help.teamsupport.com/1/en/topic/changing-your-password" target="_blank" class="info_card_options_button">Change your password<img src="../Images/welcome/right-pointer.png" /></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="contact">
+            <div class="contact_title">How to contact us</div>
+            <div class="contact_cardholder">
+                <a id="ChatOnline" class="contact_card one" href="#">
+                    <div class="contact_card_iconholder">
+                        <img class="contact_card_icon" src="../Images/welcome/chat-grey.png" />
+                        <img class="contact_card_icon_hover" src="../Images/welcome/chat-blue.png" />
+                    </div>
+                    <div class="contact_card_text">Chat online</div>
+                </a>
+                <a class="contact_card two" href="mailto:support@teamsupport.com">
+                    <div class="contact_card_iconholder">
+                        <img class="contact_card_icon" src="../Images/welcome/email-grey.png" />
+                        <img class="contact_card_icon_hover" src="../Images/welcome/email-blue.png" />
+                    </div>
+                    <div class="contact_card_text">Send an Email</div>
+                </a>
+                <a class="contact_card three" href="tel:+18005962820">
+                    <div class="contact_card_iconholder">
+                        <img class="contact_card_icon" src="../Images/welcome/phone-grey.png" />
+                        <img class="contact_card_icon_hover" src="../Images/welcome/phone-blue.png" />
+                    </div>
+                    <div class="contact_card_text">Phone Call</div>
+                </a>
+                <a id="SupportHub" class="contact_card four" href="#">
+                    <div class="contact_card_iconholder">
+                        <img class="contact_card_icon" src="../Images/welcome/hub-grey.png" />
+                        <img class="contact_card_icon_hover" src="../Images/welcome/hub-blue.png" />
+                    </div>
+                    <div class="contact_card_text">Support Hub</div>
+                </a>
+            </div>
+        </div>
     </div>
-    <div class="ts-section ui-widget-content ui-corner-all ui-helper-hidden">
-      <div>
-        <div style="text-align:left; float:left;"><img src="../images/WelcomeTSLogo.png" /></div>
-        <div style="float:right;"><button class="welcome-payonline">Submit Payment</button></div>
-      </div>
-      <div class="ts-clearfix"></div>
-      <div>
 
-        <p>
-          Welcome <span class="first-name"></span>.  Thank you for your interest in TeamSupport - we appreciate your time in evaluating our customer support solution.  If you would like to schedule a live demo with our staff, please send an email to <a href="mailto:sales@teamsupport.com">sales@teamsupport.com</a> and a member of our team will get it scheduled.
-        </p>
-        <p>
-          Each new account includes preconfigured settings to help new trial users quickly get a general understanding of how TeamSupport works.  You are welcome to use these settings - but more importantly you can change them.  
-        </p>
-        <h1>Let's Get Started!</h1>
-
-        
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/8FwDh3pKPrY" frameborder="0" allowfullscreen=allowfullscreen></iframe>
-        <h2>The Basics</h2>
-        <ul>
-          <li><p>Bookmark <script type="text/javascript">document.write(location.protocol + '//' + location.host);</script>  This is where you will log in each time.</p></li>
-          <li>
-            <p><a href="#" class="welcome-new-user">Add Team Members</a></p>
-            <p>You can add as many co-workers as you like.  This way, you can assign tickets to each other, comment on them and really see TeamSupport in action.  If it's just you, that's ok too!</p>
-          </li>
-          <li>
-            <p><a href="#" class="welcome-new-customer">Add Customers</a></p>
-            <p>TeamSupport allows you to track tickets against your customers.  When a customer submits a ticket either via email or the customer portal, they are auto associated to the ticket.  You can also manually associate them to any ticket.  This is also how you allow them to access your customer portal (see below under Customer Portals).</p>
-          </li>
-          <li>
-            <p><a href="#" class="welcome-new-ticket">Create Your First Ticket</a></p>
-          </li>
-          
-            <h2>Email Integration</h2>
-            <li><p>Your system email address: <a class="welcome-sysemail" target="_blank"></a></p>
-            <p>You can create tickets from email, forward emails and reply to emails. <strong>To test how the email integration works, simply send or forward an email to
-            your system email address</strong>. Wait about a minute and you should see a new ticket appear on the Dashboard and under All Tickets.</p>
-            <li><p><a class="welcome-setup-email" href="#">Setup more email options.</a></p>
-            <li><p>Email integration plays a big role in your use of TeamSupport.  <a href="http://help.teamsupport.com/1/en/topic/email-integration" target="_blank">Find out more details.</a></p>
-          </li>
-        
-        </ul>
-        <h2>Customize</h2>
-        <ul>
-          <li>
-            <p><a class="welcome-setup-tickettypes" href="#">Setup Ticket Types</a></p>
-            <p>Ticket Types are categories that let you better define the types of tickets you want to manage in your account.  Click the expander next to <strong>"All Tickets"</strong> and you will see some predefined Ticket Types we've made for you.  You are welcome to keep these, or you can change them - it's up to you.</p>
-          </li>
-          <li>
-            <p><a class="welcome-setup-custom-fields">Add custom fields to your tickets and other places</a></p>
-            <p>Adding custom fields allows you to better define the properties in your account.  While we have many stock fields, we know you may have more data you want to capture and track.  You can add as many custom fields as you like.</p>
-          </li>
-          <li>
-            <p><a class="welcome-setup-ticketstatuses" href="#">Modify the ticket statuses</a></p>
-            <p>Ticket statuses allow you to define the ticket lifecycyle.  They are also unique to each Ticket Type.  Since different types of tickets may be dealt with differently in your business, this makes it very easy to track what is going on across the board.</p>
-          </li>
-          <li>
-            <p><a class="welcome-setup-workflow" href="#">Modify status workflow</a></p>
-            <p>Workflow allows you to determine which ticket statuses can be selected based on the current status of a ticket.  For example, you may want to limit someone trying to go from Step1 to Step3 without going to Step2 first.</p>
-          </li>
-        </ul>
-        <h2>Customer Portals</h2>
-        <ul>
-          <li>
-            <p><a class="welcome-setup-portals" href="#">Set up your Portals</a></p>
-            <p>There are two main portal types in TeamSupport.  The <strong>Advanced Portal</strong> and the <strong>Public Portal</strong>.
-            <p>All portals are designed to fit within your website via an iframe.  This allows you to keep your customers within your website and not redirect them some where else.
-            <a href="#" class="welcome-help-ticket">See this in action now on our site.</a></p>
-            <ul>
-              <li>The Advanced Portal is secure and requires your customers to login - although we do support the concept of single sign on (assuming they have already logged into your site/app).  The portal let's them submit tickets, view/comment on existing tickets, search the KB and also join in the community forum conversations .</li>
-              <li>The Public Portal is non-authenticated and also does not include the community/forum ability, but your customers can submit tickets, look up and comment on their open tickets and search the KB.</li>
-            </ul>
-            <p>You can read our online help documents regarding the portals <a href="http://help.teamsupport.com/1/en/topic/using-the-customer-portals" target="_blank">here</a>.</p>
-          </li>
-        </ul>
-        <h2>Chat</h2>
-        <ul>
-          <li>
-            <p><a href="#" class="welcome-test-chat">Try out chat here</a></p>
-            <p>All accounts include live customer chat.  When you are online, your customers can chat with you and your team.  When you are offline, your customer chats are immediately converted into tickets for you to respond to later.  You can customize your "online" and "offline" buttons and also brand the chat window the customer sees. <a href="http://help.teamsupport.com/1/en/topic/customer-chat-setup" target="_blank">Learn how to setup chat.</a></p>
-          </li>
-        </ul>
-
-        <h2>Need more help?</h2>
-        <p>TeamSupport is easy to use.  As with anything new, you may have questions or might not see the feature you are looking for.  If there is anything we can help, please let us know by any of the following channels.</p>
-        <ul>
-          <li>
-            <a href="#" class="welcome-help-ticket">Log into our support portal to submit a ticket, search the knowledgebase, and join the Community conversation</a>
-          </li>
-          <li>
-            <a href="#" class="welcome-help-chat">Chat</a>
-          </li>
-          <li>
-            <a href="mailto:support@teamsupport.com" target="_blank" class="welcome-help-email">Email</a>
-          </li>
-          <li>
-            <span>Call Us:</span> <a href="tel:8005962820" target="_blank">(800) 596-2820</a>
-          </li>
-        </ul>
-        <h1 style="text-align:center; padding-top: 2em;">Thanks for using TeamSupport!</h1>
-      </div>
-      <div style="display:none;" class=" ts-separator ui-widget-content"></div>
-
-    <button class="welcome-hide">Hide this page</button>
-    <div class="ts-clearfix"></div>
-    <button id="btnRefresh" style="display: none; margin-left:1em;">Refresh</button>
-    </div>
-  </div>
 </body>
 </html>

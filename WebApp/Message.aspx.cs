@@ -27,7 +27,7 @@ public partial class Message : System.Web.UI.Page
     switch (_message)
     {
       case "thanks_signup": 
-        lblMessage.Text = "You have successfully signed up.<br/>Thank you for taking the time to try Team Support.<br/>Please continue to sign in.";
+        lblMessage.Text = "You have successfully signed up.<br/>Thank you for taking the time to try TeamSupport.<br/>Please continue to sign in.";
         break;
       case "password_changed": lblMessage.Text = "You have successfully changed your password."; break;
       case "password_reset": lblMessage.Text = "Your new password was sent to your email account."; break;

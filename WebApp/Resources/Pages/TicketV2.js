@@ -481,6 +481,10 @@ function SetupTicketProperties(order) {
         $('#ticket-visible').prop('disabled', true);
     };
 
+    if (!window.parent.Ts.System.User.IsSystemAdmin && _ticketInfo.Ticket.IsKnowledgeBase && !window.parent.Ts.System.User.ChangeKbVisibility) {
+        $('#ticket-visible').prop('disabled', true);
+    };
+
   	 //set the url for the copy paste button
     //var ticketURLLink = ""
     var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
@@ -1663,6 +1667,13 @@ function LoadTicketControls() {
       }
   }
 
+  $('#ticket-type').selectize({
+      onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+  });
+
   SetupStatusField(_ticketInfo.Ticket.TicketStatusID);
 
   $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
@@ -1671,6 +1682,12 @@ function LoadTicketControls() {
   for (var i = 0; i < severities.length; i++) {
     AppendSelect('#ticket-severity', severities[i], 'severity', severities[i].TicketSeverityID, severities[i].Name, (_ticketInfo.Ticket.TicketSeverityID === severities[i].TicketSeverityID));
   }
+  $('#ticket-severity').selectize({
+      onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+      },
+      closeAfterSelect: true
+  });
 
   $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal)
 
@@ -1764,13 +1781,6 @@ function LoadTicketControls() {
     $('#ticket-Community').closest('.form-horizontal').remove();
     //$('#ticket-Community-RO').remove();
   }
-
-  $('.ticket-select').selectize({
-    onDropdownClose: function ($dropdown) {
-      $($dropdown).prev().find('input').blur();
-    },
-    closeAfterSelect: true
-  });
 
   setSLAInfo();
 
@@ -3754,7 +3764,9 @@ var SetupStatusField = function (StatusId) {
 
     if (statuses) {
         for (var i = 0; i < statuses.length; i++) {
-            selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+            if (statuses[i]) {
+                selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+            }
         }
     }
 

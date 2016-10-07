@@ -362,6 +362,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         }
         break;
       case SelectedType.TicketSeverities:
+        table.Columns.Add("Visible on Portal");
         TicketSeverities ticketSeverities = new TicketSeverities(UserSession.LoginUser);
         ticketSeverities.LoadAllPositions(UserSession.LoginUser.OrganizationID);
         foreach (TicketSeverity ticketSeverity in ticketSeverities)
