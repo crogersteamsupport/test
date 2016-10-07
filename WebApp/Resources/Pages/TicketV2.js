@@ -3764,7 +3764,9 @@ var SetupStatusField = function (StatusId) {
 
     if (statuses) {
         for (var i = 0; i < statuses.length; i++) {
-            selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+            if (statuses[i]) {
+                selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+            }
         }
     }
 
