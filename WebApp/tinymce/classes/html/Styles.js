@@ -1,4 +1,31 @@
+/**
+ * Styles.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class is used to parse CSS styles it also compresses styles to reduce the output size.
+ *
+ * @example
+ * var Styles = new tinymce.html.Styles({
+ *    url_converter: function(url) {
+ *       return url;
+ *    }
+ * });
+ *
+ * styles = Styles.parse('border: 1px solid red');
+ * styles.color = 'red';
+ *
+ * console.log(new tinymce.html.StyleSerializer().serialize(styles));
+ *
+ * @class tinymce.html.Styles
+ * @version 3.4
+ */
 define("tinymce/html/Styles", [], function() {
 	return function(settings, schema) {
 		/*jshint maxlen:255 */
@@ -259,7 +286,7 @@ define("tinymce/html/Styles", [], function() {
 					}
 
 					// IE 11 will produce a border-image: none when getting the style attribute from <p style="border: 1px solid red"></p>
-					// So lets asume it shouldn't be there
+					// So let us assume it shouldn't be there
 					if (styles['border-image'] === 'none') {
 						delete styles['border-image'];
 					}

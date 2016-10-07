@@ -1,6 +1,42 @@
+/**
+ * Selector.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*eslint no-nested-ternary:0 */
 
+/**
+ * Selector engine, enables you to select controls by using CSS like expressions.
+ * We currently only support basic CSS expressions to reduce the size of the core
+ * and the ones we support should be enough for most cases.
+ *
+ * @example
+ * Supported expressions:
+ *  element
+ *  element#name
+ *  element.class
+ *  element[attr]
+ *  element[attr*=value]
+ *  element[attr~=value]
+ *  element[attr!=value]
+ *  element[attr^=value]
+ *  element[attr$=value]
+ *  element:<state>
+ *  element:not(<expression>)
+ *  element:first
+ *  element:last
+ *  element:odd
+ *  element:even
+ *  element element
+ *  element > element
+ *
+ * @class tinymce.ui.Selector
+ */
 define("tinymce/ui/Selector", [
 	"tinymce/util/Class"
 ], function(Class) {
@@ -35,7 +71,7 @@ define("tinymce/ui/Selector", [
 		return uniqueItems;
 	}
 
-	var expression = /^([\w\\*]+)?(?:#([\w\\]+))?(?:\.([\w\\\.]+))?(?:\[\@?([\w\\]+)([\^\$\*!~]?=)([\w\\]+)\])?(?:\:(.+))?/i;
+	var expression = /^([\w\\*]+)?(?:#([\w\-\\]+))?(?:\.([\w\\\.]+))?(?:\[\@?([\w\\]+)([\^\$\*!~]?=)([\w\\]+)\])?(?:\:(.+))?/i;
 
 	/*jshint maxlen:255 */
 	/*eslint max-len:0 */
@@ -153,8 +189,8 @@ define("tinymce/ui/Selector", [
 				add(compileAttrFilter(parts[4], parts[5], parts[6]));
 				add(compilePsuedoFilter(parts[7]));
 
-				// Mark the filter with psuedo for performance
-				filters.psuedo = !!parts[7];
+				// Mark the filter with pseudo for performance
+				filters.pseudo = !!parts[7];
 				filters.direct = direct;
 
 				return filters;
@@ -202,7 +238,7 @@ define("tinymce/ui/Selector", [
 		 * Returns true/false if the selector matches the specified control.
 		 *
 		 * @method match
-		 * @param {tinymce.ui.Control} control Control to match agains the selector.
+		 * @param {tinymce.ui.Control} control Control to match against the selector.
 		 * @param {Array} selectors Optional array of selectors, mostly used internally.
 		 * @return {Boolean} true/false state if the control matches or not.
 		 */
@@ -220,8 +256,8 @@ define("tinymce/ui/Selector", [
 					filters = selector[si];
 
 					while (item) {
-						// Find the index and length since a psuedo filter like :first needs it
-						if (filters.psuedo) {
+						// Find the index and length since a pseudo filter like :first needs it
+						if (filters.pseudo) {
 							siblings = item.parent().items();
 							index = length = siblings.length;
 							while (index--) {
@@ -278,7 +314,7 @@ define("tinymce/ui/Selector", [
 				for (i = 0, l = items.length; i < l; i++) {
 					item = items[i];
 
-					// Run each filter agains the item
+					// Run each filter against the item
 					for (fi = 0, fl = filters.length; fi < fl; fi++) {
 						if (!filters[fi](item, i, l)) {
 							fi = fl + 1;

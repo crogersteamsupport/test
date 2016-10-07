@@ -1,13 +1,25 @@
+/**
+ * plugin.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ *
+ * This plugin will force TinyMCE to produce deprecated legacy output such as font elements, u elements, align
+ * attributes and so forth. There are a few cases where these old items might be needed for example in email applications or with Flash
+ *
+ * However you should NOT use this plugin if you are building some system that produces web contents such as a CMS. All these elements are
+ * not apart of the newer specifications for HTML and XHTML.
+ */
 
 /*global tinymce:true */
 
 (function(tinymce) {
-	// Override inline_styles setting to force TinyMCE to produce deprecated contents
-	tinymce.on('AddEditor', function(e) {
-		e.editor.settings.inline_styles = false;
-	});
-
 	tinymce.PluginManager.add('legacyoutput', function(editor, url, $) {
+		editor.settings.inline_styles = false;
+
 		editor.on('init', function() {
 			var alignElements = 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
 				fontSizes = tinymce.explode(editor.settings.font_size_style_values),

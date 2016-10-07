@@ -1,6 +1,21 @@
+/**
+ * Dialogs.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*eslint dot-notation:0*/
 
+/**
+ * ...
+ *
+ * @class tinymce.tableplugin.Dialogs
+ * @private
+ */
 define("tinymce/tableplugin/Dialogs", [
 	"tinymce/util/Tools",
 	"tinymce/Env"
@@ -472,7 +487,7 @@ define("tinymce/tableplugin/Dialogs", [
 			}
 
 			// Get selected cells or the current cell
-			cells = editor.dom.select('td.mce-item-selected,th.mce-item-selected');
+			cells = editor.dom.select('td[data-mce-selected],th[data-mce-selected]');
 			cellElm = editor.dom.getParent(editor.selection.getStart(), 'td,th');
 			if (!cells.length && cellElm) {
 				cells.push(cellElm);
@@ -695,7 +710,7 @@ define("tinymce/tableplugin/Dialogs", [
 
 			each(tableElm.rows, function(row) {
 				each(row.cells, function(cell) {
-					if (dom.hasClass(cell, 'mce-item-selected') || cell == cellElm) {
+					if (dom.getAttrib(cell, 'data-mce-selected') || cell == cellElm) {
 						rows.push(row);
 						return false;
 					}

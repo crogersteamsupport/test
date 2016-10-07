@@ -1,4 +1,30 @@
+/**
+ * Form.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class creates a form container. A form container has the ability
+ * to automatically wrap items in tinymce.ui.FormItem instances.
+ *
+ * Each FormItem instance is a container for the label and the item.
+ *
+ * @example
+ * tinymce.ui.Factory.create({
+ *     type: 'form',
+ *     items: [
+ *         {type: 'textbox', label: 'My text box'}
+ *     ]
+ * }).renderTo(document.body);
+ *
+ * @class tinymce.ui.Form
+ * @extends tinymce.ui.Container
+ */
 define("tinymce/ui/Form", [
 	"tinymce/ui/Container",
 	"tinymce/ui/FormItem",

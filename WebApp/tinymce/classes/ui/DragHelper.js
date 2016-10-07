@@ -1,4 +1,30 @@
+/**
+ * DragHelper.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Drag/drop helper class.
+ *
+ * @example
+ * var dragHelper = new tinymce.ui.DragHelper('mydiv', {
+ *     start: function(evt) {
+ *     },
+ *
+ *     drag: function(evt) {
+ *     },
+ *
+ *     end: function(evt) {
+ *     }
+ * });
+ *
+ * @class tinymce.ui.DragHelper
+ */
 define("tinymce/ui/DragHelper", [
 	"tinymce/dom/DomQuery"
 ], function($) {
