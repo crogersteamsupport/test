@@ -574,11 +574,35 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string GetTOKSessionInfoClient(string chatID = "")
+        {
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED, archiveMode: ArchiveMode.MANUAL);
+            var token = OpenTok.GenerateToken(session.Id, Role.PUBLISHER);
+            var values = new List<string>();
+            values.Add(session.Id);
+            values.Add(token);
+            values.Add(SystemSettings.GetTokApiKey());
+            //return values;
+            return JsonConvert.SerializeObject(values);
+        }
+
+
+        [WebMethod]
         public string StartArchiving(string sessionId)
         {
             var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
             var archive = OpenTok.StartArchive(sessionId);
             return archive.Id.ToString();
+        }
+
+        [WebMethod]
+        public string StartArchivingClient(string sessionId)
+        {
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            var archive = OpenTok.StartArchive(sessionId);
+            //return archive.Id.ToString();
+            return JsonConvert.SerializeObject(archive.Id.ToString());
         }
 
         [WebMethod]
@@ -605,6 +629,30 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string StopArchivingClient(string archiveId)
+        {
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            System.Threading.Thread.Sleep(1500);
+            var archive = OpenTok.StopArchive(archiveId);
+            do
+            {
+
+            }
+            while (OpenTok.GetArchive(archiveId).Status != ArchiveStatus.UPLOADED);
+
+            TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
+            ts.AmazonPath = string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id, SystemSettings.ReadString(loginUser, "AWS-VideoBucket", ""));
+            ts.CreatedDate = DateTime.Now;
+            ts.CreatorID = loginUser.UserID;
+            ts.OrganizationID = loginUser.OrganizationID;
+            ts.ArchiveID = archive.Id.ToString();
+            ts.Collection.Save();
+
+            //return string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString(), SystemSettings.ReadString(loginUser, "AWS-VideoBucket", ""));
+            return JsonConvert.SerializeObject(string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString(), SystemSettings.ReadString(loginUser, "AWS-VideoBucket", "")));
+        }
+
+        [WebMethod]
         public bool DeleteArchive(string archiveId)
         {
             var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
@@ -616,6 +664,21 @@ namespace TSWebServices
             ts[0].Collection.Save();
 
             return true;
+        }
+
+        [WebMethod]
+        public string DeleteArchiveClient(string archiveId)
+        {
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            OpenTok.DeleteArchive(archiveId);
+
+            TokStorage ts = new TokStorage(loginUser);
+            ts.LoadByArchiveID(archiveId.ToString());
+            ts[0].Delete();
+            ts[0].Collection.Save();
+
+            //return true;
+            return JsonConvert.SerializeObject(true);
         }
 
         #endregion

@@ -1,6 +1,10 @@
-﻿$(document).ready(function () {
+﻿var _activeChatID = null;
+var _participantID = null;
+$(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("chatid", window);
+    _activeChatID = chatID;
     var participantID = Ts.Utils.getQueryValue("pid", window);
+    _participantID = participantID;
     var chatObject;
     var channel;
     var chatInfoObject = {};
@@ -10,12 +14,12 @@
     });
     loadInitialMessages(chatID);
     SetupChatUploads(chatID, participantID);
+    SetupTOK();
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
-        console.log(channel.members.me);
-        var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
-        
+        var messageData = { channelName: 'presence-' + chatID, message: message, chatID: chatID, userID: participantID };
+
         IssueAjaxRequest("AddMessage", messageData,
         function (result) {
             $('#message').val('');
@@ -23,11 +27,7 @@
         function (error) {
 
         });
-
     });
-
-
-  
 });
 
 function createMessage(message)
