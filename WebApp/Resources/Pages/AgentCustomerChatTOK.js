@@ -293,3 +293,8 @@ function unmuteScreenRecording(e) {
     $('#muteScreenRecording').show();
     $('#unmuteScreenRecording').hide();
 };
+
+function installChromePlugin() {
+    chrome.webstore.install("https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg",
+function () { }, function (e) { console.log(e) });
+}

@@ -21,7 +21,6 @@
                         <div id="chat-body" class="chat-body"></div>
                     </div>
                 </div>
-
             </div>
         </div>
         <div class="panel-footer form-footer">
@@ -54,9 +53,10 @@
                 <div class="input-group">
                     <input id="message" type="text" class="form-control" />
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit" aria-label="send message">Send</button>
                         <button id="chat-attachment" class="btn btn-default" type="button" aria-label="attach documents"><span class="fa fa-paperclip"></span></button>
-                        <button id="chat-tok-video" class="btn btn-default" type="button" aria-label="record video"><span class="fa fa-circle"></span></button>
+                        <button id="chat-tok-video" class="btn btn-default" type="button" aria-label="record screen"><span class="fa fa-video-camera"></span></button>
+                        <button id="chat-tok-screen" class="btn btn-default" type="button" aria-label="record video"><span class="fa fa-circle"></span></button>
+                        <button class="btn btn-default" type="submit" aria-label="send message">Send</button>
                         <input id="hiddenAttachmentInput" type="file" name="somename" size="chars" style="display:none;">
                     </span>
                 </div>
@@ -73,7 +73,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <p>An Extension is required in order for Screen Sharing to function properly. Please select your browswer and install the extension. Once the installation is complete close this dialog and click the Record Screen button again.</p>
-                        <p id="chromemodalbutton"><button type="button" class="btn btn-primary" onclick="top.Ts.MainPage.installChromePlugin();" id="install-button">Add to Chrome</button></p>
+                        <p id="chromemodalbutton"><button type="button" class="btn btn-primary" onclick="installChromePlugin();" id="install-button">Add to Chrome</button></p>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -112,6 +112,7 @@
     <script src="../vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
     <script src="../vcr/1_9_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
     <script src="../vcr/1_9_0/Js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="../vcr/1_9_0/Js/browser.js" type="text/javascript"></script>
 
 </body>
 </html>

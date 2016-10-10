@@ -52,6 +52,7 @@ function SetupTOK() {
     });
 
     $('#chat-tok-screen').click(function (e) {
+        $('.panel-body').height('calc(95vh - 95px)');
             var dynamicPub = $("#screenShare");
             $("#screenRecordingContainer").show();
             dynamicPub.show();
@@ -213,10 +214,10 @@ function unmuteVideoRecording(e) {
     $('#unmuteVideoRecording').hide();
 };
 
-
-//TODO:  Genericise below here
 function startScreenRecording(e) {
-    top.Ts.Services.Chat.StartArchiving(sessionId, function (resultID) {
+    var data = { sessionId: sessionId };
+    IssueAjaxRequest("StartArchivingClient", data,
+    function (resultID) {
         $('#startScreenRecording').hide();
         $('#stopScreenRecording').show();
         $('#cancelScreenRecording').hide();
@@ -228,6 +229,9 @@ function startScreenRecording(e) {
         }, 1000);
 
         $('#screenRecordingStatusText').text("Currently Recording Screen...");
+    },
+    function (error) {
+        console.log(error.message);
     });
 };
 
@@ -255,8 +259,11 @@ function updateTimer(parentElement) {
 }
 
 function stopScreenRecording(e) {
-    $('#screenRecordingStatusText').text("Processing..."); 
-    top.Ts.Services.Chat.StopArchiving(archiveID, function (result) {
+    $('#screenRecordingStatusText').text("Processing...");
+
+    var data = { archiveID: archiveID };
+    IssueAjaxRequest("StopArchiving", data,
+    function (resultID) {
         $('#startScreenRecording').show();
         $('#stopScreenRecording').hide();
         $('#insertScreenRecording').show();
@@ -266,12 +273,15 @@ function stopScreenRecording(e) {
         clearTimeout(tokTimer);
         $("#tokScreenRecordingCountdown").html("0:00");
         $("#tokScreenRecordingCountdown").hide();
+    },
+    function (error) {
+        console.log(error.message);
     });
 };
 
 function insertScreenRecording (e) {
     parent.Ts.System.logAction('Chat - Screen Recording Insert Clicked');
-
+    $('.panel-body').height('calc(100vh - 95px)');
     var videoHTML = '<video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
     submitMessage(videoHTML);
 
@@ -285,19 +295,24 @@ function insertScreenRecording (e) {
 };
 
 function cancelScreenRecording(e) {
-    parent.Ts.System.logAction('Chat - Video Recording Cancel Clicked');
+    $('.panel-body').height('calc(100vh - 95px)');
     if (archiveID) {
         $('#screenRecordingStatusText').text("Canceling Recording ...");
-        top.Ts.Services.Chat.DeleteArchive(archiveID, function (resultID) {
-            $("#tokScreenRecordingCountdown").html("0:00");
-            $("#tokScreenRecordingCountdown").hide();
+        var data = { archiveID: archiveID };
+        IssueAjaxRequest("DeleteArchive", data,
+        function (resultID) {
+                $("#tokScreenRecordingCountdown").html("0:00");
+                $("#tokScreenRecordingCountdown").hide();
 
-            $('#startScreenRecording').show();
-            $('#stopScreenRecording').hide();
-            $('#insertScreenRecording').hide();
-            session.unpublish(publisher);
-            $('#screenRecordingContainer').hide();
-            $('#screenRecordingStatusText').text("");
+                $('#startScreenRecording').show();
+                $('#stopScreenRecording').hide();
+                $('#insertScreenRecording').hide();
+                session.unpublish(publisher);
+                $('#screenRecordingContainer').hide();
+                $('#screenRecordingStatusText').text("");
+        },
+        function (error) {
+            console.log(error.message);
         });
     }
     else {
@@ -318,3 +333,9 @@ function unmuteScreenRecording(e) {
     $('#muteScreenRecording').show();
     $('#unmuteScreenRecording').hide();
 };
+
+function installChromePlugin()
+{
+    chrome.webstore.install("https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg",
+function () { }, function (e) { console.log(e) });
+}
