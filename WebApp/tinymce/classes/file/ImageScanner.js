@@ -1,16 +1,32 @@
+/**
+ * ImageScanner.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Finds images with data uris or blob uris. If data uris are found it will convert them into blob uris.
+ *
+ * @private
+ * @class tinymce.file.ImageScanner
+ */
 define("tinymce/file/ImageScanner", [
 	"tinymce/util/Promise",
 	"tinymce/util/Arr",
+	"tinymce/util/Fun",
 	"tinymce/file/Conversions",
 	"tinymce/Env"
-], function(Promise, Arr, Conversions, Env) {
+], function(Promise, Arr, Fun, Conversions, Env) {
 	var count = 0;
 
-	return function(blobCache) {
+	return function(uploadStatus, blobCache) {
 		var cachedPromises = {};
 
-		function findAll(elm) {
+		function findAll(elm, predicate) {
 			var images, promises;
 
 			function imageToBlobInfo(img, resolve) {
@@ -54,6 +70,10 @@ define("tinymce/file/ImageScanner", [
 				}
 			}
 
+			if (!predicate) {
+				predicate = Fun.constant(true);
+			}
+
 			images = Arr.filter(elm.getElementsByTagName('img'), function(img) {
 				var src = img.src;
 
@@ -73,7 +93,15 @@ define("tinymce/file/ImageScanner", [
 					return false;
 				}
 
-				return src.indexOf('data:') === 0 || src.indexOf('blob:') === 0;
+				if (src.indexOf('blob:') === 0) {
+					return !uploadStatus.isUploaded(src);
+				}
+
+				if (src.indexOf('data:') === 0) {
+					return predicate(img);
+				}
+
+				return false;
 			});
 
 			promises = Arr.map(images, function(img) {

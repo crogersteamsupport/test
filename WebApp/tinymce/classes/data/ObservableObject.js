@@ -1,4 +1,19 @@
+/**
+ * ObservableObject.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class is a object that is observable when properties changes a change event gets emitted.
+ *
+ * @private
+ * @class tinymce.data.ObservableObject
+ */
 define("tinymce/data/ObservableObject", [
 	"tinymce/data/Binding",
 	"tinymce/util/Observable",

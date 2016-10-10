@@ -1,4 +1,23 @@
+/**
+ * Node.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class is a minimalistic implementation of a DOM like node used by the DomParser class.
+ *
+ * @example
+ * var node = new tinymce.html.Node('strong', 1);
+ * someRoot.append(node);
+ *
+ * @class tinymce.html.Node
+ * @version 3.4
+ */
 define("tinymce/html/Node", [], function() {
 	var whiteSpaceRegExp = /^[ \t\r\n]*$/, typeLookup = {
 		'#text': 3,

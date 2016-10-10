@@ -1,4 +1,25 @@
+/**
+ * Writer.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class is used to write HTML tags out it can be used with the Serializer or the SaxParser.
+ *
+ * @class tinymce.html.Writer
+ * @example
+ * var writer = new tinymce.html.Writer({indent: true});
+ * var parser = new tinymce.html.SaxParser(writer).parse('<p><br></p>');
+ * console.log(writer.getContent());
+ *
+ * @class tinymce.html.Writer
+ * @version 3.4
+ */
 define("tinymce/html/Writer", [
 	"tinymce/html/Entities",
 	"tinymce/util/Tools"

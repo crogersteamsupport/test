@@ -1,4 +1,20 @@
+/**
+ * Path.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Creates a new path control.
+ *
+ * @-x-less Path.less
+ * @class tinymce.ui.Path
+ * @extends tinymce.ui.Widget
+ */
 define("tinymce/ui/Path", [
 	"tinymce/ui/Widget"
 ], function(Widget) {

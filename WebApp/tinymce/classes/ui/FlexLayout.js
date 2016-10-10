@@ -1,4 +1,24 @@
+/**
+ * FlexLayout.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This layout manager works similar to the CSS flex box.
+ *
+ * @setting {String} direction row|row-reverse|column|column-reverse
+ * @setting {Number} flex A positive-number to flex by.
+ * @setting {String} align start|end|center|stretch
+ * @setting {String} pack start|end|justify
+ *
+ * @class tinymce.ui.FlexLayout
+ * @extends tinymce.ui.AbsoluteLayout
+ */
 define("tinymce/ui/FlexLayout", [
 	"tinymce/ui/AbsoluteLayout"
 ], function(AbsoluteLayout) {

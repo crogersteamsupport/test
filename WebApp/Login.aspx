@@ -53,7 +53,7 @@
 			 	<a href="http://www.teamsupport.com/customer-support-software-free-trial">Create a free account</a>
           </div>
           <div class="col-xs-6">
-            <a href="http://m.teamsupport.com">Mobile Site</a>
+            <a id="mobile-link" href="http://m.teamsupport.com">Mobile Site</a>
           </div>
         </div>
       </footer>

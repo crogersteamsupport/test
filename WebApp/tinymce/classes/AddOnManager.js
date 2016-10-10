@@ -1,4 +1,18 @@
+/**
+ * AddOnManager.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class handles the loading of themes/plugins or other add-ons and their language packs.
+ *
+ * @class tinymce.AddOnManager
+ */
 define("tinymce/AddOnManager", [
 	"tinymce/dom/ScriptLoader",
 	"tinymce/util/Tools"
@@ -98,6 +112,11 @@ define("tinymce/AddOnManager", [
 			return addOn;
 		},
 
+		remove: function(name) {
+			delete this.urls[name];
+			delete this.lookup[name];
+		},
+
 		createUrl: function(baseUrl, dep) {
 			if (typeof dep === "object") {
 				return dep;
@@ -190,5 +209,62 @@ define("tinymce/AddOnManager", [
 	return AddOnManager;
 });
 
+/**
+ * TinyMCE theme class.
+ *
+ * @class tinymce.Theme
+ */
 
+/**
+ * This method is responsible for rendering/generating the overall user interface with toolbars, buttons, iframe containers etc.
+ *
+ * @method renderUI
+ * @param {Object} obj Object parameter containing the targetNode DOM node that will be replaced visually with an editor instance.
+ * @return {Object} an object with items like iframeContainer, editorContainer, sizeContainer, deltaWidth, deltaHeight.
+ */
 
+/**
+ * Plugin base class, this is a pseudo class that describes how a plugin is to be created for TinyMCE. The methods below are all optional.
+ *
+ * @class tinymce.Plugin
+ * @example
+ * tinymce.PluginManager.add('example', function(editor, url) {
+ *     // Add a button that opens a window
+ *     editor.addButton('example', {
+ *         text: 'My button',
+ *         icon: false,
+ *         onclick: function() {
+ *             // Open window
+ *             editor.windowManager.open({
+ *                 title: 'Example plugin',
+ *                 body: [
+ *                     {type: 'textbox', name: 'title', label: 'Title'}
+ *                 ],
+ *                 onsubmit: function(e) {
+ *                     // Insert content when the window form is submitted
+ *                     editor.insertContent('Title: ' + e.data.title);
+ *                 }
+ *             });
+ *         }
+ *     });
+ *
+ *     // Adds a menu item to the tools menu
+ *     editor.addMenuItem('example', {
+ *         text: 'Example plugin',
+ *         context: 'tools',
+ *         onclick: function() {
+ *             // Open window with a specific url
+ *             editor.windowManager.open({
+ *                 title: 'TinyMCE site',
+ *                 url: 'http://www.tinymce.com',
+ *                 width: 800,
+ *                 height: 600,
+ *                 buttons: [{
+ *                     text: 'Close',
+ *                     onclick: 'close'
+ *                 }]
+ *             });
+ *         }
+ *     });
+ * });
+ */
