@@ -18,11 +18,13 @@ $(document).ready(function () {
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
-        var messageData = { channelName: 'presence-' + chatID, message: message, chatID: chatID, userID: participantID };
+        $('#send-message').prop("disabled", true);
+        var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
 
         IssueAjaxRequest("AddMessage", messageData,
         function (result) {
             $('#message').val('');
+            $('#send-message').prop("disabled", false);
         },
         function (error) {
 

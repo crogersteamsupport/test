@@ -192,8 +192,10 @@ $(document).ready(function () {
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
+        $('#new-message').prop("disabled", true);
         parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, $('#message').val(), _activeChatID, function (data) {
             $('#message').val('');
+            $('#new-message').prop("disabled", false);
         });
 
     });
