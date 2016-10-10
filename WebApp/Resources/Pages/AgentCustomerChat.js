@@ -28,7 +28,7 @@ $(document).ready(function () {
         pusherKey = key;
         SetupChatRequests();
         subscribeToNewChatRequest(pusherKey, function (request) {
-            SetupPendingRequest(request.chatRequest, false);
+            SetupPendingRequest(request.chatRequest, true);
         });
 
         $('.page-loading').hide().next().show();
@@ -61,6 +61,7 @@ $(document).ready(function () {
             e.preventDefault();
 
             CloseRequestAnchor();
+            $(this).addClass('list-group-item-info');
 
             var acceptBtn = $('<button class="btn btn-default">Accept</button>').click(function (e) {
                 var parentEl = $(this).parent();
@@ -102,7 +103,7 @@ $(document).ready(function () {
     }
 
     function CloseRequestAnchor() {
-        $('.open-request').html($('.open-request > .userName').text()).removeClass('open-request');
+        $('.open-request').html($('.open-request > .userName').text()).removeClass('open-request').removeClass('list-group-item-info');
     }
 
     function AcceptRequest(ChatRequestID, innerString, parentEl)  {
