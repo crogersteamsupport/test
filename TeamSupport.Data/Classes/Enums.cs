@@ -73,8 +73,8 @@ namespace TeamSupport.Data
 		AgentRating = 55,
 		PrimaryContacts = 56,
 		CustomerHubLogo = 57,
-        ContactNotes = 58
-
+        ContactNotes = 58,
+        Tasks = 59
 	};
 
 	public enum SlaViolationType

@@ -19,6 +19,10 @@ $(document).ready(function () {
             }
             else {
                 $('.assigned-results-empty').hide();
+                if (tasks[0].TaskIsComplete) {
+                    $('.assigned-tasks-filter li.active').removeClass('active');
+                    $('.assigned-tasks-filter-completed').parent().addClass('active');
+                }
             }
         }
         else {
@@ -38,6 +42,10 @@ $(document).ready(function () {
             }
             else {
                 $('.created-results-empty').hide();
+                if (!tasks[0].TaskIsComplete) {
+                    $('.created-tasks-filter li.active').removeClass('active');
+                    $('.created-tasks-filter-pending').parent().addClass('active');
+                }
             }
         }
         else {
@@ -189,11 +197,11 @@ $(document).ready(function () {
         //}
 
         secondRow.append('Due Date: ');
-        if (isNullOrWhiteSpace(item.DueDate)) {
+        if (isNullOrWhiteSpace(item.TaskDueDate)) {
             secondRow.append('Unassigned');
         }
         else {
-            secondRow.append(parent.Ts.Utils.getMsDate(item.DueDate).localeFormat(parent.Ts.Utils.getDatePattern()));
+            secondRow.append(parent.Ts.Utils.getMsDate(item.TaskDueDate).localeFormat(parent.Ts.Utils.getDatePattern()));
         }
 
     }

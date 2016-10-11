@@ -20,7 +20,6 @@ namespace TSWebServices
 
         }
 
-
         [WebMethod]
         public ReminderProxy[] GetTasks(int from, int count, bool searchPending, bool searchComplete, bool searchCreated)
         {
@@ -182,12 +181,48 @@ namespace TSWebServices
             return (int)SqlExecutor.ExecuteScalar(loginUser, command);
         }
 
-
         private int GetCreatedCount(LoginUser loginUser)
         {
             SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE CreatorID = @UserID AND UserID <> @UserID");
             command.Parameters.AddWithValue("UserID", loginUser.UserID);
             return (int)SqlExecutor.ExecuteScalar(loginUser, command);
+        }
+
+        [WebMethod]
+        public string SetName(int reminderID, string value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            task.TaskName = value;
+            task.Collection.Save();
+            string description = String.Format("{0} set task name to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            return value != "" ? value : "Empty";
+        }
+
+        [WebMethod]
+        public string SetDescription(int reminderID, string value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            task.Description = value;
+            task.Collection.Save();
+            string description = String.Format("{0} set task description to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            return value != "" ? value : "Empty";
+        }
+
+        [WebMethod]
+        public int SetUser(int reminderID, int value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            task.UserID = value;
+            task.Collection.Save();
+            User u = Users.GetUser(loginUser, value);
+            string description = String.Format("{0} set task user to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            return value;
         }
     }
 

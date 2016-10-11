@@ -111,7 +111,7 @@ namespace TeamSupport.Data
             WHERE
                 CreatorID = @UserID 
                 AND UserID <> @UserID
-                AND isDismissed = 0 ";
+                AND TaskIsComplete = 0 ";
 
         string completeQuery = @"
             SELECT 
@@ -121,12 +121,12 @@ namespace TeamSupport.Data
             WHERE
                 CreatorID = @UserID 
                 AND UserID <> @UserID
-                AND isDismissed = 1 ";
+                AND TaskIsComplete = 1 ";
 
         string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY DueDate DESC) AS 'RowNum' FROM q)
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskDateCompleted DESC, TaskDueDate, DueDate) AS 'RowNum' FROM q)
             SELECT
                 ReminderID
                 , OrganizationID
@@ -142,6 +142,7 @@ namespace TeamSupport.Data
                 , TaskName
                 , TaskDueDate
                 , TaskIsComplete
+                , TaskDateCompleted
             FROM 
                 r
             WHERE
@@ -227,6 +228,7 @@ namespace TeamSupport.Data
                 , TaskName
                 , TaskDueDate
                 , TaskIsComplete
+                , TaskDateCompleted
             FROM 
                 r
             WHERE

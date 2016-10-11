@@ -26,6 +26,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TaskName", "TaskName", false, false, false);
       _fieldMap.AddMap("TaskDueDate", "TaskDueDate", false, false, false);
       _fieldMap.AddMap("TaskIsComplete", "TaskIsComplete", false, false, false);
+      _fieldMap.AddMap("TaskDateCompleted", "TaskDateCompleted", false, false, false);
             
     }
   }

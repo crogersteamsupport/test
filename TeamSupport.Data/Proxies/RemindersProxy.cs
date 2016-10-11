@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public string TaskName { get; set; }
     [DataMember] public DateTime? TaskDueDate { get; set; }
     [DataMember] public bool TaskIsComplete { get; set; }
+    [DataMember] public DateTime? TaskDateCompleted { get; set; }
           
   }
   
@@ -48,6 +49,7 @@ namespace TeamSupport.Data
       result.DueDate = DateTime.SpecifyKind(this.DueDateUtc, DateTimeKind.Utc);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
+      result.TaskDateCompleted = this.TaskDateCompletedUtc == null ? this.TaskDateCompletedUtc : DateTime.SpecifyKind((DateTime)this.TaskDateCompletedUtc, DateTimeKind.Utc); 
       result.TaskDueDate = this.TaskDueDateUtc == null ? this.TaskDueDateUtc : DateTime.SpecifyKind((DateTime)this.TaskDueDateUtc, DateTimeKind.Utc); 
        
       return result;
