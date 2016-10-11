@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Text;
 using System.Web.Script.Services;
 using System.Web.Services;
 using TeamSupport.Data;
@@ -188,6 +190,12 @@ namespace TSWebServices
             return (int)SqlExecutor.ExecuteScalar(loginUser, command);
         }
 
+        public string GetDateFormatNormal()
+        {
+            CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
+            return us.DateTimeFormat.ShortDatePattern;
+        }
+
         [WebMethod]
         public string SetName(int reminderID, string value)
         {
@@ -223,6 +231,78 @@ namespace TSWebServices
             string description = String.Format("{0} set task user to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
             return value;
+        }
+
+        [WebMethod]
+        public bool SetTaskIsCompleted(int reminderID, bool value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            task.TaskIsComplete = value;
+            if (value)
+            {
+                task.TaskDateCompleted = DateTime.UtcNow;
+            }
+            else
+            {
+                task.TaskDateCompleted = null;
+            }
+            task.Collection.Save();
+            string description = String.Format("{0} set task is complete to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            return value;
+        }
+
+        [WebMethod]
+        public string SetTaskDueDate(int reminderID, object value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            StringBuilder description = new StringBuilder();
+            if (task.TaskDueDate == null)
+            {
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+            }
+            else
+            {
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.TaskDueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+            }
+            task.TaskDueDate = (DateTime)value;
+            task.Collection.Save();
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description.ToString());
+            return value.ToString() != "" ? value.ToString() : null;
+        }
+
+        [WebMethod]
+        public bool SetIsDismissed(int reminderID, bool value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            task.IsDismissed = value;
+            task.Collection.Save();
+            string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            return value;
+        }
+
+        [WebMethod]
+        public string SetDueDate(int reminderID, object value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            StringBuilder description = new StringBuilder();
+            if (task.DueDate == null)
+            {
+                description.Append(String.Format("Changed Reminder Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+            }
+            else
+            {
+                description.Append(String.Format("Changed Reminder Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+            }
+            task.DueDate = (DateTime)value;
+            task.Collection.Save();
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description.ToString());
+            return value.ToString() != "" ? value.ToString() : null;
         }
     }
 

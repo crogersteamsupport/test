@@ -50,6 +50,12 @@ $(document).ready(function () {
             $('#fieldDueDate').text(window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
             $('#fieldReminder').text(!task.IsDismissed);
             $('#fieldReminderDate').text(window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+            if (task.IsDismissed) {
+                $('#reminderDateGroup').hide();
+            }
+            else {
+                $('#reminderDateGroup').show();
+            }
 
             $('#fieldCreator').text(task.Creator);
             $('#fieldDateCreated').text(window.parent.parent.Ts.Utils.getMsDate(task.DateCreated).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
@@ -222,6 +228,144 @@ $(document).ready(function () {
                 $('#taskEdit').removeClass("disabled");
             });
         });
+        $('#taskEdit').addClass("disabled");
+    });
+
+    $('#fieldComplete').click(function (e) {
+        if (!$(this).hasClass('editable'))
+            return false;
+        top.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'true'), function (result) {
+            top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
+            $('#fieldComplete').text((result === true ? 'true' : 'false'));
+        },
+        function (error) {
+            header.show();
+            alert('There was an error saving the task is complete.');
+        });
+    });
+
+    $('#fieldDueDate').click(function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+            return false;
+        top.Ts.System.logAction('Task Detail - Due Date Clicked');
+        var parent = $(this).hide();
+        var container = $('<div>')
+              .insertAfter(parent);
+
+        var container1 = $('<div>')
+                .addClass('col-xs-9')
+              .appendTo(container);
+
+        var input = $('<input type="text">')
+                .addClass('col-xs-10 form-control')
+                .val($(this).val())
+                .datetimepicker({ pickTime: true })
+                .appendTo(container1)
+                .focus();
+
+        $('<i>')
+              .addClass('col-xs-1 fa fa-times')
+              .click(function (e) {
+                  $(this).closest('div').remove();
+                  parent.show();
+                  $('#taskEdit').removeClass("disabled");
+                  top.Ts.System.logAction('Task - Due Date change cancelled');
+              })
+              .insertAfter(container1);
+        $('<i>')
+              .addClass('col-xs-1 fa fa-check')
+              .click(function (e) {
+                  var value = top.Ts.Utils.getMsDate(input.val());
+                  container.remove();
+                  top.Ts.Services.Task.SetTaskDueDate(_reminderID, value, function (result) {
+                      var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+                      parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                      $('#taskEdit').removeClass("disabled");
+                      top.Ts.System.logAction('Task Detail - Due Date Change');
+                  },
+                  function (error) {
+                      parent.show();
+                      alert('There was an error saving the Task Due Date.');
+                      $('#taskEdit').removeClass("disabled");
+                  });
+                  $('#taskEdit').removeClass("disabled");
+                  $(this).closest('div').remove();
+                  parent.show();
+              })
+              .insertAfter(container1);
+        $('#taskEdit').addClass("disabled");
+    });
+
+    $('#fieldReminder').click(function (e) {
+        if (!$(this).hasClass('editable'))
+            return false;
+        top.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'false'), function (result) {
+            top.Ts.System.logAction('Task Detail - Toggle IsDismissed');
+            $('#fieldReminder').text((result === true ? 'false' : 'true'));
+            if (result) {
+                $('#reminderDateGroup').hide();
+            }
+            else {
+                $('#reminderDateGroup').show();
+            }
+        },
+        function (error) {
+            header.show();
+            alert('There was an error saving the task is dismissed.');
+        });
+    });
+
+    $('#fieldReminderDate').click(function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+            return false;
+        top.Ts.System.logAction('Task Detail - Reminder Date Clicked');
+        var parent = $(this).hide();
+        var container = $('<div>')
+              .insertAfter(parent);
+
+        var container1 = $('<div>')
+                .addClass('col-xs-9')
+              .appendTo(container);
+
+        var input = $('<input type="text">')
+                .addClass('col-xs-10 form-control')
+                .val($(this).val())
+                .datetimepicker({ pickTime: true })
+                .appendTo(container1)
+                .focus();
+
+        $('<i>')
+              .addClass('col-xs-1 fa fa-times')
+              .click(function (e) {
+                  $(this).closest('div').remove();
+                  parent.show();
+                  $('#taskEdit').removeClass("disabled");
+                  top.Ts.System.logAction('Task - Reminder Date change cancelled');
+              })
+              .insertAfter(container1);
+        $('<i>')
+              .addClass('col-xs-1 fa fa-check')
+              .click(function (e) {
+                  var value = top.Ts.Utils.getMsDate(input.val());
+                  container.remove();
+                  top.Ts.Services.Task.SetDueDate(_reminderID, value, function (result) {
+                      var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+                      parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                      $('#taskEdit').removeClass("disabled");
+                      top.Ts.System.logAction('Task Detail - Reminder Date Change');
+                  },
+                  function (error) {
+                      parent.show();
+                      alert('There was an error saving the Task Reminder Date.');
+                      $('#taskEdit').removeClass("disabled");
+                  });
+                  $('#taskEdit').removeClass("disabled");
+                  $(this).closest('div').remove();
+                  parent.show();
+              })
+              .insertAfter(container1);
         $('#taskEdit').addClass("disabled");
     });
 
