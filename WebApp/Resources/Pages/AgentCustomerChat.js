@@ -361,7 +361,7 @@ $(document).ready(function () {
             e.preventDefault();
             var ticketID = $('#chat-add-ticket').data('item').data;
             parent.Ts.Services.Chat.AddTicket(_activeChatID, ticketID, function () {
-                
+                parent.Ts.MainPage.openTicketByID(ticketID, false);
                 $('#chat-add-ticket-modal').modal('hide');
             });
         });

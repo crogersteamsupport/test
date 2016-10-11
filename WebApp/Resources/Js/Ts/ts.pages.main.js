@@ -694,7 +694,7 @@ Ts.Pages.Main.prototype = {
                 var chatGUID = top.Ts.System.Organization.ChatID;
                 pusher = new Pusher(key);
                 request_channel = pusher.subscribe('chat-requests-' + chatGUID);
-
+                
                 request_channel.bind('new-chat-request', function (data) {
                     $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
                     $.jGrowl(data.message, {
