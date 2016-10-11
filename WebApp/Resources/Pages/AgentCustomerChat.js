@@ -266,7 +266,7 @@ $(document).ready(function () {
         $('#chat-suggestions').click(function (e) {
             e.preventDefault();
             suggestedSolutions(function (ticketID, isArticle) {
-                console.log(ticketID + ' ' + isArticle);
+                //console.log(ticketID + ' ' + isArticle);
 
                 if (isArticle) {
                     top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
@@ -394,7 +394,7 @@ $(document).ready(function () {
         }
     }
 
-    function suggestedSolutions(callback) {
+    function suggestedSolutions(callback) {debugger
         $('.dialog-select-ticket2').find('input').val('');
         $('#SuggestedSolutionsModal').modal('show');
         $('#SuggestedSolutionsModal').on('shown.bs.modal', function () {

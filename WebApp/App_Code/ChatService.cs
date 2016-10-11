@@ -357,18 +357,6 @@ namespace TSWebServices
             return ticketID;
         }
 
-        //private void TransferAttachments(int chatID, int actionID)
-        //{
-        //    Attachments attachments = new Attachments(loginUser);
-        //    attachments.LoadByReference(ReferenceType.ChatAttachments, chatID);
-
-        //    foreach(Attachment attachment in attachments)
-        //    {
-        //        attachment.RefType = ReferenceType.Actions;
-        //        attachment.RefID = actionID;
-        //    }
-        //}
-
         [WebMethod]
         public void RequestTransfer(int chatID, int userID)
         {
