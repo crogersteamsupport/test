@@ -996,7 +996,7 @@ namespace TeamSupport.Data
 		public static bool ResetPassword(LoginUser loginUser, User user, bool isPortalUser, bool isCustomerHub = false)
 		{
 			string password = GenerateRandomPassword();
-				if (isCustomerHub || isPortalUser)
+				if (isCustomerHub)
 					user.IsPasswordExpired = false;
 				else
 					user.IsPasswordExpired = true;
