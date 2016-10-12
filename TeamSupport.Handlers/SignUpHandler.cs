@@ -516,7 +516,7 @@ namespace TeamSupport.Handlers
                     //TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Company", hrCompanyID.ToString(), "159931", true, false);//
                     try
                     {
-                        TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, source, hubSpotUtk, productType, "");
+                        TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, source, hubSpotUtk, productType);
                     }
                     catch (Exception ex)
                     {
