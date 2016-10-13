@@ -71,6 +71,8 @@ form.file-upload input { position: absolute; top: 0; right: 0; margin: 0; border
 }
 .ur{/*display:inline-block;*/line-height:1.5em}    
 
+.ulfn{padding:2px 2px 2px 6px;line-height:1.5em}
+
 .upload-queue .progress {
     float: left;
     height: 7px;
@@ -92,4 +94,17 @@ form.file-upload input { position: absolute; top: 0; right: 0; margin: 0; border
 
 #attachmentinput {
     margin-bottom: 20px;
+}
+
+.ticket-removable-item {
+/*padding: .25em .5em;*/
+margin: 0 .5em .5em 0;
+float: left;
+}
+
+.ticket-removable-item .ui-icon-close {
+    cursor: pointer;
+    float: right;
+    margin-left: 0.25em;
+    width: 16px;
 }
