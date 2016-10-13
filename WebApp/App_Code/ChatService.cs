@@ -866,7 +866,7 @@ namespace TSWebServices
                 DateCreated = request.DateCreated;
                 InitiatorMessage = (initiator.Title != null) 
                 ?   string.Format("{0} {1} - {2}, {3} ({4})", initiator.FirstName, initiator.LastName, initiator.Title, initiator.CompanyName, initiator.Email)
-                :   string.Format("{0} {1}, {3} ({4})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
+                :   string.Format("{0} {1}, {2} ({3})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
 
                 InitiatorDisplayName = string.Format("{0} {1}", initiator.FirstName, initiator.LastName);
                 InitiatorEmail = initiator.Email;

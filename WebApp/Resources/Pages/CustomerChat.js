@@ -14,10 +14,6 @@ $(document).ready(function () {
         channel = channelObject;
 
         _timer = setTimeout(function () {
-            //TODO: Just need to create a missed chat request and redirect them to the thank you page.  just verify old functionality. 
-
-
-            alert("Hello");
 
             var data = { chatID: chatID }
 
