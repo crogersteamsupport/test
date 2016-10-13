@@ -18,7 +18,10 @@
                         <p id="operator-message">waiting on operator...</p>
                     </div>
                     <div class="col-inside-lg decor-default">
-                        <div id="chat-body" class="chat-body"></div>
+                        <div id="chat-body" class="chat-body">
+                            <p id="typing" style="display:none; position:fixed; bottom: 50px;">user is typing...</p>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -51,7 +54,7 @@
             </div>
             <form id="message-form" action="">
                 <div class="input-group">
-                    <input id="message" type="text" class="form-control" />
+                    <input id="message" type="text" class="form-control" autocomplete="off" />
                     <span class="input-group-btn">
                         <button id="chat-attachment" class="btn btn-default" type="button" aria-label="attach documents"><span class="fa fa-paperclip"></span></button>
                         <button id="chat-tok-video" class="btn btn-default" type="button" aria-label="record screen"><span class="fa fa-video-camera"></span></button>

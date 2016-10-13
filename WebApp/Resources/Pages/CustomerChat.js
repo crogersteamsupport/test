@@ -14,7 +14,9 @@ $(document).ready(function () {
         channel = channelObject;
 
         _timer = setTimeout(function () {
-
+            console.log(_timer)
+            debugger
+            //console.log(_timer)
             var data = { chatID: chatID }
 
             IssueAjaxRequest("MissedChat", data,
@@ -26,6 +28,11 @@ $(document).ready(function () {
                 console.log(error)
             });
         }, 90000);
+
+        channel.bind('agent-joined', function (data) {
+            $('#operator-message').remove();
+            clearTimeout(_timer);
+        });
         
 
     });
@@ -100,10 +107,10 @@ function setupChat(chatID, participantID, callback) {
         console.log(status);
     });
 
-    pressenceChannel.bind('agent-joined', function (data) {
-        $('#operator-message').remove();
-        clearTimeout(_timer);
-    });
+    //pressenceChannel.bind('agent-joined', function (data) {
+    //    $('#operator-message').remove();
+    //    clearTimeout(_timer);
+    //});
 
     pressenceChannel.bind('new-comment', function (data) {
         //console.log('new-comment-user');
@@ -111,6 +118,53 @@ function setupChat(chatID, participantID, callback) {
         createMessageElement(data, (data.CreatorType == 0) ? 'left' : 'right');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
+
+    pressenceChannel.bind('agent-typing', function (data) {
+        console.log(data);
+        $('#typing').text(data).show();
+        //alert('yo typing')
+    });
+
+    pressenceChannel.bind('agent-stop-typing', function (data) {
+        $('#typing').hide();
+    });
+
+    var typingTimer;                //timer identifier
+    var doneTypingInterval = 5000;  //time in ms, 5 second for example
+    var $input = $('#message');
+
+    //on keyup, start the countdown
+    $input.on('keyup', function () {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+    });
+
+    //on keydown, clear the countdown 
+    $input.on('keydown', function () {
+        clearTimeout(typingTimer);
+        var data = { channelName: 'presence-' + chatID, userID: participantID, isTyping: true };
+
+        IssueAjaxRequest("UserTyping", data,
+        function (result) {
+
+        },
+        function (error) {
+
+        });
+    });
+
+    //user is "finished typing," do something
+    function doneTyping() {
+        var data = { channelName: 'presence-' + chatID,  userID: participantID, isTyping: false };
+
+        IssueAjaxRequest("UserTyping", data,
+        function (result) {
+
+        },
+        function (error) {
+
+        });
+    }
 
     callback(pressenceChannel);
 }

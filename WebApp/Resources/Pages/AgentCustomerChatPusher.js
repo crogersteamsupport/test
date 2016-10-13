@@ -27,6 +27,46 @@
         newCommentCallback(data, true);
     });
 
+    channel.bind('user-typing', function (data) {
+        console.log(data);
+        $('#typing').text(data).show();
+        //alert('yo typing')
+    });
+
+    channel.bind('user-stop-typing', function (data) {
+        $('#typing').hide();
+        //alert('yo NOT typing')
+    });
+
+
+    var typingTimer;                //timer identifier
+    var doneTypingInterval = 5000;  //time in ms, 5 second for example
+    var $input = $('#message');
+
+    //on keyup, start the countdown
+    $input.on('keyup', function () {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+    });
+
+    //on keydown, clear the countdown 
+    $input.on('keydown', function () {
+        clearTimeout(typingTimer);
+
+        parent.Ts.Services.Chat.AgentTyping('presence-' + _activeChatID, true, function (data) {
+
+        });
+    });
+
+    //user is "finished typing," do something
+    function doneTyping() {
+        $('#typing').hide();
+
+        parent.Ts.Services.Chat.AgentTyping('presence-' + _activeChatID, false, function (data) {
+
+        });
+    }
+
     callback(channel);
 }
 

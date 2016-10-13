@@ -198,6 +198,16 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string UserTyping(string channelName, int userID, bool isTyping)
+        {
+            ParticipantInfoView user = GetLinkedUserInfo(userID, ChatParticipantType.External);
+
+           var result = pusher.Trigger(channelName, (isTyping) ? "user-typing" : "user-stop-typing", string.Format("{0} {1} is typing...", user.FirstName, user.LastName));
+            return JsonConvert.SerializeObject(true);
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string AddUserUploadMessage(string channelName, int chatID, int attachmentID, int userID)
         {
             Chat chat = GetChat(chatID);
@@ -358,6 +368,15 @@ namespace TSWebServices
             ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
 
             var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            return JsonConvert.SerializeObject(true);
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string AgentTyping(string channelName, bool isTyping)
+        {
+            User user = loginUser.GetUser();
+            var result = pusher.Trigger(channelName, (isTyping) ? "agent-typing" : "agent-stop-typing", string.Format("{0} is typing...", user.DisplayName));
             return JsonConvert.SerializeObject(true);
         }
 

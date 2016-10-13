@@ -87,3 +87,8 @@
 .fa-book    { color: #3276B1 !important}
 
 video:hover{ cursor: pointer; }
+
+p.typing {   
+    position: fixed;
+    bottom: 50px;
+}

@@ -196,3 +196,9 @@
 .hover {
   border: 3px dashed #ccc;
 }
+
+
+p.typing {   
+    position: fixed;
+    bottom: 50px;
+}
