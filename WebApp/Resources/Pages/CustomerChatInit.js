@@ -25,7 +25,7 @@
         var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val(), description: $('#userIssue').val() };
 
         if (!chatOffline) {
-            IssueAjaxRequest("MissedChat", contactInfo,
+            IssueAjaxRequest("OfflineChat", contactInfo,
             function (result) {
                 console.log(result)
                 window.location.replace('ChatThankYou.html');

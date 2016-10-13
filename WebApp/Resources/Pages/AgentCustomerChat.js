@@ -394,7 +394,7 @@ $(document).ready(function () {
         }
     }
 
-    function suggestedSolutions(callback) {debugger
+    function suggestedSolutions(callback) {
         $('.dialog-select-ticket2').find('input').val('');
         $('#SuggestedSolutionsModal').modal('show');
         $('#SuggestedSolutionsModal').on('shown.bs.modal', function () {

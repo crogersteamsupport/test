@@ -65,7 +65,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void MissedChat(string chatGuid, string fName, string lName, string email, string description)
+        public void OfflineChat(string chatGuid, string fName, string lName, string email, string description)
         {
             Organization _organization = GetOrganization(chatGuid);
             Ticket ticket = (new Tickets(LoginUser.Anonymous)).AddNewTicket();
@@ -105,6 +105,53 @@ namespace TSWebServices
 
             Users users = new Users(LoginUser.Anonymous);
             users.LoadByEmailOrderByActive(_organization.OrganizationID, email);
+            if (!users.IsEmpty) ticket.Collection.AddContact(users[0].UserID, ticket.TicketID);
+        }
+
+        [WebMethod]
+        public void MissedChat(int chatID)
+        {
+            ChatRequestProxy request = GetChatRequest(chatID);
+            Organization _organization = Organizations.GetOrganization(loginUser, request.OrganizationID);
+            ChatClient client = ChatClients.GetChatClient(LoginUser.Anonymous, request.RequestorID);
+
+            Ticket ticket = (new Tickets(LoginUser.Anonymous)).AddNewTicket();
+            ticket.OrganizationID = _organization.OrganizationID;
+            ticket.GroupID = _organization.DefaultPortalGroupID;
+            ticket.IsKnowledgeBase = false;
+            ticket.IsVisibleOnPortal = true;
+            ticket.Name = "Missed Chat";
+            ticket.TicketSeverityID = TicketSeverities.GetTop(LoginUser.Anonymous, _organization.OrganizationID).TicketSeverityID;
+            ticket.TicketTypeID = TicketTypes.GetTop(LoginUser.Anonymous, _organization.OrganizationID).TicketTypeID;
+            ticket.TicketStatusID = TicketStatuses.GetTop(LoginUser.Anonymous, ticket.TicketTypeID).TicketStatusID;
+            ticket.TicketSource = "ChatOffline";
+            ticket.PortalEmail = client.Email;
+            ticket.Collection.Save();
+
+            StringBuilder builder = new StringBuilder();
+            builder.Append("<h2>Missed Chat Request</h2>");
+            builder.Append("<table cellspacing=\"0\" cellpadding=\"5\" border=\"0\">");
+            builder.Append("<tr><td><strong>First Name:</strong></td><td>" + client.FirstName + "</td></tr>");
+            builder.Append("<tr><td><strong>Last Name:</strong></td><td>" + client.LastName + "</td></tr>");
+            builder.Append("<tr><td><strong>Email:</strong></td><td><a href=\"mailto:" + client.Email + "\">" + client.Email + "</td></tr>");
+            builder.Append("<tr><td colspan=\"2\"><strong>Question:</strong></td></tr>");
+            builder.Append("<tr><td colspan=\"2\">" + request.Message + "</td></tr>");
+            builder.Append("</table>");
+
+
+            TeamSupport.Data.Action action = (new Actions(LoginUser.Anonymous)).AddNewAction();
+            action.ActionTypeID = null;
+            action.SystemActionTypeID = SystemActionType.Description;
+            action.Description = builder.ToString();
+            action.IsKnowledgeBase = false;
+            action.IsVisibleOnPortal = true;
+            action.ActionSource = "ChatOffline";
+            action.Name = "Description";
+            action.TicketID = ticket.TicketID;
+            action.Collection.Save();
+
+            Users users = new Users(LoginUser.Anonymous);
+            users.LoadByEmailOrderByActive(_organization.OrganizationID, client.Email);
             if (!users.IsEmpty) ticket.Collection.AddContact(users[0].UserID, ticket.TicketID);
         }
 
@@ -170,7 +217,6 @@ namespace TSWebServices
             chatMessage.Collection.Save();
             //Users.UpdateUserActivityTime(loginUser, userID);
 
-            User user = loginUser.GetUser();
             ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
 
             var result = pusher.Trigger(channelName, "new-comment", newMessage);
@@ -187,6 +233,28 @@ namespace TSWebServices
 
             if (users.IsEmpty) return null;
             else return JsonConvert.SerializeObject(users[0].GetProxy());
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string DisconnectUser(string channelName, int chatID, int userID)
+        {
+            //Chat chat = GetChat(chatID);
+            ParticipantInfoView participant = GetParticipant(userID, chatID);
+
+            ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
+            chatMessage.Message = string.Format("{0} {1} has left the chat.", participant.FirstName, participant.LastName);
+            chatMessage.ChatID = chatID;
+            chatMessage.PosterID = userID;
+            chatMessage.PosterType = ChatParticipantType.External;
+            chatMessage.IsNotification = true;
+            chatMessage.Collection.Save();
+            //Users.UpdateUserActivityTime(loginUser, userID);
+
+            ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
+
+            var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            return JsonConvert.SerializeObject(true);
         }
 
         #endregion
@@ -710,7 +778,7 @@ namespace TSWebServices
 
                 if (user != null)
                 {
-                    return new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, user.Organization);
+                    return new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, user.Organization, user.Title);
                 }
 
             }
@@ -724,7 +792,7 @@ namespace TSWebServices
             {
                 case ChatParticipantType.User:
                     UsersViewItem user = UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), participantID);
-                    if (user != null) result = new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, user.Organization);
+                    if (user != null) result = new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, user.Organization, user.Title);
                     break;
                 case ChatParticipantType.External:
                     ChatClientsViewItem client = ChatClientsView.GetChatClientsViewItem(TSAuthentication.GetLoginUser(), participantID);
@@ -768,16 +836,6 @@ namespace TSWebServices
             return result.ToString();
         }
 
-        /// <summary>
-        /// TODO:  Need to take uploaded chat files associated with a chatid and then transfer to a action created for a ticket. 
-        /// Replace the refID and refType in the attachments object
-        /// </summary>
-        /// <param name="actionID"></param>
-        private void TransferChatFiles(int chatID, int actionID)
-        {
-
-        }
-
         #endregion
 
         #region Classes
@@ -806,7 +864,10 @@ namespace TSWebServices
                 OrganizationID = request.OrganizationID;
                 InitiatorUserID = initiator.UserID;
                 DateCreated = request.DateCreated;
-                InitiatorMessage = string.Format("{0} {1}, {2} ({3})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
+                InitiatorMessage = (initiator.Title != null) 
+                ?   string.Format("{0} {1} - {2}, {3} ({4})", initiator.FirstName, initiator.LastName, initiator.Title, initiator.CompanyName, initiator.Email)
+                :   string.Format("{0} {1}, {3} ({4})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
+
                 InitiatorDisplayName = string.Format("{0} {1}", initiator.FirstName, initiator.LastName);
                 InitiatorEmail = initiator.Email;
                 Description = request.Message;
@@ -856,18 +917,22 @@ namespace TSWebServices
             public string LastName { get; set; }
             public string Email { get; set; }
             public string CompanyName { get; set; }
+            public string Title { get; set; }
+            public string PhoneNumber { get; set; }
 
             public ParticipantInfoView()
             {
 
             }
-            public ParticipantInfoView(int? userID, string firstName, string lastName, string email, string companyName)
+            public ParticipantInfoView(int? userID, string firstName, string lastName, string email, string companyName, string title = null, string phoneNumber = null)
             {
                 UserID = userID;
                 FirstName = firstName;
                 LastName = lastName;
                 Email = email;
                 CompanyName = companyName;
+                Title = title;
+                PhoneNumber = phoneNumber;
             }
         }
 

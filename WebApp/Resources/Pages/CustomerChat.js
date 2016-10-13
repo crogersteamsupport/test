@@ -1,5 +1,6 @@
 ﻿var _activeChatID = null;
 var _participantID = null;
+var _timer;
 $(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("chatid", window);
     _activeChatID = chatID;
@@ -11,6 +12,26 @@ $(document).ready(function () {
 
     setupChat(chatID, participantID, function (channelObject) {
         channel = channelObject;
+
+        _timer = setTimeout(function () {
+            //TODO: Just need to create a missed chat request and redirect them to the thank you page.  just verify old functionality. 
+
+
+            alert("Hello");
+
+            var data = { chatID: chatID }
+
+            IssueAjaxRequest("MissedChat", data,
+            function (result) {
+                //console.log(result)
+                window.location.replace('ChatThankYou.html');
+            },
+            function (error) {
+                console.log(error)
+            });
+        }, 90000);
+        
+
     });
     loadInitialMessages(chatID);
     SetupChatUploads(chatID, participantID);
@@ -66,12 +87,26 @@ function setupChat(chatID, participantID, callback) {
         createMessage(member.info.name + ' joined the chat.')
     });
 
+    //TODO:  This is not working.  Need a way to capture disconnection thru either agent or customer side.  
+    pressenceChannel.bind('disconnected', function () {
+        var data = { channelName: 'presence-' + chatID, chatID: chatID, userID: participantID };
+        IssueAjaxRequest("DisconnectUser", data,
+        function (result) {
+
+        },
+        function (error) {
+
+        });
+    });
+
+
     pressenceChannel.bind('pusher:subscription_error', function (status) {
         console.log(status);
     });
 
     pressenceChannel.bind('agent-joined', function (data) {
         $('#operator-message').remove();
+        clearTimeout(_timer);
     });
 
     pressenceChannel.bind('new-comment', function (data) {
