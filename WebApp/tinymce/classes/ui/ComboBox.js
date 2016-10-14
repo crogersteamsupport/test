@@ -1,4 +1,21 @@
+/**
+ * ComboBox.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class creates a combobox control. Select box that you select a value from or
+ * type a value into.
+ *
+ * @-x-less ComboBox.less
+ * @class tinymce.ui.ComboBox
+ * @extends tinymce.ui.Widget
+ */
 define("tinymce/ui/ComboBox", [
 	"tinymce/ui/Widget",
 	"tinymce/ui/Factory",

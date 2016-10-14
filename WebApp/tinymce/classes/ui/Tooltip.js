@@ -1,4 +1,21 @@
+/**
+ * Tooltip.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Creates a tooltip instance.
+ *
+ * @-x-less ToolTip.less
+ * @class tinymce.ui.ToolTip
+ * @extends tinymce.ui.Control
+ * @mixes tinymce.ui.Movable
+ */
 define("tinymce/ui/Tooltip", [
 	"tinymce/ui/Control",
 	"tinymce/ui/Movable"

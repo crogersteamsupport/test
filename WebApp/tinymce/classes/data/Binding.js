@@ -1,4 +1,20 @@
+/**
+ * Binding.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class gets dynamically extended to provide a binding between two models. This makes it possible to
+ * sync the state of two properties in two models by a layer of abstraction.
+ *
+ * @private
+ * @class tinymce.data.Binding
+ */
 define("tinymce/data/Binding", [], function() {
 	/**
 	 * Constructs a new bidning.

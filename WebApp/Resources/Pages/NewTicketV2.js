@@ -2112,6 +2112,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
   var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
   var input = $('<input type="text">')
                   .addClass('form-control ticket-simple-input')
+                  .attr("placeholder", "Enter Value")
                   .val(field.Value)
                   .appendTo(inputGroupContainer)
                   .after(getUrls(field.Value));
@@ -2384,6 +2385,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
   var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
   var input = $('<input type="text">')
                   .addClass('form-control ticket-simple-input')
+                  .attr("placeholder", "Enter Value")
                   .val(field.Value)
                   .appendTo(inputContainer)
                   .numeric();
@@ -2431,10 +2433,10 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
   var selectContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
-  var select = $('<select>').addClass('hidden-select').appendTo(selectContainer);
+  var select = $('<select>').addClass('hidden-select').attr("placeholder", "Select Value").appendTo(selectContainer);
   var options = field.ListValues.split('|');
 
-  if (field.Value == "") {
+  if (field.Value == undefined || field.Value == "") {
     $('<option>').text("unassigned").val("").appendTo(select);
     if (field.IsRequired) groupContainer.addClass('hasError');
 
