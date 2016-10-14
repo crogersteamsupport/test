@@ -484,6 +484,17 @@ namespace TSWebServices
             return true;
         }
 
+        [WebMethod]
+        public bool RemoveUser(string channelName, int chatID, int userID)
+        {
+            Chat chat = Chats.GetChat(loginUser, chatID);
+            ChatMessageProxy message = Chats.LeaveChat(loginUser, userID, ChatParticipantType.External, chatID);
+            ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External));
+
+            var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            return true;
+        }
+
         //TODO: Refactor into data layer...
         [WebMethod]
         public SuggestedSolutions GetSuggestedSolutions(int chatID, int firstItemIndex, int pageSize)

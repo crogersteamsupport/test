@@ -119,16 +119,17 @@ function setupChat(chatID, participantID, callback) {
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
 
-    pressenceChannel.bind('agent-typing', function (data) {
+    pressenceChannel.bind('client-agent-typing', function (data) {
         console.log(data);
         $('#typing').text(data).show();
         //alert('yo typing')
     });
 
-    pressenceChannel.bind('agent-stop-typing', function (data) {
+    pressenceChannel.bind('client-agent-stop-typing', function (data) {
         $('#typing').hide();
     });
 
+    var isTyping = false;
     var typingTimer;                //timer identifier
     var doneTypingInterval = 5000;  //time in ms, 5 second for example
     var $input = $('#message');
@@ -141,29 +142,17 @@ function setupChat(chatID, participantID, callback) {
 
     //on keydown, clear the countdown 
     $input.on('keydown', function () {
-        clearTimeout(typingTimer);
-        var data = { channelName: 'presence-' + chatID, userID: participantID, isTyping: true };
-
-        IssueAjaxRequest("UserTyping", data,
-        function (result) {
-
-        },
-        function (error) {
-
-        });
+        if (!isTyping) {
+            isTyping = true;
+            clearTimeout(typingTimer);
+            var triggered = pressenceChannel.trigger('client-user-typing', pressenceChannel.members.me.info.name + ' is typing...');
+        }
     });
 
     //user is "finished typing," do something
     function doneTyping() {
-        var data = { channelName: 'presence-' + chatID,  userID: participantID, isTyping: false };
-
-        IssueAjaxRequest("UserTyping", data,
-        function (result) {
-
-        },
-        function (error) {
-
-        });
+        var triggered = pressenceChannel.trigger('client-user-stop-typing', pressenceChannel.members.me.info.name + ' is typing...');
+        isTyping = false;
     }
 
     callback(pressenceChannel);
@@ -177,13 +166,6 @@ function loadInitialMessages(chatID) {
         chatInfoObject = result;
         createMessage('Initiated On: ' + moment(result.DateCreated).format('DD/MM/YYYY hh:mm A'));
         createMessage('Initiated By: ' + result.InitiatorDisplayName);
-
-        //for (i = 0; i < result.Messages.length; i++) {
-        //    console.log(result.Messages[i])
-        //    createMessageElement(result.Messages[i], (result.Messages[i].CreatorType == 0) ? 'left' : 'right');
-        //}
-
-        //$(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     },
     function (error) {
 

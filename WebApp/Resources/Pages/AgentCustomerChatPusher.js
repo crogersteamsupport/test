@@ -19,6 +19,10 @@
         //createMessage(member.info.name + ' joined the chat.')
     });
 
+    channel.bind('pusher:member_removed', function (member) {
+        parent.Ts.Services.Chat.RemoveUser('presence-' + _activeChatID, _activeChatID, member.id, function (success) { });
+    });
+
     channel.bind('pusher:subscription_error', function (status) {
         console.log(status);
     });
@@ -27,18 +31,19 @@
         newCommentCallback(data, true);
     });
 
-    channel.bind('user-typing', function (data) {
+    channel.bind('client-user-typing', function (data) {
         console.log(data);
         $('#typing').text(data).show();
         //alert('yo typing')
     });
 
-    channel.bind('user-stop-typing', function (data) {
+    channel.bind('client-user-stop-typing', function (data) {
         $('#typing').hide();
         //alert('yo NOT typing')
     });
 
 
+    var isTyping = false;
     var typingTimer;                //timer identifier
     var doneTypingInterval = 5000;  //time in ms, 5 second for example
     var $input = $('#message');
@@ -51,20 +56,18 @@
 
     //on keydown, clear the countdown 
     $input.on('keydown', function () {
-        clearTimeout(typingTimer);
-
-        parent.Ts.Services.Chat.AgentTyping('presence-' + _activeChatID, true, function (data) {
-
-        });
+        if (!isTyping) {
+            isTyping = true;
+            clearTimeout(typingTimer);
+            var triggered = channel.trigger('client-agent-typing', channel.members.me.info.name + ' is typing...');
+        }
     });
 
     //user is "finished typing," do something
     function doneTyping() {
         $('#typing').hide();
-
-        parent.Ts.Services.Chat.AgentTyping('presence-' + _activeChatID, false, function (data) {
-
-        });
+        var triggered = channel.trigger('client-agent-stop-typing', channel.members.me.info.name + ' is typing...');
+        isTyping = false;
     }
 
     callback(channel);
