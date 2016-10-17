@@ -1009,8 +1009,9 @@ namespace TeamSupport.Data
 					{
 						EmailPosts.SendResetCustomerHubPassword(loginUser, user.UserID, password);
 					}
-					else { 
-						EmailPosts.SendResetPortalPassword(loginUser, user.UserID, password);
+					else {
+                        user.IsPasswordExpired = true;
+                        EmailPosts.SendResetPortalPassword(loginUser, user.UserID, password);
 					}
 				else
 					EmailPosts.SendResetTSPassword(loginUser, user.UserID, password);
