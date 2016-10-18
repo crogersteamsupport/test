@@ -473,15 +473,15 @@ namespace TeamSupport.Handlers
                     ExceptionLogs.LogException(loginUser, ex, "signup");
                 }
 
-                string[] salesGuys = SystemSettings.ReadString(loginUser, "SalesGuys", "Jesus:1045957|Leon:1045958").Split('|');
+/*                string[] salesGuys = SystemSettings.ReadString(loginUser, "SalesGuys", "Jesus:1045957|Leon:1045958").Split('|');
                 int nextSalesGuy = int.Parse(SystemSettings.ReadString(loginUser, "NextSalesGuy", "0"));
                 if (nextSalesGuy >= salesGuys.Length || nextSalesGuy < 0) nextSalesGuy = 0;
                 string salesGuy = salesGuys[nextSalesGuy].Split(':')[0];
                 string salesGuyID = salesGuys[nextSalesGuy].Split(':')[1];
                 nextSalesGuy++;
                 if (nextSalesGuy >= salesGuys.Length) nextSalesGuy = 0;
-                SystemSettings.WriteString(loginUser, "NextSalesGuy", nextSalesGuy.ToString());
-
+               SystemSettings.WriteString(loginUser, "NextSalesGuy", nextSalesGuy.ToString());
+*/
                 string promo = data.Promo.ToString();
                 string hubSpotUtk = data.HubSpotUtk.ToString();
                 string source = data.Source.ToString();
@@ -497,7 +497,7 @@ namespace TeamSupport.Handlers
                     CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "Version", version);
                     CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "PodName", data.PodName.ToString());
                     CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "TeamSupportOrganizationID", data.OrganizationID.ToString());
-                    CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "SalesRep", salesGuy);
+                    //CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "SalesRep", salesGuy);
                 }
                 catch (Exception ex)
                 {
@@ -507,16 +507,16 @@ namespace TeamSupport.Handlers
                 try
                 {
 
-                    int hrCompanyID = TSHighrise.CreateCompany(tsOrg.Name, phone.Number, tsUser.Email, productType, "", source, campaign, "", new string[] { salesGuy, "trial" });
-                    int hrContactID = TSHighrise.CreatePerson(tsUser.FirstName, tsUser.LastName, tsOrg.Name, phone.Number, tsUser.Email, productType, "", source, campaign, "", new string[] { salesGuy });
+                    int hrCompanyID = TSHighrise.CreateCompany(tsOrg.Name, phone.Number, tsUser.Email, productType, "", source, campaign, "", new string[] { "trial" });
+                    int hrContactID = TSHighrise.CreatePerson(tsUser.FirstName, tsUser.LastName, tsOrg.Name, phone.Number, tsUser.Email, productType, "", source, campaign, "");
                     //1. New Trial Check In:1496359
                     //3. End of trial: 1496361
                     //Eric's ID 159931
-                    TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
-                    TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Company", hrCompanyID.ToString(), "159931", true, false);
+                    //TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
+                    //TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Company", hrCompanyID.ToString(), "159931", true, false);//
                     try
                     {
-                        TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, source, hubSpotUtk, productType, salesGuy);
+                        TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, source, hubSpotUtk, productType);
                     }
                     catch (Exception ex)
                     {
