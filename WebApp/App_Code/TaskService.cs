@@ -176,6 +176,14 @@ namespace TSWebServices
             return task.GetProxy();
         }
 
+        [WebMethod]
+        public AttachmentProxy[] GetAttachments(int reminderID)
+        {
+            Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
+            attachments.LoadByReference(ReferenceType.Tasks, reminderID);
+            return attachments.GetAttachmentProxies();
+        }
+
         private int GetAssignedCount(LoginUser loginUser)
         {
             SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE UserID = @UserID");

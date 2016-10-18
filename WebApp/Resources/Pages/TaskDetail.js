@@ -89,6 +89,43 @@ $(document).ready(function () {
         $(".newticket-product").val(-1);
     }
 
+    function LoadAssociations() {
+        window.parent.parent.Ts.Services.Task.GetAttachments(_reminderID, function (attachments) {
+            if (attachments.length > 0) {
+                var attdiv = $('<div>')
+                .addClass('attachment-list')
+                .appendTo($('#associationsContainer'));
+            }
+            for (var i = 0; i < attachments.length; i++) {
+                var blockDiv = $('<div>').appendTo(attdiv);
+                var atticon = $('<span>')
+                .addClass('ts-icon ts-icon-attachment')
+                .appendTo(blockDiv);
+
+                $('<a>')
+                .attr('target', '_blank')
+                .attr('filetype', attachments[i].FileType)
+                .text(ellipseString(attachments[i].FileName, 20))
+                .addClass('attfilename ui-state-default ts-link preview')
+                .attr('href', '../../../dc/1/attachments/' + attachments[i].AttachmentID)
+                .hover(function (e) {
+                    if ($(this).attr('filetype').indexOf('image') >= 0) {
+                        $("body").append("<p id='preview'><img src='" + this.href + "' alt='Image preview' style='max-width:400px' /></p>");
+                        $("#preview")
+			        .css("top", (e.pageY - 10) + "px")
+			        .css("left", (e.pageX + 30) + "px")
+			        .fadeIn("fast");
+                    }
+                },
+	            function () {
+	                $("#preview").remove();
+	            })
+                .appendTo(blockDiv);
+
+            }
+        });
+    }
+
     $('#taskEdit').click(function (e) {
         $('.taskProperties p, #taskName').toggleClass("editable");
         $(this).toggleClass("btn-primary");

@@ -108,3 +108,13 @@ float: left;
     margin-left: 0.25em;
     width: 16px;
 }
+
+#associationsContainer {
+    margin-top: 25px !important;
+}
+.attachment-list{padding: 10px 0 0 0}
+.attfilename{margin-right: 5px; line-height: 16px;}
+.ts-icon-attachment{float:left; margin-right: 10px}
+.ts-icon-attachment { background-position: -448px 0px; }
+.ts-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
+.ts-icon { width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
