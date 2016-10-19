@@ -144,7 +144,7 @@ $(document).ready(function () {
                                     .replace('{{MessageDirection}}', 'left')
                                     .replace('{{UserName}}', messageData.CreatorDisplayName)
                                     .replace('{{Avatar}}', (messageData.CreatorID !== null)
-                                                                    ? 'https://app.teamsupport.com/dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
+                                                                    ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
                                                                     : '../images/blank_avatar.png')
                                     .replace('{{Message}}', messageData.Message)
                                     .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
@@ -194,6 +194,7 @@ $(document).ready(function () {
     $("#message-form").submit(function (e) {
         e.preventDefault();
         $('#new-message').prop("disabled", true);
+        doneTyping();
         parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, $('#message').val(), _activeChatID, function (data) {
             $('#message').val('');
             $('#new-message').prop("disabled", false);

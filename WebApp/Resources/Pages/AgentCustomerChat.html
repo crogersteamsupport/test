@@ -87,6 +87,7 @@
                                 <div id="statusText"></div>
                                 <div id="publisher" style="margin:auto; margin-bottom:6px; display:block; height:450px; width:450px;"></div>
                                 <button type="button" id="startVideoRecording" class="btn btn-primary" title="Record" onClick="startVideoRecording()"><i class="fa fa-video-camera"></i></button>
+                                <button type="button" id="startScreenStreaming" class="btn btn-primary" title="Stream" onClick="startScreenStreaming()"><i class="fa fa-wifi"></i></button>
                                 <button type="button" id="stopVideoRecording" class="btn btn-danger" title="Stop" style="display:none;" onClick="stopVideoRecording()"><i class="fa fa-stop"></i></button>
                                 <button type="button" id="muteVideoRecording" class="btn btn-primary" title="Mute Audio" onClick="muteVideoRecording()"><i class="fa fa-microphone"></i></button>
                                 <button type="button" id="unmuteVideoRecording" class="btn btn-danger" title="Record Audio" style="display:none;" onClick="unmuteVideoRecording()"><i class="fa fa-microphone-slash"></i></button>
@@ -102,6 +103,7 @@
                                 <div id="screenRecordingStatusText"></div>
                                 <div id="tokScreenRecordingCountdown">0:00</div>
                                 <button type="button" id="startScreenRecording" class="btn btn-primary" title="Record Screen" onClick="startScreenRecording()"><i class="fa fa-video-camera"></i></button>
+                                <button type="button" id="startScreenStreaming" class="btn btn-primary" title="Stream Screen" onClick="startScreenStreaming()"><i class="fa fa-wifi"></i></button>
                                 <button type="button" id="muteScreenRecording" class="btn btn-primary" title="Mute Audio" onClick="muteScreenRecording()"><i class="fa fa-microphone"></i></button>
                                 <button type="button" id="unmuteScreenRecording" class="btn btn-danger" title="Record Audio" style="display:none;" onClick="unmuteScreenRecording()"><i class="fa fa-microphone-slash"></i></button>
                                 <button type="button" id="stopScreenRecording" class="btn btn-danger" title="Stop Screen Recording" style="display:none;" onClick="stopScreenRecording()"><i class="fa fa-stop"></i></button>
@@ -247,6 +249,18 @@
         </div>
     </div>
 
+    <div id="screenStreamModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div style="text-align: center; display: none;" id="screenStreamingContrainer">
+                        <div id="screenStream" style="margin:auto; margin-bottom:6px; display:block; height:450px; width:450px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Templates -->
     <script id="message-template" type="text/x-custom-template">
         <li class="media">
@@ -258,6 +272,19 @@
                         <br>
                         <small class="text-muted">{{UserName}} | {{Date}}</small>
                         <hr>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </script>
+    <script id="tok-template" type="text/x-custom-template">
+        <li class="media">
+            <div class="media-body">
+                <div class="media">
+                    <!--<img class="pull-{{MessageDirection}} media-object img-circle user-avatar" src="{{Avatar}}">-->
+                    <div class="media-body">
+                        {{message}} <a onClick="subscribeToStream()">Do you Accept?</a>
+                        <br>
                     </div>
                 </div>
             </div>

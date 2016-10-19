@@ -10,6 +10,10 @@ var videoURL;
 var tokTimer;
 var archiveID;
 
+var sharedSessionID;
+var sharedApiKey;
+var sharedToken;
+
 function SetupTOK() {
     $('#chat-tok-video').click(function (e) {
         top.Ts.System.logAction('Chat - Video Recording Button Clicked');
@@ -128,6 +132,41 @@ function startVideoRecording(e) {
     });
 };
 
+function startVideoStreaming(e) {
+    parent.Ts.System.logAction('Chat - Video Streaming Start Clicked');
+    //Send a signal over Pusher to any parties to notify of screen sharing stream.
+    channel.trigger('client-tok-video', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    $('#statusText').text("Currently Streaming ...");
+};
+
+function subscribeToStream() {
+    var dynamicPub = $("#screenStream");
+    $('#screenStreamModal').modal('show');
+    $("#screenStreamingContrainer").show();
+    dynamicPub.show();
+    dynamicPub.attr("id", "tempContainer");
+    dynamicPub.attr("width", "400px");
+    dynamicPub.attr("height", "400px");
+
+    if (dynamicPub.length == 0)
+        dynamicPub = $("#tempContainer");
+
+    stream = OT.initSession(sharedApiKey, sharedSessionID);
+    stream.connect(sharedToken, function (error) {
+        stream.on('streamCreated', function (event) {
+            stream.subscribe(event.stream, dynamicPub.attr('id'), {
+                insertMode: 'append',
+                width: '100%',
+                height: '100%'
+            });
+        });
+        stream.on('streamDestroyed', function (event) {
+            $('#screenStreamingContrainer').hide();
+            $('#screenStreamModal').modal('hide');
+        });
+    });
+}
+
 function stopVideoRecording(e) {
     parent.Ts.System.logAction('Ticket - Video Recording Stop Clicked');
     $('#statusText').text("Processing...");
@@ -205,6 +244,14 @@ function startScreenRecording(e) {
 
         $('#screenRecordingStatusText').text("Currently Recording Screen...");
     });
+};
+
+function startScreenStreaming(e) {
+    parent.Ts.System.logAction('Chat - Screen Streaming Start Clicked');
+    //Send a signal over Pusher to any parties to notify of screen sharing stream.
+    channel.trigger('client-tok-screen', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    //sessionId
+    $('#screenRecordingStatusText').text("Currently Streaming Screen...");
 };
 
 function updateTimer(parentElement) {

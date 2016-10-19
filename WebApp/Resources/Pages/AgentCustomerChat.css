@@ -92,3 +92,5 @@ p.typing {
     position: fixed;
     bottom: 50px;
 }
+
+a { cursor: pointer; }

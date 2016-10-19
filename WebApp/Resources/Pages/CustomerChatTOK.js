@@ -9,9 +9,14 @@ var screenSharingPublisher;
 var videoURL;
 var tokTimer;
 var archiveID;
+var stream;
+var sharedSessionID;
+var sharedApiKey;
+var sharedToken;
 
 function SetupTOK() {
     $('#chat-tok-video').click(function (e) {
+
         if (OT.checkSystemRequirements() == 1) {
             var dynamicPub = $("#publisher");
 
@@ -27,7 +32,7 @@ function SetupTOK() {
             var data = { chatID: _activeChatID };
             IssueAjaxRequest("GetTOKSessionInfoClient", data,
             function (resultID) {
-                $('.panel-body').height('calc(50vh - 95px)');
+                //$('.panel-body').height('calc(50vh - 95px)');
                 sessionId = resultID[0];
                 token = resultID[1];
                 apiKey = resultID[2];
@@ -40,6 +45,7 @@ function SetupTOK() {
                     });
                     session.publish(publisher);
                 });
+                $('#TOKModal').modal('show');
             },
             function (error) {
                 consol.log(error.message)
@@ -52,7 +58,7 @@ function SetupTOK() {
     });
 
     $('#chat-tok-screen').click(function (e) {
-        $('.panel-body').height('calc(95vh - 95px)');
+           
             var dynamicPub = $("#screenShare");
             $("#screenRecordingContainer").show();
             dynamicPub.show();
@@ -64,7 +70,7 @@ function SetupTOK() {
 
 
             OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
-
+        
             OT.checkScreenSharingCapability(function (response) {
                 if (!response.supported || response.extensionRegistered === false) {
                     alert("This browser does not support screen sharing");
@@ -81,7 +87,9 @@ function SetupTOK() {
                     $('#screenRecordingContainer').hide();
                 }
                 else {
-                    IssueAjaxRequest("GetTOKSessionInfo",
+                    $('#TOKModal').modal('show');
+                    var data = { chatID: _activeChatID };
+                    IssueAjaxRequest("GetTOKSessionInfoClient", data,
                     function (resultID) {
                         sessionId = resultID[0];
                         token = resultID[1];
@@ -93,7 +101,6 @@ function SetupTOK() {
                         session.connect(token, function (error) {
                             session.publish(publisher);
                         });
-
 
                         // Screen sharing is available. Publish the screen.
                         // Create an element, but do not display it in the HTML DOM:
@@ -116,7 +123,7 @@ function SetupTOK() {
                               });
                     },
                     function (error) {
-
+                        
                     });
                 }
             });
@@ -156,7 +163,14 @@ function stopVideoRecording(e) {
     $('#statusText').text("Processing...");
 };
 
+function startVideoStreaming(e) {
+    //Send a signal over Pusher to any parties to notify of screen sharing stream.
+    pressenceChannel.trigger('client-tok-video-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    $('#statusText').text("Currently Streaming ...");
+};
+
 function insertVideoRecording(e) {
+    $('#TOKModal').modal('hide');
     var videoHTML = '<video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
     var messageData = { channelName: 'presence-' + _activeChatID, message: videoHTML, chatID: _activeChatID, userID: _participantID };
 
@@ -174,11 +188,11 @@ function insertVideoRecording(e) {
     $('#insertVideoRecording').hide();
     $('#videoRecordingContainer').hide();
     $('#statusText').text("");
-    $('.panel-body').height('calc(100vh - 95px)');
+    //$('.panel-body').height('calc(100vh - 95px)');
 };
 
 function cancelVideoRecording(e) {
-    $('.panel-body').height('calc(100vh - 95px)');
+    $('#TOKModal').modal('hide');
     if (archiveID) {
         $('#statusText').text("Cancelling Recording ...");
         var data = { archiveID: archiveID };
@@ -214,8 +228,36 @@ function unmuteVideoRecording(e) {
     $('#unmuteVideoRecording').hide();
 };
 
+function subscribeToStream() {
+    var dynamicPub = $("#screenStream");
+    $('#screenStreamModal').modal('show');
+    $("#screenStreamingContrainer").show();
+    dynamicPub.show();
+    dynamicPub.attr("id", "tempContainer");
+    dynamicPub.attr("width", "400px");
+    dynamicPub.attr("height", "400px");
+
+    if (dynamicPub.length == 0)
+        dynamicPub = $("#tempContainer");
+
+    stream = OT.initSession(sharedApiKey, sharedSessionID);
+    stream.connect(sharedToken, function (error) {
+        stream.on('streamCreated', function (event) {
+            stream.subscribe(event.stream, dynamicPub.attr('id'), {
+                insertMode: 'append',
+                width: '100%',
+                height: '100%'
+            });
+        });
+        stream.on('streamDestroyed', function (event) {
+            $('#screenStreamingContrainer').hide();
+            $('#screenStreamModal').modal('hide');
+        });
+    });
+}
+
 function startScreenRecording(e) {
-    var data = { sessionId: sessionId };
+    var data = { sessionId: sessionId }; 
     IssueAjaxRequest("StartArchivingClient", data,
     function (resultID) {
         $('#startScreenRecording').hide();
@@ -233,6 +275,12 @@ function startScreenRecording(e) {
     function (error) {
         console.log(error.message);
     });
+};
+
+function startScreenStreaming(e) {
+    //Send a signal over Pusher to any parties to notify of screen sharing stream.
+    pressenceChannel.trigger('client-tok-screen-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    $('#screenRecordingStatusText').text("Currently Streaming Screen...");
 };
 
 function updateTimer(parentElement) {
@@ -260,15 +308,14 @@ function updateTimer(parentElement) {
 
 function stopScreenRecording(e) {
     $('#screenRecordingStatusText').text("Processing...");
-
-    var data = { archiveID: archiveID };
-    IssueAjaxRequest("StopArchiving", data,
+    var data = { archiveId: archiveID };
+    IssueAjaxRequest("StopArchivingClient", data,
     function (resultID) {
         $('#startScreenRecording').show();
         $('#stopScreenRecording').hide();
         $('#insertScreenRecording').show();
         $('#cancelScreenRecording').show();
-        tokurl = result;
+        tokurl = resultID;
         $('#screenRecordingStatusText').text("Recording Stopped");
         clearTimeout(tokTimer);
         $("#tokScreenRecordingCountdown").html("0:00");
@@ -279,10 +326,9 @@ function stopScreenRecording(e) {
     });
 };
 
-function insertScreenRecording (e) {
-    parent.Ts.System.logAction('Chat - Screen Recording Insert Clicked');
-    $('.panel-body').height('calc(100vh - 95px)');
-    var videoHTML = '<video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+function insertScreenRecording(e) {
+    $('#TOKModal').modal('hide');
+    var videoHTML = '<video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
     submitMessage(videoHTML);
 
     session.unpublish(publisher);
@@ -295,11 +341,11 @@ function insertScreenRecording (e) {
 };
 
 function cancelScreenRecording(e) {
-    $('.panel-body').height('calc(100vh - 95px)');
+    $('#TOKModal').modal('hide');
     if (archiveID) {
         $('#screenRecordingStatusText').text("Canceling Recording ...");
         var data = { archiveID: archiveID };
-        IssueAjaxRequest("DeleteArchive", data,
+        IssueAjaxRequest("DeleteArchiveClient", data,
         function (resultID) {
                 $("#tokScreenRecordingCountdown").html("0:00");
                 $("#tokScreenRecordingCountdown").hide();

@@ -14,9 +14,6 @@ $(document).ready(function () {
         channel = channelObject;
 
         _timer = setTimeout(function () {
-            console.log(_timer)
-            debugger
-            //console.log(_timer)
             var data = { chatID: chatID }
 
             IssueAjaxRequest("MissedChat", data,
@@ -43,6 +40,7 @@ $(document).ready(function () {
     $("#message-form").submit(function (e) {
         e.preventDefault();
         $('#send-message').prop("disabled", true);
+        doneTyping();
         var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
 
         IssueAjaxRequest("AddMessage", messageData,
@@ -69,6 +67,7 @@ function createMessageElement(messageData, direction) {
                         '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('DD/MM/YYYY hh:mm A') + '</div></div>');
 }
 
+var pressenceChannel;
 function setupChat(chatID, participantID, callback) {
     var channelName = 'presence-' + chatID;
     var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
@@ -79,7 +78,7 @@ function setupChat(chatID, participantID, callback) {
             }
         }
     });
-    var pressenceChannel = pusher.subscribe(channelName);
+    pressenceChannel = pusher.subscribe(channelName);
 
     pressenceChannel.bind('pusher:subscription_succeeded', function () {
         //console.log(channel.members);
@@ -119,6 +118,26 @@ function setupChat(chatID, participantID, callback) {
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
 
+    pressenceChannel.bind('client-tok-screen', function (data) {
+        console.log(data);
+        $('#chat-body').append('<div class="answer left">' +
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToStream()">Do you Accept?</a></div></div>');
+
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+    });
+
+    pressenceChannel.bind('client-tok-video', function (data) {
+        console.log(data);
+        $('#chat-body').append('<div class="answer left">' +
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to have a video chat with you. <a onClick="subscribeToStream()">Do you Accept?</a></div></div>');
+
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+    });
+
     pressenceChannel.bind('client-agent-typing', function (data) {
         console.log(data);
         $('#typing').text(data).show();
@@ -149,13 +168,12 @@ function setupChat(chatID, participantID, callback) {
         }
     });
 
-    //user is "finished typing," do something
-    function doneTyping() {
-        var triggered = pressenceChannel.trigger('client-user-stop-typing', pressenceChannel.members.me.info.name + ' is typing...');
-        isTyping = false;
-    }
-
     callback(pressenceChannel);
+}
+
+function doneTyping() {
+    var triggered = pressenceChannel.trigger('client-user-stop-typing', pressenceChannel.members.me.info.name + ' is typing...');
+    isTyping = false;
 }
 
 function loadInitialMessages(chatID) {

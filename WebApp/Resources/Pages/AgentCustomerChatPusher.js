@@ -1,4 +1,6 @@
-﻿function setupChat(pusherKey, chatID, newCommentCallback, callback) {
+﻿var isTyping = false;
+var channel;
+function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     var channelName = 'presence-' + chatID;
     var service = '/Services/ChatService.asmx/';
     var pusher = new Pusher(pusherKey, {
@@ -8,16 +10,16 @@
             }
         }
     });
-    var channel = pusher.subscribe(channelName);
+    channel = pusher.subscribe(channelName);
 
-    channel.bind('pusher:subscription_succeeded', function () {
-        //console.log(channel.members);
-    });
+    //channel.bind('pusher:subscription_succeeded', function () {
+    //    //console.log(channel.members);
+    //});
 
-    channel.bind('pusher:member_added', function (member) {
-        //$('#scopeMessage').remove();
-        //createMessage(member.info.name + ' joined the chat.')
-    });
+    //channel.bind('pusher:member_added', function (member) {
+    //    //$('#scopeMessage').remove();
+    //    //createMessage(member.info.name + ' joined the chat.')
+    //});
 
     channel.bind('pusher:member_removed', function (member) {
         parent.Ts.Services.Chat.RemoveUser('presence-' + _activeChatID, _activeChatID, member.id, function (success) { });
@@ -42,10 +44,29 @@
         //alert('yo NOT typing')
     });
 
+    channel.bind('client-tok-screen-user', function (data) {
+        var messageTemplate = $("#tok-template").html();
+        var compiledTemplate = messageTemplate
+                                .replace('{{message}}', data.userName + ' wants to share their screen with you. ')
+        $('.media-list').append(compiledTemplate);
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+    });
 
-    var isTyping = false;
-    var typingTimer;                //timer identifier
-    var doneTypingInterval = 5000;  //time in ms, 5 second for example
+    channel.bind('client-tok-video-user', function (data) {
+        var messageTemplate = $("#tok-template").html();
+        var compiledTemplate = messageTemplate
+                                .replace('{{message}}', data.userName + ' wants to video chat with you. ')
+        $('.media-list').append(compiledTemplate);
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+    });
+
+
+    var typingTimer;
+    var doneTypingInterval = 5000;
     var $input = $('#message');
 
     //on keyup, start the countdown
@@ -59,18 +80,19 @@
         if (!isTyping) {
             isTyping = true;
             clearTimeout(typingTimer);
-            var triggered = channel.trigger('client-agent-typing', channel.members.me.info.name + ' is typing...');
+            if (channel !== null)
+                var triggered = channel.trigger('client-agent-typing', channel.members.me.info.name + ' is typing...');
         }
     });
 
-    //user is "finished typing," do something
-    function doneTyping() {
-        $('#typing').hide();
-        var triggered = channel.trigger('client-agent-stop-typing', channel.members.me.info.name + ' is typing...');
-        isTyping = false;
-    }
-
     callback(channel);
+}
+
+function doneTyping() {
+    //$('#typing').hide();
+    if (channel !== null)
+        var triggered = channel.trigger('client-agent-stop-typing', channel.members.me.info.name + ' is typing...');
+    isTyping = false;
 }
 
 function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
