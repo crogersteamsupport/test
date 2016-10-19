@@ -825,7 +825,7 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetChangedPasswordHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub)
+        public static MailMessage GetWelcomeCustomerHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub)
         {
             EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 33, -1);
             template.ReplaceCommonParameters().ReplaceFields("CustomerHub", hub).ReplaceFields("HubUser", hubUser);
