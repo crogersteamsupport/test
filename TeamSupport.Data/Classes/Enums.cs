@@ -135,7 +135,8 @@ namespace TeamSupport.Data
 		NewDevice = 12,
 		TooManyAttempts = 13,
 		ResetCustomerHubPassword = 14,//PARAMS: UserID, Password
-        ChangedCustomerHubPassword = 15 //PARAMS: UserID
+        WelcomeCustomerHubUser = 15 //PARAMS: UserID
+        
     }
 
     public enum ProductType

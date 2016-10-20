@@ -10,22 +10,22 @@ namespace TeamSupport.Data
 {
     public class TSHubSpot
     {
-        public static void HubspotPost(string fname, string lname, string email, string company, string phone, string promo, string source, string utkCookie, ProductType version, string salesGuy)
+        public static void HubspotPost(string fname, string lname, string email, string company, string phone, string promo, string source, string utkCookie, ProductType version)
         {
 
             Dictionary<string, string> dictFormValues = new Dictionary<string, string>();
-            dictFormValues.Add("firstname", fname);
-            dictFormValues.Add("lastname", lname);
-            dictFormValues.Add("email", email);
-            dictFormValues.Add("phone", phone);
-            dictFormValues.Add("company", company);
-            dictFormValues.Add("campaign", promo);
-            dictFormValues.Add("marketingsource", source);
+            dictFormValues.Add("firstname", HttpUtility.UrlEncode(fname));
+            dictFormValues.Add("lastname", HttpUtility.UrlEncode(lname));
+            dictFormValues.Add("email", HttpUtility.UrlEncode(email));
+            dictFormValues.Add("phone", HttpUtility.UrlEncode(phone));
+            dictFormValues.Add("company", HttpUtility.UrlEncode(company));
+            dictFormValues.Add("campaign", HttpUtility.UrlEncode(promo));
+            dictFormValues.Add("marketingsource", HttpUtility.UrlEncode(source));
             dictFormValues.Add("lifecyclestage", "salesqualifiedlead");
             dictFormValues.Add("type_of_sql", "Trial");
             //dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");
             dictFormValues.Add("product_edition", GetProductVersionName(version));
-            dictFormValues.Add("hubspot_owner_id", GetSalesGuyHubSpotID(salesGuy));
+            //dictFormValues.Add("hubspot_owner_id", GetSalesGuyHubSpotID(salesGuy));
 
             int intPortalID = 448936;
             string strFormGUID = "0ddd21dd-ed3a-4282-afc8-26707a31d04e";
@@ -126,7 +126,9 @@ namespace TeamSupport.Data
             }
             return rtnValue;
         }
-        private static string GetSalesGuyHubSpotID(string salesGuy)
+
+        /*
+         * private static string GetSalesGuyHubSpotID(string salesGuy)
         {
             string rtnValue = "";
             switch(salesGuy.Trim().ToLower())
@@ -144,6 +146,7 @@ namespace TeamSupport.Data
 
             return rtnValue;
         }
+        */
     }
 
     public static class ExtensionMethods

@@ -469,7 +469,25 @@ namespace TSWebServices
 			organization = Organizations.GetOrganization(loginUser, organizationId);
 			bool isNewSignUp = DateTime.UtcNow.Subtract(organization.DateCreatedUtc).TotalMinutes < 10;
 
-			Users users = new Users(loginUser);
+
+            if (!organization.IsActive)
+            {
+                if (string.IsNullOrEmpty(organization.InActiveReason))
+                {
+                    validation.Error = "Your account is no longer active.  Please contact TeamSupport.com.";
+                    validation.Result = LoginResult.Fail;
+                }
+                else
+                {
+                    validation.Error = "Your company account is no longer active.<br />" + organization.InActiveReason;
+                    validation.Result = LoginResult.Fail;
+                }
+
+                return validation;
+            }
+
+
+            Users users = new Users(loginUser);
 			users.LoadByEmail(1, email);
 
 			if (users.Count == 1)

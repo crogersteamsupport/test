@@ -3111,7 +3111,7 @@ SELECT
                     if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)
                         EmailPosts.SendWelcomeTSUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
                     else
-                        EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
+                        EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
 
                     return ("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
 

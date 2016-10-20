@@ -686,21 +686,20 @@ function CreateNewActionLI() {
   });
 
   $('#action-timeline').on('click', '.action-create-option', function (e) {	
-  	DisableCreateBtns();
     e.preventDefault();
     e.stopPropagation();
+    DisableCreateBtns();
+    $('#action-add-public').removeClass('click-disabled');
+    $('#action-add-private').removeClass('click-disabled');
+    $("a.action-option-edit").each(function () {
+        $(this).removeClass('click-disabled');
+    });
     var self = $(this);
     var _oldActionID = self.data('actionid');
     isFormValid(function (isValid) {
       if (isValid) {
         SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
           if (result) {
-            UploadAttachments(result);
-            $('#action-new-editor').val('').parent().fadeOut('normal');
-            if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-            	tinymce.activeEditor.destroy();
-            }
-
             if ($('.upload-queue li').length > 0) {
               UploadAttachments(result);
             }
@@ -714,7 +713,9 @@ function CreateNewActionLI() {
               else {
                 UpdateActionElement(result, false);
               }
+              clearTicketEditor();
             }
+            
 
             var statusID = self.data("statusid");
             SetStatus(statusID);
@@ -777,7 +778,7 @@ function CreateNewActionLI() {
 };
 
 function DisableCreateBtns() {
-	if ($('#action-new-save-element').hasClass('open')) {
+    if ($('.action-save-group').hasClass('open')) {
 		$('#action-new-save-element').dropdown('toggle');
 	}
 	$('#action-new-save').prop('disabled', true);
@@ -930,6 +931,7 @@ function SetupActionEditor(elem, action) {
           actionElement.find('.ticket-action-number').text(_actionTotal);
         }
         else {
+            clearTicketEditor();
           UpdateActionElement(_newAction, false);
         }
         _newAction = null;
@@ -3769,7 +3771,9 @@ var SetupStatusField = function (StatusId) {
 
     if (statuses) {
         for (var i = 0; i < statuses.length; i++) {
-            selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+            if (statuses[i]) {
+                selectize.addOption({ value: statuses[i].TicketStatusID, text: statuses[i].Name, data: statuses[i] });
+            }
         }
     }
 

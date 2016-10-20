@@ -45,8 +45,8 @@ document.onkeydown = function (event) {
     }
 };
 
-window.onbeforeunload = function () {
-    return "Please make sure to save any changes before leaving the page.";
-    //if we return nothing here (just calling return;) then there will be no pop-up question at all
-    //return;
-};
+//window.onbeforeunload = function () {
+//    return "Please make sure to save any changes before leaving the page.";
+//    //if we return nothing here (just calling return;) then there will be no pop-up question at all
+//    //return;
+//};

@@ -1991,39 +1991,43 @@ function createCustomFields() {
         }
       }
     }
-
-    appendCategorizedCustomFields(result, null, parentContainer);
+    parentContainer.show();
+    appendCategorizedCustomFields(result, null);
   });
 };
 
-var appendCategorizedCustomFields = function (fields, className, container) {
+var appendCategorizedCustomFields = function (fields, className) {
   parent.Ts.Services.CustomFields.GetAllTypesCategories(parent.Ts.ReferenceTypes.Tickets, function (categories) {
+  	var container = $('#ticket-group-categorized-custom-fields');
     for (var j = 0; j < categories.length; j++) {
-      var isFirstFieldAdded = true;
+    var catWrap = $('#CFCatWrap-' + categories[j].CustomFieldCategoryID);
+    //TODO:  Wrap header and hr together inside a span so they can both be removed easily
+    //var container = $('<div>').addClass('cf-category category-' + categories[j].CustomFieldCategoryID).appendTo(parentcontainer);
+    if (catWrap.length == 0) {
+        catWrap = $('<div id=CFCatWrap-' + categories[j].CustomFieldCategoryID + '>');
+        var header = $('<label id=CFCat-' + categories[j].CustomFieldCategoryID + '>').text(categories[j].Category).addClass('customFieldCategoryHeader');
+        catWrap.append($('<hr>')).append(header);
+        container.append(catWrap);
+        catWrap.hide();
+    }
+
       for (var i = 0; i < fields.length; i++) {
         var item = null;
 
         var field = fields[i];
 
         if (field.CustomFieldCategoryID == categories[j].CustomFieldCategoryID) {
-          if (isFirstFieldAdded) {
-            isFirstFieldAdded = false;
-            //TODO:  Wrap header and hr together inside a span so they can both be removed easily
-            //var container = $('<div>').addClass('cf-category category-' + categories[j].CustomFieldCategoryID).appendTo(parentcontainer);
-            var header = $('<label id=CFCat-' + categories[j].CustomFieldCategoryID + '>').text(categories[j].Category).addClass('customFieldCategoryHeader');
-            container.append($('<hr>')).append(header);
-          }
-
+            catWrap.show();
           //TODO: need container for categories.
          // var container = $('.category-' + categories[j].CustomFieldCategoryID);
           switch (field.FieldType) {
-            case parent.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, container); break;
-            case parent.Ts.CustomFieldType.Date: AddCustomFieldDate(field, container); break;
-            case parent.Ts.CustomFieldType.Time: AddCustomFieldTime(field, container); break;
-            case parent.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, container); break;
-            case parent.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, container); break;
-            case parent.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, container); break;
-            case parent.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, container, false); break;
+            case parent.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, catWrap); break;
+            case parent.Ts.CustomFieldType.Date: AddCustomFieldDate(field, catWrap); break;
+            case parent.Ts.CustomFieldType.Time: AddCustomFieldTime(field, catWrap); break;
+            case parent.Ts.CustomFieldType.DateTime: AddCustomFieldDateTime(field, catWrap); break;
+            case parent.Ts.CustomFieldType.Boolean: AddCustomFieldBool(field, catWrap); break;
+            case parent.Ts.CustomFieldType.Number: AddCustomFieldNumber(field, catWrap); break;
+            case parent.Ts.CustomFieldType.PickList: AddCustomFieldSelect(field, catWrap, false); break;
             default:
           }
         }
@@ -2108,10 +2112,14 @@ var AddCustomFieldEdit = function (field, parentContainer) {
                           .data('field', field)
                           .appendTo(formcontainer)
                           .append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  if (field.ParentProductID) {
+      groupContainer.addClass('product-dependent');
+  }
   var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
   var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
   var input = $('<input type="text">')
                   .addClass('form-control ticket-simple-input')
+                  .attr("placeholder", "Enter Value")
                   .val(field.Value)
                   .appendTo(inputGroupContainer)
                   .after(getUrls(field.Value));
@@ -2173,6 +2181,9 @@ var AddCustomFieldDate = function (field, parentContainer) {
   var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  if (field.ParentProductID) {
+      groupContainer.addClass('product-dependent');
+  }
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
@@ -2238,6 +2249,9 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
   var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  if (field.ParentProductID) {
+      groupContainer.addClass('product-dependent');
+  }
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
@@ -2303,6 +2317,9 @@ var AddCustomFieldTime = function (field, parentContainer) {
   var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  if (field.ParentProductID) {
+      groupContainer.addClass('product-dependent');
+  }
   var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
   var dateLink = $('<a>')
                       .attr('href', '#')
@@ -2371,6 +2388,9 @@ var AddCustomFieldBool = function (field, parentContainer) {
                           .data('field', field)
                           .appendTo(formcontainer)
                           .append($('<label>').addClass('col-sm-4 control-label').text(field.Name));
+  if (field.ParentProductID) {
+      groupContainer.addClass('product-dependent');
+  }
   var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
   var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
   var input = $('<input type="checkbox">').appendTo(inputDiv);
@@ -2381,9 +2401,13 @@ var AddCustomFieldBool = function (field, parentContainer) {
 var AddCustomFieldNumber = function (field, parentContainer) {
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  if (field.ParentProductID) {
+      groupContainer.addClass('product-dependent');
+  }
   var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
   var input = $('<input type="text">')
                   .addClass('form-control ticket-simple-input')
+                  .attr("placeholder", "Enter Value")
                   .val(field.Value)
                   .appendTo(inputContainer)
                   .numeric();
@@ -2430,11 +2454,14 @@ var AddCustomFieldNumber = function (field, parentContainer) {
 var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFields) {
   var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
   var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+  if (field.ParentProductID) {
+      groupContainer.addClass('product-dependent');
+  }
   var selectContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
-  var select = $('<select>').addClass('hidden-select').appendTo(selectContainer);
+  var select = $('<select>').addClass('hidden-select').attr("placeholder", "Select Value").appendTo(selectContainer);
   var options = field.ListValues.split('|');
 
-  if (field.Value == "") {
+  if (field.Value == undefined || field.Value == "") {
     $('<option>').text("unassigned").val("").appendTo(select);
     if (field.IsRequired) groupContainer.addClass('hasError');
 
@@ -2551,11 +2578,11 @@ var appendMatchingParentValueFields = function (container, field, value) {
 };
 
 function AppendProductMatchingCustomFields() {
-  $('.CFProductGroup').remove();
+    $('.product-dependent').remove();
   var productID = $('#ticket-Product').val();
   if (productID == undefined || productID == "") productID = "-1";
   parent.Ts.Services.CustomFields.GetProductMatchingCustomFields(parent.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
-    var container = $('<div>').addClass('CFProductGroup').appendTo($('#ticket-group-custom-fields'));
+      var container = $('#ticket-group-custom-fields');
 
     for (var i = 0; i < result.length; i++) {
       if (!result[i].CustomFieldCategoryID) {
@@ -2578,7 +2605,7 @@ function AppendProductMatchingCustomFields() {
         }
       }
     }
-    appendCategorizedCustomFields(result, null, container);
+    appendCategorizedCustomFields(result, null);
   });
 };
 
