@@ -165,14 +165,7 @@ namespace TeamSupport.ServiceLibrary
 
             //Create Batch File
             string batchFile = string.Format("thread_{0}.bat", _threadPosition);
-            string batchFileCommand = Path.GetPathRoot(System.Reflection.Assembly.GetEntryAssembly().Location) + Environment.NewLine;
-
-            if (!string.IsNullOrEmpty(batchFileCommand))
-            {
-                batchFileCommand = batchFileCommand.Replace(@"\", "");
-            }
-
-            batchFileCommand += "chdir " + Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + Environment.NewLine;
+            string batchFileCommand = "chdir " + Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + Environment.NewLine;
             batchFileCommand += string.Format(PHANTOMJSCOMMAND, optionsFile, outputImage);
             string batchFileFullPath = Path.Combine(path, batchFile);
             Log("batchFile: " + batchFileFullPath);

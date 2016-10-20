@@ -218,53 +218,6 @@ namespace TeamSupport.Data
       }
     }
 
-    public static DateTime? GetLastActionDateCreated(LoginUser loginUser, int ticketId)
-    {
-        DateTime? result = null;
-
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = "SELECT MAX(DateCreated) AS DateCreated FROM Actions GROUP BY TicketID HAVING TicketID = @TicketId";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@TicketId", ticketId);
-            Actions actions = new Actions(loginUser);
-            result = (DateTime?)actions.ExecuteScalar(command);
-        }
-
-        return result;
-    }
-
-    public static int TotalActionsForSla(LoginUser loginUser, int ticketId)
-    {
-        int result = 0;
-
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = @"SELECT COUNT(1) AS ActionCount
-FROM Actions ax
-LEFT JOIN Tickets tx ON ax.TicketID = tx.TicketID
-LEFT JOIN Organizations ox ON ox.OrganizationID = tx.OrganizationID
-WHERE ax.SystemActionTypeID <> 1
-    AND(
-    ax.IsVisibleOnPortal = 1
-    OR ox.SlaInitRespAnyAction = 1
-    )
-GROUP BY ax.TicketID
-HAVING ax.TicketID = @TicketId";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@TicketId", ticketId);
-            Actions actions = new Actions(loginUser);
-            var resultVar = actions.ExecuteScalar(command);
-            
-            if (resultVar != null)
-            {
-                result = int.Parse(resultVar.ToString());
-            }
-        }
-
-        return result;
-    }
-
     public void LoadByActionIDs(int[] actionIDs)
     {
       if (actionIDs.Length < 1) return;

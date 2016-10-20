@@ -287,11 +287,6 @@ $(document).ready(function () {
   script.setAttribute('id', 'dropboxjs');
   firstScript.parentNode.insertBefore(script, firstScript);
 
-  var slaCheckTimer = setTimeout(function () {
-      if ($('#ticket-SLANote').text() == 'Calculating...') {
-        resetSLAInfo();
-      }
-  }, 5000);
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -5271,13 +5266,9 @@ var resetSLAInfo = function () {
 
 var setSLAInfo = function () {
   $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
-  if (_ticketInfo.Ticket.SlaViolationTime === null && (_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)) {
+  if (_ticketInfo.Ticket.SlaViolationTime === null) {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
-  }
-  else if (_ticketInfo.Ticket.SlaViolationTime === null && _ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0) {
-      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
-      $('#ticket-SLANote').text('Calculating...');
   }
   else {
     $('#ticket-SLAStatus')

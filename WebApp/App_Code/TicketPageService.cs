@@ -65,7 +65,7 @@ namespace TSWebServices
             info.Attachments = GetAttachments(ticket);
 
             Reminders reminders = new Reminders(ticket.Collection.LoginUser);
-			reminders.LoadByItemAll(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
+				reminders.LoadByItemAll(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
             info.Reminders = reminders.GetReminderProxies();
 
             Assets assets = new Assets(ticket.Collection.LoginUser);
@@ -73,13 +73,6 @@ namespace TSWebServices
             info.Assets = assets.GetAssetProxies();
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
-
-            SlaTicket slaTicket = SlaTickets.GetSlaTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
-
-            if (slaTicket != null)
-            {
-                info.SlaTriggerId = slaTicket.SlaTriggerId;
-            }
 
             return info;
         }
@@ -843,8 +836,7 @@ namespace TSWebServices
             public TicketLinkToJiraItemProxy LinkToJira { get; set; }
             [DataMember]
             public AttachmentProxy[] Attachments { get; set; }
-            [DataMember]
-            public int? SlaTriggerId { get; set; }
+
         }
 
         [DataContract]
