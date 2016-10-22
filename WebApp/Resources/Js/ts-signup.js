@@ -4,13 +4,15 @@
         var val = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
         return val ? decodeURIComponent(val) : null;
     }
-    
+
     initFromParams();
 
     if (getURLParameter("suerror") != null) {
         validateCompany();
         validateEmail();
         validateName();
+        validatePassword();
+        validateConfirm();
         alert("There was an error processing your sign up request.  Please review your information and try again.");
     }
 
@@ -18,6 +20,8 @@
         validateCompany();
         validateEmail();
         validateName();
+        validatePassword();
+        validateConfirm();
 
         if (jQuery('.form-group.has-error').length > 0) {
             e.preventDefault();
@@ -40,6 +44,8 @@
     jQuery('input[name="name"]').keyup(function (e) { validateName(); }).change(function (e) { validateName(); });
     jQuery('input[name="email"]').keyup(function (e) { validateEmail(); }).change(function (e) { validateEmail(); });
     jQuery('input[name="company"]').keyup(function (e) { validateCompany(); }).change(function (e) { validateCompany(); });
+    jQuery('input[name="password"]').keyup(function (e) { validatePassword(); }).change(function (e) { validatePassword(); });
+    jQuery('input[name="confirm"]').keyup(function (e) { validateConfirm(); }).change(function (e) { validateConfirm(); });
 
     function initFromParams() {
         function initParam(param) {
@@ -76,6 +82,52 @@
         }
     }
 
+    function validatePassword() {
+        var el = jQuery('input[name="password"]');
+        if (el == null) return;
+        var pw = jQuery.trim(el.val());
+        var confirm = jQuery.trim(jQuery('input[name="confirm"]').val());
+
+        if (pw.length < 8) {
+            el.closest('.form-group').addClass('has-error');
+        } else {
+            el.closest('.form-group').removeClass('has-error');
+        }
+    }
+
+    function validateConfirm() {
+        var el = jQuery('input[name="confirm"]');
+        if (el == null) return;
+
+        var pw = jQuery.trim(jQuery('input[name="password"]').val());
+        var confirm = jQuery.trim(el.val());
+
+        if (pw != confirm) {
+            el.closest('.form-group').addClass('has-error');
+        } else {
+            el.closest('.form-group').removeClass('has-error');
+        }
+    }
+
+
+    function getBaseUrl(url) {
+        pathArray = url.split('/');
+        protocol = pathArray[0];
+        host = pathArray[2];
+        return protocol + '//' + host;
+    }
+
+    function getScriptUrl() {
+        var scripts = document.getElementsByTagName('script');
+        for (i = 0; i < scripts.length; i++) {
+            if (scripts[i].src.indexOf("ts-signup.js") > -1) {
+                return getBaseUrl(scripts[i].src);
+            }
+        }
+        return "";
+    }
+
+
     function validateCompany(callback) {
         var el = jQuery('input[name="company"]');
         var company = jQuery.trim(el.val());
@@ -87,10 +139,9 @@
             return;
         }
 
-
         jQuery.ajax({
             type: "GET",
-            url: top.Ts.System.AppDomain + "/signup/fn/validatecompany",
+            url: getScriptUrl() + "/signup/fn/validatecompany",
             data: { name: company },
             crossDomain: true,
             dataType: 'jsonp'

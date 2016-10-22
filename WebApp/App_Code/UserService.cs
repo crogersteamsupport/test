@@ -517,6 +517,16 @@ namespace TSWebServices
                 Organizations orgs = new Organizations(TSAuthentication.GetLoginUser());
                 orgs.ResetDefaultSupportUser(TSAuthentication.GetLoginUser(), user.UserID);
             }
+            else
+            {
+                int userCount = Organizations.GetUserCount(TSAuthentication.GetLoginUser(), TSAuthentication.GetLoginUser().OrganizationID);
+                Organization organization = (Organization)Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.GetLoginUser().OrganizationID);
+
+                if (organization.UserSeats <= userCount)
+                {
+                    return false;
+                }
+            }
 
             user.IsActive = value;
             user.Collection.Save();

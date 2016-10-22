@@ -269,7 +269,7 @@ namespace TeamSupport.Handlers
                 prams.promo = promo;
                 prams.hubspotutk = cookies["hubspotutk"] != null ? cookies["hubspotutk"].Value : "";
                 prams.source = source;
-                return Organizations.SetupNewAccount(fname, lname, email, company, phone, eval, seats, (ProductType)version, prams, context.Request.Url.OriginalString, context.Request.UrlReferrer.OriginalString);
+                return Organizations.SetupNewAccount(fname, lname, email, password, company, phone, eval, seats, (ProductType)version, prams, context.Request.Url.OriginalString, context.Request.UrlReferrer.OriginalString);
             }
             else
             {
@@ -466,7 +466,14 @@ namespace TeamSupport.Handlers
                     op.ProductID = 219;
                     op.ProductVersionID = null;
                     op.IsVisibleOnPortal = true;
+
+                    op = ops.AddNewOrganizationProduct();
+                    op.OrganizationID = tsOrg.OrganizationID;
+                    op.ProductID = 44639;
+                    op.ProductVersionID = null;
+                    op.IsVisibleOnPortal = true;
                     ops.Save();
+
                 }
                 catch (Exception ex)
                 {
