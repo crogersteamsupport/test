@@ -30,7 +30,7 @@
 
         var btn = jQuery(this).hide();
         if (jQuery('.img-busy').length < 1) {
-            jQuery('<img>').attr('src', 'http://www.teamsupport.com/images/dots64.gif').insertAfter(btn);
+            jQuery('<img>').attr('src', 'https://www.teamsupport.com/hubfs/icons/signup-loading.gif').insertAfter(btn);
         }
         else {
             jQuery('.img-busy').show();
