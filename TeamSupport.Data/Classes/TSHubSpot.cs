@@ -14,13 +14,13 @@ namespace TeamSupport.Data
         {
 
             Dictionary<string, string> dictFormValues = new Dictionary<string, string>();
-            dictFormValues.Add("firstname", HttpUtility.UrlEncode(fname));
-            dictFormValues.Add("lastname", HttpUtility.UrlEncode(lname));
-            dictFormValues.Add("email", HttpUtility.UrlEncode(email));
-            dictFormValues.Add("phone", HttpUtility.UrlEncode(phone));
-            dictFormValues.Add("company", HttpUtility.UrlEncode(company));
-            dictFormValues.Add("campaign", HttpUtility.UrlEncode(promo));
-            dictFormValues.Add("marketingsource", HttpUtility.UrlEncode(source));
+            dictFormValues.Add("firstname", fname);
+            dictFormValues.Add("lastname", lname);
+            dictFormValues.Add("email", email);
+            dictFormValues.Add("phone", phone);
+            dictFormValues.Add("company", company);
+            dictFormValues.Add("campaign", promo);
+            dictFormValues.Add("marketingsource", source);
             dictFormValues.Add("lifecyclestage", "salesqualifiedlead");
             dictFormValues.Add("type_of_sql", "Trial");
             //dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");
