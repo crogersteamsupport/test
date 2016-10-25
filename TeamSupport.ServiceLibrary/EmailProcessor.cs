@@ -1310,7 +1310,7 @@ namespace TeamSupport.ServiceLibrary
             hubs.LoadByOrganizationID(organization.OrganizationID);
             if (hubs.IsEmpty) throw new Exception("No customer hub found for user: " + userID.ToString());
 
-            MailMessage message = EmailTemplates.GetWelcomeCustomerHub(LoginUser, user.GetUserView(), hubs[0]);
+            MailMessage message = EmailTemplates.GetWelcomeCustomerHub(LoginUser, user.GetUserView(), hubs[0], password);
             message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
             AddMessage(organization.OrganizationID, "Portal Password Changed [" + user.FirstLastName + "]", message);
         }
