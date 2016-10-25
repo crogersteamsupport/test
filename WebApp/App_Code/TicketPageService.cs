@@ -74,6 +74,13 @@ namespace TSWebServices
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
 
+            SlaTicket slaTicket = SlaTickets.GetSlaTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+
+            if (slaTicket != null)
+            {
+                info.SlaTriggerId = slaTicket.SlaTriggerId;
+            }
+
             return info;
         }
 
@@ -836,7 +843,8 @@ namespace TSWebServices
             public TicketLinkToJiraItemProxy LinkToJira { get; set; }
             [DataMember]
             public AttachmentProxy[] Attachments { get; set; }
-
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
         }
 
         [DataContract]
