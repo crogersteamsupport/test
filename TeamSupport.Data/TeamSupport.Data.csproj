@@ -299,6 +299,7 @@
     <Compile Include="BusinessObjects\TagLinks.cs" />
     <Compile Include="BusinessObjects\Tags.cs" />
     <Compile Include="BusinessObjects\TaskAssociations.cs" />
+    <Compile Include="BusinessObjects\TaskAssociationsView.cs" />
     <Compile Include="BusinessObjects\TasksView.cs" />
     <Compile Include="BusinessObjects\TicketAutomationActions.cs" />
     <Compile Include="BusinessObjects\TicketAutomationHistory.cs" />
@@ -418,6 +419,7 @@
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
     <Compile Include="FieldMaps\TagsFieldMap.cs" />
     <Compile Include="FieldMaps\TaskAssociationsFieldMap.cs" />
+    <Compile Include="FieldMaps\TaskAssociationsViewFieldMap.cs" />
     <Compile Include="FieldMaps\TasksViewFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationActionsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationHistoryFieldMap.cs" />
@@ -713,6 +715,7 @@
     <Compile Include="Generated\GeneratedTagLinks.cs" />
     <Compile Include="Generated\GeneratedTags.cs" />
     <Compile Include="Generated\GeneratedTaskAssociations.cs" />
+    <Compile Include="Generated\GeneratedTaskAssociationsView.cs" />
     <Compile Include="Generated\GeneratedTasksView.cs" />
     <Compile Include="Generated\GeneratedTechDocs.cs" />
     <Compile Include="Generated\GeneratedTicketAutomationActions.cs" />
@@ -785,6 +788,7 @@
     <Compile Include="Proxies\SimpleImportFieldsViewProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
     <Compile Include="Proxies\TaskAssociationsProxy.cs" />
+    <Compile Include="Proxies\TaskAssociationsViewProxy.cs" />
     <Compile Include="Proxies\TasksViewProxy.cs" />
     <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />
     <Compile Include="Proxies\TicketTypesViewProxy.cs" />

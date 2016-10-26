@@ -141,7 +141,7 @@ namespace TeamSupport.Data
     {
         SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TaskAssociations] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID);";
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TaskAssociations] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
         deleteCommand.Parameters.Add("ReminderID", SqlDbType.Int);
         deleteCommand.Parameters["ReminderID"].Value = reminderID;
 
@@ -159,7 +159,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TaskAssociations] SET     [RefType] = @RefType  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TaskAssociations] SET   WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReminderID", SqlDbType.Int, 4);
@@ -232,7 +232,7 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TaskAssociations] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID);";
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TaskAssociations] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
 		deleteCommand.Parameters.Add("ReminderID", SqlDbType.Int);
 
 		try
@@ -338,7 +338,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReminderID], [RefID], [RefType], [CreatorID], [DateCreated] FROM [dbo].[TaskAssociations] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReminderID], [RefID], [RefType], [CreatorID], [DateCreated] FROM [dbo].[TaskAssociations] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReminderID", reminderID);
         Fill(command);

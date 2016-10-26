@@ -44,11 +44,21 @@
 }
 
 .addatt{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/icons/attachment.png');cursor:pointer}
-.addticket{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
-.addgroup{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
-.addcustomer{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
-.addproduct{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
-.adduser{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+.addticket {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
+.addgroup {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
+.addcustomer {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.addproduct {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
+.adduser {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+
+.ticketIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
+.groupIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
+.companyIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.productIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
+.userIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+
+.attfilenamefix {
+    margin-left: 10px;
+}
 
 form.file-upload { position: relative; overflow: hidden; direction: ltr; cursor: pointer; color: #333; height: 16px; line-height: 16px; float:left; margin-top: 4px !important; margin-right: 5px !important; }
 form.file-upload input { position: absolute; top: 0; right: 0; margin: 0; border: 300px solid transparent; opacity: 0; -ms-filter: 'alpha(opacity=0)'; filter: alpha(opacity=0); -o-transform: translate(-300px, -300px) scale(10); -moz-transform: translate(-800px, 0) scale(10); cursor: pointer; height: 100%; }
@@ -92,9 +102,9 @@ form.file-upload input { position: absolute; top: 0; right: 0; margin: 0; border
     padding: 0;
 }
 
-#attachmentinput {
+/*#attachmentinput {
     margin-bottom: 20px;
-}
+}*/
 
 .ticket-removable-item {
 /*padding: .25em .5em;*/
@@ -109,8 +119,11 @@ float: left;
     width: 16px;
 }
 
-#associationsContainer {
-    margin-top: 25px !important;
+#associationsBreak {
+    margin: 5px 0px 10px 0px;
+}
+.associationsBreakAdjustement {
+    margin-top: 20px !important;
 }
 .attachment-list{padding: 10px 0 0 0}
 .attfilename{margin-right: 5px; line-height: 16px;}
@@ -118,3 +131,6 @@ float: left;
 .ts-icon-attachment { background-position: -448px 0px; }
 .ts-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
 .ts-icon { width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
+
+.main-quick-ticket-blur, .company-search-blur, .user-search-blur, .insert-ticket-blur, .group-search-blur,.product-search-blur { font-style: italic;}
+.main-quick-ticket, .company-search, .user-search, .insert-ticket, .group-search, .product-search {width:200px}

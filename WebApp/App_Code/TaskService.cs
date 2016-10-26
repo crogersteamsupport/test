@@ -184,6 +184,14 @@ namespace TSWebServices
             return attachments.GetAttachmentProxies();
         }
 
+        [WebMethod]
+        public TaskAssociationsViewItemProxy[] LoadAssociations(int reminderID)
+        {
+            TaskAssociationsView taskAssociations = new TaskAssociationsView(TSAuthentication.GetLoginUser());
+            taskAssociations.LoadByReminderIDOnly(reminderID);
+            return taskAssociations.GetTaskAssociationsViewItemProxies();
+        }
+
         private int GetAssignedCount(LoginUser loginUser)
         {
             SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE UserID = @UserID");
@@ -311,6 +319,41 @@ namespace TSWebServices
             task.Collection.Save();
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description.ToString());
             return value.ToString() != "" ? value.ToString() : null;
+        }
+
+        [WebMethod]
+        public bool AddAssociation(int reminderID, int refID, ReferenceType refType)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            try
+            {
+                TaskAssociation taskAssociation = (new TaskAssociations(loginUser).AddNewTaskAssociation());
+                taskAssociation.ReminderID = reminderID;
+                taskAssociation.RefID = refID;
+                taskAssociation.RefType = (int)refType;
+                taskAssociation.DateCreated = DateTime.UtcNow;
+                taskAssociation.CreatorID = loginUser.UserID;
+                taskAssociation.Collection.Save();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        [WebMethod(true)]
+        public void DeleteAssociation(int reminderID, int refID, ReferenceType refType)
+        {
+            try
+            {
+                TaskAssociations associations = new TaskAssociations(UserSession.LoginUser);
+                associations.DeleteAssociation(reminderID, refID, refType);
+            }
+            catch (Exception ex)
+            {
+                DataUtils.LogException(UserSession.LoginUser, ex);
+            }
         }
     }
 

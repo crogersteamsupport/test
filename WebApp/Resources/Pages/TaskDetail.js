@@ -91,13 +91,32 @@ $(document).ready(function () {
 
     function LoadAssociations() {
         window.parent.parent.Ts.Services.Task.GetAttachments(_reminderID, function (attachments) {
-            if (attachments.length > 0) {
-                var attdiv = $('<div>')
-                .addClass('attachment-list')
-                .appendTo($('#associationsContainer'));
-            }
+            var attdiv = $('#associationsContainer');
+            attdiv.empty();
+            //if (attachments.length > 0) {
+            //    var attdiv = $('<div>')
+            //    .addClass('attachment-list')
+            //    .appendTo($('#associationsContainer'));
+            //}
             for (var i = 0; i < attachments.length; i++) {
-                var blockDiv = $('<div>').appendTo(attdiv);
+                var blockDiv = $('<div>')
+                .data('attachmentID', attachments[i].AttachmentID)
+                .hover(function (e) {
+                    $(this).find('.associationDelete').show();
+                    //if ($(this).attr('filetype').indexOf('image') >= 0) {
+                    //    $("body").append("<p id='preview'><img src='" + this.href + "' alt='Image preview' style='max-width:400px' /></p>");
+                    //    $("#preview")
+			        //.css("top", (e.pageY - 10) + "px")
+			        //.css("left", (e.pageX + 30) + "px")
+			        //.fadeIn("fast");
+                    //}
+                },
+	            function () {
+	                $(this).find('.associationDelete').hide();
+	                $("#preview").remove();
+	            })
+                .appendTo(attdiv);
+
                 var atticon = $('<span>')
                 .addClass('ts-icon ts-icon-attachment')
                 .appendTo(blockDiv);
@@ -105,24 +124,95 @@ $(document).ready(function () {
                 $('<a>')
                 .attr('target', '_blank')
                 .attr('filetype', attachments[i].FileType)
-                .text(ellipseString(attachments[i].FileName, 20))
+                .text(ellipseString(attachments[i].FileName, 100))
                 .addClass('attfilename ui-state-default ts-link preview')
                 .attr('href', '../../../dc/1/attachments/' + attachments[i].AttachmentID)
-                .hover(function (e) {
-                    if ($(this).attr('filetype').indexOf('image') >= 0) {
-                        $("body").append("<p id='preview'><img src='" + this.href + "' alt='Image preview' style='max-width:400px' /></p>");
-                        $("#preview")
-			        .css("top", (e.pageY - 10) + "px")
-			        .css("left", (e.pageX + 30) + "px")
-			        .fadeIn("fast");
-                    }
-                },
-	            function () {
-	                $("#preview").remove();
-	            })
                 .appendTo(blockDiv);
 
+                $('<i>')
+                .addClass('fa fa-trash-o associationDelete')
+                .hide()
+                .appendTo(blockDiv);
             }
+
+            window.parent.parent.Ts.Services.Task.LoadAssociations(_reminderID, function (associations) {
+                for (var i = 0; i < associations.length; i++) {
+                    var blockDiv = $('<div>')
+                    .data('refID', associations[i].RefID)
+                    .data('refType', associations[i].RefType)
+                    .hover(function (e) {
+                        $(this).find('.associationDelete').show();
+                        //if ($(this).attr('filetype').indexOf('image') >= 0) {
+                        //    $("body").append("<p id='preview'><img src='" + this.href + "' alt='Image preview' style='max-width:400px' /></p>");
+                        //    $("#preview")
+                        //.css("top", (e.pageY - 10) + "px")
+                        //.css("left", (e.pageX + 30) + "px")
+                        //.fadeIn("fast");
+                        //}
+                    },
+                    function () {
+                        $(this).find('.associationDelete').hide();
+                        //$("#preview").remove();
+                    })
+                    .appendTo(attdiv);
+
+                    var atticon = $('<span>')
+                    //.addClass('ts-icon ts-icon-attachment')
+                    .appendTo(blockDiv);
+
+                    var link = $('<a>')
+                    .attr('target', '_blank')
+                    //.attr('filetype', associations[i].RefType)
+                    //.text(ellipseString(attachments[i].FileName, 20))
+                    .addClass('attfilename ui-state-default ts-link preview attfilenamefix')
+                    //.attr('href', '../../../dc/1/attachments/' + attachments[i].AttachmentID)
+                    .appendTo(blockDiv);
+
+                    switch (associations[i].RefType) {
+                        case window.parent.parent.Ts.ReferenceTypes.Tickets:
+                            atticon.addClass('ticketIcon');
+                            link.text(ellipseString(associations[i].TicketNumber + ': ' + associations[i].TicketName, 100));
+                            link.attr('href', window.parent.parent.Ts.System.AppDomain + '?TicketID=' + associations[i].RefID);
+                            link.attr('target', '_blank');
+                            link.attr('onclick', 'window.parent.parent.Ts.MainPage.openTicketByID(' + associations[i].RefID + '); return false;');
+                            break;
+                        case window.parent.parent.Ts.ReferenceTypes.Users:
+                            atticon.addClass('userIcon');
+                            link.text(ellipseString(associations[i].User, 100));
+                            link.attr('href', '#');
+                            link.attr('target', '_blank');
+                            link.attr('onclick', 'window.parent.parent.Ts.MainPage.openNewContact(' + associations[i].RefID + '); return false;');
+                            break;
+                        case window.parent.parent.Ts.ReferenceTypes.Organizations:
+                            atticon.addClass('companyIcon');
+                            link.text(ellipseString(associations[i].Company, 100));
+                            link.attr('href', '#');
+                            link.attr('target', '_blank');
+                            link.attr('onclick', 'window.parent.parent.Ts.MainPage.openNewCustomer(' + associations[i].RefID + '); return false;');
+                            break;
+                        case window.parent.parent.Ts.ReferenceTypes.Groups:
+                            atticon.addClass('groupIcon');
+                            link.text(ellipseString(associations[i].Group, 100));
+                            link.attr('href', '#');
+                            link.attr('target', '_blank');
+                            link.attr('onclick', 'window.parent.parent.Ts.MainPage.openGroup(' + associations[i].RefID + '); return false;');
+                            break;
+                        case window.parent.parent.Ts.ReferenceTypes.Products:
+                            atticon.addClass('productIcon');
+                            link.text(ellipseString(associations[i].Product, 100));
+                            link.attr('href', '#');
+                            link.attr('target', '_blank');
+                            link.attr('onclick', 'window.parent.parent.Ts.MainPage.openNewProduct(' + associations[i].RefID + '); return false;');
+                            break;
+
+                    }
+
+                    $('<i>')
+                    .addClass('fa fa-trash-o associationDelete')
+                    .hide()
+                    .appendTo(blockDiv);
+                }
+            })
         });
     }
 
@@ -163,8 +253,8 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
-              top.Ts.System.logAction('Task Detail - Save Name');
-              top.Ts.Services.Task.SetName(_reminderID, $(this).prev().find('input').val(), function (result) {
+              window.parent.parent.Ts.System.logAction('Task Detail - Save Name');
+              window.parent.parent.Ts.Services.Task.SetName(_reminderID, $(this).prev().find('input').val(), function (result) {
                   _taskName = result;
                   header.text(result);
                   $('#taskName').text(result);
@@ -188,8 +278,8 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         var header = $(this).hide();
-        top.Ts.System.logAction('Task Detail - Edit Description');
-        top.Ts.Services.Task.GetTask(_reminderID, function (task) {
+        window.parent.parent.Ts.System.logAction('Task Detail - Edit Description');
+        window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
             var desc = task.Description;
             desc = desc.replace(/<br\s?\/?>/g, "\n");
             //        $('#fieldDesc').tinymce().setContent(desc);
@@ -209,8 +299,8 @@ $(document).ready(function () {
 
         $('#btnDescriptionSave').click(function (e) {
             e.preventDefault();
-            top.Ts.System.logAction('Task Detail - Save Description Edit');
-            top.Ts.Services.Task.SetDescription(_reminderID, $(this).prev().find('textarea').val(), function (result) {
+            window.parent.parent.Ts.System.logAction('Task Detail - Save Description Edit');
+            window.parent.parent.Ts.Services.Task.SetDescription(_reminderID, $(this).prev().find('textarea').val(), function (result) {
                 header.html(result);
                 $('#taskEdit').removeClass("disabled");
             },
@@ -242,8 +332,7 @@ $(document).ready(function () {
 
         var select = $('<select>').addClass('form-control').attr('id', 'ddlPrimaryContact').appendTo(container1);
         var organizationID = top.Ts.System.Organization.OrganizationID;
-        window.parent.parent
-        top.Ts.Services.Customers.LoadOrgUsers(organizationID, function (contacts) {
+        window.parent.parent.Ts.Services.Customers.LoadOrgUsers(organizationID, function (contacts) {
             $('<option>').attr('value', '-1').text('Unassigned').appendTo(select);
             for (var i = 0; i < contacts.length; i++) {
                 var opt = $('<option>').attr('value', contacts[i].UserID).text(contacts[i].FirstName + " " + contacts[i].LastName).data('o', contacts[i]);
@@ -266,8 +355,8 @@ $(document).ready(function () {
             var value = $(this).val();
             var name = this.options[this.selectedIndex].innerHTML;
             container.remove();
-            top.Ts.System.logAction('Task Detail - Save User');
-            top.Ts.Services.Task.SetUser(_reminderID, value, function (result) {
+            window.parent.parent.Ts.System.logAction('Task Detail - Save User');
+            window.parent.parent.Ts.Services.Task.SetUser(_reminderID, value, function (result) {
                 header.data('field', result);
                 header.text(name);
                 header.show();
@@ -283,7 +372,7 @@ $(document).ready(function () {
     $('#fieldComplete').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        top.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'true'), function (result) {
+        window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'true'), function (result) {
             top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
             $('#fieldComplete').text((result === true ? 'true' : 'false'));
         },
@@ -297,7 +386,7 @@ $(document).ready(function () {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
             return false;
-        top.Ts.System.logAction('Task Detail - Due Date Clicked');
+        window.parent.parent.Ts.System.logAction('Task Detail - Due Date Clicked');
         var parent = $(this).hide();
         var container = $('<div>')
               .insertAfter(parent);
@@ -327,7 +416,7 @@ $(document).ready(function () {
               .click(function (e) {
                   var value = top.Ts.Utils.getMsDate(input.val());
                   container.remove();
-                  top.Ts.Services.Task.SetTaskDueDate(_reminderID, value, function (result) {
+                  window.parent.parent.Ts.Services.Task.SetTaskDueDate(_reminderID, value, function (result) {
                       var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                       parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
                       $('#taskEdit').removeClass("disabled");
@@ -349,7 +438,7 @@ $(document).ready(function () {
     $('#fieldReminder').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        top.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'false'), function (result) {
+        window.parent.parent.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'false'), function (result) {
             top.Ts.System.logAction('Task Detail - Toggle IsDismissed');
             $('#fieldReminder').text((result === true ? 'false' : 'true'));
             if (result) {
@@ -369,7 +458,7 @@ $(document).ready(function () {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
             return false;
-        top.Ts.System.logAction('Task Detail - Reminder Date Clicked');
+        window.parent.parent.Ts.System.logAction('Task Detail - Reminder Date Clicked');
         var parent = $(this).hide();
         var container = $('<div>')
               .insertAfter(parent);
@@ -399,7 +488,7 @@ $(document).ready(function () {
               .click(function (e) {
                   var value = top.Ts.Utils.getMsDate(input.val());
                   container.remove();
-                  top.Ts.Services.Task.SetDueDate(_reminderID, value, function (result) {
+                  window.parent.parent.Ts.Services.Task.SetDueDate(_reminderID, value, function (result) {
                       var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                       parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
                       $('#taskEdit').removeClass("disabled");
@@ -428,8 +517,8 @@ $(document).ready(function () {
         $(this).parent().parent().find("#attachmentinput").show();
         $(this).parent().parent().find("#ticketinsert").show();
         $(this).parent().find(".arrow-up").css('left', '7px');
-    })
-    .tooltip();
+        $('#associationsBreak').addClass('associationsBreakAdjustement');
+    }).tooltip();
     $('.addticket').click(function (e) {
         e.preventDefault();
         $(this).parent().parent().find("#ticketinput").show();
@@ -440,8 +529,8 @@ $(document).ready(function () {
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
         $(this).parent().find(".arrow-up").css('left', '30px');
-    })
-    .tooltip();
+        $('#associationsBreak').removeClass('associationsBreakAdjustement');
+    }).tooltip();
     $('.adduser').click(function (e) {
         e.preventDefault();
         $(this).parent().parent().find("#ticketinput").hide();
@@ -452,8 +541,8 @@ $(document).ready(function () {
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
         $(this).parent().find(".arrow-up").css('left', '53px');
-    })
-    .tooltip();
+        $('#associationsBreak').removeClass('associationsBreakAdjustement');
+    }).tooltip();
     $('.addcustomer').click(function (e) {
         e.preventDefault();
         $(this).parent().parent().find("#ticketinput").hide();
@@ -464,8 +553,8 @@ $(document).ready(function () {
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
         $(this).parent().find(".arrow-up").css('left', '78px');
-    })
-    .tooltip();
+        $('#associationsBreak').removeClass('associationsBreakAdjustement');
+    }).tooltip();
     $('.addgroup').click(function (e) {
         e.preventDefault();
         $(this).parent().parent().find("#ticketinput").hide();
@@ -476,8 +565,8 @@ $(document).ready(function () {
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
         $(this).parent().find(".arrow-up").css('left', '104px');
-    })
-    .tooltip();
+        $('#associationsBreak').removeClass('associationsBreakAdjustement');
+    }).tooltip();
     $('.addproduct').click(function (e) {
         e.preventDefault();
         $(this).parent().parent().find("#ticketinput").hide();
@@ -488,9 +577,318 @@ $(document).ready(function () {
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
         $(this).parent().find(".arrow-up").css('left', '125px');
+        $('#associationsBreak').removeClass('associationsBreakAdjustement');
+    }).tooltip();
 
-    })
-    .tooltip();
+    $('#associationsContainer').on('click', '.associationDelete', function (e) {
+        e.preventDefault();
+        if (confirm('Are you sure you would like to remove this task association?')) {
+            window.parent.parent.Ts.System.logAction('Task Detail - Delete Association');
+            var blockDiv = $(this).parent();
+            if (blockDiv.data('attachmentID')) {
+                parent.privateServices.DeleteAttachment(blockDiv.data('attachmentID'), function (e) {
+                    blockDiv.hide();
+                });
+            }
+            else {
+                window.parent.parent.Ts.Services.Task.DeleteAssociation(_reminderID, blockDiv.data('refID'), blockDiv.data('refType'), function (result) {
+                    blockDiv.hide();
+                });
+            }
+        }
+    });
+
+    var execGetCustomer = null;
+    function getCustomers(request, response) {
+        if (execGetCustomer) { execGetCustomer._executor.abort(); }
+        execGetCustomer = window.parent.parent.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
+            response(result);
+        });
+    }
+
+    var execGetUsers = null;
+    function getUsers(request, response) {
+        if (execGetUsers) { execGetUsers._executor.abort(); }
+        execGetUsers = window.parent.parent.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
+    }
+
+    var execGetTicket = null;
+    function getTicketsByTerm(request, response) {
+        if (execGetTicket) { execGetTicket._executor.abort(); }
+        //execGetTicket = Ts.Services.Tickets.GetTicketsByTerm(request.term, function (result) { response(result); });
+        execGetTicket = window.parent.parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
+            $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
+            response(result);
+        });
+
+    }
+
+    var execGetGroups = null;
+    function getGroupsByTerm(request, response) {
+        if (execGetGroups) { execGetGroups._executor.abort(); }
+        execGetTicket = window.parent.parent.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
+    }
+
+    var execGetProducts = null;
+    function getProductByTerm(request, response) {
+        if (execGetProducts) { execGetProducts._executor.abort(); }
+        execGetProducts = window.parent.parent.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
+    }
+
+    $('.user-search')
+    .focusin(function () { $(this).val('').removeClass('user-search-blur'); })
+    .focusout(function () { $(this).val('Search for a user...').addClass('user-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('user-search-blur'); })
+    .val('Search for a user...')
+    .autocomplete({
+        minLength: 3,
+        source: getUsers,
+        select: function (event, ui) {
+            if (ui.item) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Users, function (success) {
+                    if (success) {
+                        var attdiv = $('#associationsContainer');
+                        var blockDiv = $('<div>')
+                        .data('refID', ui.item.id)
+                        .data('refType', window.parent.parent.Ts.ReferenceTypes.Users)
+                        .hover(function (e) {
+                            $(this).find('.associationDelete').show();
+                        },
+	                    function () {
+	                        $(this).find('.associationDelete').hide();
+	                        $("#preview").remove();
+	                    })
+                        .appendTo(attdiv);
+                        var atticon = $('<span>')
+                        .addClass('userIcon')
+                        .appendTo(blockDiv);
+
+                        $('<a>')
+                        .attr('target', '_blank')
+                        .text(ellipseString(ui.item.value, 100))
+                        .addClass('attfilename ui-state-default ts-link preview attfilenamefix')
+                        .attr('href', '#')
+                        .attr('target', '_blank')
+                        .attr('onclick', 'window.parent.parent.Ts.MainPage.openNewContact(' + ui.item.id + '); return false;')
+                        .appendTo(blockDiv);
+
+                        $('<i>')
+                        .addClass('fa fa-trash-o associationDelete')
+                        .hide()
+                        .appendTo(blockDiv);
+                    }
+                });
+            }
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading');
+        }
+    });
+
+    $('.company-search')
+    .focusin(function () { $(this).val('').removeClass('company-search-blur'); })
+    .focusout(function () { $(this).val('Search for a company...').addClass('company-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('company-search-blur'); })
+    .val('Search for a company...')
+    .autocomplete({
+        minLength: 3,
+        source: getCustomers,
+        select: function (event, ui) {
+            if (ui.item) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Organizations, function (success) {
+                    if (success) {
+                        var attdiv = $('#associationsContainer');
+                        var blockDiv = $('<div>')
+                        .data('refID', ui.item.id)
+                        .data('refType', window.parent.parent.Ts.ReferenceTypes.Organizations)
+                        .hover(function (e) {
+                            $(this).find('.associationDelete').show();
+                        },
+	                    function () {
+	                        $(this).find('.associationDelete').hide();
+	                        $("#preview").remove();
+	                    })
+                        .appendTo(attdiv);
+                        var atticon = $('<span>')
+                        .addClass('companyIcon')
+                        .appendTo(blockDiv);
+
+                        $('<a>')
+                        .attr('target', '_blank')
+                        .text(ellipseString(ui.item.value, 100))
+                        .addClass('attfilename ui-state-default ts-link preview attfilenamefix')
+                        .attr('href', '#')
+                        .attr('target', '_blank')
+                        .attr('onclick', 'window.parent.parent.Ts.MainPage.openNewCustomer(' + ui.item.id + '); return false;')
+                        .appendTo(blockDiv);
+
+                        $('<i>')
+                        .addClass('fa fa-trash-o associationDelete')
+                        .hide()
+                        .appendTo(blockDiv);
+                    }
+                });
+            }
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading');
+        }
+    });
+
+    $('.main-quick-ticket')
+    .focusin(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
+    .focusout(function () { $(this).val('Search for a ticket...').addClass('main-quick-ticket-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
+    .val('Search for a ticket...')
+    .autocomplete({
+        minLength: 2, source: getTicketsByTerm, delay: 300,
+        select: function (event, ui) {
+            window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.data, window.parent.parent.Ts.ReferenceTypes.Tickets, function (success) {
+                if (success) {
+                    var attdiv = $('#associationsContainer');
+                    //if (attachments.length > 0) {
+                        //var attdiv = $('<div>')
+                        //.addClass('attachment-list')
+                        //.appendTo($('#associationsContainer'));
+                    //}
+                    //for (var i = 0; i < attachments.length; i++) {
+                        var blockDiv = $('<div>')
+                        .data('refID', ui.item.data)
+                        .data('refType', window.parent.parent.Ts.ReferenceTypes.Tickets)
+                        .hover(function (e) {
+                            $(this).find('.associationDelete').show();
+                        },
+                        function () {
+                            $(this).find('.associationDelete').hide();
+                            $("#preview").remove();
+                        })
+                        .appendTo(attdiv);
+                        var atticon = $('<span>')
+                        .addClass('ticketIcon')
+                        .appendTo(blockDiv);
+
+                        $('<a>')
+                        .attr('target', '_blank')
+                        //.attr('filetype', attachments[i].FileType)
+                        .text(ellipseString(ui.item.value, 100))
+                        .addClass('attfilename ui-state-default ts-link preview attfilenamefix')
+                        .attr('href', window.parent.parent.Ts.System.AppDomain + '?TicketNumber=' + ui.item.id)
+                        .attr('target', '_blank')
+                        .attr('onclick', 'window.parent.parent.Ts.MainPage.openTicket(' + ui.item.id + '); return false;')
+                        .appendTo(blockDiv);
+
+                        $('<i>')
+                        .addClass('fa fa-trash-o associationDelete')
+                        .hide()
+                        .appendTo(blockDiv);
+                    //}
+                }
+            });
+            $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
+            return false;
+        }
+    });
+
+    $('.group-search')
+    .focusin(function () { $(this).val('').removeClass('group-search-blur'); })
+    .focusout(function () { $(this).val('Search for a group...').addClass('group-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('group-search-blur'); })
+    .val('Search for a group...')
+    .autocomplete({
+        minLength: 2,
+        source: getGroupsByTerm,
+        select: function (event, ui) {
+            if (ui.item) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Groups, function (success) {
+                    if (success) {
+                        var attdiv = $('#associationsContainer');
+                        var blockDiv = $('<div>')
+                        .data('refID', ui.item.id)
+                        .data('refType', window.parent.parent.Ts.ReferenceTypes.Groups)
+                        .hover(function (e) {
+                            $(this).find('.associationDelete').show();
+                        },
+                        function () {
+                            $(this).find('.associationDelete').hide();
+                            $("#preview").remove();
+                        })
+                        .appendTo(attdiv);
+                        var atticon = $('<span>')
+                        .addClass('groupIcon')
+                        .appendTo(blockDiv);
+
+                        $('<a>')
+                        .attr('target', '_blank')
+                        .text(ellipseString(ui.item.value, 100))
+                        .addClass('attfilename ui-state-default ts-link preview attfilenamefix')
+                        .attr('href', '#')
+                        .attr('target', '_blank')
+                        .attr('onclick', 'window.parent.parent.Ts.MainPage.openGroup(' + ui.item.id + '); return false;')
+                        .appendTo(blockDiv);
+
+                        $('<i>')
+                        .addClass('fa fa-trash-o associationDelete')
+                        .hide()
+                        .appendTo(blockDiv);
+                    }
+                });
+            }
+            $(this).val("");
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading');
+        }
+    });
+
+    $('.product-search')
+    .focusin(function () { $(this).val('').removeClass('product-search-blur'); })
+    .focusout(function () { $(this).val('Search for a product...').addClass('product-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('product-search-blur'); })
+    .val('Search for a product...')
+    .autocomplete({
+        minLength: 3,
+        source: getProductByTerm,
+        select: function (event, ui) {
+            if (ui.item) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Products, function (success) {
+                    if (success) {
+                        var attdiv = $('#associationsContainer');
+                        var blockDiv = $('<div>')
+                        .data('refID', ui.item.id)
+                        .data('refType', window.parent.parent.Ts.ReferenceTypes.Products)
+                        .hover(function (e) {
+                            $(this).find('.associationDelete').show();
+                        },
+                        function () {
+                            $(this).find('.associationDelete').hide();
+                            $("#preview").remove();
+                        })
+                        .appendTo(attdiv);
+                        var atticon = $('<span>')
+                        .addClass('productIcon')
+                        .appendTo(blockDiv);
+
+                        $('<a>')
+                        .attr('target', '_blank')
+                        .text(ellipseString(ui.item.value, 100))
+                        .addClass('attfilename ui-state-default ts-link preview attfilenamefix')
+                        .attr('href', '#')
+                        .attr('target', '_blank')
+                        .attr('onclick', 'window.parent.parent.Ts.MainPage.openNewProduct(' + ui.item.id + '); return false;')
+                        .appendTo(blockDiv);
+
+                        $('<i>')
+                        .addClass('fa fa-trash-o associationDelete')
+                        .hide()
+                        .appendTo(blockDiv);
+                    }
+                });
+            }
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading');
+        }
+    });
 
     $('.file-upload').fileupload({
         namespace: 'task_attachment',
@@ -568,7 +966,10 @@ $(document).ready(function () {
         }
     });
 
-    $('.task-tooltip').tooltip({ placement: 'bottom', container: 'body' });
+    $('#associationsRefresh').on('click', function () {
+        LoadAssociations();
+    });
+
     $('.taskProperties p, #taskName').toggleClass("editable");
 });
 

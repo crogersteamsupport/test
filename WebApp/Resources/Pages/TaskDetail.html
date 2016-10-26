@@ -8,6 +8,7 @@
     <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
     <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
     <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
     <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
     <!--<link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />-->
@@ -15,10 +16,10 @@
 
     <script src="../Js/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
     <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
     <script src="../Js/moment.min.js" type="text/javascript"></script>
     <script src="../Js/bootstrap-datetimepicker.js" type="text/javascript"></script>
-    <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
     <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
     <script src="taskdetail.js" type="text/javascript"></script>
 
@@ -91,7 +92,7 @@
                                     <h3>Associations</h3>
                                     <div class="box-actions">
                                         <!--<a id="actionsHistoryToggle" data-toggle="collapse" data-target="#actionsHistoryContent" href="#"><i class="fa fa-chevron-down"></i></a>-->
-                                        <a id="actionsHistoryRefresh" href="#"><i class="fa fa-refresh"></i></a>
+                                        <a id="associationsRefresh" href="#"><i class="fa fa-refresh"></i></a>
                                     </div>
                                     <div class="attachrow">
                                         <span class="addatt" title="Add Attachments"></span>
@@ -124,6 +125,7 @@
                                             <input id="productinput" class="product-search" type="text" />
                                         </span>
                                     </div>
+                                    <hr id="associationsBreak" class="associationsBreakAdjustement"/>
                                     <div id="associationsContainer">
 
                                     </div>
