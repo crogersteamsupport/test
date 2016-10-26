@@ -825,10 +825,10 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetWelcomeCustomerHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub)
+        public static MailMessage GetWelcomeCustomerHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password)
         {
             EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 33, -1);
-            template.ReplaceCommonParameters().ReplaceFields("CustomerHub", hub).ReplaceFields("HubUser", hubUser);
+            template.ReplaceCommonParameters().ReplaceFields("CustomerHub", hub).ReplaceFields("HubUser", hubUser).ReplaceParameter("Password", password);
             return template.GetMessage();
         }
 
