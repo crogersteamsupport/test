@@ -203,26 +203,24 @@ ReportPage = function () {
     $('.report-list').on('click', 'td.report-list-selection', function (e) {
         e.preventDefault();
 
-    	if (!_isScheduledReportsSelected) {
-            var row = $(this).closest('.report-item');
-            if (row.hasClass('report-selected')) {
-                row.removeClass('report-selected').find('.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
-            }
-            else {
-                row.addClass('report-selected').find('.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
-            }
+		var row = $(this).closest('.report-item');
+		if (row.hasClass('report-selected')) {
+			row.removeClass('report-selected').find('.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+		}
+		else {
+			row.addClass('report-selected').find('.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
+		}
 
-            if ($('.report-item:visible').length == $('.report-selected.report-item:visible').length) {
-                $('.report-list th.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
-            }
-            else {
-                $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
-            }
+		if ($('.report-item:visible').length == $('.report-selected.report-item:visible').length) {
+			$('.report-list th.report-list-selection i').removeClass('fa-square-o').addClass('fa-check-square-o');
+		}
+		else {
+			$('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
+		}
 
-            $('.report-active').removeClass('report-active');
-            row.addClass('report-active');
-            updateToolbar();
-    	}
+		$('.report-active').removeClass('report-active');
+		row.addClass('report-active');
+		updateToolbar();
         
         e.stopPropagation();
     });
