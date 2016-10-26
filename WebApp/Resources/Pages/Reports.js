@@ -287,7 +287,15 @@ ReportPage = function () {
     });
 
     function updateToolbar() {
-    	if (!_isScheduledReportsSelected) {
+        if (_isScheduledReportsSelected) {
+            if ($('.report-selected:visible').length > 0) {
+                $('.report-delete').removeClass('disabled');
+            } else {
+                $('.report-delete').addClass('disabled');
+            }
+        }
+        else
+        {
             if ($('.report-active:visible').length > 0) {
                 $('.report-clone').removeClass('disabled');
             } else {
@@ -378,21 +386,35 @@ ReportPage = function () {
         if (button.hasClass('disabled')) return;
         var ids = new Array();
 
-        $('.report-item.report-selected:visible').each(function () {
-            ids.push($(this).data('o').ReportID);
-        });
+        if (_isScheduledReportsSelected) {
+            if (confirm("Are you sure you would like to delete the selected scheduled reports?")) {
+                $('.report-item.report-selected:visible').each(function () {
+                    ids.push($(this).data('o').Id);
+                });
 
-
-        if (confirm("Are you sure you would like to delete selected reports?")) {
-            parent.Ts.Services.Reports.DeleteReports(JSON.stringify(ids), function (results) {
-                for (var i = 0; i < results.length; i++) {
-                    var item = $('.reportid-' + results[i]);
-                    item.fadeOut("slow", function (results) { item.remove(); });
-                    parent.Ts.MainPage.closeReportTab(results[i]);
-                }
-            });
+                parent.Ts.Services.Reports.DeleteScheduledReports(JSON.stringify(ids), function (results) {
+                    for (var i = 0; i < results.length; i++) {
+                        var item = $('.reportid-' + results[i]);
+                        item.fadeOut("slow", function (results) { item.remove(); });
+                    }
+                });
+            }
         }
+        else {
+            $('.report-item.report-selected:visible').each(function () {
+                ids.push($(this).data('o').ReportID);
+            });
 
+            if (confirm("Are you sure you would like to delete selected reports?")) {
+                parent.Ts.Services.Reports.DeleteReports(JSON.stringify(ids), function (results) {
+                    for (var i = 0; i < results.length; i++) {
+                        var item = $('.reportid-' + results[i]);
+                        item.fadeOut("slow", function (results) { item.remove(); });
+                        parent.Ts.MainPage.closeReportTab(results[i]);
+                    }
+                });
+            }
+        }
     });
 
     $('.report-list').on('click', '.report-list-star', function (e) {
@@ -653,7 +675,6 @@ ReportPage = function () {
     }
 
     function setScheduledReportItem(report, item) {
-    	item.find('.report-list-selection i').removeClass('fa-square-o');
     	item.find('.report-list-title a').text(report.ReportName);
     	item.find('.report-list-owner').text(report.Creator);
     	var name = (report.ModifierId == parent.Ts.System.User.UserID ? "me" : report.Modifier);
