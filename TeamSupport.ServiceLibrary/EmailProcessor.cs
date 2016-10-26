@@ -1189,7 +1189,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         public void ProcessWelcomeNewSignup(int userID, string password)
-        {
+        {/*
             User user = Users.GetUser(LoginUser, userID);
             Organization organization = Organizations.GetOrganization(LoginUser, user.OrganizationID);
 
