@@ -5284,11 +5284,11 @@ var setSLAInfo = function () {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
   }
-  else if (_ticketInfo.Ticket.SlaViolationTime === null && _ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && !_ticketInfo.IsSlaPaused) {
+  else if (_ticketInfo.Ticket.SlaViolationTime === null && _ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && !_ticketInfo.IsSlaPaused && !_ticketInfo.Ticket.IsClosed) {
       $('#ticket-SLAStatus').find('i').addClass('color-yellow');
       $('#ticket-SLANote').text('Calculating...');
   }
-  else if (_ticketInfo.IsSlaPaused) {
+  else if (_ticketInfo.IsSlaPaused && !_ticketInfo.Ticket.IsClosed) {
       $('#ticket-SLAStatus').find('i').addClass('color-yellow');
       $('#ticket-SLANote').text('Paused');
   }
