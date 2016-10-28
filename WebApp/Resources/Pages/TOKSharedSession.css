@@ -57,7 +57,7 @@
 .current-chat-area {
     padding-top: 10px;
     overflow: auto;
-    height: 84vh;
+    height: 90vh;
 }
 
 .current-chat-footer {
@@ -94,9 +94,3 @@ p.typing {
 }
 
 a { cursor: pointer; }
-
-.tok-controls > div > button > .fa:before {
-    margin-right: 10px;
-}
-
-.tok-controls { padding: 0px 0px 10px 0px }

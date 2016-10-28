@@ -45,7 +45,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('client-tok-screen-user', function (data) {
-        var messageTemplate = $("#tok-template").html();
+        var messageTemplate = $("#tok-screen-template").html();
         var compiledTemplate = messageTemplate
                                 .replace('{{message}}', data.userName + ' wants to share their screen with you. ')
         $('.media-list').append(compiledTemplate);
@@ -55,9 +55,19 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('client-tok-video-user', function (data) {
-        var messageTemplate = $("#tok-template").html();
+        var messageTemplate = $("#tok-video-template").html();
         var compiledTemplate = messageTemplate
-                                .replace('{{message}}', data.userName + ' wants to video chat with you. ')
+                                .replace('{{message}}', data.userName + ' wants to have a video call with you.  ')
+        $('.media-list').append(compiledTemplate);
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+    });
+
+    channel.bind('client-tok-audio-user', function (data) {
+        var messageTemplate = $("#tok-audio-template").html();
+        var compiledTemplate = messageTemplate
+                                .replace('{{message}}', data.userName + ' wants to have a audio call with you. ')
         $('.media-list').append(compiledTemplate);
         sharedApiKey = data.apiKey;
         sharedToken = data.token;

@@ -24,7 +24,7 @@ $(document).ready(function () {
             function (error) {
                 console.log(error)
             });
-        }, 90000);
+        }, 120000);
 
         channel.bind('agent-joined', function (data) {
             $('#operator-message').remove();
@@ -52,6 +52,9 @@ $(document).ready(function () {
 
         });
     });
+
+    //TODO:  Not centering correclty
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 function createMessage(message)
@@ -89,39 +92,20 @@ function setupChat(chatID, participantID, callback) {
         createMessage(member.info.name + ' joined the chat.')
     });
 
-    //TODO:  This is not working.  Need a way to capture disconnection thru either agent or customer side.  
-    pressenceChannel.bind('disconnected', function () {
-        var data = { channelName: 'presence-' + chatID, chatID: chatID, userID: participantID };
-        IssueAjaxRequest("DisconnectUser", data,
-        function (result) {
-
-        },
-        function (error) {
-
-        });
-    });
-
 
     pressenceChannel.bind('pusher:subscription_error', function (status) {
         console.log(status);
     });
 
-    //pressenceChannel.bind('agent-joined', function (data) {
-    //    $('#operator-message').remove();
-    //    clearTimeout(_timer);
-    //});
-
     pressenceChannel.bind('new-comment', function (data) {
-        //console.log('new-comment-user');
-        //console.log(data)
         createMessageElement(data, (data.CreatorType == 0) ? 'left' : 'right');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
 
     pressenceChannel.bind('client-tok-screen', function (data) {
-        console.log(data);
+        //console.log(data);
         $('#chat-body').append('<div class="answer left">' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToStream()">Do you Accept?</a></div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToScreenStream()">Do you Accept?</a></div></div>');
 
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
@@ -129,9 +113,19 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('client-tok-video', function (data) {
-        console.log(data);
+        console.log('client-tok-video');
         $('#chat-body').append('<div class="answer left">' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to have a video chat with you. <a onClick="subscribeToStream()">Do you Accept?</a></div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToVideoStream()">Do you Accept?</a></div></div>');
+
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+    });
+
+    pressenceChannel.bind('client-tok-audio', function (data) {
+        console.log('client-tok-audio');
+        $('#chat-body').append('<div class="answer left">' +
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToAudioStream()">Do you Accept?</a></div></div>');
 
         sharedApiKey = data.apiKey;
         sharedToken = data.token;

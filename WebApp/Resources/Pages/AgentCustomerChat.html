@@ -57,12 +57,12 @@
                                 <button id="chat-attachment" class="btn btn-default" type="button">
                                     <i class="fa fa-paperclip"></i>
                                 </button>
-                                <button id="chat-tok-video" class="btn btn-default" type="button">
+                                <!--<button id="chat-tok-video" class="btn btn-default" type="button">
                                     <i class="fa fa-video-camera"></i>
                                 </button>
                                 <button id="chat-tok-screen" class="btn btn-default" type="button">
                                     <i class="fa fa-circle"></i>
-                                </button>
+                                </button>-->
                             </div>
                             <div class="btn-group ticket-toolbar" role="group" aria-label="...">
                                 <button type="button" class="btn btn-default ticket-option dropdown-toggle" data-toggle="dropdown">Ticket&nbsp;<span class="caret"></span></button>
@@ -83,32 +83,22 @@
                     </div>
                     <div class="row current-chat-footer">
                         <div class="panel-footer">
-                            <div style="text-align: center; display: none;" id="videoRecordingContainer" class="action-new-toolbar">
-                                <div id="statusText"></div>
-                                <div id="publisher" style="margin:auto; margin-bottom:6px; display:block; height:450px; width:450px;"></div>
-                                <button type="button" id="startVideoRecording" class="btn btn-primary" title="Record" onClick="startVideoRecording()"><i class="fa fa-video-camera"></i></button>
-                                <button type="button" id="startScreenStreaming" class="btn btn-primary" title="Stream" onClick="startScreenStreaming()"><i class="fa fa-wifi"></i></button>
-                                <button type="button" id="stopVideoRecording" class="btn btn-danger" title="Stop" style="display:none;" onClick="stopVideoRecording()"><i class="fa fa-stop"></i></button>
-                                <button type="button" id="muteVideoRecording" class="btn btn-primary" title="Mute Audio" onClick="muteVideoRecording()"><i class="fa fa-microphone"></i></button>
-                                <button type="button" id="unmuteVideoRecording" class="btn btn-danger" title="Record Audio" style="display:none;" onClick="unmuteVideoRecording()"><i class="fa fa-microphone-slash"></i></button>
-                                <button type="button" id="insertVideoRecording" class="btn btn-success" title="Insert Video" style="display:none;" onClick="insertVideoRecording()"><i class="fa fa-cloud-upload"></i></button>
-                                <button type="button" id="cancelVideoRecording" title="Cancel" class="btn btn-danger" onClick="cancelVideoRecording()"><i class="fa fa-eject"></i></button>
-                            </div>
-
-                            <div style="text-align: center;display: none;" id="screenRecordingContainer" class="action-new-toolbar">
-                                <div id="screenRecordDiv">
-                                    <div id="screenOne" style="position: absolute !important; z-index: -9999; display:none;"></div>
-                                    <div id="screenTwo" style="position: absolute; left: -9999px;"></div>
+                            <div class="btn-group btn-group-justified tok-controls" role="group" aria-label="...">
+                                <div id="chat-tok-audio" class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default">
+                                        <span class="fa fa-phone">Go to Audio</span>
+                                    </button>
                                 </div>
-                                <div id="screenRecordingStatusText"></div>
-                                <div id="tokScreenRecordingCountdown">0:00</div>
-                                <button type="button" id="startScreenRecording" class="btn btn-primary" title="Record Screen" onClick="startScreenRecording()"><i class="fa fa-video-camera"></i></button>
-                                <button type="button" id="startScreenStreaming" class="btn btn-primary" title="Stream Screen" onClick="startScreenStreaming()"><i class="fa fa-wifi"></i></button>
-                                <button type="button" id="muteScreenRecording" class="btn btn-primary" title="Mute Audio" onClick="muteScreenRecording()"><i class="fa fa-microphone"></i></button>
-                                <button type="button" id="unmuteScreenRecording" class="btn btn-danger" title="Record Audio" style="display:none;" onClick="unmuteScreenRecording()"><i class="fa fa-microphone-slash"></i></button>
-                                <button type="button" id="stopScreenRecording" class="btn btn-danger" title="Stop Screen Recording" style="display:none;" onClick="stopScreenRecording()"><i class="fa fa-stop"></i></button>
-                                <button type="button" id="insertScreenRecording" class="btn btn-success" title="Insert Screen Recording" style="display:none;" onClick="insertScreenRecording()"><i class="fa fa-cloud-upload"></i></button>
-                                <button type="button" id="cancelScreenRecording" title="Cancel Screen Recording" class="btn btn-danger" onClick="cancelScreenRecording()"><i class="fa fa-eject"></i></button>
+                                <div id="chat-tok-video" class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default">
+                                        <span class="fa fa-video-camera">Go to Video</span>
+                                    </button>
+                                </div>
+                                <div id="chat-tok-screen" class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default">
+                                        <span class="fa fa-desktop">Share Screen</span>
+                                    </button>
+                                </div>
                             </div>
                             <form id="message-form" action="">
                                 <div class="input-group">
@@ -277,13 +267,36 @@
             </div>
         </li>
     </script>
-    <script id="tok-template" type="text/x-custom-template">
+    <script id="tok-video-template" type="text/x-custom-template">
         <li class="media">
             <div class="media-body">
                 <div class="media">
-                    <!--<img class="pull-{{MessageDirection}} media-object img-circle user-avatar" src="{{Avatar}}">-->
                     <div class="media-body">
-                        {{message}} <a onClick="subscribeToStream()">Do you Accept?</a>
+                        {{message}} <a onClick="subscribeToVideoStream()">Do you Accept?</a>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </script>
+    <script id="tok-audio-template" type="text/x-custom-template">
+        <li class="media">
+            <div class="media-body">
+                <div class="media">
+                    <div class="media-body">
+                        {{message}} <a onClick="subscribeToAudioStream()">Do you Accept?</a>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </script>
+    <script id="tok-screen-template" type="text/x-custom-template">
+        <li class="media">
+            <div class="media-body">
+                <div class="media">
+                    <div class="media-body">
+                        {{message}} <a onClick="subscribeToScreenStream()">Do you Accept?</a>
                         <br>
                     </div>
                 </div>
