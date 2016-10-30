@@ -55,6 +55,8 @@ var screenSharingPublisher;
 var videoURL;
 var tokTimer;
 
+var slaCheckTimer;
+
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
   execGetCustomer = window.parent.Ts.Services.TicketPage.GetUserOrOrganizationForTicket(request, function (result) { response(result); });
@@ -286,7 +288,7 @@ $(document).ready(function () {
   script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
   script.setAttribute('id', 'dropboxjs');
   firstScript.parentNode.insertBefore(script, firstScript);
-
+  slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -3749,6 +3751,10 @@ var SetupStatusField = function (StatusId) {
               return;
             }
           });
+
+          _ticketInfo.IsSlaPaused = status.PauseSLA;
+          resetSLAInfo();
+          slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
         }
       },
       render: {
@@ -5215,6 +5221,14 @@ function SetupWCArea() {
   });
 }
 
+function RefreshSlaDisplay() {
+    if ($('#ticket-SLANote').text() == 'Calculating...') {
+        resetSLAInfo();
+    } else {
+        clearInterval(slaCheckTimer);
+    }
+}
+
 var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
   $('#merge-success').show();
   $('#MergeModal').modal('hide');
@@ -5266,15 +5280,23 @@ var resetSLAInfo = function () {
 
 var setSLAInfo = function () {
   $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
-  if (_ticketInfo.Ticket.SlaViolationTime === null) {
+  if (_ticketInfo.Ticket.SlaViolationTime === null && (_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)) {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
+  }
+  else if (_ticketInfo.Ticket.SlaViolationTime === null && _ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && !_ticketInfo.IsSlaPaused && !_ticketInfo.Ticket.IsClosed) {
+      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+      $('#ticket-SLANote').text('Calculating...');
+  }
+  else if (_ticketInfo.IsSlaPaused && !_ticketInfo.Ticket.IsClosed) {
+      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+      $('#ticket-SLANote').text('Paused');
   }
   else {
     $('#ticket-SLAStatus')
       .find('i')
       .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
-    if (_ticketInfo.Ticket.SlaViolationDate !== undefined) {
+    if (_ticketInfo.Ticket.SlaViolationDate !== null) {
       $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
     }
     else {

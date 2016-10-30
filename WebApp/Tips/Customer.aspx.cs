@@ -50,7 +50,7 @@ public partial class Tips_Customer : System.Web.UI.Page
 
 		foreach (PhoneNumbersViewItemProxy number in numbers.GetPhoneNumbersViewItemProxies())
       {
-        props.Append(string.Format("<dt>{0}</dt><dd>{1} {2}</dd>", number.PhoneType, number.FormattedPhoneNumber, number.Extension));
+        props.Append(string.Format("<dt>{0}</dt><dd><a href=\"tel:{1}\">{1} {2}</a></dd>", number.PhoneType, number.FormattedPhoneNumber, number.Extension));
       }
 
       tipProps.InnerHtml = props.ToString();

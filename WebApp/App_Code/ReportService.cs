@@ -370,7 +370,28 @@ namespace TSWebServices
       
       }
 
-      [WebMethod]
+        [WebMethod]
+        public int[] DeleteScheduledReports(string reportIDs)
+        {
+            List<int> result = new List<int>();
+            int[] ids = JsonConvert.DeserializeObject<int[]>(reportIDs);
+            for (int i = 0; i < ids.Length; i++)
+            {
+                int reportID = ids[i];
+                ScheduledReport scheduledReport = ScheduledReports.GetScheduledReport(TSAuthentication.GetLoginUser(), reportID);
+                if (scheduledReport != null && scheduledReport.OrganizationId == TSAuthentication.OrganizationID && (TSAuthentication.UserID == scheduledReport.CreatorId || TSAuthentication.IsSystemAdmin))
+                {
+                    scheduledReport.Delete();
+                    scheduledReport.Collection.Save();
+                    result.Add(reportID);
+                }
+            }
+
+            return result.ToArray();
+
+        }
+
+        [WebMethod]
       public ReportItem CloneReport(int reportID)
       {
         Reports reports = new Reports(TSAuthentication.GetLoginUser());
