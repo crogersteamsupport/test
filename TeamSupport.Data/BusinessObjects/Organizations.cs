@@ -435,7 +435,6 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
         User user = users.AddNewUser();
         user.ActivatedOn = DateTime.UtcNow;
-        user.CryptedPassword = "UNVALIDATED";
         user.Email = email.Trim();
         user.FirstName = firstName.Trim();
         user.InOffice = true;
@@ -464,7 +463,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         user.CanEditCompany = true;
         user.CanEditContact = true;
         user.IsClassicView = true;
-        user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
+        user.CryptedPassword = password == "" ? "UNVALIDATED" : FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
         user.Collection.Save();
 
         

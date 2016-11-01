@@ -152,6 +152,8 @@
     <Compile Include="ContentHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TSHighrise.cs" />
+    <Compile Include="TSHubSpot.cs" />
     <Compile Include="UserStatusHandler.cs" />
     <Compile Include="SignUpHandler.cs" />
     <Compile Include="ChatStatusHandler.cs" />
