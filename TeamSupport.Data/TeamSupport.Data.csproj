@@ -336,8 +336,6 @@
     <Compile Include="Classes\NamedGZipStream.cs" />
     <Compile Include="Classes\SqlExecutor.cs" />
     <Compile Include="Classes\TeamSupportSync.cs" />
-    <Compile Include="Classes\TSHighrise.cs" />
-    <Compile Include="Classes\TSHubSpot.cs" />
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsOptionsFieldMap.cs" />
