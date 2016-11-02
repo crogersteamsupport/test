@@ -1,4 +1,22 @@
+/**
+ * Collection.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Control collection, this class contains control instances and it enables you to
+ * perform actions on all the contained items. This is very similar to how jQuery works.
+ *
+ * @example
+ * someCollection.show().disabled(true);
+ *
+ * @class tinymce.ui.Collection
+ */
 define("tinymce/ui/Collection", [
 	"tinymce/util/Tools",
 	"tinymce/ui/Selector",

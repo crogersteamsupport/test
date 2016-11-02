@@ -1,3 +1,12 @@
+/**
+ * plugin.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*global tinymce:true */
 
@@ -278,12 +287,12 @@ tinymce.PluginManager.add('link', function(editor) {
 				function delayedConfirm(message, callback) {
 					var rng = editor.selection.getRng();
 
-					window.setTimeout(function() {
+					tinymce.util.Delay.setEditorTimeout(editor, function() {
 						editor.windowManager.confirm(message, function(state) {
 							editor.selection.setRng(rng);
 							callback(state);
 						});
-					}, 0);
+					});
 				}
 
 				function insertLink() {

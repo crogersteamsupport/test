@@ -1,4 +1,28 @@
+/**
+ * Checkbox.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This control creates a custom checkbox.
+ *
+ * @example
+ * // Create and render a checkbox to the body element
+ * tinymce.ui.Factory.create({
+ *     type: 'checkbox',
+ *     checked: true,
+ *     text: 'My checkbox'
+ * }).renderTo(document.body);
+ *
+ * @-x-less Checkbox.less
+ * @class tinymce.ui.Checkbox
+ * @extends tinymce.ui.Widget
+ */
 define("tinymce/ui/Checkbox", [
 	"tinymce/ui/Widget"
 ], function(Widget) {

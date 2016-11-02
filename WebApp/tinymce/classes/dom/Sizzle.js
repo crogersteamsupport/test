@@ -1,7 +1,28 @@
+/**
+ * Sizzle.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ *
+ * @ignore-file
+ */
 
 /*jshint bitwise:false, expr:true, noempty:false, sub:true, eqnull:true, latedef:false, maxlen:255 */
 /*eslint-disable */
 
+/**
+ * Sizzle CSS Selector Engine v@VERSION
+ * http://sizzlejs.com/
+ *
+ * Copyright 2008, 2014 jQuery Foundation, Inc. and other contributors
+ * Released under the MIT license
+ * http://jquery.org/license
+ *
+ * Date: @DATE
+ */
 define("tinymce/dom/Sizzle", [], function() {
 var i,
 	support,
@@ -283,6 +304,12 @@ function Sizzle( selector, context, results, seed ) {
 	return select( selector.replace( rtrim, "$1" ), context, results, seed );
 }
 
+/**
+ * Create key-value caches of limited size
+ * @returns {Function(string, Object)} Returns the Object data after storing it on itself with
+ *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
+ *	deleting the oldest entry
+ */
 function createCache() {
 	var keys = [];
 
@@ -297,11 +324,19 @@ function createCache() {
 	return cache;
 }
 
+/**
+ * Mark a function for special use by Sizzle
+ * @param {Function} fn The function to mark
+ */
 function markFunction( fn ) {
 	fn[ expando ] = true;
 	return fn;
 }
 
+/**
+ * Support testing using an element
+ * @param {Function} fn Passed the created div and expects a boolean result
+ */
 function assert( fn ) {
 	var div = document.createElement("div");
 
@@ -319,6 +354,11 @@ function assert( fn ) {
 	}
 }
 
+/**
+ * Adds the same handler for all of the specified attrs
+ * @param {String} attrs Pipe-separated list of attributes
+ * @param {Function} handler The method that will be applied
+ */
 function addHandle( attrs, handler ) {
 	var arr = attrs.split("|"),
 		i = attrs.length;
@@ -328,6 +368,12 @@ function addHandle( attrs, handler ) {
 	}
 }
 
+/**
+ * Checks document order of two siblings
+ * @param {Element} a
+ * @param {Element} b
+ * @returns {Number} Returns less than 0 if a precedes b, greater than 0 if a follows b
+ */
 function siblingCheck( a, b ) {
 	var cur = b && a,
 		diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
@@ -351,6 +397,10 @@ function siblingCheck( a, b ) {
 	return a ? 1 : -1;
 }
 
+/**
+ * Returns a function to use in pseudos for input types
+ * @param {String} type
+ */
 function createInputPseudo( type ) {
 	return function( elem ) {
 		var name = elem.nodeName.toLowerCase();
@@ -358,6 +408,10 @@ function createInputPseudo( type ) {
 	};
 }
 
+/**
+ * Returns a function to use in pseudos for buttons
+ * @param {String} type
+ */
 function createButtonPseudo( type ) {
 	return function( elem ) {
 		var name = elem.nodeName.toLowerCase();
@@ -365,6 +419,10 @@ function createButtonPseudo( type ) {
 	};
 }
 
+/**
+ * Returns a function to use in pseudos for positionals
+ * @param {Function} fn
+ */
 function createPositionalPseudo( fn ) {
 	return markFunction(function( argument ) {
 		argument = +argument;
@@ -383,6 +441,11 @@ function createPositionalPseudo( fn ) {
 	});
 }
 
+/**
+ * Checks a node for validity as a Sizzle context
+ * @param {Element|Object=} context
+ * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
+ */
 function testContext( context ) {
 	return context && typeof context.getElementsByTagName !== strundefined && context;
 }
@@ -390,6 +453,11 @@ function testContext( context ) {
 // Expose support vars for convenience
 support = Sizzle.support = {};
 
+/**
+ * Detects XML nodes
+ * @param {Element|Object} elem An element or a document
+ * @returns {Boolean} True iff elem is a non-HTML XML node
+ */
 isXML = Sizzle.isXML = function( elem ) {
 	// documentElement is verified for cases where it doesn't yet exist
 	// (such as loading iframes in IE - #4833)
@@ -397,10 +465,26 @@ isXML = Sizzle.isXML = function( elem ) {
 	return documentElement ? documentElement.nodeName !== "HTML" : false;
 };
 
+/**
+ * Sets document-related variables once based on the current document
+ * @param {Element|Object} [doc] An element or document object to use to set the document
+ * @returns {Object} Returns the current document
+ */
 setDocument = Sizzle.setDocument = function( node ) {
 	var hasCompare,
 		doc = node ? node.ownerDocument || node : preferredDoc,
 		parent = doc.defaultView;
+
+	function getTop(win) {
+		// Edge throws a lovely Object expected if you try to get top on a detached reference see #2642
+		try {
+			return win.top;
+		} catch (ex) {
+			// Ignore
+		}
+
+		return null;
+	}
 
 	// If no document and documentElement is available, return
 	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
@@ -418,7 +502,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// If iframe document is assigned to "document" variable and if iframe has been reloaded,
 	// IE will throw "permission denied" error when accessing "document" variable, see jQuery #13936
 	// IE6-8 do not support the defaultView property so parent will be undefined
-	if ( parent && parent !== parent.top ) {
+	if ( parent && parent !== getTop(parent) ) {
 		// IE11 does not have attachEvent, so all must suffer
 		if ( parent.addEventListener ) {
 			parent.addEventListener( "unload", function() {
@@ -816,6 +900,10 @@ Sizzle.error = function( msg ) {
 	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
+/**
+ * Document sorting and removing duplicates
+ * @param {ArrayLike} results
+ */
 Sizzle.uniqueSort = function( results ) {
 	var elem,
 		duplicates = [],
@@ -845,6 +933,10 @@ Sizzle.uniqueSort = function( results ) {
 	return results;
 };
 
+/**
+ * Utility function for retrieving the text value of an array of DOM nodes
+ * @param {Array|Element} elem
+ */
 getText = Sizzle.getText = function( elem ) {
 	var node,
 		ret = "",
@@ -1809,6 +1901,15 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 	return cached;
 };
 
+/**
+ * A low-level selection function that works with Sizzle's compiled
+ *  selector functions
+ * @param {String|Function} selector A selector or a pre-compiled
+ *  selector function built with Sizzle.compile
+ * @param {Element} context
+ * @param {Array} [results]
+ * @param {Array} [seed] A set of elements to match against
+ */
 select = Sizzle.select = function( selector, context, results, seed ) {
 	var i, tokens, token, type, find,
 		compiled = typeof selector === "function" && selector,

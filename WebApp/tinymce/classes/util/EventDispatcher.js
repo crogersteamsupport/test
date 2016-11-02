@@ -1,4 +1,24 @@
+/**
+ * EventDispatcher.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class lets you add/remove and fire events by name on the specified scope. This makes
+ * it easy to add event listener logic to any class.
+ *
+ * @class tinymce.util.EventDispatcher
+ * @example
+ *  var eventDispatcher = new EventDispatcher();
+ *
+ *  eventDispatcher.on('click', function() {console.log('data');});
+ *  eventDispatcher.fire('click', {data: 123});
+ */
 define("tinymce/util/EventDispatcher", [
 	"tinymce/util/Tools"
 ], function(Tools) {
@@ -6,7 +26,7 @@ define("tinymce/util/EventDispatcher", [
 		"focus blur focusin focusout click dblclick mousedown mouseup mousemove mouseover beforepaste paste cut copy selectionchange " +
 		"mouseout mouseenter mouseleave wheel keydown keypress keyup input contextmenu dragstart dragend dragover " +
 		"draggesture dragdrop drop drag submit " +
-		"compositionstart compositionend compositionupdate touchstart touchend",
+		"compositionstart compositionend compositionupdate touchstart touchmove touchend",
 		' '
 	);
 

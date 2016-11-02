@@ -1,4 +1,19 @@
+/**
+ * EditorObservable.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This mixin contains the event logic for the tinymce.Editor class.
+ *
+ * @mixin tinymce.EditorObservable
+ * @extends tinymce.util.Observable
+ */
 define("tinymce/EditorObservable", [
 	"tinymce/util/Observable",
 	"tinymce/dom/DOMUtils",
@@ -23,7 +38,7 @@ define("tinymce/EditorObservable", [
 
 		// Need to bind mousedown/mouseup etc to document not body in iframe mode
 		// Since the user might click on the HTML element not the BODY
-		if (!editor.inline && /^mouse|click|contextmenu|drop|dragover|dragend/.test(eventName)) {
+		if (!editor.inline && /^mouse|touch|click|contextmenu|drop|dragover|dragend/.test(eventName)) {
 			return editor.getDoc().documentElement;
 		}
 
@@ -49,6 +64,10 @@ define("tinymce/EditorObservable", [
 	 */
 	function bindEventDelegate(editor, eventName) {
 		var eventRootElm = getEventTarget(editor, eventName), delegate;
+
+		function isListening(editor) {
+			return !editor.hidden && !editor.readonly;
+		}
 
 		if (!editor.delegates) {
 			editor.delegates = {};
@@ -87,7 +106,7 @@ define("tinymce/EditorObservable", [
 					var body = editors[i].getBody();
 
 					if (body === target || DOM.isChildOf(target, body)) {
-						if (!editors[i].hidden) {
+						if (isListening(editors[i])) {
 							editors[i].fire(eventName, e);
 						}
 					}
@@ -98,7 +117,7 @@ define("tinymce/EditorObservable", [
 			DOM.bind(eventRootElm, eventName, delegate);
 		} else {
 			delegate = function(e) {
-				if (!editor.hidden) {
+				if (isListening(editor)) {
 					editor.fire(eventName, e);
 				}
 			};
@@ -130,10 +149,6 @@ define("tinymce/EditorObservable", [
 		 */
 		toggleNativeEvent: function(name, state) {
 			var self = this;
-
-			if (self.settings.readonly) {
-				return;
-			}
 
 			// Never bind focus/blur since the FocusManager fakes those
 			if (name == "focus" || name == "blur") {

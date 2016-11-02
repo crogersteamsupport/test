@@ -176,6 +176,27 @@ namespace TeamSupport.Data
 			}
 		}
 
+        public void LoadRestrictedProductVersions(int productID, int organizationID) {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT Distinct pv.*
+                                        FROM dbo.[OrganizationProducts] as op
+                                        left join dbo.ProductVersions as pv on op.ProductID = pv.ProductID
+                                        where op.OrganizationID = @OrganizationID and op.ProductID = @ProductID and op.ProductVersionID is null and IsReleased = 1
+                                        union
+                                        SELECT Distinct pv.*
+                                        FROM dbo.[OrganizationProducts] as op
+                                        left join dbo.ProductVersions as pv on op.ProductID = pv.ProductID
+                                        	and op.ProductVersionID = pv.ProductVersionID
+                                        where op.OrganizationID = @OrganizationID and op.ProductID = @ProductID and op.ProductVersionID is not null and IsReleased = 1";
+
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ProductID", productID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
+
 		public void LoadByProductID(int productID)
     {
       using (SqlCommand command = new SqlCommand())

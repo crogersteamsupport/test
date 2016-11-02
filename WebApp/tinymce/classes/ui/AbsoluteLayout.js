@@ -1,4 +1,21 @@
+/**
+ * AbsoluteLayout.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * LayoutManager for absolute positioning. This layout manager is more of
+ * a base class for other layouts but can be created and used directly.
+ *
+ * @-x-less AbsoluteLayout.less
+ * @class tinymce.ui.AbsoluteLayout
+ * @extends tinymce.ui.Layout
+ */
 define("tinymce/ui/AbsoluteLayout", [
 	"tinymce/ui/Layout"
 ], function(Layout) {

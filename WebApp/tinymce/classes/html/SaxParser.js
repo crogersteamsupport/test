@@ -1,6 +1,55 @@
+/**
+ * SaxParser.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*eslint max-depth:[2, 9] */
 
+/**
+ * This class parses HTML code using pure JavaScript and executes various events for each item it finds. It will
+ * always execute the events in the right order for tag soup code like <b><p></b></p>. It will also remove elements
+ * and attributes that doesn't fit the schema if the validate setting is enabled.
+ *
+ * @example
+ * var parser = new tinymce.html.SaxParser({
+ *     validate: true,
+ *
+ *     comment: function(text) {
+ *         console.log('Comment:', text);
+ *     },
+ *
+ *     cdata: function(text) {
+ *         console.log('CDATA:', text);
+ *     },
+ *
+ *     text: function(text, raw) {
+ *         console.log('Text:', text, 'Raw:', raw);
+ *     },
+ *
+ *     start: function(name, attrs, empty) {
+ *         console.log('Start:', name, attrs, empty);
+ *     },
+ *
+ *     end: function(name) {
+ *         console.log('End:', name);
+ *     },
+ *
+ *     pi: function(name, text) {
+ *         console.log('PI:', name, text);
+ *     },
+ *
+ *     doctype: function(text) {
+ *         console.log('DocType:', text);
+ *     }
+ * }, schema);
+ * @class tinymce.html.SaxParser
+ * @version 3.4
+ */
 define("tinymce/html/SaxParser", [
 	"tinymce/html/Schema",
 	"tinymce/html/Entities",

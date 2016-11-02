@@ -217,7 +217,15 @@ namespace TeamSupport.Data
             return Regex.Replace(text, "[\r\n\t]*", string.Empty);
         }
 
-        public static string StripHTML(string Content) {
+        public static string StripHTML(string Content, bool addLineBreaks = false) {
+            //Ticket 35785. Trying to keep blank lines in between. Done specifically for Cayenta (1081853) for now, if it looks good after a while we might need to open it to all orgs.
+            if (addLineBreaks)
+            {
+                Content = Content.Replace("</p>", "</p>TeamSupportNewLine");
+                Content = Content.Replace("<br>", "<br>TeamSupportNewLine");
+                Content = Content.Replace("&nbsp;</div>", "&nbsp;</div>TeamSupportNewLine");
+            }
+
             // While researching Ticket #20811 realized further Regex.Replace break in multiple lines. This added to temporarily remove break lines, and carriage returns.
             Content = Regex.Replace(Content, @"\n", "TeamSupportNewLine");
             Content = Regex.Replace(Content, @"\r", "TeamSupportNewLine");
@@ -227,7 +235,7 @@ namespace TeamSupport.Data
             Content = Regex.Replace(Content, "<w:WordDocument>(.|\n)*?</w:WordDocument>", string.Empty);
             
             Content = Regex.Replace(Content, "<.*?>", string.Empty);
-            Content = System.Web.HttpUtility.HtmlDecode(Content);
+            Content = HttpUtility.HtmlDecode(Content);
             Content = StripComments(Content);
 
             //regex based on http://stackoverflow.com/questions/787932/using-c-regular-expressions-to-remove-html-tags/787949#787949
@@ -240,8 +248,14 @@ namespace TeamSupport.Data
 
             Content = Regex.Replace(Content, @"(?:(?:\r?\n)+ +){2,}", Environment.NewLine + Environment.NewLine);
 
-            //regex to replace the contiguous newlines, leave just one. ref: http://stackoverflow.com/questions/11710966/building-a-regex-how-to-remove-redundant-line-breaks
-            Content = Regex.Replace(Content, @"\s*\r\n\s*", "\r\n");
+            if (!addLineBreaks)
+            {
+                //regex to replace the contiguous newlines, leave just one. ref: http://stackoverflow.com/questions/11710966/building-a-regex-how-to-remove-redundant-line-breaks
+                Content = Regex.Replace(Content, @"\s*\r\n\s*", "\r\n");
+            }
+
+            //Remove trailing empty lines
+            Content = Content.TrimEnd('\r', '\n');
 
             return Content;
         }

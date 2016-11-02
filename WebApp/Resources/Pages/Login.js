@@ -20,6 +20,10 @@ $(document).ready(function () {
 		return;
 	}
 
+	IssueAjaxRequest(loginService, "GetMobileURL", { "userID": 1 }, function (result) {
+        $('#mobile-link').prop('href', result);
+	});
+
   $('#signIn').click(function (e) {
     e.preventDefault();
     var email = $('#inputEmail').val();
@@ -107,25 +111,26 @@ function getRememberMe() {
 }
 
 function IssueAjaxRequest(service, method, data, successCallback, errorCallback) {
-  $.ajax({
-    type: "POST",
-    url: service + method,
-    data: JSON.stringify(data),
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-	 cache: false,
-    dataFilter: function (data) {
-      var jsonResult = eval('(' + data + ')');
-      if (jsonResult.hasOwnProperty('d'))
-        return jsonResult.d;
-      else
-        return jsonResult;
-    },
-    success: function (jsonResult) {
-      successCallback(jsonResult);
-    },
-    error: function (error, errorStatus, errorThrown) {
-      if (errorCallback) errorCallback(error);
-    }
-  });
+    $.ajax({
+        type: "POST",
+        url: service + method,
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        cache: false,
+        dataFilter: function (data) {
+            var jsonResult = eval('(' + data + ')');
+            if (jsonResult.hasOwnProperty('d'))
+                return jsonResult.d;
+            else
+                return jsonResult;
+        },
+        success: function (jsonResult) {
+            successCallback(jsonResult);
+        },
+        error: function (error, errorStatus, errorThrown) {
+            if (errorCallback) errorCallback(error);
+        }
+    });
+
 }

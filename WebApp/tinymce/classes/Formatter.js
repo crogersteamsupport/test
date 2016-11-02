@@ -1,12 +1,36 @@
+/**
+ * Formatter.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Text formatter engine class. This class is used to apply formats like bold, italic, font size
+ * etc to the current selection or specific nodes. This engine was built to replace the browser's
+ * default formatting logic for execCommand due to its inconsistent and buggy behavior.
+ *
+ * @class tinymce.Formatter
+ * @example
+ *  tinymce.activeEditor.formatter.register('mycustomformat', {
+ *    inline: 'span',
+ *    styles: {color: '#ff0000'}
+ *  });
+ *
+ *  tinymce.activeEditor.formatter.apply('mycustomformat');
+ */
 define("tinymce/Formatter", [
 	"tinymce/dom/TreeWalker",
 	"tinymce/dom/RangeUtils",
 	"tinymce/dom/BookmarkManager",
 	"tinymce/dom/ElementUtils",
 	"tinymce/util/Tools",
-	"tinymce/fmt/Preview"
-], function(TreeWalker, RangeUtils, BookmarkManager, ElementUtils, Tools, Preview) {
+	"tinymce/fmt/Preview",
+	"tinymce/fmt/Hooks"
+], function(TreeWalker, RangeUtils, BookmarkManager, ElementUtils, Tools, Preview, Hooks) {
 	/**
 	 * Constructs a new formatter instance.
 	 *
@@ -77,23 +101,54 @@ define("tinymce/Formatter", [
 				],
 
 				alignleft: [
-					{selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li', styles: {textAlign: 'left'}, defaultBlock: 'div'},
+					{selector: 'figure.image', collapsed: false, classes: 'align-left', ceFalseOverride: true},
+					{
+						selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li',
+						styles: {
+							textAlign: 'left'
+						},
+						inherit: false,
+						defaultBlock: 'div'
+					},
 					{selector: 'img,table', collapsed: false, styles: {'float': 'left'}}
 				],
 
 				aligncenter: [
-					{selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li', styles: {textAlign: 'center'}, defaultBlock: 'div'},
+					{
+						selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li',
+						styles: {
+							textAlign: 'center'
+						},
+						inherit: false,
+						defaultBlock: 'div'
+					},
+					{selector: 'figure.image', collapsed: false, classes: 'align-center', ceFalseOverride: true},
 					{selector: 'img', collapsed: false, styles: {display: 'block', marginLeft: 'auto', marginRight: 'auto'}},
 					{selector: 'table', collapsed: false, styles: {marginLeft: 'auto', marginRight: 'auto'}}
 				],
 
 				alignright: [
-					{selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li', styles: {textAlign: 'right'}, defaultBlock: 'div'},
+					{selector: 'figure.image', collapsed: false, classes: 'align-right', ceFalseOverride: true},
+					{
+						selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li',
+						styles: {
+							textAlign: 'right'
+						},
+						inherit: false,
+						defaultBlock: 'div'
+					},
 					{selector: 'img,table', collapsed: false, styles: {'float': 'right'}}
 				],
 
 				alignjustify: [
-					{selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li', styles: {textAlign: 'justify'}, defaultBlock: 'div'}
+					{
+						selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li',
+						styles: {
+							textAlign: 'justify'
+						},
+						inherit: false,
+						defaultBlock: 'div'
+					}
 				],
 
 				bold: [
@@ -185,8 +240,8 @@ define("tinymce/Formatter", [
 		 * Returns the format by name or all formats if no name is specified.
 		 *
 		 * @method get
-		 * @param {String} name Optional name to retrive by.
-		 * @return {Array/Object} Array/Object with all registred formats or a specific format.
+		 * @param {String} name Optional name to retrieve by.
+		 * @return {Array/Object} Array/Object with all registered formats or a specific format.
 		 */
 		function get(name) {
 			return name ? formats[name] : formats;
@@ -256,6 +311,20 @@ define("tinymce/Formatter", [
 			}
 
 			return formats;
+		}
+
+		function matchesUnInheritedFormatSelector(node, name) {
+			var formatList = get(name);
+
+			if (formatList) {
+				for (var i = 0; i < formatList.length; i++) {
+					if (formatList[i].inherit === false && dom.is(node, formatList[i].selector)) {
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		function getTextDecoration(node) {
@@ -328,10 +397,15 @@ define("tinymce/Formatter", [
 				}
 			}
 
+			// This converts: <p>[a</p><p>]b</p> -> <p>[a]</p><p>b</p>
 			function adjustSelectionToVisibleSelection() {
 				function findSelectionEnd(start, end) {
 					var walker = new TreeWalker(end);
-					for (node = walker.current(); node; node = walker.prev()) {
+					for (node = walker.prev2(); node; node = walker.prev2()) {
+						if (node.nodeType == 3 && node.data.length > 0) {
+							return node;
+						}
+
 						if (node.childNodes.length > 1 || node == start || node.tagName == 'BR') {
 							return node;
 						}
@@ -346,7 +420,7 @@ define("tinymce/Formatter", [
 
 				if (start != end && rng.endOffset === 0) {
 					var newEnd = findSelectionEnd(start, end);
-					var endOffset = newEnd.nodeType == 3 ? newEnd.length : newEnd.childNodes.length;
+					var endOffset = newEnd.nodeType == 3 ? newEnd.data.length : newEnd.childNodes.length;
 
 					rng.setEnd(newEnd, endOffset);
 				}
@@ -423,6 +497,7 @@ define("tinymce/Formatter", [
 								if (dom.is(node, format.selector) && !isCaretNode(node)) {
 									setElementFormat(node, format);
 									found = true;
+									return false;
 								}
 							});
 
@@ -526,7 +601,7 @@ define("tinymce/Formatter", [
 
 					// Remove empty nodes but only if there is multiple wrappers and they are not block
 					// elements so never remove single <h1></h1> since that would remove the
-					// currrent empty block element where the caret is at
+					// current empty block element where the caret is at
 					if ((newWrappers.length > 1 || !isBlock(node)) && childCount === 0) {
 						dom.remove(node, 1);
 						return;
@@ -579,6 +654,18 @@ define("tinymce/Formatter", [
 				});
 			}
 
+			if (getContentEditable(selection.getNode()) === "false") {
+				node = selection.getNode();
+				for (var i = 0, l = formatList.length; i < l; i++) {
+					if (formatList[i].ceFalseOverride && dom.is(node, formatList[i].selector)) {
+						setElementFormat(node, formatList[i]);
+						return;
+					}
+				}
+
+				return;
+			}
+
 			if (format) {
 				if (node) {
 					if (node.nodeType) {
@@ -590,7 +677,7 @@ define("tinymce/Formatter", [
 						applyRngStyle(node, null, true);
 					}
 				} else {
-					if (!isCollapsed || !format.inline || dom.select('td.mce-item-selected,th.mce-item-selected').length) {
+					if (!isCollapsed || !format.inline || dom.select('td[data-mce-selected],th[data-mce-selected]').length) {
 						// Obtain selection node before selection is unselected by applyRngStyle()
 						var curSelNode = ed.selection.getNode();
 
@@ -619,6 +706,8 @@ define("tinymce/Formatter", [
 						performCaretAction('apply', name, vars);
 					}
 				}
+
+				Hooks.postProcess(name, ed);
 			}
 		}
 
@@ -855,7 +944,20 @@ define("tinymce/Formatter", [
 				return;
 			}
 
-			if (!selection.isCollapsed() || !format.inline || dom.select('td.mce-item-selected,th.mce-item-selected').length) {
+			if (getContentEditable(selection.getNode()) === "false") {
+				node = selection.getNode();
+				for (var i = 0, l = formatList.length; i < l; i++) {
+					if (formatList[i].ceFalseOverride) {
+						if (removeFormat(formatList[i], vars, node, node)) {
+							break;
+						}
+					}
+				}
+
+				return;
+			}
+
+			if (!selection.isCollapsed() || !format.inline || dom.select('td[data-mce-selected],th[data-mce-selected]').length) {
 				bookmark = selection.getBookmark();
 				removeRngStyle(selection.getRng(TRUE));
 				selection.moveToBookmark(bookmark);
@@ -988,6 +1090,10 @@ define("tinymce/Formatter", [
 
 				// Find first node with similar format settings
 				node = dom.getParent(node, function(node) {
+					if (matchesUnInheritedFormatSelector(node, name)) {
+						return true;
+					}
+
 					return node.parentNode === root || !!matchNode(node, name, vars, true);
 				});
 
@@ -1121,6 +1227,10 @@ define("tinymce/Formatter", [
 								matchedFormats[format] = callbacks;
 								return false;
 							}
+
+							if (matchesUnInheritedFormatSelector(node, format)) {
+								return false;
+							}
 						});
 					});
 
@@ -1225,8 +1335,8 @@ define("tinymce/Formatter", [
 		 * Compares two string/nodes regardless of their case.
 		 *
 		 * @private
-		 * @param {String/Node} Node or string to compare.
-		 * @param {String/Node} Node or string to compare.
+		 * @param {String/Node} str1 Node or string to compare.
+		 * @param {String/Node} str2 Node or string to compare.
 		 * @return {boolean} True/false if they match.
 		 */
 		function isEq(str1, str2) {
@@ -1257,7 +1367,7 @@ define("tinymce/Formatter", [
 		 * to make it more easy to match. This will resolve a few browser issues.
 		 *
 		 * @private
-		 * @param {Node} node to get style from.
+		 * @param {String} value Value to get style from.
 		 * @param {String} name Style name to get.
 		 * @return {String} Style item value.
 		 */
@@ -1321,7 +1431,8 @@ define("tinymce/Formatter", [
 		 *
 		 * @private
 		 * @param {Object} rng Range like object.
-		 * @param {Array} formats Array with formats to expand by.
+		 * @param {Array} format Array with formats to expand by.
+		 * @param {Boolean} remove
 		 * @return {Object} Expanded range like object.
 		 */
 		function expandRng(rng, format, remove) {
@@ -1365,7 +1476,7 @@ define("tinymce/Formatter", [
 					}
 
 					// Check if we can move up are we at root level or body level
-					if (parent.parentNode == root) {
+					if (parent == root || parent.parentNode == root) {
 						container = parent;
 						break;
 					}
@@ -1781,7 +1892,8 @@ define("tinymce/Formatter", [
 				// Check for non internal attributes
 				attrs = dom.getAttribs(node);
 				for (i = 0; i < attrs.length; i++) {
-					if (attrs[i].nodeName.indexOf('_') !== 0) {
+					var attrName = attrs[i].nodeName;
+					if (attrName.indexOf('_') !== 0 && attrName.indexOf('data-') !== 0) {
 						return FALSE;
 					}
 				}
@@ -2069,7 +2181,7 @@ define("tinymce/Formatter", [
 				}
 			}
 
-			// Applies formatting to the caret postion
+			// Applies formatting to the caret position
 			function applyCaretFormat() {
 				var rng, caretContainer, textNode, offset, bookmark, container, text;
 
@@ -2189,7 +2301,7 @@ define("tinymce/Formatter", [
 						// Replace formatNode with caretContainer when removing format from empty block like <p><b>|</b></p>
 						formatNode.parentNode.replaceChild(caretContainer, formatNode);
 					} else {
-						// Insert caret container after the formated node
+						// Insert caret container after the formatted node
 						dom.insertAfter(caretContainer, formatNode);
 					}
 

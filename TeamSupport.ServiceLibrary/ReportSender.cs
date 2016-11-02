@@ -10,6 +10,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TeamSupport.Data;
 
 namespace TeamSupport.ServiceLibrary
@@ -165,7 +166,14 @@ namespace TeamSupport.ServiceLibrary
 
             //Create Batch File
             string batchFile = string.Format("thread_{0}.bat", _threadPosition);
-            string batchFileCommand = "chdir " + Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + Environment.NewLine;
+            string batchFileCommand = Path.GetPathRoot(System.Reflection.Assembly.GetEntryAssembly().Location) + Environment.NewLine;
+
+            if (!string.IsNullOrEmpty(batchFileCommand))
+            {
+                batchFileCommand = batchFileCommand.Replace(@"\", "");
+            }
+
+            batchFileCommand += "chdir " + Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + Environment.NewLine;
             batchFileCommand += string.Format(PHANTOMJSCOMMAND, optionsFile, outputImage);
             string batchFileFullPath = Path.Combine(path, batchFile);
             Log("batchFile: " + batchFileFullPath);
@@ -569,14 +577,14 @@ namespace TeamSupport.ServiceLibrary
 
         private void QueueEmail(ScheduledReport scheduledReport)
         {
-				scheduledReport.IsSuccessful = false;
+			scheduledReport.IsSuccessful = false;
             Log(string.Format("Scheduled Report Id: {0}, Report Id: {1}, Organization {2}", scheduledReport.Id.ToString(), scheduledReport.ReportId, scheduledReport.OrganizationId));
             Log(string.Format("Set to start on: {0}", scheduledReport.NextRun), LogType.Public);
 
             try
             {
                 LoginUser scheduledReportCreator = new LoginUser(scheduledReport.CreatorId, scheduledReport.OrganizationId);
-                Report report = Reports.GetReport(scheduledReportCreator, scheduledReport.ReportId, LoginUser.UserID);
+                Report report = Reports.GetReport(scheduledReportCreator, scheduledReport.ReportId, scheduledReport.CreatorId);
                 Log(string.Format("Generating {0} Report", report.ReportDefType.ToString()), LogType.Both);
 
                 string reportAttachmentFile = string.Empty;
@@ -860,6 +868,45 @@ namespace TeamSupport.ServiceLibrary
             if (logs != null)
             {
                 logs.WriteEventFormat("dataTable created with {0} rows and {1} columns", dataTable.Rows.Count, dataTable.Columns.Count);
+            }
+
+            try
+            {
+                dynamic settings = null;
+                object o = report.Row["Settings"];
+
+                if (o != null && o != DBNull.Value && !string.IsNullOrEmpty(o.ToString()))
+                {
+                    settings = JObject.Parse(o.ToString());
+                }
+
+                if (settings != null)
+                {
+                    if (settings["Columns"] != null)
+                    {
+                        List<string> reportColumnNames = new List<string>();
+                        for (int i = 0; i < settings["Columns"].Count; i++)
+                        {
+                            reportColumnNames.Add(settings["Columns"][i]["id"].ToString());
+                        }
+
+                        int index = 0;
+                        foreach (string columnName in reportColumnNames)
+                        {
+                            DataColumn column = dataTable.Columns[columnName];
+                            if (column != null)
+                            {
+                                column.SetOrdinal(index);
+                                index++;
+                            }
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logs.WriteEventFormat("Exception when setting the column order by user settings. {0}", ex.Message);
             }
 
             StringBuilder stringBuilder = new StringBuilder();

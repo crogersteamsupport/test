@@ -1,4 +1,19 @@
+/**
+ * Scrollable.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This mixin makes controls scrollable using custom scrollbars.
+ *
+ * @-x-less Scrollable.less
+ * @mixin tinymce.ui.Scrollable
+ */
 define("tinymce/ui/Scrollable", [
 	"tinymce/dom/DomQuery",
 	"tinymce/ui/DragHelper"

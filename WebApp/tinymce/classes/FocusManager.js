@@ -1,8 +1,27 @@
+/**
+ * FocusManager.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class manages the focus/blur state of the editor. This class is needed since some
+ * browsers fire false focus/blur states when the selection is moved to a UI dialog or similar.
+ *
+ * This class will fire two events focus and blur on the editor instances that got affected.
+ * It will also handle the restore of selection when the focus is lost and returned.
+ *
+ * @class tinymce.FocusManager
+ */
 define("tinymce/FocusManager", [
 	"tinymce/dom/DOMUtils",
+	"tinymce/util/Delay",
 	"tinymce/Env"
-], function(DOMUtils, Env) {
+], function(DOMUtils, Delay, Env) {
 	var selectionChangeHandler, documentFocusInHandler, documentMouseUpHandler, DOM = DOMUtils.DOM;
 
 	/**
@@ -131,11 +150,12 @@ define("tinymce/FocusManager", [
 			});
 
 			editor.on('focusin', function() {
-				var focusedEditor = editorManager.focusedEditor;
+				var focusedEditor = editorManager.focusedEditor, lastRng;
 
 				if (editor.selection.lastFocusBookmark) {
-					editor.selection.setRng(bookmarkToRng(editor, editor.selection.lastFocusBookmark));
+					lastRng = bookmarkToRng(editor, editor.selection.lastFocusBookmark);
 					editor.selection.lastFocusBookmark = null;
+					editor.selection.setRng(lastRng);
 				}
 
 				if (focusedEditor != editor) {
@@ -153,10 +173,10 @@ define("tinymce/FocusManager", [
 			});
 
 			editor.on('focusout', function() {
-				window.setTimeout(function() {
+				Delay.setEditorTimeout(editor, function() {
 					var focusedEditor = editorManager.focusedEditor;
 
-					// Still the same editor the the blur was outside any editor UI
+					// Still the same editor the blur was outside any editor UI
 					if (!isUIElement(getActiveElement()) && focusedEditor == editor) {
 						editor.fire('blur', {focusedEditor: null});
 						editorManager.focusedEditor = null;
@@ -166,24 +186,26 @@ define("tinymce/FocusManager", [
 							editor.selection.lastFocusBookmark = null;
 						}
 					}
-				}, 0);
+				});
 			});
 
 			// Check if focus is moved to an element outside the active editor by checking if the target node
 			// isn't within the body of the activeEditor nor a UI element such as a dialog child control
 			if (!documentFocusInHandler) {
 				documentFocusInHandler = function(e) {
-					var activeEditor = editorManager.activeEditor;
+					var activeEditor = editorManager.activeEditor, target;
 
-					if (activeEditor && e.target.ownerDocument == document) {
+					target = e.target;
+
+					if (activeEditor && target.ownerDocument == document) {
 						// Check to make sure we have a valid selection don't update the bookmark if it's
 						// a focusin to the body of the editor see #7025
-						if (activeEditor.selection && e.target != activeEditor.getBody()) {
+						if (activeEditor.selection && target != activeEditor.getBody()) {
 							activeEditor.selection.lastFocusBookmark = createBookmark(activeEditor.dom, activeEditor.lastRng);
 						}
 
 						// Fire a blur event if the element isn't a UI element
-						if (e.target != document.body && !isUIElement(e.target) && editorManager.focusedEditor == activeEditor) {
+						if (target != document.body && !isUIElement(target) && editorManager.focusedEditor == activeEditor) {
 							activeEditor.fire('blur', {focusedEditor: null});
 							editorManager.focusedEditor = null;
 						}
@@ -198,9 +220,9 @@ define("tinymce/FocusManager", [
 			// Gecko doesn't have the "selectionchange" event we need to do this. Fixes: #6843
 			if (editor.inline && !documentMouseUpHandler) {
 				documentMouseUpHandler = function(e) {
-					var activeEditor = editorManager.activeEditor;
+					var activeEditor = editorManager.activeEditor, dom = activeEditor.dom;
 
-					if (activeEditor.inline && !activeEditor.dom.isChildOf(e.target, activeEditor.getBody())) {
+					if (activeEditor.inline && dom && !dom.isChildOf(e.target, activeEditor.getBody())) {
 						var rng = activeEditor.selection.getRng();
 
 						if (!rng.collapsed) {

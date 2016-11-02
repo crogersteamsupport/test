@@ -22,9 +22,9 @@ var initEditor = function (element, shouldResize, init, postinit) {
             resizePluginCode = 'autoresize';
         }
         var editorOptions = {
-        	plugins: "paste link code textcolor image imagetools moxiemanager table " + resizePluginCode,
+            plugins: "paste link code textcolor image imagetools moxiemanager table codesample " + resizePluginCode,
         	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
-        	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote | code | table",
+        	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
             statusbar: true,
             gecko_spellcheck: true,
             extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
@@ -508,16 +508,16 @@ The following steps will refresh your browser<br><br> \
 
 var initScheduledReportEditor = function (element, init) {
     var editorOptions = {
-        plugins: "autoresize paste link code textcolor table",
+        plugins: "autoresize paste link code textcolor table codesample",
         toolbar1: "insertPasteImage insertTicket image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
-        toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote | code | table",
+        toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote codesample | code | table",
         statusbar: false,
         gecko_spellcheck: true,
         extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
         content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css,Reports_Schedule.css",
         body_class: "ui-widget ui-widget-content",
         convert_urls: true,
-        autoresize_bottom_margin: 50,
+        autoresize_bottom_margin: 20,
         remove_script_host: false,
         relative_urls: false,
         template_external_list_url: "tinymce/jscripts/template_list.js",
@@ -531,7 +531,6 @@ var initScheduledReportEditor = function (element, init) {
         },
         paste_data_images: true,
         images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
-        height: "100",
         setup: function (ed) {
             ed.on('init', function (e) {
                 _mainFrame.Ts.System.refreshUser(function () {

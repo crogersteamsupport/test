@@ -260,6 +260,12 @@ function loadSignalR(url) {
         }
     };
 
+    ticketSocket.client.ticketRefreshSla = function (ticketNum) {
+        if ($('.main-ticket-' + ticketNum).length > 0) {
+            $('.main-ticket-' + ticketNum).find('iframe')[0].contentWindow.resetSLAInfo();
+        }
+    };
+
     $.connection.hub.start(function () {
         chatHubClient.server.login();
         var mainWC = $("#iframe-mniWC2");

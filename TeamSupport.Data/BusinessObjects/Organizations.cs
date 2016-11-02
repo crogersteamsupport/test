@@ -369,7 +369,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       return orgTemplate.IsEmpty ? null : orgTemplate[0];
     }
 
-    public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, string evalProcess, string potentialSeats, ProductType productType, SignUpParams signUpParams, string url, string referrer)
+    public static User SetupNewAccount(string firstName, string lastName, string email, string password, string company, string phone, string evalProcess, string potentialSeats, ProductType productType, SignUpParams signUpParams, string url, string referrer)
     {
       try
       {
@@ -403,7 +403,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         organization.PrimaryInterest = "";
         organization.PotentialSeats = potentialSeats;
         organization.EvalProcess = evalProcess;
-        organization.AddEmailViaTS = true;
+        organization.AddEmailViaTS = sourceOrg.AddEmailViaTS;
         organization.RequireKnownUserForNewEmail = sourceOrg.RequireKnownUserForNewEmail;
         organization.RequireNewKeyword = sourceOrg.RequireNewKeyword;
         organization.ChangeStatusIfClosed = sourceOrg.ChangeStatusIfClosed;
@@ -420,17 +420,21 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         organization.HasPortalAccess = sourceOrg.HasPortalAccess;
         organization.IsApiEnabled = sourceOrg.IsApiEnabled;
         organization.SetNewActionsVisibleToCustomers = sourceOrg.SetNewActionsVisibleToCustomers;
-        organization.AgentRating = true;
+        organization.AgentRating = sourceOrg.AgentRating;
         organization.IsValidated = false;
         organization.SignUpToken = Guid.NewGuid().ToString();
+                organization.UseProductFamilies = sourceOrg.UseProductFamilies;
+                organization.IsCustomerInsightsActive = sourceOrg.IsCustomerInsightsActive;
+                organization.AllowUnsecureAttachmentViewing = sourceOrg.AllowUnsecureAttachmentViewing;
+                organization.ShowGroupMembersFirstInTicketAssignmentList = sourceOrg.ShowGroupMembersFirstInTicketAssignmentList;
         organization.Collection.Save();
         
         //374,826,378,703,377
 
         Users users = new Users(LoginUser.Anonymous);
+
         User user = users.AddNewUser();
         user.ActivatedOn = DateTime.UtcNow;
-        user.CryptedPassword = "UNVALIDATED";
         user.Email = email.Trim();
         user.FirstName = firstName.Trim();
         user.InOffice = true;
@@ -459,6 +463,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         user.CanEditCompany = true;
         user.CanEditContact = true;
         user.IsClassicView = true;
+        user.CryptedPassword = password == "" ? "UNVALIDATED" : FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
         user.Collection.Save();
 
         

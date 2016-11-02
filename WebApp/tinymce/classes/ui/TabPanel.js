@@ -1,4 +1,22 @@
+/**
+ * TabPanel.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Creates a tab panel control.
+ *
+ * @-x-less TabPanel.less
+ * @class tinymce.ui.TabPanel
+ * @extends tinymce.ui.Panel
+ *
+ * @setting {Number} activeTab Active tab index.
+ */
 define("tinymce/ui/TabPanel", [
 	"tinymce/ui/Panel",
 	"tinymce/dom/DomQuery",

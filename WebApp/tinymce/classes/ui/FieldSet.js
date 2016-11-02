@@ -1,4 +1,20 @@
+/**
+ * FieldSet.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class creates fieldset containers.
+ *
+ * @-x-less FieldSet.less
+ * @class tinymce.ui.FieldSet
+ * @extends tinymce.ui.Form
+ */
 define("tinymce/ui/FieldSet", [
 	"tinymce/ui/Form"
 ], function(Form) {

@@ -55,6 +55,8 @@ var screenSharingPublisher;
 var videoURL;
 var tokTimer;
 
+var slaCheckTimer;
+
 var getTicketCustomers = function (request, response) {
   if (execGetCustomer) { execGetCustomer._executor.abort(); }
   execGetCustomer = window.parent.Ts.Services.TicketPage.GetUserOrOrganizationForTicket(request, function (result) { response(result); });
@@ -286,7 +288,7 @@ $(document).ready(function () {
   script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
   script.setAttribute('id', 'dropboxjs');
   firstScript.parentNode.insertBefore(script, firstScript);
-
+  slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -681,21 +683,20 @@ function CreateNewActionLI() {
   });
 
   $('#action-timeline').on('click', '.action-create-option', function (e) {	
-  	DisableCreateBtns();
     e.preventDefault();
     e.stopPropagation();
+    DisableCreateBtns();
+    $('#action-add-public').removeClass('click-disabled');
+    $('#action-add-private').removeClass('click-disabled');
+    $("a.action-option-edit").each(function () {
+        $(this).removeClass('click-disabled');
+    });
     var self = $(this);
     var _oldActionID = self.data('actionid');
     isFormValid(function (isValid) {
       if (isValid) {
         SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
           if (result) {
-            UploadAttachments(result);
-            $('#action-new-editor').val('').parent().fadeOut('normal');
-            if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-            	tinymce.activeEditor.destroy();
-            }
-
             if ($('.upload-queue li').length > 0) {
               UploadAttachments(result);
             }
@@ -709,7 +710,9 @@ function CreateNewActionLI() {
               else {
                 UpdateActionElement(result, false);
               }
+              clearTicketEditor();
             }
+            
 
             var statusID = self.data("statusid");
             SetStatus(statusID);
@@ -772,7 +775,7 @@ function CreateNewActionLI() {
 };
 
 function DisableCreateBtns() {
-	if ($('#action-new-save-element').hasClass('open')) {
+    if ($('.action-save-group').hasClass('open')) {
 		$('#action-new-save-element').dropdown('toggle');
 	}
 	$('#action-new-save').prop('disabled', true);
@@ -925,6 +928,7 @@ function SetupActionEditor(elem, action) {
           actionElement.find('.ticket-action-number').text(_actionTotal);
         }
         else {
+            clearTicketEditor();
           UpdateActionElement(_newAction, false);
         }
         _newAction = null;
@@ -3747,6 +3751,10 @@ var SetupStatusField = function (StatusId) {
               return;
             }
           });
+
+          _ticketInfo.IsSlaPaused = status.PauseSLA;
+          resetSLAInfo();
+          slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
         }
       },
       render: {
@@ -5213,6 +5221,14 @@ function SetupWCArea() {
   });
 }
 
+function RefreshSlaDisplay() {
+    if ($('#ticket-SLANote').text() == 'Calculating...') {
+        resetSLAInfo();
+    } else {
+        clearInterval(slaCheckTimer);
+    }
+}
+
 var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
   $('#merge-success').show();
   $('#MergeModal').modal('hide');
@@ -5264,15 +5280,23 @@ var resetSLAInfo = function () {
 
 var setSLAInfo = function () {
   $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
-  if (_ticketInfo.Ticket.SlaViolationTime === null) {
+  if (_ticketInfo.Ticket.SlaViolationTime === null && (_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)) {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
+  }
+  else if (_ticketInfo.Ticket.SlaViolationTime === null && _ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && !_ticketInfo.IsSlaPaused && !_ticketInfo.Ticket.IsClosed) {
+      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+      $('#ticket-SLANote').text('Calculating...');
+  }
+  else if (_ticketInfo.IsSlaPaused && !_ticketInfo.Ticket.IsClosed) {
+      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+      $('#ticket-SLANote').text('Paused');
   }
   else {
     $('#ticket-SLAStatus')
       .find('i')
       .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
-    if (_ticketInfo.Ticket.SlaViolationDate !== undefined) {
+    if (_ticketInfo.Ticket.SlaViolationDate !== null) {
       $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
     }
     else {
