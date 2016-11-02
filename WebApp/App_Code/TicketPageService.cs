@@ -52,6 +52,18 @@ namespace TSWebServices
             if (info.Ticket.Name.ToLower() == "<no subject>")
                 info.Ticket.Name = "";
 
+            //check if outside resource change ticket type and to modify the status
+            TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
+            statuses.LoadAvailableTicketStatuses(info.Ticket.TicketTypeID, null);
+
+            if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID))
+            {
+                info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
+                Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+                newticket.TicketStatusID = ticket.TicketStatusID;
+                newticket.Collection.Save();
+            }
+
             if (info.Ticket.CategoryName != null && info.Ticket.ForumCategory != null)
                 info.Ticket.CategoryDisplayString = ForumCategories.GetCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.ForumCategory);
             if (info.Ticket.KnowledgeBaseCategoryName != null)
