@@ -496,6 +496,7 @@ namespace TeamSupport.Handlers
                 ProductType productType = (ProductType)int.Parse(data.ProductType.ToString());
                 string version = productType == ProductType.HelpDesk ? "Support Desk" : "Enterprise";
 
+
                 try
                 {
                     CustomFields customFields = new CustomFields(loginUser);
@@ -513,6 +514,15 @@ namespace TeamSupport.Handlers
 
                 try
                 {
+                    TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, source, hubSpotUtk, productType);
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(loginUser, ex, "Sign Up - HubSpot", "UserID: " + tsUser.UserID.ToString());
+                }
+
+                try
+                {
 
                     int hrCompanyID = TSHighrise.CreateCompany(tsOrg.Name, phone.Number, tsUser.Email, productType, "", source, campaign, "", new string[] { "trial" });
                     int hrContactID = TSHighrise.CreatePerson(tsUser.FirstName, tsUser.LastName, tsOrg.Name, phone.Number, tsUser.Email, productType, "", source, campaign, "");
@@ -521,14 +531,6 @@ namespace TeamSupport.Handlers
                     //Eric's ID 159931
                     //TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
                     //TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Company", hrCompanyID.ToString(), "159931", true, false);//
-                    try
-                    {
-                        TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, source, hubSpotUtk, productType);
-                    }
-                    catch (Exception ex)
-                    {
-                        ExceptionLogs.LogException(loginUser, ex, "Sign Up - HubSpot", "UserID: " + tsUser.UserID.ToString());
-                    }
                 }
                 catch (Exception ex)
                 {

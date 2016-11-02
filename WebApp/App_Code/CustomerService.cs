@@ -344,7 +344,7 @@ namespace TSWebServices
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.IsActive = value;
-            if(!value)
+            if (!value)
             {
                 u.AppChatStatus = false;
                 u.AppChatID = "";
@@ -3111,8 +3111,9 @@ SELECT
                     if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)
                         EmailPosts.SendWelcomeTSUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
                     else
+                    {
                         EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
-
+                    }
                     return ("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
 
                 }
