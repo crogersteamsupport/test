@@ -54,7 +54,7 @@ header {
 }
 
 .btn_info_context {
-    margin-top: 12px;
+    margin-top: 24px;
     color: white;
     font-size: 13px;
     font-weight: 400;
@@ -85,8 +85,6 @@ header {
 
 .btn-container {
     height: 200px;
-    margin-right: 80px;
-    padding-top: 40px;
 }
 /* HEADER ENDING */
 
