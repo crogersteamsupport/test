@@ -16,11 +16,15 @@ var sharedToken;
 
 function SetupTOK() {
     $('#chat-tok-video').click(function (e) {
-        publishTOKVideo();
+        publishTOKVideo(function () {
+            startVideoStreaming();
+        });
     });
 
     $('#chat-tok-audio').click(function (e) {
-        publishTOKAudio();
+        publishTOKAudio(function () {
+            startAudioStreaming();
+        });
     });
 
     $('#chat-tok-screen').click(function (e) {
@@ -28,12 +32,16 @@ function SetupTOK() {
     });
 }
 
-function publishTOKVideo() {
+function publishTOKVideo(callback) {
     if (OT.checkSystemRequirements() == 1) {
         var dynamicPub = $("#publisher");
 
         if (dynamicPub.length == 0)
             dynamicPub = $("#tempContainer");
+
+        $('.panel-body').height('calc(92vh - 95px)');
+        $('#tokStreamControls').show();
+        $('#tokStatusText').text('Requesting Live Session...');
 
         var data = { chatID: _activeChatID };
         IssueAjaxRequest("GetTOKSessionInfoClient", data,
@@ -50,7 +58,7 @@ function publishTOKVideo() {
                 });
                 session.publish(publisher);
             });
-            startVideoStreaming();
+            callback();
         },
         function (error) {
             consol.log(error.message)
@@ -61,12 +69,16 @@ function publishTOKVideo() {
     }
 }
 
-function publishTOKAudio() {
+function publishTOKAudio(callback) {
     if (OT.checkSystemRequirements() == 1) {
         var dynamicPub = $("#publisher");
 
         if (dynamicPub.length == 0)
             dynamicPub = $("#tempContainer");
+
+        $('.panel-body').height('calc(92vh - 95px)');
+        $('#tokStreamControls').show();
+        $('#tokStatusText').text('Requesting Live Session...');
 
         var data = { chatID: _activeChatID };
         IssueAjaxRequest("GetTOKSessionInfoClient", data,
@@ -84,7 +96,8 @@ function publishTOKAudio() {
                 });
                 session.publish(publisher);
             });
-            startAudioStreaming();
+            //startAudioStreaming();
+            callback();
         },
         function (error) {
             consol.log(error.message)
@@ -124,6 +137,9 @@ function publishTOKScreen() {
             $('#screenRecordingContainer').hide();
         }
         else {
+            $('.panel-body').height('calc(92vh - 95px)');
+            $('#tokStreamControls').show();
+            $('#tokStatusText').text('Sharing Screen.');
             var data = { chatID: _activeChatID };
             IssueAjaxRequest("GetTOKSessionInfoClient", data,
             function (resultID) {
@@ -169,13 +185,17 @@ function publishTOKScreen() {
 function subscribeToVideoStream() {
     var tokenURI = encodeURIComponent(sharedToken);
     window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
-    publishTOKVideo();
+    publishTOKVideo(function () {
+        pressenceChannel.trigger('client-tok-video-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    });
 }
 
 function subscribeToAudioStream() {
     var tokenURI = encodeURIComponent(sharedToken);
     window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
-    publishTOKAudio();
+    publishTOKAudio(function () {
+        pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    });
 }
 
 function subscribeToScreenStream() {
@@ -206,212 +226,21 @@ function stopScreenStreaming() {
     session.unpublish(screenSharingPublisher);
 }
 
-//Below is now useless code I wrote for no reason at this point...
-//function startVideoRecording(e) {
-//    var data = { sessionId: sessionId };
-//    IssueAjaxRequest("StartArchivingClient", data,
-//    function (resultID) {
-//        $('#startVideoRecording').hide();
-//        $('#stopVideoRecording').show();
-//        $('#canceltok').hide();
-//        archiveID = resultID;
-//        $('#statusText').text("Currently Recording ...");
-//    },
-//    function (error) {
-//        console.log(error.message);
-//    });
-//};
+function stopTOKStream(e) {
+    $('#tokStatusText').text('Ending live session...');
+    session.unpublish(publisher);
+    $('#tokStreamControls').hide();
+    $('.panel-body').height('calc(100vh - 95px)');
+};
 
-//function stopVideoRecording(e) {
-//    var data = { archiveId: archiveID };
-//    IssueAjaxRequest("StopArchivingClient", data,
-//    function (result) {
-//        $('#startVideoRecording').show();
-//        $('#stopVideoRecording').hide();
-//        $('#insertVideoRecording').show();
-//        $('#canceltok').show();
-//        tokurl = result;
-//        $('#statusText').text("Recording Stopped");
-//    },
-//    function (error) {
-//        console.log(error.message);
-//    });
-//    $('#statusText').text("Processing...");
-//};
+function muteTOKStream(e) {
+    publisher.publishAudio(false);
+    $('#unmuteStream').show();
+    $('#muteStream').hide();
+};
 
-//function insertVideoRecording(e) {
-//    $('#TOKModal').modal('hide');
-//    var videoHTML = '<video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-//    var messageData = { channelName: 'presence-' + _activeChatID, message: videoHTML, chatID: _activeChatID, userID: _participantID };
-
-//    IssueAjaxRequest("AddMessage", messageData,
-//    function (result) {
-//        $('#message').val('');
-//    },
-//    function (error) {
-
-//    });
-
-//    session.unpublish(publisher);
-//    $('#startVideoRecording').show();
-//    $('#stopVideoRecording').hide();
-//    $('#insertVideoRecording').hide();
-//    $('#videoRecordingContainer').hide();
-//    $('#statusText').text("");
-//    //$('.panel-body').height('calc(100vh - 95px)');
-//};
-
-//function cancelVideoRecording(e) {
-//    $('#TOKModal').modal('hide');
-//    if (archiveID) {
-//        $('#statusText').text("Cancelling Recording ...");
-//        var data = { archiveID: archiveID };
-//        IssueAjaxRequest("DeleteArchiveClient", data,
-//        function (resultID) {
-//            $('#startVideoRecording').show();
-//            $('#stopVideoRecording').hide();
-//            $('#insertVideoRecording').hide();
-//            session.unpublish(publisher);
-//            $('#videoRecordingContainer').hide();
-//            $('#statusText').text("");
-//        },
-//        function (error) {
-
-//        });
-//    }
-//    else {
-//        session.unpublish(publisher);
-//        $('#videoRecordingContainer').hide();
-//    }
-//    $('#statusText').text("");
-//};
-
-//function muteVideoRecording(e) {
-//    publisher.publishAudio(false);
-//    $('#unmuteVideoRecording').show();
-//    $('#muteVideoRecording').hide();
-//};
-
-//function unmuteVideoRecording(e) {
-//    publisher.publishAudio(true);
-//    $('#muteVideoRecording').show();
-//    $('#unmuteVideoRecording').hide();
-//};
-
-//function startScreenRecording(e) {
-//    var data = { sessionId: sessionId }; 
-//    IssueAjaxRequest("StartArchivingClient", data,
-//    function (resultID) {
-//        $('#startScreenRecording').hide();
-//        $('#stopScreenRecording').show();
-//        $('#cancelScreenRecording').hide();
-//        $('#muteScreenRecording').show();
-//        archiveID = resultID;
-//        $('#tokScreenRecordingCountdown').show();
-//        setTimeout(function () {
-//            updateTimer($('#tokScreenRecordingCountdown'));
-//        }, 1000);
-
-//        $('#screenRecordingStatusText').text("Currently Recording Screen...");
-//    },
-//    function (error) {
-//        console.log(error.message);
-//    });
-//};
-
-//function updateTimer(parentElement) {
-//    var myTime = $('#tokScreenRecordingCountdown').html();
-//    var ss = myTime.split(":");
-//    var dt = new Date();
-//    dt.setHours(0);
-//    dt.setMinutes(ss[0]);
-//    dt.setSeconds(ss[1]);
-
-//    var dt2 = new Date(dt.valueOf() + 1000);
-//    var temp = dt2.toTimeString().split(" ");
-//    var ts = temp[0].split(":");
-
-//    if (temp[0] == "05") {
-//        stopScreenRecording(parentElement);
-//        return;
-//    }
-
-//    $("#tokScreenRecordingCountdown").html(ts[1] + ":" + ts[2]);
-//    tokTimer = setTimeout(function () {
-//        updateTimer(parentElement);
-//    }, 1000);
-//}
-
-//function stopScreenRecording(e) {
-//    $('#screenRecordingStatusText').text("Processing...");
-//    var data = { archiveId: archiveID };
-//    IssueAjaxRequest("StopArchivingClient", data,
-//    function (resultID) {
-//        $('#startScreenRecording').show();
-//        $('#stopScreenRecording').hide();
-//        $('#insertScreenRecording').show();
-//        $('#cancelScreenRecording').show();
-//        tokurl = resultID;
-//        $('#screenRecordingStatusText').text("Recording Stopped");
-//        clearTimeout(tokTimer);
-//        $("#tokScreenRecordingCountdown").html("0:00");
-//        $("#tokScreenRecordingCountdown").hide();
-//    },
-//    function (error) {
-//        console.log(error.message);
-//    });
-//};
-
-//function insertScreenRecording(e) {
-//    $('#TOKModal').modal('hide');
-//    var videoHTML = '<video width="400" height="400" controls poster="https://app.teamsupport.com/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-//    submitMessage(videoHTML);
-
-//    session.unpublish(publisher);
-
-//    $('#startScreenRecording').show();
-//    $('#stopScreenRecording').hide();
-//    $('#insertScreenRecording').hide();
-//    $('#screenRecordingContainer').hide();
-//    $('#screenRecordingStatusText').text("");
-//};
-
-//function cancelScreenRecording(e) {
-//    $('#TOKModal').modal('hide');
-//    if (archiveID) {
-//        $('#screenRecordingStatusText').text("Canceling Recording ...");
-//        var data = { archiveID: archiveID };
-//        IssueAjaxRequest("DeleteArchiveClient", data,
-//        function (resultID) {
-//                $("#tokScreenRecordingCountdown").html("0:00");
-//                $("#tokScreenRecordingCountdown").hide();
-
-//                $('#startScreenRecording').show();
-//                $('#stopScreenRecording').hide();
-//                $('#insertScreenRecording').hide();
-//                session.unpublish(publisher);
-//                $('#screenRecordingContainer').hide();
-//                $('#screenRecordingStatusText').text("");
-//        },
-//        function (error) {
-//            console.log(error.message);
-//        });
-//    }
-//    else {
-//        session.unpublish(publisher);
-//        $('#screenRecordingContainer').hide();
-//    }
-//    $('#screenRecordingStatusText').text("");
-//};
-
-//function muteScreenRecording(e) {
-//    publisher.publishAudio(false);
-//    $('#unmuteScreenRecording').show();
-//    $('#muteScreenRecording').hide();
-//};
-
-//function unmuteScreenRecording(e) {
-//    publisher.publishAudio(true);
-//    $('#muteScreenRecording').show();
-//    $('#unmuteScreenRecording').hide();
-//};
+function unmuteTOKStream(e) {
+    publisher.publishAudio(true);
+    $('#muteStream').show();
+    $('#unmuteStream').hide();
+};

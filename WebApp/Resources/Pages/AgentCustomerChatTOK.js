@@ -17,12 +17,16 @@ var sharedToken;
 function SetupTOK() {
     $('#chat-tok-video').click(function (e) {
         top.Ts.System.logAction('Chat - Video Call Button Clicked');
-        publishTOKVideo();
+        publishTOKVideo(function () {
+            startVideoStreaming();
+        });
     });
 
     $('#chat-tok-audio').click(function (e) {
         top.Ts.System.logAction('Chat -Audio Call Button Clicked');
-        publishTOKAudio();
+        publishTOKAudio(function () {
+            startAudioStreaming();
+        });
     });
 
     $('#chat-tok-screen').click(function (e) {
@@ -32,12 +36,15 @@ function SetupTOK() {
 }
 
 
-function publishTOKVideo() {
+function publishTOKVideo(callback) {
     if (OT.checkSystemRequirements() == 1) {
         var dynamicPub = $("#publisher");
 
         if (dynamicPub.length == 0)
             dynamicPub = $("#tempContainer");
+
+        $('#tokStreamControls').show();
+        $('#tokStatusText').text('Requesting Live Session...');
 
         top.Ts.Services.Chat.GetTOKSessionInfo(function (resultID) {
             sessionId = resultID[0];
@@ -52,7 +59,7 @@ function publishTOKVideo() {
                 });
                 session.publish(publisher);
             });
-            startVideoStreaming();
+            callback();
         });
     }
     else {
@@ -60,12 +67,15 @@ function publishTOKVideo() {
     }
 }
 
-function publishTOKAudio() {
+function publishTOKAudio(callback) {
     if (OT.checkSystemRequirements() == 1) {
         var dynamicPub = $("#publisher");
 
         if (dynamicPub.length == 0)
             dynamicPub = $("#tempContainer");
+
+        $('#tokStreamControls').show();
+        $('#tokStatusText').text('Requesting Live Session...');
 
         top.Ts.Services.Chat.GetTOKSessionInfo(function (resultID) {
             sessionId = resultID[0];
@@ -81,7 +91,7 @@ function publishTOKAudio() {
                 });
                 session.publish(publisher);
             });
-            startAudioStreaming();
+            callback();
         });
     }
     else {
@@ -118,6 +128,8 @@ function publishTOKScreen() {
             $('#screenRecordingContainer').hide();
         }
         else {
+            $('#tokStreamControls').show();
+            $('#tokStatusText').text('Sharing Screen.');
             top.Ts.Services.Chat.GetTOKSessionInfo(function (resultID) {
                 sessionId = resultID[0];
                 token = resultID[1];
@@ -158,13 +170,17 @@ function publishTOKScreen() {
 function subscribeToVideoStream() {
     var tokenURI = encodeURIComponent(sharedToken);
     window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
-    publichTOKVideo();
+    publishTOKVideo(function () {
+        channel.trigger('client-tok-video-accept', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    });
 }
 
 function subscribeToAudioStream() {
     var tokenURI = encodeURIComponent(sharedToken);
     window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
-    publichTOKAudio();
+    publishTOKAudio(function () {
+        channel.trigger('client-tok-audio-accept', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    });
 }
 
 function subscribeToScreenStream() {
@@ -185,6 +201,24 @@ function startAudioStreaming() {
 function startScreenStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
     channel.trigger('client-tok-screen', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+};
+
+function stopTOKStream(e) {
+    $('#tokStatusText').text('Ending live session...');
+    session.unpublish(publisher);
+    $('#tokStreamControls').hide();
+};
+
+function muteTOKStream(e) {
+    publisher.publishAudio(false);
+    $('#unmuteStream').show();
+    $('#muteStream').hide();
+};
+
+function unmuteTOKStream(e) {
+    publisher.publishAudio(true);
+    $('#muteStream').show();
+    $('#unmuteStream').hide();
 };
 
 function installChromePlugin() {

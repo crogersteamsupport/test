@@ -41,6 +41,34 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string GetClientChatPropertiesByChatID(int chatID)
+        {
+            Chat chat = GetChat(chatID);
+            ChatSettingsModel model = new ChatSettingsModel();
+
+            model.ChatIntro = OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatIntroMessage", "How can I help you today?");
+            model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKScreenEnabled", "true"));
+            model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVoiceEnabled", "true"));
+            model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVideoEnabled", "true"));
+
+            return JsonConvert.SerializeObject(model);
+        }
+
+        [WebMethod]
+        public string GetClientChatPropertiesByChatGUID(string chatGuid)
+        {
+            Organization org = GetOrganization(chatGuid);
+            ChatSettingsModel model = new ChatSettingsModel();
+
+            model.ChatIntro = OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatIntroMessage", "How can I help you today?");
+            model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKScreenEnabled", "true"));
+            model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVoiceEnabled", "true"));
+            model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVideoEnabled", "true"));
+
+            return JsonConvert.SerializeObject(model);
+        }
+
+        [WebMethod]
         public string GetPusherKey()
         {
             return SystemSettings.GetPusherKey();
@@ -270,6 +298,19 @@ namespace TSWebServices
         #endregion
 
         #region AgentServices
+
+        [WebMethod]
+        public ChatSettingsModel GetAgentChatProperties()
+        {
+            ChatSettingsModel model = new ChatSettingsModel();
+
+            model.ChatIntro = Settings.OrganizationDB.ReadString("ChatIntroMessage", "How can we help you today?");
+            model.TOKScreenEnabled = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", true);
+            model.TOKVoiceEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", true);
+            model.TOKVideoEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", true);
+
+            return model;
+        }
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
@@ -966,6 +1007,15 @@ namespace TSWebServices
             }
         }
 
-        #endregion
-    }
+        public class ChatSettingsModel
+        {
+            public string ChatIntro { get; set; }
+            public bool TOKScreenEnabled { get; set; }
+            public bool TOKVoiceEnabled { get; set; }
+            public bool TOKVideoEnabled { get; set; }
+
+        }
+
+            #endregion
+        }
 }

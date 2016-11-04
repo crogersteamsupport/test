@@ -27,12 +27,18 @@
             </div>
         </div>
         <div class="panel-footer form-footer">
+            <div style="display: none;" id="tokStreamControls">
+                <div id="tokStatusText"></div>
+                <button type="button" id="muteStream" class="btn btn-primary" title="Mute Audio" onClick="muteTOKStream()"><i class="fa fa-microphone"></i></button>
+                <button type="button" id="unmuteStream" class="btn btn-danger" title="UnMute Audio" style="display:none;" onClick="unmuteTOKStream()"><i class="fa fa-microphone-slash"></i></button>
+                <button type="button" id="stopStream" class="btn btn-danger" title="Stop Streaming" onClick="stopTOKStream()"><i class="fa fa-stop"></i></button>
+            </div>
             <form id="message-form" action="">
                 <div class="input-group">
                     <input id="message" type="text" class="form-control" autocomplete="off" />
                     <span class="input-group-btn">
                         <button id="chat-attachment" class="btn btn-default" type="button" aria-label="attach documents"><span class="fa fa-paperclip"></span></button>
-                        <button id="chat-tok-audio" class="btn btn-default" type="button" aria-label="audio call"  data-toggle="tooltip" data-placement="top" title="Go to Audio"><span class="fa fa-microphone"></span></button>
+                        <button id="chat-tok-audio" class="btn btn-default" type="button" aria-label="audio call"><span class="fa fa-microphone"></span></button>
                         <button id="chat-tok-video" class="btn btn-default" type="button" aria-label="video call"><span class="fa fa-video-camera"></span></button>
                         <button id="chat-tok-screen" class="btn btn-default" type="button" aria-label="record video"><span class="fa fa-desktop"></span></button>
                         <button id="send-message" class="btn btn-default" type="submit" aria-label="send message">Send</button>

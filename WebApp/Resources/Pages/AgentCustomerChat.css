@@ -100,3 +100,11 @@ a { cursor: pointer; }
 }
 
 .tok-controls { padding: 0px 0px 10px 0px }
+
+#tokStreamControls {
+    text-align: center;
+    padding: 10px;
+    margin-top: -10px;
+}
+
+#tokStatusText { padding: 5px; }

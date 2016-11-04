@@ -34,8 +34,20 @@ $(document).ready(function () {
         $('.page-loading').hide().next().show();
     });
 
+    GetChatSettings();
     SetupToolbar();
     SetupTOK();
+
+    function GetChatSettings() {
+        parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
+            if (!data.TOKScreenEnabled)
+                $('#chat-tok-screen').hide();
+            if (!data.TOKVideoEnabled)
+                $('#chat-tok-video').hide();
+            if (!data.TOKVoiceEnabled)
+                $('#chat-tok-audio').hide();
+        });
+    }
 
     function SetupChatRequests() {
         parent.Ts.Services.Chat.GetChatRequests(function (data) {

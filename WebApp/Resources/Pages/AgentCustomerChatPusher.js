@@ -74,6 +74,25 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedSessionID = data.sessionId;
     });
 
+    channel.bind('client-tok-audio-user-accept', function (data) {
+        //console.log(data);
+        $('#tokStatusText').text(data.userName + ' has joined live session.');
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+        var tokenURI = encodeURIComponent(sharedToken);
+        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+    });
+
+    channel.bind('client-tok-video-user-accept', function (data) {
+        $('#tokStatusText').text(data.userName + ' has joined live session.');
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+        var tokenURI = encodeURIComponent(sharedToken);
+        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+    });
+
 
     var typingTimer;
     var doneTypingInterval = 5000;

@@ -1,21 +1,10 @@
 ﻿$(document).ready(function () {
     var sessionID = Ts.Utils.getQueryValue("sessionid", window);
     var token = Ts.Utils.getQueryValue("token", window);
-    debugger
-
-
-    //IssueAjaxRequest("GetTOKSessionInfoClient",
-    //function (result) {
-
-    //},
-    //function (error) {
-
-    //});
 
     var data = { chatID: 1 };
     IssueAjaxRequest("GetTOKSessionInfoClient", data,
     function (resultID) {
-        //token = resultID[1];
         apiKey = resultID[2];
 
         var dynamicPub = $("#screenStream");

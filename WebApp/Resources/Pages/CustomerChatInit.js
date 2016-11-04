@@ -3,6 +3,8 @@
     var chatOffline = false;
     var chatGuid = { chatGuid: chatID };
 
+    GetChatSettings(chatID);
+
     IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID },
     function (result) {
         console.log(result)
@@ -47,6 +49,18 @@
     });
   
 });
+
+function GetChatSettings(chatID) {
+    var chatObject = { chatGuid: chatID };
+
+    IssueAjaxRequest("GetClientChatPropertiesByChatGUID", chatObject,
+    function (result) {
+        $('.panel-heading').text(result.ChatIntro);
+    },
+    function (error) {
+
+    });
+}
 
 var service = '../Services/ChatService.asmx/';
 function IssueAjaxRequest(method, data, successCallback, errorCallback) {

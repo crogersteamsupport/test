@@ -52,7 +52,11 @@ public partial class Dialogs_ChatProperties  : BaseDialogPage
     imgUnavailable.ImageUrl = String.Format("../dc/{0}/images/chat/chat_unavailable", _organizationID.ToString());
     imgLogo.ImageUrl = String.Format("../dc/{0}/images/chat/chat_logo", _organizationID.ToString());
 
-  }
+        textChatIntro.Text = Settings.OrganizationDB.ReadString("ChatIntroMessage", "How can we help you today?");
+        cbChatTOKScreenEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", true);
+        cbChatTOKVoiceEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", true);
+        cbChatTOKVideoEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", true);
+    }
 
 
   public override bool Save()
@@ -82,7 +86,12 @@ public partial class Dialogs_ChatProperties  : BaseDialogPage
       upLogo.UploadedFiles[0].SaveAs(fileName, true);
     }
 
-    return true;
+    Settings.OrganizationDB.WriteString("ChatIntroMessage", textChatIntro.Text);
+    Settings.OrganizationDB.WriteBool("ChatTOKScreenEnabled", cbChatTOKScreenEnabled.Checked);
+    Settings.OrganizationDB.WriteBool("ChatTOKVoiceEnabled", cbChatTOKVoiceEnabled.Checked);
+    Settings.OrganizationDB.WriteBool("ChatTOKVideoEnabled", cbChatTOKVideoEnabled.Checked);
+
+        return true;
   }
 
 

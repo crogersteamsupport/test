@@ -204,3 +204,13 @@ p.typing {
 }
 
 a { cursor: pointer; }
+
+
+/*TOK*/
+#tokStreamControls {
+    text-align: center;
+    padding: 10px;
+    margin-top: -10px;
+}
+
+#tokStatusText { padding: 5px; }

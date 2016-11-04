@@ -33,6 +33,8 @@ $(document).ready(function () {
         
 
     });
+
+    GetChatSettings(chatID);
     loadInitialMessages(chatID);
     SetupChatUploads(chatID, participantID);
     SetupTOK();
@@ -54,8 +56,29 @@ $(document).ready(function () {
     });
 
     //TODO:  Not centering correclty
-    $('[data-toggle="tooltip"]').tooltip();
+    //$('#chat-tok-audio').tooltip({
+    //    container: 'body'
+    //});
 });
+
+function GetChatSettings(chatID) {
+    var chatObject = { chatID: chatID };
+    
+    IssueAjaxRequest("GetClientChatPropertiesByChatID", chatObject,
+    function (result) {
+        console.log(result)
+        if (!result.TOKScreenEnabled)
+            $('#chat-tok-screen').hide();
+        if (!result.TOKVideoEnabled)
+            $('#chat-tok-video').hide();
+        if (!result.TOKVoiceEnabled)
+            $('#chat-tok-audio').hide();
+        $('.panel-heading').text(result.ChatIntro);
+    },
+    function (error) {
+
+    });
+}
 
 function createMessage(message)
 {
@@ -104,7 +127,7 @@ function setupChat(chatID, participantID, callback) {
 
     pressenceChannel.bind('client-tok-screen', function (data) {
         //console.log(data);
-        $('#chat-body').append('<div class="answer left">' +
+        $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
                     '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToScreenStream()">Do you Accept?</a></div></div>');
 
         sharedApiKey = data.apiKey;
@@ -113,8 +136,8 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('client-tok-video', function (data) {
-        console.log('client-tok-video');
-        $('#chat-body').append('<div class="answer left">' +
+        //console.log('client-tok-video');
+        $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
                     '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToVideoStream()">Do you Accept?</a></div></div>');
 
         sharedApiKey = data.apiKey;
@@ -123,13 +146,31 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('client-tok-audio', function (data) {
-        console.log('client-tok-audio');
-        $('#chat-body').append('<div class="answer left">' +
+       // console.log('client-tok-audio');
+        $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
                     '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToAudioStream()">Do you Accept?</a></div></div>');
 
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
+    });
+
+    pressenceChannel.bind('client-tok-audio-accept', function (data) {
+        $('#tokStatusText').text(data.userName + ' has joined live session.');
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+        var tokenURI = encodeURIComponent(sharedToken);
+        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+    });
+
+    pressenceChannel.bind('client-tok-video-accept', function (data) {
+        $('#tokStatusText').text(data.userName + ' has joined live session.');
+        sharedApiKey = data.apiKey;
+        sharedToken = data.token;
+        sharedSessionID = data.sessionId;
+        var tokenURI = encodeURIComponent(sharedToken);
+        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
     });
 
     pressenceChannel.bind('client-agent-typing', function (data) {
