@@ -4045,7 +4045,10 @@ function CreateActionElement(val, ShouldAppend) {
   var actionElement = $(html);
   actionElement.find('a').attr('target', '_blank');
   if (ShouldAppend) {
-    $("#action-timeline").append(actionElement);
+      try {
+          $("#action-timeline").append(actionElement);
+      }
+      catch(e){}
   }
   else {
     if ($('.ticket-action.pinned').length) {
