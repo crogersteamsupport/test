@@ -31,7 +31,7 @@ namespace TSWebServices
         public AdminService()
         {
 
-            //Uncommen t the following line if using designed components 
+            //Uncomment the following line if using designed components 
             //InitializeComponent(); 
         }
 
