@@ -242,6 +242,16 @@
         });
       });
 
+      $('.action-hub').click(function (e) {
+          e.preventDefault();
+          var sendEmails = confirm("Would you like to send password emails?");
+          if (!confirm("Are you sure you would like to turn all the contacts into hub users?")) return;
+          var org = $('.org-info').data('o');
+          top.Ts.Services.Organizations.AdminSetAllHubsers(org.OrganizationID, sendEmails, function () {
+              alert("All hub users are now enabled.");
+          });
+      });
+
 
       $('.action-index').click(function (e) {
         e.preventDefault();
@@ -304,6 +314,7 @@
                 <button class="btn btn-default action-seats">Change Seat Count</button>
                 <button class="btn btn-default action-api">Change API Request Count</button>
                 <button class="btn btn-default action-portal">Turn all portal users on</button>
+                  <button class="btn btn-default action-hub">Turn all hub users on</button>
                 <button class="btn btn-default action-ticketnumber">Set Next Ticket Number</button>
               </div>
               <div>
