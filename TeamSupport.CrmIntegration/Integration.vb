@@ -378,8 +378,8 @@ Namespace TeamSupport
                         thisCompany = findCompany.FindByName(company.AccountName)
                         'update accountid
                         thisCompany.CRMLinkID = company.AccountID
-						logMessage = "Found by Name"
-                    Else
+                        logMessage = "Found by Name"
+                    ElseIf ParentOrgID <> "1078" Then
                         'if still not found, add new
                         Dim crmlinkOrg As New Organizations(User)
                         crmlinkOrg.LoadByOrganizationID(ParentOrgID)
@@ -392,7 +392,10 @@ Namespace TeamSupport
                         thisCompany.HasPortalAccess = isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess
                         thisCompany.IsActive = True
                         thisCompany.SlaLevelID = CRMLinkRow.DefaultSlaLevelID
-						logMessage = "Added a new account"
+                        logMessage = "Added a new account"
+                    Else
+                        Log.Write(String.Format("Company {0} {1} was not added in our 1078. ", company.AccountName, company.AccountID))
+                        Return
                     End If
                 End If
 
