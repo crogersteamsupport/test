@@ -629,7 +629,14 @@ namespace TSWebServices
         public void AdminSetAllPortalUsers(int organizationID, bool sendEmails)
         {
             if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
-            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails);
+            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, false);
+        }
+
+        [WebMethod]
+        public void AdminSetAllHubUsers(int organizationID, bool sendEmails)
+        {
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, true);
         }
 
         [WebMethod]
