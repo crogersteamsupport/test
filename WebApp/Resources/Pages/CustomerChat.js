@@ -41,18 +41,20 @@ $(document).ready(function () {
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
-        $('#send-message').prop("disabled", true);
-        doneTyping();
-        var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
+        if ($('#message').val() !== '') {
+            $('#send-message').prop("disabled", true);
+            doneTyping();
+            var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
 
-        IssueAjaxRequest("AddMessage", messageData,
-        function (result) {
-            $('#message').val('');
-            $('#send-message').prop("disabled", false);
-        },
-        function (error) {
+            IssueAjaxRequest("AddMessage", messageData,
+            function (result) {
+                $('#message').val('');
+                $('#send-message').prop("disabled", false);
+            },
+            function (error) {
 
-        });
+            });
+        }
     });
 
     //TODO:  Not centering correclty
@@ -90,7 +92,7 @@ function createMessageElement(messageData, direction) {
     if (messageData.CreatorID !== null) userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429';
 
     $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="'+ userAvatar +'" alt="User name">  </div>' +
-                        '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('DD/MM/YYYY hh:mm A') + '</div></div>');
+                        '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('MM/DD/YYYY hh:mm A') + '</div></div>');
 }
 
 var pressenceChannel;
@@ -128,7 +130,7 @@ function setupChat(chatID, participantID, callback) {
     pressenceChannel.bind('client-tok-screen', function (data) {
         //console.log(data);
         $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToScreenStream()">Do you Accept?</a></div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToScreenStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
@@ -136,20 +138,20 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('client-tok-video', function (data) {
-        //console.log('client-tok-video');
         $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToVideoStream()">Do you Accept?</a></div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToVideoStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
+        $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
     });
 
     pressenceChannel.bind('client-tok-audio', function (data) {
-       // console.log('client-tok-audio');
         $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToAudioStream()">Do you Accept?</a></div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToAudioStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
+        $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
@@ -161,7 +163,7 @@ function setupChat(chatID, participantID, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
     });
 
     pressenceChannel.bind('client-tok-video-accept', function (data) {
@@ -170,17 +172,16 @@ function setupChat(chatID, participantID, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
     });
 
     pressenceChannel.bind('client-agent-typing', function (data) {
-        console.log(data);
-        $('#typing').text(data).show();
-        //alert('yo typing')
+        $('#chat-body').append('<div id="typing" class="answer left"> <div class="avatar"><img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name"></div>' +
+                    '<div class="name">' + data + '</div>  <div class="text">' + data + '</div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
     });
 
     pressenceChannel.bind('client-agent-stop-typing', function (data) {
-        $('#typing').hide();
+        $('#typing').remove();
     });
 
     var isTyping = false;
@@ -217,7 +218,7 @@ function loadInitialMessages(chatID) {
     IssueAjaxRequest("GetChatInfo", chatObject,
     function (result) {
         chatInfoObject = result;
-        createMessage('Initiated On: ' + moment(result.DateCreated).format('DD/MM/YYYY hh:mm A'));
+        createMessage('Initiated On: ' + moment(result.DateCreated).format('MM/DD/YYYY hh:mm A'));
         createMessage('Initiated By: ' + result.InitiatorDisplayName);
     },
     function (error) {

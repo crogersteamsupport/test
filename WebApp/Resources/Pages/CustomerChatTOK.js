@@ -39,7 +39,7 @@ function publishTOKVideo(callback) {
         if (dynamicPub.length == 0)
             dynamicPub = $("#tempContainer");
 
-        $('.panel-body').height('calc(92vh - 95px)');
+        $('.panel-body').height('calc(100vh - 172px)');
         $('#tokStreamControls').show();
         $('#tokStatusText').text('Requesting Live Session...');
 
@@ -76,7 +76,7 @@ function publishTOKAudio(callback) {
         if (dynamicPub.length == 0)
             dynamicPub = $("#tempContainer");
 
-        $('.panel-body').height('calc(92vh - 95px)');
+        $('.panel-body').height('calc(100vh - 172px)');
         $('#tokStreamControls').show();
         $('#tokStatusText').text('Requesting Live Session...');
 
@@ -137,7 +137,7 @@ function publishTOKScreen() {
             $('#screenRecordingContainer').hide();
         }
         else {
-            $('.panel-body').height('calc(92vh - 95px)');
+            $('.panel-body').height('calc(100vh - 172px)');
             $('#tokStreamControls').show();
             $('#tokStatusText').text('Sharing Screen.');
             var data = { chatID: _activeChatID };
@@ -184,7 +184,7 @@ function publishTOKScreen() {
 
 function subscribeToVideoStream() {
     var tokenURI = encodeURIComponent(sharedToken);
-    window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+    window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
     publishTOKVideo(function () {
         pressenceChannel.trigger('client-tok-video-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
     });
@@ -192,7 +192,7 @@ function subscribeToVideoStream() {
 
 function subscribeToAudioStream() {
     var tokenURI = encodeURIComponent(sharedToken);
-    window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+    window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
     publishTOKAudio(function () {
         pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
     });
@@ -200,7 +200,7 @@ function subscribeToAudioStream() {
 
 function subscribeToScreenStream() {
     var tokenURI = encodeURIComponent(sharedToken);
-    window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=1000');
+    window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
 }
 
 function startVideoStreaming() {

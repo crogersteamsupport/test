@@ -15,8 +15,8 @@
     <div class="panel panel-default chatRequestForm" style="display:none;">
         <div class="panel-heading">How can we help you today?</div>
         <div class="panel-body">
-            <form id="newChatForm">
-                <div class="form-group row">
+            <form id="newChatForm" class="container">
+                <div class="row">
                     <div class="col-xs-9 col-sm-10 col-md-11">                        
                         <div class="alert alert-info chatOfflineWarning" role="alert">
                             <strong>A chat operator is not available.</strong><br />
@@ -39,11 +39,13 @@
                         <div class="chat-logo pull-right"></div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="userIssue" class="description-label">What are your questions?</label>
-                    <textarea class="form-control" id="userIssue" rows="5"></textarea>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <label for="userIssue" class="description-label">What are your questions?</label>
+                        <textarea class="form-control" id="userIssue" rows="5"></textarea>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-default">Submit</button>
+                <button type="submit" class="btn btn-default" style="margin-top:10px;">Submit</button>
             </form>
         </div>
     </div>

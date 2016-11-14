@@ -1,7 +1,7 @@
 ﻿var _activeChatID = null;
+var dateFormat;
 $(document).ready(function () {
     //apiKey = "45228242";
-    var dateFormat;
     var chatInfoObject = {};
     var pusherKey = null;
     var contactID = null;

@@ -10,8 +10,8 @@
         var dynamicPub = $("#screenStream");
         dynamicPub.show();
         dynamicPub.attr("id", "tempContainer");
-        dynamicPub.attr("width", "400px");
-        dynamicPub.attr("height", "400px");
+        dynamicPub.attr("width", "100%");
+        dynamicPub.attr("height", "100%");
 
         if (dynamicPub.length == 0)
             dynamicPub = $("#tempContainer");
@@ -19,16 +19,29 @@
         var stream = OT.initSession(apiKey, sessionID);
         stream.connect(token, function (error) {
             stream.on('streamCreated', function (event) {
-                stream.subscribe(event.stream, dynamicPub.attr('id'), {
-                    insertMode: 'append',
-                    width: '100%',
-                    height: '100%'
-                });
+                //console.log(event.stream);
+                if (event.stream.hasVideo) {
+                    stream.subscribe(event.stream, dynamicPub.attr('id'), {
+                        insertMode: 'append',
+                        width: '100%',
+                        height: 'calc(100vh - 50px)'
+                    });
+                }
+                else {
+                    stream.subscribe(event.stream, dynamicPub.attr('id'), {
+                        insertMode: 'append',
+                        width: '100%',
+                        height: '0px'
+                    });
+                }
             });
+
             stream.on('streamDestroyed', function (event) {
                 window.close();
             });
         });
+
+
     });
 });
 

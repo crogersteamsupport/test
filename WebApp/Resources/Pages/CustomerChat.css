@@ -191,6 +191,10 @@
     color: #333333;
 }
 
+.chat-body .answer.right .text a {
+    color: #ffffff;
+}
+
 
 /*File Uploads*/
 .hover {

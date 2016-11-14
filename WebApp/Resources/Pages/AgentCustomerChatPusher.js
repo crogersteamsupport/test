@@ -33,15 +33,22 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         newCommentCallback(data, true);
     });
 
+    var typeTemplate;
     channel.bind('client-user-typing', function (data) {
-        console.log(data);
-        $('#typing').text(data).show();
-        //alert('yo typing')
+        var messageTemplate = $("#message-template").html();
+        typeTemplate = messageTemplate
+                                .replace('{{MessageDirection}}', 'left')
+                                .replace('{{UserName}}', ' ')
+                                .replace('{{Avatar}}', '../images/blank_avatar.png')
+                                .replace('{{Message}}', data)
+                                .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'));
+
+        $('.media-list').append(typeTemplate);
+        ScrollMessages(true);
     });
 
     channel.bind('client-user-stop-typing', function (data) {
-        $('#typing').hide();
-        //alert('yo NOT typing')
+        typeTemplate.remove();
     });
 
     channel.bind('client-tok-screen-user', function (data) {
@@ -49,6 +56,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         var compiledTemplate = messageTemplate
                                 .replace('{{message}}', data.userName + ' wants to share their screen with you. ')
         $('.media-list').append(compiledTemplate);
+        ScrollMessages(true);
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
@@ -59,6 +67,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         var compiledTemplate = messageTemplate
                                 .replace('{{message}}', data.userName + ' wants to have a video call with you.  ')
         $('.media-list').append(compiledTemplate);
+        ScrollMessages(true);
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
@@ -69,6 +78,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         var compiledTemplate = messageTemplate
                                 .replace('{{message}}', data.userName + ' wants to have a audio call with you. ')
         $('.media-list').append(compiledTemplate);
+        ScrollMessages(true);
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
@@ -81,7 +91,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
     });
 
     channel.bind('client-tok-video-user-accept', function (data) {
@@ -90,7 +100,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=500,height=500');
+        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
     });
 
 
