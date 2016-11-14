@@ -1,580 +1,475 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product]
-  FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskLogID],
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255),
+  @TaskID int,
+  @Description varchar(1000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskAssociationsView]
+  INSERT INTO [dbo].[TaskLogs]
   (
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product])
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
   VALUES (
-    @ReminderID,
-    @RefID,
-    @RefType,
-    @TicketNumber,
-    @TicketName,
-    @User,
-    @Company,
-    @Group,
-    @Product)
+    @TaskID,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255)
+  @TaskLogID int,
+  @TaskID int,
+  @Description varchar(1000),
+  @DateModified datetime,
+  @ModifierID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskAssociationsView]
+  UPDATE [dbo].[TaskLogs]
   SET
-    [TicketNumber] = @TicketNumber,
-    [TicketName] = @TicketName,
-    [User] = @User,
-    [Company] = @Company,
-    [Group] = @Group,
-    [Product] = @Product
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskID] = @TaskID,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+  DELETE FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product]
-  FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskLogID],
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255),
+  @TaskID int,
+  @Description varchar(1000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskAssociationsView]
+  INSERT INTO [dbo].[TaskLogs]
   (
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product])
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
   VALUES (
-    @ReminderID,
-    @RefID,
-    @RefType,
-    @TicketNumber,
-    @TicketName,
-    @User,
-    @Company,
-    @Group,
-    @Product)
+    @TaskID,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255)
+  @TaskLogID int,
+  @TaskID int,
+  @Description varchar(1000),
+  @DateModified datetime,
+  @ModifierID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskAssociationsView]
+  UPDATE [dbo].[TaskLogs]
   SET
-    [TicketNumber] = @TicketNumber,
-    [TicketName] = @TicketName,
-    [User] = @User,
-    [Company] = @Company,
-    [Group] = @Group,
-    [Product] = @Product
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskID] = @TaskID,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+  DELETE FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product]
-  FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskLogID],
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255),
+  @TaskID int,
+  @Description varchar(1000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskAssociationsView]
+  INSERT INTO [dbo].[TaskLogs]
   (
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product])
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
   VALUES (
-    @ReminderID,
-    @RefID,
-    @RefType,
-    @TicketNumber,
-    @TicketName,
-    @User,
-    @Company,
-    @Group,
-    @Product)
+    @TaskID,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255)
+  @TaskLogID int,
+  @TaskID int,
+  @Description varchar(1000),
+  @DateModified datetime,
+  @ModifierID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskAssociationsView]
+  UPDATE [dbo].[TaskLogs]
   SET
-    [TicketNumber] = @TicketNumber,
-    [TicketName] = @TicketName,
-    [User] = @User,
-    [Company] = @Company,
-    [Group] = @Group,
-    [Product] = @Product
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskID] = @TaskID,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+  DELETE FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product]
-  FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskLogID],
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255),
+  @TaskID int,
+  @Description varchar(1000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskAssociationsView]
+  INSERT INTO [dbo].[TaskLogs]
   (
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product])
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
   VALUES (
-    @ReminderID,
-    @RefID,
-    @RefType,
-    @TicketNumber,
-    @TicketName,
-    @User,
-    @Company,
-    @Group,
-    @Product)
+    @TaskID,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255)
+  @TaskLogID int,
+  @TaskID int,
+  @Description varchar(1000),
+  @DateModified datetime,
+  @ModifierID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskAssociationsView]
+  UPDATE [dbo].[TaskLogs]
   SET
-    [TicketNumber] = @TicketNumber,
-    [TicketName] = @TicketName,
-    [User] = @User,
-    [Company] = @Company,
-    [Group] = @Group,
-    [Product] = @Product
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskID] = @TaskID,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+  DELETE FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product]
-  FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskLogID],
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255),
+  @TaskID int,
+  @Description varchar(1000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskAssociationsView]
+  INSERT INTO [dbo].[TaskLogs]
   (
-    [ReminderID],
-    [RefID],
-    [RefType],
-    [TicketNumber],
-    [TicketName],
-    [User],
-    [Company],
-    [Group],
-    [Product])
+    [TaskID],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
   VALUES (
-    @ReminderID,
-    @RefID,
-    @RefType,
-    @TicketNumber,
-    @TicketName,
-    @User,
-    @Company,
-    @Group,
-    @Product)
+    @TaskID,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int,
-  @TicketNumber int,
-  @TicketName nvarchar(255),
-  @User nvarchar(201),
-  @Company nvarchar(255),
-  @Group varchar(255),
-  @Product varchar(255)
+  @TaskLogID int,
+  @TaskID int,
+  @Description varchar(1000),
+  @DateModified datetime,
+  @ModifierID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskAssociationsView]
+  UPDATE [dbo].[TaskLogs]
   SET
-    [TicketNumber] = @TicketNumber,
-    [TicketName] = @TicketName,
-    [User] = @User,
-    [Company] = @Company,
-    [Group] = @Group,
-    [Product] = @Product
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+    [TaskID] = @TaskID,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskAssociationsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskLog
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskAssociationsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTaskLog
 
 (
-  @ReminderID int,
-  @RefID int,
-  @RefType int
+  @TaskLogID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskAssociationsView]
-  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType)
+  DELETE FROM [dbo].[TaskLogs]
+  WHERE ([TaskLogID] = @TaskLogID)
 GO
 
 

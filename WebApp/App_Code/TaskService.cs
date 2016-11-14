@@ -192,6 +192,15 @@ namespace TSWebServices
             return taskAssociations.GetTaskAssociationsViewItemProxies();
         }
 
+        [WebMethod]
+        public TaskLogProxy[] LoadHistory(int reminderID, int start)
+        {
+            TaskLogs taskLogs = new TaskLogs(TSAuthentication.GetLoginUser());
+            taskLogs.LoadByReminderID(reminderID, start);
+
+            return taskLogs.GetTaskLogProxies();
+        }
+
         private int GetAssignedCount(LoginUser loginUser)
         {
             SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE UserID = @UserID");
@@ -220,7 +229,7 @@ namespace TSWebServices
             task.TaskName = value;
             task.Collection.Save();
             string description = String.Format("{0} set task name to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, reminderID, description);
             return value != "" ? value : "Empty";
         }
 
@@ -232,7 +241,7 @@ namespace TSWebServices
             task.Description = value;
             task.Collection.Save();
             string description = String.Format("{0} set task description to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, reminderID, description);
             return value != "" ? value : "Empty";
         }
 
@@ -245,7 +254,7 @@ namespace TSWebServices
             task.Collection.Save();
             User u = Users.GetUser(loginUser, value);
             string description = String.Format("{0} set task user to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, reminderID, description);
             return value;
         }
 
@@ -265,7 +274,7 @@ namespace TSWebServices
             }
             task.Collection.Save();
             string description = String.Format("{0} set task is complete to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, reminderID, description);
             return value;
         }
 
@@ -285,7 +294,7 @@ namespace TSWebServices
             }
             task.TaskDueDate = (DateTime)value;
             task.Collection.Save();
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description.ToString());
+            TaskLogs.AddTaskLog(loginUser, reminderID, description);
             return value.ToString() != "" ? value.ToString() : null;
         }
 
@@ -297,7 +306,7 @@ namespace TSWebServices
             task.IsDismissed = value;
             task.Collection.Save();
             string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, reminderID, description);
             return value;
         }
 
@@ -317,7 +326,7 @@ namespace TSWebServices
             }
             task.DueDate = (DateTime)value;
             task.Collection.Save();
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tasks, reminderID, description.ToString());
+            TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
             return value.ToString() != "" ? value.ToString() : null;
         }
 
@@ -334,6 +343,8 @@ namespace TSWebServices
                 taskAssociation.DateCreated = DateTime.UtcNow;
                 taskAssociation.CreatorID = loginUser.UserID;
                 taskAssociation.Collection.Save();
+                string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+                TaskLogs.AddTaskLog(loginUser, reminderID, description);
                 return true;
             }
             catch (Exception e)
@@ -349,6 +360,8 @@ namespace TSWebServices
             {
                 TaskAssociations associations = new TaskAssociations(UserSession.LoginUser);
                 associations.DeleteAssociation(reminderID, refID, refType);
+                string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+                TaskLogs.AddTaskLog(loginUser, reminderID, description);
             }
             catch (Exception ex)
             {

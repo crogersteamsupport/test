@@ -1,6 +1,7 @@
 ﻿var _taskDetailPage = null;
 var _reminderID = null;
 var _taskName = null;
+var _historyLoaded = 0;
 
 $(document).ready(function () {
     _taskDetailPage = new TaskDetailPage();
@@ -213,6 +214,26 @@ $(document).ready(function () {
                     .appendTo(blockDiv);
                 }
             })
+        });
+    }
+
+    function LoadHistory(start) {
+        if (start == 1)
+            $('#tblHistory tbody').empty();
+
+        window.parent.parent.Ts.Services.Task.LoadHistory(_reminderID, start, function (history) {
+            for (var i = 0; i < history.length; i++) {
+                $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+                .appendTo('#tblHistory > tbody:last');
+                //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
+            }
+            if (history.length == 50)
+                $('<button>').text("Load More").addClass('btn-link')
+                .click(function (e) {
+                    LoadHistory($('#tblHistory tbody > tr').length + 1);
+                    $(this).remove();
+                })
+               .appendTo('#tblHistory > tbody:last');
         });
     }
 
@@ -968,6 +989,19 @@ $(document).ready(function () {
 
     $('#associationsRefresh').on('click', function () {
         LoadAssociations();
+    });
+
+    $('#historyToggle').on('click', function () {
+        window.parent.parent.Ts.System.logAction('Task - History Toggle');
+        if (_historyLoaded == 0) {
+            _historyLoaded = 1;
+            LoadHistory(1);
+        }
+    });
+
+    $('#historyRefresh').on('click', function () {
+        window.parent.parent.Ts.System.logAction('Task - History Refresh');
+        LoadHistory(1);
     });
 
     $('.taskProperties p, #taskName').toggleClass("editable");
