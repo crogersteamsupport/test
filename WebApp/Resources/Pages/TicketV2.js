@@ -1911,9 +1911,10 @@ function SetupTicketPropertyEvents() {
     var value = self.val();
     window.parent.Ts.Services.Tickets.SetTicketSeverity(_ticketID, value, function (result) {
     	if (result !== null) {
-    		resetSLAInfo();
-      	window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName); 
-      }
+    	    resetSLAInfo();
+    	    slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+      	    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName); 
+          }
     },
     function (error) {
       alert('There was an error setting your ticket severity.');
@@ -5274,24 +5275,41 @@ var removeUserViewing = function (ticketNum, userID) {
 
 var resetSLAInfo = function () {
 	window.parent.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {
-		_ticketInfo.Ticket.SlaViolationTime = info.SlaViolationTime;
-		_ticketInfo.Ticket.SlaWarningTime = info.SlaWarningTime;
-		_ticketInfo.Ticket.SlaViolationDate = info.SlaViolationDate;
+		_ticketInfo.Ticket.SlaViolationTime = info.Ticket.SlaViolationTime;
+		_ticketInfo.Ticket.SlaWarningTime = info.Ticket.SlaWarningTime;
+		_ticketInfo.Ticket.SlaViolationDate = info.Ticket.SlaViolationDate;
+		_ticketInfo.SlaTriggerId = info.SlaTriggerId;
+		_ticketInfo.IsSlaPending = info.IsSlaPending;
+		_ticketInfo.IsSlaPaused = info.IsSlaPaused;
 		setSLAInfo();
 	});
 }
 
 var setSLAInfo = function () {
   $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
-  if (_ticketInfo.Ticket.SlaViolationTime === null && (_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)) {
+  if (_ticketInfo.Ticket.SlaViolationTime === null
+      && ((_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)
+            || (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && _ticketInfo.IsSlaPending !== null && !_ticketInfo.IsSlaPending))
+      ) {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
   }
-  else if (_ticketInfo.Ticket.SlaViolationTime === null && _ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && !_ticketInfo.IsSlaPaused && !_ticketInfo.Ticket.IsClosed) {
+  else if (_ticketInfo.Ticket.SlaViolationTime === null
+            && _ticketInfo.SlaTriggerId !== null
+            && _ticketInfo.SlaTriggerId > 0
+            && _ticketInfo.IsSlaPaused !== undefined
+            && !_ticketInfo.IsSlaPaused
+            && !_ticketInfo.Ticket.IsClosed
+            && _ticketInfo.IsSlaPending !== null
+            && _ticketInfo.IsSlaPending) {
       $('#ticket-SLAStatus').find('i').addClass('color-yellow');
       $('#ticket-SLANote').text('Calculating...');
   }
-  else if (_ticketInfo.IsSlaPaused && !_ticketInfo.Ticket.IsClosed) {
+  else if (_ticketInfo.IsSlaPaused !== undefined
+            && _ticketInfo.IsSlaPaused
+            && !_ticketInfo.Ticket.IsClosed
+            && _ticketInfo.SlaTriggerId !== null
+            && _ticketInfo.SlaTriggerId > 0) {
       $('#ticket-SLAStatus').find('i').addClass('color-yellow');
       $('#ticket-SLANote').text('Paused');
   }
