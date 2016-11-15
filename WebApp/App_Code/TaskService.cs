@@ -294,7 +294,7 @@ namespace TSWebServices
             }
             task.TaskDueDate = (DateTime)value;
             task.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
             return value.ToString() != "" ? value.ToString() : null;
         }
 
@@ -343,7 +343,7 @@ namespace TSWebServices
                 taskAssociation.DateCreated = DateTime.UtcNow;
                 taskAssociation.CreatorID = loginUser.UserID;
                 taskAssociation.Collection.Save();
-                string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+                string description = String.Format("{0} added task association to {1}.", TSAuthentication.GetUser(loginUser).FirstLastName, Enum.GetName(typeof(ReferenceType), refType));
                 TaskLogs.AddTaskLog(loginUser, reminderID, description);
                 return true;
             }
@@ -360,8 +360,8 @@ namespace TSWebServices
             {
                 TaskAssociations associations = new TaskAssociations(UserSession.LoginUser);
                 associations.DeleteAssociation(reminderID, refID, refType);
-                string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-                TaskLogs.AddTaskLog(loginUser, reminderID, description);
+                string description = String.Format("{0} deleted task association to {1} ", TSAuthentication.GetUser(UserSession.LoginUser).FirstLastName, Enum.GetName(typeof(ReferenceType), refType));
+                TaskLogs.AddTaskLog(UserSession.LoginUser, reminderID, description);
             }
             catch (Exception ex)
             {

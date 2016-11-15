@@ -237,6 +237,10 @@ $(document).ready(function () {
         });
     }
 
+    $('#taskRefresh').click(function (e) {
+        window.location = window.location;
+    });
+
     $('#taskEdit').click(function (e) {
         $('.taskProperties p, #taskName').toggleClass("editable");
         $(this).toggleClass("btn-primary");
