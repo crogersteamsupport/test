@@ -1089,7 +1089,7 @@ function SetupActionEditor(elem, action) {
   if (action) {
     $('#action-new-save').text('Update').data('actionid', action.RefID);
     for (var i = 0; i < statuses.length; i++) {
-      $('#action-new-saveoptions').append('<li><a class="action-create-option" data-actionid=' + action.RefID + ' data-statusid=' + statuses[i].TicketStatusID + ' href="#">Create and Set Status to ' + statuses[i].Name + '</a></li>');
+      $('#action-new-saveoptions').append('<li><a class="action-create-option" data-actionid=' + action.RefID + ' data-statusid=' + statuses[i].TicketStatusID + ' href="#">Save and Set Status to ' + statuses[i].Name + '</a></li>');
     }
   }
   else {
@@ -4046,7 +4046,7 @@ function CreateActionElement(val, ShouldAppend) {
   actionElement.find('a').attr('target', '_blank');
   if (ShouldAppend) {
       try {
-        $("#action-timeline").append(actionElement);
+          $("#action-timeline").append(actionElement);
       }
       catch(e){}
   }

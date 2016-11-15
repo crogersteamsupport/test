@@ -482,7 +482,7 @@ namespace TSWebServices
                     validation.Error = "Your company account is no longer active.<br />" + organization.InActiveReason;
                     validation.Result = LoginResult.Fail;
                 }
-
+                TSEventLog.WriteEvent(TSEventLogEventType.FailedLoginAttempt, HttpContext.Current.Request, null, organization, new string[] { "Email: " + email });
                 return validation;
             }
 
@@ -567,16 +567,22 @@ namespace TSWebServices
 			{
 				validation.Error = string.Format("Your account is temporarily locked, because of too many failed login attempts.{0}Try again in 15 minutes or use the forgot password link above to reset your password. ", Environment.NewLine);
 				validation.Result = LoginResult.Fail;
-				if (attempts == MAXLOGINATTEMPTS + 1) EmailPosts.SendTooManyAttempts(loginUser, user.UserID);
+                if (attempts == MAXLOGINATTEMPTS + 1)
+                {
+                    TSEventLog.WriteEvent(TSEventLogEventType.AccountLocked, HttpContext.Current.Request, user, organization);
+                    EmailPosts.SendTooManyAttempts(loginUser, user.UserID);
+                }
 
 			}
 
 			if (validation.Result != LoginResult.Success && validation.Result != LoginResult.Unknown && !string.IsNullOrEmpty(validation.Error))
 			{
+                TSEventLog.WriteEvent(TSEventLogEventType.FailedLoginAttempt, HttpContext.Current.Request, user, organization, new string[] { "Attempted Email: " + email });
 				LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, GetDeviceID());
 			}
 			else
 			{
+                TSEventLog.WriteEvent(TSEventLogEventType.LoginSuccess, HttpContext.Current.Request, user, organization);
 				validation.Result = LoginResult.Success;
 			}
 
