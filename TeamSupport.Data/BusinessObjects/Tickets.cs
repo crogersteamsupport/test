@@ -3327,9 +3327,7 @@ WHERE
         SlaViolationTimeClosed = @SlaViolationTimeClosed,
         SlaWarningInitialResponse = @SlaWarningInitialResponse,
         SlaWarningLastAction = @SlaWarningLastAction,
-        SlaWarningTimeClosed = @SlaWarningTimeClosed,
-        ModifierID = @ModifierID,
-        DateModified = @DateModified
+        SlaWarningTimeClosed = @SlaWarningTimeClosed
     WHERE TicketID = @TicketId";
                     command.Parameters.AddWithValue("@TicketId", TicketId);
                     command.Parameters.AddWithValue("@SlaViolationInitialResponse", (object)SlaViolationInitialResponse ?? DBNull.Value);
@@ -3338,8 +3336,6 @@ WHERE
                     command.Parameters.AddWithValue("@SlaWarningInitialResponse", (object)SlaWarningInitialResponse ?? DBNull.Value);
                     command.Parameters.AddWithValue("@SlaWarningLastAction", (object)SlaWarningLastAction ?? DBNull.Value);
                     command.Parameters.AddWithValue("@SlaWarningTimeClosed", (object)SlaWarningTimeClosed ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@ModifierID", -1);
-                    command.Parameters.AddWithValue("@DateModified", DateTime.UtcNow);
                     command.ExecuteNonQuery();
                 }
                 connection.Close();
