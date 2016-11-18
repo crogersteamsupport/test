@@ -119,7 +119,6 @@ namespace TeamSupport.ServiceLibrary
                             ticket.SlaViolationInitialResponse = newSlaViolationInitialResponse;
                             ticket.SlaWarningInitialResponse = newSlaWarningInitialResponse;
                             Tickets.UpdateTicketSla(LoginUser, ticket.TicketID, newSlaViolationInitialResponse, newSlaViolationLastAction, newSlaViolationTimeClosed, newSlaWarningInitialResponse, newSlaWarningLastAction, newSlaWarningTimeClosed);
-                            ticket.Collection.Save(); 
                             Logs.WriteEvent("Ticket SLA calculation completed.");
 
                             string signalRUrl = Settings.ReadString("SignalRUrl");
