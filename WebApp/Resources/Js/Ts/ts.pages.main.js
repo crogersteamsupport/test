@@ -2076,12 +2076,12 @@ function () { }, function (e) { console.log(e) });
         }
     },
 
-    //newTask: function (tab, orgID) {
-    //    var query;
-    //    if (tab != undefined)
-    //        query = "?open=" + tab + "&organizationid=" + orgID;
-    //    this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
-    //},
+    newTask: function (tab, orgID) {
+        var query;
+        if (tab != undefined)
+            query = "?open=" + tab + "&organizationid=" + orgID;
+        this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
+    },
     //closenewTaskTab: function () {
     //    var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
     //    if (tab) {

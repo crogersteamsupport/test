@@ -314,6 +314,13 @@ $(document).ready(function () {
         });
     }
 
+    $('.action-new').click(function (e) {
+        e.preventDefault();
+        parent.Ts.System.logAction('Customer Page - New Customer');
+        parent.Ts.MainPage.newTask();
+
+    });
+
     $('.assigned-tasks-filter').on('click', 'a', function (e) {
         e.preventDefault();
         $('.assigned-tasks-filter li.active').removeClass('active');
