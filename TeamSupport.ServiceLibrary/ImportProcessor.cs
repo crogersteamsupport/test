@@ -464,7 +464,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        string productName = ReadString("Product", string.Empty);
+        string productName = ReadString("ProductName", string.Empty);
         if (product == null && productName != string.Empty)
         {
           product = products.FindByName(productName);
