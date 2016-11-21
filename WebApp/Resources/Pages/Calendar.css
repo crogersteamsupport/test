@@ -52,3 +52,16 @@
 	left: 7px;
 	clear: both;
 }
+
+.allDayCheckbox,
+.isHolidayCheckbox {
+    float: left;
+}
+
+.isHolidayCheckbox {
+    margin-left: 5%;
+}
+
+.holiday {
+    background-color: #d0eddc !important;
+}

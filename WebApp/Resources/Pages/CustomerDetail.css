@@ -25,7 +25,7 @@
 
 .list-group { padding-top: 15px; }
 
-#tblNotes, #tblProducts, #tblFiles i {cursor:pointer;}
+#tblNotes, #tblProducts, #tblSLATriggers, #tblFiles i {cursor:pointer;}
 
 .form-group p.editable, .editable, .link {
     color:#428BCA;
@@ -322,4 +322,8 @@ div[data-toggle="collapse"] .ui-icon {
 
 .collapsedCustomCategory {
     padding: 15px !important;
+}
+
+.addSlaTrigger {
+    float: right;
 }

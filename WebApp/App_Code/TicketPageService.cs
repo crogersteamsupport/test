@@ -86,6 +86,9 @@ namespace TSWebServices
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
 
+            TicketStatuses ticketStatus = new TicketStatuses(TSAuthentication.GetLoginUser());
+            ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+            info.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
             SlaTicket slaTicket = SlaTickets.GetSlaTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
 
             if (slaTicket != null)
@@ -812,13 +815,14 @@ namespace TSWebServices
             {
                 TicketStatuses ticketStatus = new TicketStatuses(loginUser);
                 ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+                slaInfo.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
 
                 slaInfo.IsSlaPending = slaTickets[0].IsPending;
                 slaInfo.SlaTriggerId = slaTickets[0].SlaTriggerId;
             }
 
             return slaInfo;
-        }
+		}
 
         [WebMethod]
         public string GetSuggestedSolutionDefaultInput(int ticketid)
@@ -850,6 +854,18 @@ namespace TSWebServices
 
         }
 
+        [DataContract]
+        public class SlaInfo
+        {
+            [DataMember]
+            public TicketsViewItemProxy Ticket { get; set; }
+            [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
+        }
 
         [DataContract]
         public class TicketPageInfo
@@ -944,19 +960,6 @@ namespace TSWebServices
             public string CatName { get; set; }
             [DataMember]
             public string Disabled { get; set; }
-        }
-
-        [DataContract]
-        public class SlaInfo
-        {
-            [DataMember]
-            public TicketsViewItemProxy Ticket { get; set; }
-            [DataMember]
-            public bool IsSlaPaused { get; set; }
-            [DataMember]
-            public int? SlaTriggerId { get; set; }
-            [DataMember]
-            public bool IsSlaPending { get; set; }
         }
 
         //Private Methods

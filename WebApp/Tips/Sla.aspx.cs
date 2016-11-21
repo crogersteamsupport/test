@@ -19,32 +19,52 @@ public partial class Tips_Sla : System.Web.UI.Page
       Ticket ticket = Tickets.GetTicket(loginUser, ticketID);
       if (ticket == null) EndResponse("Invalid Ticket");
 
+        tipNumber.InnerText = "Ticket #" + ticket.TicketNumber.ToString();
+        tipNumber.Attributes.Add("onclick", "top.Ts.MainPage.openTicket(" + ticket.TicketNumber + "); return false;");
+        tipName.InnerHtml = ticket.Name;
 
-      DateTime? nextViolation = GetUtcDate(ticket, "SlaViolationInitialResponse");
-      nextViolation = GetMinDate(loginUser, nextViolation, GetUtcDate(ticket, "SlaViolationLastAction"));
-      nextViolation = GetMinDate(loginUser, nextViolation, GetUtcDate(ticket, "SlaViolationTimeClosed"));
+        bool isPaused = false;
+        SlaTicket slaTicket = SlaTickets.GetSlaTicket(loginUser, ticket.TicketID);
 
-      DateTime? nextWarning = GetUtcDate(ticket, "SlaWarningInitialResponse");
-      nextWarning = GetMinDate(loginUser, nextWarning, GetUtcDate(ticket, "SlaWarningLastAction"));
-      nextWarning = GetMinDate(loginUser, nextWarning, GetUtcDate(ticket, "SlaWarningTimeClosed"));
+        if (slaTicket != null)
+        {
+            isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
+        }
 
-      if (nextViolation != null && nextViolation < DateTime.UtcNow) tipSla.Attributes.Add("class", "ts-icon ts-icon-sla-bad");
-      else if (nextWarning != null && nextWarning < DateTime.UtcNow) tipSla.Attributes.Add("class", "ts-icon ts-icon-sla-warning");
-      else tipSla.Attributes.Add("class", "ts-icon ts-icon-sla-good");
-      
+        if (isPaused)
+        {
+            wClose.InnerText = "Paused";
+            vClose.InnerText = "Paused";
+            wLast.InnerText = "Paused";
+            vLast.InnerText = "Paused";
+            wInit.InnerText = "Paused";
+            vInit.InnerText = "Paused";
+            wNext.InnerText = "Paused";
+            vNext.InnerText = "Paused";
+        }
+        else
+        {
+            DateTime? nextViolation = GetUtcDate(ticket, "SlaViolationInitialResponse");
+            nextViolation = GetMinDate(loginUser, nextViolation, GetUtcDate(ticket, "SlaViolationLastAction"));
+            nextViolation = GetMinDate(loginUser, nextViolation, GetUtcDate(ticket, "SlaViolationTimeClosed"));
 
-      tipNumber.InnerText = "Ticket #" + ticket.TicketNumber.ToString();
-      tipNumber.Attributes.Add("onclick", "top.Ts.MainPage.openTicket(" + ticket.TicketNumber + "); return false;");
-      tipName.InnerHtml = ticket.Name;
+            DateTime? nextWarning = GetUtcDate(ticket, "SlaWarningInitialResponse");
+            nextWarning = GetMinDate(loginUser, nextWarning, GetUtcDate(ticket, "SlaWarningLastAction"));
+            nextWarning = GetMinDate(loginUser, nextWarning, GetUtcDate(ticket, "SlaWarningTimeClosed"));
 
-      wClose.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaWarningTimeClosed"));
-      vClose.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaViolationTimeClosed"));
-      wLast.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaWarningLastAction"));
-      vLast.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaViolationLastAction"));
-      wInit.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaWarningInitialResponse"));
-      vInit.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaViolationInitialResponse"));
-      wNext.InnerText = GetDateString(loginUser, nextWarning);
-      vNext.InnerText = GetDateString(loginUser, nextViolation);
+            if (nextViolation != null && nextViolation < DateTime.UtcNow) tipSla.Attributes.Add("class", "ts-icon ts-icon-sla-bad");
+            else if (nextWarning != null && nextWarning < DateTime.UtcNow) tipSla.Attributes.Add("class", "ts-icon ts-icon-sla-warning");
+            else tipSla.Attributes.Add("class", "ts-icon ts-icon-sla-good");
+
+            wClose.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaWarningTimeClosed"));
+            vClose.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaViolationTimeClosed"));
+            wLast.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaWarningLastAction"));
+            vLast.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaViolationLastAction"));
+            wInit.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaWarningInitialResponse"));
+            vInit.InnerText = GetDateString(loginUser, GetUtcDate(ticket, "SlaViolationInitialResponse"));
+            wNext.InnerText = GetDateString(loginUser, nextWarning);
+            vNext.InnerText = GetDateString(loginUser, nextViolation);
+        }
     }
 
     private DateTime? GetMinDate(LoginUser loginUser, DateTime? d1, DateTime? d2)

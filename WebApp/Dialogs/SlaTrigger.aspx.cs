@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
@@ -41,6 +41,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
     if (!IsPostBack)
     {
+      LoadTimeZones();
       SetTimes(Settings.UserDB.ReadInt("SlaTriggerWarningTime", 1440),
          Settings.UserDB.ReadInt("SlaTriggerInitialResponseTime", 60),
          Settings.UserDB.ReadInt("SlaTriggerLastActionTime", 60),
@@ -51,6 +52,8 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
       cbUserViolations.Checked = Settings.UserDB.ReadBool("SlaTriggerUserViolations", true);
       cbUserWarnings.Checked = Settings.UserDB.ReadBool("SlaTriggerUserWarnings", true);
       cbBusinessHours.Checked = Settings.UserDB.ReadBool("SlaTriggerUseBusinessHours", true);
+      cbPauseOnOrganizationHolidays.Checked = Settings.UserDB.ReadBool("SlaTriggerPauseOnOrganizationHolidays", true);
+      daysToPauseList.Attributes.Add("onkeydown", "DeleteSelectedItems();");
     }
 
     if (_slaTriggerID > -1)
@@ -111,6 +114,41 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     cbUserViolations.Checked = trigger.NotifyUserOnViolation;
     cbUserWarnings.Checked = trigger.NotifyUserOnWarning;
     cbBusinessHours.Checked = trigger.UseBusinessHours;
+    timeSLAStart.SelectedDate = (trigger.DayStartUtc != null ? TimeZoneInfo.ConvertTimeFromUtc(trigger.DayStartUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(trigger.TimeZone)) : new DateTime?());
+    timeSLAEnd.SelectedDate = (trigger.DayEndUtc != null ? TimeZoneInfo.ConvertTimeFromUtc(trigger.DayEndUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(trigger.TimeZone)) : new DateTime?());
+    cbTimeZones.SelectedValue = trigger.TimeZone;
+    cbSLASunday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Sunday)) > 0;
+    cbSLAMonday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Monday)) > 0;
+    cbSLATuesday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Tuesday)) > 0;
+    cbSLAWednesday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Wednesday)) > 0;
+    cbSLAThursday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Thursday)) > 0;
+    cbSLAFriday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Friday)) > 0;
+    cbSLASaturday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Saturday)) > 0;
+
+    if (trigger.UseBusinessHours)
+    {
+        timeSLAStart.Enabled = false;
+        timeSLAEnd.Enabled = false;
+        cbSLASunday.Enabled = false;
+        cbSLAMonday.Enabled = false;
+        cbSLATuesday.Enabled = false;
+        cbSLAWednesday.Enabled = false;
+        cbSLAThursday.Enabled = false;
+        cbSLAFriday.Enabled = false;
+        cbSLASaturday.Enabled = false;
+    }
+
+    cbPauseOnOrganizationHolidays.Checked = trigger.PauseOnHoliday;
+    List<DateTime> daysToPause = SlaTriggers.GetSpecificDaysToPause(trigger.SlaTriggerID);
+    DaysToPauseHidden.Value = string.Join(",", daysToPause.Select(p => DataUtils.DateToLocal(UserSession.LoginUser, p).ToString("d")));
+
+    foreach(DateTime dayToPause in daysToPause)
+    {
+        daysToPauseList.Items.Add(new ListItem {
+                                                Value = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d"),
+                                                Text = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d")
+                                               });
+    }
   }
 
   private void SetTimes(int warning, int initial, int action, int closed)
@@ -168,6 +206,16 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
   public override bool Save()
   {
+    if (!cbBusinessHours.Checked && (timeSLAStart.SelectedDate == null || timeSLAEnd.SelectedDate == null))
+    {
+        string script = "alert('Please select both the SLA Day Start and End.');";
+        string name = "Testing";
+        ScriptManager.RegisterClientScriptBlock(this, typeof(Page), name + "_function", "function " + name + "(){" + script + "Sys.Application.remove_load(" + name + ");}", true);
+        ScriptManager.RegisterStartupScript(this, typeof(Page), name, "Sys.Application.add_load(" + name + ");", true);
+        DialogResult = "";
+        return false;
+    }
+
     SlaTrigger trigger;
     SlaTriggers triggers = new SlaTriggers(UserSession.LoginUser);
 
@@ -189,8 +237,78 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     trigger.NotifyUserOnViolation = cbUserViolations.Checked;
     trigger.NotifyUserOnWarning = cbUserWarnings.Checked;
     trigger.UseBusinessHours = cbBusinessHours.Checked;
+    trigger.PauseOnHoliday = cbPauseOnOrganizationHolidays.Checked;
+    trigger.DayStart = null;
+	trigger.DayEnd = null;
 
-    int value = numWarning.Value == null ? 0 : (int)numWarning.Value; 
+    trigger.TimeZone = cbTimeZones.SelectedValue;
+    UserSession.LoginUser.TimeZoneInfo = null;
+
+    try
+    {
+        TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(trigger.TimeZone);
+
+        if (timeSLAStart.SelectedDate != null)
+        {
+            trigger.DayStart = TimeZoneInfo.ConvertTimeToUtc((DateTime)timeSLAStart.SelectedDate, timeZoneInfo);
+        }
+
+        if (timeSLAEnd.SelectedDate != null)
+        {
+            trigger.DayEnd = TimeZoneInfo.ConvertTimeToUtc((DateTime)timeSLAEnd.SelectedDate, timeZoneInfo);
+        }
+    }
+    catch (Exception ex)
+    {
+    }
+
+    int weekdays = 0;
+    AddSLADay(ref weekdays, DayOfWeek.Sunday, cbSLASunday.Checked);
+    AddSLADay(ref weekdays, DayOfWeek.Monday, cbSLAMonday.Checked);
+    AddSLADay(ref weekdays, DayOfWeek.Tuesday, cbSLATuesday.Checked);
+    AddSLADay(ref weekdays, DayOfWeek.Wednesday, cbSLAWednesday.Checked);
+    AddSLADay(ref weekdays, DayOfWeek.Thursday, cbSLAThursday.Checked);
+    AddSLADay(ref weekdays, DayOfWeek.Friday, cbSLAFriday.Checked);
+    AddSLADay(ref weekdays, DayOfWeek.Saturday, cbSLASaturday.Checked);
+    trigger.Weekdays = weekdays;
+
+    List<string> DaysToPause = new List<string>();
+
+    if (!String.IsNullOrEmpty(DaysToPauseHidden.Value))
+    {
+        DaysToPause = DaysToPauseHidden.Value.Split(',').ToList();
+    }
+
+    SlaPausedDays slaPausedDays = new SlaPausedDays(UserSession.LoginUser);
+
+    if (_slaTriggerID > 0)
+    {
+        slaPausedDays.LoadByTriggerID(trigger.SlaTriggerID);
+
+        if (slaPausedDays != null && slaPausedDays.Any())
+        {
+            slaPausedDays.DeleteAll();
+            slaPausedDays.Save();
+        }
+
+        slaPausedDays = new SlaPausedDays(UserSession.LoginUser);
+    }
+
+    foreach (string day in DaysToPause)
+    {
+        DateTime dayToPause = new DateTime();
+
+        if (DateTime.TryParse(day, out dayToPause))
+        {
+            SlaPausedDay slaPausedDay = slaPausedDays.AddNewSlaPausedDay();
+            slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
+            slaPausedDay.DateToPause = dayToPause.ToUniversalTime();
+            slaPausedDay.Collection.Save();
+        }
+    }
+
+    int value = numWarning.Value == null ? 0 : (int)numWarning.Value;
+
     if (rbWarningDay.Checked) trigger.WarningTime = value * 24 * 60;
     else if (rbWarningHour.Checked) trigger.WarningTime = value * 60;
     else trigger.WarningTime = value;
@@ -222,12 +340,29 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     Settings.UserDB.WriteBool("SlaTriggerUserViolations", cbUserViolations.Checked);
     Settings.UserDB.WriteBool("SlaTriggerUserWarnings", cbUserWarnings.Checked);
     Settings.UserDB.WriteBool("SlaTriggerUseBusinessHours", cbBusinessHours.Checked);
-
+    Settings.UserDB.WriteBool("SlaTriggerPauseOnOrganizationHolidays", cbPauseOnOrganizationHolidays.Checked);
 
     DialogResult = trigger.SlaTriggerID.ToString();
     return true;
   }
 
-  
+    private static void AddSLADay(ref int slaDays, DayOfWeek dayOfWeek, bool add)
+    {
+        if (add)
+        {
+            slaDays = slaDays | (int)Math.Pow(2, (int)dayOfWeek);
+        }
+    }
+
+    private void LoadTimeZones()
+    {
+        cbTimeZones.Items.Clear();
+
+        System.Collections.ObjectModel.ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
+        foreach (TimeZoneInfo info in timeZones)
+        {
+            cbTimeZones.Items.Add(new RadComboBoxItem(info.DisplayName, info.Id));
+        }
+    }
 }
 

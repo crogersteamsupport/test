@@ -25,6 +25,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CreatorID", "CreatorID", true, false, true);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, true);
       _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
+      _fieldMap.AddMap("SlaLevelID", "SlaLevelID", false, false, false);
             
     }
   }

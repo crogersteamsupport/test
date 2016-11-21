@@ -146,6 +146,7 @@
                             end: this.displayend,
                             allDay: this.allday,
                             isallDay: this.allday,
+                            isHoliday: this.isHoliday,
                             references: this.references,
                             creatorID: this.creatorID,
                             editable: editable
@@ -205,6 +206,42 @@
                 }
                     
             });
+
+            if (event.isHoliday) {
+                try {
+                    if (event.hasOwnProperty("start") && event.hasOwnProperty("validend")) {
+                        var startDate = new Date(event.start._i);
+                        var endDate = new Date(event.validend);
+                        endDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 0, 0, 0, 0);
+                        startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getUTCDate(), 0, 0, 0, 0);
+                        var today = new Date();
+                        today = new Date(today.getFullYear(), today.getMonth(), today.getUTCDate(), 0, 0, 0, 0);
+                        var stretchDate = new Date(startDate);
+                        var year;
+                        var month;
+                        var day;
+                        var holidayCss = 'holiday';
+
+                        while (stretchDate.getTime() <= endDate.getTime()) {
+                            if (stretchDate.getTime() !== today.getTime()) {
+                                year = stretchDate.getFullYear();
+                                month = (((stretchDate.getMonth() + 1).toString().length < 2) ? "0" + stretchDate.getMonth() + 1 : stretchDate.getMonth() + 1);
+                                day = ((stretchDate.getDate().toString().length < 2) ? "0" + stretchDate.getDate() : stretchDate.getDate());
+                                var dayCell = $('.fc-day[data-date="' + year + '-' + month + '-' + day + '"]');
+
+                                if (!$(dayCell).hasClass(holidayCss)) {
+                                    $(dayCell).addClass(holidayCss);
+                                }
+                            }
+
+                            stretchDate.setDate(stretchDate.getDate() + 1);
+                        }
+                    }
+                }
+                catch (e) {
+                    //Couldn't mark the day as Holiday.
+                }
+            }
         },
         eventClick: function (calEvent, jsEvent, view) {
             theTempEvent = calEvent;
@@ -257,6 +294,7 @@
         if (confirm("Are you sure you want to delete this event")) {
             mainFrame.Ts.Services.Users.DeleteCalEvent(eventid.id, function () {
                 $('.popover').hide();
+                $("#calendar .holiday").removeClass("holiday");
                 $("#calendar").fullCalendar('refetchEvents');
                 mainFrame.Ts.System.logAction('Calendar Event - Deleted');
             });
@@ -314,6 +352,15 @@
 
         }
 
+    });
+
+    $('#inputIsHoliday').click(function (e) {
+        if ($('#inputIsHoliday').is(':checked')) {
+            $('#inputAllDay').prop('checked', true).triggerHandler('click');
+            $('#inputAllDay').attr('disabled', true);
+        } else {
+            $('#inputAllDay').attr('disabled', false);
+        }
     });
 
     function showModal(date)
@@ -748,7 +795,9 @@
         calendarinfo.start = convertToValidDate($('#inputAllDay').is(':checked') ? startDateTz : $('#inputStartTime').val());
         calendarinfo.end = convertToValidDate($('#inputAllDay').is(':checked') ? endDateTz : $('#inputEndTime').val());
         calendarinfo.description = $('#inputDescription').val();
-        calendarinfo.allday = $('#inputAllDay').is(':checked')
+        calendarinfo.allday = $('#inputAllDay').is(':checked');
+        calendarinfo.isHoliday = $('#inputIsHoliday').is(':checked');
+
         calendarinfo.PageType = pageType;
         calendarinfo.PageID = pageID;
 
@@ -905,6 +954,9 @@
         $('.form-control').prop('disabled', false);
         $('#inputAllDay').prop('disabled', false);
         $('#inputAllDay').prop('checked', false);
+        $('#inputIsHoliday').prop('disabled', false);
+        $('#inputIsHoliday').prop('checked', false);
+
         $('#inputRecurring').prop('disabled', false);
         $('#btnSaveEvent').show();
     }
@@ -944,6 +996,11 @@
 
         $('#inputDescription').val(event.description);
         $('#inputAllDay').prop('checked', event.isallDay);
+        $('#inputIsHoliday').prop('checked', event.isHoliday);
+
+        if (event.isHoliday) {
+            $('#inputAllDay').attr('disabled', true);
+        }
 
         if (event.references) {
             for (i = 0; i < event.references.length; i++)
@@ -1140,6 +1197,7 @@
     {
         $('.form-control').prop('disabled', true);
         $('#inputAllDay').prop('disabled', true);
+        $('#inputIsHoliday').prop('disabled', true);
         $('#inputRecurring').prop('disabled', true);
         $('#btnSaveEvent').hide();
     }
