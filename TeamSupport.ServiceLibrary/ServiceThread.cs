@@ -118,8 +118,8 @@ namespace TeamSupport.ServiceLibrary
         public virtual void Stop()
         {
 
-            Logs.WriteHeader("Thread Stopped: ");
-            Logs.WriteEvent(Environment.StackTrace);
+            Logs.WriteEvent("Thread Stopped: ");
+            //Logs.WriteEvent(Environment.StackTrace);
 
             lock (this) { _isStopped = true; }
 
@@ -189,7 +189,7 @@ namespace TeamSupport.ServiceLibrary
                     try
                     {
                         if (IsStopped && !_runHandlesStop) return;
-                        if (service.Enabled && (lastTime.AddMilliseconds(service.Interval) < DateTime.Now || !IsLoop))
+                        if (lastTime.AddMilliseconds(service.Interval) < DateTime.Now || !IsLoop)
                         {
                             service.LastStartTime = DateTime.Now;
                             service.HealthTime = DateTime.Now;
