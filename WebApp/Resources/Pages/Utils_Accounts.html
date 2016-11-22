@@ -247,7 +247,7 @@
           var sendEmails = confirm("Would you like to send password emails?");
           if (!confirm("Are you sure you would like to turn all the contacts into hub users?")) return;
           var org = $('.org-info').data('o');
-          top.Ts.Services.Organizations.AdminSetAllHubsers(org.OrganizationID, sendEmails, function () {
+          top.Ts.Services.Organizations.AdminSetAllHubUsers(org.OrganizationID, sendEmails, function () {
               alert("All hub users are now enabled.");
           });
       });
