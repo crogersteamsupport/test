@@ -50,7 +50,6 @@ namespace TeamSupport.ServiceLibrary
         {
             Logs.WriteEvent("Starting Run");
             UpdateHealth();
-            string s = Settings.ReadString("ffmpegPath"); 
 
             TokStorage ts = new TokStorage(LoginUser);
             ts.GetNonTranscoded();
