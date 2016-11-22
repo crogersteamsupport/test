@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Mail;
 using System.Collections.Generic;
 //using Microsoft.AspNet.SignalR.Client;//ToDo //vv Not Yet. Per Kevin, services service need to be able to access the signalr server first. To do at a future date.
@@ -142,21 +143,22 @@ namespace TeamSupport.ServiceLibrary
 
                             if (!string.IsNullOrEmpty(signalRUrl))
                             {
-                                Dictionary<string, string> queryStringData = new Dictionary<string, string>();
-                                queryStringData.Add("userID", "-1");
-                                queryStringData.Add("organizationID", ticket.OrganizationID.ToString());
-                                HubConnection connection = new HubConnection(signalRUrl, queryStringData);
-                                IHubProxy signalRConnection = connection.CreateHubProxy("TicketSocket");
+                                //Not yet. Talk to Kevin for this, so the service server can talk to the signalR server
+                                //Dictionary<string, string> queryStringData = new Dictionary<string, string>();
+                                //queryStringData.Add("userID", "-1");
+                                //queryStringData.Add("organizationID", ticket.OrganizationID.ToString());
+                                //HubConnection connection = new HubConnection(signalRUrl, queryStringData);
+                                //IHubProxy signalRConnection = connection.CreateHubProxy("TicketSocket");
 
-                                try
-                                {
-                                    connection.Start().Wait();
-                                    signalRConnection.Invoke("RefreshSLA", ticket.TicketNumber);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Logs.WriteEvent("Could not send signalR to refresh the SLA. Message: " + ex.Message);
-                                }
+                                //try
+                                //{
+                                //    connection.Start().Wait();
+                                //    signalRConnection.Invoke("RefreshSLA", ticket.TicketNumber);
+                                //}
+                                //catch (Exception ex)
+                                //{
+                                //    Logs.WriteEvent("Could not send signalR to refresh the SLA. Message: " + ex.Message);
+                                //}
                             }
                         }
                         else
