@@ -32,7 +32,7 @@ namespace TSWebServices
     {
 
         public TicketPageService() { }
-
+        
         [WebMethod]
         public TicketPageInfo GetTicketInfo(int ticketNumber)
         {
@@ -1042,8 +1042,10 @@ namespace TSWebServices
             List<AttachmentProxy> result = new List<AttachmentProxy>();
             foreach (AttachmentProxy attachment in attach.GetAttachmentProxies())
             {
-                result.Add(attachment);
+                if (!result.Exists(a => a.FileName == attachment.FileName))
+                   result.Add(attachment);
             }
+
             return result.ToArray();
         }
 
