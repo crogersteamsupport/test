@@ -78,11 +78,11 @@ public partial class Frames_AdminSla : BaseFramePage
 
     StringBuilder builder = new StringBuilder();
 
-    builder.Append("<table width=\"748px\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\"><thead><tr><th /><th /><th>Severity</th><th>Initial Response</th><th>Last Action</th><th>To Closed</th><th>Warning Time</th><th>Business Hours</th></tr></thead><tbody>");
+    builder.Append("<table width=\"100%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\"><thead><tr><th /><th /><th>Severity</th><th>Initial Response</th><th>Last Action</th><th>To Closed</th><th>Warning Time</th><th>Business Hours</th><th>Pause on Company Holidays</th><th>Days of Week</th><th>Start Time</th><th>End Time</th><th>Time Zone</th></tr></thead><tbody>");
 
     foreach (SlaTriggersViewItem item in triggers)
     {
-      string s = "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td><td>{7}</td></tr>";
+      string s = "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td><td>{7}</td><td>{8}</td><td>{9}</td><td>{10}</td><td>{11}</td><td>{12}</td></tr>";
       string edit = "<img src=\"../images/icons/Edit.png\" alt=\"Edit\" onclick=\"EditTrigger(" + item.SlaTriggerID + ");\" />";
       string delete = "<img src=\"../images/icons/Trash.png\" alt=\"Delete\" onclick=\"DeleteTrigger(" + item.SlaTriggerID + ");\" />";
       builder.Append(string.Format(s, 
@@ -93,18 +93,66 @@ public partial class Frames_AdminSla : BaseFramePage
         DataUtils.MinutesToDisplayTime(item.TimeLastAction, "0"),
         DataUtils.MinutesToDisplayTime(item.TimeToClose, "0"),
         DataUtils.MinutesToDisplayTime(item.WarningTime, "0"),
-        item.UseBusinessHours.ToString()));
+        item.UseBusinessHours.ToString(),
+        item.PauseOnHoliday.ToString(),
+        GetDays(item.Weekdays),
+        (item.DayStart != null ? TimeZoneInfo.ConvertTimeFromUtc(item.DayStartUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(item.TimeZone)).ToString("hh:mm tt") : ""),
+        (item.DayEnd != null ? TimeZoneInfo.ConvertTimeFromUtc(item.DayEndUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(item.TimeZone)).ToString("hh:mm tt") : ""),
+        item.TimeZone
+        ));
     }
 
     if (triggers.Count < 1)
     {
-      builder.Append("<tr><td colspan=\"8\" >There are no triggers to display.</td></tr>");
+      builder.Append("<tr><td colspan=\"13\" >There are no triggers to display.</td></tr>");
     
     }
 
     builder.Append("</tbody></table>");
     return builder.ToString();
   }
+
+    private static string GetDays(int weedays)
+    {
+        string days = string.Empty;
+
+        if (((int)weedays & (int)Math.Pow(2, (int)DayOfWeek.Sunday)) > 0)
+        {
+            days += DayOfWeek.Sunday.ToString();
+        }
+
+        if (((int)weedays & (int)Math.Pow(2, (int)DayOfWeek.Monday)) > 0)
+        {
+            days += (days.Length > 0 ? "," : "") + DayOfWeek.Monday.ToString();
+        }
+
+        if (((int)weedays & (int)Math.Pow(2, (int)DayOfWeek.Tuesday)) > 0)
+        {
+            days += (days.Length > 0 ? "," : "") + DayOfWeek.Tuesday.ToString();
+        }
+
+        if (((int)weedays & (int)Math.Pow(2, (int)DayOfWeek.Wednesday)) > 0)
+        {
+            days += (days.Length > 0 ? "," : "") + DayOfWeek.Wednesday.ToString();
+        }
+
+        if (((int)weedays & (int)Math.Pow(2, (int)DayOfWeek.Thursday)) > 0)
+        {
+            days += (days.Length > 0 ? "," : "") + DayOfWeek.Thursday.ToString();
+        }
+
+        if (((int)weedays & (int)Math.Pow(2, (int)DayOfWeek.Friday)) > 0)
+        {
+            days += (days.Length > 0 ? "," : "") + DayOfWeek.Friday.ToString();
+        }
+
+        if (((int)weedays & (int)Math.Pow(2, (int)DayOfWeek.Saturday)) > 0)
+        {
+            days += (days.Length > 0 ? "," : "") + DayOfWeek.Saturday.ToString();
+        }
+
+        return days;
+    }
 
   protected override void OnInit(EventArgs e)
   {

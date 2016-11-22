@@ -28,6 +28,7 @@ namespace TeamSupport.ServiceTestApplication
     WebHooks _webhooks;
     CustomerInsightsProcessor _cip;
 	ServiceThreadPool<ReportSender> _reportSender;
+        ServiceThreadPool<TokTranscoder> _tokTranscoder;
     
     public Form1()
     {
@@ -60,7 +61,8 @@ namespace TeamSupport.ServiceTestApplication
       if (_webhooks != null) _webhooks.Stop();
       if (_cip != null) _cip.Stop();
 	  if (_reportSender != null) _reportSender.Stop();
-    }
+            if (_tokTranscoder != null) _tokTranscoder.Stop();
+        }
 
     private void StartProcess(ServiceThread thread, Button button)
     {
@@ -203,5 +205,10 @@ namespace TeamSupport.ServiceTestApplication
 		{
 			if (_reportSender == null || _reportSender.IsStopped) StartProcess(_reportSender = new ServiceThreadPool<ReportSender>("ReportSender"), sender as Button); else StopProcess(_reportSender, sender as Button);
 		}
-	}
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            if (_tokTranscoder == null || _tokTranscoder.IsStopped) StartProcess(_tokTranscoder = new ServiceThreadPool<TokTranscoder>("TokTranscoder"), sender as Button); else StopProcess(_tokTranscoder, sender as Button);
+        }
+    }
 }

@@ -880,6 +880,34 @@ AND ot.TicketID = @TicketID
             emailPost.Save();
         }
 
+        public bool IsSlaPaused(int triggerId, int organizationId)
+        {
+            bool isPaused = false;
+            TicketStatuses statuses = new TicketStatuses(Collection.LoginUser);
+            statuses.LoadByStatusIDs(OrganizationID, new int[] { TicketStatusID });
+
+            if (statuses != null && statuses.Any())
+            {
+                isPaused = statuses[0].PauseSLA;
+            }
+
+            //check if "Pause on Specific Dates"
+            if (!isPaused)
+            {
+                List<DateTime> daysToPause = SlaTriggers.GetSpecificDaysToPause(triggerId);
+                isPaused = daysToPause.Where(p => DateTime.Compare(p.Date, DateTime.UtcNow.Date) == 0).Any();
+            }
+
+            //If Pause on Company Holidays is selected
+            SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(Collection.LoginUser, triggerId);
+
+            if (!isPaused && slaTrigger.PauseOnHoliday)
+            {
+                isPaused = SlaTriggers.IsOrganizationHoliday(organizationId, DateTime.UtcNow);
+            }
+
+            return isPaused;
+        }
     }
 
     public partial class Tickets
@@ -3327,9 +3355,7 @@ WHERE
         SlaViolationTimeClosed = @SlaViolationTimeClosed,
         SlaWarningInitialResponse = @SlaWarningInitialResponse,
         SlaWarningLastAction = @SlaWarningLastAction,
-        SlaWarningTimeClosed = @SlaWarningTimeClosed,
-        ModifierID = @ModifierID,
-        DateModified = @DateModified
+        SlaWarningTimeClosed = @SlaWarningTimeClosed
     WHERE TicketID = @TicketId";
                     command.Parameters.AddWithValue("@TicketId", TicketId);
                     command.Parameters.AddWithValue("@SlaViolationInitialResponse", (object)SlaViolationInitialResponse ?? DBNull.Value);
@@ -3338,8 +3364,6 @@ WHERE
                     command.Parameters.AddWithValue("@SlaWarningInitialResponse", (object)SlaWarningInitialResponse ?? DBNull.Value);
                     command.Parameters.AddWithValue("@SlaWarningLastAction", (object)SlaWarningLastAction ?? DBNull.Value);
                     command.Parameters.AddWithValue("@SlaWarningTimeClosed", (object)SlaWarningTimeClosed ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@ModifierID", -1);
-                    command.Parameters.AddWithValue("@DateModified", DateTime.UtcNow);
                     command.ExecuteNonQuery();
                 }
                 connection.Close();

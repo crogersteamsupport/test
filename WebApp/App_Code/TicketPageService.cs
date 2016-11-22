@@ -86,11 +86,15 @@ namespace TSWebServices
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
 
+            TicketStatuses ticketStatus = new TicketStatuses(TSAuthentication.GetLoginUser());
+            ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+            info.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
             SlaTicket slaTicket = SlaTickets.GetSlaTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
 
             if (slaTicket != null)
             {
                 info.SlaTriggerId = slaTicket.SlaTriggerId;
+                info.IsSlaPending = slaTicket.IsPending;
             }
 
             return info;
@@ -792,11 +796,32 @@ namespace TSWebServices
         }
 
 		[WebMethod]
-		public TicketsViewItemProxy GetTicketSLAInfo(int ticketNumber)
+		public SlaInfo GetTicketSLAInfo(int ticketNumber)
 		{
-			TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SlaInfo slaInfo = new SlaInfo();
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(loginUser, ticketNumber);
 			if (ticket == null) return null;
-			return ticket.GetProxy();
+
+            slaInfo.Ticket = ticket.GetProxy();
+
+            SlaTickets slaTickets = new SlaTickets(loginUser);
+            slaTickets.LoadByTicketId(ticket.TicketID);
+            slaInfo.IsSlaPaused = false;
+            slaInfo.IsSlaPending = false;
+            slaInfo.SlaTriggerId = null;
+
+            if (slaTickets != null && slaTickets.Count > 0)
+            {
+                TicketStatuses ticketStatus = new TicketStatuses(loginUser);
+                ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+                slaInfo.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
+
+                slaInfo.IsSlaPending = slaTickets[0].IsPending;
+                slaInfo.SlaTriggerId = slaTickets[0].SlaTriggerId;
+            }
+
+            return slaInfo;
 		}
 
         [WebMethod]
@@ -829,6 +854,18 @@ namespace TSWebServices
 
         }
 
+        [DataContract]
+        public class SlaInfo
+        {
+            [DataMember]
+            public TicketsViewItemProxy Ticket { get; set; }
+            [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
+        }
 
         [DataContract]
         public class TicketPageInfo
@@ -856,7 +893,11 @@ namespace TSWebServices
             [DataMember]
             public AttachmentProxy[] Attachments { get; set; }
             [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
             public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
         }
 
         [DataContract]

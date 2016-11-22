@@ -69,6 +69,37 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+        public void LoadByCustomer(int organizationId, int customerId)
+        {
+            string sql = @"SELECT SlaTriggersView.SlaLevelID, SlaTriggersView.SlaTriggerID, SlaTriggersView.LevelName, SlaTriggersView.Severity, SlaTriggersView.TicketType
+FROM
+	SlaTriggersView
+	JOIN (SELECT SlaLevels.SlaLevelID
+			FROM
+				Organizations
+				JOIN SlaLevels
+					ON Organizations.SlaLevelID = SlaLevels.SlaLevelID
+			WHERE Organizations.OrganizationID = @customerId
+			UNION
+			SELECT SlaLevels.SlaLevelID
+			FROM
+				OrganizationProducts
+				JOIN SlaLevels
+					ON OrganizationProducts.SlaLevelID = SlaLevels.SlaLevelID
+			WHERE OrganizationProducts.OrganizationID = @customerId) AS SlaLevelsAssociated
+	ON SlaTriggersView.SlaLevelID = SlaLevelsAssociated.SlaLevelID
+WHERE OrganizationID = @organizationId";
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = sql;
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationId", organizationId);
+                command.Parameters.AddWithValue("@customerId", customerId);
+                Fill(command);
+            }
+        }
   }
   
 }

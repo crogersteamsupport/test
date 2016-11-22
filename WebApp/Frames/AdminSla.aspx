@@ -38,6 +38,8 @@
           </telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Delete SLA" Value="DeleteSLA" ImageUrl="~/images/icons/trash.png">
           </telerik:RadToolBarButton>
+          <telerik:RadToolBarButton runat="server" Text="Clone SLA" Value="CloneSLA" ImageUrl="~/images/icons/RequestUpdate.png">
+          </telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" IsSeparator="True" Text="Button 3">
           </telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Add Trigger" Value="AddTrigger" ImageUrl="~/images/icons/add.png">
@@ -68,8 +70,8 @@
         </div>
         <div style="clear: both;">
         </div>
-        <div style="width: 100%; height: 100%; padding: 10px 0 0 15px;">
-          <div class="groupDiv groupLightBlue" style="width: 750px;">
+        <div style="width: 100%; height: 90%; padding: 10px 0 0 15px;">
+          <div class="groupDiv groupLightBlue" style="width: 100%;">
             <div class="groupHeaderDiv">
               <span class="groupHeaderSpan"></span><span class="groupCaptionSpan">Triggers</span>
               <span class="groupButtonSpanWrapper hiddenSpan addTriggerSpan"><span class="groupButtonsSpan">
@@ -110,6 +112,7 @@
           toolBar.findItemByValue('EditSLA').enable();
           toolBar.findItemByValue('DeleteSLA').enable();
           toolBar.findItemByValue('AddTrigger').enable();
+          toolBar.findItemByValue('CloneSLA').enable();
           comboLevels.enable();
           cmbTicketTypes.enable();
         }
@@ -118,6 +121,7 @@
           toolBar.findItemByValue('EditSLA').disable();
           toolBar.findItemByValue('DeleteSLA').disable();
           toolBar.findItemByValue('AddTrigger').disable();
+          toolBar.findItemByValue('CloneSLA').disable();
           comboLevels.disable();
           cmbTicketTypes.disable();
         }
@@ -229,6 +233,7 @@
         else if (value == 'EditSLA') { ShowLevelDialog(parent.parent.GetSlaLevelDialog(false, GetSelectedLevelID())); parent.parent.Ts.System.logAction('Admin SLA - Edit SLA Level Dialog Opened'); }
         else if (value == 'DeleteSLA') { DeleteSlaLevel(); }
         else if (value == 'AddTrigger') { AddTrigger(); }
+        else if (value == 'CloneSLA') { ShowLevelDialog(parent.parent.GetSlaLevelDialog(true, GetSelectedLevelID())); parent.parent.Ts.System.logAction('Admin SLA - Clone SLA Level Dialog Opened'); }
       }
     
     </script>

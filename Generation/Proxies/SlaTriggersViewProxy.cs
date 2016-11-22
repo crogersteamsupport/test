@@ -26,6 +26,11 @@ namespace TeamSupport.Data
     [DataMember] public bool NotifyGroupOnViolation { get; set; }
     [DataMember] public int WarningTime { get; set; }
     [DataMember] public bool UseBusinessHours { get; set; }
+    [DataMember] public bool PauseOnHoliday { get; set; }
+    [DataMember] public int Weekdays { get; set; }
+    [DataMember] public DateTime? DayStart { get; set; }
+    [DataMember] public DateTime? DayEnd { get; set; }
+    [DataMember] public string TimeZone { get; set; }
     [DataMember] public string LevelName { get; set; }
     [DataMember] public string Severity { get; set; }
     [DataMember] public string TicketType { get; set; }
@@ -44,6 +49,9 @@ namespace TeamSupport.Data
       result.TicketType = this.TicketType;
       result.Severity = this.Severity;
       result.LevelName = this.LevelName;
+      result.TimeZone = this.TimeZone;
+      result.Weekdays = this.Weekdays;
+      result.PauseOnHoliday = this.PauseOnHoliday;
       result.UseBusinessHours = this.UseBusinessHours;
       result.WarningTime = this.WarningTime;
       result.NotifyGroupOnViolation = this.NotifyGroupOnViolation;
@@ -59,6 +67,8 @@ namespace TeamSupport.Data
       result.SlaTriggerID = this.SlaTriggerID;
        
        
+      result.DayEnd = this.DayEndUtc == null ? this.DayEndUtc : DateTime.SpecifyKind((DateTime)this.DayEndUtc, DateTimeKind.Utc); 
+      result.DayStart = this.DayStartUtc == null ? this.DayStartUtc : DateTime.SpecifyKind((DateTime)this.DayStartUtc, DateTimeKind.Utc); 
        
       return result;
     }	

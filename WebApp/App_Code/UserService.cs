@@ -1644,6 +1644,7 @@ namespace TSWebServices
                 cal.id = c.CalendarID;
                 cal.description = c.Description;
                 cal.allday = c.AllDay;
+                cal.isHoliday = c.IsHoliday;
                 cal.creatorID = c.CreatorID;
 
                 User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
@@ -1799,6 +1800,7 @@ namespace TSWebServices
                 cal.Description = info.description;
                 cal.LastModified = DateTime.Now;
                 cal.AllDay = info.allDay;
+                cal.IsHoliday = info.isHoliday;
                 cal.Collection.Save();
 
                 CalendarRef calRef = new CalendarRef(TSAuthentication.GetLoginUser());
@@ -1966,6 +1968,7 @@ namespace TSWebServices
                 cal.LastModified = DateTime.Now;
                 cal.CreatorID = TSAuthentication.GetLoginUser().UserID;
                 cal.AllDay = info.allDay;
+                cal.IsHoliday = info.isHoliday;
                 cal.Collection.Save();
 
                 if(info.PageType == 0)
@@ -2101,6 +2104,8 @@ namespace TSWebServices
             [DataMember]
             public bool allday { get; set; }
             [DataMember]
+            public bool isHoliday { get; set; }
+            [DataMember]
             public CalendarRefItemProxy[] references { get; set; }
 
         }
@@ -2130,6 +2135,8 @@ namespace TSWebServices
           public string end { get; set; }
           [DataMember]
           public bool allDay { get; set; }
+          [DataMember]
+          public bool isHoliday { get; set; }
           [DataMember]
           public string description { get; set; }
           [DataMember]

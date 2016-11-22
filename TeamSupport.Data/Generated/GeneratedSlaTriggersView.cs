@@ -61,6 +61,24 @@ namespace TeamSupport.Data
       set { Row["LevelName"] = CheckValue("LevelName", value); }
     }
     
+    public string TimeZone
+    {
+      get { return (string)Row["TimeZone"]; }
+      set { Row["TimeZone"] = CheckValue("TimeZone", value); }
+    }
+    
+    public int Weekdays
+    {
+      get { return (int)Row["Weekdays"]; }
+      set { Row["Weekdays"] = CheckValue("Weekdays", value); }
+    }
+    
+    public bool PauseOnHoliday
+    {
+      get { return (bool)Row["PauseOnHoliday"]; }
+      set { Row["PauseOnHoliday"] = CheckValue("PauseOnHoliday", value); }
+    }
+    
     public bool UseBusinessHours
     {
       get { return (bool)Row["UseBusinessHours"]; }
@@ -145,6 +163,28 @@ namespace TeamSupport.Data
     
     
 
+    
+    public DateTime? DayStart
+    {
+      get { return Row["DayStart"] != DBNull.Value ? DateToLocal((DateTime?)Row["DayStart"]) : null; }
+      set { Row["DayStart"] = CheckValue("DayStart", value); }
+    }
+
+    public DateTime? DayStartUtc
+    {
+      get { return Row["DayStart"] != DBNull.Value ? (DateTime?)Row["DayStart"] : null; }
+    }
+    
+    public DateTime? DayEnd
+    {
+      get { return Row["DayEnd"] != DBNull.Value ? DateToLocal((DateTime?)Row["DayEnd"]) : null; }
+      set { Row["DayEnd"] = CheckValue("DayEnd", value); }
+    }
+
+    public DateTime? DayEndUtc
+    {
+      get { return Row["DayEnd"] != DBNull.Value ? (DateTime?)Row["DayEnd"] : null; }
+    }
     
 
     
@@ -242,7 +282,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaTriggersView] SET     [SlaLevelID] = @SlaLevelID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [TimeInitialResponse] = @TimeInitialResponse,    [TimeLastAction] = @TimeLastAction,    [TimeToClose] = @TimeToClose,    [NotifyUserOnWarning] = @NotifyUserOnWarning,    [NotifyGroupOnWarning] = @NotifyGroupOnWarning,    [NotifyUserOnViolation] = @NotifyUserOnViolation,    [NotifyGroupOnViolation] = @NotifyGroupOnViolation,    [WarningTime] = @WarningTime,    [UseBusinessHours] = @UseBusinessHours,    [LevelName] = @LevelName,    [Severity] = @Severity,    [TicketType] = @TicketType,    [Position] = @Position,    [OrganizationID] = @OrganizationID  WHERE ([SlaTriggerID] = @SlaTriggerID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaTriggersView] SET     [SlaLevelID] = @SlaLevelID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [TimeInitialResponse] = @TimeInitialResponse,    [TimeLastAction] = @TimeLastAction,    [TimeToClose] = @TimeToClose,    [NotifyUserOnWarning] = @NotifyUserOnWarning,    [NotifyGroupOnWarning] = @NotifyGroupOnWarning,    [NotifyUserOnViolation] = @NotifyUserOnViolation,    [NotifyGroupOnViolation] = @NotifyGroupOnViolation,    [WarningTime] = @WarningTime,    [UseBusinessHours] = @UseBusinessHours,    [PauseOnHoliday] = @PauseOnHoliday,    [Weekdays] = @Weekdays,    [DayStart] = @DayStart,    [DayEnd] = @DayEnd,    [TimeZone] = @TimeZone,    [LevelName] = @LevelName,    [Severity] = @Severity,    [TicketType] = @TicketType,    [Position] = @Position,    [OrganizationID] = @OrganizationID  WHERE ([SlaTriggerID] = @SlaTriggerID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SlaTriggerID", SqlDbType.Int, 4);
@@ -336,6 +376,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("PauseOnHoliday", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Weekdays", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DayStart", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DayEnd", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TimeZone", SqlDbType.VarChar, 300);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("LevelName", SqlDbType.VarChar, 150);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -376,7 +451,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaTriggersView] (    [SlaTriggerID],    [SlaLevelID],    [TicketTypeID],    [TicketSeverityID],    [TimeInitialResponse],    [TimeLastAction],    [TimeToClose],    [NotifyUserOnWarning],    [NotifyGroupOnWarning],    [NotifyUserOnViolation],    [NotifyGroupOnViolation],    [WarningTime],    [UseBusinessHours],    [LevelName],    [Severity],    [TicketType],    [Position],    [OrganizationID]) VALUES ( @SlaTriggerID, @SlaLevelID, @TicketTypeID, @TicketSeverityID, @TimeInitialResponse, @TimeLastAction, @TimeToClose, @NotifyUserOnWarning, @NotifyGroupOnWarning, @NotifyUserOnViolation, @NotifyGroupOnViolation, @WarningTime, @UseBusinessHours, @LevelName, @Severity, @TicketType, @Position, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaTriggersView] (    [SlaTriggerID],    [SlaLevelID],    [TicketTypeID],    [TicketSeverityID],    [TimeInitialResponse],    [TimeLastAction],    [TimeToClose],    [NotifyUserOnWarning],    [NotifyGroupOnWarning],    [NotifyUserOnViolation],    [NotifyGroupOnViolation],    [WarningTime],    [UseBusinessHours],    [PauseOnHoliday],    [Weekdays],    [DayStart],    [DayEnd],    [TimeZone],    [LevelName],    [Severity],    [TicketType],    [Position],    [OrganizationID]) VALUES ( @SlaTriggerID, @SlaLevelID, @TicketTypeID, @TicketSeverityID, @TimeInitialResponse, @TimeLastAction, @TimeToClose, @NotifyUserOnWarning, @NotifyGroupOnWarning, @NotifyUserOnViolation, @NotifyGroupOnViolation, @WarningTime, @UseBusinessHours, @PauseOnHoliday, @Weekdays, @DayStart, @DayEnd, @TimeZone, @LevelName, @Severity, @TicketType, @Position, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -408,6 +483,41 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("LevelName", SqlDbType.VarChar, 150);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TimeZone", SqlDbType.VarChar, 300);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DayEnd", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DayStart", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Weekdays", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("PauseOnHoliday", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -617,7 +727,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [SlaTriggerID], [SlaLevelID], [TicketTypeID], [TicketSeverityID], [TimeInitialResponse], [TimeLastAction], [TimeToClose], [NotifyUserOnWarning], [NotifyGroupOnWarning], [NotifyUserOnViolation], [NotifyGroupOnViolation], [WarningTime], [UseBusinessHours], [LevelName], [Severity], [TicketType], [Position], [OrganizationID] FROM [dbo].[SlaTriggersView] WHERE ([SlaTriggerID] = @SlaTriggerID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SlaTriggerID], [SlaLevelID], [TicketTypeID], [TicketSeverityID], [TimeInitialResponse], [TimeLastAction], [TimeToClose], [NotifyUserOnWarning], [NotifyGroupOnWarning], [NotifyUserOnViolation], [NotifyGroupOnViolation], [WarningTime], [UseBusinessHours], [PauseOnHoliday], [Weekdays], [DayStart], [DayEnd], [TimeZone], [LevelName], [Severity], [TicketType], [Position], [OrganizationID] FROM [dbo].[SlaTriggersView] WHERE ([SlaTriggerID] = @SlaTriggerID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("SlaTriggerID", slaTriggerID);
         Fill(command);
