@@ -216,8 +216,8 @@ namespace TeamSupport.Data
 
 					using (SqlCommand command = new SqlCommand())
 					{
-						User userAcount = loginUser.GetUser();
-						if (!userAcount.PortalLimitOrgChildrenTickets)
+						User userAccount = loginUser.GetUser();
+						if (userAccount.PortalLimitOrgTickets)
 						{
 							command.CommandText = @"SELECT COUNT(*) 
 																			FROM OrganizationTickets ot 
@@ -229,14 +229,15 @@ namespace TeamSupport.Data
 						}
 						else
 						{
-							command.CommandText = @"SELECT COUNT(*) 
-																				FROM OrganizationTickets 
-																				WHERE (OrganizationID = @OrganizationID) 
-																					AND (TicketID = @TicketID)";
+							command.CommandText = @"SELECT COUNT(*)
+                                                    FROM UserTicketStatusesView as UT
+                                                    WHERE (UT.TicketID = @TicketID)
+	                                                    AND (UT.UserID = @UserID)";
 						}
 						command.CommandType = CommandType.Text;
 						command.Parameters.AddWithValue("@TicketID", TicketID);
 						command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
 						object o = Collection.ExecuteScalar(command);
 						if (o == null || o == DBNull.Value) return false;
 						return (int)o > 0;
