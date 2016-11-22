@@ -52,6 +52,18 @@ namespace TSWebServices
             if (info.Ticket.Name.ToLower() == "<no subject>")
                 info.Ticket.Name = "";
 
+            //check if outside resource change ticket type and to modify the status
+            TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
+            statuses.LoadAvailableTicketStatuses(info.Ticket.TicketTypeID, null);
+
+            if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID))
+            {
+                info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
+                Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+                newticket.TicketStatusID = ticket.TicketStatusID;
+                newticket.Collection.Save();
+            }
+
             if (info.Ticket.CategoryName != null && info.Ticket.ForumCategory != null)
                 info.Ticket.CategoryDisplayString = ForumCategories.GetCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.ForumCategory);
             if (info.Ticket.KnowledgeBaseCategoryName != null)
@@ -79,6 +91,7 @@ namespace TSWebServices
             if (slaTicket != null)
             {
                 info.SlaTriggerId = slaTicket.SlaTriggerId;
+                info.IsSlaPending = slaTicket.IsPending;
             }
 
             return info;
@@ -780,12 +793,32 @@ namespace TSWebServices
         }
 
 		[WebMethod]
-		public TicketsViewItemProxy GetTicketSLAInfo(int ticketNumber)
+		public SlaInfo GetTicketSLAInfo(int ticketNumber)
 		{
-			TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SlaInfo slaInfo = new SlaInfo();
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(loginUser, ticketNumber);
 			if (ticket == null) return null;
-			return ticket.GetProxy();
-		}
+
+            slaInfo.Ticket = ticket.GetProxy();
+
+            SlaTickets slaTickets = new SlaTickets(loginUser);
+            slaTickets.LoadByTicketId(ticket.TicketID);
+            slaInfo.IsSlaPaused = false;
+            slaInfo.IsSlaPending = false;
+            slaInfo.SlaTriggerId = null;
+
+            if (slaTickets != null && slaTickets.Count > 0)
+            {
+                TicketStatuses ticketStatus = new TicketStatuses(loginUser);
+                ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+
+                slaInfo.IsSlaPending = slaTickets[0].IsPending;
+                slaInfo.SlaTriggerId = slaTickets[0].SlaTriggerId;
+            }
+
+            return slaInfo;
+        }
 
         [WebMethod]
         public string GetSuggestedSolutionDefaultInput(int ticketid)
@@ -844,7 +877,11 @@ namespace TSWebServices
             [DataMember]
             public AttachmentProxy[] Attachments { get; set; }
             [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
             public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
         }
 
         [DataContract]
@@ -907,6 +944,19 @@ namespace TSWebServices
             public string CatName { get; set; }
             [DataMember]
             public string Disabled { get; set; }
+        }
+
+        [DataContract]
+        public class SlaInfo
+        {
+            [DataMember]
+            public TicketsViewItemProxy Ticket { get; set; }
+            [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
         }
 
         //Private Methods

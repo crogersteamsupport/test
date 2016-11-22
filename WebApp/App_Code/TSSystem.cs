@@ -102,6 +102,7 @@ namespace TSWebServices
             try
             {
                 ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Users, TSAuthentication.UserID, "Logged out");
+                TSEventLog.WriteEvent(TSEventLogEventType.LogoutSuccess, HttpContext.Current.Request, TSAuthentication.GetLoginUser().GetUser(), TSAuthentication.GetLoginUser().GetOrganization());
             }
             catch (Exception)
             {

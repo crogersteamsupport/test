@@ -506,7 +506,7 @@ namespace TeamSupport.Handlers
                     CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "PodName", data.PodName.ToString());
                     CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "TeamSupportOrganizationID", data.OrganizationID.ToString());
                     CustomValues.UpdateByAPIFieldName(loginUser, customFields, tsOrg.OrganizationID, "LifecycleStatus", "Trial");
-                    
+
                 }
                 catch (Exception ex)
                 {
