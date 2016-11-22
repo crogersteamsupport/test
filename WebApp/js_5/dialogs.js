@@ -241,7 +241,7 @@ function GetSlaTriggerDialog(isNew, id, ticketTypeID) {
     else {
         url = url + '?SlaTriggerID=' + id;
     }
-    wnd.setSize(750, 640);
+    wnd.setSize(590, 760);
 
     wnd.setUrl(url);
     return wnd;

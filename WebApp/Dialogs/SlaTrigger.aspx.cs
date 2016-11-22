@@ -51,7 +51,8 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
       cbGroupWarnings.Checked = Settings.UserDB.ReadBool("SlaTriggerGroupWarnings", true);
       cbUserViolations.Checked = Settings.UserDB.ReadBool("SlaTriggerUserViolations", true);
       cbUserWarnings.Checked = Settings.UserDB.ReadBool("SlaTriggerUserWarnings", true);
-      cbBusinessHours.Checked = Settings.UserDB.ReadBool("SlaTriggerUseBusinessHours", true);
+      rbBusinessHours.Checked = Settings.UserDB.ReadBool("SlaTriggerUseBusinessHours", true);
+      rbCustomBusinessHours.Checked = !rbBusinessHours.Checked;
       cbPauseOnOrganizationHolidays.Checked = Settings.UserDB.ReadBool("SlaTriggerPauseOnOrganizationHolidays", true);
       daysToPauseList.Attributes.Add("onkeydown", "DeleteSelectedItems();");
     }
@@ -69,6 +70,10 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
       _ticketTypeID = _trigger.TicketTypeID;
 
       if (!IsPostBack) LoadTrigger(_trigger);
+    }
+    else
+    {
+        DisableEnableCustomBusinessHours(rbBusinessHours.Checked);
     }
 
     SlaLevel level =SlaLevels.GetSlaLevel(UserSession.LoginUser, _slaLevelID);
@@ -113,7 +118,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     cbGroupWarnings.Checked = trigger.NotifyGroupOnWarning;
     cbUserViolations.Checked = trigger.NotifyUserOnViolation;
     cbUserWarnings.Checked = trigger.NotifyUserOnWarning;
-    cbBusinessHours.Checked = trigger.UseBusinessHours;
+    rbBusinessHours.Checked = trigger.UseBusinessHours;
     timeSLAStart.SelectedDate = (trigger.DayStartUtc != null ? TimeZoneInfo.ConvertTimeFromUtc(trigger.DayStartUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(trigger.TimeZone)) : new DateTime?());
     timeSLAEnd.SelectedDate = (trigger.DayEndUtc != null ? TimeZoneInfo.ConvertTimeFromUtc(trigger.DayEndUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(trigger.TimeZone)) : new DateTime?());
     cbTimeZones.SelectedValue = trigger.TimeZone;
@@ -124,19 +129,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     cbSLAThursday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Thursday)) > 0;
     cbSLAFriday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Friday)) > 0;
     cbSLASaturday.Checked = ((int)trigger.Weekdays & (int)Math.Pow(2, (int)DayOfWeek.Saturday)) > 0;
-
-    if (trigger.UseBusinessHours)
-    {
-        timeSLAStart.Enabled = false;
-        timeSLAEnd.Enabled = false;
-        cbSLASunday.Enabled = false;
-        cbSLAMonday.Enabled = false;
-        cbSLATuesday.Enabled = false;
-        cbSLAWednesday.Enabled = false;
-        cbSLAThursday.Enabled = false;
-        cbSLAFriday.Enabled = false;
-        cbSLASaturday.Enabled = false;
-    }
+    DisableEnableCustomBusinessHours(trigger.UseBusinessHours);
 
     cbPauseOnOrganizationHolidays.Checked = trigger.PauseOnHoliday;
     List<DateTime> daysToPause = SlaTriggers.GetSpecificDaysToPause(trigger.SlaTriggerID);
@@ -206,7 +199,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
   public override bool Save()
   {
-    if (!cbBusinessHours.Checked && (timeSLAStart.SelectedDate == null || timeSLAEnd.SelectedDate == null))
+    if (!rbBusinessHours.Checked && (timeSLAStart.SelectedDate == null || timeSLAEnd.SelectedDate == null))
     {
         string script = "alert('Please select both the SLA Day Start and End.');";
         string name = "Testing";
@@ -236,7 +229,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     trigger.NotifyGroupOnWarning = cbGroupWarnings.Checked;
     trigger.NotifyUserOnViolation = cbUserViolations.Checked;
     trigger.NotifyUserOnWarning = cbUserWarnings.Checked;
-    trigger.UseBusinessHours = cbBusinessHours.Checked;
+    trigger.UseBusinessHours = rbBusinessHours.Checked;
     trigger.PauseOnHoliday = cbPauseOnOrganizationHolidays.Checked;
     trigger.DayStart = null;
 	trigger.DayEnd = null;
@@ -339,7 +332,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     Settings.UserDB.WriteBool("SlaTriggerGroupWarnings", cbGroupWarnings.Checked);
     Settings.UserDB.WriteBool("SlaTriggerUserViolations", cbUserViolations.Checked);
     Settings.UserDB.WriteBool("SlaTriggerUserWarnings", cbUserWarnings.Checked);
-    Settings.UserDB.WriteBool("SlaTriggerUseBusinessHours", cbBusinessHours.Checked);
+    Settings.UserDB.WriteBool("SlaTriggerUseBusinessHours", rbBusinessHours.Checked);
     Settings.UserDB.WriteBool("SlaTriggerPauseOnOrganizationHolidays", cbPauseOnOrganizationHolidays.Checked);
 
     DialogResult = trigger.SlaTriggerID.ToString();
@@ -363,6 +356,21 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
         {
             cbTimeZones.Items.Add(new RadComboBoxItem(info.DisplayName, info.Id));
         }
+    }
+
+    private void DisableEnableCustomBusinessHours(bool useAccountBusinessHours)
+    {
+        rbCustomBusinessHours.Checked = !useAccountBusinessHours;
+        cbTimeZones.Enabled = !useAccountBusinessHours;
+        timeSLAStart.Enabled = !useAccountBusinessHours;
+        timeSLAEnd.Enabled = !useAccountBusinessHours;
+        cbSLASunday.Enabled = !useAccountBusinessHours;
+        cbSLAMonday.Enabled = !useAccountBusinessHours;
+        cbSLATuesday.Enabled = !useAccountBusinessHours;
+        cbSLAWednesday.Enabled = !useAccountBusinessHours;
+        cbSLAThursday.Enabled = !useAccountBusinessHours;
+        cbSLAFriday.Enabled = !useAccountBusinessHours;
+        cbSLASaturday.Enabled = !useAccountBusinessHours;
     }
 }
 

@@ -49,47 +49,72 @@
             <asp:RadioButton ID="rbWarningMin" runat="server" Text="Minutes" GroupName="WarningTime" />
             <asp:RadioButton ID="rbWarningHour" runat="server" Text="Hours" GroupName="WarningTime" Checked="true"/>
             <asp:RadioButton ID="rbWarningDay" runat="server" Text="Days" GroupName="WarningTime"/></td></tr>
+
+        <tr><td colspan="4"><div style="border-bottom: solid 1px; font-size: 16px; margin-bottom: 7px; padding-top: 6px;">Pause</div></td></tr>    
         <tr>
-          <td class="col1">Enforce Business Hours:</td><td>
-            <asp:CheckBox ID="cbBusinessHours" runat="server" OnClick="DisableSlaDaysAndHours()" /></td>
-        </tr>
-        <tr>
-          <td class="col1">Pause on Company Holidays:</td><td>
+          <td class="col1">Pause on Company Holidays</td><td>
             <asp:CheckBox ID="cbPauseOnOrganizationHolidays" runat="server" /></td>
         </tr>
-          <tr>
-              <td class="col1" style="vertical-align: top;">Pause on Specific Dates:</td>
-              <td><asp:ListBox ID="daysToPauseList" runat="server" Rows="6" Width="100px" SelectionMode="Multiple" CssClass="daysToPause"></asp:ListBox>
-                  <input type="hidden" runat="server" id="DaysToPauseHidden" name="DaysToPayseHidden" />
-                  <telerik:RadDatePicker ID="PauseOnDates" runat="server" Width="1px" CssClass="HiddenPicker">
-                      <ClientEvents OnDateSelected="AddToList" />
-                      <DateInput runat="server" CssClass="HiddenTextBox" />
-                  </telerik:RadDatePicker>
-              </td>
-          </tr>
-          <tr>
-              <td class="col1">SLA Day Start/End:</td>
-              <td>
-                  <telerik:RadTimePicker ID="timeSLAStart" runat="server" Width="90px">
-                  </telerik:RadTimePicker>
-                  <telerik:RadTimePicker ID="timeSLAEnd" runat="server" Width="90px">
-                  </telerik:RadTimePicker>
-                  <span>Time Zone:</span>
-                  <telerik:RadComboBox ID="cbTimeZones" runat="server" Width="200px"></telerik:RadComboBox>
-              </td>
-          </tr>
-          <tr>
-              <td class="col1">SLA Days:</td>
-              <td colspan="4">
-                  <asp:CheckBox ID="cbSLASunday" runat="server" Text="Sunday" />
-                  <asp:CheckBox ID="cbSLAMonday" runat="server" Text="Monday" />
-                  <asp:CheckBox ID="cbSLATuesday" runat="server" Text="Tuesday" />
-                  <asp:CheckBox ID="cbSLAWednesday" runat="server" Text="Wednesday" />
-                  <asp:CheckBox ID="cbSLAThursday" runat="server" Text="Thursday" />
-                  <asp:CheckBox ID="cbSLAFriday" runat="server" Text="Friday" />
-                  <asp:CheckBox ID="cbSLASaturday" runat="server" Text="Saturday" />
-              </td>
-          </tr>
+        <tr>
+            <td class="col1" style="vertical-align: top;">Pause on Specific Dates</td>
+        </tr>
+        <tr>
+            <td class="col1"><asp:ListBox ID="daysToPauseList" runat="server" Rows="6" Width="100px" SelectionMode="Multiple" CssClass="daysToPause"></asp:ListBox>
+                <input type="hidden" runat="server" id="DaysToPauseHidden" name="DaysToPayseHidden" />
+                <telerik:RadDatePicker ID="PauseOnDates" runat="server" Width="1px" CssClass="HiddenPicker">
+                    <ClientEvents OnDateSelected="AddToList" />
+                    <DateInput runat="server" CssClass="HiddenTextBox" />
+                </telerik:RadDatePicker>
+            </td>
+        </tr>
+
+        <tr><td colspan="4"><div style="border-bottom: solid 1px; font-size: 16px; margin-bottom: 7px; padding-top: 6px;">Business Hours</div></td></tr>    
+        <tr>
+            <td class="col1">Use Account Business Hours:</td>
+            <td><asp:RadioButton ID="rbBusinessHours" runat="server" Text="" GroupName="BusinessHours" OnClick="DisableSlaDaysAndHours()" /></td>
+        </tr>
+        <tr>
+            <td class="col1">Use Custom Business Hours:</td>
+            <td><asp:RadioButton ID="rbCustomBusinessHours" runat="server" Text="" GroupName="BusinessHours" OnClick="DisableSlaDaysAndHours()" /></td>
+        </tr>
+        <tr>
+            <td class="col1">SLA Start:</td>
+            <td>
+                <telerik:RadTimePicker ID="timeSLAStart" runat="server" Width="90px">
+                </telerik:RadTimePicker>
+            </td>
+        </tr>
+        <tr>
+            <td class="col1">SLA End:</td>
+            <td>
+                <telerik:RadTimePicker ID="timeSLAEnd" runat="server" Width="90px">
+                </telerik:RadTimePicker>
+            </td>
+        </tr>
+        <tr>
+            <td class="col1">Time Zone:</td>
+            <td>
+                <telerik:RadComboBox ID="cbTimeZones" runat="server" Width="200px"></telerik:RadComboBox>
+            </td>
+        </tr>
+            
+        <tr>
+            <td class="col1">SLA Days:</td>
+            <td colspan="4">
+                <asp:CheckBox ID="cbSLAMonday" runat="server" Text="Monday" />
+                <asp:CheckBox ID="cbSLATuesday" runat="server" Text="Tuesday" />
+                <asp:CheckBox ID="cbSLAWednesday" runat="server" Text="Wednesday" />
+                <asp:CheckBox ID="cbSLAThursday" runat="server" Text="Thursday" />
+            </td>
+        </tr>
+        <tr>
+            <td class="col1"></td>
+            <td>
+                <asp:CheckBox ID="cbSLAFriday" runat="server" Text="Friday" />
+                <asp:CheckBox ID="cbSLASaturday" runat="server" Text="Saturday" />
+                <asp:CheckBox ID="cbSLASunday" runat="server" Text="Sunday" />
+            </td>
+        </tr>
 
         <tr><td colspan="4"><div style="border-bottom: solid 1px; font-size: 16px; margin-bottom: 7px; padding-top: 6px;">Violation Times</div></td></tr>    
         
@@ -182,11 +207,18 @@
         }
 
         function DisableSlaDaysAndHours() {
-            var useOrgBusinessHours = document.getElementById('<%= cbBusinessHours.ClientID %>');
+            var useOrgBusinessHours = document.getElementById('<%= rbBusinessHours.ClientID %>');
             var timeSLAStart = $find("<%= timeSLAStart.ClientID %>");
             var timeSLAEnd = $find("<%= timeSLAEnd.ClientID %>");
             timeSLAStart.set_enabled(!useOrgBusinessHours.checked);
             timeSLAEnd.set_enabled(!useOrgBusinessHours.checked);
+            var timeZones = $find("<%= cbTimeZones.ClientID %>")
+
+            if (useOrgBusinessHours.checked) {
+                timeZones.disable();
+            } else {
+                timeZones.enable();
+            }
 
             var cbSLASunday = document.getElementById('<%= cbSLASunday.ClientID %>');
             cbSLASunday.disabled = useOrgBusinessHours.checked;
