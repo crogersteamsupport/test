@@ -322,9 +322,11 @@ namespace TeamSupport.ServiceLibrary
                     }
 
                     //Repeat until we find the first business day, non-pause day, non-holiday
-                    while (!IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
+                    while (!IsValidDay(DateCreated, slaBusinessDays, daysToPause, holidays))
                     {
                         DateCreated = DateCreated.AddDays(1);
+                        //If this happened then we need to set it with the start of day hour
+                        DateCreated = new DateTime(DateCreated.Year, DateCreated.Month, DateCreated.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0);
                     }
 
                     //When converted the input to UTC the end time might be less than the start time. E.g. central 8 to 22, is stored as utc 14 to 4
@@ -499,22 +501,30 @@ namespace TeamSupport.ServiceLibrary
                 {
                     ExpireDate = ExpireDate.Value.AddMinutes(-1);
 
-                    if (ExpireDate.Value.Hour < slaDayStart.Value.Hour && hoursBeforeNextDayUtcTimeSituation == 0)
+                    if (ExpireDate.Value.Hour < slaDayStart.Value.Hour && hoursBeforeNextDayUtcTimeSituation != 0)
                     {
                         ExpireDate = GetPreviousBusinessDay(ExpireDate.Value, slaBusinessDays);
                         TimeSpan difference = (new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0)) - (DateTime)ExpireDate;
                         ExpireDate = new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayEnd.Value.Hour, slaDayEnd.Value.Minute, 0);
                         ExpireDate = ExpireDate.Value.AddMinutes(-1 * difference.Minutes).AddSeconds(-1 * difference.Seconds);
-                    }
-                    else
-                    {
-                        hoursBeforeNextDayUtcTimeSituation--;
+                        hoursBeforeNextDayUtcTimeSituation = 0;
                     }
 
                     if (IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
                     {
                         slaMinutes--;
                     }
+                }
+
+                if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
+                {
+                    hoursBeforeNextDayUtcTimeSituation = 24 - businessHours.DayStartUtc.Hour;
+                }
+
+                if (hoursBeforeNextDayUtcTimeSituation != 0 && ViolationDate.Hour == slaDayStart.Value.Hour && ViolationDate.Minute == slaDayStart.Value.Minute
+                    && ExpireDate.Value.CompareTo(ViolationDate) < 0)
+                {
+                    ExpireDate = ExpireDate.Value.AddDays(1);
                 }
             }
 
