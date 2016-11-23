@@ -275,6 +275,8 @@
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToVideoStream()">Do you Accept?</a>
                         <br>
+                        <small class="text-muted">{{UserName}} | {{Date}}</small>
+                        <hr>
                     </div>
                 </div>
             </div>
@@ -288,6 +290,8 @@
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToAudioStream()">Do you Accept?</a>
                         <br>
+                        <small class="text-muted">{{UserName}} | {{Date}}</small>
+                        <hr>
                     </div>
                 </div>
             </div>
@@ -301,6 +305,24 @@
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToScreenStream()">Do you Accept?</a>
                         <br>
+                        <small class="text-muted">{{UserName}} | {{Date}}</small>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </script>
+
+    <script id="typing-template" type="text/x-custom-template">
+        <li id="typing" class="media">
+            <div class="media-body">
+                <div class="media">
+                    <img class="pull-left media-object img-circle user-avatar" src="../images/blank_avatar.png">
+                    <div class="media-body">
+                        {{message}}
+                        <br>
+                        <small class="text-muted">{{UserName}} | {{Date}}</small>
+                        <hr>
                     </div>
                 </div>
             </div>

@@ -35,12 +35,12 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
 
     var typeTemplate;
     channel.bind('client-user-typing', function (data) {
-        var messageTemplate = $("#message-template").html();
+        var messageTemplate = $("#typing-template").html();
         typeTemplate = messageTemplate
                                 .replace('{{MessageDirection}}', 'left')
-                                .replace('{{UserName}}', ' ')
+                                .replace('{{UserName}}', data.userName)
                                 .replace('{{Avatar}}', '../images/blank_avatar.png')
-                                .replace('{{Message}}', data)
+                                .replace('{{message}}', data.userName + ' is typing... ')
                                 .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'));
 
         $('.media-list').append(typeTemplate);
@@ -48,40 +48,48 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('client-user-stop-typing', function (data) {
-        typeTemplate.remove();
+        $('#typing').remove();
     });
 
     channel.bind('client-tok-screen-user', function (data) {
         var messageTemplate = $("#tok-screen-template").html();
         var compiledTemplate = messageTemplate
                                 .replace('{{message}}', data.userName + ' wants to share their screen with you. ')
+                                .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'))
+                                .replace('{{UserName}}', data.userName);
         $('.media-list').append(compiledTemplate);
-        ScrollMessages(true);
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
+        ScrollMessages(true);
     });
 
     channel.bind('client-tok-video-user', function (data) {
         var messageTemplate = $("#tok-video-template").html();
         var compiledTemplate = messageTemplate
                                 .replace('{{message}}', data.userName + ' wants to have a video call with you.  ')
+                                .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'))
+                                .replace('{{UserName}}', data.userName);
         $('.media-list').append(compiledTemplate);
-        ScrollMessages(true);
+
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
+        ScrollMessages(true);
     });
 
     channel.bind('client-tok-audio-user', function (data) {
         var messageTemplate = $("#tok-audio-template").html();
         var compiledTemplate = messageTemplate
                                 .replace('{{message}}', data.userName + ' wants to have a audio call with you. ')
+                                .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'))
+                                .replace('{{UserName}}', data.userName);
         $('.media-list').append(compiledTemplate);
-        ScrollMessages(true);
+
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
+        ScrollMessages(true);
     });
 
     channel.bind('client-tok-audio-user-accept', function (data) {
@@ -91,7 +99,18 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+
+        //Account for popup blockers
+        setTimeout(function () {
+            if (!tokpopup || tokpopup.outerHeight === 0) {
+                //First Checking Condition Works For IE & Firefox
+                //Second Checking Condition Works For Chrome
+                alert("Popup Blocker is enabled! Please add this site to your exception list.");
+            } else {
+
+            }
+        }, 25);
     });
 
     channel.bind('client-tok-video-user-accept', function (data) {
@@ -100,8 +119,23 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+
+        setTimeout(function () {
+            if (!tokpopup || tokpopup.outerHeight === 0) {
+                //First Checking Condition Works For IE & Firefox
+                //Second Checking Condition Works For Chrome
+                alert("Popup Blocker is enabled! Please add this site to your exception list.");
+            } else {
+
+            }
+        }, 25);
     });
+
+
+    //channel.bind('client-tok-ended', function (data) {
+    //    stopTOKStream();
+    //});
 
 
     var typingTimer;
@@ -125,6 +159,13 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     callback(channel);
+}
+
+function ScrollMessages(animated) {
+    if (animated)
+        $(".current-chat-area").animate({ scrollTop: $('.current-chat-area').prop("scrollHeight") }, 1000);
+    else
+        $(".current-chat-area").scrollTop($('.current-chat-area').prop("scrollHeight"));
 }
 
 function doneTyping() {

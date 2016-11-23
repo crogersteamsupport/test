@@ -114,6 +114,13 @@ $(document).ready(function () {
 
     }
 
+    function doneTyping() {
+        //$('#typing').hide();
+        if (channel !== null)
+            var triggered = channel.trigger('client-agent-stop-typing', channel.members.me.info.name + ' is typing...');
+        isTyping = false;
+    }
+
     function CloseRequestAnchor() {
         $('.open-request').html($('.open-request > .userName').text()).removeClass('open-request').removeClass('list-group-item-info');
     }
@@ -218,15 +225,19 @@ $(document).ready(function () {
         //Leave Chat and remove from list of active chats
         $('#chat-leave').click(function (e) {
             e.preventDefault();
-            parent.Ts.Services.Chat.CloseChat('presence-' + _activeChatID, _activeChatID, function (success) {
-                if (success) {
-                    $('#active-chat_' + _activeChatID).remove();
-                    $('.media-list').empty();
-                    $('.chat-intro').empty();
-                    _activeChatID = null;
-                }
-                else console.log('Error closing chat.')
-            });
+            if (confirm('Are you sure you want to leave this chat?')) {
+                parent.Ts.Services.Chat.CloseChat('presence-' + _activeChatID, _activeChatID, function (success) {
+                    if (success) {
+                        $('#active-chat_' + _activeChatID).remove();
+                        $('.media-list').empty();
+                        $('.chat-intro').empty();
+                        _activeChatID = null;
+                    }
+                    else console.log('Error closing chat.')
+                });
+            } else {
+                // Do nothing!
+            }
         });
 
         $('#chat-invite').click(function (e) {

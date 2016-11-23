@@ -123,6 +123,7 @@ function setupChat(chatID, participantID, callback) {
     });
 
     pressenceChannel.bind('new-comment', function (data) {
+        $('#typing').remove();
         createMessageElement(data, (data.CreatorType == 0) ? 'left' : 'right');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
@@ -149,7 +150,7 @@ function setupChat(chatID, participantID, callback) {
 
     pressenceChannel.bind('client-tok-audio', function (data) {
         $('#chat-body').append('<div class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToAudioStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share audio with you. <a onClick="subscribeToAudioStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
         sharedApiKey = data.apiKey;
@@ -163,7 +164,16 @@ function setupChat(chatID, participantID, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        setTimeout(function () {
+            if (!tokpopup || tokpopup.outerHeight === 0) {
+                //First Checking Condition Works For IE & Firefox
+                //Second Checking Condition Works For Chrome
+                alert("Popup Blocker is enabled! Please add this site to your exception list.");
+            } else {
+
+            }
+        }, 25);
     });
 
     pressenceChannel.bind('client-tok-video-accept', function (data) {
@@ -172,7 +182,21 @@ function setupChat(chatID, participantID, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        setTimeout(function () {
+            if (!tokpopup || tokpopup.outerHeight === 0) {
+                //First Checking Condition Works For IE & Firefox
+                //Second Checking Condition Works For Chrome
+                alert("Popup Blocker is enabled! Please add this site to your exception list.");
+            } else {
+
+            }
+        }, 25);
+    });
+
+    pressenceChannel.bind('client-agent-stop-typing', function (data) {
+        //console.log('received: client-agent-stoip-typing');
+        $('#typing').remove();
     });
 
     pressenceChannel.bind('client-agent-typing', function (data) {
@@ -180,9 +204,11 @@ function setupChat(chatID, participantID, callback) {
                     '<div class="name">' + data + '</div>  <div class="text">' + data + '</div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
     });
 
-    pressenceChannel.bind('client-agent-stop-typing', function (data) {
-        $('#typing').remove();
-    });
+    //pressenceChannel.bind('client-tok-ended', function (data) {
+    //    stopTOKStream();
+    //    channel.trigger('client-tok-ended', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    //});
+
 
     var isTyping = false;
     var typingTimer;                //timer identifier
