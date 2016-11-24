@@ -5,6 +5,10 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 
   <style type="text/css">
+    .tbMainAdmin
+    {
+        overflow: hidden;
+    }
     .divTriggers thead
     {
       background-color: #D6E6F4;
@@ -30,7 +34,7 @@
     BorderSize="0" Orientation="Horizontal">
     <telerik:RadPane ID="paneToolbar" runat="server" Height="32px">
       <telerik:RadToolBar ID="tbMain" runat="server" Width="100%" OnClientButtonClicked="OnToolBarButtonClicked"
-        CssClass="NoRoundedCornerEnds">
+        CssClass="NoRoundedCornerEnds tbMainAdmin">
         <Items>
           <telerik:RadToolBarButton runat="server" Text="New SLA" Value="NewSLA" ImageUrl="~/images/icons/new.png">
           </telerik:RadToolBarButton>

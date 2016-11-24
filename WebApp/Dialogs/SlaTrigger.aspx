@@ -184,8 +184,8 @@
             }
         }
 
-        function DeleteSelectedItems() {
-            if (event.keyCode == 46) {
+        function DeleteSelectedItems(event) {
+            if (event.keyCode == 46 || event.key == "Delete") {
                 var htmlSelect = document.getElementById('<%=daysToPauseList.ClientID%>');
 
                 for (var i = (htmlSelect.options.length - 1) ; i >= 0; i--) {

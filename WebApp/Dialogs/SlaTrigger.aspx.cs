@@ -54,7 +54,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
       rbBusinessHours.Checked = Settings.UserDB.ReadBool("SlaTriggerUseBusinessHours", true);
       rbCustomBusinessHours.Checked = !rbBusinessHours.Checked;
       cbPauseOnOrganizationHolidays.Checked = Settings.UserDB.ReadBool("SlaTriggerPauseOnOrganizationHolidays", true);
-      daysToPauseList.Attributes.Add("onkeydown", "DeleteSelectedItems();");
+      daysToPauseList.Attributes.Add("onkeydown", "DeleteSelectedItems(event);");
     }
 
     if (_slaTriggerID > -1)
