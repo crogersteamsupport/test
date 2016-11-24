@@ -806,7 +806,7 @@ namespace TeamSupport.ServiceLibrary
             IsValid = IsBusinessDay(day, businessDays);
 
             //2
-            if (IsValid && daysToPause != null && daysToPause.Where(p => p.CompareTo(day.Date) == 0).Any())
+            if (IsValid && daysToPause != null && daysToPause.Where(p => p.Date.CompareTo(day.Date) == 0).Any())
             {
                 IsValid = false;
             }
