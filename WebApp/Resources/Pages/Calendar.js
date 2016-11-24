@@ -152,6 +152,7 @@
                             editable: editable
                         });
                     });
+                    $("#calendar .holiday").removeClass("holiday");
                     callback(events);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -211,7 +212,7 @@
                 try {
                     if (event.hasOwnProperty("start") && event.hasOwnProperty("validend")) {
                         var startDate = new Date(event.start._i);
-                        var endDate = new Date(event.validend);
+                        var endDate = new Date(event.end._d);
                         endDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 0, 0, 0, 0);
                         startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getUTCDate(), 0, 0, 0, 0);
                         var today = new Date();
