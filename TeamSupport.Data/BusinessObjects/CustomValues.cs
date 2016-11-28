@@ -571,15 +571,16 @@ ORDER BY cf.Position";
 
     public DataTable GetParentsAndChildrensByRefID(int organizationID, ReferenceType refType, int? auxID, int refID, int? parentProductID)
     {
-        DataTable result = new DataTable();
         
         DataTable parentCustomValues = GetParentsByReferenceType(organizationID, refType, auxID, refID, parentProductID);
+        DataTable result = parentCustomValues.Clone();
+
         int parentID = -1;
         string parentValue = string.Empty;
 
         for (int i = 0; i < parentCustomValues.Rows.Count; i++)
         {
-            result.ImportRow(parentCustomValues.Rows[i]);
+            result.ImportRow(parentCustomValues.Rows[i]); 
             parentID = (int)parentCustomValues.Rows[i]["CustomFieldID"];
             parentValue = parentCustomValues.Rows[i]["CustomValue"].ToString();
             GetChildrenByParentValue(organizationID, refType, auxID, refID, parentID, parentValue, parentProductID, ref result);
