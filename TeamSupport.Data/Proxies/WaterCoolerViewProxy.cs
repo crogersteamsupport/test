@@ -57,20 +57,34 @@ namespace TeamSupport.Data
 
         string testb = HtmlToText.ConvertHtml(txt);
         string fixedurl;
+        //var resultString = new StringBuilder(testb);
+
         Regex regx = new Regex(@"((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)", RegexOptions.IgnoreCase);
-        MatchCollection mactches = regx.Matches(txt);
 
-        foreach (Match match in mactches)
+        string resultString = regx.Replace(txt, (match) =>
         {
-            if(match.Value.StartsWith("http://") || match.Value.StartsWith("https://"))
-                fixedurl = match.Value;
-            else
-                fixedurl = "http://" + match.Value;
+             fixedurl = (match.Value.StartsWith("http://") || match.Value.StartsWith("https://"))
+                ? match.Value
+                : "http://" + match.Value;
 
-            testb = testb.Replace(match.Value, "<a target='_blank' class='ts-link ui-state-default' href='" + fixedurl + "'>" + match.Value + "</a>");
-        }
+            return "<a target='_blank' class='ts-link ui-state-default' href='" + fixedurl + "'>" + match.Value + "</a>";
+        });
 
-        return GenerateTicketLink(testb);
+        //    Regex regx = new Regex(@"((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)", RegexOptions.IgnoreCase);
+        //MatchCollection mactches = regx.Matches(txt);
+
+        //foreach (Match match in mactches)
+        //{
+        //    if(match.Value.StartsWith("http://") || match.Value.StartsWith("https://"))
+        //        fixedurl = match.Value;
+        //    else
+        //        fixedurl = "http://" + match.Value;
+
+        //     resultString.Replace(match.Value, "<a target='_blank' class='ts-link ui-state-default' href='" + fixedurl + "'>" + match.Value + "</a>");
+        //    //testb = testb.Replace(match.Value, "<a target='_blank' class='ts-link ui-state-default' href='" + fixedurl + "'>" + match.Value + "</a>");
+        //}
+
+        return GenerateTicketLink(resultString.ToString());
     }
 
     public string GenerateTicketLink(string txt)
