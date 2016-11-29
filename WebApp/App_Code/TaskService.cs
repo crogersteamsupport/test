@@ -225,7 +225,8 @@ namespace TSWebServices
         public ReminderProxy NewTask(string data)
         {
             TaskJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskJsonInfo>(data);
-            Reminder newTask = (new Reminders(TSAuthentication.GetLoginUser())).AddNewReminder();
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminder newTask = (new Reminders(loginUser)).AddNewReminder();
 
             newTask.OrganizationID = TSAuthentication.OrganizationID;
             newTask.TaskName = info.TaskName;
@@ -266,6 +267,9 @@ namespace TSWebServices
             {
                 AddAssociation(newTask.ReminderID, UserID, ReferenceType.Users);
             }
+
+            string description = String.Format("{0} created task.", TSAuthentication.GetUser(loginUser).FirstLastName);
+            TaskLogs.AddTaskLog(loginUser, newTask.ReminderID, description);
 
             return newTask.GetProxy();
         }

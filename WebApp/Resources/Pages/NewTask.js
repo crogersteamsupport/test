@@ -25,6 +25,9 @@ $(document).ready(function () {
 
     LoadUsers();
     initAssociationControls();
+    resetDisplay();
+
+    var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
     function LoadUsers() {
         parent.Ts.Services.Customers.LoadUsers(function (users) {
@@ -46,14 +49,18 @@ $(document).ready(function () {
     }
 
     function resetDisplay() {
+        $("#inputName").empty();
+        $("#Description").empty();
+        $("#cbComplete").attr('checked', false);
+        $("#DueDate").empty();
+        $("#cbReminder").attr('checked', true);
+        $("#ReminderDate").empty();
         $('#commentatt').find('.upload-queue').empty();
         $('#commentatt').find('.ticket-queue').empty();
         $('#commentatt').find('.group-queue').empty();
         $('#commentatt').find('.customer-queue').empty();
         $('#commentatt').find('.user-queue').empty();
         $('#commentatt').find('.product-queue').empty();
-        $(".newticket-group").val(-1);
-        $(".newticket-product").val(-1);
     }
 
     $(".maincontainer").on("keypress", "input", (function (evt) {
@@ -312,7 +319,7 @@ $(document).ready(function () {
                 if (!isDupe) {
                     var bg = $('<div>')
                     .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-                    .appendTo($(this).parent().parent().find('.ticket-queue')).data('Ticket', ui.item.id);
+                    .appendTo($(this).parent().parent().find('.ticket-queue')).data('Ticket', ui.item.data);
 
 
                     $('<span>')
@@ -420,45 +427,44 @@ $(document).ready(function () {
     });
 
     $('.file-upload').fileupload({
-        namespace: 'new_task',
+        namespace: 'task_attachment',
         dropZone: $('.file-upload'),
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-
                 var bg = $('<div>')
-          .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-          .appendTo($(this).parent().parent().find('.upload-queue'));
+                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                .appendTo($(this).parent().parent().find('.upload-queue'));
 
                 data.context = bg;
                 bg.data('data', data);
 
                 $('<span>')
-          .text(ellipseString(data.files[i].name, 20) + '  (' + window.parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-          .addClass('filename')
-          .appendTo(bg);
+                .text(ellipseString(data.files[i].name, 20) + '  (' + window.parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .addClass('filename')
+                .appendTo(bg);
 
                 $('<div>')
-            .addClass('progress')
-            .hide()
-            .appendTo(bg);
+                .addClass('progress')
+                .hide()
+                .appendTo(bg);
 
                 $('<span>')
-          .addClass('ui-icon ui-icon-close')
-          .click(function (e) {
-              e.preventDefault();
-              $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-          })
-          .appendTo(bg);
+                .addClass('ui-icon ui-icon-close')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
 
                 $('<span>')
-          .addClass('ui-icon ui-icon-cancel')
-          .hide()
-          .click(function (e) {
-              e.preventDefault();
-              var data = $(this).closest('li').data('data');
-              data.jqXHR.abort();
-          })
-          .appendTo(bg);
+                .addClass('ui-icon ui-icon-cancel')
+                .hide()
+                .click(function (e) {
+                    e.preventDefault();
+                    var data = $(this).closest('li').data('data');
+                    data.jqXHR.abort();
+                })
+                .appendTo(bg);
             }
 
         },

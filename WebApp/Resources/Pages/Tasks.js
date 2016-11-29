@@ -316,7 +316,7 @@ $(document).ready(function () {
 
     $('.action-new').click(function (e) {
         e.preventDefault();
-        parent.Ts.System.logAction('Customer Page - New Customer');
+        parent.Ts.System.logAction('Tasks Page - New Task');
         parent.Ts.MainPage.newTask();
 
     });
