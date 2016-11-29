@@ -30,6 +30,7 @@
   <script src="vcr/1_9_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
+  <script src="vcr/1_9_0/Js/Ts/ts.editor.js" type="text/javascript"></script>
 
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
@@ -59,7 +60,7 @@
     var g_PrivateServices;
     var _selectContactID = -1;
     var _selectCustomerID = -1;
-
+    var _tinyMCE;
     function teamSupportLoad() {
       g_uac = $('#fieldAuth').val();
       Ts.MainPage = new Ts.Pages.Main();
@@ -89,34 +90,61 @@
       }
     }
 
-    document.onkeydown = function (event) {
+    var backspaceIsPressed = false
+    $(document).keydown(function (event) {
+        if (event.which == 8) {
+            backspaceIsPressed = true
+        }
+    })
+    $(document).keyup(function (event) {
+        if (event.which == 8) {
+            backspaceIsPressed = false
+        }
+    })
+    $(window).on('beforeunload', function () {
+        //if (backspaceIsPressed) {
+        //    backspaceIsPressed = false
+        //    return "Are you sure you want to leave this page?"
+        //}
 
-        if (!event) { /* This will happen in IE */
-            event = window.event;
+        var iframes = document.getElementsByTagName('iframe'); //all iframes on page
+        for (var i = 0; i < iframes.length; i++) {
+            try {
+                if (iframes[i].contentWindow.tinyMCE.activeEditor)
+                    return "Are you sure you want to leave this page?"
+            } catch (e) { }
         }
 
-        var keyCode = event.keyCode;
+    })
 
-        if (keyCode == 8 &&
-            ((event.target || event.srcElement).tagName != "TEXTAREA") &&
-            ((event.target || event.srcElement).tagName != "INPUT")) {
+    //document.onkeydown = function (event) {
 
-            if (navigator.userAgent.toLowerCase().indexOf("msie") == -1) {
-                event.stopPropagation();
-            } else {
-                alert("prevented");
-                event.returnValue = false;
-            }
+    //    if (!event) { /* This will happen in IE */
+    //        event = window.event;
+    //    }
 
-            return false;
-        }
-    };
+    //    var keyCode = event.keyCode;
 
-    window.onbeforeunload = function() {
-       return "Are you sure you want to leave TeamSupport?";
-       //if we return nothing here (just calling return;) then there will be no pop-up question at all
-       //return;
-    };
+    //    if (keyCode == 8 &&
+    //        ((event.target || event.srcElement).tagName != "TEXTAREA") &&
+    //        ((event.target || event.srcElement).tagName != "INPUT")) {
+
+    //        if (navigator.userAgent.toLowerCase().indexOf("msie") == -1) {
+    //            event.stopPropagation();
+    //        } else {
+    //            alert("prevented");
+    //            event.returnValue = false;
+    //        }
+
+    //        return false;
+    //    }
+    //};
+
+    //window.onbeforeunload = function() {
+    //   return "Are you sure you want to leave TeamSupport?";
+    //   //if we return nothing here (just calling return;) then there will be no pop-up question at all
+    //   //return;
+    //};
 
 
   </script>

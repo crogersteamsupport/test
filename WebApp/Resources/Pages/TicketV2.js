@@ -1461,8 +1461,14 @@ function SaveAction(_oldActionID, isPrivate, callback) {
       });
   }
   window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
-    _ticketInfo = info;
-    setSLAInfo();
+      _ticketInfo = info;
+
+      if (_ticketInfo.SlaTriggerId !== null
+            && _ticketInfo.SlaTriggerId > 0) {
+          $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+          $('#ticket-SLANote').text('Calculating...');
+          slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+      }
   });
 
   window.parent.Ts.System.logAction('Action Saved');
@@ -3738,6 +3744,9 @@ var SetupStatusField = function (StatusId) {
                   //SetStatus(null);
                   window.parent.Ts.System.logAction('Ticket - Status Changed');
                   $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
+                  _ticketInfo.IsSlaPaused = status.PauseSLA;
+                  resetSLAInfo();
+                  slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
                   window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
                 }
               },
@@ -3752,10 +3761,6 @@ var SetupStatusField = function (StatusId) {
               return;
             }
           });
-
-          _ticketInfo.IsSlaPaused = status.PauseSLA;
-          resetSLAInfo();
-          slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
         }
       },
       render: {
@@ -5281,6 +5286,7 @@ var resetSLAInfo = function () {
 		_ticketInfo.SlaTriggerId = info.SlaTriggerId;
 		_ticketInfo.IsSlaPending = info.IsSlaPending;
 		_ticketInfo.IsSlaPaused = info.IsSlaPaused;
+		_ticketInfo.Ticket.IsClosed = info.Ticket.IsClosed;
 		setSLAInfo();
 	});
 }
@@ -5291,7 +5297,7 @@ var setSLAInfo = function () {
       && ((_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)
             || (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && _ticketInfo.IsSlaPending !== null && !_ticketInfo.IsSlaPending))
       ) {
-      $('#ticket-SLAStatus').find('i').addClass('color-green');
+    $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
   }
   else if (_ticketInfo.Ticket.SlaViolationTime === null
