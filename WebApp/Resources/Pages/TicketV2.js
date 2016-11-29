@@ -1461,8 +1461,14 @@ function SaveAction(_oldActionID, isPrivate, callback) {
       });
   }
   window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
-    _ticketInfo = info;
-    setSLAInfo();
+      _ticketInfo = info;
+
+      if (_ticketInfo.SlaTriggerId !== null
+            && _ticketInfo.SlaTriggerId > 0) {
+          $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+          $('#ticket-SLANote').text('Calculating...');
+          slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+      }
   });
 
   window.parent.Ts.System.logAction('Action Saved');
