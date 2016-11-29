@@ -16,12 +16,16 @@
     <table cellspacing="0" cellpadding="0" border="0" class="tip-sla-props">
       <thead>
         <tr class="ts-color-bg-accent">
-          <th>SLA Type</th>
-          <th>Warning</th>
-          <th>Violation</th>
+          <th>SLA Name</th>
+          <th colspan="2" id="wslaName" runat="server"></th>
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <td>SLA Type</td>
+          <td>Warning</td>
+          <td>Violation</td>
+        </tr>
         <tr>
           <td>Last Action</td>
           <td id="wLast" runat="server"></td>

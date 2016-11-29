@@ -29,6 +29,9 @@ public partial class Tips_Sla : System.Web.UI.Page
         if (slaTicket != null)
         {
             isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
+            string slaName  = new SlaLevels(TSAuthentication.GetLoginUser()).GetSlaveLevelName(slaTicket.SlaTriggerId);
+            wslaName.InnerText = slaName;
+
         }
 
         if (isPaused)
