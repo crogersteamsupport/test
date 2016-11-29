@@ -222,6 +222,55 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public ReminderProxy NewTask(string data)
+        {
+            TaskJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskJsonInfo>(data);
+            Reminder newTask = (new Reminders(TSAuthentication.GetLoginUser())).AddNewReminder();
+
+            newTask.OrganizationID = TSAuthentication.OrganizationID;
+            newTask.TaskName = info.TaskName;
+            newTask.Description = info.Description;
+            newTask.UserID = info.UserID;
+            newTask.TaskIsComplete = info.TaskIsComplete;
+            newTask.TaskDueDate = info.TaskDueDate;
+            newTask.IsDismissed = info.IsDismissed;
+            newTask.DueDate = info.DueDate;
+
+            newTask.RefType = ReferenceType.Tasks;
+            newTask.RefID = -1;
+            newTask.HasEmailSent = false;
+
+            newTask.Collection.Save();
+
+            foreach (int ticketID in info.Tickets)
+            {
+                AddAssociation(newTask.ReminderID, ticketID, ReferenceType.Tickets);
+            }
+
+            foreach (int productID in info.Products)
+            {
+                AddAssociation(newTask.ReminderID, productID, ReferenceType.Products);
+            }
+
+            foreach (int CompanyID in info.Company)
+            {
+                AddAssociation(newTask.ReminderID, CompanyID, ReferenceType.Organizations);
+            }
+
+            foreach (int groupID in info.Groups)
+            {
+                AddAssociation(newTask.ReminderID, groupID, ReferenceType.Groups);
+            }
+
+            foreach (int UserID in info.User)
+            {
+                AddAssociation(newTask.ReminderID, UserID, ReferenceType.Users);
+            }
+
+            return newTask.GetProxy();
+        }
+
+        [WebMethod]
         public string SetName(int reminderID, string value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -385,4 +434,33 @@ namespace TSWebServices
         public ReminderProxy[] CreatedItems { get; set; }
     }
 
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    public class TaskJsonInfo
+    {
+        public TaskJsonInfo() { }
+        [DataMember]
+        public string TaskName { get; set; }
+        [DataMember]
+        public string Description { get; set; }
+        [DataMember]
+        public int UserID { get; set; }
+        [DataMember]
+        public bool TaskIsComplete { get; set; }
+        [DataMember]
+        public DateTime TaskDueDate { get; set; }
+        [DataMember]
+        public bool IsDismissed { get; set; }
+        [DataMember]
+        public DateTime DueDate { get; set; }
+        [DataMember]
+        public List<int> Tickets { get; set; }
+        [DataMember]
+        public List<int> Groups { get; set; }
+        [DataMember]
+        public List<int> Products { get; set; }
+        [DataMember]
+        public List<int> Company { get; set; }
+        [DataMember]
+        public List<int> User { get; set; }
+    }
 }

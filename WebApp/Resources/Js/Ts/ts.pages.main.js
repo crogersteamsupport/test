@@ -2082,13 +2082,13 @@ function () { }, function (e) { console.log(e) });
             query = "?open=" + tab + "&organizationid=" + orgID;
         this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
     },
-    //closenewTaskTab: function () {
-    //    var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
-    //    if (tab) {
-    //        this.closeTab(tab);
-    //        tab.remove();
-    //    }
-    //},
+    closenewTaskTab: function () {
+        var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
+        if (tab) {
+            this.closeTab(tab);
+            tab.remove();
+        }
+    },
     openNewTask: function (reminderID) {
         var query = "?reminderid=" + reminderID;
         mainFrame.Ts.Services.Task.GetShortNameFromID(reminderID, function (result) {
