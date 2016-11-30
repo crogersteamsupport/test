@@ -1,4 +1,22 @@
+/**
+ * ColorButton.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class creates a color button control. This is a split button in which the main
+ * button has a visual representation of the currently selected color. When clicked
+ * the caret button displays a color picker, allowing the user to select a new color.
+ *
+ * @-x-less ColorButton.less
+ * @class tinymce.ui.ColorButton
+ * @extends tinymce.ui.PanelButton
+ */
 define("tinymce/ui/ColorButton", [
 	"tinymce/ui/PanelButton",
 	"tinymce/dom/DOMUtils"
@@ -57,14 +75,20 @@ define("tinymce/ui/ColorButton", [
 		renderHtml: function() {
 			var self = this, id = self._id, prefix = self.classPrefix, text = self.state.get('text');
 			var icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + self.settings.icon : '';
-			var image = self.settings.image ? ' style="background-image: url(\'' + self.settings.image + '\')"' : '';
+			var image = self.settings.image ? ' style="background-image: url(\'' + self.settings.image + '\')"' : '',
+				textHtml = '';
+
+			if (text) {
+				self.classes.add('btn-has-text');
+				textHtml = '<span class="' + prefix + 'txt">' + self.encode(text) + '</span>';
+			}
 
 			return (
 				'<div id="' + id + '" class="' + self.classes + '" role="button" tabindex="-1" aria-haspopup="true">' +
 					'<button role="presentation" hidefocus="1" type="button" tabindex="-1">' +
 						(icon ? '<i class="' + icon + '"' + image + '></i>' : '') +
 						'<span id="' + id + '-preview" class="' + prefix + 'preview"></span>' +
-						(text ? (icon ? ' ' : '') + (text) : '') +
+						textHtml +
 					'</button>' +
 					'<button type="button" class="' + prefix + 'open" hidefocus="1" tabindex="-1">' +
 						' <i class="' + prefix + 'caret"></i>' +

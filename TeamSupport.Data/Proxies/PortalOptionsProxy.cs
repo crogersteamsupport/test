@@ -63,13 +63,15 @@ namespace TeamSupport.Data
     [DataMember] public bool DisplayFbKB { get; set; }
     [DataMember] public bool EnableSaExpiration { get; set; }
     [DataMember] public bool AllowSeverityEditing { get; set; }
-  }
+    [DataMember] public bool AllowNameEditing { get; set; }
+    }
   
   public partial class PortalOption : BaseItem
   {
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.AllowNameEditing = this.AllowNameEditing;
       result.AllowSeverityEditing = this.AllowSeverityEditing;
       result.DisplayLogout = this.DisplayLogout;
       result.EnableSaExpiration = this.EnableSaExpiration;

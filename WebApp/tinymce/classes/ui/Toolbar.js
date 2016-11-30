@@ -1,4 +1,19 @@
+/**
+ * Toolbar.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Creates a new toolbar.
+ *
+ * @class tinymce.ui.Toolbar
+ * @extends tinymce.ui.Container
+ */
 define("tinymce/ui/Toolbar", [
 	"tinymce/ui/Container"
 ], function(Container) {

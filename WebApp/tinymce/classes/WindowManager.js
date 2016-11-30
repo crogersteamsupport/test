@@ -1,4 +1,39 @@
+/**
+ * WindowManager.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class handles the creation of native windows and dialogs. This class can be extended to provide for example inline dialogs.
+ *
+ * @class tinymce.WindowManager
+ * @example
+ * // Opens a new dialog with the file.htm file and the size 320x240
+ * // It also adds a custom parameter this can be retrieved by using tinyMCEPopup.getWindowArg inside the dialog.
+ * tinymce.activeEditor.windowManager.open({
+ *    url: 'file.htm',
+ *    width: 320,
+ *    height: 240
+ * }, {
+ *    custom_param: 1
+ * });
+ *
+ * // Displays an alert box using the active editors window manager instance
+ * tinymce.activeEditor.windowManager.alert('Hello world!');
+ *
+ * // Displays an confirm box and an alert message will be displayed depending on what you choose in the confirm
+ * tinymce.activeEditor.windowManager.confirm("Do you want to do something", function(s) {
+ *    if (s)
+ *       tinymce.activeEditor.windowManager.alert("Ok");
+ *    else
+ *       tinymce.activeEditor.windowManager.alert("Cancel");
+ * });
+ */
 define("tinymce/WindowManager", [
 	"tinymce/ui/Window",
 	"tinymce/ui/MessageBox"
@@ -10,6 +45,18 @@ define("tinymce/WindowManager", [
 			if (windows.length) {
 				return windows[windows.length - 1];
 			}
+		}
+
+		function fireOpenEvent(win) {
+			editor.fire('OpenWindow', {
+				win: win
+			});
+		}
+
+		function fireCloseEvent(win) {
+			editor.fire('CloseWindow', {
+				win: win
+			});
 		}
 
 		self.windows = windows;
@@ -27,6 +74,7 @@ define("tinymce/WindowManager", [
 		 *
 		 * @method open
 		 * @param {Object} args Optional name/value settings collection contains things like width/height/url etc.
+		 * @param {Object} params Options like title, file, width, height etc.
 		 * @option {String} title Window title.
 		 * @option {String} file URL of the file to open in the window.
 		 * @option {Number} width Width in pixels.
@@ -53,7 +101,9 @@ define("tinymce/WindowManager", [
 				args.items = {
 					defaults: args.defaults,
 					type: args.bodyType || 'form',
-					items: args.body
+					items: args.body,
+					data: args.data,
+					callbacks: args.commands
 				};
 			}
 
@@ -84,6 +134,8 @@ define("tinymce/WindowManager", [
 				if (!windows.length) {
 					editor.focus();
 				}
+
+				fireCloseEvent(win);
 			});
 
 			// Handle data
@@ -108,7 +160,11 @@ define("tinymce/WindowManager", [
 				editor.nodeChanged();
 			}
 
-			return win.renderTo().reflow();
+			win = win.renderTo().reflow();
+
+			fireOpenEvent(win);
+
+			return win;
 		};
 
 		/**
@@ -124,13 +180,21 @@ define("tinymce/WindowManager", [
 		 * tinymce.activeEditor.windowManager.alert('Hello world!');
 		 */
 		self.alert = function(message, callback, scope) {
-			MessageBox.alert(message, function() {
+			var win;
+
+			win = MessageBox.alert(message, function() {
 				if (callback) {
 					callback.call(scope || this);
 				} else {
 					editor.focus();
 				}
 			});
+
+			win.on('close', function() {
+				fireCloseEvent(win);
+			});
+
+			fireOpenEvent(win);
 		};
 
 		/**
@@ -138,7 +202,7 @@ define("tinymce/WindowManager", [
 		 * native version use the callback method instead then it can be extended.
 		 *
 		 * @method confirm
-		 * @param {String} messageText to display in the new confirm dialog.
+		 * @param {String} message Text to display in the new confirm dialog.
 		 * @param {function} callback Callback function to be executed after the user has selected ok or cancel.
 		 * @param {Object} scope Optional scope to execute the callback in.
 		 * @example
@@ -151,9 +215,17 @@ define("tinymce/WindowManager", [
 		 * });
 		 */
 		self.confirm = function(message, callback, scope) {
-			MessageBox.confirm(message, function(state) {
+			var win;
+
+			win = MessageBox.confirm(message, function(state) {
 				callback.call(scope || this, state);
 			});
+
+			win.on('close', function() {
+				fireCloseEvent(win);
+			});
+
+			fireOpenEvent(win);
 		};
 
 		/**

@@ -38,10 +38,15 @@ document.onkeydown = function (event) {
         if (navigator.userAgent.toLowerCase().indexOf("msie") == -1) {
             event.stopPropagation();
         } else {
-            alert("prevented");
             event.returnValue = false;
         }
 
         return false;
     }
 };
+
+//window.onbeforeunload = function () {
+//    return "Please make sure to save any changes before leaving the page.";
+//    //if we return nothing here (just calling return;) then there will be no pop-up question at all
+//    //return;
+//};

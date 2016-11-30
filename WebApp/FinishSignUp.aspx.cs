@@ -44,7 +44,7 @@ public partial class ChangePassword : System.Web.UI.Page
 
       foreach (User item in users)
       {
-        if (item.CryptedPassword == "UNVALIDATED")
+        if (item.CryptedPassword == "UNVALIDATED" || FormsAuthentication.HashPasswordForStoringInConfigFile("", "MD5") == item.CryptedPassword)
         {
           user = item;
           break;

@@ -211,32 +211,33 @@ namespace TeamSupport.Data
             }
         }
 
-				public bool GetCustomerHasAccess(int organizationID, LoginUser loginUser)
+				public bool GetCustomerHasAccess(int organizationID, LoginUser loginUser, bool hubOrganizationTickets)
 				{
 
 					using (SqlCommand command = new SqlCommand())
 					{
-						User userAcount = loginUser.GetUser();
-						if (!userAcount.PortalLimitOrgChildrenTickets)
+						User userAccount = loginUser.GetUser();
+						if (hubOrganizationTickets && !userAccount.PortalLimitOrgTickets)
 						{
 							command.CommandText = @"SELECT COUNT(*) 
-																			FROM OrganizationTickets ot 
-																			WHERE (
-																							ot.OrganizationID = @OrganizationID 
-																							OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)
-																						) 
-																						AND (ot.TicketID = @TicketID)";
+													FROM OrganizationTickets ot 
+													WHERE (
+														ot.OrganizationID = @OrganizationID 
+														OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)
+													) 
+													AND (ot.TicketID = @TicketID)";
 						}
 						else
 						{
-							command.CommandText = @"SELECT COUNT(*) 
-																				FROM OrganizationTickets 
-																				WHERE (OrganizationID = @OrganizationID) 
-																					AND (TicketID = @TicketID)";
+							command.CommandText = @"SELECT COUNT(*)
+                                                    FROM UserTickets as UT
+                                                    WHERE (UT.TicketID = @TicketID)
+	                                                    AND (UT.UserID = @UserID)";
 						}
 						command.CommandType = CommandType.Text;
 						command.Parameters.AddWithValue("@TicketID", TicketID);
 						command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
 						object o = Collection.ExecuteScalar(command);
 						if (o == null || o == DBNull.Value) return false;
 						return (int)o > 0;

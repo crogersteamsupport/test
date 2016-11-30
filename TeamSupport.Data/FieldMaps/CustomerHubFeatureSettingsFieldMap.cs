@@ -36,6 +36,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableTicketSeverity", "EnableTicketSeverity", false, false, false);
       _fieldMap.AddMap("EnableTicketSeverityModification", "EnableTicketSeverityModification", false, false, false);
       _fieldMap.AddMap("RestrictProductVersions", "RestrictProductVersions", false, false, false);
+      _fieldMap.AddMap("EnableTicketNameModification", "EnableTicketNameModification", false, false, false);
             
     }
   }

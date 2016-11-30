@@ -289,8 +289,8 @@ namespace TeamSupport.Data
 					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS BIT");
 					break;
 				case CustomFieldType.Number:
-					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS decimal");
-					break;
+                    builder.Append("TRY_CAST(NULLIF(RTRIM(CustomValue), '') AS decimal");
+                    break;
 				default:
 					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
 					break;
@@ -996,7 +996,7 @@ namespace TeamSupport.Data
 		public static bool ResetPassword(LoginUser loginUser, User user, bool isPortalUser, bool isCustomerHub = false)
 		{
 			string password = GenerateRandomPassword();
-				if (isCustomerHub || isPortalUser)
+				if (isCustomerHub)
 					user.IsPasswordExpired = false;
 				else
 					user.IsPasswordExpired = true;
@@ -1009,8 +1009,9 @@ namespace TeamSupport.Data
 					{
 						EmailPosts.SendResetCustomerHubPassword(loginUser, user.UserID, password);
 					}
-					else { 
-						EmailPosts.SendResetPortalPassword(loginUser, user.UserID, password);
+					else {
+                        user.IsPasswordExpired = true;
+                        EmailPosts.SendResetPortalPassword(loginUser, user.UserID, password);
 					}
 				else
 					EmailPosts.SendResetTSPassword(loginUser, user.UserID, password);

@@ -61,26 +61,36 @@ namespace TeamSupport.Data
 					NextRun = StartDateUtc;
 					break;
 				case ScheduledReportFrequency.Weekly:
-					//we need: startdate, every, weekday (1:Sun, ..., 7:Sat)
-					while (dateOnly < DateTime.UtcNow)
-					{
-						int totalDaysInAWeek = 7;
-						int totalDays = (byte)Every * totalDaysInAWeek;
-						dateOnly = dateOnly.AddDays(totalDays);
+                    //we need: startdate, every, weekday (1:Sun, ..., 7:Sat)
+                    //The list in the UI is: 1: Sunday, ..., 7: Saturday. So we need to substract 1 to convert it to DayOfWeek
+                    dayOfWeek = (DayOfWeek)(byte)Weekday - 1;
 
-						//The list in the UI is: 1: Sunday, ..., 7: Saturday. So we need to substract 1 to convert it to DayOfWeek
-						dayOfWeek = (DayOfWeek)(byte)Weekday - 1;
+                    if (dateOnly.Add(timeOnly.TimeOfDay) > DateTime.UtcNow)
+                    {
+                        while (dateOnly.DayOfWeek != dayOfWeek)
+                        {
+                            dateOnly = dateOnly.AddDays(1);
+                        }
+                    }
+                    else
+                    {
+                        while (dateOnly < DateTime.UtcNow)
+                        {
+                            int totalDaysInAWeek = 7;
+                            int totalDays = (byte)Every * totalDaysInAWeek;
+                            dateOnly = dateOnly.AddDays(totalDays);
 
-						if (dateOnly.DayOfWeek != dayOfWeek)
-						{
-							dateOnly = dateOnly.AddDays(-totalDaysInAWeek);
-							dateOnly = dateOnly.AddDays(dayOfWeek - dateOnly.DayOfWeek);
-						}
-					}
+                            if (dateOnly.DayOfWeek != dayOfWeek)
+                            {
+                                dateOnly = dateOnly.AddDays(-totalDaysInAWeek);
+                                dateOnly = dateOnly.AddDays(dayOfWeek - dateOnly.DayOfWeek);
+                            }
+                        }
+                    }
 
-					NextRun = dateOnly.Add(timeOnly.TimeOfDay);
+                    NextRun = dateOnly.Add(timeOnly.TimeOfDay);
 
-					break;
+                    break;
 				case ScheduledReportFrequency.Monthly:
 					//we need: startdate, every, weekday (1:Sun, ..., 7:Sat), 
 					//				monthday (if < 5 then weekday can have a value: the 1st monday.. the 3rd wednesday, etc;

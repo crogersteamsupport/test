@@ -3303,6 +3303,44 @@ WHERE
                 Fill(command);
             }
         }
+
+        public static void UpdateTicketSla(LoginUser loginUser,
+                                            int TicketId,
+                                            DateTime? SlaViolationInitialResponse,
+                                            DateTime? SlaViolationLastAction,
+                                            DateTime? SlaViolationTimeClosed,
+                                            DateTime? SlaWarningInitialResponse,
+                                            DateTime? SlaWarningLastAction,
+                                            DateTime? SlaWarningTimeClosed)
+        {
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = @"UPDATE [dbo].[Tickets]
+    SET 
+        SlaViolationInitialResponse = @SlaViolationInitialResponse,
+        SlaViolationLastAction = @SlaViolationLastAction,
+        SlaViolationTimeClosed = @SlaViolationTimeClosed,
+        SlaWarningInitialResponse = @SlaWarningInitialResponse,
+        SlaWarningLastAction = @SlaWarningLastAction,
+        SlaWarningTimeClosed = @SlaWarningTimeClosed
+    WHERE TicketID = @TicketId";
+                    command.Parameters.AddWithValue("@TicketId", TicketId);
+                    command.Parameters.AddWithValue("@SlaViolationInitialResponse", (object)SlaViolationInitialResponse ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaViolationLastAction", (object)SlaViolationLastAction ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaViolationTimeClosed", (object)SlaViolationTimeClosed ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaWarningInitialResponse", (object)SlaWarningInitialResponse ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaWarningLastAction", (object)SlaWarningLastAction ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaWarningTimeClosed", (object)SlaWarningTimeClosed ?? DBNull.Value);
+                    command.ExecuteNonQuery();
+                }
+                connection.Close();
+            }
+        }
     }
 }
 

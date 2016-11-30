@@ -1928,7 +1928,7 @@ function () { }, function (e) { console.log(e) });
         });
         Ts.Services.Settings.WriteUserSetting('SelectedUserID', contactID, function () {
             Ts.Services.Settings.WriteUserSetting('SelectedUserTabIndex', 0, function () {
-                self.MainMenu.find('mniUsers', 'users').select();
+                //self.MainMenu.find('mniUsers', 'users').select();
                 var element = $('.main-tab-content-item:visible');
                 var contentFrame = $(element).children('iframe')[0];
                 if (contentFrame && contentFrame.contentWindow.refreshData) {

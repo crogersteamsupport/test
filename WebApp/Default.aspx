@@ -112,6 +112,13 @@
         }
     };
 
+    window.onbeforeunload = function() {
+       return "Are you sure you want to leave TeamSupport?";
+       //if we return nothing here (just calling return;) then there will be no pop-up question at all
+       //return;
+    };
+
+
   </script>
   <style type="text/css">
     html, body, form { height: 100%; margin: 0; padding: 0; overflow: hidden; }

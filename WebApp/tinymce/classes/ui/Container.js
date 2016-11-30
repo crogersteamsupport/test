@@ -1,4 +1,22 @@
+/**
+ * Container.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Container control. This is extended by all controls that can have
+ * children such as panels etc. You can also use this class directly as an
+ * generic container instance. The container doesn't have any specific role or style.
+ *
+ * @-x-less Container.less
+ * @class tinymce.ui.Container
+ * @extends tinymce.ui.Control
+ */
 define("tinymce/ui/Container", [
 	"tinymce/ui/Control",
 	"tinymce/ui/Collection",

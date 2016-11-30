@@ -241,8 +241,8 @@ namespace TeamSupport.ServiceLibrary
                 case EmailPostType.ChangedPortalPassword:
                     ProcessChangedPortalPassword(GetIntParam(emailPost.Param1));
                     break;
-                case EmailPostType.ChangedCustomerHubPassword:
-                    ProcessChangedHubPassword(GetIntParam(emailPost.Param1));
+                case EmailPostType.WelcomeCustomerHubUser:
+                    ProcessWelcomeCustomerHubUser(GetIntParam(emailPost.Param1), emailPost.Param2);
                     break;
                 case EmailPostType.ResetCustomerHubPassword:
                     ProcessResetHubPassword(GetIntParam(emailPost.Param1), emailPost.Param2);
@@ -1189,7 +1189,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         public void ProcessWelcomeNewSignup(int userID, string password)
-        {
+        {/*
             User user = Users.GetUser(LoginUser, userID);
             Organization organization = Organizations.GetOrganization(LoginUser, user.OrganizationID);
 
@@ -1302,15 +1302,15 @@ namespace TeamSupport.ServiceLibrary
             AddMessage(organization.OrganizationID, "Reset Portal Password [" + user.FirstLastName + "]", message);
         }
 
-        public void ProcessChangedHubPassword(int userID)
+        public void ProcessWelcomeCustomerHubUser(int userID, string password)
         {
             User user = (User)Users.GetUser(LoginUser, userID);
             Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
             CustomerHubs hubs = new CustomerHubs(LoginUser);
             hubs.LoadByOrganizationID(organization.OrganizationID);
             if (hubs.IsEmpty) throw new Exception("No customer hub found for user: " + userID.ToString());
-            
-            MailMessage message = EmailTemplates.GetChangedPasswordHub(LoginUser, user.GetUserView(), hubs[0]);
+
+            MailMessage message = EmailTemplates.GetWelcomeCustomerHub(LoginUser, user.GetUserView(), hubs[0], password);
             message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
             AddMessage(organization.OrganizationID, "Portal Password Changed [" + user.FirstLastName + "]", message);
         }

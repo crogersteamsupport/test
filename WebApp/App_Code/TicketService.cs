@@ -1193,8 +1193,16 @@ namespace TSWebServices
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
             if (ticket.OrganizationID == TSAuthentication.OrganizationID && (ticket.CreatorID == TSAuthentication.UserID || TSAuthentication.IsSystemAdmin))
             {
-                ticket.Delete();
-                ticket.Collection.Save();
+                try
+                {
+                    ticket.Delete();
+                    ticket.Collection.Save();
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "TicketService.DeleteTicket");
+                    throw;
+                }
             }
         }
 
@@ -1901,7 +1909,7 @@ namespace TSWebServices
                         linkToJira.LoadByTicketID(ticketID);
 
                         TicketLinkToJiraItemProxy ticketLinktoJiraProxy = GetLinkToJira(ticketID);
-                        if (null != ticketLinktoJiraProxy && linkToJira.Count > 0)
+                        if (ticketLinktoJiraProxy != null && linkToJira.Count > 0)
                         {
                             if (ticketLinktoJiraProxy.JiraID != null && !String.IsNullOrEmpty(ticketLinktoJiraProxy.JiraKey))
                             {
@@ -1909,27 +1917,40 @@ namespace TSWebServices
                                 Jira.IssueRef issueRef = new Jira.IssueRef();
                                 issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
                                 issueRef.key = ticketLinktoJiraProxy.JiraKey;
-                                var issue = jiraClient.LoadIssue(issueRef);
 
-                                if (null != issue)
+                                try
                                 {
-                                    var remoteLinks = jiraClient.GetRemoteLinks(issueRef);
+                                    var issue = jiraClient.LoadIssue(issueRef);
 
-                                    if (null != remoteLinks)
+                                    if (issue != null)
                                     {
-                                        Jira.RemoteLink linkItem = remoteLinks.Where(p => p.url.Contains("ticketid=" + ticketID.ToString())).FirstOrDefault();
+                                        var remoteLinks = jiraClient.GetRemoteLinks(issueRef);
 
-                                        if (linkItem != null)
+                                        if (null != remoteLinks)
                                         {
-                                            jiraClient.DeleteRemoteLink(issueRef, linkItem);
+                                            Jira.RemoteLink linkItem = remoteLinks.Where(p => p.url.Contains("ticketid=" + ticketID.ToString())).FirstOrDefault();
+
+                                            if (linkItem != null)
+                                            {
+                                                jiraClient.DeleteRemoteLink(issueRef, linkItem);
+                                            }
                                         }
+                                    }
+                                }
+                                catch (Jira.JiraClientException jiraException)
+                                {
+                                    if (jiraException.Message.ToLower().Trim() != "could not load issue" && !jiraException.InnerException.Message.ToLower().Trim().Contains("not found"))
+                                    {
+                                        jiraException.Data.Add("TicketId", ticketID);
+                                        jiraException.Data.Add("JiraId", ticketLinktoJiraProxy.JiraID);
+                                        jiraException.Data.Add("JiraKey", ticketLinktoJiraProxy.JiraKey);
+                                        throw jiraException;
                                     }
                                 }
                             }
 
                             linkToJira.DeleteFromDB(ticketLinktoJiraProxy.id);
                             result = true;
-
                         }
                     }
                 }
@@ -3373,6 +3394,7 @@ WHERE t.TicketID = @TicketID
             action.SystemActionTypeID = SystemActionType.Description;
             action.ActionSource = ticket.TicketSource;
             action.Description = info.Description;
+
 
             if (!string.IsNullOrWhiteSpace(user.Signature) && info.IsVisibleOnPortal)
             {

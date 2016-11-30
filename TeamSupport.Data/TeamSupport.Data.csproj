@@ -295,6 +295,7 @@
     <Compile Include="BusinessObjects\Services.cs" />
     <Compile Include="BusinessObjects\ServiceSettings.cs" />
     <Compile Include="BusinessObjects\SimpleImportFieldsView.cs" />
+    <Compile Include="BusinessObjects\SlaTickets.cs" />
     <Compile Include="BusinessObjects\SlaViolationHistory.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
     <Compile Include="BusinessObjects\Tags.cs" />
@@ -340,8 +341,7 @@
     <Compile Include="Classes\NamedGZipStream.cs" />
     <Compile Include="Classes\SqlExecutor.cs" />
     <Compile Include="Classes\TeamSupportSync.cs" />
-    <Compile Include="Classes\TSHighrise.cs" />
-    <Compile Include="Classes\TSHubSpot.cs" />
+    <Compile Include="Classes\TSEventLog.cs" />
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsOptionsFieldMap.cs" />
@@ -416,6 +416,7 @@
     <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ServicesFieldMap.cs" />
     <Compile Include="FieldMaps\SimpleImportFieldsViewFieldMap.cs" />
+    <Compile Include="FieldMaps\SlaTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\SlaViolationHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
     <Compile Include="FieldMaps\TagsFieldMap.cs" />
@@ -709,6 +710,7 @@
     <Compile Include="Generated\GeneratedSimpleImportFieldsView.cs" />
     <Compile Include="Generated\GeneratedSlaLevels.cs" />
     <Compile Include="Generated\GeneratedSlaNotifications.cs" />
+    <Compile Include="Generated\GeneratedSlaTickets.cs" />
     <Compile Include="Generated\GeneratedSlaTriggers.cs" />
     <Compile Include="Generated\GeneratedSlaTriggersView.cs" />
     <Compile Include="Generated\GeneratedSlaViolationHistory.cs" />
@@ -789,6 +791,7 @@
     <Compile Include="Proxies\ScheduledReportsProxy.cs" />
     <Compile Include="Proxies\ScheduledReportsRecurrencyProxy.cs" />
     <Compile Include="Proxies\SimpleImportFieldsViewProxy.cs" />
+    <Compile Include="Proxies\SlaTicketsProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
     <Compile Include="Proxies\TaskAssociationsProxy.cs" />
     <Compile Include="Proxies\TaskAssociationsViewProxy.cs" />

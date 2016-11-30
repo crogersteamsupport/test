@@ -228,6 +228,7 @@ namespace TSWebServices
                 fb[0].Collection.Save();
             }
 
+            option.AllowNameEditing = proxy.AllowNameEditing;
             option.AllowSeverityEditing = proxy.AllowSeverityEditing;
             option.EnableSaExpiration = proxy.EnableSaExpiration;
             option.PublicLandingPageBody = proxy.PublicLandingPageBody;
@@ -628,7 +629,14 @@ namespace TSWebServices
         public void AdminSetAllPortalUsers(int organizationID, bool sendEmails)
         {
             if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
-            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails);
+            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, false);
+        }
+
+        [WebMethod]
+        public void AdminSetAllHubUsers(int organizationID, bool sendEmails)
+        {
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, true);
         }
 
         [WebMethod]
@@ -802,6 +810,17 @@ namespace TSWebServices
             org.IsApiEnabled = value;
             org.IsInventoryEnabled = value;
             org.Collection.Save();
+
+            if (!value)
+            {
+                Users users = new Users(org.Collection.LoginUser);
+                users.LoadByOrganizationID(org.OrganizationID, false);
+                foreach (User user in users)
+                {
+                    user.IsActive = false;
+                }
+                users.Save();
+            }
         }
 
         public Organization GetAdminOrgTarget(int orgID)

@@ -1,4 +1,18 @@
+/**
+ * Resizable.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Resizable mixin. Enables controls to be resized.
+ *
+ * @mixin tinymce.ui.Resizable
+ */
 define("tinymce/ui/Resizable", [
 	"tinymce/ui/DomUtils"
 ], function(DomUtils) {

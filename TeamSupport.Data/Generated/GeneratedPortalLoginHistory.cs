@@ -72,6 +72,12 @@ namespace TeamSupport.Data
     
 
     
+    public string Source
+    {
+      get { return (string)Row["Source"]; }
+      set { Row["Source"] = CheckValue("Source", value); }
+    }
+    
     public int UserID
     {
       get { return (int)Row["UserID"]; }
@@ -162,28 +168,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int portalLoginID)
     {
-      BeforeDBDelete(portalLoginID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[PortalLoginHistory] WHERE ([PortalLoginID] = @PortalLoginID);";
         deleteCommand.Parameters.Add("PortalLoginID", SqlDbType.Int);
         deleteCommand.Parameters["PortalLoginID"].Value = portalLoginID;
 
+        BeforeDBDelete(portalLoginID);
         BeforeRowDelete(portalLoginID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(portalLoginID);
-      }
-      AfterDBDelete(portalLoginID);
-      
-    }
+        AfterDBDelete(portalLoginID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("PortalLoginHistorySave");
@@ -192,7 +188,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PortalLoginHistory] SET     [UserName] = @UserName,    [OrganizationID] = @OrganizationID,    [OrganizationName] = @OrganizationName,    [Success] = @Success,    [LoginDateTime] = @LoginDateTime,    [IPAddress] = @IPAddress,    [Browser] = @Browser,    [UserID] = @UserID  WHERE ([PortalLoginID] = @PortalLoginID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PortalLoginHistory] SET     [UserName] = @UserName,    [OrganizationID] = @OrganizationID,    [OrganizationName] = @OrganizationName,    [Success] = @Success,    [LoginDateTime] = @LoginDateTime,    [IPAddress] = @IPAddress,    [Browser] = @Browser,    [UserID] = @UserID,    [Source] = @Source  WHERE ([PortalLoginID] = @PortalLoginID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("PortalLoginID", SqlDbType.Int, 4);
@@ -258,13 +254,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("Source", SqlDbType.NVarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PortalLoginHistory] (    [UserName],    [OrganizationID],    [OrganizationName],    [Success],    [LoginDateTime],    [IPAddress],    [Browser],    [UserID]) VALUES ( @UserName, @OrganizationID, @OrganizationName, @Success, @LoginDateTime, @IPAddress, @Browser, @UserID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PortalLoginHistory] (    [UserName],    [OrganizationID],    [OrganizationName],    [Success],    [LoginDateTime],    [IPAddress],    [Browser],    [UserID],    [Source]) VALUES ( @UserName, @OrganizationID, @OrganizationName, @Success, @LoginDateTime, @IPAddress, @Browser, @UserID, @Source); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("Source", SqlDbType.NVarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -434,7 +444,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [PortalLoginID], [UserName], [OrganizationID], [OrganizationName], [Success], [LoginDateTime], [IPAddress], [Browser], [UserID] FROM [dbo].[PortalLoginHistory] WHERE ([PortalLoginID] = @PortalLoginID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [PortalLoginID], [UserName], [OrganizationID], [OrganizationName], [Success], [LoginDateTime], [IPAddress], [Browser], [UserID], [Source] FROM [dbo].[PortalLoginHistory] WHERE ([PortalLoginID] = @PortalLoginID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("PortalLoginID", portalLoginID);
         Fill(command);

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -45,5 +43,38 @@ namespace TeamSupport.Data
       return Regex.Replace(html, "<!--[\\s\\S]*?-->", string.Empty, RegexOptions.IgnoreCase);
     }
 
+    public static Dictionary<int, string> ExtractCodeSamples(ref string actionDescription)
+    {
+        Dictionary<int, string> codeSamples = new Dictionary<int, string>();
+        string codeSample = string.Empty;
+        int startPosition = 0;
+        int endPosition = 0;
+        int codeSampleCount = 0;
+        string codeSampleOpeningTag = "<code>";
+        string codeSampleClosingTag = "</code>";
+
+        while (actionDescription.Substring(startPosition).ToLower().Contains(codeSampleOpeningTag) && actionDescription.Substring(endPosition).ToLower().Contains(codeSampleClosingTag))
+        {
+            codeSampleCount = codeSampleCount + 1;
+            startPosition = actionDescription.IndexOf(codeSampleOpeningTag);
+            endPosition = actionDescription.IndexOf(codeSampleClosingTag);
+            codeSample = actionDescription.Substring(startPosition + codeSampleOpeningTag.Length, endPosition - startPosition - codeSampleClosingTag.Length + 1);
+            codeSample = Environment.NewLine + HttpUtility.HtmlDecode(codeSample) + Environment.NewLine;
+            actionDescription = actionDescription.Substring(0, startPosition) + "##codesample" + codeSampleCount.ToString() + "##" + actionDescription.Substring(endPosition + codeSampleClosingTag.Length);
+            codeSamples.Add(codeSampleCount, codeSample);
+            startPosition = 0;
+            endPosition = 0;
+        }
+
+        return codeSamples;
+    }
+
+    public static void AddCodeSamples(ref string actionDescription, Dictionary<int, string> codeSamples)
+    {
+        foreach (KeyValuePair<int, string> code in codeSamples)
+        {
+            actionDescription = actionDescription.Replace("##codesample" + code.Key.ToString() + "##", code.Value);
+        }
+    }
   }
 }

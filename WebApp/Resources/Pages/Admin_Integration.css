@@ -12,7 +12,7 @@
 .int-action button { margin-right: 1em;}
 label.checkbox { display:inline;}
 #int-api-inactive { font-size: 1.2em; font-weight:bold;}
-dl dt { float:left; font-weight:bold; margin-right:1em; padding:.5em; width:165px; text-align:right;}
+dl dt { float:left; font-weight:bold; margin-right:1em; padding:.5em; width:215px; text-align:right;}
 dl dd { margin:2px 0; padding:5px 0; }
 .int-list dl dd strong.ui-state-error { border: none; background: transparent none; }
 .ts-api a.int-api-link-users  { font-weight: bold; display:block; padding: 1em 0; }

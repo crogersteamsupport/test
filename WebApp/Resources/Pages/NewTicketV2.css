@@ -533,6 +533,7 @@
 
     #ticket-properties-area > hr { margin: 4px -15px 4px -15px; border-top: 1px solid #D9D9D9; }
     #ticket-group-custom-fields > hr { margin: 4px -15px 4px -15px; border-top: 1px solid #D9D9D9; }
+    #ticket-group-categorized-custom-fields > div > hr { margin: 4px -15px 4px -15px; border-top: 1px solid #D9D9D9; }
 
     #ticket-properties-area .form-group {
       margin-bottom: 0px;
