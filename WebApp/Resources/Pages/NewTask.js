@@ -23,6 +23,9 @@ $(document).ready(function () {
         }
     });
 
+    initScheduledReportEditor($('#Description'), function (ed) {
+    });
+
     LoadUsers();
     initAssociationControls();
     resetDisplay();

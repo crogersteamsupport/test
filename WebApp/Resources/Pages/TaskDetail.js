@@ -242,7 +242,7 @@ $(document).ready(function () {
     });
 
     $('#taskEdit').click(function (e) {
-        $('.taskProperties p, #taskName').toggleClass("editable");
+        $('p, #taskName').toggleClass("editable");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
     });
@@ -309,7 +309,13 @@ $(document).ready(function () {
             desc = desc.replace(/<br\s?\/?>/g, "\n");
             //        $('#fieldDesc').tinymce().setContent(desc);
             //        $('#fieldDesc').tinymce().focus();
-            $('#fieldDesc').html(desc);
+            //$('#fieldDesc').html(desc);
+
+            initScheduledReportEditor($('#fieldDesc'), function (ed) {
+                $('#fieldDesc').tinymce().setContent(desc);
+                $('#fieldDesc').tinymce().focus();
+            });
+
             $('#descriptionContent').hide();
             $('#descriptionForm').show();
         });

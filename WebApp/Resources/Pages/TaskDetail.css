@@ -10,6 +10,30 @@
     font-size: 24px;
 }
 
+.fa-paste {
+    color: #5CB85C !important
+}
+
+.fa-book {
+    color: #3276B1 !important
+}
+
+.fa-ticket {
+    color: #FEC21E !important
+}
+
+.mce-i-image {
+    color: #BA55D3 !important
+}
+
+.fa-dropbox {
+    color: #3d9ae8 !important
+}
+
+.fa-circle {
+    color: #D9534F !important
+}
+
 .form-horizontal .control-label{font-weight:normal;color:#888;text-align:left;font-size:12px}
 .box-content {font-size: 12px}
 
