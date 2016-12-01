@@ -1901,6 +1901,7 @@ namespace TSWebServices
             {
                 CRMLinkTable crmlink = new CRMLinkTable(TSAuthentication.GetLoginUser());
                 crmlink.LoadByOrganizationID(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).OrganizationID);
+
                 foreach (DataRow crmRow in crmlink.Table.Rows)
                 {
                     if (crmRow["CRMType"].ToString() == "Jira")
@@ -1909,7 +1910,12 @@ namespace TSWebServices
                         linkToJira.LoadByTicketID(ticketID);
 
                         TicketLinkToJiraItemProxy ticketLinktoJiraProxy = GetLinkToJira(ticketID);
-                        if (ticketLinktoJiraProxy != null && linkToJira.Count > 0)
+                        int crmLinkId = int.Parse(crmRow["CRMLinkID"].ToString());
+
+                        if (ticketLinktoJiraProxy != null
+                            && linkToJira.Count > 0
+                            && ticketLinktoJiraProxy.CrmLinkID == linkToJira[0].CrmLinkID
+                            && crmLinkId == ticketLinktoJiraProxy.CrmLinkID)
                         {
                             if (ticketLinktoJiraProxy.JiraID != null && !String.IsNullOrEmpty(ticketLinktoJiraProxy.JiraKey))
                             {
