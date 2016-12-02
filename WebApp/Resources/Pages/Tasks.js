@@ -21,7 +21,7 @@ $(document).ready(function () {
                 $('.assigned-results-empty').hide();
                 if (tasks[0].TaskIsComplete) {
                     $('.assigned-tasks-filter li.active').removeClass('active');
-                    $('.assigned-tasks-filter-completed').parent().addClass('active');
+                    $('.assigned-tasks-filter-completed').addClass('active');
                 }
             }
         }
@@ -321,9 +321,10 @@ $(document).ready(function () {
 
     });
 
-    $('.assigned-tasks-filter').on('click', 'a', function (e) {
+    $('.assigned-tasks-filter').on('click', 'button', function (e) {
+        debugger;
         e.preventDefault();
-        $('.assigned-tasks-filter li.active').removeClass('active');
+        $('.assigned-tasks-filter li.active').removeClass('btn-primary');
         $(this).parent().addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _allAssignedLoaded = false;

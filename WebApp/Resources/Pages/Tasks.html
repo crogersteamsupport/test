@@ -10,73 +10,95 @@
 
     <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
     <script src="Tasks.js" type="text/javascript"></script>
-</head> 
+</head>
 <body>
     <div class="frame-container">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-11">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div class="tasks-header">
-                                    <h3 class="pull-left">Tasks</h3>
-                                    <button type="button" class="btn btn-primary pull-right action-new" data-toggle="dropdown">New Task</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div id="assignedColumn" class="col-xs-6">
-                                <div class="tasks-header">
-                                    <h4 class="pull-left">Assigned</h4>
-                                </div>
-                                <div class="clearfix"></div>
-                                <div class="assigned-tasks-filter">
-                                    <ul class="nav nav-pills">
-                                        <li class="active"><a href="#" class="assigned-tasks-filter-pending">Pending</a></li>
-                                        <li><a href="#" class="assigned-tasks-filter-completed">Completed</a></li>
-                                        <li><a href="#" class="assigned-tasks-filter-all">All</a></li>
-                                    </ul>
-                                </div>
-                                <div class="clearfix"></div>
-                                <div class="results-wrapper">
-                                    <table class="assignedresults searchresults"></table>
-                                    <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                                    <div class="assigned-results-empty">No tasks.</div>
-                                </div>
-                            </div>
-                            <div id="createdColumn" class="col-xs-6">
-                                <h4 class="pull-left">Created</h4>
-                                <div class="clearfix"></div>
-                                <div class="created-tasks-filter">
-                                    <ul class="nav nav-pills">
-                                        <li><a href="#" class="created-tasks-filter-pending">Pending</a></li>
-                                        <li class="active"><a href="#" class="created-tasks-filter-completed">Completed</a></li>
-                                        <li><a href="#" class="created-tasks-filter-all">All</a></li>
-                                    </ul>
-                                </div>
-                                <div class="clearfix"></div>
-                                <div class="results-wrapper">
-                                    <table class="createdresults searchresults"></table>
-                                    <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                                    <div class="created-results-empty">No tasks.</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row tasks-more" hidden><a id="moreTasks" href="#">Show more tasks.</a></div>
-                        <!--<div class="results-done">There are no more tasks.</div>-->
-                        <div class="results-empty">No tasks.</div>
-                    </div>
-                </div>
-                <!-- recent task column here -->
+        <div style="float:left; width:160px; height:100% !important; background-color:#C6DCF7;">
+            <div style="height:40px; padding: 10px 20px 0px 20px; background-color:white">
+                <a class="assigned-tasks" href="#">
+                    Assigned
+                    <span class="pull-right">20</span>
+                </a>
+            </div>
+            <div style="margin-top:10px; padding:0px 20px 0px 20px;">
+                <a class="created-tasks" href="#">
+                    Created
+                    <span class="pull-right">5</span>
+                </a>
             </div>
         </div>
-        <div class="maincontainerx">
-            <a href="#" class="scrollup">Scroll</a>
-            <div class="row">
-                <div>
-                    <div class="row">
+        <div class="" style="margin-left:150px; margin-top:20px;">
+            <div class="container">
+                <div class="margin-top:20px;">
+                    <div class="col-xs-12">
+                        <div class="tasks-header">
+                            <button type="button" class="btn btn-primary pull-left action-new" data-toggle="dropdown">New Task</button>
+                            <div class="pull-right">
+                                <div class="btn-group assigned-tasks-filter" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-primary assigned-tasks-filter-pending">Pending</button>
+                                    <button type="button" class="btn btn-default assigned-tasks-filter-completed">Completed</button>
+                                    <button type="button" class="btn btn-default assigned-tasks-filter-all">All</button>
+                                </div>
+                                <ul class="nav nav-pills">
+                                    <li class="active"><a href="#" class="assigned-tasks-filter-pending">Pending</a></li>
+                                    <li><a href="#" class="assigned-tasks-filter-completed">Completed</a></li>
+                                    <li><a href="#" class="assigned-tasks-filter-all">All</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="">
+                    <div id="assignedColumn" class="col-xs-6">
+                        <div class="tasks-header">
+                            <h4 class="pull-left">Assigned</h4>
+                        </div>
+                        <div class="clearfix"></div>
+                        <!--<div class="assigned-tasks-filter">
+                            <ul class="nav nav-pills">
+                                <li class="active"><a href="#" class="assigned-tasks-filter-pending">Pending</a></li>
+                                <li><a href="#" class="assigned-tasks-filter-completed">Completed</a></li>
+                                <li><a href="#" class="assigned-tasks-filter-all">All</a></li>
+                            </ul>
+                        </div>-->
+                        <div class="clearfix"></div>
+                        <div class="results-wrapper">
+                            <table class="assignedresults searchresults"></table>
+                            <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                            <div class="assigned-results-empty">No tasks.</div>
+                        </div>
+                    </div>
+                    <div id="createdColumn" class="col-xs-6">
+                        <h4 class="pull-left">Created</h4>
+                        <div class="clearfix"></div>
+                        <div class="created-tasks-filter">
+                            <ul class="nav nav-pills">
+                                <li><a href="#" class="created-tasks-filter-pending">Pending</a></li>
+                                <li class="active"><a href="#" class="created-tasks-filter-completed">Completed</a></li>
+                                <li><a href="#" class="created-tasks-filter-all">All</a></li>
+                            </ul>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="results-wrapper">
+                            <table class="createdresults searchresults"></table>
+                            <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                            <div class="created-results-empty">No tasks.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row tasks-more" hidden><a id="moreTasks" href="#">Show more tasks.</a></div>
+                <div class="results-done">There are no more tasks.</div>
+                <div class="results-empty">No tasks.</div>
+            </div>
+
+            <!-- recent task column here-->
+        </div>
+    </div>
+    <div class="maincontainerx">
+        <a href="#" class="scrollup">Scroll</a>
+        <div class="row">
+            <div>
+                <div class="row">
                 </div>
             </div>
         </div>

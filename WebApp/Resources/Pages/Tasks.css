@@ -1,8 +1,8 @@
 ﻿body {
   background-color: #fff;
 }
-
-.container { margin-top: 20px; }
+.frame-container {height:100%; margin:0px; padding:0px;}
+.tasks-container {margin-top: 8px;}
 .tasks-header h3 { margin-top: 5px;}
 .tasks-header button { margin-top: 15px;}
 .tasks-filter { padding-bottom: 7px; padding-top: 4px;}
