@@ -768,7 +768,7 @@ ORDER BY cf.Position";
             result.ImportRow(children.Rows[i]);
             childID = (int)children.Rows[i]["CustomFieldID"];
             childValue = children.Rows[i]["CustomValue"].ToString();
-            GetChildrenByParentValue(organizationID, refType, auxID, refID, parentID, parentValue, productID, ref result);
+            GetChildrenByParentValue(organizationID, refType, auxID, refID, childID, childValue, productID, ref result);
         }
     }
 
