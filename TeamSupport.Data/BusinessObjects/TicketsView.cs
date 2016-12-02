@@ -211,26 +211,26 @@ namespace TeamSupport.Data
             }
         }
 
-				public bool GetCustomerHasAccess(int organizationID, LoginUser loginUser)
+				public bool GetCustomerHasAccess(int organizationID, LoginUser loginUser, bool hubOrganizationTickets)
 				{
 
 					using (SqlCommand command = new SqlCommand())
 					{
 						User userAccount = loginUser.GetUser();
-						if (userAccount.PortalLimitOrgTickets)
+						if (hubOrganizationTickets && !userAccount.PortalLimitOrgTickets)
 						{
 							command.CommandText = @"SELECT COUNT(*) 
-																			FROM OrganizationTickets ot 
-																			WHERE (
-																							ot.OrganizationID = @OrganizationID 
-																							OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)
-																						) 
-																						AND (ot.TicketID = @TicketID)";
+													FROM OrganizationTickets ot 
+													WHERE (
+														ot.OrganizationID = @OrganizationID 
+														OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)
+													) 
+													AND (ot.TicketID = @TicketID)";
 						}
 						else
 						{
 							command.CommandText = @"SELECT COUNT(*)
-                                                    FROM UserTicketStatusesView as UT
+                                                    FROM UserTickets as UT
                                                     WHERE (UT.TicketID = @TicketID)
 	                                                    AND (UT.UserID = @UserID)";
 						}
