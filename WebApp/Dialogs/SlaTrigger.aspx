@@ -30,6 +30,12 @@
     {
         vertical-align: top !important;
     }
+
+    .holidaysTip
+    {
+        font-style: italic;
+        font-size: smaller;
+    }
   </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
@@ -52,7 +58,7 @@
 
         <tr><td colspan="4"><div style="border-bottom: solid 1px; font-size: 16px; margin-bottom: 7px; padding-top: 6px;">Pause</div></td></tr>    
         <tr>
-          <td class="col1">Pause on Company Holidays</td><td>
+          <td class="col1">Pause on Company Holidays<br /><span class="holidaysTip">(Holidays are defined in the Calendar)</span></td><td>
             <asp:CheckBox ID="cbPauseOnOrganizationHolidays" runat="server" /></td>
         </tr>
         <tr>
