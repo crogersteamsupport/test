@@ -28,10 +28,24 @@ public partial class Tips_Sla : System.Web.UI.Page
 
         if (slaTicket != null)
         {
-            isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
-            string slaName  = new SlaLevels(TSAuthentication.GetLoginUser()).GetSlaveLevelName(slaTicket.SlaTriggerId);
-            wslaName.InnerText = slaName;
+            SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(loginUser, slaTicket.SlaTriggerId);
 
+            if (slaTrigger != null)
+            {
+                isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
+                string slaName = new SlaLevels(TSAuthentication.GetLoginUser()).GetSlaveLevelName(slaTicket.SlaTriggerId);
+                wslaName.InnerText = slaName;
+            }
+            else
+            {
+                ticket.SlaViolationInitialResponse = null;
+                ticket.SlaViolationTimeClosed = null;
+                ticket.SlaViolationLastAction = null;
+                ticket.SlaWarningInitialResponse = null;
+                ticket.SlaWarningTimeClosed = null;
+                ticket.SlaWarningLastAction = null;
+                ticket.Collection.Save();
+            }
         }
 
         if (isPaused)
