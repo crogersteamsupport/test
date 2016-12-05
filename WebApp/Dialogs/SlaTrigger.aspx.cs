@@ -269,7 +269,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
     if (!String.IsNullOrEmpty(DaysToPauseHidden.Value))
     {
-        DaysToPause = DaysToPauseHidden.Value.Split(',').ToList();
+        DaysToPause = DaysToPauseHidden.Value.Split(',').Distinct().ToList();
     }
 
     SlaPausedDays slaPausedDays = new SlaPausedDays(UserSession.LoginUser);
@@ -285,19 +285,6 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
         }
 
         slaPausedDays = new SlaPausedDays(UserSession.LoginUser);
-    }
-
-    foreach (string day in DaysToPause)
-    {
-        DateTime dayToPause = new DateTime();
-
-        if (DateTime.TryParse(day, out dayToPause))
-        {
-            SlaPausedDay slaPausedDay = slaPausedDays.AddNewSlaPausedDay();
-            slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
-            slaPausedDay.DateToPause = dayToPause.ToUniversalTime();
-            slaPausedDay.Collection.Save();
-        }
     }
 
     int value = numWarning.Value == null ? 0 : (int)numWarning.Value;
@@ -321,21 +308,48 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     else if (rbClosedHour.Checked) trigger.TimeToClose = value * 60;
     else trigger.TimeToClose = value;
 
-    trigger.Collection.Save();
+    try
+    {
+        trigger.Collection.Save();
 
+        foreach (string day in DaysToPause)
+        {
+            DateTime dayToPause = new DateTime();
+
+            if (DateTime.TryParse(day, out dayToPause))
+            {
+                SlaPausedDay slaPausedDay = slaPausedDays.AddNewSlaPausedDay();
+                slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
+                slaPausedDay.DateToPause = dayToPause.ToUniversalTime();
+                slaPausedDay.Collection.Save();
+            }
+        }
+
+        Settings.UserDB.WriteInt("SlaTriggerWarningTime", trigger.WarningTime);
+        Settings.UserDB.WriteInt("SlaTriggerInitialResponseTime", trigger.TimeInitialResponse);
+        Settings.UserDB.WriteInt("SlaTriggerLastActionTime", trigger.TimeLastAction);
+        Settings.UserDB.WriteInt("SlaTriggerClosedTime", trigger.TimeToClose);
+        Settings.UserDB.WriteBool("SlaTriggerGroupViolations", cbGroupViolations.Checked);
+        Settings.UserDB.WriteBool("SlaTriggerGroupWarnings", cbGroupWarnings.Checked);
+        Settings.UserDB.WriteBool("SlaTriggerUserViolations", cbUserViolations.Checked);
+        Settings.UserDB.WriteBool("SlaTriggerUserWarnings", cbUserWarnings.Checked);
+        Settings.UserDB.WriteBool("SlaTriggerUseBusinessHours", rbBusinessHours.Checked);
+        Settings.UserDB.WriteBool("SlaTriggerPauseOnOrganizationHolidays", cbPauseOnOrganizationHolidays.Checked);
+
+        DialogResult = trigger.SlaTriggerID.ToString();
+    }
+    catch (System.Data.SqlClient.SqlException sqlEx)
+    {
+        if (sqlEx.Message.Contains("duplicate key") && sqlEx.Message.Contains("SlaTriggers"))
+        {
+            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), sqlEx, "SlaTrigger.Save");
+        }
+        else
+        {
+            throw sqlEx;
+        }
+    }
     
-    Settings.UserDB.WriteInt("SlaTriggerWarningTime", trigger.WarningTime);
-    Settings.UserDB.WriteInt("SlaTriggerInitialResponseTime", trigger.TimeInitialResponse);
-    Settings.UserDB.WriteInt("SlaTriggerLastActionTime", trigger.TimeLastAction);
-    Settings.UserDB.WriteInt("SlaTriggerClosedTime", trigger.TimeToClose);
-    Settings.UserDB.WriteBool("SlaTriggerGroupViolations", cbGroupViolations.Checked);
-    Settings.UserDB.WriteBool("SlaTriggerGroupWarnings", cbGroupWarnings.Checked);
-    Settings.UserDB.WriteBool("SlaTriggerUserViolations", cbUserViolations.Checked);
-    Settings.UserDB.WriteBool("SlaTriggerUserWarnings", cbUserWarnings.Checked);
-    Settings.UserDB.WriteBool("SlaTriggerUseBusinessHours", rbBusinessHours.Checked);
-    Settings.UserDB.WriteBool("SlaTriggerPauseOnOrganizationHolidays", cbPauseOnOrganizationHolidays.Checked);
-
-    DialogResult = trigger.SlaTriggerID.ToString();
     return true;
   }
 

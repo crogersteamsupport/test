@@ -66,7 +66,7 @@
         </tr>
         <tr>
             <td class="col1"><asp:ListBox ID="daysToPauseList" runat="server" Rows="6" Width="100px" SelectionMode="Multiple" CssClass="daysToPause"></asp:ListBox>
-                <input type="hidden" runat="server" id="DaysToPauseHidden" name="DaysToPayseHidden" />
+                <input type="hidden" runat="server" id="DaysToPauseHidden" name="DaysToPauseHidden" />
                 <telerik:RadDatePicker ID="PauseOnDates" runat="server" Width="1px" CssClass="HiddenPicker">
                     <ClientEvents OnDateSelected="AddToList" />
                     <DateInput runat="server" CssClass="HiddenTextBox" />
@@ -168,16 +168,22 @@
   </div>
 
     <script type="text/javascript">
+        var _reset = false;
+
         function AddToList()
         {
-            var datePicker = $find("<%=PauseOnDates.ClientID %>");
-            var dateText = datePicker.get_dateInput().get_selectedDate().localeFormat(parent.Ts.Utils.getDatePattern());
-            var htmlSelect = document.getElementById('<%=daysToPauseList.ClientID%>');
-            var option = document.createElement("OPTION");
-            option.innerHTML = dateText;
-            option.value = dateText;
-            htmlSelect.appendChild(option);
-            AddToHidden(dateText);
+            if (!_reset) {
+                var datePicker = $find("<%=PauseOnDates.ClientID %>");
+                var dateText = datePicker.get_dateInput().get_selectedDate().localeFormat(window.parent.Ts.Utils.getDatePattern());
+                var htmlSelect = document.getElementById('<%=daysToPauseList.ClientID%>');
+                var option = document.createElement("OPTION");
+                option.innerHTML = dateText;
+                option.value = dateText;
+                htmlSelect.appendChild(option);
+                AddToHidden(dateText);
+            }
+
+            _reset = false;            
         }
 
         function AddToHidden(dateText) {
@@ -197,7 +203,21 @@
                 for (var i = (htmlSelect.options.length - 1) ; i >= 0; i--) {
                     if (htmlSelect.options[i].selected) {
                         RemoveOfHidden(htmlSelect.options[i].value);
+                        var deletedDate = new Date(htmlSelect.options[i].value);
                         htmlSelect.options[i] = null;
+
+                        var datePicker = $find("<%=PauseOnDates.ClientID %>");
+                        var dateText = datePicker.get_dateInput().get_selectedDate();
+
+                        if (deletedDate.getTime() === dateText.getTime()) {
+                            _reset = true;
+                            var month = dateText.getMonth();
+                            var day = dateText.getDate();
+                            day = (day > 1) ? 1 : 2;
+                            var year = dateText.getFullYear();
+                            var newDate = new Date(year, month, day);
+                            datePicker.set_selectedDate(newDate);
+                       }
                     }
                 }
             }
