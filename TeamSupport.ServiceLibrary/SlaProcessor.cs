@@ -37,7 +37,6 @@ namespace TeamSupport.ServiceLibrary
 
                         if (ticket != null)
                         {
-                            bool isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
                             bool isClosed = ticket.DateClosed != null;
                             DateTime? newSlaViolationTimeClosed = null;
                             DateTime? newSlaWarningTimeClosed = null;
@@ -46,7 +45,7 @@ namespace TeamSupport.ServiceLibrary
                             DateTime? newSlaViolationInitialResponse = null;
                             DateTime? newSlaWarningInitialResponse = null;
 
-                            if (!isPaused && !isClosed)
+                            if (!isClosed)
                             {
                                 DateTime? lastActionDateCreated = Actions.GetLastActionDateCreated(LoginUser, ticket.TicketID);
                                 int totalActions = Actions.TotalActionsForSla(LoginUser, ticket.TicketID);
@@ -69,7 +68,7 @@ namespace TeamSupport.ServiceLibrary
                                     businessHours.DayEndUtc = slaTrigger.DayEndUtc.Value;
                                     businessHours.BusinessDays = slaTrigger.Weekdays;
                                 }
-                                else
+                                else if (!slaTrigger.UseBusinessHours)
                                 {
                                     Logs.WriteEventFormat("Using Account's business hours {0} to {1} because while the trigger is set to use sla's business hours one of them has no value. Sla DayStartUtc {2}, Sla DayEndUtc {3}",
                                         organization.BusinessDayStartUtc.ToShortTimeString(),
@@ -170,7 +169,7 @@ namespace TeamSupport.ServiceLibrary
                             }
                             else
                             {
-                                Logs.WriteEventFormat("Ticket is {0}, clearing its SLA values.", isClosed ? "closed" : "paused");
+                                Logs.WriteEvent("Ticket is Closed, clearing its SLA values.");
 
                                 //TODO //vv Do we want to delete the paused times and slaticket record if the ticket is closed? how is it done today?
                                 /*
