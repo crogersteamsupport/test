@@ -124,7 +124,7 @@ AND ot.TicketID = @TicketID
             }
             if (!result)
             {
-                Organization account = Organizations.GetOrganization(user.Collection.LoginUser, user.Collection.LoginUser.OrganizationID);
+                Organization account = Organizations.GetOrganization(user.Collection.LoginUser, user.OrganizationID);
                 if (!account.UseProductFamilies)
                 {
                     result = true;
@@ -904,6 +904,20 @@ AND ot.TicketID = @TicketID
             if (!isPaused && slaTrigger.PauseOnHoliday)
             {
                 isPaused = SlaTriggers.IsOrganizationHoliday(organizationId, DateTime.UtcNow);
+            }
+
+            return isPaused;
+        }
+
+        public bool IsSlaStatusPaused()
+        {
+            bool isPaused = false;
+            TicketStatuses statuses = new TicketStatuses(Collection.LoginUser);
+            statuses.LoadByStatusIDs(OrganizationID, new int[] { TicketStatusID });
+
+            if (statuses != null && statuses.Any())
+            {
+                isPaused = statuses[0].PauseSLA;
             }
 
             return isPaused;

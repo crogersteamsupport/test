@@ -23,7 +23,7 @@ public partial class Tips_Sla : System.Web.UI.Page
         tipNumber.Attributes.Add("onclick", "top.Ts.MainPage.openTicket(" + ticket.TicketNumber + "); return false;");
         tipName.InnerHtml = ticket.Name;
 
-        bool isPaused = false;
+        bool isStatusPaused = false;
         SlaTicket slaTicket = SlaTickets.GetSlaTicket(loginUser, ticket.TicketID);
 
         if (slaTicket != null)
@@ -32,7 +32,7 @@ public partial class Tips_Sla : System.Web.UI.Page
 
             if (slaTrigger != null)
             {
-                isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
+                isStatusPaused = ticket.IsSlaStatusPaused();
                 string slaName = new SlaLevels(TSAuthentication.GetLoginUser()).GetSlaveLevelName(slaTicket.SlaTriggerId);
                 wslaName.InnerText = slaName;
             }
@@ -48,7 +48,7 @@ public partial class Tips_Sla : System.Web.UI.Page
             }
         }
 
-        if (isPaused)
+        if (isStatusPaused)
         {
             wClose.InnerText = "Paused";
             vClose.InnerText = "Paused";

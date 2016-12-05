@@ -5299,6 +5299,9 @@ var setSLAInfo = function () {
       ) {
     $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
+    $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+    $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+    $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
   }
   else if (_ticketInfo.Ticket.SlaViolationTime === null
             && _ticketInfo.SlaTriggerId !== null
@@ -5310,19 +5313,28 @@ var setSLAInfo = function () {
             && _ticketInfo.IsSlaPending) {
       $('#ticket-SLAStatus').find('i').addClass('color-yellow');
       $('#ticket-SLANote').text('Calculating...');
+      $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+      $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+      $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
   }
   else if (_ticketInfo.IsSlaPaused !== undefined
             && _ticketInfo.IsSlaPaused
             && !_ticketInfo.Ticket.IsClosed
             && _ticketInfo.SlaTriggerId !== null
             && _ticketInfo.SlaTriggerId > 0) {
-      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+      $('#ticket-SLAStatus').find('i').removeClass('fa-bomb');
+      $('#ticket-SLAStatus').find('i').addClass('fa-pause');
+      $('#ticket-SLAStatus').find('i').addClass('slaPausedIcon');
       $('#ticket-SLANote').text('Paused');
   }
   else {
     $('#ticket-SLAStatus')
       .find('i')
       .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
+    $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+    $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+    $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
+
     if (_ticketInfo.Ticket.SlaViolationDate !== null) {
       $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
     }

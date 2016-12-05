@@ -945,3 +945,7 @@
     padding-right: 5px;
     width: 100%;
 }
+
+.slaPausedIcon {
+    color: #428bca !important;
+}
