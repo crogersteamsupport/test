@@ -947,6 +947,26 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
+        public static MailMessage GetReminderTaskEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, TasksViewItem task)
+        {
+            EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 59, -1);
+            template.ReplaceCommonParameters().ReplaceFields("User", user);
+            template.ReplaceParameter("TaskName", reminder.TaskName);
+            template.ReplaceParameter("TaskDescription", reminder.Description);
+            if (reminder.TaskDueDate.HasValue)
+            {
+                DateTime taskDueDate = reminder.TaskDueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDueDate", "[None]");
+            }
+            //template.ReplaceParameter("TaskDateCompleted", reminder.TaskDateCompleted.ToString("G", loginUser.OrganizationCulture);
+            template.ReplaceParameter("TaskReminderDate", reminder.DueDate.ToString("G", loginUser.OrganizationCulture));
+            return template.GetMessage();
+        }
+
         public static MailMessage GetSlaEmail(LoginUser loginUser, TicketsViewItem ticket, string violationType, bool isWarning)
         {
             int productFamilyID = -1;
