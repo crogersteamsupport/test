@@ -2,7 +2,7 @@
 var _allAssignedLoaded = false;
 var _allCreatedLoaded = false;
 var _assignedTab = -1;
-var _createdTab = -1;
+var _createdTab = 0;
 var _start = 0;
 
 $(document).ready(function () {
@@ -13,17 +13,19 @@ $(document).ready(function () {
             _allAssignedLoaded = true;
         }
         if (_start == 0) {
+            debugger;
             insertSearchResults(container, tasks);
             if (tasks.length == 0) {
-                $('.assigned-results-empty').show();
+                $('.results-empty').show();
             }
-            else {
-                $('.assigned-results-empty').hide();
-                if (tasks[0].TaskIsComplete) {
-                    $('.assigned-tasks-filter li.active').removeClass('active');
-                    $('.assigned-tasks-filter-completed').addClass('active');
-                }
-            }
+            //else {
+            //    debugger;
+            //    $('.assigned-results-empty').hide();
+            //    if (tasks[0].TaskIsComplete) {
+            //        //$('.assigned-tasks-filter').removeClass('active');
+            //        $('.assigned-tasks-filter-completed').addClass('active');
+            //    }
+            //}
         }
         else {
             appendSearchResults(container, tasks);
@@ -40,13 +42,13 @@ $(document).ready(function () {
             if (tasks.length == 0) {
                 $('.created-results-empty').show();
             }
-            else {
-                $('.created-results-empty').hide();
-                if (!tasks[0].TaskIsComplete) {
-                    $('.created-tasks-filter li.active').removeClass('active');
-                    $('.created-tasks-filter-pending').parent().addClass('active');
-                }
-            }
+            //else {
+            //    $('.created-results-empty').hide();
+            //    if (!tasks[0].TaskIsComplete) {
+            //        $('.created-tasks-filter li.active').removeClass('active');
+            //        $('.created-tasks-filter-pending').parent().addClass('active');
+            //    }
+            //}
         }
         else {
             appendSearchResults(container, tasks);
@@ -82,21 +84,26 @@ $(document).ready(function () {
         appendSearchResults(container, items);
     }
 
-    function appendSearchResults(container, items) {
+    function appendSearchResults(container, tasks) {
+
         $('.results-loading').hide();
         $('.results-empty').hide();
+
+       
         //$('.results-done').hide();
 
-        if (items.length < 1) {
+        if (tasks.length < 1) {
             //$('.results-done').show();
         } else {
-            for (var i = 0; i < items.length; i++) {
-                appendItem(container, items[i]);
-            }
+            //for (var i = 0; i < tasks.length; i++) {
+            //    appendItem(container, tasks[i]);
+            //}
 
-            if (items.length == _pageSize) {
-                $('.tasks-more').show();
-            }
+            var source = $("#task-template").html();
+            var template = Handlebars.compile(source);
+            data = { taskList: tasks };
+
+            $("#taskList").html(template(data));
         }
         _isLoading = false;
     }
@@ -211,6 +218,7 @@ $(document).ready(function () {
     }
 
     function GetAssignedTab() {
+        debugger;
         var result = -3;
         if ($('#assignedColumn').is(':hidden')) {
             result = -1;
@@ -218,16 +226,17 @@ $(document).ready(function () {
         else if (_allAssignedLoaded) {
             result = 0;
         }
-        else if ($('.assigned-tasks-filter-pending').parent().hasClass('active')) {
+        else if ($('.assigned-tasks-filter-pending').hasClass('active')) {
             result = 1;
         }
-        else if ($('.assigned-tasks-filter-completed').parent().hasClass('active')) {
+        else if ($('.assigned-tasks-filter-completed').hasClass('active')) {
             result = 2;
         }
         return result;
     }
 
-    function GetGreatedTab() {
+    function GetCreatedTab() {
+        debugger;
         var result = -3;
         if ($('#createdColumn').is(':hidden')) {
             result = -1;
@@ -235,10 +244,10 @@ $(document).ready(function () {
         else if (_allCreatedLoaded) {
             result = 0;
         }
-        else if ($('.created-tasks-filter-pending').parent().hasClass('active')) {
+        else if ($('.created-tasks-filter-pending').hasClass('active')) {
             result = 1;
         }
-        else if ($('.created-tasks-filter-completed').parent().hasClass('active')) {
+        else if ($('.created-tasks-filter-completed').hasClass('active')) {
             result = 2;
         }
         return result;
@@ -257,12 +266,15 @@ $(document).ready(function () {
 
 
     function fetchItems() {
+
         showLoadingIndicator();
         $('.searchresults').fadeTo(200, 0.5);
         var term = $('#searchString').val();
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
         parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (pageData) {
+
+            debugger;
             $('.searchresults').fadeTo(0, 1);
 
 
@@ -324,8 +336,8 @@ $(document).ready(function () {
     $('.assigned-tasks-filter').on('click', 'button', function (e) {
         debugger;
         e.preventDefault();
-        $('.assigned-tasks-filter li.active').removeClass('btn-primary');
-        $(this).parent().addClass('active');
+        $('.assigned-tasks-filter > button.active').removeClass('active');
+        $(this).addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _allAssignedLoaded = false;
         _assignedTab = GetAssignedTab();
@@ -334,19 +346,22 @@ $(document).ready(function () {
         fetchItems();
     });
 
-    $('.created-tasks-filter').on('click', 'a', function (e) {
+    $('.created-tasks-filter').on('click', 'button', function (e) {
+        debugger;
         e.preventDefault();
-        $('.created-tasks-filter li.active').removeClass('active');
-        $(this).parent().addClass('active');
+        $('.created-tasks-filter > button.active').removeClass('active');
+        $(this).addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _assignedTab = 0;
         _allCreatedLoaded = false;
-        _createdTab = GetGreatedTab();
+        _createdTab = GetCreatedTab();
+        _assignedTab = 0;
         _start = 0;
         fetchItems();
     });
 
     $('.searchresults').on('click', '.tasklink', function (e) {
+        debugger;
         e.preventDefault();
 
         var id = $(this).data('reminderid');
@@ -362,7 +377,7 @@ $(document).ready(function () {
 
     $('#moreTasks').click(function (e) {
         _assignedTab = GetAssignedTab();
-        _createdTab = GetGreatedTab();
+        _createdTab = GetCreatedTab();
         _start = GetStart();
         fetchItems();
     });
@@ -376,7 +391,7 @@ $(document).ready(function () {
 
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             _assignedTab = GetAssignedTab();
-            _createdTab = GetGreatedTab();
+            _createdTab = GetCreatedTab();
             _start = GetStart();
             fetchItems();
         }
@@ -397,4 +412,37 @@ $(document).ready(function () {
     });
 
     fetchItems();
+
+    $('.tabs').on('click', 'a', function (e) {
+        debugger;
+        e.preventDefault();
+        $('.tab-created-tasks').removeClass('active');
+        $(this).parent().addClass('active');
+        parent.Ts.System.logAction('Tasks Page - Change Filter');
+
+        if ($(this).hasClass('tab-assigned-tasks')) {
+            $('#createdColumn').hide();
+            $('#assignedColumn').show();
+            debugger;
+            _createdTab = 0;
+            _allAssignedLoaded = false;
+            _assignedTab = GetAssignedTab();
+            _start = 0;
+        }
+        else {
+            $('#assignedColumn').hide();
+            $('#createdColumn').show();
+            _assignedTab = 0;
+            _allCreatedLoaded = false;
+            _createdTab = GetCreatedTab();
+            _start = 0;
+        }
+
+
+        fetchItems();
+    });
+
+    Handlebars.registerHelper("formatDate", function (datetime) {
+        return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+    });
 });

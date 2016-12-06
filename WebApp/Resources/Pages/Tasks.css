@@ -8,7 +8,7 @@
 .tasks-filter { padding-bottom: 7px; padding-top: 4px;}
 .tasks-filter ul {display:inline-block;}
 
-.results-wrapper { padding: 5px 5px;}
+.results-wrapper { padding: 5px 5px; margin-top:10px;}
 .searchresults { width:100%; border-collapse:collapse;} 
 .searchresults ul {padding: 0; margin: 0;}
 .searchresults td { border-bottom: 1px solid #eee; padding: 10px 10px;}

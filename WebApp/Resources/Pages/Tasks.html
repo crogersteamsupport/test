@@ -9,19 +9,20 @@
     <link href="Tasks.css" rel="stylesheet" type="text/css" />
 
     <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="../Js/handlebars.js" type="text/javascript"></script>
     <script src="Tasks.js" type="text/javascript"></script>
 </head>
 <body>
     <div class="frame-container">
-        <div style="float:left; width:160px; height:100% !important; background-color:#C6DCF7;">
+        <div class="tabs" style="float:left; width:160px; height:100% !important; background-color:#C6DCF7;">
             <div style="height:40px; padding: 10px 20px 0px 20px; background-color:white">
-                <a class="assigned-tasks" href="#">
+                <a class="tab-assigned-tasks" href="#">
                     Assigned
                     <span class="pull-right">20</span>
                 </a>
             </div>
             <div style="margin-top:10px; padding:0px 20px 0px 20px;">
-                <a class="created-tasks" href="#">
+                <a class="tab-created-tasks" href="#">
                     Created
                     <span class="pull-right">5</span>
                 </a>
@@ -29,68 +30,50 @@
         </div>
         <div class="" style="margin-left:150px; margin-top:20px;">
             <div class="container">
-                <div class="margin-top:20px;">
-                    <div class="col-xs-12">
-                        <div class="tasks-header">
-                            <button type="button" class="btn btn-primary pull-left action-new" data-toggle="dropdown">New Task</button>
-                            <div class="pull-right">
-                                <div class="btn-group assigned-tasks-filter" role="group" aria-label="...">
-                                    <button type="button" class="btn btn-primary assigned-tasks-filter-pending">Pending</button>
-                                    <button type="button" class="btn btn-default assigned-tasks-filter-completed">Completed</button>
-                                    <button type="button" class="btn btn-default assigned-tasks-filter-all">All</button>
-                                </div>
-                                <ul class="nav nav-pills">
-                                    <li class="active"><a href="#" class="assigned-tasks-filter-pending">Pending</a></li>
-                                    <li><a href="#" class="assigned-tasks-filter-completed">Completed</a></li>
-                                    <li><a href="#" class="assigned-tasks-filter-all">All</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="">
-                    <div id="assignedColumn" class="col-xs-6">
+                    <div id="assignedColumn" class="col-xs-8" style="">
                         <div class="tasks-header">
                             <h4 class="pull-left">Assigned</h4>
                         </div>
                         <div class="clearfix"></div>
-                        <!--<div class="assigned-tasks-filter">
-                            <ul class="nav nav-pills">
-                                <li class="active"><a href="#" class="assigned-tasks-filter-pending">Pending</a></li>
-                                <li><a href="#" class="assigned-tasks-filter-completed">Completed</a></li>
-                                <li><a href="#" class="assigned-tasks-filter-all">All</a></li>
-                            </ul>
-                        </div>-->
-                        <div class="clearfix"></div>
-                        <div class="results-wrapper">
-                            <table class="assignedresults searchresults"></table>
-                            <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                            <div class="assigned-results-empty">No tasks.</div>
+                        <button type="button" class="btn btn-primary pull-left action-new" data-toggle="dropdown">New Task</button>
+                        <div class="pull-right">
+                            <div class="btn-group assigned-tasks-filter" role="group" aria-label="...">
+                                <button type="button" class="btn btn-default assigned-tasks-filter-pending active">Pending</button>
+                                <button type="button" class="btn btn-default assigned-tasks-filter-completed">Completed</button>
+                                <button type="button" class="btn btn-default assigned-tasks-filter-all">All</button>
+                            </div>
                         </div>
+                        <div class="clearfix"></div>
                     </div>
-                    <div id="createdColumn" class="col-xs-6">
+                    <div id="createdColumn" class="col-xs-8" style="display:none;">
                         <h4 class="pull-left">Created</h4>
                         <div class="clearfix"></div>
-                        <div class="created-tasks-filter">
-                            <ul class="nav nav-pills">
-                                <li><a href="#" class="created-tasks-filter-pending">Pending</a></li>
-                                <li class="active"><a href="#" class="created-tasks-filter-completed">Completed</a></li>
-                                <li><a href="#" class="created-tasks-filter-all">All</a></li>
-                            </ul>
+                        <button type="button" class="btn btn-primary pull-left action-new" data-toggle="dropdown">New Task</button>
+                        <div class="btn-group created-tasks-filter pull-right" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default created-tasks-filter-pending active">Pending</button>
+                            <button type="button" class="btn btn-default created-tasks-filter-completed">Completed</button>
+                            <button type="button" class="btn btn-default created-tasks-filter-all">All</button>
                         </div>
                         <div class="clearfix"></div>
-                        <div class="results-wrapper">
+                        <!--<div class="results-wrapper">
                             <table class="createdresults searchresults"></table>
                             <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
                             <div class="created-results-empty">No tasks.</div>
-                        </div>
+                        </div>-->
+                    </div>
+                    <div class="results-wrapper col-xs-8">
+                        <table class="assignedresults searchresults table table-striped" id="taskList"></table>
+                        <!--<table class="assignedresults searchresults"></table>-->
+                        <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                        <div class="results-done">There are no more tasks.</div>
+                        <div class="results-empty">No tasks.</div>
+                        <div class="assigned-results-empty">No tasks.</div>
                     </div>
                 </div>
                 <div class="row tasks-more" hidden><a id="moreTasks" href="#">Show more tasks.</a></div>
-                <div class="results-done">There are no more tasks.</div>
-                <div class="results-empty">No tasks.</div>
+                
             </div>
-
             <!-- recent task column here-->
         </div>
     </div>
@@ -103,5 +86,28 @@
             </div>
         </div>
     </div>
+    <script id="task-template" type="text/x-handlebars-template">
+        <tbody>
+            {{#taskList}}
+            <tr>
+                <td>
+                    <div class="taskinfo">
+                        <h4>
+                            <span class="checkbox">
+                                <input type="checkbox" value="">
+                                <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
+                                    {{TaskName}}
+                                </a>
+                            </span>
+                        </h4>
+                        <div>
+                            Due: {{formatDate TaskDueDate}}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {{/taskList}}
+        </tbody>
+    </script>
 </body>
 </html>
