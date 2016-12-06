@@ -64,6 +64,7 @@ namespace TeamSupport.ServiceLibrary
                     ExtractZip($@"{downloadLocation}/{s3Path}");
                     MergeVideoFiles();
                     UploadHighResVideo();
+                    CleanUpFiles();
                 }
                 UpdateHealth();
             }
@@ -153,9 +154,9 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteEvent("----- Merging webm files ...");
             outputFileLocation = Path.Combine(Path.GetDirectoryName(webmFiles[0]), "archive.webm");
             Process proc = new Process();
-            proc.StartInfo.WorkingDirectory = ffmpegPath;
-            proc.StartInfo.FileName = "ffmpeg";
-            proc.StartInfo.Arguments = $@"-i {webmFiles[0]} -i {webmFiles[1]} {outputFileLocation}";
+            //proc.StartInfo.WorkingDirectory = ffmpegPath;
+            proc.StartInfo.FileName = Path.Combine(ffmpegPath,"ffmpeg.exe");
+            proc.StartInfo.Arguments = $@"-i {webmFiles[0]} -i {webmFiles[1]} -acodec copy -vcodec copy  {outputFileLocation}";
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.UseShellExecute = false;
             if (!proc.Start())
@@ -205,7 +206,7 @@ namespace TeamSupport.ServiceLibrary
         void CleanUpFiles()
         {
             Logs.WriteEvent("----- Cleaning up files and marking as processed");
-            string dest = Path.Combine(downloadLocation, s3Path);
+            string dest = Path.GetDirectoryName(webmFiles[0]);
             System.IO.DirectoryInfo di = new DirectoryInfo(dest);
 
             foreach (FileInfo file in di.GetFiles())
