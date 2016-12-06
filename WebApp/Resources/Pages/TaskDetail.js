@@ -49,7 +49,7 @@ $(document).ready(function () {
             $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
             $('#fieldComplete').text(task.TaskIsComplete);
-            $('#fieldDueDate').text(window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+            $('#fieldDueDate').text(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
             $('#fieldReminder').text(!task.IsDismissed);
             $('#fieldReminderDate').text(window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
             if (task.IsDismissed) {
