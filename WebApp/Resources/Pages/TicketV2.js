@@ -462,6 +462,10 @@ function SetupTicketProperties(order) {
 
     jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
 
+    if (!window.parent.Ts.System.User.ChangeKbVisibility && window.parent.Ts.System.User.IsSystemAdmin)
+        $('#action-new-KB').prop('disabled', true);
+
+
     if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserID === _ticketInfo.UserID) {
       $('.ticket-menu-actions').append('<li><a id="Ticket-Delete">Delete</a></li>');
       $('#Ticket-Delete').click(function (e) {
@@ -897,6 +901,10 @@ function SetupActionEditor(elem, action) {
           data.jqXHR.abort();
         })
         .appendTo(bg);
+
+        if ((data.files[i].size / 1000000) > 25)
+            alert("Warning " + data.files[i].name + " is over 25MB");
+
       }
 
     },
@@ -2568,9 +2576,11 @@ function SetupProductVersionsControl(product) {
   if (product !== null && product.Versions.length > 0) {
   	var versions = product.Versions;
   	
-    for (var i = 0; i < versions.length; i++) {
-      AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
-      AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+  	for (var i = 0; i < versions.length; i++) {
+        try{
+            AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+            AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+        }catch(e){}
     }
     if ($('#ticket-Resolved').length) {
       $('#ticket-Versions').selectize({
