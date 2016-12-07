@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? TaskDueDate { get; set; }
     [DataMember] public bool TaskIsComplete { get; set; }
     [DataMember] public DateTime? TaskDateCompleted { get; set; }
+    [DataMember] public int? TaskParentID { get; set; }
           
   }
   
@@ -36,6 +37,7 @@ namespace TeamSupport.Data
     public ReminderProxy GetProxy()
     {
       ReminderProxy result = new ReminderProxy();
+      result.TaskParentID = this.TaskParentID;
       result.TaskIsComplete = this.TaskIsComplete;
       result.TaskName = this.TaskName;
       result.CreatorID = this.CreatorID;

@@ -2,6 +2,7 @@
 var _reminderID = null;
 var _taskName = null;
 var _historyLoaded = 0;
+var _subtasksLoaded = 0;
 
 $(document).ready(function () {
     _taskDetailPage = new TaskDetailPage();
@@ -214,6 +215,49 @@ $(document).ready(function () {
                     .appendTo(blockDiv);
                 }
             })
+        });
+    }
+
+    function LoadSubtasks() {
+        $('#tblSubtasks tbody').empty();
+
+        window.parent.parent.Ts.Services.Task.LoadSubtasks(_reminderID, function (subtasks) {
+            for (var i = 0; i < subtasks.length; i++) {
+                var displayName;
+                if (subtasks[i].TaskName) {
+                    displayName = ellipseString(subtasks[i].TaskName, 40);
+                }
+                else if (subtasks[i].Description) {
+                    displayName = ellipseString(subtasks[i].Description, 40);
+                }
+                else {
+                    displayName = subtasks[i].ReminderID;
+                }
+                
+                var row = $('<tr>').appendTo('#tblSubtasks > tbody:last');
+                var nameCel = $('<td>').appendTo(row);
+                $('<a>')
+                  .attr('href', '#')
+                  .addClass('tasklink')
+                  .data('reminderid', subtasks[i].ReminderID)
+                  .text(displayName)
+                  .appendTo(nameCel)
+
+                var userCel = $('<td>').append(subtasks[i].UserID).appendTo(row);
+
+                var dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
+
+                //$('<tr>').html('<td>' + subtasks[i].TaskName + '</td><td>' + subtasks[i].UserID + '</td><td>' + subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td>')
+                
+                //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
+            }
+            //if (history.length == 50)
+            //    $('<button>').text("Load More").addClass('btn-link')
+            //    .click(function (e) {
+            //        LoadHistory($('#tblSubtasks tbody > tr').length + 1);
+            //        $(this).remove();
+            //    })
+            //   .appendTo('#tblSubtasks > tbody:last');
         });
     }
 
@@ -629,6 +673,20 @@ $(document).ready(function () {
         }
     });
 
+    $('#tblSubtasks').on('click', '.tasklink', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('Task Detail Page - View Subtask');
+        parent.Ts.MainPage.openNewTask(id);
+
+        //parent.Ts.Services.Assets.UpdateRecentlyViewed('o' + id, function (resultHtml) {
+        //    $('.recent-container').empty();
+        //    $('.recent-container').html(resultHtml);
+        //});
+
+    });
+
     var execGetCustomer = null;
     function getCustomers(request, response) {
         if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -999,6 +1057,19 @@ $(document).ready(function () {
 
     $('#associationsRefresh').on('click', function () {
         LoadAssociations();
+    });
+
+    $('#subtasksToggle').on('click', function () {
+        window.parent.parent.Ts.System.logAction('Task - Subtasks Toggle');
+        if (_subtasksLoaded == 0) {
+            _subtasksLoaded = 1;
+            LoadSubtasks(1);
+        }
+    });
+
+    $('#subtasksRefresh').on('click', function () {
+        window.parent.parent.Ts.System.logAction('Task - Subtasks Refresh');
+        LoadSubtasks(1);
     });
 
     $('#historyToggle').on('click', function () {

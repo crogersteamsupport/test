@@ -27,6 +27,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TaskName", "TaskName", false, false, false);
       _fieldMap.AddMap("TaskDueDate", "TaskDueDate", false, false, false);
       _fieldMap.AddMap("TaskIsComplete", "TaskIsComplete", false, false, false);
+      _fieldMap.AddMap("TaskDateCompleted", "TaskDateCompleted", false, false, false);
+      _fieldMap.AddMap("TaskParentID", "TaskParentID", false, false, false);
+      _fieldMap.AddMap("TaskParentName", "TaskParentName", false, false, false);
       _fieldMap.AddMap("UserName", "UserName", false, false, false);
       _fieldMap.AddMap("Creator", "Creator", false, false, false);
             

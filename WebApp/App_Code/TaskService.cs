@@ -193,6 +193,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public ReminderProxy[] LoadSubtasks(int reminderID)
+        {
+            Reminders subtasks = new Reminders(TSAuthentication.GetLoginUser());
+            subtasks.LoadByParentID(reminderID);
+
+            return subtasks.GetReminderProxies();
+        }
+
+        [WebMethod]
         public TaskLogProxy[] LoadHistory(int reminderID, int start)
         {
             TaskLogs taskLogs = new TaskLogs(TSAuthentication.GetLoginUser());

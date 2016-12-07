@@ -135,6 +135,31 @@
                             </div>
                             <div class="box mb10">
                                 <div class="box-header" style="padding-bottom: 10px;">
+                                    <h3>Subtasks</h3>
+                                    <div class="box-actions">
+                                        <a id="subtasksToggle" data-toggle="collapse" data-target="#subtasksContent" href="#"><i class="fa fa-chevron-down"></i></a>
+                                        <a id="subtasksRefresh" href="#"><i class="fa fa-refresh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="box-content collapse historyTableAdjustment" id="subtasksContent">
+                                    <div class="row">
+                                        <div class="col-md-12 historyTableAdjustment">
+                                            <table class="table ntable-hover" id="tblSubtasks">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>Assigned to</th>
+                                                        <th>Due Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box mb10">
+                                <div class="box-header" style="padding-bottom: 10px;">
                                     <h3>History</h3>
                                     <div class="box-actions">
                                         <a id="historyToggle" data-toggle="collapse" data-target="#actionsHistoryContent" href="#"><i class="fa fa-chevron-down"></i></a>

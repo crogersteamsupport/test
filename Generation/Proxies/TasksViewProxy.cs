@@ -27,6 +27,9 @@ namespace TeamSupport.Data
     [DataMember] public string TaskName { get; set; }
     [DataMember] public DateTime? TaskDueDate { get; set; }
     [DataMember] public bool TaskIsComplete { get; set; }
+    [DataMember] public DateTime? TaskDateCompleted { get; set; }
+    [DataMember] public int? TaskParentID { get; set; }
+    [DataMember] public string TaskParentName { get; set; }
     [DataMember] public string UserName { get; set; }
     [DataMember] public string Creator { get; set; }
           
@@ -39,6 +42,8 @@ namespace TeamSupport.Data
       TasksViewItemProxy result = new TasksViewItemProxy();
       result.Creator = this.Creator;
       result.UserName = this.UserName;
+      result.TaskParentName = this.TaskParentName;
+      result.TaskParentID = this.TaskParentID;
       result.TaskIsComplete = this.TaskIsComplete;
       result.TaskName = this.TaskName;
       result.CreatorID = this.CreatorID;
@@ -54,6 +59,7 @@ namespace TeamSupport.Data
       result.DueDate = DateTime.SpecifyKind(this.DueDateUtc, DateTimeKind.Utc);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
+      result.TaskDateCompleted = this.TaskDateCompletedUtc == null ? this.TaskDateCompletedUtc : DateTime.SpecifyKind((DateTime)this.TaskDateCompletedUtc, DateTimeKind.Utc); 
       result.TaskDueDate = this.TaskDueDateUtc == null ? this.TaskDueDateUtc : DateTime.SpecifyKind((DateTime)this.TaskDueDateUtc, DateTimeKind.Utc); 
        
       return result;

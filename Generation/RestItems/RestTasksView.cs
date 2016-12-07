@@ -13,9 +13,9 @@ namespace TeamSupport.Api
   
   public class RestTasksView
   {
-    public static string GetTasksViewItem(RestCommand command, int reminderID)
+    public static string GetTasksViewItem(RestCommand command, int )
     {
-      TasksViewItem tasksViewItem = TasksView.GetTasksViewItem(command.LoginUser, reminderID);
+      TasksViewItem tasksViewItem = TasksView.GetTasksViewItem(command.LoginUser, );
       if (tasksViewItem.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       return tasksViewItem.GetXml("TasksViewItem", true);
     }

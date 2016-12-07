@@ -14,6 +14,7 @@ namespace TeamSupport.Data
     {
       _fieldMap = new FieldMap();
       _fieldMap.AddMap("ReminderID", "ReminderID", false, false, false);
+      _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
       _fieldMap.AddMap("RefType", "RefType", false, false, false);
       _fieldMap.AddMap("RefID", "RefID", false, false, false);
       _fieldMap.AddMap("Description", "Description", false, false, false);
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TaskDueDate", "TaskDueDate", false, false, false);
       _fieldMap.AddMap("TaskIsComplete", "TaskIsComplete", false, false, false);
       _fieldMap.AddMap("TaskDateCompleted", "TaskDateCompleted", false, false, false);
+      _fieldMap.AddMap("TaskParentID", "TaskParentID", false, false, false);
             
     }
   }
