@@ -255,7 +255,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Transcoded", SqlDbType.Bit, 1);
+		tempParameter = insertCommand.Parameters.Add("Transcoded", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
