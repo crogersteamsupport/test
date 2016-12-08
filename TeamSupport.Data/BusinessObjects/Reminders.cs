@@ -145,6 +145,7 @@ namespace TeamSupport.Data
                 , TaskDueDate
                 , TaskIsComplete
                 , TaskDateCompleted
+                , TaskParentID
             FROM 
                 r
             WHERE
@@ -233,6 +234,7 @@ namespace TeamSupport.Data
                 , TaskDueDate
                 , TaskIsComplete
                 , TaskDateCompleted
+                , TaskParentID
             FROM 
                 r
             WHERE
