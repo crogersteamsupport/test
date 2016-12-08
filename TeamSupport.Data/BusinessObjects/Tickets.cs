@@ -124,7 +124,7 @@ AND ot.TicketID = @TicketID
             }
             if (!result)
             {
-                Organization account = Organizations.GetOrganization(user.Collection.LoginUser, user.OrganizationID);
+                Organization account = Organizations.GetOrganization(user.Collection.LoginUser, ticket.OrganizationID);
                 if (!account.UseProductFamilies)
                 {
                     result = true;
