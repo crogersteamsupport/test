@@ -49,9 +49,9 @@ $(document).ready(function () {
 
             $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
-            $('#fieldComplete').text(task.TaskIsComplete);
+            $('#fieldComplete').text(task.TaskIsComplete ? "yes": "no");
             $('#fieldDueDate').text(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-            $('#fieldReminder').text(!task.IsDismissed);
+            $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
             $('#fieldReminderDate').text(window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
             if (task.IsDismissed) {
                 $('#reminderDateGroup').hide();
@@ -289,6 +289,10 @@ $(document).ready(function () {
         $('p, #taskName').toggleClass("editable");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
+        if ($(this).hasClass("btn-primary"))
+            $(this).html('<i class="fa fa-pencil"></i> Edit');
+        else
+            $(this).html('<i class="fa fa-pencil"></i> Save');
     });
 
     $('#taskName').click(function (e) {
@@ -447,9 +451,9 @@ $(document).ready(function () {
     $('#fieldComplete').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'true'), function (result) {
+        window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
             top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-            $('#fieldComplete').text((result === true ? 'true' : 'false'));
+            $('#fieldComplete').text((result === true ? 'yes' : 'no'));
         },
         function (error) {
             header.show();
@@ -513,9 +517,9 @@ $(document).ready(function () {
     $('#fieldReminder').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        window.parent.parent.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'false'), function (result) {
+        window.parent.parent.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'no'), function (result) {
             top.Ts.System.logAction('Task Detail - Toggle IsDismissed');
-            $('#fieldReminder').text((result === true ? 'false' : 'true'));
+            $('#fieldReminder').text((result === true ? 'no' : 'yes'));
             if (result) {
                 $('#reminderDateGroup').hide();
             }

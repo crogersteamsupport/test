@@ -212,14 +212,14 @@ namespace TSWebServices
 
         private int GetAssignedCount(LoginUser loginUser)
         {
-            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE UserID = @UserID AND RefType = 59");
+            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE UserID = @UserID");
             command.Parameters.AddWithValue("UserID", loginUser.UserID);
             return (int)SqlExecutor.ExecuteScalar(loginUser, command);
         }
 
         private int GetCreatedCount(LoginUser loginUser)
         {
-            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE CreatorID = @UserID AND UserID <> @UserID AND RefType = 59");
+            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE CreatorID = @UserID AND UserID <> @UserID");
             command.Parameters.AddWithValue("UserID", loginUser.UserID);
             return (int)SqlExecutor.ExecuteScalar(loginUser, command);
         }

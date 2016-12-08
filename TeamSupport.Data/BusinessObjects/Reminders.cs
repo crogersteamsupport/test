@@ -110,7 +110,6 @@ namespace TeamSupport.Data
                 Reminders
             WHERE
                 CreatorID = @UserID 
-                AND RefType = 59
                 AND UserID <> @UserID
                 AND TaskIsComplete = 0 ";
 
@@ -121,7 +120,6 @@ namespace TeamSupport.Data
                 Reminders
             WHERE
                 CreatorID = @UserID 
-                AND RefType = 59
                 AND UserID <> @UserID
                 AND TaskIsComplete = 1 ";
 
@@ -201,7 +199,6 @@ namespace TeamSupport.Data
                 Reminders
             WHERE
                 UserID = @UserID
-                AND RefType = 59
                 AND isDismissed = 0 ";
 
         string completeQuery = @"
@@ -211,7 +208,6 @@ namespace TeamSupport.Data
                 Reminders
             WHERE
                 UserID = @UserID
-                AND RefType = 59
                 AND isDismissed = 1 ";
 
         string pageQuery = @"
