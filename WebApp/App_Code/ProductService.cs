@@ -794,7 +794,29 @@ namespace TSWebServices
         return value;
     }
 
-    [WebMethod]
+        [WebMethod]
+        public int SetSlaLevel(int productID, int value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Product p = Products.GetProduct(loginUser, productID);
+            if (value == -1)
+            {
+                p.SlaLevelID = null;
+            }
+            else
+            {
+                p.SlaLevelID = value;
+            }
+            p.Collection.Save();
+            SlaLevels slaLevels = new SlaLevels(loginUser);
+            slaLevels.LoadBySlaLevelID(value);
+
+            string description = String.Format("{0} set product sla as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, slaLevels.IsEmpty ? "Unassigned" : slaLevels[0].Name);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, productID, description);
+            return value;
+        }
+
+        [WebMethod]
     public string SetProductJiraProjectKey(int id, string value, bool isForProductVersion)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
