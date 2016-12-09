@@ -2461,6 +2461,9 @@ function SetupProductSection() {
         window.parent.Ts.Services.Tickets.GetParentValues(_ticketID, function (fields) {
           AppenCustomValues(fields);
         });
+
+        resetSLAInfo();
+        slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
       },
       function (error) {
         alert('There was an error setting the product.');

@@ -111,6 +111,9 @@ namespace TSWebServices
       products.LoadByProductID(productID);
       ProductFamilies productFamilies = new ProductFamilies(loginUser);
 
+        SlaLevels slaLevels = new SlaLevels(loginUser);
+        slaLevels.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
       ProdProp prodProp = new ProdProp();
 
       if (products.IsEmpty) return null;
@@ -121,7 +124,19 @@ namespace TSWebServices
           productFamilies.LoadByProductFamilyID((int)products[0].ProductFamilyID);
           productFamily = productFamilies.IsEmpty ? "" : productFamilies[0].Name;
       }
+
+        string slaAssigned = "Empty";
+        if (slaLevels.Any() && products[0].SlaLevelID != null)
+        {
+            var sla = slaLevels.Where(m => m.SlaLevelID == products[0].SlaLevelID).First();
+            if (sla != null)
+            {
+                slaAssigned = sla.Name;
+            }
+        }
+
       prodProp.ProductFamily = productFamily;
+      prodProp.SlaAssigned = slaAssigned;
       prodProp.prodproxy = products[0].GetProxy();
       prodProp.JiraProjectKey = products[0].JiraProjectKey;
       prodProp.JiraInstance = "None";
@@ -1433,7 +1448,9 @@ namespace TSWebServices
     public string JiraInstance { get; set; }
     [DataMember]
     public int CrmLinkId { get; set; }
-  }
+        [DataMember]
+        public string SlaAssigned { get; set; }
+    }
 
   [DataContract]
   public class FamilyProduct
