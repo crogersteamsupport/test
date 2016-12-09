@@ -5316,8 +5316,7 @@ var setSLAInfo = function () {
     $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
     $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
   }
-  else if (_ticketInfo.Ticket.SlaViolationTime === null
-            && _ticketInfo.SlaTriggerId !== null
+  else if (_ticketInfo.SlaTriggerId !== null
             && _ticketInfo.SlaTriggerId > 0
             && _ticketInfo.IsSlaPaused !== undefined
             && !_ticketInfo.IsSlaPaused
