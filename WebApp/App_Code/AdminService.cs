@@ -573,6 +573,16 @@ namespace TSWebServices
             return null;
         }
 
+        /* SLA Trigger methods */
+        [WebMethod]
+        public SlaTrigger GetSlaTrigger(int slaTriggerId)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(loginUser, slaTriggerId);
+            
+            return slaTrigger;
+        }
+
         /// <summary>
         /// Method to migrate the customers portal settings into the customer hub tables
         /// </summary>

@@ -31,6 +31,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DayStart", "DayStart", false, false, false);
       _fieldMap.AddMap("DayEnd", "DayEnd", false, false, false);
       _fieldMap.AddMap("TimeZone", "TimeZone", false, false, false);
+      _fieldMap.AddMap("NoBusinessHours", "NoBusinessHours", false, false, false);
             
     }
   }

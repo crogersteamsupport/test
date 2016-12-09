@@ -31,6 +31,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? DayStart { get; set; }
     [DataMember] public DateTime? DayEnd { get; set; }
     [DataMember] public string TimeZone { get; set; }
+    [DataMember] public bool NoBusinessHours { get; set; }
           
   }
   
@@ -39,6 +40,7 @@ namespace TeamSupport.Data
     public SlaTriggerProxy GetProxy()
     {
       SlaTriggerProxy result = new SlaTriggerProxy();
+      result.NoBusinessHours = this.NoBusinessHours;
       result.TimeZone = this.TimeZone;
       result.Weekdays = this.Weekdays;
       result.PauseOnHoliday = this.PauseOnHoliday;
