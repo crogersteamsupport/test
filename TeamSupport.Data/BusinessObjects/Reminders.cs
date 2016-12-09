@@ -275,17 +275,6 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-
-    public void LoadByParentID(int TaskParentID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Reminders WHERE TaskParentID = @TaskParentID ORDER BY DueDate";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TaskParentID", TaskParentID);
-        Fill(command);
-      }
-    }
   }
   
 }

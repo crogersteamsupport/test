@@ -31,6 +31,7 @@ $(document).ready(function () {
     LoadProperties();
     initAssociationControls();
     LoadAssociations();
+    LoadSubtasks();
 
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
@@ -66,6 +67,11 @@ $(document).ready(function () {
             //$('#fieldDateModified').text(window.parent.parent.Ts.Utils.getMsDate(task.DateModified).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
 
             $('#fieldDescription').html(task.Description != null && task.Description != "" ? task.Description : "Empty");
+
+            if (task.TaskParentID)
+            {
+                $('#subtasksDiv').hide();
+            }
         });
     }
 
@@ -243,7 +249,7 @@ $(document).ready(function () {
                   .text(displayName)
                   .appendTo(nameCel)
 
-                var userCel = $('<td>').append(subtasks[i].UserID).appendTo(row);
+                var userCel = $('<td>').append(subtasks[i].UserName).appendTo(row);
 
                 var dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
 
@@ -1063,12 +1069,9 @@ $(document).ready(function () {
         LoadAssociations();
     });
 
-    $('#subtasksToggle').on('click', function () {
-        window.parent.parent.Ts.System.logAction('Task - Subtasks Toggle');
-        if (_subtasksLoaded == 0) {
-            _subtasksLoaded = 1;
-            LoadSubtasks(1);
-        }
+    $('#subtasksAdd').on('click', function () {
+        window.parent.parent.Ts.System.logAction('Task - Subtasks Add');
+        //Pending implementation
     });
 
     $('#subtasksRefresh').on('click', function () {
