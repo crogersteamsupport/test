@@ -71,6 +71,19 @@ $(document).ready(function () {
             if (task.TaskParentID)
             {
                 $('#subtasksDiv').hide();
+                var parentName = $('<h6>')
+                    .addClass('parentName');
+
+                $('<a>')
+                  .attr('href', '#')
+                  .addClass('parentLink')
+                  .data('reminderid', task.TaskParentID)
+                  .text(task.TaskParentName + ' >')
+                  .appendTo(parentName)
+                    
+                $('.header-nav').prepend(parentName);
+
+                $('.btn-toolbar').addClass('subtaskButtonsAdjustement');
             }
         });
     }
@@ -695,6 +708,14 @@ $(document).ready(function () {
         //    $('.recent-container').html(resultHtml);
         //});
 
+    });
+
+    $('.header-nav').on('click', '.parentLink', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('Task Detail Page - View Parent Task');
+        parent.Ts.MainPage.openNewTask(id);
     });
 
     var execGetCustomer = null;

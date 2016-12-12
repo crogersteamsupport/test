@@ -158,3 +158,16 @@ float: left;
 
 .main-quick-ticket-blur, .company-search-blur, .user-search-blur, .insert-ticket-blur, .group-search-blur,.product-search-blur { font-style: italic;}
 .main-quick-ticket, .company-search, .user-search, .insert-ticket, .group-search, .product-search {width:200px}
+
+.parentLink {
+    color: rgb(153, 153, 153);
+}
+
+.parentName {
+    margin-top: -2px;
+    margin-bottom: 0px;
+}
+
+.subtaskButtonsAdjustement {
+    margin-top: 4px !important;
+}
