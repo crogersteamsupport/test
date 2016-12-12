@@ -13,7 +13,96 @@
     <script src="Tasks.js" type="text/javascript"></script>
 </head>
 <body>
-    <div class="frame-container">
+    <div class="container">
+        <div class="row">
+            <div style="text-align:center; margin-top:20px;">
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default tab-assigned-tasks">My Tasks</button>
+                    <button type="button" class="btn btn-default tab-created-tasks">Created Tasks</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div id="Pending" style="text-align:center;">
+                    <h3>Pending Tasks</h3>
+                    <span class="pull-right" style="margin-right:20px;">
+                        <i class="fa fa-plus"></i>
+                    </span>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <td></td>
+                                <td>Name</td>
+                                <td>Assigned To</td>
+                                <td>Due</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" />
+                                </td>
+                                <td>This is an amazing task with stuff</td>
+                                <td>Travis Pitts</td>
+                                <td>1/5/2017</td>
+                                <td> <i class="fa fa-pencil"></i></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" />
+                                </td>
+                                <td>This is an amazing task with stuff</td>
+                                <td>Travis Pitts</td>
+                                <td>1/5/2017</td>
+                                <td> <i class="fa fa-pencil"></i></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" />
+                                </td>
+                                <td>This is an amazing task with stuff</td>
+                                <td>Travis Pitts</td>
+                                <td>1/5/2017</td>
+                                <td> <i class="fa fa-pencil"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div id="Completed" style="text-align:center;">
+                    <h3>Completed Tasks</h3>
+                    <span class="pull-right" style="margin-right:20px;">
+                        <i class="fa fa-plus"></i>
+                    </span>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <td></td>
+                                <td>Name</td>
+                                <td>Assigned To</td>
+                                <td>Due</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" />
+                                </td>
+                                <td>Thing 2</td>
+                                <td>Matt Damon</td>
+                                <td>10/7/2016</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="frame-container">
         <div class="tabs" style="float:left; width:160px; height:100% !important; background-color:#C6DCF7;">
             <div style="height:40px; padding: 10px 20px 0px 20px; background-color:white">
                 <a class="tab-assigned-tasks" href="#">
@@ -28,86 +117,53 @@
                 </a>
             </div>
         </div>
-        <div class="" style="margin-left:150px; margin-top:20px;">
-            <div class="container">
-                <div class="">
-                    <div id="assignedColumn" class="col-xs-8" style="">
-                        <div class="tasks-header">
-                            <h4 class="pull-left">Assigned</h4>
-                        </div>
-                        <div class="clearfix"></div>
-                        <button type="button" class="btn btn-primary pull-left action-new" data-toggle="dropdown">New Task</button>
-                        <div class="pull-right">
-                            <div class="btn-group assigned-tasks-filter" role="group" aria-label="...">
-                                <button type="button" class="btn btn-default assigned-tasks-filter-pending active">Pending</button>
-                                <button type="button" class="btn btn-default assigned-tasks-filter-completed">Completed</button>
-                                <button type="button" class="btn btn-default assigned-tasks-filter-all">All</button>
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div id="createdColumn" class="col-xs-8" style="display:none;">
-                        <h4 class="pull-left">Created</h4>
-                        <div class="clearfix"></div>
-                        <button type="button" class="btn btn-primary pull-left action-new" data-toggle="dropdown">New Task</button>
-                        <div class="btn-group created-tasks-filter pull-right" role="group" aria-label="...">
-                            <button type="button" class="btn btn-default created-tasks-filter-pending active">Pending</button>
-                            <button type="button" class="btn btn-default created-tasks-filter-completed">Completed</button>
-                            <button type="button" class="btn btn-default created-tasks-filter-all">All</button>
-                        </div>
-                        <div class="clearfix"></div>
-                        <!--<div class="results-wrapper">
-                            <table class="createdresults searchresults"></table>
-                            <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                            <div class="created-results-empty">No tasks.</div>
-                        </div>-->
-                    </div>
-                    <div class="results-wrapper col-xs-8">
-                        <table class="assignedresults searchresults table table-striped" id="taskList"></table>
-                        <!--<table class="assignedresults searchresults"></table>-->
-                        <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                        <div class="results-done">There are no more tasks.</div>
-                        <div class="results-empty">No tasks.</div>
-                        <div class="assigned-results-empty">No tasks.</div>
-                    </div>
-                </div>
-                <div class="row tasks-more" hidden><a id="moreTasks" href="#">Show more tasks.</a></div>
-                
-            </div>
-            <!-- recent task column here-->
-        </div>
-    </div>
-    <div class="maincontainerx">
-        <a href="#" class="scrollup">Scroll</a>
-        <div class="row">
-            <div>
-                <div class="row">
-                </div>
-            </div>
-        </div>
-    </div>
-    <script id="task-template" type="text/x-handlebars-template">
-        <tbody>
-            {{#taskList}}
-            <tr>
-                <td>
-                    <div class="taskinfo">
-                        <h4>
-                            <span class="checkbox">
-                                <input type="checkbox" value="">
-                                <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
-                                    {{TaskName}}
-                                </a>
-                            </span>
-                        </h4>
-                        <div>
-                            Due: {{formatDate TaskDueDate}}
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            {{/taskList}}
-        </tbody>
-    </script>
+
+    </div>-->
 </body>
+<script id="task-template" type="text/x-handlebars-template">
+    <tbody>
+        {{#taskList}}
+        <tr>
+            <td>
+                <div class="taskinfo">
+                    <h4>
+                        <span class="checkbox">
+                            <input type="checkbox" value="">
+                            <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
+                                {{TaskName}}
+                            </a>
+                        </span>
+                    </h4>
+                    <div>
+                        Due: {{formatDate TaskDueDate}}
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {{/taskList}}
+    </tbody>
+</script>
+<script id="task-template" type="text/x-handlebars-template">
+    <tbody>
+        {{#taskList}}
+        <tr>
+            <td>
+                <div class="taskinfo">
+                    <h4>
+                        <span class="checkbox">
+                            <input type="checkbox" value="">
+                            <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
+                                {{TaskName}}
+                            </a>
+                        </span>
+                    </h4>
+                    <div>
+                        Due: {{formatDate TaskDueDate}}
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {{/taskList}}
+    </tbody>
+</script>
 </html>
