@@ -31,6 +31,7 @@ $(document).ready(function () {
     LoadProperties();
     initAssociationControls();
     LoadAssociations();
+    LoadSubtasks();
 
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
@@ -49,9 +50,9 @@ $(document).ready(function () {
 
             $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
-            $('#fieldComplete').text(task.TaskIsComplete);
+            $('#fieldComplete').text(task.TaskIsComplete ? "yes": "no");
             $('#fieldDueDate').text(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-            $('#fieldReminder').text(!task.IsDismissed);
+            $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
             $('#fieldReminderDate').text(window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
             if (task.IsDismissed) {
                 $('#reminderDateGroup').hide();
@@ -66,6 +67,11 @@ $(document).ready(function () {
             //$('#fieldDateModified').text(window.parent.parent.Ts.Utils.getMsDate(task.DateModified).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
 
             $('#fieldDescription').html(task.Description != null && task.Description != "" ? task.Description : "Empty");
+
+            if (task.TaskParentID)
+            {
+                $('#subtasksDiv').hide();
+            }
         });
     }
 
@@ -243,7 +249,7 @@ $(document).ready(function () {
                   .text(displayName)
                   .appendTo(nameCel)
 
-                var userCel = $('<td>').append(subtasks[i].UserID).appendTo(row);
+                var userCel = $('<td>').append(subtasks[i].UserName).appendTo(row);
 
                 var dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
 
@@ -289,6 +295,10 @@ $(document).ready(function () {
         $('p, #taskName').toggleClass("editable");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
+        if ($(this).hasClass("btn-primary"))
+            $(this).html('<i class="fa fa-pencil"></i> Edit');
+        else
+            $(this).html('<i class="fa fa-pencil"></i> Save');
     });
 
     $('#taskName').click(function (e) {
@@ -447,9 +457,9 @@ $(document).ready(function () {
     $('#fieldComplete').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'true'), function (result) {
+        window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
             top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-            $('#fieldComplete').text((result === true ? 'true' : 'false'));
+            $('#fieldComplete').text((result === true ? 'yes' : 'no'));
         },
         function (error) {
             header.show();
@@ -513,9 +523,9 @@ $(document).ready(function () {
     $('#fieldReminder').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        window.parent.parent.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'false'), function (result) {
+        window.parent.parent.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'no'), function (result) {
             top.Ts.System.logAction('Task Detail - Toggle IsDismissed');
-            $('#fieldReminder').text((result === true ? 'false' : 'true'));
+            $('#fieldReminder').text((result === true ? 'no' : 'yes'));
             if (result) {
                 $('#reminderDateGroup').hide();
             }
@@ -1059,12 +1069,9 @@ $(document).ready(function () {
         LoadAssociations();
     });
 
-    $('#subtasksToggle').on('click', function () {
-        window.parent.parent.Ts.System.logAction('Task - Subtasks Toggle');
-        if (_subtasksLoaded == 0) {
-            _subtasksLoaded = 1;
-            LoadSubtasks(1);
-        }
+    $('#subtasksAdd').on('click', function () {
+        window.parent.parent.Ts.System.logAction('Task - Subtasks Add');
+        //Pending implementation
     });
 
     $('#subtasksRefresh').on('click', function () {
