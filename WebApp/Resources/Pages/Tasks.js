@@ -439,7 +439,7 @@ $(document).ready(function () {
         }
 
 
-        fetchItems();
+        //fetchItems();
     });
 
     Handlebars.registerHelper("formatDate", function (datetime) {
