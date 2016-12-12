@@ -273,12 +273,46 @@
                 }
 
                 cbSLASunday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLASunday.parentElement.tagName == 'SPAN' && cbSLASunday.parentElement.disabled == true) {
+                    cbSLASunday.parentElement.disabled = false;
+                }
+
                 cbSLAMonday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLAMonday.parentElement.tagName == 'SPAN' && cbSLAMonday.parentElement.disabled == true) {
+                    cbSLAMonday.parentElement.disabled = false;
+                }
+
                 cbSLATuesday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLATuesday.parentElement.tagName == 'SPAN' && cbSLATuesday.parentElement.disabled == true) {
+                    cbSLATuesday.parentElement.disabled = false;
+                }
+
                 cbSLAWednesday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLAWednesday.parentElement.tagName == 'SPAN' && cbSLAWednesday.parentElement.disabled == true) {
+                    cbSLAWednesday.parentElement.disabled = false;
+                }
+
                 cbSLAThursday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLAThursday.parentElement.tagName == 'SPAN' && cbSLAThursday.parentElement.disabled == true) {
+                    cbSLAThursday.parentElement.disabled = false;
+                }
+
                 cbSLAFriday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLAFriday.parentElement.tagName == 'SPAN' && cbSLAFriday.parentElement.disabled == true) {
+                    cbSLAFriday.parentElement.disabled = false;
+                }
+
                 cbSLASaturday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLASaturday.parentElement.tagName == 'SPAN' && cbSLASaturday.parentElement.disabled == true) {
+                    cbSLASaturday.parentElement.disabled = false;
+                }
             }
         }
     </script>

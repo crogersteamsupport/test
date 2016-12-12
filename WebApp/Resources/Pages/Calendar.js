@@ -298,6 +298,7 @@
                 $("#calendar .holiday").removeClass("holiday");
                 $("#calendar").fullCalendar('refetchEvents');
                 mainFrame.Ts.System.logAction('Calendar Event - Deleted');
+                theTempEvent = null;
             });
         }
     });
