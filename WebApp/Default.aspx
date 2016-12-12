@@ -90,7 +90,9 @@
       }
     }
 
-    var backspaceIsPressed = false
+    var backspaceIsPressed = false;
+    var isSignedOut = false;
+
     $(document).keydown(function (event) {
         if (event.which == 8) {
             backspaceIsPressed = true
@@ -106,13 +108,15 @@
         //    backspaceIsPressed = false
         //    return "Are you sure you want to leave this page?"
         //}
-
-        var iframes = document.getElementsByTagName('iframe'); //all iframes on page
-        for (var i = 0; i < iframes.length; i++) {
-            try {
-                if (iframes[i].contentWindow.tinyMCE.activeEditor)
-                    return "Are you sure you want to leave this page?"
-            } catch (e) { }
+        if (!isSignedOut)
+        {
+            var iframes = document.getElementsByTagName('iframe'); //all iframes on page
+            for (var i = 0; i < iframes.length; i++) {
+                try {
+                    if (iframes[i].contentWindow.tinyMCE.activeEditor)
+                        return "Are you sure you want to leave this page?"
+                } catch (e) { }
+            }
         }
 
     })
