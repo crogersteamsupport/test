@@ -212,6 +212,7 @@
                 try {
                     if (event.hasOwnProperty("start") && event.hasOwnProperty("validend")) {
                         var startDate = new Date(event.start._i);
+                        startDate.setTime(startDate.getTime() + (Math.abs(startDate.getTimezoneOffset()) * 60 * 1000));
                         var endDate = new Date(event.end._d);
                         endDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 0, 0, 0, 0);
                         startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getUTCDate(), 0, 0, 0, 0);
@@ -226,7 +227,7 @@
                         while (stretchDate.getTime() <= endDate.getTime()) {
                             if (stretchDate.getTime() !== today.getTime()) {
                                 year = stretchDate.getFullYear();
-                                month = (((stretchDate.getMonth() + 1).toString().length < 2) ? "0" + stretchDate.getMonth() + 1 : stretchDate.getMonth() + 1);
+                                month = (((stretchDate.getMonth() + 1).toString().length < 2) ? "0" + parseInt(stretchDate.getMonth() + 1) : stretchDate.getMonth() + 1);
                                 day = ((stretchDate.getDate().toString().length < 2) ? "0" + stretchDate.getDate() : stretchDate.getDate());
                                 var dayCell = $('.fc-day[data-date="' + year + '-' + month + '-' + day + '"]');
 
@@ -298,6 +299,7 @@
                 $("#calendar .holiday").removeClass("holiday");
                 $("#calendar").fullCalendar('refetchEvents');
                 mainFrame.Ts.System.logAction('Calendar Event - Deleted');
+                theTempEvent = null;
             });
         }
     });

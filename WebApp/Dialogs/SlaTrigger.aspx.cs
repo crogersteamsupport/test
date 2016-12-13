@@ -200,10 +200,10 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
   public override bool Save()
   {
-    if (!rbBusinessHours.Checked && (timeSLAStart.SelectedDate == null || timeSLAEnd.SelectedDate == null))
+    if (rbCustomBusinessHours.Checked && (timeSLAStart.SelectedDate == null || timeSLAEnd.SelectedDate == null))
     {
         string script = "alert('Please select both the SLA Day Start and End.');";
-        string name = "Testing";
+        string name = "ValidationAlert";
         ScriptManager.RegisterClientScriptBlock(this, typeof(Page), name + "_function", "function " + name + "(){" + script + "Sys.Application.remove_load(" + name + ");}", true);
         ScriptManager.RegisterStartupScript(this, typeof(Page), name, "Sys.Application.add_load(" + name + ");", true);
         DialogResult = "";

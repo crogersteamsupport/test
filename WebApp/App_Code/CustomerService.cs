@@ -1443,6 +1443,7 @@ namespace TSWebServices
                 customerSlaTrigger.LevelName = row["LevelName"].ToString();
                 customerSlaTrigger.Severity = row["Severity"].ToString();
                 customerSlaTrigger.TicketType = row["TicketType"].ToString();
+                customerSlaTrigger.SLAType = row["SLAType"].ToString();
 
                 list.Add(customerSlaTrigger);
             }
@@ -4831,6 +4832,7 @@ SELECT
             public string LevelName { get; set; }
             public string Severity { get; set; }
             public string TicketType { get; set; }
+            public string SLAType { get; set; }
         }
 
         public class CustomerSLAViolation
