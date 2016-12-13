@@ -2464,7 +2464,7 @@ $(document).ready(function () {
                 var html;
 
                 if (!_isParentView && (_mainFrame.Ts.System.User.CanEditCompany || _isAdmin)) {
-                    html = '<td>' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td><td>' + slaTriggers[i].SLAType + '</td>';
+                    html = '<td class="col-md-3">' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td><td>' + slaTriggers[i].SLAType + '</td>';
                 }
                 else {
                     html = '<td>' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td><td>' + slaTriggers[i].SLAType + '</td>';
