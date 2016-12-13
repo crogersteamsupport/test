@@ -522,7 +522,7 @@ function SaveTicket() {
         var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
         info.DueDate = _dueDate;
 
-        info.CategoryID = ($('#ticket-Category').length) ? $('#ticket-Category').val() : null;//$('#ticket-Category').val();
+        info.CategoryID = ($('#ticket-Community').length) ? $('#ticket-Community').val() : null;//$('#ticket-Category').val();
         info.ProductID = ($('#ticket-Product').length && $('#ticket-Product').val() !== '') ? $('#ticket-Product').val() : '-1';//($('#ticket-Product').val() == '') ? '-1' : $('#ticket-Product').val();
         info.ReportedID = ($('#ticket-Versions').length && $('#ticket-Versions').val() !== '') ? $('#ticket-Versions').val() : '-1';//($('#ticket-Versions').val() == '') ? '-1' : $('#ticket-Versions').val();
         info.ResolvedID = ($('#ticket-Resolved').length && $('#ticket-Resolved').val() !== '') ? $('#ticket-Resolved').val() : '-1';//($('#ticket-Resolved').val() == '') ? '-1' : $('#ticket-Resolved').val();
