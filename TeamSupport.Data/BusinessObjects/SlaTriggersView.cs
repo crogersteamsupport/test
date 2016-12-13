@@ -70,6 +70,18 @@ namespace TeamSupport.Data
       }
     }
 
+        public void LoadByTicketId(int id)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT * FROM SlaTriggersView WHERE SlaTriggerID = dbo.GetSlaTrigger(@TicketID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", id);
+
+                Fill(command);
+            }
+        }
+
         public void LoadByCustomer(int organizationId, int customerId)
         {
             string sql = @"SELECT SlaTriggersView.SlaLevelID, SlaTriggersView.SlaTriggerID, SlaTriggersView.LevelName, SlaTriggersView.Severity, SlaTriggersView.TicketType, SlaLevelsAssociated.SLAType

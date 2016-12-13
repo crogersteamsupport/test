@@ -1466,6 +1466,9 @@ namespace TSWebServices
                 customerSlaViolation.TicketNumber = int.Parse(row["TicketNumber"].ToString());
                 customerSlaViolation.Violation = row["Violation"].ToString();
                 customerSlaViolation.DateViolated = DateTime.Parse(row["DateViolated"].ToString());
+                customerSlaViolation.LevelName = row["LevelName"].ToString();
+                customerSlaViolation.Severity = row["SlaSeverity"].ToString();
+                customerSlaViolation.TicketType = row["SlaTicketType"].ToString();
 
                 list.Add(customerSlaViolation);
             }
@@ -4841,6 +4844,9 @@ SELECT
             public int TicketNumber { get; set; }
             public string Violation { get; set; }
             public DateTime DateViolated { get; set; }
+            public string LevelName { get; set; }
+            public string Severity { get; set; }
+            public string TicketType { get; set; }
         }
     }
 }
