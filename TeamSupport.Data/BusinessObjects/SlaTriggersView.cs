@@ -72,24 +72,34 @@ namespace TeamSupport.Data
 
         public void LoadByCustomer(int organizationId, int customerId)
         {
-            string sql = @"SELECT SlaTriggersView.SlaLevelID, SlaTriggersView.SlaTriggerID, SlaTriggersView.LevelName, SlaTriggersView.Severity, SlaTriggersView.TicketType
+            string sql = @"SELECT SlaTriggersView.SlaLevelID, SlaTriggersView.SlaTriggerID, SlaTriggersView.LevelName, SlaTriggersView.Severity, SlaTriggersView.TicketType, SlaLevelsAssociated.SLAType
 FROM
 	SlaTriggersView
-	JOIN (SELECT SlaLevels.SlaLevelID
-			FROM
-				Organizations
-				JOIN SlaLevels
-					ON Organizations.SlaLevelID = SlaLevels.SlaLevelID
-			WHERE Organizations.OrganizationID = @customerId
-			UNION
-			SELECT SlaLevels.SlaLevelID
+	JOIN (SELECT SlaLevels.SlaLevelID, 'Customer-Product' AS SLAType, 1 AS [SlaHierarchy]
 			FROM
 				OrganizationProducts
 				JOIN SlaLevels
 					ON OrganizationProducts.SlaLevelID = SlaLevels.SlaLevelID
-			WHERE OrganizationProducts.OrganizationID = @customerId) AS SlaLevelsAssociated
+			WHERE OrganizationProducts.OrganizationID = @customerId
+            UNION
+            SELECT SlaLevels.SlaLevelID, 'Product' AS SLAType, 2 AS [SlaHierarchy]
+			FROM
+				OrganizationProducts
+				JOIN Products
+					ON OrganizationProducts.ProductID = Products.ProductID
+				JOIN SlaLevels
+					ON Products.SlaLevelID = SlaLevels.SlaLevelID				
+			WHERE OrganizationProducts.OrganizationID = @customerId
+            UNION
+            SELECT SlaLevels.SlaLevelID, 'Customer' AS SLAType, 3 AS [SlaHierarchy]
+			FROM
+				Organizations
+				JOIN SlaLevels
+					ON Organizations.SlaLevelID = SlaLevels.SlaLevelID
+			WHERE Organizations.OrganizationID = @customerId) AS SlaLevelsAssociated
 	ON SlaTriggersView.SlaLevelID = SlaLevelsAssociated.SlaLevelID
-WHERE OrganizationID = @organizationId";
+WHERE OrganizationID = @organizationId
+ORDER BY SlaLevelsAssociated.SlaHierarchy";
 
             using (SqlCommand command = new SqlCommand())
             {
