@@ -1288,6 +1288,24 @@ namespace TSWebServices
           user.Collection.Save();
         }
 
+        [WebMethod]
+        public void AdminSetAdmin(int userID, bool value)
+        {
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            user.IsSystemAdmin = value;
+            user.Collection.Save();
+        }
+
+        [WebMethod]
+        public void AdminSetBilling(int userID, bool value)
+        {
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            user.IsFinanceAdmin = value;
+            user.Collection.Save();
+        }
+
         public int GetIDByExactName(string name)
         {
             Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
