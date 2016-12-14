@@ -180,12 +180,13 @@
             if (!_reset) {
                 var datePicker = $find("<%=PauseOnDates.ClientID %>");
                 var dateText = datePicker.get_dateInput().get_selectedDate().localeFormat(window.parent.Ts.Utils.getDatePattern());
+                var dateValue = datePicker.get_dateInput().get_selectedDate().toLocaleDateString();
                 var htmlSelect = document.getElementById('<%=daysToPauseList.ClientID%>');
                 var option = document.createElement("OPTION");
                 option.innerHTML = dateText;
-                option.value = dateText;
+                option.value = dateValue;
                 htmlSelect.appendChild(option);
-                AddToHidden(dateText);
+                AddToHidden(dateValue);
             }
 
             _reset = false;            
@@ -211,18 +212,21 @@
                         var deletedDate = new Date(htmlSelect.options[i].value);
                         htmlSelect.options[i] = null;
 
-                        var datePicker = $find("<%=PauseOnDates.ClientID %>");
-                        var dateText = datePicker.get_dateInput().get_selectedDate();
+                        try {
+                            var datePicker = $find("<%=PauseOnDates.ClientID %>");
+                            var dateText = datePicker.get_dateInput().get_selectedDate();
 
-                        if (deletedDate.getTime() === dateText.getTime()) {
-                            _reset = true;
-                            var month = dateText.getMonth();
-                            var day = dateText.getDate();
-                            day = (day > 1) ? 1 : 2;
-                            var year = dateText.getFullYear();
-                            var newDate = new Date(year, month, day);
-                            datePicker.set_selectedDate(newDate);
-                       }
+                            if (deletedDate.getTime() === dateText.getTime()) {
+                                _reset = true;
+                                var month = dateText.getMonth();
+                                var day = dateText.getDate();
+                                day = (day > 1) ? 1 : 2;
+                                var year = dateText.getFullYear();
+                                var newDate = new Date(year, month, day);
+                                datePicker.set_selectedDate(newDate);
+                           }
+                        } catch (err) {
+                        }
                     }
                 }
             }

@@ -132,10 +132,10 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     DaysToPauseHidden.Value = string.Join(",", daysToPause.Select(p => DataUtils.DateToLocal(UserSession.LoginUser, p).ToString("d")));
     LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-    foreach(DateTime dayToPause in daysToPause)
+    foreach(DateTime dayToPause in daysToPause.OrderBy(p => p))
     {
         daysToPauseList.Items.Add(new ListItem {
-                                                Value = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d", loginUser.CultureInfo),
+                                                Value = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d"),
                                                 Text = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d", loginUser.CultureInfo)
                                                });
     }
@@ -266,7 +266,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
     if (!String.IsNullOrEmpty(DaysToPauseHidden.Value))
     {
-        DaysToPause = DaysToPauseHidden.Value.Split(',').Distinct().ToList();
+        DaysToPause = DaysToPauseHidden.Value.Split(',').Distinct().Where(p => !string.IsNullOrEmpty(p)).ToList();
     }
 
     SlaPausedDays slaPausedDays = new SlaPausedDays(UserSession.LoginUser);
