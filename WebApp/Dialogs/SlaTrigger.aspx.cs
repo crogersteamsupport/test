@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
+using System.Globalization;
 using System.Linq;
-using System.Web;
-using System.Web.Security;
 using System.Web.UI;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
 using TeamSupport.WebUtils;
 using TeamSupport.Data;
 using Telerik.Web.UI;
@@ -135,12 +130,13 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     cbPauseOnOrganizationHolidays.Checked = trigger.PauseOnHoliday;
     List<DateTime> daysToPause = SlaTriggers.GetSpecificDaysToPause(trigger.SlaTriggerID);
     DaysToPauseHidden.Value = string.Join(",", daysToPause.Select(p => DataUtils.DateToLocal(UserSession.LoginUser, p).ToString("d")));
+    LoginUser loginUser = TSAuthentication.GetLoginUser();
 
     foreach(DateTime dayToPause in daysToPause)
     {
         daysToPauseList.Items.Add(new ListItem {
-                                                Value = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d"),
-                                                Text = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d")
+                                                Value = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d", loginUser.CultureInfo),
+                                                Text = DataUtils.DateToLocal(UserSession.LoginUser, dayToPause).ToString("d", loginUser.CultureInfo)
                                                });
     }
   }
@@ -317,7 +313,14 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
         {
             DateTime dayToPause = new DateTime();
 
-            if (DateTime.TryParse(day, out dayToPause))
+            if (DateTime.TryParse(day, new CultureInfo("en-US"), DateTimeStyles.None, out dayToPause))
+            {
+                SlaPausedDay slaPausedDay = slaPausedDays.AddNewSlaPausedDay();
+                slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
+                slaPausedDay.DateToPause = dayToPause.ToUniversalTime();
+                slaPausedDay.Collection.Save();
+            }
+            else if (DateTime.TryParse(day, TSAuthentication.GetLoginUser().CultureInfo, DateTimeStyles.None, out dayToPause))
             {
                 SlaPausedDay slaPausedDay = slaPausedDays.AddNewSlaPausedDay();
                 slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
