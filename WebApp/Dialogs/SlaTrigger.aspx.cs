@@ -262,11 +262,11 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     AddSLADay(ref weekdays, DayOfWeek.Saturday, cbSLASaturday.Checked);
     trigger.Weekdays = weekdays;
 
-    List<string> DaysToPause = new List<string>();
+    List<string> daysToPause = new List<string>();
 
     if (!String.IsNullOrEmpty(DaysToPauseHidden.Value))
     {
-        DaysToPause = DaysToPauseHidden.Value.Split(',').Distinct().Where(p => !string.IsNullOrEmpty(p)).ToList();
+        daysToPause = DaysToPauseHidden.Value.Split(',').Distinct().Where(p => !string.IsNullOrEmpty(p)).ToList();
     }
 
     SlaPausedDays slaPausedDays = new SlaPausedDays(UserSession.LoginUser);
@@ -309,9 +309,10 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
     {
         trigger.Collection.Save();
 
-        foreach (string day in DaysToPause)
+        foreach (string day in daysToPause)
         {
             DateTime dayToPause = new DateTime();
+            Settings.UserDB.WriteString("SlaTriggerDayToPauseDebug", day);
 
             if (DateTime.TryParse(day, new CultureInfo("en-US"), DateTimeStyles.None, out dayToPause))
             {
@@ -319,6 +320,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
                 slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
                 slaPausedDay.DateToPause = dayToPause.ToUniversalTime();
                 slaPausedDay.Collection.Save();
+                Settings.UserDB.WriteString("SlaTriggerDayToPauseParseDebug", "us-US: " + dayToPause.ToShortDateString());
             }
             else if (DateTime.TryParse(day, TSAuthentication.GetLoginUser().CultureInfo, DateTimeStyles.None, out dayToPause))
             {
@@ -326,6 +328,11 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
                 slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
                 slaPausedDay.DateToPause = dayToPause.ToUniversalTime();
                 slaPausedDay.Collection.Save();
+                Settings.UserDB.WriteString("SlaTriggerDayToPauseParseDebug", TSAuthentication.GetLoginUser().CultureInfo + ": " + dayToPause.ToShortDateString());
+            }
+            else
+            {
+                Settings.UserDB.WriteString("SlaTriggerDayToPauseParseDebug", "none");
             }
         }
 
