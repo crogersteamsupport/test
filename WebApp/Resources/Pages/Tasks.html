@@ -24,64 +24,73 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 col-sm-12">
+            <div class="col-md-12 col-sm-12">
                 <div id="Pending">
-                    <h3>Pending Tasks</h3>
+                    <h3>Pending</h3>
                     <span class="pull-right" style="margin-right:20px;">
                         <a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i></a>
                     </span>
-                    <table class="table table-striped">
+                    <div id="pendingTaskList">
+                        <div id="handlebarsTaskList"></div>
+                    </div>
+                    <!--<table class="table table-striped">
                         <thead>
                             <tr>
                                 <td></td>
                                 <td>Name</td>
                                 <td>Assigned To</td>
                                 <td>Due</td>
+                                <td>Reminder Date</td>
                                 <td></td>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
-                                    <i class="fa fa-angle-right" style="margin-right:6px;"></i>
-                                    <input type="checkbox" />
+                                    <i style="margin-right:-12px;" class="fa fa-angle-down"></i>
+                                    <input style="margin-left:20px;" type="checkbox" />
                                 </td>
                                 <td>This is an amazing task with stuff</td>
                                 <td>Travis Pitts</td>
                                 <td>1/5/2017</td>
+                                <td>1/1/2017</td>
                                 <td>
                                     <i class="fa fa-pencil"></i>
                                     <i class="fa fa-list" aria-hidden="true"></i>
                                 </td>
                             </tr>
-                            <tr>
-                                <td><input type="checkbox" /></td>
-                                <td style="padding-left:30px;">Break everything</td>
+                            <tr class="">
+                                <td><input style="margin-left:20px;" type="checkbox" /></td>
+                                <td style="padding-left:40px;">Break everything</td>
                                 <td>Matt Townsen</td>
                                 <td>12/5/2016</td>
+                                <td></td>
                                 <td><i class="fa fa-pencil"></i></td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" /></td>
-                                <td style="padding-left:30px;">Break everything again</td>
+                                <td><input style="margin-left:20px;" type="checkbox" /></td>
+                                <td style="padding-left:40px;">Break everything again</td>
                                 <td>Matt Townsen</td>
                                 <td>12/5/2016</td>
+                                <td></td>
                                 <td><i class="fa fa-pencil"></i></td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" /></td>
-                                <td style="padding-left:30px;">Torch what's left</td>
+                                <td><input style="margin-left:20px;" type="checkbox" /></td>
+                                <td style="padding-left:40px;">Torch what's left</td>
                                 <td>Matt Townsen</td>
                                 <td>12/5/2016</td>
+                                <td></td>
                                 <td><i class="fa fa-pencil"></i></td>
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="checkbox" />
+                                    <input style="margin-left:20px;" type="checkbox" />
                                 </td>
                                 <td>This is an amazing task with stuff</td>
                                 <td>Travis Pitts</td>
                                 <td>1/5/2017</td>
+                                <td></td>
                                 <td> <i class="fa fa-pencil"></i></td>
                             </tr>
                             <tr>
@@ -91,14 +100,15 @@
                                 <td>This is an amazing task with stuff</td>
                                 <td>Travis Pitts</td>
                                 <td>1/5/2017</td>
+                                <td></td>
                                 <td> <i class="fa fa-pencil"></i></td>
                             </tr>
                         </tbody>
-                    </table>
+                    </table>-->
                 </div>
             </div>
-            <div class="col-md-6 col-sm-12">
-                <div id="Completed" style="text-align:center;">
+            <!--<div class="col-md-12 col-sm-12">
+                <div id="Completed">
                     <h3>Completed Tasks</h3>
                     <span class="pull-right" style="margin-right:20px;">
                         <a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i></a>
@@ -122,33 +132,11 @@
                                 <td>10/7/2016</td>
                             </tr>
                         </tbody>
-
                     </table>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
-    <!--<div class="frame-container">
-        <div class="tabs" style="float:left; width:160px; height:100% !important; background-color:#C6DCF7;">
-            <div style="height:40px; padding: 10px 20px 0px 20px; background-color:white">
-                <a class="tab-assigned-tasks" href="#">
-                    Assigned
-                    <span class="pull-right">20</span>
-                </a>
-            </div>
-            <div style="margin-top:10px; padding:0px 20px 0px 20px;">
-                <a class="tab-created-tasks" href="#">
-                    Created
-                    <span class="pull-right">5</span>
-                </a>
-            </div>
-        </div>
-
-    </div>-->
-    <!--<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-        Launch demo modal
-    </button>-->
-    <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -157,7 +145,22 @@
                     <h4 class="modal-title" id="myModalLabel">New Task</h4>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <div class="taskLine">
+                        Task Name
+                        <input type="text" placeholder="" class="form-control" />
+                    </div>
+                    <div class="taskLine">
+                        Assigned To
+                        <input type="text" style="width:300px;" placeholder="" class="form-control" />
+                    </div>
+                    <div class="taskLine" style="width:200px;">
+                        Due
+                        <input type="date" class="form-control" />
+                    </div>
+                    <div class="taskLine" style="width:200px;">
+                        Reminder Date
+                        <input type="date" class="form-control" />
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -168,49 +171,38 @@
     </div>
 </body>
 <script id="task-template" type="text/x-handlebars-template">
-    <tbody>
-        {{#taskList}}
-        <tr>
-            <td>
-                <div class="taskinfo">
-                    <h4>
-                        <span class="checkbox">
-                            <input type="checkbox" value="">
-                            <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
-                                {{TaskName}}
-                            </a>
-                        </span>
-                    </h4>
-                    <div>
-                        Due: {{formatDate TaskDueDate}}
-                    </div>
-                </div>
-            </td>
-        </tr>
-        {{/taskList}}
-    </tbody>
-</script>
-<script id="task-template" type="text/x-handlebars-template">
-    <tbody>
-        {{#taskList}}
-        <tr>
-            <td>
-                <div class="taskinfo">
-                    <h4>
-                        <span class="checkbox">
-                            <input type="checkbox" value="">
-                            <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
-                                {{TaskName}}
-                            </a>
-                        </span>
-                    </h4>
-                    <div>
-                        Due: {{formatDate TaskDueDate}}
-                    </div>
-                </div>
-            </td>
-        </tr>
-        {{/taskList}}
-    </tbody>
+    <div id="taskList"></div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td></td>
+                <td>Name</td>
+                <td>Assigned To</td>
+                <td>Due</td>
+                <td>Reminder Date</td>
+                <td>Association</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody id="pendingtasks">
+            {{#taskList}}
+            <tr>
+                <td>
+                    <input {{taskComplete TaskDateCompleted}} type="checkbox" />
+                </td>
+                <td>{{TaskName}}</td>
+                <td>Matt Damon</td>
+                <td>{{formatDate TaskDueDate}}</td>
+                <td>{{formatDate TaskDueDate}}</td>
+                <td></td>
+                <td>
+                    <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </td>
+            </tr>
+            {{/taskList}}
+        </tbody>
+    </table>
 </script>
 </html>
