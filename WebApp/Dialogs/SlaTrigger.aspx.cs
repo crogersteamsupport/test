@@ -266,9 +266,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
     if (!String.IsNullOrEmpty(DaysToPauseHidden.Value))
     {
-        string daysToPauseHiddenTemp = DaysToPauseHidden.Value;
-        daysToPauseHiddenTemp = daysToPauseHiddenTemp.Replace("?", "");
-        daysToPause = daysToPauseHiddenTemp.Split(',').Distinct().Where(p => !string.IsNullOrEmpty(p)).ToList();
+        daysToPause = DaysToPauseHidden.Value.Split(',').Distinct().Where(p => !string.IsNullOrEmpty(p)).ToList();
     }
 
     SlaPausedDays slaPausedDays = new SlaPausedDays(UserSession.LoginUser);
@@ -313,10 +311,11 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
         foreach (string day in daysToPause)
         {
+            string decodedDay = System.Net.WebUtility.HtmlDecode(day);
             DateTime dayToPause = new DateTime();
-            Settings.UserDB.WriteString("SlaTriggerDayToPauseDebug", day);
+            Settings.UserDB.WriteString("SlaTriggerDayToPauseDebug", day + " => " + decodedDay);
 
-            if (DateTime.TryParse(day, new CultureInfo("en-US"), DateTimeStyles.None, out dayToPause))
+            if (DateTime.TryParse(decodedDay, new CultureInfo("en-US"), DateTimeStyles.None, out dayToPause))
             {
                 SlaPausedDay slaPausedDay = slaPausedDays.AddNewSlaPausedDay();
                 slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
@@ -324,7 +323,7 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
                 slaPausedDay.Collection.Save();
                 Settings.UserDB.WriteString("SlaTriggerDayToPauseParseDebug", "us-US: " + dayToPause.ToShortDateString());
             }
-            else if (DateTime.TryParse(day, TSAuthentication.GetLoginUser().CultureInfo, DateTimeStyles.None, out dayToPause))
+            else if (DateTime.TryParse(decodedDay, TSAuthentication.GetLoginUser().CultureInfo, DateTimeStyles.None, out dayToPause))
             {
                 SlaPausedDay slaPausedDay = slaPausedDays.AddNewSlaPausedDay();
                 slaPausedDay.SlaTriggerId = trigger.SlaTriggerID;
