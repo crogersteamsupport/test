@@ -312,6 +312,9 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
         foreach (string day in daysToPause)
         {
             string decodedDay = System.Net.WebUtility.HtmlDecode(day);
+            decodedDay = System.Text.RegularExpressions.Regex.Replace(decodedDay, @"[^\u0000-\u007F]+", string.Empty);
+            decodedDay = System.Text.RegularExpressions.Regex.Replace(decodedDay, "[^.0-9/\\s]", "");
+
             DateTime dayToPause = new DateTime();
             Settings.UserDB.WriteString("SlaTriggerDayToPauseDebug", day + " => " + decodedDay);
 
