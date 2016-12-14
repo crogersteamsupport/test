@@ -198,7 +198,9 @@
             if (daysToPauseHidden.value == null || daysToPauseHidden.value == '') {
                 daysToPauseHidden.value = dateText;
             } else {
-                daysToPauseHidden.value += "," + dateText;
+                var daysToPauseHiddenTemp = daysToPauseHidden.value;
+                daysToPauseHiddenTemp = daysToPauseHiddenTemp + "," + dateText;
+                daysToPauseHidden.value = daysToPauseHiddenTemp;
             }
         }
 

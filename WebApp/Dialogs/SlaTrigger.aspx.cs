@@ -266,7 +266,9 @@ public partial class Dialogs_SlaTrigger : BaseDialogPage
 
     if (!String.IsNullOrEmpty(DaysToPauseHidden.Value))
     {
-        daysToPause = DaysToPauseHidden.Value.Split(',').Distinct().Where(p => !string.IsNullOrEmpty(p)).ToList();
+        string daysToPauseHiddenTemp = DaysToPauseHidden.Value;
+        daysToPauseHiddenTemp = daysToPauseHiddenTemp.Replace("?", "");
+        daysToPause = daysToPauseHiddenTemp.Split(',').Distinct().Where(p => !string.IsNullOrEmpty(p)).ToList();
     }
 
     SlaPausedDays slaPausedDays = new SlaPausedDays(UserSession.LoginUser);
