@@ -1,9 +1,16 @@
 ﻿$(document).ready(function () {
   LoadOrder();
   CreateDOMEvents();
+  if (window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1078)
+  {
+      $('#btnAddTicketPlugin').remove();
+
+  }
 });
 
 var _pluginID = -1;
+
+
 
 function LoadOrder() {
     //get ticket categories and append them to list
