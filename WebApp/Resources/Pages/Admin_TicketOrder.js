@@ -1,7 +1,10 @@
 ﻿$(document).ready(function () {
   LoadOrder();
   CreateDOMEvents();
-  if (window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1078)
+  if (window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1078
+      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 13679
+      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1088
+      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 362372)
   {
       $('#btnAddTicketPlugin').remove();
 
