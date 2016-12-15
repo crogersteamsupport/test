@@ -281,6 +281,7 @@
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
     <Compile Include="BusinessObjects\OrganizationProductsView.cs" />
     <Compile Include="BusinessObjects\Organizations.cs" />
+    <Compile Include="BusinessObjects\Plugins.cs" />
     <Compile Include="BusinessObjects\ProductFamilies.cs" />
     <Compile Include="BusinessObjects\RecentlyViewedItems.cs" />
     <Compile Include="BusinessObjects\Reminders.cs" />
@@ -399,6 +400,7 @@
     <Compile Include="FieldMaps\OrganizationProductsViewFieldMap.cs" />
     <Compile Include="FieldMaps\PhoneOptionsFieldMap.cs" />
     <Compile Include="FieldMaps\PhoneQueueFieldMap.cs" />
+    <Compile Include="FieldMaps\PluginsFieldMap.cs" />
     <Compile Include="FieldMaps\ProductFamiliesFieldMap.cs" />
     <Compile Include="FieldMaps\RecentlyViewedItemsFieldMap.cs" />
     <Compile Include="FieldMaps\RemindersFieldMap.cs" />
@@ -677,6 +679,7 @@
     <Compile Include="Generated\GeneratedPhoneOptions.cs" />
     <Compile Include="Generated\GeneratedPhoneQueue.cs" />
     <Compile Include="Generated\GeneratedPhoneTypes.cs" />
+    <Compile Include="Generated\GeneratedPlugins.cs" />
     <Compile Include="Generated\GeneratedPortalLoginHistory.cs" />
     <Compile Include="Generated\GeneratedPortalOptions.cs" />
     <Compile Include="Generated\GeneratedProductFamilies.cs" />
@@ -781,6 +784,7 @@
     <Compile Include="Proxies\ImportsProxy.cs" />
     <Compile Include="Proxies\JiraInstanceProductsProxy.cs" />
     <Compile Include="Proxies\KBRatingsProxy.cs" />
+    <Compile Include="Proxies\PluginsProxy.cs" />
     <Compile Include="Proxies\ProductFamiliesProxy.cs" />
     <Compile Include="Proxies\ScheduledReportsProxy.cs" />
     <Compile Include="Proxies\ScheduledReportsRecurrencyProxy.cs" />
