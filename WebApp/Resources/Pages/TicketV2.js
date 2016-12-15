@@ -462,7 +462,7 @@ function SetupTicketProperties(order) {
 
     jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
 
-    if (!window.parent.Ts.System.User.ChangeKbVisibility && window.parent.Ts.System.User.IsSystemAdmin)
+    if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin)
         $('#action-new-KB').prop('disabled', true);
 
 
