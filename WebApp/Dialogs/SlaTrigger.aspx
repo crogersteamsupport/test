@@ -36,6 +36,16 @@
         font-style: italic;
         font-size: smaller;
     }
+
+    .RadPicker .rcCalPopup
+    {
+        margin-left: 5px;
+    }
+
+    .deleteDates
+    {
+        vertical-align: bottom;
+    }
   </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
@@ -68,10 +78,13 @@
             <td class="col1">
                 <asp:ListBox ID="daysToPauseList" runat="server" Rows="6" Width="100px" SelectionMode="Multiple" CssClass="daysToPause"></asp:ListBox>
                 <input type="hidden" runat="server" id="DaysToPauseHidden" name="DaysToPauseHidden" />
-                <telerik:RadDatePicker ID="PauseOnDates" runat="server" Width="1px" CssClass="HiddenPicker">
+                <telerik:RadDatePicker ID="PauseOnDates" runat="server" Width="0" CssClass="HiddenPicker">
                     <ClientEvents OnDateSelected="AddToList" />
                     <DateInput runat="server" CssClass="HiddenTextBox" />
                 </telerik:RadDatePicker>
+            </td>
+            <td class="deleteDates">
+                <img src="../images/icons/Trash.png" title="Delete Selected Dates" alt="Delete Selected Dates" onclick="RemoveDates();" />
             </td>
         </tr>
 
@@ -180,12 +193,13 @@
             if (!_reset) {
                 var datePicker = $find("<%=PauseOnDates.ClientID %>");
                 var dateText = datePicker.get_dateInput().get_selectedDate().localeFormat(window.parent.Ts.Utils.getDatePattern());
+                var dateValue = datePicker.get_dateInput().get_selectedDate().toLocaleDateString();
                 var htmlSelect = document.getElementById('<%=daysToPauseList.ClientID%>');
                 var option = document.createElement("OPTION");
                 option.innerHTML = dateText;
-                option.value = dateText;
+                option.value = dateValue;
                 htmlSelect.appendChild(option);
-                AddToHidden(dateText);
+                AddToHidden(dateValue);
             }
 
             _reset = false;            
@@ -197,20 +211,28 @@
             if (daysToPauseHidden.value == null || daysToPauseHidden.value == '') {
                 daysToPauseHidden.value = dateText;
             } else {
-                daysToPauseHidden.value += "," + dateText;
+                var daysToPauseHiddenTemp = daysToPauseHidden.value;
+                daysToPauseHiddenTemp = daysToPauseHiddenTemp + "," + dateText;
+                daysToPauseHidden.value = daysToPauseHiddenTemp;
             }
         }
 
         function DeleteSelectedItems(event) {
             if (event.keyCode == 46 || event.key == "Delete") {
-                var htmlSelect = document.getElementById('<%=daysToPauseList.ClientID%>');
+                RemoveDates();
+            }
+        }
 
-                for (var i = (htmlSelect.options.length - 1) ; i >= 0; i--) {
-                    if (htmlSelect.options[i].selected) {
-                        RemoveOfHidden(htmlSelect.options[i].value);
-                        var deletedDate = new Date(htmlSelect.options[i].value);
-                        htmlSelect.options[i] = null;
+        function RemoveDates() {
+            var htmlSelect = document.getElementById('<%=daysToPauseList.ClientID%>');
 
+            for (var i = (htmlSelect.options.length - 1) ; i >= 0; i--) {
+                if (htmlSelect.options[i].selected) {
+                    RemoveOfHidden(htmlSelect.options[i].value);
+                    var deletedDate = new Date(htmlSelect.options[i].value);
+                    htmlSelect.options[i] = null;
+
+                    try {
                         var datePicker = $find("<%=PauseOnDates.ClientID %>");
                         var dateText = datePicker.get_dateInput().get_selectedDate();
 
@@ -222,7 +244,8 @@
                             var year = dateText.getFullYear();
                             var newDate = new Date(year, month, day);
                             datePicker.set_selectedDate(newDate);
-                       }
+                        }
+                    } catch (err) {
                     }
                 }
             }
@@ -273,12 +296,46 @@
                 }
 
                 cbSLASunday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLASunday.parentElement.tagName == 'SPAN' && cbSLASunday.parentElement.disabled == true) {
+                    cbSLASunday.parentElement.disabled = false;
+                }
+
                 cbSLAMonday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLAMonday.parentElement.tagName == 'SPAN' && cbSLAMonday.parentElement.disabled == true) {
+                    cbSLAMonday.parentElement.disabled = false;
+                }
+
                 cbSLATuesday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLATuesday.parentElement.tagName == 'SPAN' && cbSLATuesday.parentElement.disabled == true) {
+                    cbSLATuesday.parentElement.disabled = false;
+                }
+
                 cbSLAWednesday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLAWednesday.parentElement.tagName == 'SPAN' && cbSLAWednesday.parentElement.disabled == true) {
+                    cbSLAWednesday.parentElement.disabled = false;
+                }
+
                 cbSLAThursday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLAThursday.parentElement.tagName == 'SPAN' && cbSLAThursday.parentElement.disabled == true) {
+                    cbSLAThursday.parentElement.disabled = false;
+                }
+
                 cbSLAFriday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLAFriday.parentElement.tagName == 'SPAN' && cbSLAFriday.parentElement.disabled == true) {
+                    cbSLAFriday.parentElement.disabled = false;
+                }
+
                 cbSLASaturday.disabled = useOrgBusinessHours.checked;
+
+                if (cbSLASaturday.parentElement.tagName == 'SPAN' && cbSLASaturday.parentElement.disabled == true) {
+                    cbSLASaturday.parentElement.disabled = false;
+                }
             }
         }
     </script>

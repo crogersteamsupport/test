@@ -2426,7 +2426,13 @@ $(document).ready(function () {
             _slaSortColumn = "TicketNumber";
         } else if (_slaSortColumn.toLowerCase() == "violation date") {
             _slaSortColumn = "DateViolated";
-        }
+        } else if (_slaSortColumn.toLowerCase() == "sla name") {
+            _slaSortColumn = "LevelName";
+        } else if (_slaSortColumn.toLowerCase() == "ticket type") {
+            _slaSortColumn = "SlaTicketType";
+        } else if (_slaSortColumn.toLowerCase() == "severity") {
+            _slaSortColumn = "SlaSeverity";
+}
 
         var sortIcon = $(this).children(i);
 
@@ -2464,10 +2470,10 @@ $(document).ready(function () {
                 var html;
 
                 if (!_isParentView && (_mainFrame.Ts.System.User.CanEditCompany || _isAdmin)) {
-                    html = '<td><i class="fa fa-edit slaTriggerEdit"></i></td><td>' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td>';
+                    html = '<td class="col-md-3">' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td><td>' + slaTriggers[i].SLAType + '</td>';
                 }
                 else {
-                    html = '<td></td><td>' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td>';
+                    html = '<td>' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td><td>' + slaTriggers[i].SLAType + '</td>';
                 }
                 var tr = $('<tr>')
                 .attr('id', slaTriggers[i].SlaLevelId)
@@ -2491,10 +2497,10 @@ $(document).ready(function () {
                 var html;
 
                 if (!_isParentView && (_mainFrame.Ts.System.User.CanEditCompany || _isAdmin)) {
-                    html = '<td><a href="#" class="slaView" id="' + slas[i].TicketId + '">' + slas[i].TicketNumber + '</a></td><td>' + slas[i].Violation + '</td><td>' + slas[i].DateViolated + '</td>';
+                    html = '<td><a href="#" class="slaView" id="' + slas[i].TicketId + '">' + slas[i].TicketNumber + '</a></td><td>' + slas[i].Violation + '</td><td>' + slas[i].DateViolated + '</td><td>' + slas[i].LevelName + '</td><td>' + slas[i].TicketType + '</td><td>' + slas[i].Severity + '</td>';
                 }
                 else {
-                    html = '<td></td><td></td><td><a href="#" class="slaView" id="' + slas[i].TicketId + '">' + slas[i].TicketNumber + '</a></td><td>' + slas[i].Violation + '</td><td>' + slas[i].DateViolated + '</td>';
+                    html = '<td></td><td></td><td><a href="#" class="slaView" id="' + slas[i].TicketId + '">' + slas[i].TicketNumber + '</a></td><td>' + slas[i].Violation + '</td><td>' + slas[i].DateViolated + '</td><td>' + slas[i].LevelName + '</td><td>' + slas[i].TicketType + '</td><td>' + slas[i].Severity + '</td>';
                 }
                 var tr = $('<tr>')
                 .attr('id', slas[i].TicketId)

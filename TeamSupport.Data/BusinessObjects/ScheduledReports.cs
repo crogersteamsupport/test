@@ -167,10 +167,10 @@ namespace TeamSupport.Data
 			}
 		}
 
-        public void SetRecipientsAndAttachment(MailMessage message, Organization organization)
+        public void SetRecipientsAndAttachment(MailMessage message, Organization organization, ref System.Collections.Generic.List<string> invalidEmailAddress)
         {
             message.From = GetEmailAddressFromString(organization.GetReplyToAddress().Trim());
-            AddEmailAddressesFromString(message.To, EmailRecipients);
+            AddEmailAddressesFromString(message.To, EmailRecipients, ref invalidEmailAddress);
         }
 
         private MailAddress GetEmailAddressFromString(string text)
@@ -206,15 +206,22 @@ namespace TeamSupport.Data
             return new MailAddress(address, name);
         }
 
-        private void AddEmailAddressesFromString(MailAddressCollection collection, string text)
+        private void AddEmailAddressesFromString(MailAddressCollection collection, string text, ref System.Collections.Generic.List<string> invalidEmailAddress)
         {
             if (string.IsNullOrEmpty(text.Trim())) return;
             string[] list = text.Split(new[] { ',', ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string s in list)
             {
-                MailAddress address = GetEmailAddressFromString(s);
-                if (address != null) collection.Add(address);
+                try
+                {
+                    MailAddress address = GetEmailAddressFromString(s);
+                    if (address != null) collection.Add(address);
+                }
+                catch (Exception ex)
+                {
+                    invalidEmailAddress.Add(s);
+                }
             }
         }
     }

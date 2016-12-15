@@ -13,7 +13,7 @@
     <h2 id="tipName" runat="server" style="padding-top:.5em;"></h2>
     <div class="ui-widget-content ts-separator"></div>
 
-    <table cellspacing="0" cellpadding="0" border="0" class="tip-sla-props">
+    <table cellspacing="0" cellpadding="0" border="0" class="tip-sla-props" width="100%">
       <thead>
         <tr class="ts-color-bg-accent">
           <th>SLA Name</th>
