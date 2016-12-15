@@ -12,7 +12,6 @@ $(document).ready(function () {
     //});
 
     $('#pendingTaskList').on('click', 'a.tasklink', function () {
-        debugger;
         //e.preventDefault();
 
         var id = $(this).data('reminderid');
@@ -150,10 +149,10 @@ $(document).ready(function () {
                         LoadCreated(pageData.CreatedItems);
                 }
 
-                if (pageData.AssignedItems.length < _pageSize && pageData.CreatedItems < _pageSize) {
-                    $('.tasks-more').hide();
-                    //$('.results-done').show();
-                }
+                //if (pageData.AssignedItems.length < _pageSize && pageData.CreatedItems < _pageSize) {
+                //    $('.tasks-more').hide();
+                //    //$('.results-done').show();
+                //}
             }
         });
     }
@@ -162,31 +161,28 @@ $(document).ready(function () {
         e.preventDefault();
         parent.Ts.System.logAction('Tasks Page - New Task');
         parent.Ts.MainPage.newTask();
-
     });
 
-    $('.assigned-tasks-filter').on('click', 'button', function (e) {
-        debugger;
+    $('.tab-assigned-tasks').on('click', function (e) {
         e.preventDefault();
-        $('.assigned-tasks-filter > button.active').removeClass('active');
+        $('.tab-created-tasks').removeClass('active');
         $(this).addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _allAssignedLoaded = false;
-        _assignedTab = GetAssignedTab();
+        _assignedTab = 1;
         _createdTab = 0;
         _start = 0;
         fetchTasks();
     });
 
-    $('.created-tasks-filter').on('click', 'button', function (e) {
-        debugger;
+    $('.tab-created-tasks').on('click', function (e) {
         e.preventDefault();
-        $('.created-tasks-filter > button.active').removeClass('active');
+        $('.tab-assigned-tasks').removeClass('active');
         $(this).addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _assignedTab = 0;
         _allCreatedLoaded = false;
-        _createdTab = GetCreatedTab();
+        _createdTab = 1
         _assignedTab = 0;
         _start = 0;
         fetchTasks();
@@ -222,12 +218,12 @@ $(document).ready(function () {
 
     //    fetchTasks();
     //});
-
-   
-
     
     Handlebars.registerHelper("formatDate", function (datetime) {
-        return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+        if (datetime != null) {
+            return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+        }
+        else return null;
     });
 
     Handlebars.registerHelper("taskComplete", function (taskdate) {

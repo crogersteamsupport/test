@@ -26,7 +26,7 @@
         <div class="row">
             <div class="col-md-12 col-sm-12">
                 <div id="Pending">
-                    <h3>Pending</h3>
+                    <h3>My Tasks</h3>
                     <span class="pull-right" style="margin-right:20px;">
                         <a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i></a>
                     </span>
@@ -191,9 +191,9 @@
                     <input {{taskComplete TaskDateCompleted}} type="checkbox" />
                 </td>
                 <td>{{TaskName}}</td>
-                <td>Matt Damon</td>
+                <td>{{AssignedTo}}</td>
                 <td>{{formatDate TaskDueDate}}</td>
-                <td>{{formatDate TaskDueDate}}</td>
+                <td>{{formatDate DueDate}}</td>
                 <td></td>
                 <td>
                     <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
