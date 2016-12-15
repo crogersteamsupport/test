@@ -361,10 +361,12 @@ var loadTicket = function (ticketNumber, refresh) {
 
 function LoadPlugins(info)
 {
-    for (var i = 0; i < info.Plugins.length; i++) {
-        var plugin = $('#ticket-group-plugin-' + info.Plugins[i].PluginID);
-        if (plugin.length > 0) {
-            plugin.html(info.Plugins[i].Code);
+    if (info.Plugins) {
+        for (var i = 0; i < info.Plugins.length; i++) {
+            var plugin = $('#ticket-group-plugin-' + info.Plugins[i].PluginID);
+            if (plugin.length > 0) {
+                plugin.html(info.Plugins[i].Code);
+            }
         }
     }
 }
