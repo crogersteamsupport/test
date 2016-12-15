@@ -97,6 +97,50 @@ namespace TSWebServices
                 info.IsSlaPending = slaTicket.IsPending;
             }
 
+            Plugins plugins = new Plugins(TSAuthentication.GetLoginUser());
+            plugins.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+            foreach (Plugin plugin in plugins)
+            {
+                StringBuilder builder = new StringBuilder(plugin.Code);
+                builder.Replace("{{Ticket.CategoryName}}", ticket.CategoryName);
+                builder.Replace("{{Ticket.CloserName}}", ticket.CloserName);
+                builder.Replace("{{Ticket.Contacts}}", ticket.Contacts);
+                builder.Replace("{{Ticket.CreatorName}}", ticket.CreatorName);
+                builder.Replace("{{Ticket.Customers}}", ticket.Customers);
+                builder.Replace("{{Ticket.DateClosed}}", ticket.DateClosed == null ? "" : ((DateTime) ticket.DateClosed).ToString("g", ticket.Collection.LoginUser.OrganizationCulture));
+                builder.Replace("{{Ticket.DateCreated}}", ticket.DateCreated.ToString("g", ticket.Collection.LoginUser.OrganizationCulture));
+                builder.Replace("{{Ticket.DateModified}}", ticket.DateModified.ToString("g", ticket.Collection.LoginUser.OrganizationCulture));
+                builder.Replace("{{Ticket.DaysClosed}}", ticket.DaysClosed.ToString());
+                builder.Replace("{{Ticket.DaysOpened}}", ticket.DaysOpened.ToString());
+                builder.Replace("{{Ticket.DueDate}}", ticket.DueDate == null ? "" : ((DateTime)ticket.DueDate).ToString("g", ticket.Collection.LoginUser.OrganizationCulture));
+                builder.Replace("{{Ticket.GroupName}}", ticket.GroupName);
+                builder.Replace("{{Ticket.IsClosed}}", ticket.IsClosed.ToString());
+                builder.Replace("{{Ticket.IsEnqueued}}", ticket.IsEnqueued.ToString());
+                builder.Replace("{{Ticket.IsFlagged}}", ticket.IsFlagged.ToString());
+                builder.Replace("{{Ticket.IsKnowledgeBase}}", ticket.IsKnowledgeBase.ToString());
+                builder.Replace("{{Ticket.IsRead}}", ticket.IsRead.ToString());
+                builder.Replace("{{Ticket.IsSubscribed}}", ticket.IsSubscribed.ToString());
+                builder.Replace("{{Ticket.IsVisibleOnPortal}}", ticket.IsVisibleOnPortal.ToString());
+                builder.Replace("{{Ticket.ModifierName}}", ticket.ModifierName);
+                builder.Replace("{{Ticket.Name}}", ticket.Name);
+                builder.Replace("{{Ticket.ProductName}}", ticket.ProductName);
+                builder.Replace("{{Ticket.ReportedVersion}}", ticket.ReportedVersion);
+                builder.Replace("{{Ticket.Severity}}", ticket.Severity);
+                builder.Replace("{{Ticket.SlaViolationDate}}", ticket.SlaViolationDate == null ? "" : ((DateTime)ticket.SlaViolationDate).ToString("g", ticket.Collection.LoginUser.OrganizationCulture));
+                builder.Replace("{{Ticket.SlaWarningDate}}", ticket.SlaWarningDate == null ? "" : ((DateTime)ticket.SlaWarningDate).ToString("g", ticket.Collection.LoginUser.OrganizationCulture));
+                builder.Replace("{{Ticket.SolvedVersion}}", ticket.SolvedVersion);
+                builder.Replace("{{Ticket.Status}}", ticket.Status);
+                builder.Replace("{{Ticket.Tags}}", ticket.Tags);
+                builder.Replace("{{Ticket.TicketID}}", ticket.TicketID.ToString());
+                builder.Replace("{{Ticket.TicketNumber}}", ticket.TicketNumber.ToString());
+                builder.Replace("{{Ticket.TicketSource}}", ticket.TicketSource);
+                builder.Replace("{{Ticket.TicketTypeName}}", ticket.TicketTypeName);
+                builder.Replace("{{Ticket.UserName}}", ticket.UserName);
+                plugin.Code = builder.ToString();
+            }
+            info.Plugins = plugins.GetPluginProxies();
+
             return info;
         }
 
@@ -363,6 +407,18 @@ namespace TSWebServices
             if (plugin.OrganizationID == TSAuthentication.OrganizationID)
             {
                 return plugin.GetProxy();
+            }
+            return null;
+        }
+        public string GetTicketPagePluginCode(int pluginID, int ticketID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID && ticket.OrganizationID == plugin.OrganizationID) 
+            {
+                // replace fields
+                return plugin.Code;
             }
             return null;
         }
@@ -949,6 +1005,8 @@ namespace TSWebServices
             public int? SlaTriggerId { get; set; }
             [DataMember]
             public bool IsSlaPending { get; set; }
+            [DataMember]
+            public PluginProxy[] Plugins { get; set; }
         }
 
         [DataContract]

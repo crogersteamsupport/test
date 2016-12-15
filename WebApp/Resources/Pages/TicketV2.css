@@ -32,6 +32,7 @@
       margin-bottom: .5em;
       clear: both;
     }
+    .ticket-plugin { font-size: 12px; color:#333;}
     .popover-content dt { width: 35%; }
     .popover-content dd { width: 60%; }
     blockquote {
