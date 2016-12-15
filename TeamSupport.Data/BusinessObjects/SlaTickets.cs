@@ -33,7 +33,8 @@ namespace TeamSupport.Data
             DateTime? ExpireDate = new DateTime();
             int adjustedMinutes = 0;
 
-            if (slaUseBusinessHours && (slaDayStart == null || slaDayEnd == null || slaBusinessDays < 1 || minutes < 1))
+            if ((slaUseBusinessHours && (slaDayStart == null || slaDayEnd == null || slaBusinessDays < 1))
+                || minutes < 1)
             {
                 ExpireDate = null;
             }

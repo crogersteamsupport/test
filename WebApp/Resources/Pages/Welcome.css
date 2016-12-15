@@ -1,14 +1,14 @@
-﻿﻿* {
+﻿* {
     box-sizing: border-box;
 }
- 
+
 body {
     padding: 16px;
     background-color: #dae3ec;
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     overflow-y: scroll;
 }
- 
+
 /* HEADER */
 header {
     display: flex;
@@ -20,9 +20,11 @@ header {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
+
 .header_info {
     display: inline-block;
 }
+
 .header_info_title {
     color: white;
     font-size: 28px;
@@ -30,6 +32,7 @@ header {
     line-height: 20px;
     margin-bottom: 23px;
 }
+
 .header_info_context {
     color: white;
     font-size: 15px;
@@ -75,6 +78,7 @@ header {
 .demo:hover {
     background-color: #3aaee3;
 }
+
 .btn:active {
     background-color: #2b91c0;
 }
@@ -83,7 +87,7 @@ header {
     height: 200px;
 }
 /* HEADER ENDING */
- 
+
 /* CONTEXT CONTAINER */
 .container {
     padding: 65px;
@@ -93,7 +97,7 @@ header {
     box-shadow: 0 0 100px rgba(166, 173, 186, 0.1);
 }
 /* CONTAINER ENDING */
- 
+
 /* INFO */
 .info {
     text-align: center;
@@ -104,28 +108,33 @@ header {
     border-radius: 2px 1.5px 1.5px 2px;
     margin-bottom: 54px;
 }
+
 .info_card {
     display: inline-block;
     width: 33%;
     padding: 36px;
     text-align: left;
 }
+
 .info_card_header {
     display: flex;
     align-content: center;
     justify-content: space-between;
     margin-bottom: 54px;
 }
+
 .info_card_header_title {
     display: flex;
     align-items: center;
     font-size: 17px;
     font-style: italic;
 }
+
 .info_card_header_icon {
     height: 24px;
     margin-right: 14px;
 }
+
 .info_card_more {
     color: #b6bec7;
     font-size: 10.5px;
@@ -134,9 +143,11 @@ header {
     transition: all .2s ease-in-out;
     will-change: color;
 }
+
 .info_card_more:hover {
     color: #249cd4;
 }
+
 .info_card_options_button {
     display: flex;
     align-items: center;
@@ -148,40 +159,47 @@ header {
     transition: all .2s ease-in-out;
     will-change: color;
 }
+
 .info_card_options_button img {
     opacity: 0;
     height: 10px;
     transition: all .2s ease-in-out;
     will-change: opacity;
 }
+
 .info_card_options_button:hover {
     color: #249cd4;
 }
+
 .info_card_options_button:hover img {
     opacity: 1;
 }
- 
+
 /* CARD SPECIFICATIONS */
 .info_card.one .info_card_header_title {
     color: #249cd4;
 }
+
 .info_card.two {
     border-left: 2px solid #d6e0e9;
     border-right: 2px solid #d6e0e9;
 }
+
 .info_card.two .info_card_header_title {
     color: #5aba83;
 }
+
 .info_card.three .info_card_header_title {
     color: #e1814d;
 }
 /* INFO ENDING */
- 
+
 /* CONTACTS */
 .contact {
     max-width: 1100px;
     margin: auto;
 }
+
 .contact_title {
     color: #7a7e83;
     font-size: 17px;
@@ -189,10 +207,12 @@ header {
     line-height: 20px;
     margin-bottom: 25px;
 }
+
 .contact_cardholder {
     display: flex;
     justify-content: space-between;
 }
+
 .contact_card {
     display: flex;
     padding: 0 35px;
@@ -213,10 +233,12 @@ header {
 .contact_card_iconholder {
     position: relative;
 }
+
 .contact_card_icon {
     height: 24px;
     margin-right: 20px;
 }
+
 .contact_card_icon_hover {
     position: absolute;
     top: 0;
@@ -226,6 +248,7 @@ header {
     transition: all .2s ease-in-out;
     will-change: opacity;
 }
+
 .contact_card_text {
     color: #7a7e83;
     font-size: 15px;
@@ -254,6 +277,7 @@ header {
 body {
     margin: 0px;
 }
+
 ul {
     margin: 0;
     padding: 0;
@@ -267,6 +291,7 @@ ul,.info_context_list li:before {
 a {
     text-decoration: none;
 }
+
 input {
     border: none;
     background: none;

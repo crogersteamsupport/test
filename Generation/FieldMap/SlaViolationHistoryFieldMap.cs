@@ -19,6 +19,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TicketID", "TicketID", false, false, false);
       _fieldMap.AddMap("ViolationType", "ViolationType", false, false, false);
       _fieldMap.AddMap("DateViolated", "DateViolated", false, false, false);
+      _fieldMap.AddMap("SlaTriggerId", "SlaTriggerId", false, false, false);
             
     }
   }
