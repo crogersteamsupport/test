@@ -19,6 +19,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SlaTriggerId", "SlaTriggerId", false, false, false);
       _fieldMap.AddMap("PausedOn", "PausedOn", false, false, false);
       _fieldMap.AddMap("ResumedOn", "ResumedOn", false, false, false);
+      _fieldMap.AddMap("BusinessPausedTime", "BusinessPausedTime", false, false, false);
             
     }
   }
