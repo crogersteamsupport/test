@@ -1698,8 +1698,11 @@ function SetupProductVersionsControl(product) {
   if (product !== null && product.Versions.length > 0) {
     var versions = product.Versions;
     for (var i = 0; i < versions.length; i++) {
-      AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
-      AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+        try{
+            AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+            AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+        }catch(e){}
+
     }
   }
 

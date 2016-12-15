@@ -110,7 +110,8 @@
             <div id="divTicketStatus">
               <asp:CheckBox ID="cbIsClosed" runat="server" Text="Is Closed" />&nbsp&nbsp
               <asp:CheckBox ID="cbIsClosedEmail" runat="server" Text="Send Closed Email" />&nbsp&nbsp
-              <asp:CheckBox ID="cbIsEmailResponse" runat="server" Text="Email Response" /></div>
+              <asp:CheckBox ID="cbIsEmailResponse" runat="server" Text="Email Response" /><br />
+              <asp:CheckBox ID="cbPauseSla" runat="server" Text="Pause Sla" /></div>
             <div id="divProductVersionStatus">
               <asp:CheckBox ID="cbIsShipping" runat="server" Text="Is Shipping" />&nbsp&nbsp<asp:CheckBox
                 ID="cbIsDiscontinued" runat="server" Text="Is Discontinued" /></div>
@@ -306,6 +307,7 @@
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosed").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosedEmail").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsEmailResponse").ClientID %>').checked = false;
+        $get('<%= wndEditType.ContentContainer.FindControl("cbPauseSla").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = false;
@@ -318,6 +320,7 @@
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosed").ClientID %>').checked = result.IsClosed;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosedEmail").ClientID %>').checked = result.IsClosedEmail;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsEmailResponse").ClientID %>').checked = result.IsEmailResponse;
+            $get('<%= wndEditType.ContentContainer.FindControl("cbPauseSla").ClientID %>').checked = result.PauseSla;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked = result.IsShipping;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = result.IsDiscontinued;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = result.IsVisibleOnPortal;
@@ -362,6 +365,7 @@
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosed").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosedEmail").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsEmailResponse").ClientID %>').checked,
+            $get('<%= wndEditType.ContentContainer.FindControl("cbPauseSla").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked,
             $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeProductFamilies").ClientID %>').get_value(),

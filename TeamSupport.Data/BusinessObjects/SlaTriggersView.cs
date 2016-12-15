@@ -69,6 +69,59 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+        public void LoadByTicketId(int id)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT * FROM SlaTriggersView WHERE SlaTriggerID = dbo.GetSlaTrigger(@TicketID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", id);
+
+                Fill(command);
+            }
+        }
+
+        public void LoadByCustomer(int organizationId, int customerId)
+        {
+            string sql = @"SELECT SlaTriggersView.SlaLevelID, SlaTriggersView.SlaTriggerID, SlaTriggersView.LevelName, SlaTriggersView.Severity, SlaTriggersView.TicketType, SlaLevelsAssociated.SLAType
+FROM
+	SlaTriggersView
+	JOIN (SELECT SlaLevels.SlaLevelID, 'Customer-Product' AS SLAType, 1 AS [SlaHierarchy]
+			FROM
+				OrganizationProducts
+				JOIN SlaLevels
+					ON OrganizationProducts.SlaLevelID = SlaLevels.SlaLevelID
+			WHERE OrganizationProducts.OrganizationID = @customerId
+            UNION
+            SELECT SlaLevels.SlaLevelID, 'Product' AS SLAType, 2 AS [SlaHierarchy]
+			FROM
+				OrganizationProducts
+				JOIN Products
+					ON OrganizationProducts.ProductID = Products.ProductID
+				JOIN SlaLevels
+					ON Products.SlaLevelID = SlaLevels.SlaLevelID				
+			WHERE OrganizationProducts.OrganizationID = @customerId
+            UNION
+            SELECT SlaLevels.SlaLevelID, 'Customer' AS SLAType, 3 AS [SlaHierarchy]
+			FROM
+				Organizations
+				JOIN SlaLevels
+					ON Organizations.SlaLevelID = SlaLevels.SlaLevelID
+			WHERE Organizations.OrganizationID = @customerId) AS SlaLevelsAssociated
+	ON SlaTriggersView.SlaLevelID = SlaLevelsAssociated.SlaLevelID
+WHERE OrganizationID = @organizationId
+ORDER BY SlaLevelsAssociated.SlaHierarchy";
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = sql;
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationId", organizationId);
+                command.Parameters.AddWithValue("@customerId", customerId);
+                Fill(command);
+            }
+        }
   }
   
 }

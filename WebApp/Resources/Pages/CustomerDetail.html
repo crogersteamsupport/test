@@ -70,639 +70,710 @@
           <li><a href="#company-inventory" data-toggle="tab">Inventory</a></li>
           <li><a href="#company-watercooler" data-toggle="tab">Watercooler</a></li>
           <li id="ratingsTab"><a href="#company-ratings" data-toggle="tab">Ratings</a></li>
-          <li id="calendarTab"><a href="#company-calendar" data-toggle="tab">Calendar</a></li>          
+          <li id="calendarTab"><a href="#company-calendar" data-toggle="tab">Calendar</a></li>
+          <li id="slaTab"><a href="#company-sla" data-toggle="tab">SLA</a></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="ui-layout-center">
-    <div class="maincontainer">
-      <div class="tab-content">
-        <div class="tab-pane fade in active" id="company-overview">
-          <div class="row">
-            <div class="col-xs-8">
-              <div class="box">
-                <div class="box-header">
-                </div>
-                <div class="box-content">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="form-horizontal">
-                        <div class="row">
-                          <div id="openChart" class="col-xs-4">
-                          </div>
-                          <div id="closedChart" class="col-xs-4">
-                          </div>
-                          <div id="csiChart" class="col-xs-4"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div id="customPropRow">
-                <div class="box">
-                  <div class="box-header"  data-toggle="collapse" data-target="#customFieldContent">
-                    <span class="ui-icon ui-icon-triangle-1-s"></span>
-                    <h3>Custom Fields</h3>
-                  </div>
-                  <div class="box-content in" id="customFieldContent">
+    <div class="ui-layout-center">
+        <div class="maincontainer">
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="company-overview">
                     <div class="row">
-                      <form class="form-horizontal">
-                      <div class="col-xs-6">
-                        <div id="customPropertiesL" class="customProperties">
-                        </div>
-                      </div>
-                      <div class="col-xs-6">
-                        <div id="customPropertiesR" class="customProperties">
-                        </div>
-                      </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="box mb10">
-                <div class="box-header" style="padding-bottom: 10px;">
-                  <h3>History</h3>
-                  <div class="box-actions">
-                    <a id="historyToggle" data-toggle="collapse" data-target="#historyContent" href="#"><i class="fa fa-chevron-down"></i></a>
-                    <a id="historyRefresh" href="#"><i class="fa fa-refresh"></i></a>
-                  </div>
-                </div>
-                <div class="box-content collapse" id="historyContent">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <table class="table table-hover" id="tblHistory">
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Author</th>
-                            <th>Description</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-4">
-              <div class="box">
-                <div class="box-header"><h3>Recent Ticket History</h3><h3 class="pull-right" id="openTicketCount"></h3></div>
-                <div class="box-content">
-                                
-                    <div id="openTickets" class="tickets">
-                    </div>
-                </div>
-            </div>  
-              <div class="box">
-                <div class="box-header">
-                  <h3>Company Info</h3>
-                   <div class="box-actions">
-                     <a href="" class="btn btn-link" id="customerPhoneBtn" data-toggle="modal" data-target="#modalPhone">
-                       <i class="fa fa-plus"></i>&nbsp;Phone</a>
-                     <a href="" class="btn btn-link" id="customerAddressBtn" data-toggle="modal" data-target="#modalAddress">
-                       <i class="fa fa-plus"></i>&nbsp;Address</a>
-
-                  </div>
-                </div>
-                <div class="box-content">
-                  <div>
-                      <div id="company-properties-area" class="form-horizontal">
-                        <div class="userProperties">
-                        <img id="companyLogo" src="" />
-                        <div class="form-group">
-                          <label for="fieldName" class="col-md-4 control-label">Name</label>
-                          <div class="col-md-8">
-                            <p class="form-control-static editable" id="fieldName"></p>
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label for="fieldPrimaryContact" class="col-md-4 control-label">Primary Contact</label>
-                          <div class="col-md-8">
-                            <p class="form-control-static editable" id="fieldPrimaryContact"></p>
-                          </div>
-                        </div>
-                        <!--<div class="form-group">
-                          <label for="fieldParentCompany" class="col-md-4 control-label">Parent Company</label>
-                          <div class="col-md-8">
-                            <p class="form-control-static editable" id="fieldParentCompany"></p>
-                          </div>
-                        </div>-->
-                        <div class="form-group">
-                          <label for="fieldDescription" class="col-md-4 control-label">Description</label>
-                          <div class="col-md-8">
-                            <p class="form-control-static editable w-wrap" id="fieldDescription"></p>
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label for="fieldWebsite" class="col-md-4 control-label">Website</label>
-                          <div class="col-md-8">
-                            <p class="form-control-static editable link" id="fieldWebsite"></p>
-                          </div>
-                        </div>
-                        </div>
-                        <hr />
-                        <!--<script id="company-group-Parents" type="text/x-handlebars-template">-->
-                            <div class="form-group company-group">
-                                <div class="tagContainer">
-                                    <input id="company-Parents-Input" class="tagInput select" type="text" placeholder="Add Parent Company">
-                                    <span id="company-Parent" style="z-index:100;"></span>
+                        <div class="col-xs-8">
+                            <div class="box">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-horizontal">
+                                                <div class="row">
+                                                    <div id="openChart" class="col-xs-4">
+                                                    </div>
+                                                    <div id="closedChart" class="col-xs-4">
+                                                    </div>
+                                                    <div id="csiChart" class="col-xs-4"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        <!--</script>-->
-                        <script id="customer-tag" type="text/x-handlebars-template">
-                            <div id="{{id}}" data-tag="{{TagData}}" class="{{css}}">
-                                <span class="tagRemove" aria-hidden="true">&times;</span>
-                                {{{value}}}
+                            <div id="customPropRow">
+                                <div class="box">
+                                    <div class="box-header" data-toggle="collapse" data-target="#customFieldContent">
+                                        <span class="ui-icon ui-icon-triangle-1-s"></span>
+                                        <h3>Custom Fields</h3>
+                                    </div>
+                                    <div class="box-content in" id="customFieldContent">
+                                        <div class="row">
+                                            <form class="form-horizontal">
+                                                <div class="col-xs-6">
+                                                    <div id="customPropertiesL" class="customProperties">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <div id="customPropertiesR" class="customProperties">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </script>
-                        <div id="phonePanel">
+                            <div class="box mb10">
+                                <div class="box-header" style="padding-bottom: 10px;">
+                                    <h3>History</h3>
+                                    <div class="box-actions">
+                                        <a id="historyToggle" data-toggle="collapse" data-target="#historyContent" href="#"><i class="fa fa-chevron-down"></i></a>
+                                        <a id="historyRefresh" href="#"><i class="fa fa-refresh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="box-content collapse" id="historyContent">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblHistory">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Author</th>
+                                                        <th>Description</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div id="addressPanel">
+                        <div class="col-xs-4">
+                            <div class="box">
+                                <div class="box-header"><h3>Recent Ticket History</h3><h3 class="pull-right" id="openTicketCount"></h3></div>
+                                <div class="box-content">
+
+                                    <div id="openTickets" class="tickets">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3>Company Info</h3>
+                                    <div class="box-actions">
+                                        <a href="" class="btn btn-link" id="customerPhoneBtn" data-toggle="modal" data-target="#modalPhone">
+                                            <i class="fa fa-plus"></i>&nbsp;Phone
+                                        </a>
+                                        <a href="" class="btn btn-link" id="customerAddressBtn" data-toggle="modal" data-target="#modalAddress">
+                                            <i class="fa fa-plus"></i>&nbsp;Address
+                                        </a>
+
+                                    </div>
+                                </div>
+                                <div class="box-content">
+                                    <div>
+                                        <div id="company-properties-area" class="form-horizontal">
+                                            <div class="userProperties">
+                                                <img id="companyLogo" src="" />
+                                                <div class="form-group">
+                                                    <label for="fieldName" class="col-md-4 control-label">Name</label>
+                                                    <div class="col-md-8">
+                                                        <p class="form-control-static editable" id="fieldName"></p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="fieldPrimaryContact" class="col-md-4 control-label">Primary Contact</label>
+                                                    <div class="col-md-8">
+                                                        <p class="form-control-static editable" id="fieldPrimaryContact"></p>
+                                                    </div>
+                                                </div>
+                                                <!--<div class="form-group">
+                                                  <label for="fieldParentCompany" class="col-md-4 control-label">Parent Company</label>
+                                                  <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldParentCompany"></p>
+                                                  </div>
+                                                </div>-->
+                                                <div class="form-group">
+                                                    <label for="fieldDescription" class="col-md-4 control-label">Description</label>
+                                                    <div class="col-md-8">
+                                                        <p class="form-control-static editable w-wrap" id="fieldDescription"></p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="fieldWebsite" class="col-md-4 control-label">Website</label>
+                                                    <div class="col-md-8">
+                                                        <p class="form-control-static editable link" id="fieldWebsite"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            <!--<script id="company-group-Parents" type="text/x-handlebars-template">-->
+                                            <div class="form-group company-group">
+                                                <div class="tagContainer">
+                                                    <input id="company-Parents-Input" class="tagInput select" type="text" placeholder="Add Parent Company">
+                                                    <span id="company-Parent" style="z-index:100;"></span>
+                                                </div>
+                                            </div>
+                                            <!--</script>-->
+                                            <script id="customer-tag" type="text/x-handlebars-template">
+                                                <div id="{{id}}" data-tag="{{TagData}}" class="{{css}}">
+                                                    <span class="tagRemove" aria-hidden="true">&times;</span>
+                                                    {{{value}}}
+                                                </div>
+                                            </script>
+                                            <div id="phonePanel">
+                                            </div>
+                                            <div id="addressPanel">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3>Settings</h3>
+                                </div>
+                                <div class="box-content">
+                                    <form class="form-horizontal">
+                                        <div class="userProperties">
+                                            <div class="form-group">
+                                                <label for="fieldOrgID" class="col-md-4 control-label">Organization ID</label>
+                                                <div class="col-md-8">
+                                                    <span class="form-control-static db" id="fieldOrgID"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" id="groupPortalGroup">
+                                                <label for="fieldDefaultPortalGroup" class="col-md-4 control-label">
+                                                    Default Portal
+                                                    Group
+                                                </label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldDefaultPortalGroup"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" id="groupSupportUser">
+                                                <label for="fieldDefaultUser" class="col-md-4 control-label">Default Support User</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldDefaultUser"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" id="groupSupportGroup">
+                                                <label for="fieldDefaultGroup" class="col-md-4 control-label">Default Support Group</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldDefaultGroup"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" id="groupTimezone">
+                                                <label for="fieldDomains" class="col-md-4 control-label">Time Zone</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldTimeZone"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fieldDomains" class="col-md-4 control-label">Domains</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldDomains"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fieldPortalAccess" class="col-md-4 control-label">Portal Access</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldPortalAccess"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fieldSAED" class="col-md-4 control-label">
+                                                    Service Agreement Expiration
+                                                    Date
+                                                </label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldSAED"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fieldSLA" class="col-md-4 control-label">Service Level Agreement</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldSLA"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fieldSupportHours" class="col-md-4 control-label">Support Hours Per Month</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldSupportHours"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="userProperties">
+                                            <div class="form-group">
+                                                <label for="fieldActive" class="col-md-4 control-label">Active</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldActive"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" id="groupAPI">
+                                                <label for="fieldAPIToken" class="col-md-4 control-label">API Token</label>
+                                                <div class="col-md-8">
+                                                    <span class="form-control-static db" id="fieldAPIToken"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fieldAPIEnabled" class="col-md-4 control-label">API Enabled</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable" id="fieldAPIEnabled"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" id="groupInactive">
+                                                <label for="inputName" class="col-md-4 control-label">Inactive Reason</label>
+                                                <div class="col-md-8">
+                                                    <p class="form-control-static editable w-wrap" id="fieldInactive"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                      </div>
-                  </div>
+                    </div>
                 </div>
-              </div>
-              <div class="box">
-                <div class="box-header">
-                  <h3>Settings</h3>
-                </div>
-                <div class="box-content">
-                  <form class="form-horizontal">
-                  <div class="userProperties">
-                    <div class="form-group">
-                      <label for="fieldOrgID" class="col-md-4 control-label">Organization ID</label>
-                      <div class="col-md-8">
-                        <span class="form-control-static db" id="fieldOrgID"></span>
-                      </div>
-                    </div>
-                    <div class="form-group" id="groupPortalGroup">
-                      <label for="fieldDefaultPortalGroup" class="col-md-4 control-label">Default Portal
-                        Group</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldDefaultPortalGroup"></p>
-                      </div>
-                    </div>
-                    <div class="form-group" id="groupSupportUser">
-                      <label for="fieldDefaultUser" class="col-md-4 control-label">Default Support User</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldDefaultUser"></p>
-                      </div>
-                    </div>
-                    <div class="form-group" id="groupSupportGroup">
-                      <label for="fieldDefaultGroup" class="col-md-4 control-label">Default Support Group</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldDefaultGroup"></p>
-                      </div>
-                    </div>
-                    <div class="form-group" id="groupTimezone">
-                      <label for="fieldDomains" class="col-md-4 control-label">Time Zone</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldTimeZone"></p>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="fieldDomains" class="col-md-4 control-label">Domains</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldDomains"></p>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="fieldPortalAccess" class="col-md-4 control-label">Portal Access</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldPortalAccess"></p>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="fieldSAED" class="col-md-4 control-label">Service Agreement Expiration
-                        Date</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldSAED"></p>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="fieldSLA" class="col-md-4 control-label">Service Level Agreement</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldSLA"></p>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="fieldSupportHours" class="col-md-4 control-label">Support Hours Per Month</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldSupportHours"></p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="userProperties">
-                    <div class="form-group">
-                      <label for="fieldActive" class="col-md-4 control-label">Active</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldActive"></p>
-                      </div>
-                    </div>
-                    <div class="form-group" id="groupAPI">
-                      <label for="fieldAPIToken" class="col-md-4 control-label">API Token</label>
-                      <div class="col-md-8">
-                        <span class="form-control-static db" id="fieldAPIToken"></span>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="fieldAPIEnabled" class="col-md-4 control-label">API Enabled</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable" id="fieldAPIEnabled"></p>
-                      </div>
-                    </div>
-                    <div class="form-group" id="groupInactive">
-                      <label for="inputName" class="col-md-4 control-label">Inactive Reason</label>
-                      <div class="col-md-8">
-                        <p class="form-control-static editable w-wrap" id="fieldInactive"></p>
-                      </div>
-                    </div>
-                  </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="company-children">
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="box">
-                <div class="box-header">
-                </div>
-                <div class="box-content">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <!--<button class="btn btn-primary contact-action-add">Add Contact</button>
-                        <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="cbActive"> Hide Inactive
-                        </label>
-                        </div>-->
-                      <div class="list-group">
-                          <table class="childrenList"></table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="company-contacts">
-          <a href="#" class="scrollup">Scroll</a>
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="box">
-                <div class="box-header">
-                </div>
-                <div class="box-content">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <button class="btn btn-primary contact-action-add">Add Contact</button>
-                        <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="cbActive"> Hide Inactive
-                        </label>
+                <div class="tab-pane fade" id="company-children">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!--<button class="btn btn-primary contact-action-add">Add Contact</button>
+                                              <div class="checkbox">
+                                              <label>
+                                                  <input type="checkbox" id="cbActive"> Hide Inactive
+                                              </label>
+                                              </div>-->
+                                            <div class="list-group">
+                                                <table class="childrenList"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                      <div class="list-group userList">
-                      </div>
-                        <div class="contacts-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                        <div class="contacts-done" hidden>There are no more contacts.</div>
-                        <div class="contacts-empty" hidden>This company has no contacts.</div>
                     </div>
-                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="company-tickets">
-          <iframe id="ticketIframe" frameborder="0" scrolling="no" src="" width="100%" style="height: 96%;
+                <div class="tab-pane fade" id="company-contacts">
+                    <a href="#" class="scrollup">Scroll</a>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button class="btn btn-primary contact-action-add">Add Contact</button>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" id="cbActive"> Hide Inactive
+                                                </label>
+                                            </div>
+                                            <div class="list-group userList">
+                                            </div>
+                                            <div class="contacts-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                                            <div class="contacts-done" hidden>There are no more contacts.</div>
+                                            <div class="contacts-empty" hidden>This company has no contacts.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="company-tickets">
+                    <iframe id="ticketIframe" frameborder="0" scrolling="no" src="" width="100%" style="height: 96%;
             position: absolute"></iframe>
-          <!--                <div class="box">
-                  <div class="box-header"></div>
-                  <div class="box-content">
-                      
-                  </div>
-                </div>   -->
-        </div>
-        <div class="tab-pane fade" id="company-products">
-          <div class="row">
-            <div class="col-xs-12" id="productsContainer">
-              <div class="box" id="productForm" style="display: none;">
-                <div class="box-header">
-                </div>
-                <div class="box-content">
-                  <form class="form-horizontal">
-                  <div class="form-group">
-                    <div class="row">
-                      <div class="col-md-4">
-                        <label class="col-md-2 control-label" for="productProduct">Product</label>
-                        <div class="col-md-8">
-                          <select id="productProduct" class="form-control"></select>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <label class="col-md-2 control-label" for="productVersion">Version</label>
-                        <div class="col-md-8">
-                          <select id="productVersion" class="form-control">
-                            <option value="-1">Unassigned</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <label class="col-md-2 control-label" for="productExpiration">Warranty Expiration</label>
-                        <div class="col-md-8">
-                          <input id="productExpiration" class="col-md-10 form-control datepicker">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <input type="hidden" id="productCustomer">
-                  <div id="customProductsControls">
-                  </div>
-                  </form>
-                  <input type="hidden" id="fieldProductID" value="-1" />
-                  <button id="btnProductSave" class="btn btn-primary col-md-offset-1">Associate Product</button>
-                  <button id="btnProductCancel" class="btn btn-default">Cancel</button>
-                </div>
-              </div>
-              <div class="box">
-                <div class="box-header">
-                  <button id="productToggle" class="btn btn-primary">Associate Product</button>
-                </div>
-                <div class="box-content">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <table class="table table-hover" id="tblProducts">
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th></th>
-                            <th><a href="#" class="productHeader">Product Name</a></th>
-                            <th><a href="#" class="productHeader">Version</a></th>
-                            <th><a href="#" class="productHeader">Support Expiration</a></th>
-                            <th><a href="#" class="productHeader">Status</a></th>
-                            <th><a href="#" class="productHeader">Released</a></th>
-                            <th><a href="#" class="productHeader">Released Date</a></th>
-                            <th><a href="#" class="productHeader">Date Created<i class="fa fa-sort-desc"></i></a></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                      </table>
-                        <div class="products-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                        <div class="products-empty" hidden>This customer has no products.</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="company-attachments">
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="box" id="fileForm" style="display: none;">
-                <div class="box-header">
-                </div>
-                <div class="box-content">
-                  <form class="form-horizontal file-upload" action="Upload/Actions/555" method="POST"
-                  enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-                  <div class="form-group">
-                    <label for="inputName" class="col-md-2 control-label">File</label>
-                    <div class="col-md-10">
-                      <input class="hiddenfile" type="file" name="file[]">
-                      <p class="form-control-static"><a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">
-                        Click to select your file or drag and drop files here.</a></p>
-                      <ul class="upload-queue"></ul>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="inputName" class="col-md-2 control-label">Description</label>
-                    <div class="col-md-10">
-                      <textarea class="col-md-3 form-control" id="attachmentDescription"></textarea>
-                    </div>
-                  </div>
-                    <div class="form-group productFamilyRow" style="display:none">
-                        <div class="row">
-                            <!--<div class="col-md-8">-->
-                                <label for="ddlFileProductFamily" class="col-md-2 control-label">Product Line</label>
-                                <div class="col-md-6">
-                                    <select class="form-control" id="ddlFileProductFamily">
-                                        <option value="-1">Unassigned</option>
-                                    </select>
-                                </div>
-                            <!--</div>-->
-                        </div>
-                    </div>
-                  </form>
-                  <button id="btnFilesSave" class="btn btn-primary col-md-offset-1">Upload</button>
-                  <button id="btnFilesCancel" class="btn btn-default">Cancel</button>
-                </div>
-              </div>
-              <div class="box">
-                <div class="box-header">
-                  <button id="fileToggle" class="btn btn-primary">Add Files</button>
-                </div>
-                <div class="box-content">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <table class="table table-hover" id="tblFiles">
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>File Name</th>
-                            <th>Description</th>
-                            <th>Attached By</th>
-                            <th>Date Attached</th>
-                              <th class="productFamilyColumn" style="display: none;">Product Line</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="company-notes">
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="box" id="noteForm" style="display: none;">
-                <div class="box-header">
-                </div>
-                <div class="box-content">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <form class="form-horizontal">
-                      <div class="form-group">
-                        <label for="inputName" class="col-md-2 control-label">Title</label>
-                        <div class="col-md-10">
-                          <input class="col-md-10 form-control" id="fieldNoteTitle" />
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="inputName" class="col-md-2 control-label">Description</label>
-                        <div class="col-md-10">
-                          <textarea class="col-md-3 form-control" id="fieldNoteDesc"></textarea>
-                        </div>
+                    <!--                <div class="box">
+                            <div class="box-header"></div>
+                            <div class="box-content">
 
-                      </div>
-                          <div class="form-group productFamilyRow" style="display:none">
-                              <div class="row">
-                                  <!--<div class="col-md-8">-->
-                                      <label for="ddlNoteProductFamily" class="col-md-2 control-label">Product Line</label>
-                                      <div class="col-md-6">
-                                          <select class="form-control" id="ddlNoteProductFamily">
-                                              <option value="-1">Unassigned</option>
-                                          </select>
-                                      </div>
-                                  <!--</div>-->
-                              </div>
-                          </div>
-                      <div class="form-group">
-                        <label for="noteCustomerAlert" class="col-md-2 control-label">Set as Alert</label>
-                          <div class="col-md-2">
-                              <input type="checkbox" id="noteCustomerAlert">
-                          </div>
-                      </div>
-                      <input type="hidden" id="fieldNoteID" value="-1" />
-                      <button id="btnNotesSave" class="btn btn-primary col-md-offset-1">Save Note</button>
-                      <button id="btnNotesCancel" class="btn btn-default">Cancel</button>
-                      </form>
-                    </div>
-                  </div>
+                            </div>
+                          </div>   -->
                 </div>
-              </div>
-              <div class="box">
-                <div class="box-header">
-                  <button id="noteToggle" class="btn btn-primary">Add Note</button>
-                </div>
-                <div class="box-content">
-                  <div class="row note-list">
-                    <div class="col-md-12">
-                      <table class="table table-hover" id="tblNotes">
-                        <thead>
-                          <th></th>
-                          <th></th>
-                          <th>Title</th>
-                                    <th>Author</th>
-                          <th>Date Written</th>
-                          <th class="productFamilyColumn" style="display: none;">Product Line</th>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-12 noteDesc" style="display: none;">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="company-inventory">
-          <div class="row">
-              <div class="col-xs-12">
-                  <div class="box">
-                <div class="box-header">
-                </div>
-                <div class="box-content">
+                <div class="tab-pane fade" id="company-products">
                     <div class="row">
-                        <div class="col-md-6">
-                          <button class="btn btn-primary asset-action-assign" data-toggle="modal" data-target="#modalAssign" >Assign Asset</button>
-                          <div class="list-group assetList">
-                          </div>
-                        </div>
-                      </div>
-                  </div>   
-              </div>
-              </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="company-watercooler">
-          <iframe id="watercoolerIframe" frameborder="0" scrolling="no" src="" width="100%"
-            height="850"></iframe>
-        </div>
-        <div class="tab-pane fade" id="company-ratings">
-            <div class="row">
-            <div class="col-xs-12">
-              <div class="box">
-                <div class="box-header">
-                    <!--<div class="row productLineRowLabel" style="display:none">
-                        <label for="ddlRatingProductFamily" class="col-md-2 control-label">Product Line</label>
-                    </div>-->
-                    <div class="row productLineRow" style="display:none">
-                        <div class="col-md-6">
-                            <select class="form-control" id="ddlRatingProductFamily">
-                                <option value="-1">All Product Lines</option>
-                                <option value="0">Without Product Line</option>
-                            </select>
+                        <div class="col-xs-12" id="productsContainer">
+                            <div class="box" id="productForm" style="display: none;">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="col-md-2 control-label" for="productProduct">Product</label>
+                                                    <div class="col-md-8">
+                                                        <select id="productProduct" class="form-control"></select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="col-md-2 control-label" for="productVersion">Version</label>
+                                                    <div class="col-md-8">
+                                                        <select id="productVersion" class="form-control">
+                                                            <option value="-1">Unassigned</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="col-md-2 control-label" for="productExpiration">Warranty Expiration</label>
+                                                    <div class="col-md-8">
+                                                        <input id="productExpiration" class="col-md-10 form-control datepicker">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="col-md-2 control-label" for="slaLevels">SLA Assigned</label>
+                                                    <div class="col-md-8">
+                                                        <select id="slaLevel" class="form-control">
+                                                            <option value="-1">Unassigned</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="productCustomer">
+                                        <div id="customProductsControls">
+                                        </div>
+                                    </form>
+                                    <input type="hidden" id="fieldProductID" value="-1" />
+                                    <button id="btnProductSave" class="btn btn-primary col-md-offset-1">Associate Product</button>
+                                    <button id="btnProductCancel" class="btn btn-default">Cancel</button>
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-header">
+                                    <button id="productToggle" class="btn btn-primary">Associate Product</button>
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblProducts">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th><a href="#" class="productHeader">Product Name</a></th>
+                                                        <th><a href="#" class="productHeader">Version</a></th>
+                                                        <th><a href="#" class="productHeader">Support Expiration</a></th>
+                                                        <th><a href="#" class="productHeader">Status</a></th>
+                                                        <th><a href="#" class="productHeader">Released</a></th>
+                                                        <th><a href="#" class="productHeader">Released Date</a></th>
+                                                        <th><a href="#" class="productHeader">SLA Assigned</a></th>
+                                                        <th><a href="#" class="productHeader">Date Created<i class="fa fa-sort-desc"></i></a></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                            <div class="products-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                                            <div class="products-empty" hidden>This customer has no products.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+                <div class="tab-pane fade" id="company-attachments">
                     <div class="row">
-                        <div class="col-xs-1">
-                            <p class="percent" id="positivePercent">0%</p>
-                            <a href="#"><img id="positiveImage" src="../Images/face-positive.png" style="width:50px;height:50px"  /></a>
-                        </div>
-                        <div class="col-xs-1">
-                            <p class="percent" id="neutralPercent">0%</p>
-                            <a href="#"><img id="neutralImage" src="../Images/face-neutral.png" style="width:50px;height:50px"  /></a>
-                        </div>
-                        <div class="col-xs-1">
-                            <p class="percent" id="negativePercent">0%</p>                        
-                            <a href="#"><img id="negativeImage" src="../Images/face-negative.png" style="width:50px;height:50px"  /></a>
-                        </div>
-                        <div class="col-xs-1">
-                            <a href="#" id="viewAll">View All</a>
+                        <div class="col-xs-12">
+                            <div class="box" id="fileForm" style="display: none;">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <form class="form-horizontal file-upload" action="Upload/Actions/555" method="POST"
+                                          enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                                        <div class="form-group">
+                                            <label for="inputName" class="col-md-2 control-label">File</label>
+                                            <div class="col-md-10">
+                                                <input class="hiddenfile" type="file" name="file[]">
+                                                <p class="form-control-static">
+                                                    <a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">
+                                                        Click to select your file or drag and drop files here.
+                                                    </a>
+                                                </p>
+                                                <ul class="upload-queue"></ul>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="inputName" class="col-md-2 control-label">Description</label>
+                                            <div class="col-md-10">
+                                                <textarea class="col-md-3 form-control" id="attachmentDescription"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group productFamilyRow" style="display:none">
+                                            <div class="row">
+                                                <!--<div class="col-md-8">-->
+                                                <label for="ddlFileProductFamily" class="col-md-2 control-label">Product Line</label>
+                                                <div class="col-md-6">
+                                                    <select class="form-control" id="ddlFileProductFamily">
+                                                        <option value="-1">Unassigned</option>
+                                                    </select>
+                                                </div>
+                                                <!--</div>-->
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <button id="btnFilesSave" class="btn btn-primary col-md-offset-1">Upload</button>
+                                    <button id="btnFilesCancel" class="btn btn-default">Cancel</button>
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-header">
+                                    <button id="fileToggle" class="btn btn-primary">Add Files</button>
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblFiles">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>File Name</th>
+                                                        <th>Description</th>
+                                                        <th>Attached By</th>
+                                                        <th>Date Attached</th>
+                                                        <th class="productFamilyColumn" style="display: none;">Product Line</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="box-content">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <table class="table table-hover" id="tblRatings">
-                        <thead>
-                          <tr>
-                            <th class="col-xs-1">Ticket</th>
-                            <th class="col-xs-2">Agents</th>
-                            <th class="col-xs-1">Reported By</th>
-                            <th class="col-xs-1">Date Reported</th>
-                            <th class="col-xs-1">Rating</th>
-                            <th class="col-xs-5">Comments</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                      </table>
+                <div class="tab-pane fade" id="company-notes">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box" id="noteForm" style="display: none;">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <form class="form-horizontal">
+                                                <div class="form-group">
+                                                    <label for="inputName" class="col-md-2 control-label">Title</label>
+                                                    <div class="col-md-10">
+                                                        <input class="col-md-10 form-control" id="fieldNoteTitle" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="inputName" class="col-md-2 control-label">Description</label>
+                                                    <div class="col-md-10">
+                                                        <textarea class="col-md-3 form-control" id="fieldNoteDesc"></textarea>
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group productFamilyRow" style="display:none">
+                                                    <div class="row">
+                                                        <!--<div class="col-md-8">-->
+                                                        <label for="ddlNoteProductFamily" class="col-md-2 control-label">Product Line</label>
+                                                        <div class="col-md-6">
+                                                            <select class="form-control" id="ddlNoteProductFamily">
+                                                                <option value="-1">Unassigned</option>
+                                                            </select>
+                                                        </div>
+                                                        <!--</div>-->
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="noteCustomerAlert" class="col-md-2 control-label">Set as Alert</label>
+                                                    <div class="col-md-2">
+                                                        <input type="checkbox" id="noteCustomerAlert">
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="fieldNoteID" value="-1" />
+                                                <button id="btnNotesSave" class="btn btn-primary col-md-offset-1">Save Note</button>
+                                                <button id="btnNotesCancel" class="btn btn-default">Cancel</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-header">
+                                    <button id="noteToggle" class="btn btn-primary">Add Note</button>
+                                </div>
+                                <div class="box-content">
+                                    <div class="row note-list">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblNotes">
+                                                <thead>
+                                                <th></th>
+                                                <th></th>
+                                                <th>Title</th>
+                                                <th>Author</th>
+                                                <th>Date Written</th>
+                                                <th class="productFamilyColumn" style="display: none;">Product Line</th>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 noteDesc" style="display: none;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
+                <div class="tab-pane fade" id="company-inventory">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button class="btn btn-primary asset-action-assign" data-toggle="modal" data-target="#modalAssign">Assign Asset</button>
+                                            <div class="list-group assetList">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="company-watercooler">
+                    <iframe id="watercoolerIframe" frameborder="0" scrolling="no" src="" width="100%"
+                            height="850"></iframe>
+                </div>
+                <div class="tab-pane fade" id="company-ratings">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                                <div class="box-header">
+                                    <!--<div class="row productLineRowLabel" style="display:none">
+                                        <label for="ddlRatingProductFamily" class="col-md-2 control-label">Product Line</label>
+                                    </div>-->
+                                    <div class="row productLineRow" style="display:none">
+                                        <div class="col-md-6">
+                                            <select class="form-control" id="ddlRatingProductFamily">
+                                                <option value="-1">All Product Lines</option>
+                                                <option value="0">Without Product Line</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-1">
+                                            <p class="percent" id="positivePercent">0%</p>
+                                            <a href="#"><img id="positiveImage" src="../Images/face-positive.png" style="width:50px;height:50px" /></a>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <p class="percent" id="neutralPercent">0%</p>
+                                            <a href="#"><img id="neutralImage" src="../Images/face-neutral.png" style="width:50px;height:50px" /></a>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <p class="percent" id="negativePercent">0%</p>
+                                            <a href="#"><img id="negativeImage" src="../Images/face-negative.png" style="width:50px;height:50px" /></a>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <a href="#" id="viewAll">View All</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblRatings">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col-xs-1">Ticket</th>
+                                                        <th class="col-xs-2">Agents</th>
+                                                        <th class="col-xs-1">Reported By</th>
+                                                        <th class="col-xs-1">Date Reported</th>
+                                                        <th class="col-xs-1">Rating</th>
+                                                        <th class="col-xs-5">Comments</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="company-calendar">
+                    <iframe id="calendarIframe" frameborder="0" scrolling="no" src="" width="100%"
+                            height="850"></iframe>
+                </div>
+                <div class="tab-pane fade" id="company-sla">
+                    <div class="row">
+                        <div class="col-xs-12" id="slaContainer">
+                            <div id="slaForm" class="box">
+                                <div class="box-header addSlaTrigger">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblSLATriggers">
+                                                <thead>
+                                                    <tr>
+                                                        <th><a href="#" class="slaHeader">SLA</a></th>
+                                                        <th><a href="#" class="slaHeader">Ticket Type</a></th>
+                                                        <th><a href="#" class="slaHeader">Severity</a></th>
+                                                        <th><a href="#" class="slaHeader">SLA Type</a></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                            <div class="slatriggers-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                                            <div class="slatriggers-empty" hidden>This customer has no SLA associated.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-header">
+                                    <!--<button id="productToggle" class="btn btn-primary">Associate Product</button>-->
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblSLAViolations">
+                                                <thead>
+                                                    <tr>
+                                                        <th><a href="#" class="slaHeader">Ticket #</a></th>
+                                                        <th><a href="#" class="slaHeader">Violation</a></th>
+                                                        <th><a href="#" class="slaHeader">Violation Date<i class="fa fa-sort-desc"></i></a></th>
+                                                        <th><a href="#" class="slaHeader">Sla Name</a></th>
+                                                        <th><a href="#" class="slaHeader">Ticket Type</a></th>
+                                                        <th><a href="#" class="slaHeader">Severity</a></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                            <div class="sla-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                                            <div class="sla-empty" hidden>This customer has no tickets with SLA violations.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="tab-pane fade" id="company-calendar">
-          <iframe id="calendarIframe" frameborder="0" scrolling="no" src="" width="100%"
-            height="850"></iframe>
-        </div>        
-      </div>
     </div>
-  </div>
   <div class="modal fade" id="modalReminder">
     <div class="modal-dialog">
       <div class="modal-content">

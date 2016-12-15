@@ -462,6 +462,10 @@ function SetupTicketProperties(order) {
 
     jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
 
+    if (!window.parent.Ts.System.User.ChangeKbVisibility && window.parent.Ts.System.User.IsSystemAdmin)
+        $('#action-new-KB').prop('disabled', true);
+
+
     if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserID === _ticketInfo.UserID) {
       $('.ticket-menu-actions').append('<li><a id="Ticket-Delete">Delete</a></li>');
       $('#Ticket-Delete').click(function (e) {
@@ -897,6 +901,10 @@ function SetupActionEditor(elem, action) {
           data.jqXHR.abort();
         })
         .appendTo(bg);
+
+        if ((data.files[i].size / 1000000) > 25)
+            alert("Warning " + data.files[i].name + " is over 25MB");
+
       }
 
     },
@@ -1461,8 +1469,14 @@ function SaveAction(_oldActionID, isPrivate, callback) {
       });
   }
   window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
-    _ticketInfo = info;
-    setSLAInfo();
+      _ticketInfo = info;
+
+      if (_ticketInfo.SlaTriggerId !== null
+            && _ticketInfo.SlaTriggerId > 0) {
+          $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+          $('#ticket-SLANote').text('Calculating...');
+          slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+      }
   });
 
   window.parent.Ts.System.logAction('Action Saved');
@@ -2447,6 +2461,9 @@ function SetupProductSection() {
         window.parent.Ts.Services.Tickets.GetParentValues(_ticketID, function (fields) {
           AppenCustomValues(fields);
         });
+
+        resetSLAInfo();
+        slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
       },
       function (error) {
         alert('There was an error setting the product.');
@@ -2562,9 +2579,11 @@ function SetupProductVersionsControl(product) {
   if (product !== null && product.Versions.length > 0) {
   	var versions = product.Versions;
   	
-    for (var i = 0; i < versions.length; i++) {
-      AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
-      AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+  	for (var i = 0; i < versions.length; i++) {
+        try{
+            AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+            AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+        }catch(e){}
     }
     if ($('#ticket-Resolved').length) {
       $('#ticket-Versions').selectize({
@@ -3738,6 +3757,9 @@ var SetupStatusField = function (StatusId) {
                   //SetStatus(null);
                   window.parent.Ts.System.logAction('Ticket - Status Changed');
                   $('#ticket-status-label').toggleClass('ticket-closed', result.IsClosed);
+                  _ticketInfo.IsSlaPaused = status.PauseSLA;
+                  resetSLAInfo();
+                  slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
                   window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
                 }
               },
@@ -3752,10 +3774,6 @@ var SetupStatusField = function (StatusId) {
               return;
             }
           });
-
-          _ticketInfo.IsSlaPaused = status.PauseSLA;
-          resetSLAInfo();
-          slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
         }
       },
       render: {
@@ -5281,6 +5299,7 @@ var resetSLAInfo = function () {
 		_ticketInfo.SlaTriggerId = info.SlaTriggerId;
 		_ticketInfo.IsSlaPending = info.IsSlaPending;
 		_ticketInfo.IsSlaPaused = info.IsSlaPaused;
+		_ticketInfo.Ticket.IsClosed = info.Ticket.IsClosed;
 		setSLAInfo();
 	});
 }
@@ -5291,11 +5310,13 @@ var setSLAInfo = function () {
       && ((_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)
             || (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && _ticketInfo.IsSlaPending !== null && !_ticketInfo.IsSlaPending))
       ) {
-      $('#ticket-SLAStatus').find('i').addClass('color-green');
+    $('#ticket-SLAStatus').find('i').addClass('color-green');
     $('#ticket-SLANote').text('');
+    $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+    $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+    $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
   }
-  else if (_ticketInfo.Ticket.SlaViolationTime === null
-            && _ticketInfo.SlaTriggerId !== null
+  else if (_ticketInfo.SlaTriggerId !== null
             && _ticketInfo.SlaTriggerId > 0
             && _ticketInfo.IsSlaPaused !== undefined
             && !_ticketInfo.IsSlaPaused
@@ -5304,19 +5325,28 @@ var setSLAInfo = function () {
             && _ticketInfo.IsSlaPending) {
       $('#ticket-SLAStatus').find('i').addClass('color-yellow');
       $('#ticket-SLANote').text('Calculating...');
+      $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+      $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+      $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
   }
   else if (_ticketInfo.IsSlaPaused !== undefined
             && _ticketInfo.IsSlaPaused
             && !_ticketInfo.Ticket.IsClosed
             && _ticketInfo.SlaTriggerId !== null
             && _ticketInfo.SlaTriggerId > 0) {
-      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+      $('#ticket-SLAStatus').find('i').removeClass('fa-bomb');
+      $('#ticket-SLAStatus').find('i').addClass('fa-pause');
+      $('#ticket-SLAStatus').find('i').addClass('slaPausedIcon');
       $('#ticket-SLANote').text('Paused');
   }
   else {
     $('#ticket-SLAStatus')
       .find('i')
       .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
+    $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+    $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+    $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
+
     if (_ticketInfo.Ticket.SlaViolationDate !== null) {
       $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
     }
