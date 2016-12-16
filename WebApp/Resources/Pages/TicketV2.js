@@ -5324,7 +5324,17 @@ var resetSLAInfo = function () {
 
 var setSLAInfo = function () {
   $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
-  if (_ticketInfo.Ticket.SlaViolationTime === null
+  if (_ticketInfo.IsSlaPaused !== undefined
+          && _ticketInfo.IsSlaPaused
+          && !_ticketInfo.Ticket.IsClosed
+          && _ticketInfo.SlaTriggerId !== null
+          && _ticketInfo.SlaTriggerId > 0) {
+      $('#ticket-SLAStatus').find('i').removeClass('fa-bomb');
+      $('#ticket-SLAStatus').find('i').addClass('fa-pause');
+      $('#ticket-SLAStatus').find('i').addClass('slaPausedIcon');
+      $('#ticket-SLANote').text('Paused');
+  }
+  else if (_ticketInfo.Ticket.SlaViolationTime === null
       && ((_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)
             || (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && _ticketInfo.IsSlaPending !== null && !_ticketInfo.IsSlaPending))
       ) {
@@ -5346,16 +5356,6 @@ var setSLAInfo = function () {
       $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
       $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
       $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
-  }
-  else if (_ticketInfo.IsSlaPaused !== undefined
-            && _ticketInfo.IsSlaPaused
-            && !_ticketInfo.Ticket.IsClosed
-            && _ticketInfo.SlaTriggerId !== null
-            && _ticketInfo.SlaTriggerId > 0) {
-      $('#ticket-SLAStatus').find('i').removeClass('fa-bomb');
-      $('#ticket-SLAStatus').find('i').addClass('fa-pause');
-      $('#ticket-SLAStatus').find('i').addClass('slaPausedIcon');
-      $('#ticket-SLANote').text('Paused');
   }
   else {
     $('#ticket-SLAStatus')
