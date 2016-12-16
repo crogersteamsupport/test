@@ -56,6 +56,7 @@ public partial class Dialogs_ChatProperties  : BaseDialogPage
         cbChatTOKScreenEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", true);
         cbChatTOKVoiceEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", true);
         cbChatTOKVideoEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", true);
+        cbChatAvatars.Checked = Settings.OrganizationDB.ReadBool("ChatAvatarsEnabled", true);
     }
 
 

@@ -65,6 +65,9 @@
         <telerik:RadTextBox ID="textChatIntro" runat="server" Width="200px"></telerik:RadTextBox>
       </div>
         <div>
+            <asp:CheckBox ID="cbChatAvatars" runat="server" Text="Enable Avatars"/>
+        </div>
+        <div>
             <asp:CheckBox ID="cbChatTOKScreenEnabled" runat="server" Text="Enable Screen Sharing"/>
         </div>
         <div>

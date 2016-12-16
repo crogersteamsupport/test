@@ -50,6 +50,7 @@ namespace TSWebServices
             model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKScreenEnabled", "true"));
             model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVoiceEnabled", "true"));
             model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVideoEnabled", "true"));
+            model.ChatAvatarsEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatAvatarsEnabled", "true"));
 
             return JsonConvert.SerializeObject(model);
         }
@@ -64,6 +65,7 @@ namespace TSWebServices
             model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKScreenEnabled", "true"));
             model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVoiceEnabled", "true"));
             model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVideoEnabled", "true"));
+            model.ChatAvatarsEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatAvatarsEnabled", "true"));
 
             return JsonConvert.SerializeObject(model);
         }
@@ -359,6 +361,7 @@ namespace TSWebServices
         {
             int chatID = ChatRequests.AcceptRequest(loginUser, loginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
             var result = pusher.Trigger("presence-" + chatID, "agent-joined", null);
+            var result2 = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", chatRequestID);
             return chatID;
         }
 
@@ -1013,6 +1016,7 @@ namespace TSWebServices
             public bool TOKScreenEnabled { get; set; }
             public bool TOKVoiceEnabled { get; set; }
             public bool TOKVideoEnabled { get; set; }
+            public bool ChatAvatarsEnabled { get; set; }
 
         }
 

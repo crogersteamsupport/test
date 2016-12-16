@@ -1,6 +1,7 @@
 ﻿var _activeChatID = null;
 var _participantID = null;
 var _timer;
+var showAvatars = true;
 $(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("chatid", window);
     _activeChatID = chatID;
@@ -75,6 +76,8 @@ function GetChatSettings(chatID) {
             $('#chat-tok-video').hide();
         if (!result.TOKVoiceEnabled)
             $('#chat-tok-audio').hide();
+
+            showAvatars = result.ChatAvatarsEnabled
         $('.panel-heading').text(result.ChatIntro);
     },
     function (error) {
