@@ -64,7 +64,7 @@ namespace TeamSupport.Data
                     logs.WriteEvent("Paused and Resumed on the same non-valid day and time (non-business day, holiday, day to pause, outside business hours), so no time to add.");
                 }
             }
-            if (pausedOn.Date == resumedOn.Date && (slaUseBusinessHours || (!slaUseBusinessHours && !slaTrigger.NoBusinessHours)) //the last condition means it is using sla custom hours
+            else if (pausedOn.Date == resumedOn.Date && (slaUseBusinessHours || (!slaUseBusinessHours && !slaTrigger.NoBusinessHours)) //the last condition means it is using sla custom hours
                 && (
                     (SlaTickets.IsValidDay(pausedOn, slaBusinessDays, daysToPause, holidays) && SlaTickets.IsValidDay(resumedOn, slaBusinessDays, daysToPause, holidays))
                     && (pausedOn.TimeOfDay.TotalSeconds > slaDayStart.Value.TimeOfDay.TotalSeconds && pausedOn.TimeOfDay.TotalSeconds < slaDayEnd.Value.TimeOfDay.TotalSeconds)
