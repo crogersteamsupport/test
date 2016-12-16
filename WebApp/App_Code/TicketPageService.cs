@@ -139,6 +139,40 @@ namespace TSWebServices
                     builder.Replace("{{Ticket.TicketSource}}", ticket.TicketSource);
                     builder.Replace("{{Ticket.TicketTypeName}}", ticket.TicketTypeName);
                     builder.Replace("{{Ticket.UserName}}", ticket.UserName);
+                    builder.Replace("{{User.UserID}}", user.UserID.ToString());
+                    builder.Replace("{{User.FirstName}}", user.FirstName);
+                    builder.Replace("{{User.MiddleName}}", user.MiddleName);
+                    builder.Replace("{{User.LastName}}", user.LastName);
+                    builder.Replace("{{User.Title}}", user.Title);
+                    builder.Replace("{{User.Email}}", user.Email);
+                    if (info.Customers.Length > 0)
+                    {
+                        Organization customer = Organizations.GetOrganization(ticket.Collection.LoginUser, info.Customers[0].OrganizationID);
+                        if (customer != null)
+                        {
+                            builder.Replace("{{Customer.Name}}", customer.Name);
+                            builder.Replace("{{Customer.Description}}", customer.Description);
+                            builder.Replace("{{Customer.Website}}", customer.Website);
+                            builder.Replace("{{Customer.OrganizationID}}", customer.OrganizationID.ToString());
+                            builder.Replace("{{Customer.Domains}}", customer.CompanyDomains);
+                            builder.Replace("{{Customer.Active}}", customer.IsActive.ToString());
+                        }
+                        if (info.Customers[0].UserID != null)
+                        {
+                            ContactsViewItem contact = ContactsView.GetContactsViewItem(ticket.Collection.LoginUser, (int)info.Customers[0].UserID);
+                            if (contact != null)
+                            {
+                                builder.Replace("{{Contact.FirstName}}", contact.FirstName);
+                                builder.Replace("{{Contact.LastName}}", contact.LastName);
+                                builder.Replace("{{Contact.Email}}", contact.Email);
+                                builder.Replace("{{Contact.Title}}", contact.Title);
+                                builder.Replace("{{Contact.Company}}", contact.Organization);
+                                builder.Replace("{{Contact.Active}}", contact.IsActive.ToString());
+                                builder.Replace("{{Contact.PortalUser}}", contact.IsPortalUser.ToString());
+                            }
+                        }
+
+                    }
                     plugin.Code = builder.ToString();
                 }
                 info.Plugins = plugins.GetPluginProxies();

@@ -63,7 +63,7 @@ function LoadOrder() {
 
 function CreateOrderElement(parent, cssclass, item) {
     if (item.ItemID) {
-        $(parent).append('<div data-itemid="' + item.ItemID + '" data-catid="' + item.CatID + '" class="admin-to-cat admin-plugin ' + cssclass + '"><i class="fa fa-bars color-lightgray"></i><span class="admin-to-cat-name">' + item.CatName + '</span><i class="fa fa-pencil color-lightgray"></i></div>');
+        $(parent).append('<div data-itemid="' + item.ItemID + '" data-catid="' + item.CatID + '" class="admin-to-cat admin-plugin ' + cssclass + '"><i class="fa fa-bars color-lightgray"></i><span class="admin-to-cat-name">' + item.CatName + '</span><i class="fa fa-pencil color-darkgray"></i></div>');
     }
     else {
         if (item.CatID == "hr") {
