@@ -6,14 +6,16 @@ var _createdTab = 0;
 var _start = 0;
 
 $(document).ready(function () {
-    //$('a.tasklink').click(function () {
-    //    debugger;
-    //    alert('poop');
-    //});
+    $('.action-new').click(function (e) {
+        e.preventDefault();
+        parent.Ts.System.logAction('Tasks Page - New Task');
+        parent.Ts.MainPage.newTask();
+
+    });
 
     $('#pendingTaskList').on('click', 'a.tasklink', function () {
         //e.preventDefault();
-
+        debugger;
         var id = $(this).data('reminderid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
@@ -188,6 +190,15 @@ $(document).ready(function () {
         fetchTasks();
     });
 
+    $('#pendingTaskList').on('click', '.change-task-status', function (e) {
+        var id = $(this).data('reminderid');
+        var checked = $(this).prop("checked");
+        parent.Ts.System.logAction('Tasks Page - Change Task Status');
+
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+
+    });
+
     fetchTasks();
 
     //$('.tabs').on('click', 'a', function (e) {
@@ -218,7 +229,7 @@ $(document).ready(function () {
 
     //    fetchTasks();
     //});
-    
+
     Handlebars.registerHelper("formatDate", function (datetime) {
         if (datetime != null) {
             return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());

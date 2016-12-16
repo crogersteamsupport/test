@@ -28,7 +28,7 @@
                 <div id="Pending">
                     <h3>My Tasks</h3>
                     <span class="pull-right" style="margin-right:20px;">
-                        <a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i></a>
+                        <a href="#" data-toggle="modal" data-target="#myModal" class="action-new"><i class="fa fa-plus"></i></a>
                     </span>
                     <div id="pendingTaskList">
                         <div id="handlebarsTaskList"></div>
@@ -188,16 +188,16 @@
             {{#taskList}}
             <tr>
                 <td>
-                    <input {{taskComplete TaskDateCompleted}} type="checkbox" />
+                    <input {{taskComplete TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{ReminderID}}"/>
                 </td>
                 <td>{{TaskName}}</td>
-                <td>{{AssignedTo}}</td>
+                <td>{{UserID}}</td>
                 <td>{{formatDate TaskDueDate}}</td>
                 <td>{{formatDate DueDate}}</td>
                 <td></td>
                 <td>
                     <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
-                        <i class="fa fa-pencil"></i>
+                        <i class="fa fa-external-link"></i>
                     </a>
                 </td>
             </tr>
