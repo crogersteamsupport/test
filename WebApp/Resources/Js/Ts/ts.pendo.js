@@ -13,14 +13,15 @@
 (function () {
     var mainFrame = getMainFrame();
 
-    window.pendo_options = mainFrame.pendo_options;
-
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'd3accju1t3mngt.cloudfront.net/js/pa.min.js';
-    var firstScript = document.getElementsByTagName('script')[0];
-    firstScript.parentNode.insertBefore(script, firstScript);
+    (function (p, e, n, d, o) {
+        var v, w, x, y, z; o = p[d] = p[d] || {}; o._q = [];
+        v = ['initialize', 'identify', 'updateOptions', 'pageLoad']; for (w = 0, x = v.length; w < x; ++w) (function (m) {
+            o[m] = o[m] || function () { o._q[m === v[0] ? 'unshift' : 'push']([m].concat([].slice.call(arguments, 0))); };
+        })(v[w]);
+        y = e.createElement(n); y.async = !0; y.src = 'https://cdn.pendo.io/agent/static/6af64640-2a96-4767-4bd8-f480c3f1ac37/pendo.js';
+        z = e.getElementsByTagName(n)[0]; z.parentNode.insertBefore(y, z);
+    })(window, document, 'script', 'pendo');
+    if (pendo) pendo.initialize(mainFrame.pendo_options);
 })();
 
 document.onkeydown = function (event) {
