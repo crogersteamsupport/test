@@ -19,6 +19,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CustomView", "CustomView", false, false, false);
       _fieldMap.AddMap("IsActive", "IsActive", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
+      _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
+      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
             
     }
   }

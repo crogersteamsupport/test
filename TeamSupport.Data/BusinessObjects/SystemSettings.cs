@@ -154,10 +154,14 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
 			return ReadString("SignalRUrl", "https://signalr.teamsupport.com/signalr");
 		}
 
+        public static string GetMobileURL()
+        {
+            return ReadString("MobileURL", "https://m.teamsupport.com/");
+        }
+
         public static string GetPusherKey()
         {
             return ReadString("PusherKey", "1");
         }
-
     }
 }

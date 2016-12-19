@@ -335,7 +335,9 @@ $(document).ready(function () {
       }
 
       window.parent.Ts.Services.Products.GetProperties(_productID, function (result) {
-      	$('#fieldEmailReplyToAddress').text(result.prodproxy.EmailReplyToAddress != null && result.prodproxy.EmailReplyToAddress != "" ? result.prodproxy.EmailReplyToAddress : "Not Set");
+          $('#fieldEmailReplyToAddress').text(result.prodproxy.EmailReplyToAddress != null && result.prodproxy.EmailReplyToAddress != "" ? result.prodproxy.EmailReplyToAddress : "Not Set");
+          $('#fieldSlaLevel').text(result.SlaAssigned);
+          $('#fieldSlaLevel').data('field', result.prodproxy.SlaLevelID);
       });
   }
 
@@ -687,6 +689,58 @@ $(document).ready(function () {
               $('#productEdit').removeClass("disabled");
           }, function () {
               alert("There was a problem saving your product property.");
+              $('#productEdit').removeClass("disabled");
+          });
+      });
+      $('#productEdit').addClass("disabled");
+  });
+
+  $('#fieldSlaLevel').click(function (e) {
+      e.preventDefault();
+      if (!$(this).hasClass('editable'))
+          return false;
+      var header = $(this).hide();
+      window.parent.Ts.System.logAction('Product Detail - Edit Assigned SLA');
+      var container = $('<div>')
+        .insertAfter(header);
+
+      var container1 = $('<div>')
+          .addClass('col-xs-9')
+        .appendTo(container);
+
+      var select = $('<select>').addClass('form-control').attr('id', 'ddlSlaLevel').appendTo(container1);
+      window.parent.Ts.Services.Organizations.GetSlaLevels(function (slaLevels) {
+          $('<option>').attr('value', '-1').text('Unassigned').appendTo(select);
+          for (var i = 0; i < slaLevels.length; i++) {
+              var opt = $('<option>').attr('value', slaLevels[i].SlaLevelID).text(slaLevels[i].Name).data('o', slaLevels[i]);
+              if (header.data('field') == slaLevels[i].SlaLevelID)
+                  opt.attr('selected', 'selected');
+              opt.appendTo(select);
+          }
+      });
+
+
+      $('<i>')
+        .addClass('col-xs-1 fa fa-times')
+        .click(function (e) {
+            $(this).closest('div').remove();
+            header.show();
+            $('#productEdit').removeClass("disabled");
+        })
+        .insertAfter(container1);
+      $('#ddlSlaLevel').on('change', function () {
+          var value = $(this).val();
+          var name = this.options[this.selectedIndex].innerHTML;
+          container.remove();
+          window.parent.Ts.System.logAction('Product Detail - Assigned SLA Edit');
+
+          window.parent.Ts.Services.Products.SetSlaLevel(_productID, value, function (result) {
+              header.data('field', result);
+              header.text(name);
+              header.show();
+              $('#productEdit').removeClass("disabled");
+          }, function () {
+              alert("There was a problem saving your sla level.");
               $('#productEdit').removeClass("disabled");
           });
       });

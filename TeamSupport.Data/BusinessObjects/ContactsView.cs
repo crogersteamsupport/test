@@ -46,7 +46,7 @@ namespace TeamSupport.Data
 		}
 	}
 
-		public void LoadByParentOrganizationID(int organizationParentId, NameValueCollection filters, int? pageNumber = null, int? pageSize = null, string orderBy = "LastName, FirstName", int? limitNumber = null, bool isCustomer = false)
+		public void LoadByParentOrganizationID(int organizationParentId, NameValueCollection filters, int? pageNumber = null, int? pageSize = null, string orderBy = "LastName, FirstName", int? limitNumber = null, bool isCustomer = false, bool useMaxDop = false)
 		{
 			//Get the column names, this row will be deleted before getting the actual data
 			this.LoadOneByParentOrganizationID(organizationParentId);
@@ -60,13 +60,22 @@ namespace TeamSupport.Data
 					limit = "TOP " + limitNumber.ToString();
 				}
 
-				string sql = BuildLoadByParentOrganizationIdSql(limit, organizationParentId, orderBy, filters, command.Parameters, isCustomer);
+				string sql = BuildLoadByParentOrganizationIdSql(limit, organizationParentId, orderBy, filters, command.Parameters, isCustomer, useMaxDop);
 				sql = InjectCustomFields(sql, "UserID", ReferenceType.Contacts);
 				sql = DataUtils.AddPaging(sql, pageSize, pageNumber, command);
 				command.CommandType = CommandType.Text;
 				command.CommandText = sql;
 				command.Parameters.AddWithValue("@OrganizationParentId", organizationParentId);
-				this.DeleteAll();
+
+                //Hack: ContactsView has the column Email size of nvarchar(1024). We are applying this here specifically for this column, the better way should be to do it for all everytime but that might be a massive change to the base code for the data processing.
+                bool hasEmailParameter = (filters.AllKeys.Where(p => p.ToLower() == "email").Any() || filters.AllKeys.Where(p => p.ToLower().Contains("email[")).Any()) && command.Parameters.Contains("@email");
+
+                if (hasEmailParameter)
+                {
+                    command.Parameters["@email"].Size = 1024;
+                }
+
+                this.DeleteAll();
 
 				Fill(command);
 			}
@@ -93,7 +102,7 @@ namespace TeamSupport.Data
 	/// <param name="filters">Filters to be applied. Specified in the URL request.</param>
 	/// <param name="filterParameters">SqlParamenterCollection for the input parameters of the sql query.</param>
 	/// <returns>A string with the full sql statement.</returns>
-		public string BuildLoadByParentOrganizationIdSql(string limit, int organizationParentId, string orderBy, NameValueCollection filters, SqlParameterCollection filterParameters, bool isCustomer = false)
+		public string BuildLoadByParentOrganizationIdSql(string limit, int organizationParentId, string orderBy, NameValueCollection filters, SqlParameterCollection filterParameters, bool isCustomer = false, bool useMaxDop = false)
 		{
 			StringBuilder result = new StringBuilder();
 
@@ -120,6 +129,11 @@ namespace TeamSupport.Data
 			result.Append("WHERE " + (isCustomer ? "OrganizationID" : "OrganizationParentID") + " = @OrganizationParentId AND (MarkDeleted = 0) ");
 			result.Append(DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationParentId, filters, ReferenceType.Contacts, "UserID", null, ref filterParameters) + " ");
 			result.Append("ORDER BY " + orderBy);
+
+            if (useMaxDop)
+            {
+                result.Append(" OPTION (MAXDOP 1);");
+            }
 
 			return result.ToString();
 		}
@@ -180,6 +194,17 @@ namespace TeamSupport.Data
       {
         command.CommandText = "SELECT cv.* FROM ContactsView cv LEFT JOIN UserTickets ut ON ut.UserID = cv.UserID WHERE ut.TicketID = @TicketID AND (cv.MarkDeleted = 0) ORDER BY ut.DateCreated ";
         command.CommandText = InjectCustomFields(command.CommandText, "cv.UserID", ReferenceType.Contacts);
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        Fill(command);
+      }
+    }
+
+    public void LoadNameAndIdByTicketID(int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT u.UserID, u.FirstName + ' ' + u.LastName AS Name FROM [Users] u LEFT JOIN UserTickets ut ON ut.UserID = u.UserID WHERE ut.TicketID = @TicketID AND (u.MarkDeleted = 0)";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TicketID", ticketID);
         Fill(command);

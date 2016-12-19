@@ -23,3 +23,30 @@
     firstScript.parentNode.insertBefore(script, firstScript);
 })();
 
+document.onkeydown = function (event) {
+
+    if (!event) { /* This will happen in IE */
+        event = window.event;
+    }
+
+    var keyCode = event.keyCode;
+
+    if (keyCode == 8 &&
+		((event.target || event.srcElement).tagName != "TEXTAREA") &&
+		((event.target || event.srcElement).tagName != "INPUT")) {
+
+        if (navigator.userAgent.toLowerCase().indexOf("msie") == -1) {
+            event.stopPropagation();
+        } else {
+            event.returnValue = false;
+        }
+
+        return false;
+    }
+};
+
+//window.onbeforeunload = function () {
+//    return "Please make sure to save any changes before leaving the page.";
+//    //if we return nothing here (just calling return;) then there will be no pop-up question at all
+//    //return;
+//};

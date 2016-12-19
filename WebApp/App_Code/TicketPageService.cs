@@ -32,7 +32,7 @@ namespace TSWebServices
     {
 
         public TicketPageService() { }
-
+        
         [WebMethod]
         public TicketPageInfo GetTicketInfo(int ticketNumber)
         {
@@ -51,6 +51,18 @@ namespace TSWebServices
 
             if (info.Ticket.Name.ToLower() == "<no subject>")
                 info.Ticket.Name = "";
+
+            //check if outside resource change ticket type and to modify the status
+            TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
+            statuses.LoadAvailableTicketStatuses(info.Ticket.TicketTypeID, null);
+
+            if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID))
+            {
+                info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
+                Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+                newticket.TicketStatusID = ticket.TicketStatusID;
+                newticket.Collection.Save();
+            }
 
             if (info.Ticket.CategoryName != null && info.Ticket.ForumCategory != null)
                 info.Ticket.CategoryDisplayString = ForumCategories.GetCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.ForumCategory);
@@ -73,6 +85,17 @@ namespace TSWebServices
             info.Assets = assets.GetAssetProxies();
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
+
+            TicketStatuses ticketStatus = new TicketStatuses(TSAuthentication.GetLoginUser());
+            ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+            info.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
+            SlaTicket slaTicket = SlaTickets.GetSlaTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+
+            if (slaTicket != null)
+            {
+                info.SlaTriggerId = slaTicket.SlaTriggerId;
+                info.IsSlaPending = slaTicket.IsPending;
+            }
 
             return info;
         }
@@ -334,6 +357,57 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public PluginProxy GetTicketPagePlugin(int pluginID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID)
+            {
+                return plugin.GetProxy();
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public PluginProxy SaveTicketPagePlugin(int pluginID, string name, string code)
+        {
+            Plugin plugin;
+
+            if (pluginID < 0)
+            {
+                Plugins plugins = new Plugins(TSAuthentication.GetLoginUser());
+                plugin = plugins.AddNewPlugin();
+                plugin.Code = code;
+                plugin.CreatorID = TSAuthentication.UserID;
+                plugin.DateCreated = DateTime.UtcNow;
+                plugin.Name = name;
+                plugin.OrganizationID = TSAuthentication.OrganizationID;
+            }
+            else
+            {
+                plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+                if (plugin.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+                {
+                    plugin.Name = name;
+                    plugin.Code = code;
+                }
+            }
+
+            plugin.BaseCollection.Save();
+            return plugin.GetProxy();
+        }
+
+        [WebMethod]
+        public void DeleteTicketPagePlugin(int pluginID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+            {
+                plugin.Delete();
+                plugin.BaseCollection.Save();
+            }
+        }
+
+        [WebMethod]
         public AutocompleteItem[] GetUserOrOrganizationForTicket(string searchTerm)
         {
             User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
@@ -422,6 +496,73 @@ namespace TSWebServices
             return GetActionTimelineItem(action);
         }
 
+        [WebMethod]
+        public TimeLineItem UpdateActionCopyingAttachment(ActionProxy proxy, int insertedKBTicketID)
+        {
+            TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+
+            if (action == null)
+            {
+                action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+                action.TicketID = proxy.TicketID;
+                action.CreatorID = TSAuthentication.UserID;
+                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
+                {
+                    if (!proxy.Description.Contains(user.Signature))
+                    {
+                        action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                    }
+                    else
+                    {
+                        action.Description = proxy.Description;
+                    }
+                }
+                else
+                {
+                    action.Description = proxy.Description;
+                }
+            }
+            else
+            {
+                if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
+                {
+                    if (!string.IsNullOrWhiteSpace(user.Signature))
+                    {
+                        if (!action.Description.Contains(user.Signature.Replace(" />", ">")))
+                        {
+                            action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                        }
+                        else
+                        {
+                            action.Description = proxy.Description;
+                        }
+                    }
+                    else
+                    {
+                        action.Description = proxy.Description;
+                    }
+                }
+                else
+                {
+                    action.Description = proxy.Description;
+                }
+            }
+
+            if (!CanEditAction(action)) return null;
+
+
+            action.ActionTypeID = proxy.ActionTypeID;
+            action.DateStarted = proxy.DateStarted;
+            action.TimeSpent = proxy.TimeSpent;
+            action.IsKnowledgeBase = proxy.IsKnowledgeBase;
+            action.IsVisibleOnPortal = proxy.IsVisibleOnPortal;
+            action.Collection.Save();
+
+            CopyInsertedKBAttachments(action.ActionID, insertedKBTicketID);
+
+            return GetActionTimelineItem(action);
+        }
 
         [WebMethod]
         public bool SetActionPortal(int actionID, bool isVisibleOnPortal)
@@ -706,11 +847,32 @@ namespace TSWebServices
         }
 
 		[WebMethod]
-		public TicketsViewItemProxy GetTicketSLAInfo(int ticketNumber)
+		public SlaInfo GetTicketSLAInfo(int ticketNumber)
 		{
-			TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SlaInfo slaInfo = new SlaInfo();
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(loginUser, ticketNumber);
 			if (ticket == null) return null;
-			return ticket.GetProxy();
+
+            slaInfo.Ticket = ticket.GetProxy();
+
+            SlaTickets slaTickets = new SlaTickets(loginUser);
+            slaTickets.LoadByTicketId(ticket.TicketID);
+            slaInfo.IsSlaPaused = false;
+            slaInfo.IsSlaPending = false;
+            slaInfo.SlaTriggerId = null;
+
+            if (slaTickets != null && slaTickets.Count > 0)
+            {
+                TicketStatuses ticketStatus = new TicketStatuses(loginUser);
+                ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+                slaInfo.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
+
+                slaInfo.IsSlaPending = slaTickets[0].IsPending;
+                slaInfo.SlaTriggerId = slaTickets[0].SlaTriggerId;
+            }
+
+            return slaInfo;
 		}
 
         [WebMethod]
@@ -743,6 +905,18 @@ namespace TSWebServices
 
         }
 
+        [DataContract]
+        public class SlaInfo
+        {
+            [DataMember]
+            public TicketsViewItemProxy Ticket { get; set; }
+            [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
+        }
 
         [DataContract]
         public class TicketPageInfo
@@ -769,7 +943,12 @@ namespace TSWebServices
             public TicketLinkToJiraItemProxy LinkToJira { get; set; }
             [DataMember]
             public AttachmentProxy[] Attachments { get; set; }
-
+            [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
         }
 
         [DataContract]
@@ -832,6 +1011,8 @@ namespace TSWebServices
             public string CatName { get; set; }
             [DataMember]
             public string Disabled { get; set; }
+            [DataMember]
+            public string ItemID { get; set; }
         }
 
         //Private Methods
@@ -955,8 +1136,10 @@ namespace TSWebServices
             List<AttachmentProxy> result = new List<AttachmentProxy>();
             foreach (AttachmentProxy attachment in attach.GetAttachmentProxies())
             {
-                result.Add(attachment);
+                if (!result.Exists(a => a.FileName == attachment.FileName))
+                   result.Add(attachment);
             }
+
             return result.ToArray();
         }
 
@@ -1076,5 +1259,50 @@ namespace TSWebServices
 
 			return GetActionTimelineItem(action);
 		}
-	}
+
+        private void CopyInsertedKBAttachments(int actionID, int insertedKBTicketID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadKBByTicketID(insertedKBTicketID);
+            if (attachments.Count > 0)
+            {
+                Attachments clonedAttachments = new Attachments(loginUser);
+                foreach (Attachment attachment in attachments)
+                {
+                    Attachment clonedAttachment = clonedAttachments.AddNewAttachment();
+                    clonedAttachment.OrganizationID = attachment.OrganizationID;
+                    clonedAttachment.FileType = attachment.FileType;
+                    clonedAttachment.FileSize = attachment.FileSize;
+                    clonedAttachment.Description = attachment.Description;
+                    clonedAttachment.DateCreated = attachment.DateCreatedUtc;
+                    clonedAttachment.DateModified = attachment.DateModifiedUtc;
+                    clonedAttachment.CreatorID = attachment.CreatorID;
+                    clonedAttachment.ModifierID = attachment.ModifierID;
+                    clonedAttachment.RefType = attachment.RefType;
+                    clonedAttachment.SentToJira = attachment.SentToJira;
+                    clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
+                    clonedAttachment.FileName = attachment.FileName;
+                    clonedAttachment.RefID = actionID;
+
+                    string originalAttachmentRefID = attachment.RefID.ToString();
+                    string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
+                                                        + actionID.ToString()
+                                                        + attachment.Path.Substring(attachment.Path.IndexOf(originalAttachmentRefID) + originalAttachmentRefID.Length);
+
+                    if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
+                    }
+
+                    clonedAttachment.Path = clonedActionAttachmentPath;
+
+                    File.Copy(attachment.Path, clonedAttachment.Path);
+
+                }
+                clonedAttachments.BulkSave();
+
+            }
+        }
+    }
 }

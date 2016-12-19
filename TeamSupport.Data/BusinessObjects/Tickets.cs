@@ -124,7 +124,7 @@ AND ot.TicketID = @TicketID
             }
             if (!result)
             {
-                Organization account = Organizations.GetOrganization(user.Collection.LoginUser, user.Collection.LoginUser.OrganizationID);
+                Organization account = Organizations.GetOrganization(user.Collection.LoginUser, ticket.OrganizationID);
                 if (!account.UseProductFamilies)
                 {
                     result = true;
@@ -880,6 +880,48 @@ AND ot.TicketID = @TicketID
             emailPost.Save();
         }
 
+        public bool IsSlaPaused(int triggerId, int organizationId)
+        {
+            bool isPaused = false;
+            TicketStatuses statuses = new TicketStatuses(Collection.LoginUser);
+            statuses.LoadByStatusIDs(OrganizationID, new int[] { TicketStatusID });
+
+            if (statuses != null && statuses.Any())
+            {
+                isPaused = statuses[0].PauseSLA;
+            }
+
+            //check if "Pause on Specific Dates"
+            if (!isPaused)
+            {
+                List<DateTime> daysToPause = SlaTriggers.GetSpecificDaysToPause(triggerId);
+                isPaused = daysToPause.Where(p => DateTime.Compare(p.Date, DateTime.UtcNow.Date) == 0).Any();
+            }
+
+            //If Pause on Company Holidays is selected
+            SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(Collection.LoginUser, triggerId);
+
+            if (!isPaused && slaTrigger.PauseOnHoliday)
+            {
+                isPaused = SlaTriggers.IsOrganizationHoliday(organizationId, DateTime.UtcNow);
+            }
+
+            return isPaused;
+        }
+
+        public bool IsSlaStatusPaused()
+        {
+            bool isPaused = false;
+            TicketStatuses statuses = new TicketStatuses(Collection.LoginUser);
+            statuses.LoadByStatusIDs(OrganizationID, new int[] { TicketStatusID });
+
+            if (statuses != null && statuses.Any())
+            {
+                isPaused = statuses[0].PauseSLA;
+            }
+
+            return isPaused;
+        }
     }
 
     public partial class Tickets
@@ -1408,7 +1450,7 @@ AND ts.IsClosed = 0";
             {
                 StringBuilder builder = new StringBuilder();
                 builder.Append(@"
-                                SELECT t.TicketID, t.Name, t.DateModified
+                                SELECT t.TicketID, t.Name, t.DateModified, t.TicketStatusID, t.IsKnowledgeBase
                                 FROM Tickets as T
                                 Inner Join ForumTickets as FT on T.TicketID = FT.TicketID
                                 Inner Join ForumCategories as FC on FT.ForumCategory = FC.CategoryID
@@ -3301,6 +3343,44 @@ WHERE
                 command.Parameters.AddWithValue("@companyID", companyID);
                 command.Parameters.AddWithValue("@OrgID", orgID);
                 Fill(command);
+            }
+        }
+
+        public static void UpdateTicketSla(LoginUser loginUser,
+                                            int TicketId,
+                                            DateTime? SlaViolationInitialResponse,
+                                            DateTime? SlaViolationLastAction,
+                                            DateTime? SlaViolationTimeClosed,
+                                            DateTime? SlaWarningInitialResponse,
+                                            DateTime? SlaWarningLastAction,
+                                            DateTime? SlaWarningTimeClosed)
+        {
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = @"UPDATE [dbo].[Tickets]
+    SET 
+        SlaViolationInitialResponse = @SlaViolationInitialResponse,
+        SlaViolationLastAction = @SlaViolationLastAction,
+        SlaViolationTimeClosed = @SlaViolationTimeClosed,
+        SlaWarningInitialResponse = @SlaWarningInitialResponse,
+        SlaWarningLastAction = @SlaWarningLastAction,
+        SlaWarningTimeClosed = @SlaWarningTimeClosed
+    WHERE TicketID = @TicketId";
+                    command.Parameters.AddWithValue("@TicketId", TicketId);
+                    command.Parameters.AddWithValue("@SlaViolationInitialResponse", (object)SlaViolationInitialResponse ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaViolationLastAction", (object)SlaViolationLastAction ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaViolationTimeClosed", (object)SlaViolationTimeClosed ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaWarningInitialResponse", (object)SlaWarningInitialResponse ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaWarningLastAction", (object)SlaWarningLastAction ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SlaWarningTimeClosed", (object)SlaWarningTimeClosed ?? DBNull.Value);
+                    command.ExecuteNonQuery();
+                }
+                connection.Close();
             }
         }
     }

@@ -149,7 +149,7 @@ namespace TeamSupport.Data
             if ((_baseCollection.LoginUser.OrganizationID == 566596 || _baseCollection.LoginUser.OrganizationID == 797841) && _baseCollection.TableName == "TicketsView")
             {
                 Organizations customers = new Organizations(_baseCollection.LoginUser);
-                customers.LoadByTicketIDOrderedByDateCreated((int)Row["TicketID"]);
+                customers.LoadNameAndIdByTicketID((int)Row["TicketID"]);
                 string customerID = string.Empty;
                 for (int i = 0; i < customers.Count; i++)
                 {
@@ -161,6 +161,42 @@ namespace TeamSupport.Data
                     }
                 }
                 writer.WriteElementString("CustomerID", customerID);
+            }
+            else if (_baseCollection.TableName == "TicketsView")
+            {
+                Organizations customers = new Organizations(_baseCollection.LoginUser);
+                customers.LoadNameAndIdByTicketID((int)Row["TicketID"]);
+                string customerID = string.Empty;
+
+                writer.WriteStartElement("Customers");
+
+                for (int i = 0; i < customers.Count; i++)
+                {
+                    customerID = customers[i].OrganizationID.ToString();
+                    writer.WriteStartElement("Customer");
+                    writer.WriteElementString("CustomerID", customerID);
+                    writer.WriteElementString("CustomerName", customers[i].Name);
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
+
+                ContactsView contacts = new ContactsView(_baseCollection.LoginUser);
+                contacts.LoadNameAndIdByTicketID((int)Row["TicketID"]);
+                string contactId = string.Empty;
+
+                writer.WriteStartElement("Contacts");
+
+                for (int i = 0; i < contacts.Count; i++)
+                {
+                    contactId = contacts[i].UserID.ToString();
+                    writer.WriteStartElement("Contact");
+                    writer.WriteElementString("ContactID", contactId);
+                    writer.WriteElementString("ContactName", contacts[i].Name);
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
             }
 
             if (includeCustomFields)
@@ -414,9 +450,32 @@ namespace TeamSupport.Data
 			get
 			{
 				string apiTotalRecordsElementName = "TotalRecords";
+
 				if (Row.Table.Columns.Contains(apiTotalRecordsElementName) && Row[apiTotalRecordsElementName] != DBNull.Value)
 				{
-					return (int)Row[apiTotalRecordsElementName];
+                    int totalRecords = 0;
+
+                    try
+                    {
+                        totalRecords = (int)Row[apiTotalRecordsElementName];
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.Message.Contains("cast") && ex.Message.Contains("not valid"))
+                        {
+                            string totalRecordsString = Convert.ToString(Row[apiTotalRecordsElementName]);
+
+                            if (!string.IsNullOrEmpty(totalRecordsString))
+                            {
+                                if (!int.TryParse(totalRecordsString, out totalRecords))
+                                {
+                                    totalRecords = 0;
+                                }
+                            }
+                        }
+                    }
+
+                    return totalRecords;
 				}
 				else return 0;
 			}
@@ -699,7 +758,7 @@ namespace TeamSupport.Data
 			}
 		}
 
-		public virtual void Fill(SqlCommand command, string tableNames)
+		public virtual void Fill(SqlCommand command, string tableNames, bool includeSchema = true)
 		{
 			FixCommandParameters(command);
 
@@ -723,7 +782,7 @@ namespace TeamSupport.Data
 				{
 					using (SqlDataAdapter adapter = new SqlDataAdapter(command))
 					{
-						adapter.FillSchema(_table, SchemaType.Source);
+						if (includeSchema) adapter.FillSchema(_table, SchemaType.Source);
 						adapter.Fill(_table);
 					}
 					transaction.Commit();

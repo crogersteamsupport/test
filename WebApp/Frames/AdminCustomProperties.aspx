@@ -11,7 +11,7 @@
     .types td { border-top: solid 1px #A2B8CE; border-left: solid 1px #A2B8CE; }
     .types img { cursor: pointer; }
     .types td.headImage { border-left: none; width: 16px; }
-    body { background: #fff; overflow: auto; }
+    body { background: #fff; overflow: auto; } 
   </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
@@ -110,7 +110,8 @@
             <div id="divTicketStatus">
               <asp:CheckBox ID="cbIsClosed" runat="server" Text="Is Closed" />&nbsp&nbsp
               <asp:CheckBox ID="cbIsClosedEmail" runat="server" Text="Send Closed Email" />&nbsp&nbsp
-              <asp:CheckBox ID="cbIsEmailResponse" runat="server" Text="Email Response" /></div>
+              <asp:CheckBox ID="cbIsEmailResponse" runat="server" Text="Email Response" /><br />
+              <asp:CheckBox ID="cbPauseSla" runat="server" Text="Pause Sla" /></div>
             <div id="divProductVersionStatus">
               <asp:CheckBox ID="cbIsShipping" runat="server" Text="Is Shipping" />&nbsp&nbsp<asp:CheckBox
                 ID="cbIsDiscontinued" runat="server" Text="Is Discontinued" /></div>
@@ -145,8 +146,10 @@
                 <div id="divUploadResults" style="padding-top: 5px; font-weight: bold; display: none;">
                 </div>
               </div>
-                <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />&nbsp&nbsp
             </div>
+              <div id="divVisibleOnPortal">
+                  <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />&nbsp&nbsp
+              </div>
           </div>
           <div style="float: right; margin: 0px 0px 0 0;">
             <asp:Button ID="btnOk1" runat="server" Text="OK" OnClientClick="closeEditTypeWindow(true); return false;" />&nbsp
@@ -281,12 +284,14 @@
         $('#divTicketStatus').hide();
         $('#divProductVersionStatus').hide();
         $('#divTicketTypeIcon').hide();
+        $('#divVisibleOnPortal').hide();
         $('#divUploadResults').hide();
         switch (_type) {
-          case '0': $('#divActionType').show(); break;
-          case '2': $('#divProductVersionStatus').show(); break;
-          case '4': $('#divTicketStatus').show(); break;
-          case '5': $('#divTicketTypeIcon').show(); break;
+            case '0': $('#divActionType').show(); break;
+            case '2': $('#divProductVersionStatus').show(); break;
+            case '3': $('#divVisibleOnPortal').show(); break;
+            case '4': $('#divTicketStatus').show(); break;
+            case '5': $('#divTicketTypeIcon').show();$('#divVisibleOnPortal').show(); break;
         }
 
         if (_useProductFamilies && _type == 5) {
@@ -302,6 +307,7 @@
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosed").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosedEmail").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsEmailResponse").ClientID %>').checked = false;
+        $get('<%= wndEditType.ContentContainer.FindControl("cbPauseSla").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = false;
@@ -314,6 +320,7 @@
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosed").ClientID %>').checked = result.IsClosed;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosedEmail").ClientID %>').checked = result.IsClosedEmail;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsEmailResponse").ClientID %>').checked = result.IsEmailResponse;
+            $get('<%= wndEditType.ContentContainer.FindControl("cbPauseSla").ClientID %>').checked = result.PauseSla;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked = result.IsShipping;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = result.IsDiscontinued;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = result.IsVisibleOnPortal;
@@ -358,6 +365,7 @@
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosed").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsClosedEmail").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsEmailResponse").ClientID %>').checked,
+            $get('<%= wndEditType.ContentContainer.FindControl("cbPauseSla").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked,
             $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeProductFamilies").ClientID %>').get_value(),

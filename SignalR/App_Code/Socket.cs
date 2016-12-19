@@ -431,6 +431,13 @@ public class TicketSocket : Hub
         Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).DisplayTicketUpdate(ticketNum, updateString);
     }
 
+    public void RefreshSLA(string ticketNum)
+    {
+        LoginUser loginUser = new LoginUser(connString, -1, -1, null);
+        loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
+        Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).ticketRefreshSla(ticketNum);
+    }
+
     public void getTicketViewing(string ticketID)
     {
         LoginUser loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);

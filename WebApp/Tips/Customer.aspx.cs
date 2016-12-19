@@ -50,7 +50,7 @@ public partial class Tips_Customer : System.Web.UI.Page
 
 		foreach (PhoneNumbersViewItemProxy number in numbers.GetPhoneNumbersViewItemProxies())
       {
-        props.Append(string.Format("<dt>{0}</dt><dd>{1} {2}</dd>", number.PhoneType, number.FormattedPhoneNumber, number.Extension));
+        props.Append(string.Format("<dt>{0}</dt><dd><a href=\"tel:{1}\">{1} {2}</a></dd>", number.PhoneType, number.FormattedPhoneNumber, number.Extension));
       }
 
       tipProps.InnerHtml = props.ToString();
@@ -97,7 +97,7 @@ public partial class Tips_Customer : System.Web.UI.Page
 
 		foreach (NotesViewItem t in notes)
 		{
-			notesString.Append(string.Format("<div><a href='#' target='_blank' onclick='top.Ts.MainPage.openNewCustomerNote({0},{1}); return false;'><span class='ticket-tip-name'>{2}</span></a></div>", t.RefID, t.NoteID, t.Title.Length > 17 ? t.Title.Substring(0, 15) + "..." : t.Title));
+			notesString.Append(string.Format("<div><a href='#' target='_blank' onclick='top.Ts.MainPage.openNewCustomerNote({0},{1}); return false;'><span class='ticket-tip-name'>{2}</span></a></div>", t.RefID, t.NoteID, t.Title.Length > 65 ? t.Title.Substring(0, 65) + "..." : t.Title));
 		}
 
 		if (notesString.Length == 0)

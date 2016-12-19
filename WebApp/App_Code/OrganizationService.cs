@@ -228,6 +228,8 @@ namespace TSWebServices
                 fb[0].Collection.Save();
             }
 
+            option.AllowNameEditing = proxy.AllowNameEditing;
+            option.AllowSeverityEditing = proxy.AllowSeverityEditing;
             option.EnableSaExpiration = proxy.EnableSaExpiration;
             option.PublicLandingPageBody = proxy.PublicLandingPageBody;
             option.PublicLandingPageHeader = proxy.PublicLandingPageHeader;
@@ -627,7 +629,14 @@ namespace TSWebServices
         public void AdminSetAllPortalUsers(int organizationID, bool sendEmails)
         {
             if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
-            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails);
+            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, false);
+        }
+
+        [WebMethod]
+        public void AdminSetAllHubUsers(int organizationID, bool sendEmails)
+        {
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, true);
         }
 
         [WebMethod]
@@ -734,6 +743,38 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void AdminSetNextTicketNumber(int orgID, int number)
+        {
+            Organization org = GetAdminOrgTarget(orgID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Ticket ticket = (new Tickets(loginUser)).AddNewTicket();
+            ticket.OrganizationID = org.OrganizationID;
+            ticket.GroupID = org.DefaultPortalGroupID;
+            ticket.IsKnowledgeBase = false;
+            ticket.IsVisibleOnPortal = true;
+            ticket.Name = "Place holder for next ticket " + number.ToString();
+            ticket.TicketSeverityID = TicketSeverities.GetTop(loginUser, org.OrganizationID).TicketSeverityID;
+            ticket.TicketTypeID = TicketTypes.GetTop(loginUser, org.OrganizationID).TicketTypeID;
+            ticket.TicketStatusID = TicketStatuses.GetTop(loginUser, ticket.TicketTypeID).TicketStatusID;
+            ticket.TicketSource = "Staff";
+            ticket.PortalEmail = "";
+            ticket.TicketNumber = number - 1;
+            ticket.Collection.Save();
+
+
+            TeamSupport.Data.Action action = (new Actions(loginUser)).AddNewAction();
+            action.ActionTypeID = null;
+            action.SystemActionTypeID = SystemActionType.Description;
+            action.Description = "You can delete this once your next ticket has been created.";
+            action.IsKnowledgeBase = false;
+            action.IsVisibleOnPortal = true;
+            action.ActionSource = "Staff";
+            action.Name = "Description";
+            action.TicketID = ticket.TicketID;
+            action.Collection.Save();
+        }
+
+        [WebMethod]
         public void AdminUpdateProductType(int orgID, int productType)
         {
             Organization org = GetAdminOrgTarget(orgID);
@@ -769,6 +810,17 @@ namespace TSWebServices
             org.IsApiEnabled = value;
             org.IsInventoryEnabled = value;
             org.Collection.Save();
+
+            if (!value)
+            {
+                Users users = new Users(org.Collection.LoginUser);
+                users.LoadByOrganizationID(org.OrganizationID, false);
+                foreach (User user in users)
+                {
+                    user.IsActive = false;
+                }
+                users.Save();
+            }
         }
 
         public Organization GetAdminOrgTarget(int orgID)

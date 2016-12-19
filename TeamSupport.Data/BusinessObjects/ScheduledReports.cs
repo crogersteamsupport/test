@@ -61,26 +61,36 @@ namespace TeamSupport.Data
 					NextRun = StartDateUtc;
 					break;
 				case ScheduledReportFrequency.Weekly:
-					//we need: startdate, every, weekday (1:Sun, ..., 7:Sat)
-					while (dateOnly < DateTime.UtcNow)
-					{
-						int totalDaysInAWeek = 7;
-						int totalDays = (byte)Every * totalDaysInAWeek;
-						dateOnly = dateOnly.AddDays(totalDays);
+                    //we need: startdate, every, weekday (1:Sun, ..., 7:Sat)
+                    //The list in the UI is: 1: Sunday, ..., 7: Saturday. So we need to substract 1 to convert it to DayOfWeek
+                    dayOfWeek = (DayOfWeek)(byte)Weekday - 1;
 
-						//The list in the UI is: 1: Sunday, ..., 7: Saturday. So we need to substract 1 to convert it to DayOfWeek
-						dayOfWeek = (DayOfWeek)(byte)Weekday - 1;
+                    if (dateOnly.Add(timeOnly.TimeOfDay) > DateTime.UtcNow)
+                    {
+                        while (dateOnly.DayOfWeek != dayOfWeek)
+                        {
+                            dateOnly = dateOnly.AddDays(1);
+                        }
+                    }
+                    else
+                    {
+                        while (dateOnly < DateTime.UtcNow)
+                        {
+                            int totalDaysInAWeek = 7;
+                            int totalDays = (byte)Every * totalDaysInAWeek;
+                            dateOnly = dateOnly.AddDays(totalDays);
 
-						if (dateOnly.DayOfWeek != dayOfWeek)
-						{
-							dateOnly = dateOnly.AddDays(-totalDaysInAWeek);
-							dateOnly = dateOnly.AddDays(dayOfWeek - dateOnly.DayOfWeek);
-						}
-					}
+                            if (dateOnly.DayOfWeek != dayOfWeek)
+                            {
+                                dateOnly = dateOnly.AddDays(-totalDaysInAWeek);
+                                dateOnly = dateOnly.AddDays(dayOfWeek - dateOnly.DayOfWeek);
+                            }
+                        }
+                    }
 
-					NextRun = dateOnly.Add(timeOnly.TimeOfDay);
+                    NextRun = dateOnly.Add(timeOnly.TimeOfDay);
 
-					break;
+                    break;
 				case ScheduledReportFrequency.Monthly:
 					//we need: startdate, every, weekday (1:Sun, ..., 7:Sat), 
 					//				monthday (if < 5 then weekday can have a value: the 1st monday.. the 3rd wednesday, etc;
@@ -133,15 +143,34 @@ namespace TeamSupport.Data
 					NextRun = dateOnly.Add(timeOnly.TimeOfDay);
 
 					break;
+                case ScheduledReportFrequency.Daily:
+                    DateTime now = DateTime.UtcNow;
+
+                    if (dateOnly.Add(timeOnly.TimeOfDay) < now)
+                    {
+                        dateOnly = now.Date;
+                    }
+
+                    if (dateOnly.Add(timeOnly.TimeOfDay) < now)
+                    {
+                        NextRun = dateOnly.AddDays(1).Add(timeOnly.TimeOfDay);
+                    }
+                    else
+                    {
+                        NextRun = dateOnly.Add(timeOnly.TimeOfDay);
+                    }
+
+                    
+                    break;
 				default:
 					break;
 			}
 		}
 
-        public void SetRecipientsAndAttachment(MailMessage message, Organization organization)
+        public void SetRecipientsAndAttachment(MailMessage message, Organization organization, ref System.Collections.Generic.List<string> invalidEmailAddress)
         {
             message.From = GetEmailAddressFromString(organization.GetReplyToAddress().Trim());
-            AddEmailAddressesFromString(message.To, EmailRecipients);
+            AddEmailAddressesFromString(message.To, EmailRecipients, ref invalidEmailAddress);
         }
 
         private MailAddress GetEmailAddressFromString(string text)
@@ -177,15 +206,22 @@ namespace TeamSupport.Data
             return new MailAddress(address, name);
         }
 
-        private void AddEmailAddressesFromString(MailAddressCollection collection, string text)
+        private void AddEmailAddressesFromString(MailAddressCollection collection, string text, ref System.Collections.Generic.List<string> invalidEmailAddress)
         {
             if (string.IsNullOrEmpty(text.Trim())) return;
             string[] list = text.Split(new[] { ',', ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string s in list)
             {
-                MailAddress address = GetEmailAddressFromString(s);
-                if (address != null) collection.Add(address);
+                try
+                {
+                    MailAddress address = GetEmailAddressFromString(s);
+                    if (address != null) collection.Add(address);
+                }
+                catch (Exception ex)
+                {
+                    invalidEmailAddress.Add(s);
+                }
             }
         }
     }

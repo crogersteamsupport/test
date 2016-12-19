@@ -111,6 +111,9 @@ namespace TSWebServices
       products.LoadByProductID(productID);
       ProductFamilies productFamilies = new ProductFamilies(loginUser);
 
+        SlaLevels slaLevels = new SlaLevels(loginUser);
+        slaLevels.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
       ProdProp prodProp = new ProdProp();
 
       if (products.IsEmpty) return null;
@@ -121,7 +124,19 @@ namespace TSWebServices
           productFamilies.LoadByProductFamilyID((int)products[0].ProductFamilyID);
           productFamily = productFamilies.IsEmpty ? "" : productFamilies[0].Name;
       }
+
+        string slaAssigned = "Empty";
+        if (slaLevels.Any() && products[0].SlaLevelID != null)
+        {
+            var sla = slaLevels.Where(m => m.SlaLevelID == products[0].SlaLevelID).First();
+            if (sla != null)
+            {
+                slaAssigned = sla.Name;
+            }
+        }
+
       prodProp.ProductFamily = productFamily;
+      prodProp.SlaAssigned = slaAssigned;
       prodProp.prodproxy = products[0].GetProxy();
       prodProp.JiraProjectKey = products[0].JiraProjectKey;
       prodProp.JiraInstance = "None";
@@ -779,7 +794,29 @@ namespace TSWebServices
         return value;
     }
 
-    [WebMethod]
+        [WebMethod]
+        public int SetSlaLevel(int productID, int value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Product p = Products.GetProduct(loginUser, productID);
+            if (value == -1)
+            {
+                p.SlaLevelID = null;
+            }
+            else
+            {
+                p.SlaLevelID = value;
+            }
+            p.Collection.Save();
+            SlaLevels slaLevels = new SlaLevels(loginUser);
+            slaLevels.LoadBySlaLevelID(value);
+
+            string description = String.Format("{0} set product sla as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, slaLevels.IsEmpty ? "Unassigned" : slaLevels[0].Name);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, productID, description);
+            return value;
+        }
+
+        [WebMethod]
     public string SetProductJiraProjectKey(int id, string value, bool isForProductVersion)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -897,6 +934,51 @@ namespace TSWebServices
         }
 
         return htmlresults.ToString();
+    }
+
+    [WebMethod]
+    public FamilyProduct LoadFamilyProducts2(int productFamilyID, int start)
+    {
+        StringBuilder htmlresults = new StringBuilder("");
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        Products products = new Products(loginUser);
+        products.LoadByProductFamilyIDLimit(productFamilyID, start);
+
+        foreach (Product product in products)
+        {
+            //htmlresults.AppendFormat(@"<div class='list-group-item'>
+            //                <a href='#' id='{0}' class='productlink'>
+            //                  <h4 class='list-group-item-heading'>{1}</h4>
+            //                </a>
+            //                <div class='row'>
+            //                    <div class='col-xs-6'>
+            //                        <p class='list-group-item-text'>{2} Open Tickets</p>
+            //                        <p class='list-group-item-text'>{3} Closed Tickets</p>                            
+            //                    </div>
+            //                </div>
+            //                </div>"
+
+            //    , product.ProductID
+            //    , product.Name
+            //    , GetProductTickets(product.ProductID, 0)
+            //    , GetProductTickets(product.ProductID, 1));
+            htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <a href='#' id='{0}' class='productlink'>
+                              <h4 class='list-group-item-heading'>{1}</h4>
+                            </a>
+                            </div>"
+
+                , product.ProductID
+                , product.Name);
+        }
+
+        FamilyProduct result = new FamilyProduct();
+        if (products.Count == 10)
+        {
+            result.MoreAvailable = true;
+        }
+        result.HTML = htmlresults.ToString();
+        return result;
     }
 
     [WebMethod]
@@ -1388,5 +1470,14 @@ namespace TSWebServices
     public string JiraInstance { get; set; }
     [DataMember]
     public int CrmLinkId { get; set; }
+        [DataMember]
+        public string SlaAssigned { get; set; }
+    }
+
+  [DataContract]
+  public class FamilyProduct
+  {
+    [DataMember] public bool MoreAvailable { get; set; }
+    [DataMember] public string HTML { get; set; }
   }
 }

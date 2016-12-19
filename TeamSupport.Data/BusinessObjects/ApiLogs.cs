@@ -28,7 +28,8 @@ FROM
 						OR parentId = @organizationId) AS Organizations
 		ON ApiLogs.organizationId = Organizations.organizationId
 WHERE
-	DateCreated > DATEADD(d, -1, GETUTCDATE())";
+	DateCreated > DATEADD(d, -1, GETUTCDATE())
+    AND ApiLogs.StatusCode <> 403";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
 

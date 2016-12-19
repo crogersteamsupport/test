@@ -73,8 +73,9 @@ namespace TeamSupport.Data
 		AgentRating = 55,
 		PrimaryContacts = 56,
 		CustomerHubLogo = 57,
-        ChatAttachments = 58
+        ContactNotes = 58,
 
+        Sla = 59
 	};
 
 	public enum SlaViolationType
@@ -135,7 +136,8 @@ namespace TeamSupport.Data
 		NewDevice = 12,
 		TooManyAttempts = 13,
 		ResetCustomerHubPassword = 14,//PARAMS: UserID, Password
-        ChangedCustomerHubPassword = 15 //PARAMS: UserID
+        WelcomeCustomerHubUser = 15 //PARAMS: UserID, Password
+        
     }
 
     public enum ProductType
@@ -346,6 +348,7 @@ namespace TeamSupport.Data
 		Unknown = 0,
 		Weekly = 1,
 		Monthly = 2,
-		Once = 3
+		Once = 3,
+      Daily = 4
 	}
 }

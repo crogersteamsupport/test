@@ -454,21 +454,21 @@ Ts.Pages.Main.prototype = {
                 resizable: false,
                 spacing_open: 0
             },
-            east: {
-                paneSelector: ".main-info",
-                size: 200,
-                minSize: 100,
-                maxSize: 300,
-                initClosed: true,
-                spacing_open: 3,
-                onopen: function () {
-                    Ts.Services.Settings.WriteUserSetting('main-info-state', true);
-                },
-                onclose: function () {
-                    Ts.Services.Settings.WriteUserSetting('main-info-state', false);
-                    mainFrame.Ts.System.logAction('Main Page - Help Frame Hidden');
-                }
-            },
+            //east: {
+            //    paneSelector: ".main-info",
+            //    size: 200,
+            //    minSize: 100,
+            //    maxSize: 300,
+            //    initClosed: true,
+            //    spacing_open: 3,
+            //    onopen: function () {
+            //        Ts.Services.Settings.WriteUserSetting('main-info-state', true);
+            //    },
+            //    onclose: function () {
+            //        Ts.Services.Settings.WriteUserSetting('main-info-state', false);
+            //        mainFrame.Ts.System.logAction('Main Page - Help Frame Hidden');
+            //    }
+            //},
             west: {
                 paneSelector: ".main-nav",
                 spacing_open: 2,
@@ -726,8 +726,8 @@ Ts.Pages.Main.prototype = {
         }
 
         function flashTitle() {
-            if (document.title != 'Team Support') {
-                document.title = 'Team Support';
+            if (document.title != 'TeamSupport') {
+                document.title = 'TeamSupport';
             } else if (chatRequestCount > 1) {
                 document.title = chatRequestCount + ' New Chat Requests';
             } else if (chatRequestCount == 1) {
@@ -1921,7 +1921,7 @@ function () { }, function (e) { console.log(e) });
         });
         Ts.Services.Settings.WriteUserSetting('SelectedUserID', contactID, function () {
             Ts.Services.Settings.WriteUserSetting('SelectedUserTabIndex', 0, function () {
-                self.MainMenu.find('mniUsers', 'users').select();
+                //self.MainMenu.find('mniUsers', 'users').select();
                 var element = $('.main-tab-content-item:visible');
                 var contentFrame = $(element).children('iframe')[0];
                 if (contentFrame && contentFrame.contentWindow.refreshData) {

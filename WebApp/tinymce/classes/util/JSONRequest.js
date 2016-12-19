@@ -1,4 +1,40 @@
+/**
+ * JSONRequest.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class enables you to use JSON-RPC to call backend methods.
+ *
+ * @class tinymce.util.JSONRequest
+ * @example
+ * var json = new tinymce.util.JSONRequest({
+ *     url: 'somebackend.php'
+ * });
+ *
+ * // Send RPC call 1
+ * json.send({
+ *     method: 'someMethod1',
+ *     params: ['a', 'b'],
+ *     success: function(result) {
+ *         console.dir(result);
+ *     }
+ * });
+ *
+ * // Send RPC call 2
+ * json.send({
+ *     method: 'someMethod2',
+ *     params: ['a', 'b'],
+ *     success: function(result) {
+ *         console.dir(result);
+ *     }
+ * });
+ */
 define("tinymce/util/JSONRequest", [
 	"tinymce/util/JSON",
 	"tinymce/util/XHR",

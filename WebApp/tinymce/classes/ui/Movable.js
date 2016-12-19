@@ -1,4 +1,18 @@
+/**
+ * Movable.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Movable mixin. Makes controls movable absolute and relative to other elements.
+ *
+ * @mixin tinymce.ui.Movable
+ */
 define("tinymce/ui/Movable", [
 	"tinymce/ui/DomUtils"
 ], function(DomUtils) {
