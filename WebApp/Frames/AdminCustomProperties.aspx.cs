@@ -277,9 +277,11 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
                 table.Columns.Add("Is Closed");
                 table.Columns.Add("Closed Email");
                 table.Columns.Add("Email Response");
+                table.Columns.Add("Pause SLA?");
+
                 foreach (TicketStatus ticketStatus in ticketStatuses)
                 {
-                    table.Rows.Add(new string[] { ticketStatus.TicketStatusID.ToString(), ticketStatus.Name, ticketStatus.Description, ticketStatus.IsClosed.ToString(), ticketStatus.IsClosedEmail.ToString(), ticketStatus.IsEmailResponse.ToString() });
+                    table.Rows.Add(new string[] { ticketStatus.TicketStatusID.ToString(), ticketStatus.Name, ticketStatus.Description, ticketStatus.IsClosed.ToString(), ticketStatus.IsClosedEmail.ToString(), ticketStatus.IsEmailResponse.ToString(), ticketStatus.PauseSLA.ToString() });
                 }
                 break;
             case SelectedType.TicketTypes:
@@ -377,9 +379,11 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         table.Columns.Add("Is Closed");
         table.Columns.Add("Closed Email");
         table.Columns.Add("Email Response");
+        table.Columns.Add("Pause SLA");
+
         foreach (TicketStatus ticketStatus in ticketStatuses)
         {
-          table.Rows.Add(new string[] { ticketStatus.TicketStatusID.ToString(), ticketStatus.Name, ticketStatus.Description, ticketStatus.IsClosed.ToString(), ticketStatus.IsClosedEmail.ToString(), ticketStatus.IsEmailResponse.ToString() });
+          table.Rows.Add(new string[] { ticketStatus.TicketStatusID.ToString(), ticketStatus.Name, ticketStatus.Description, ticketStatus.IsClosed.ToString(), ticketStatus.IsClosedEmail.ToString(), ticketStatus.IsEmailResponse.ToString(), ticketStatus.PauseSLA.ToString() });
         }
         break;
       case SelectedType.TicketTypes:
@@ -650,6 +654,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         result.IsClosed = ticketStatus.IsClosed;
         result.IsClosedEmail = ticketStatus.IsClosedEmail;
         result.IsEmailResponse = ticketStatus.IsEmailResponse;
+        result.PauseSla = ticketStatus.PauseSLA;
         break;
       case SelectedType.TicketTypes:
         TicketType ticketType = TicketTypes.GetTicketType(UserSession.LoginUser, id);
@@ -685,6 +690,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       bool isClosed, 
       bool isClosedEmail, 
       bool isEmailResponse, 
+      bool pauseSla,
       bool isShipping, 
       bool isDiscontinued,
       string productFamilyID,
@@ -751,6 +757,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         ticketStatus.IsClosed = isClosed;
         ticketStatus.IsClosedEmail = isClosedEmail;
         ticketStatus.IsEmailResponse = isEmailResponse;
+        ticketStatus.PauseSLA = pauseSla;
         ticketStatus.Name = name;
         ticketStatus.Description = description;
         if (id == null) ticketStatus.Position = ticketStatus.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
@@ -847,6 +854,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       Description = "";
       IsClosed = false;
       IsClosedEmail = false;
+      PauseSla = false;
       IsTimed = false;
       IsShipping = false;
       IsDiscontinued = false;
@@ -858,6 +866,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     public bool IsClosed { get; set; }
     public bool IsClosedEmail { get; set; }
     public bool IsEmailResponse { get; set; }
+    public bool PauseSla { get; set; }
     public bool IsTimed { get; set; }
     public bool IsShipping { get; set; }
     public bool IsDiscontinued { get; set; }

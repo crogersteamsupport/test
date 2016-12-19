@@ -19,6 +19,7 @@ public partial class Dialogs_SlaLevel : BaseDialogPage
 {
 
   private int _slaLevelID = -1;
+  private bool _isCloning = false;
 
   protected override void OnLoad(EventArgs e)
   {
@@ -33,6 +34,13 @@ public partial class Dialogs_SlaLevel : BaseDialogPage
 
 
     if (Request["SlaLevelID"] != null) _slaLevelID = int.Parse(Request["SlaLevelID"]);
+
+    if (Request["IsCloning"] != null) _isCloning = bool.Parse(Request["IsCloning"]);
+
+    if (_isCloning)
+    {
+        this.Title = "Clone Service Level Agreement";
+    }
 
     if (!IsPostBack)
     {
@@ -51,42 +59,56 @@ public partial class Dialogs_SlaLevel : BaseDialogPage
       return;
     }
 
-    textName.Text = level.Name;
+    textName.Text = level.Name + (_isCloning ? " (Clone)" : "");
   }
 
   public override bool Save()
   {
-
-    if (textName.Text.Trim() == "")
+    if (IsValid())
     {
-      _manager.Alert("Please enter a name.");
-      return false;
-    }
+        if (_isCloning)
+        {
+            //Clone SLA here
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+			int clonedSlaLevelId = 0;
 
-    if (DoesNameExist(textName.Text))
-    {
-      _manager.Alert("That name is already being used.  Please choose another one.");
-      return false;
-    }
+			try
+			{
+				SlaLevel originalSlaLevel = SlaLevels.GetSlaLevel(loginUser, _slaLevelID);
+                SlaLevel clonedSlaLevel = originalSlaLevel.Clone(textName.Text.Trim());
+				clonedSlaLevelId = clonedSlaLevel.SlaLevelID;
+            }
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(loginUser, ex, "Cloning Sla", "SlaLevel.aspx.cs.Save");
+			}
+        }
+        else
+        {
+            SlaLevel level;
+            SlaLevels levels = new SlaLevels(UserSession.LoginUser);
 
+            if (_slaLevelID < 0)
+            {
+                level = levels.AddNewSlaLevel();
+                level.OrganizationID = UserSession.LoginUser.OrganizationID;
+            }
+            else
+            {
+                level = SlaLevels.GetSlaLevel(UserSession.LoginUser, _slaLevelID);
+                if (level == null) return false;
+            }
 
-    SlaLevel level;
-    SlaLevels levels = new SlaLevels(UserSession.LoginUser);
-
-    if (_slaLevelID < 0)
-    {
-      level = levels.AddNewSlaLevel();
-      level.OrganizationID = UserSession.LoginUser.OrganizationID;
+            level.Name = textName.Text;
+            level.Collection.Save();
+            DialogResult = level.SlaLevelID.ToString();
+        }
     }
     else
     {
-      level = SlaLevels.GetSlaLevel(UserSession.LoginUser, _slaLevelID);
-      if (level == null) return false;
-    }
-
-    level.Name = textName.Text;
-    level.Collection.Save();
-    DialogResult = level.SlaLevelID.ToString();
+        return false;
+    } 
+    
     return true;
   }
 
@@ -115,6 +137,23 @@ public partial class Dialogs_SlaLevel : BaseDialogPage
   
   }
 
-  
+    private bool IsValid()
+    {
+        bool isValid = true;
+
+        if (textName.Text.Trim() == "")
+        {
+            _manager.Alert("Please enter a name.");
+            isValid = false;
+        }
+
+        if (isValid && DoesNameExist(textName.Text))
+        {
+            _manager.Alert("That name is already being used.  Please choose another one.");
+            isValid = false;
+        }
+
+        return isValid;
+    }
 }
 

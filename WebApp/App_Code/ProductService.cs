@@ -111,6 +111,9 @@ namespace TSWebServices
       products.LoadByProductID(productID);
       ProductFamilies productFamilies = new ProductFamilies(loginUser);
 
+        SlaLevels slaLevels = new SlaLevels(loginUser);
+        slaLevels.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
       ProdProp prodProp = new ProdProp();
 
       if (products.IsEmpty) return null;
@@ -121,7 +124,19 @@ namespace TSWebServices
           productFamilies.LoadByProductFamilyID((int)products[0].ProductFamilyID);
           productFamily = productFamilies.IsEmpty ? "" : productFamilies[0].Name;
       }
+
+        string slaAssigned = "Empty";
+        if (slaLevels.Any() && products[0].SlaLevelID != null)
+        {
+            var sla = slaLevels.Where(m => m.SlaLevelID == products[0].SlaLevelID).First();
+            if (sla != null)
+            {
+                slaAssigned = sla.Name;
+            }
+        }
+
       prodProp.ProductFamily = productFamily;
+      prodProp.SlaAssigned = slaAssigned;
       prodProp.prodproxy = products[0].GetProxy();
       prodProp.JiraProjectKey = products[0].JiraProjectKey;
       prodProp.JiraInstance = "None";
@@ -779,7 +794,29 @@ namespace TSWebServices
         return value;
     }
 
-    [WebMethod]
+        [WebMethod]
+        public int SetSlaLevel(int productID, int value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Product p = Products.GetProduct(loginUser, productID);
+            if (value == -1)
+            {
+                p.SlaLevelID = null;
+            }
+            else
+            {
+                p.SlaLevelID = value;
+            }
+            p.Collection.Save();
+            SlaLevels slaLevels = new SlaLevels(loginUser);
+            slaLevels.LoadBySlaLevelID(value);
+
+            string description = String.Format("{0} set product sla as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, slaLevels.IsEmpty ? "Unassigned" : slaLevels[0].Name);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, productID, description);
+            return value;
+        }
+
+        [WebMethod]
     public string SetProductJiraProjectKey(int id, string value, bool isForProductVersion)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -1433,7 +1470,9 @@ namespace TSWebServices
     public string JiraInstance { get; set; }
     [DataMember]
     public int CrmLinkId { get; set; }
-  }
+        [DataMember]
+        public string SlaAssigned { get; set; }
+    }
 
   [DataContract]
   public class FamilyProduct

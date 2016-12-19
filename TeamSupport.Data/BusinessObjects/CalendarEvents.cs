@@ -48,6 +48,17 @@ namespace TeamSupport.Data
               Fill(command);
           }
       }
-  }
+
+        public void LoadHolidays(int organizationId)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM CalendarEvents WHERE OrganizationID = @organizationId AND IsHoliday = 1";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationId", organizationId);
+                Fill(command);
+            }
+        }
+    }
   
 }

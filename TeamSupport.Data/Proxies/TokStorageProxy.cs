@@ -13,6 +13,7 @@ namespace TeamSupport.Data
   public class TokStorageItemProxy
   {
     public TokStorageItemProxy() {}
+    [DataMember] public bool Transcoded { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public string AmazonPath { get; set; }
     [DataMember] public DateTime CreatedDate { get; set; }
@@ -30,7 +31,7 @@ namespace TeamSupport.Data
       result.CreatorID = this.CreatorID;
       result.AmazonPath = this.AmazonPath;
       result.OrganizationID = this.OrganizationID;
-       
+      result.Transcoded = this.Transcoded;
       result.CreatedDate = DateTime.SpecifyKind(this.CreatedDateUtc, DateTimeKind.Utc);
        
        

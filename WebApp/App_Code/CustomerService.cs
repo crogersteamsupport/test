@@ -1360,6 +1360,9 @@ namespace TSWebServices
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.OrganizationProducts);
 
+            SlaLevels slaLevels = new SlaLevels(TSAuthentication.GetLoginUser());
+            slaLevels.LoadByOrganizationID(organizationID);
+
 
             foreach (DataRow row in organizationProducts.Table.Rows)
             {
@@ -1370,6 +1373,7 @@ namespace TSWebServices
                 test.VersionStatus = row["VersionStatus"].ToString();
                 test.IsReleased = row["IsReleased"].ToString();
                 test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+                test.SlaAssigned = row["SlaLevelName"].ToString();
                 test.DateCreated = row["DateCreated"].ToString() != "" ? ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal()) : "";
                 test.OrganizationProductID = (int)row["OrganizationProductID"];
                 test.CustomFields = new List<string>();
@@ -1396,7 +1400,6 @@ namespace TSWebServices
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.OrganizationProducts);
 
-
             foreach (DataRow row in organizationProducts.Table.Rows)
             {
                 OrganizationCustomProduct test = new OrganizationCustomProduct();
@@ -1406,6 +1409,7 @@ namespace TSWebServices
                 test.VersionStatus = row["VersionStatus"].ToString();
                 test.IsReleased = row["IsReleased"].ToString();
                 test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+                test.SlaAssigned = row["SlaLevelName"].ToString();
                 test.DateCreated = row["DateCreated"].ToString() != "" ? ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal()) : "";
                 test.OrganizationProductID = (int)row["OrganizationProductID"];
                 test.CustomFields = new List<string>();
@@ -1424,6 +1428,55 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public CustomerSLATrigger[] LoadSlaTriggers(int organizationID, int customerId, string sortColumn, string sortDirection)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SlaTriggersView slaTriggers = new SlaTriggersView(loginUser);
+            slaTriggers.LoadByCustomer(organizationID, customerId);
+            List<CustomerSLATrigger> list = new List<CustomerSLATrigger>();
+
+            foreach (DataRow row in slaTriggers.Table.Rows)
+            {
+                CustomerSLATrigger customerSlaTrigger = new CustomerSLATrigger();
+                customerSlaTrigger.SlaLevelId = int.Parse(row["SlaLevelID"].ToString());
+                customerSlaTrigger.SlaTriggerId = int.Parse(row["SlaTriggerID"].ToString());
+                customerSlaTrigger.LevelName = row["LevelName"].ToString();
+                customerSlaTrigger.Severity = row["Severity"].ToString();
+                customerSlaTrigger.TicketType = row["TicketType"].ToString();
+                customerSlaTrigger.SLAType = row["SLAType"].ToString();
+
+                list.Add(customerSlaTrigger);
+            }
+
+            return list.ToArray();
+        }
+
+        [WebMethod]
+        public CustomerSLAViolation[] LoadSlaViolations(int organizationID, string sortColumn, string sortDirection)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SlaViolationHistory slaViolationHistory = new SlaViolationHistory(loginUser);
+            slaViolationHistory.LoadByCustomer(organizationID, sortColumn, sortDirection);
+            List<CustomerSLAViolation> list = new List<CustomerSLAViolation>();
+
+            foreach (DataRow row in slaViolationHistory.Table.Rows)
+            {
+                CustomerSLAViolation customerSlaViolation = new CustomerSLAViolation();
+                customerSlaViolation.TicketId = int.Parse(row["TicketID"].ToString());
+                customerSlaViolation.TicketNumber = int.Parse(row["TicketNumber"].ToString());
+                customerSlaViolation.Violation = row["Violation"].ToString();
+                customerSlaViolation.DateViolated = DateTime.Parse(row["DateViolated"].ToString());
+                customerSlaViolation.LevelName = row["LevelName"].ToString();
+                customerSlaViolation.Severity = row["SlaSeverity"].ToString();
+                customerSlaViolation.TicketType = row["SlaTicketType"].ToString();
+
+                list.Add(customerSlaViolation);
+            }
+
+            return list.ToArray();
+        }
+
+        [WebMethod]
         public UserCustomProduct[] LoadContactProducts(int contactID, string sortColumn, string sortDirection)
         {
             UserProducts userProducts = new UserProducts(TSAuthentication.GetLoginUser());
@@ -1431,7 +1484,6 @@ namespace TSWebServices
             List<UserCustomProduct> list = new List<UserCustomProduct>();
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.UserProducts);
-
 
             foreach (DataRow row in userProducts.Table.Rows)
             {
@@ -1479,6 +1531,9 @@ namespace TSWebServices
                 case "released":
                     result = "IsReleased";
                     break;
+                case "sla assigned":
+                    result = "SlaLevelName";
+                    break;
                 case "released date":
                     result = "ReleaseDate";
                     break;
@@ -1508,6 +1563,7 @@ namespace TSWebServices
             custProd.ReleaseDate = null;
             custProd.OrganizationProductID = organizationProduct.OrganizationProductID;
             custProd.ProductID = organizationProduct.ProductID;
+            custProd.SlaLevelID = organizationProduct.SlaLevelID != null ? (int)organizationProduct.SlaLevelID : -1;
 
             return custProd;
         }
@@ -1578,6 +1634,15 @@ namespace TSWebServices
             productVersions.LoadByProductID(productID);
 
             return productVersions.GetProductVersionProxies();
+        }
+
+        [WebMethod]
+        public SlaLevelProxy[] LoadSlaLevels()
+        {
+            SlaLevels slaLevels = new SlaLevels(TSAuthentication.GetLoginUser());
+            slaLevels.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+            return slaLevels.GetSlaLevelProxies();
         }
 
         [WebMethod]
@@ -2652,6 +2717,8 @@ SELECT
                 organizationProduct.SupportExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.ParseExact(info.SupportExpiration, GetDateFormatNormal(), null));
             else
                 organizationProduct.SupportExpiration = null;
+
+            organizationProduct.SlaLevelID = info.SlaLevelID > 0 ? info.SlaLevelID : (int?)null;
 
             organizationProduct.Collection.Save();
 
@@ -4562,6 +4629,8 @@ SELECT
             [DataMember]
             public string SupportExpiration { get; set; }
             [DataMember]
+            public int SlaLevelID { get; set; }
+            [DataMember]
             public int OrganizationProductID { get; set; }
             [DataMember]
             public int UserProductID { get; set; }
@@ -4684,6 +4753,10 @@ SELECT
             [DataMember]
             public string DateCreated { get; set; }
             [DataMember]
+            public string SlaAssigned { get; set; }
+            [DataMember]
+            public int SlaLevelID { get; set; }
+            [DataMember]
             public int ProductID { get; set; }
             [DataMember]
             public int OrganizationProductID { get; set; }
@@ -4708,6 +4781,10 @@ SELECT
             public string ReleaseDate { get; set; }
             [DataMember]
             public string DateCreated { get; set; }
+            [DataMember]
+            public int SlaLevelID { get; set; }
+            [DataMember]
+            public string SlaAssigned { get; set; }
             [DataMember]
             public int ProductID { get; set; }
             [DataMember]
@@ -4751,6 +4828,25 @@ SELECT
 
         }
 
-    }
+        public class CustomerSLATrigger
+        {
+            public int SlaLevelId { get; set; }
+            public int SlaTriggerId { get; set; }
+            public string LevelName { get; set; }
+            public string Severity { get; set; }
+            public string TicketType { get; set; }
+            public string SLAType { get; set; }
+        }
 
+        public class CustomerSLAViolation
+        {
+            public int TicketId { get; set; }
+            public int TicketNumber { get; set; }
+            public string Violation { get; set; }
+            public DateTime DateViolated { get; set; }
+            public string LevelName { get; set; }
+            public string Severity { get; set; }
+            public string TicketType { get; set; }
+        }
+    }
 }

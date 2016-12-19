@@ -281,6 +281,7 @@
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
     <Compile Include="BusinessObjects\OrganizationProductsView.cs" />
     <Compile Include="BusinessObjects\Organizations.cs" />
+    <Compile Include="BusinessObjects\Plugins.cs" />
     <Compile Include="BusinessObjects\ProductFamilies.cs" />
     <Compile Include="BusinessObjects\RecentlyViewedItems.cs" />
     <Compile Include="BusinessObjects\Reminders.cs" />
@@ -295,6 +296,8 @@
     <Compile Include="BusinessObjects\Services.cs" />
     <Compile Include="BusinessObjects\ServiceSettings.cs" />
     <Compile Include="BusinessObjects\SimpleImportFieldsView.cs" />
+    <Compile Include="BusinessObjects\SlaPausedDays.cs" />
+    <Compile Include="BusinessObjects\SlaPausedTimes.cs" />
     <Compile Include="BusinessObjects\SlaTickets.cs" />
     <Compile Include="BusinessObjects\SlaViolationHistory.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
@@ -397,6 +400,7 @@
     <Compile Include="FieldMaps\OrganizationProductsViewFieldMap.cs" />
     <Compile Include="FieldMaps\PhoneOptionsFieldMap.cs" />
     <Compile Include="FieldMaps\PhoneQueueFieldMap.cs" />
+    <Compile Include="FieldMaps\PluginsFieldMap.cs" />
     <Compile Include="FieldMaps\ProductFamiliesFieldMap.cs" />
     <Compile Include="FieldMaps\RecentlyViewedItemsFieldMap.cs" />
     <Compile Include="FieldMaps\RemindersFieldMap.cs" />
@@ -412,6 +416,8 @@
     <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ServicesFieldMap.cs" />
     <Compile Include="FieldMaps\SimpleImportFieldsViewFieldMap.cs" />
+    <Compile Include="FieldMaps\SlaPausedDaysFieldMap.cs" />
+    <Compile Include="FieldMaps\SlaPausedTimesFieldMap.cs" />
     <Compile Include="FieldMaps\SlaTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\SlaViolationHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
@@ -673,6 +679,7 @@
     <Compile Include="Generated\GeneratedPhoneOptions.cs" />
     <Compile Include="Generated\GeneratedPhoneQueue.cs" />
     <Compile Include="Generated\GeneratedPhoneTypes.cs" />
+    <Compile Include="Generated\GeneratedPlugins.cs" />
     <Compile Include="Generated\GeneratedPortalLoginHistory.cs" />
     <Compile Include="Generated\GeneratedPortalOptions.cs" />
     <Compile Include="Generated\GeneratedProductFamilies.cs" />
@@ -702,6 +709,8 @@
     <Compile Include="Generated\GeneratedSimpleImportFieldsView.cs" />
     <Compile Include="Generated\GeneratedSlaLevels.cs" />
     <Compile Include="Generated\GeneratedSlaNotifications.cs" />
+    <Compile Include="Generated\GeneratedSlaPausedDays.cs" />
+    <Compile Include="Generated\GeneratedSlaPausedTimes.cs" />
     <Compile Include="Generated\GeneratedSlaTickets.cs" />
     <Compile Include="Generated\GeneratedSlaTriggers.cs" />
     <Compile Include="Generated\GeneratedSlaTriggersView.cs" />
@@ -775,10 +784,13 @@
     <Compile Include="Proxies\ImportsProxy.cs" />
     <Compile Include="Proxies\JiraInstanceProductsProxy.cs" />
     <Compile Include="Proxies\KBRatingsProxy.cs" />
+    <Compile Include="Proxies\PluginsProxy.cs" />
     <Compile Include="Proxies\ProductFamiliesProxy.cs" />
     <Compile Include="Proxies\ScheduledReportsProxy.cs" />
     <Compile Include="Proxies\ScheduledReportsRecurrencyProxy.cs" />
     <Compile Include="Proxies\SimpleImportFieldsViewProxy.cs" />
+    <Compile Include="Proxies\SlaPausedDaysProxy.cs" />
+    <Compile Include="Proxies\SlaPausedTimesProxy.cs" />
     <Compile Include="Proxies\SlaTicketsProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
     <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />

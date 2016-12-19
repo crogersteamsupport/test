@@ -26,6 +26,12 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("NotifyGroupOnViolation", "NotifyGroupOnViolation", false, false, false);
       _fieldMap.AddMap("WarningTime", "WarningTime", false, false, false);
       _fieldMap.AddMap("UseBusinessHours", "UseBusinessHours", false, false, false);
+      _fieldMap.AddMap("PauseOnHoliday", "PauseOnHoliday", false, false, false);
+      _fieldMap.AddMap("Weekdays", "Weekdays", false, false, false);
+      _fieldMap.AddMap("DayStart", "DayStart", false, false, false);
+      _fieldMap.AddMap("DayEnd", "DayEnd", false, false, false);
+      _fieldMap.AddMap("TimeZone", "TimeZone", false, false, false);
+      _fieldMap.AddMap("NoBusinessHours", "NoBusinessHours", false, false, false);
             
     }
   }
