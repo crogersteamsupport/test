@@ -1,6 +1,8 @@
 ﻿$(document).ready(function () {
   LoadOrder();
   CreateDOMEvents();
+  LoadPluginTemplate('ticket');
+    
   if (window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1078
       && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 13679
       && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1088
@@ -75,6 +77,21 @@ function CreateOrderElement(parent, cssclass, item) {
     }
 };
 
+function LoadPluginTemplate(type) {
+
+    $('#acc-template').empty();
+    var source = $('#entry-template').html();
+    var template = Handlebars.compile(source);
+    window.parent.parent.parent.Ts.Services.TicketPage.GetTicketPagePluginTemplates(type, function (result) {
+        var c = "Kevin"
+        //<div class="col-md-3">{{Cat.Name}}</div>
+        var html = template({ collapse: 'collapse-ticket', heading: 'heading-ticket', title: 'Ticket', content: c });
+        $('#acc-template').html(html);
+    });
+
+};
+
+
 function CreateDOMEvents() {
     //refresh page
     $('#btnRefresh').click(function (e) {
@@ -88,8 +105,11 @@ function CreateDOMEvents() {
         $('#plugin-name').val('');
         $('#plugin-code').val('');
         $('#plugin-name').closest('.form-group').removeClass('has-error');
-        $('#modal-plugin').modal('show');
-
+        $('#btnPluginDelete').addClass('hidden');
+        $('#div-main').addClass('hidden');
+        $('#div-plugin').removeClass('hidden');
+        $('#plugin-show-variables').text('Show variables >>');
+        $('#plugin-variables').addClass('hidden');
     });
 
     $('body').on('click', '.admin-to-cat .fa-pencil', function (e) {
@@ -98,21 +118,36 @@ function CreateDOMEvents() {
             $('#plugin-name').val(result.Name);
             $('#plugin-code').val(result.Code);
             $('#plugin-name').closest('.form-group').removeClass('has-error');
-            $('#modal-plugin').modal('show');
+            $('#btnPluginDelete').removeClass('hidden');
+            $('#plugin-show-variables').text('Show variables >>');
+            $('#plugin-variables').addClass('hidden');
+            $('#div-main').addClass('hidden');
+            $('#div-plugin').removeClass('hidden');
         });
     });
 
-    $('#plugin-variables').hide();
     $('#plugin-show-variables').click(function (e) {
         e.preventDefault();
-        $('#plugin-show-variables').hide();
-        $('#plugin-variables').show();
+        var el = $('#plugin-show-variables');
+        if (el.text().indexOf('Show') > -1) {
+            el.text('<< Hide variables');
+            $('#plugin-variables').removeClass('hidden');
+        }
+        else {
+            el.text('Show variables >>');
+            $('#plugin-variables').addClass('hidden');
+        }
     });
 
     $('#plugin-hide-variables').click(function (e) {
         e.preventDefault();
-        $('#plugin-show-variables').show();
-        $('#plugin-variables').hide();
+    });
+
+    
+    $('#btnPluginCancel').click(function (e) {
+        e.preventDefault();
+        $('#div-main').removeClass('hidden');
+        $('#div-plugin').addClass('hidden');
     });
 
     $('#btnPluginSave').click(function (e) {
@@ -133,10 +168,15 @@ function CreateDOMEvents() {
                 item.Disabled = "false";
                 CreateOrderElement('.admin-ticket-page-fields', 'admin-ticket-page-field', item);
                 $('.admin-ticket-page-fields, .admin-ticket-page-fields-disabled').sortable("refresh");
-                SaveOrder('.admin-ticket-page-fields', '.admin-ticket-page-field', 'TicketFieldsOrder');
             }
+            else {
+                $("body").find('[data-itemid="' + _pluginID + '"]').find('.admin-to-cat-name').text($('#plugin-name').val());
+            }
+            SaveOrder('.admin-ticket-page-fields', '.admin-ticket-page-field', 'TicketFieldsOrder');
+            $('#div-main').removeClass('hidden');
+            $('#div-plugin').addClass('hidden');
         });
-        $('#modal-plugin').modal('hide');
+
     });
     
     $('#btnPluginDelete').click(function (e) {
@@ -144,10 +184,10 @@ function CreateDOMEvents() {
         if (confirm('Are you sure you would like to delete this plugin?')) {
             window.parent.parent.parent.Ts.Services.TicketPage.DeleteTicketPagePlugin(_pluginID);
             $("body").find('[data-itemid="' + _pluginID + '"]').remove();
-            $('#modal-plugin').modal('hide');
+            $('#div-main').removeClass('hidden');
+            $('#div-plugin').addClass('hidden');
             SaveOrder('.admin-ticket-page-fields', '.admin-ticket-page-field', 'TicketFieldsOrder');
         }
-
     });
 
     $('#btnAddSpacerNewTicket').click(function (e) {

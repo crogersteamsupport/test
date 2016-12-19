@@ -20,8 +20,8 @@ using System.Linq;
 using System.Diagnostics;
 using ImageResizer;
 using System.Net;
-using Newtonsoft.Json;
 using System.IO;
+using System.Dynamic;
 
 namespace TSWebServices
 {
@@ -452,6 +452,47 @@ namespace TSWebServices
             }
             return null;
         }
+
+        public string GetTicketPagePluginTemplates(string templateType)
+        {
+            List<ExpandoObject> result = new List<ExpandoObject>();
+            if (templateType.ToLower() == "ticket")
+            {
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Ticket", "TicketsView"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Ticket Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Tickets));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "User", "UsersView"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "User Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Users));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer", "OrganizationsView"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Customer Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Organizations));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact", "ContactsView"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Contact Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Contacts));
+            }
+            return null;
+        }
+
+        private ExpandoObject GetTableTemplate(LoginUser loginUser, string templateName, string tableName)
+        {
+            dynamic cat = new ExpandoObject();
+            cat.name = templateName;
+
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT TOP 1 * FROM " + tableName;
+            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+            cat.items = table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+            return cat;
+        }
+
+        private ExpandoObject GetCustomFieldNames(LoginUser loginUser, string templateName, int organizationID, ReferenceType refType)
+        {
+            dynamic cat = new ExpandoObject();
+            cat.name = templateName;
+
+            CustomFields fields = new CustomFields(loginUser);
+            fields.LoadByReferenceType(organizationID, refType);
+            cat.items = fields.Cast<CustomField>().Select(x => x.Name).ToArray();
+            return cat;
+        }
+
         public string GetTicketPagePluginCode(int pluginID, int ticketID)
         {
             Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);

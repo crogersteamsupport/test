@@ -1,4 +1,4 @@
-﻿body { background-color: #fff; }
+﻿body { background-color: #fcfdfd; }
 .ts-icon { cursor: pointer;}
 .admin-to-cat.ui-sortable-helper {
     border: 1px solid #777;
@@ -7,9 +7,10 @@
 }
 .admin-to-cat-placeholder { height: 20px; }
 .admin-panel-buttons { margin-top: 15px; }
+#plugin-show-variables { margin: 15px 0; display:block;}
 .admin-to-cat { margin-top: 5px; }
 .admin-to-cat .fa-times, .admin-to-cat .fa-pencil { display:none; }
 .admin-to-cat:hover .fa-times,.admin-to-cat:hover .fa-pencil { display:inline-block; }
-.admin-to-cat .fa-times,.admin-to-cat .fa-pencil { cursor: default; }
+.admin-to-cat .fa-times,.admin-to-cat .fa-pencil { cursor: pointer; }
 .admin-to-cat span { padding: 0 10px;}
 .fa-bars { cursor: url(../cursors/grab.cur), move !important; }
