@@ -22,6 +22,16 @@ $(document).ready(function () {
 
     });
 
+    $('#pendingTaskList').on('click', 'a.tasklink', function () {
+        //e.preventDefault();
+        debugger;
+        alert('do scrub');
+        //var id = $(this).data('reminderid');
+        //parent.Ts.System.logAction('Tasks Page - View Task');
+        //parent.Ts.MainPage.openNewTask(id);
+
+    });
+
     function LoadMyTasks(tasks) {
         var container = $('.assignedresults');
         if (tasks.length < _pageSize) {
@@ -91,6 +101,7 @@ $(document).ready(function () {
             data = { taskList: tasks };
             console.log(data);
 
+            debugger;
             $("#handlebarsTaskList").html(template(data));
         }
         _isLoading = false;
@@ -239,6 +250,12 @@ $(document).ready(function () {
 
     Handlebars.registerHelper("taskComplete", function (taskdate) {
         return taskdate != null ? ' checked="checked"' : '';
+    });
+
+    Handlebars.registerHelper("mapAssociation", function (refType, refID) {
+        var str = '';
+        str = '<span><a href="#" class="association">' + refType + ' ' + refID + '</a></span>'
+        return new Handlebars.SafeString(str);
     });
 });
 

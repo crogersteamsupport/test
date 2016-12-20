@@ -188,15 +188,19 @@
             {{#taskList}}
             <tr>
                 <td>
-                    <input {{taskComplete TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{ReminderID}}"/>
+                    <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}"/>
                 </td>
-                <td>{{TaskName}}</td>
-                <td>{{UserID}}</td>
-                <td>{{formatDate TaskDueDate}}</td>
-                <td>{{formatDate DueDate}}</td>
-                <td></td>
+                <td>{{Task.TaskName}}</td>
+                <td>{{AssignedTo}}</td>
+                <td>{{formatDate Task.TaskDueDate}}</td>
+                <td>{{formatDate Task.DueDate}}</td>
                 <td>
-                    <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
+                    {{#Associations}}
+                    {{mapAssociation RefType RefID}}
+                    {{/Associations}}
+                </td>
+                <td>
+                    <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
                         <i class="fa fa-external-link"></i>
                     </a>
                 </td>
