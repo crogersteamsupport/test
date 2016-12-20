@@ -231,7 +231,7 @@ namespace TeamSupport.Data
 			using (SearchJob job = new SearchJob())
 			{
 				StringBuilder conditions = new StringBuilder();
-				conditions.Append(" ((PortalView::True) AND //(IsDeleted::True))");
+				conditions.Append(" ((PortalView::True) AND (IsDeleted::false))");
 
 				job.Request = searchTerm;
 				job.FieldWeights = "ArticleName: 1000";
