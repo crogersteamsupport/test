@@ -31,12 +31,13 @@ namespace TSWebServices
             Reminders results = new Reminders(loginUser);
             if (searchCreated)
             {
-                results.LoadCreatedByUser(from, count, loginUser.UserID, searchPending, searchComplete);
+                results.LoadCreatedByUser(from, count, loginUser.UserID, true, true);
             }
             else
             {
-                results.LoadAssignedToUser(from, count, loginUser.UserID, searchPending, searchComplete);
+                results.LoadAssignedToUser(from, count, loginUser.UserID, true, true);
             }
+
             return results.GetReminderProxies();
         }
 

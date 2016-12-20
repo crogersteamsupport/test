@@ -16,10 +16,13 @@ var _execGetAsset = null;
 var _execGetCustomer = null;
 var _productsSortColumn = 'Date Created';
 var _productsSortDirection = 'DESC';
+var _slaSortColumn = 'DateViolated';
+var _slaSortDirection = 'DESC';
 var _productHeadersAdded = false;
 var _isParentView = false;
 var _isLoadingContacts = false;
 var _viewingContacts = false;
+var _orgParentId;
 
 function getMainFrame() {
     var result = window.parent;
@@ -197,6 +200,7 @@ $(document).ready(function () {
     LoadCustomProperties();
     //LoadContacts();
     LoadProductTypes();
+    LoadSlaLevels();
     LoadCustomControls(_mainFrame.Ts.ReferenceTypes.OrganizationProducts);
     LoadReminderUsers();
     UpdateRecentView();
@@ -1122,7 +1126,8 @@ $(document).ready(function () {
       else {
         $('#companyLogo').hide();
       }
-      
+
+      _orgParentId = org.ParentID;
     });
 
     $("input[type=text], textarea").autoGrow();
@@ -1155,6 +1160,7 @@ $(document).ready(function () {
         productInfo.Version = $("#productVersion").val();
         productInfo.SupportExpiration = $("#productExpiration").val();
         productInfo.OrganizationProductID = $('#fieldProductID').val();
+        productInfo.SlaLevelID = $('#slaLevel').val();
 
         productInfo.Fields = new Array();
         $('.customField:visible').each(function () {
@@ -1195,6 +1201,7 @@ $(document).ready(function () {
                 $('#btnProductSave').text("Save Product");
                 $('#productExpiration').val('');
                 $('#fieldProductID').val('-1');
+                $('#slaLevel').val('-1');
                 $('#btnProductSave').text("Associate Product");
                 $('.customField:visible').each(function () {
                     switch ($(this).attr("type")) {
@@ -1323,6 +1330,11 @@ $(document).ready(function () {
       //      alert("Please fill in all the fields");
     });
 
+    $('#tblSLATriggers').on('click', '.slaTriggerEdit', function (e) {
+        e.preventDefault();
+        _mainFrame.Ts.System.logAction('Customer Detail - Edit SLA Trigger');
+    });
+
     $('#tblProducts').on('click', '.productEdit', function (e) {
         e.preventDefault();
         var product = $(this).parent().parent().attr('id');
@@ -1334,6 +1346,7 @@ $(document).ready(function () {
             $('#productProduct').val(prod.ProductID);
             $('#productExpiration').val(prod.SupportExpiration);
             $('#fieldProductID').val(orgproductID);
+            $('#slaLevel').val(prod.SlaLevelID);
             $('#btnProductSave').text("Save");
             _mainFrame.Ts.Services.Customers.LoadCustomProductFields(product, function (custField) {
                 for (var i = 0; i < custField.length; i++) {
@@ -1383,6 +1396,7 @@ $(document).ready(function () {
                 case "version":
                 case "support expiration":
                 case "released date":
+                case "sla assigned":
                 case "date created":
                     newSortIcon.toggleClass('fa-sort-asc fa-sort-desc');
                     _productsSortDirection = 'DESC';
@@ -2330,6 +2344,20 @@ $(document).ready(function () {
         });
     }
 
+    function LoadSlaLevels(productID, selVal) {
+        $("#slaLevel").empty();
+
+        _mainFrame.Ts.Services.Customers.LoadSlaLevels(function (pt) {
+            $('<option>').attr('value', '-1').text('Unassigned').appendTo('#slaLevel');
+            for (var i = 0; i < pt.length; i++) {
+                var opt = $('<option>').attr('value', pt[i].SlaLevelID).text(pt[i].Name).data('o', pt[i]);
+                //if (pt[i].ProductVersionID == selVal)
+                //    opt.attr('selected', 'selected');
+                opt.appendTo('#slaLevel');
+            }
+        });
+    }
+
     function LoadChildren() {
         $(".childrenList").empty();
 
@@ -2390,8 +2418,113 @@ $(document).ready(function () {
         $('.contacts-loading').show();
     }
 
-    function LoadProducts() {
+    $('#tblSLAViolations').on('click', '.slaHeader', function (e) {
+        e.preventDefault();
+        _slaSortColumn = $(this).text();
 
+        if (_slaSortColumn.toLowerCase() == "ticket #") {
+            _slaSortColumn = "TicketNumber";
+        } else if (_slaSortColumn.toLowerCase() == "violation date") {
+            _slaSortColumn = "DateViolated";
+        } else if (_slaSortColumn.toLowerCase() == "sla name") {
+            _slaSortColumn = "LevelName";
+        } else if (_slaSortColumn.toLowerCase() == "ticket type") {
+            _slaSortColumn = "SlaTicketType";
+        } else if (_slaSortColumn.toLowerCase() == "severity") {
+            _slaSortColumn = "SlaSeverity";
+}
+
+        var sortIcon = $(this).children(i);
+
+        if (sortIcon.length > 0) {
+            if (sortIcon.hasClass('fa-sort-asc')) {
+                _slaSortDirection = 'DESC'
+            }
+            else {
+                _slaSortDirection = 'ASC'
+            }
+            sortIcon.toggleClass('fa-sort-asc fa-sort-desc');
+        }
+        else {
+            $('.slaHeader').children(i).remove();
+            var newSortIcon = $('<i>')
+                .addClass('fa fa-sort-asc')
+                .appendTo($(this));
+            _slaSortDirection = 'ASC';
+            switch (_slaSortColumn.toLowerCase()) {
+                case "ticketid":
+                case "ticketnumber":
+                case "violationdate":
+                    newSortIcon.toggleClass('fa-sort-asc fa-sort-desc');
+                    _slaSortDirection = 'DESC';
+            }
+        }
+        LoadSLAViolationsGrid();
+    });
+
+    function LoadSLATriggersGrid() {
+        $('#tblSLATriggers tbody').empty();
+
+        _mainFrame.Ts.Services.Customers.LoadSlaTriggers(_orgParentId, organizationID, _slaSortColumn, _slaSortDirection, function (slaTriggers) {
+            for (var i = 0; i < slaTriggers.length; i++) {
+                var html;
+
+                if (!_isParentView && (_mainFrame.Ts.System.User.CanEditCompany || _isAdmin)) {
+                    html = '<td class="col-md-3">' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td><td>' + slaTriggers[i].SLAType + '</td>';
+                }
+                else {
+                    html = '<td>' + slaTriggers[i].LevelName + '</td><td>' + slaTriggers[i].TicketType + '</td><td>' + slaTriggers[i].Severity + '</td><td>' + slaTriggers[i].SLAType + '</td>';
+                }
+                var tr = $('<tr>')
+                .attr('id', slaTriggers[i].SlaLevelId)
+                .html(html)
+                .appendTo('#tblSLATriggers > tbody:last');
+            }
+
+            $('.slatriggers-loading').hide();
+            $('.slatriggers-empty').hide();
+            if (slaTriggers.length == 0) {
+                $('.slatriggers-empty').show();
+            }
+        });
+    }
+
+    function LoadSLAViolationsGrid() {
+        $('#tblSLAViolations tbody').empty();
+
+        _mainFrame.Ts.Services.Customers.LoadSlaViolations(organizationID, _slaSortColumn, _slaSortDirection, function (slas) {
+            for (var i = 0; i < slas.length; i++) {
+                var html;
+
+                if (!_isParentView && (_mainFrame.Ts.System.User.CanEditCompany || _isAdmin)) {
+                    html = '<td><a href="#" class="slaView" id="' + slas[i].TicketId + '">' + slas[i].TicketNumber + '</a></td><td>' + slas[i].Violation + '</td><td>' + slas[i].DateViolated + '</td><td>' + slas[i].LevelName + '</td><td>' + slas[i].TicketType + '</td><td>' + slas[i].Severity + '</td>';
+                }
+                else {
+                    html = '<td></td><td></td><td><a href="#" class="slaView" id="' + slas[i].TicketId + '">' + slas[i].TicketNumber + '</a></td><td>' + slas[i].Violation + '</td><td>' + slas[i].DateViolated + '</td><td>' + slas[i].LevelName + '</td><td>' + slas[i].TicketType + '</td><td>' + slas[i].Severity + '</td>';
+                }
+                var tr = $('<tr>')
+                .attr('id', slas[i].TicketId)
+                .html(html)
+                .appendTo('#tblSLAViolations > tbody:last');
+            }
+
+            $('.sla-loading').hide();
+            $('.sla-empty').hide();
+            if (slas.length == 0) {
+                $('.sla-empty').show();
+            }
+        });
+    }
+
+    $('#tblSLAViolations').on('click', '.slaView', function (e) {
+        e.preventDefault();
+        _mainFrame.Ts.System.logAction('Customer Detail - View Ticket Sla Violated');
+        var ticketId = $(this).attr('id');
+        openTicketWindow(ticketId);
+
+    });
+
+    function LoadProducts() {
         if (!_productHeadersAdded) {
             _mainFrame.Ts.Services.Customers.LoadcustomProductHeaders(function (headers) {
                 for (var i = 0; i < headers.length; i++) {
@@ -2417,11 +2550,11 @@ $(document).ready(function () {
 
                 if (!_isParentView && (_mainFrame.Ts.System.User.CanEditCompany || _isAdmin))
                 {
-                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
+                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].SlaAssigned + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
                 else
                 {
-                    html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields
+                    html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].SlaAssigned + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields
                 }
                 var tr = $('<tr>')
                 .attr('id', product[i].OrganizationProductID)
@@ -2786,6 +2919,10 @@ $(document).ready(function () {
         else if (e.target.innerHTML == "Calendar") {
             $('#calendarIframe').attr("src", "Calendar.html?pagetype=2&pageid=" + organizationID);
             _viewingContacts = false;
+        }
+        else if (e.target.innerHTML == "SLA") {
+            LoadSLATriggersGrid();
+            LoadSLAViolationsGrid();
         }
     })
 

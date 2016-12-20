@@ -13,15 +13,19 @@
     <h2 id="tipName" runat="server" style="padding-top:.5em;"></h2>
     <div class="ui-widget-content ts-separator"></div>
 
-    <table cellspacing="0" cellpadding="0" border="0" class="tip-sla-props">
+    <table cellspacing="0" cellpadding="0" border="0" class="tip-sla-props" width="100%">
       <thead>
         <tr class="ts-color-bg-accent">
-          <th>SLA Type</th>
-          <th>Warning</th>
-          <th>Violation</th>
+          <th>SLA Name</th>
+          <th colspan="2" id="wslaName" runat="server"></th>
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <td>SLA Type</td>
+          <td>Warning</td>
+          <td>Violation</td>
+        </tr>
         <tr>
           <td>Last Action</td>
           <td id="wLast" runat="server"></td>

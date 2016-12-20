@@ -6,14 +6,28 @@ var _createdTab = 0;
 var _start = 0;
 
 $(document).ready(function () {
+    $('.action-new').click(function (e) {
+        e.preventDefault();
+        parent.Ts.System.logAction('Tasks Page - New Task');
+        parent.Ts.MainPage.newTask();
 
-    function LoadAssigned(tasks) {
+    });
+
+    $('#pendingTaskList').on('click', 'a.tasklink', function () {
+        //e.preventDefault();
+        debugger;
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('Tasks Page - View Task');
+        parent.Ts.MainPage.openNewTask(id);
+
+    });
+
+    function LoadMyTasks(tasks) {
         var container = $('.assignedresults');
         if (tasks.length < _pageSize) {
             _allAssignedLoaded = true;
         }
         if (_start == 0) {
-            debugger;
             insertSearchResults(container, tasks);
             if (tasks.length == 0) {
                 $('.results-empty').show();
@@ -55,25 +69,6 @@ $(document).ready(function () {
         }
     }
 
-    function HideAssigned() {
-        $('#assignedColumn').hide();
-        $('#createdColumn').removeClass('col-xs-6').addClass('col-xs-12');
-        $('#createdColumn').find('.tasks-header').hide();
-    }
-
-    function HideCreated() {
-        $('#createdColumn').hide();
-        $('#assignedColumn').removeClass('col-xs-6').addClass('col-xs-12');
-        $('#assignedColumn').find('.tasks-header').hide();
-    }
-
-    function ShowNoTasks() {
-        HideCreated();
-        _isLoading = false;
-        $('.results-loading').hide();
-        $('.results-empty').show();
-    }
-
     function showLoadingIndicator() {
         _isLoading = true;
         $('.results-loading').show();
@@ -85,198 +80,36 @@ $(document).ready(function () {
     }
 
     function appendSearchResults(container, tasks) {
-
         $('.results-loading').hide();
         $('.results-empty').hide();
-
-       
-        //$('.results-done').hide();
 
         if (tasks.length < 1) {
             //$('.results-done').show();
         } else {
-            //for (var i = 0; i < tasks.length; i++) {
-            //    appendItem(container, tasks[i]);
-            //}
-
             var source = $("#task-template").html();
             var template = Handlebars.compile(source);
             data = { taskList: tasks };
+            console.log(data);
 
-            $("#taskList").html(template(data));
+            $("#handlebarsTaskList").html(template(data));
         }
         _isLoading = false;
     }
 
-    function appendItem(container, item) {
-        var el = $('<tr>');
-        var circle = $('<i>').addClass('fa fa-circle fa-stack-2x');
-        var icon = $('<i>').addClass('fa fa-stack-1x fa-inverse');
-
-        if (parent.Ts.System.User.UserID != item.UserID) {
-            var avaspn = $('<span>')
-                .appendTo(el);
-
-            var avaimg = $('<img>')
-                .addClass('topicavatarsm')
-                    .attr("src", "/dc/" + parent.Ts.System.User.OrganizationID + "/UserAvatar/" + item.UserID + "/40/" + new Date().getTime())
-                .appendTo(avaspn);
-
-            $('<td>').addClass('widthfix').append(
-              $('<span>').append(avaspn)
-            ).appendTo(el);
-        }
-
-        var div = $('<div>')
-              .addClass('taskinfo');
-
-        $('<td>').append(div).appendTo(el);
-
-        circle.addClass('color-pink');
-        icon.addClass('fa-check');
-
-        appendTask(div, item);
-
-        el.appendTo(container);
-    }
-
-    var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
-
-    function appendTask(el, item) {
-        var displayName;
-        if (item.TaskName) {
-            displayName = ellipseString(item.TaskName, 40);
-        }
-        else if (item.Description) {
-            displayName = ellipseString(item.Description, 40);
-        }
-        else {
-            displayName = item.ReminderID;
-        }
-
-        if (parent.Ts.System.User.UserID == item.UserID) {
-            var checkbox = $('<input />', { type: 'checkbox', id: 'cb' + item.ReminderID, value: '' });
-            $('<div>').addClass('checkbox').append(
-                $('<a>')
-                  .attr('href', '#')
-                  .addClass('tasklink')
-                  .data('reminderid', item.ReminderID)
-                  .text(displayName)
-                  .append(checkbox)
-            ).appendTo($('<h4>').appendTo(el));
-        }
-        else {
-            $('<a>')
-              .attr('href', '#')
-              .addClass('tasklink')
-              .data('reminderid', item.ReminderID)
-              .text(displayName)
-              .appendTo($('<h4>').appendTo(el));
-        }
-
-        var list = $('<ul>').appendTo(el);
-
-        //var firstRow = $('<li>').appendTo(list);
-
-        //$('<a>')
-        //      .attr('target', '_blank')
-        //      .text(item.Description)
-        //      .appendTo(firstRow);
-
-        //if (!isNullOrWhiteSpace(item.productVersionNumber)) {
-        //    firstRow.append(' - ');
-        //    $('<a>')
-        //          .attr('target', '_blank')
-        //          .text(item.productVersionNumber)
-        //          .appendTo(firstRow);
-        //}
-
-        var secondRow = $('<li>').appendTo(list);
-        //if (!displayNameIsSerialNumber) {
-        //    secondRow.append('SN: ');
-        //    if (isNullOrWhiteSpace(item.serialNumber)) {
-        //        secondRow.append('Empty');
-        //    }
-        //    else {
-        //        secondRow.append(item.serialNumber);
-        //    }
-        //    secondRow.append(' - ');
-        //}
-
-        secondRow.append('Due Date: ');
-        if (isNullOrWhiteSpace(item.TaskDueDate)) {
-            secondRow.append('Unassigned');
-        }
-        else {
-            secondRow.append(parent.Ts.Utils.getMsDate(item.TaskDueDate).localeFormat(parent.Ts.Utils.getDatePattern()));
-        }
-
-    }
 
     function isNullOrWhiteSpace(str) {
         return str === null || String(str).match(/^ *$/) !== null;
     }
 
-    function GetAssignedTab() {
-        debugger;
-        var result = -3;
-        if ($('#assignedColumn').is(':hidden')) {
-            result = -1;
-        }
-        else if (_allAssignedLoaded) {
-            result = 0;
-        }
-        else if ($('.assigned-tasks-filter-pending').hasClass('active')) {
-            result = 1;
-        }
-        else if ($('.assigned-tasks-filter-completed').hasClass('active')) {
-            result = 2;
-        }
-        return result;
-    }
 
-    function GetCreatedTab() {
-        debugger;
-        var result = -3;
-        if ($('#createdColumn').is(':hidden')) {
-            result = -1;
-        }
-        else if (_allCreatedLoaded) {
-            result = 0;
-        }
-        else if ($('.created-tasks-filter-pending').hasClass('active')) {
-            result = 1;
-        }
-        else if ($('.created-tasks-filter-completed').hasClass('active')) {
-            result = 2;
-        }
-        return result;
-    }
-
-    function GetStart() {
-        var result = 1;
-        if ($('.assignedresults > tbody > tr').length > 0) {
-            result = $('.assignedresults > tbody > tr').length;
-        }
-        if ($('.createdresults > tbody > tr').length >= result) {
-            result = $('.createdresults > tbody > tr').length;
-        }
-        return result;
-    }
-
-
-    function fetchItems() {
+    function fetchTasks() {
 
         showLoadingIndicator();
-        $('.searchresults').fadeTo(200, 0.5);
-        var term = $('#searchString').val();
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
         parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (pageData) {
-
             debugger;
             $('.searchresults').fadeTo(0, 1);
-
 
             if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
                 ShowNoTasks();
@@ -285,7 +118,7 @@ $(document).ready(function () {
                 switch (_assignedTab) {
                     case -1:
                         if (pageData.AssignedCount > 0) {
-                            LoadAssigned(pageData.AssignedItems);
+                            LoadMyTasks(pageData.AssignedItems);
                             //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
                             //    set completed active
                             //}
@@ -297,7 +130,7 @@ $(document).ready(function () {
                     case 0:
                         break;
                     default:
-                        LoadAssigned(pageData.AssignedItems);
+                        LoadMyTasks(pageData.AssignedItems);
                 }
 
                 switch (_createdTab) {
@@ -318,10 +151,10 @@ $(document).ready(function () {
                         LoadCreated(pageData.CreatedItems);
                 }
 
-                if (pageData.AssignedItems.length < _pageSize && pageData.CreatedItems < _pageSize) {
-                    $('.tasks-more').hide();
-                    //$('.results-done').show();
-                }
+                //if (pageData.AssignedItems.length < _pageSize && pageData.CreatedItems < _pageSize) {
+                //    $('.tasks-more').hide();
+                //    //$('.results-done').show();
+                //}
             }
         });
     }
@@ -330,119 +163,83 @@ $(document).ready(function () {
         e.preventDefault();
         parent.Ts.System.logAction('Tasks Page - New Task');
         parent.Ts.MainPage.newTask();
-
     });
 
-    $('.assigned-tasks-filter').on('click', 'button', function (e) {
-        debugger;
+    $('.tab-assigned-tasks').on('click', function (e) {
         e.preventDefault();
-        $('.assigned-tasks-filter > button.active').removeClass('active');
+        $('.tab-created-tasks').removeClass('active');
         $(this).addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _allAssignedLoaded = false;
-        _assignedTab = GetAssignedTab();
+        _assignedTab = 1;
         _createdTab = 0;
         _start = 0;
-        fetchItems();
+        fetchTasks();
     });
 
-    $('.created-tasks-filter').on('click', 'button', function (e) {
-        debugger;
+    $('.tab-created-tasks').on('click', function (e) {
         e.preventDefault();
-        $('.created-tasks-filter > button.active').removeClass('active');
+        $('.tab-assigned-tasks').removeClass('active');
         $(this).addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _assignedTab = 0;
         _allCreatedLoaded = false;
-        _createdTab = GetCreatedTab();
+        _createdTab = 1
         _assignedTab = 0;
         _start = 0;
-        fetchItems();
+        fetchTasks();
     });
 
-    $('.searchresults').on('click', '.tasklink', function (e) {
-        debugger;
-        e.preventDefault();
-
+    $('#pendingTaskList').on('click', '.change-task-status', function (e) {
         var id = $(this).data('reminderid');
-        parent.Ts.System.logAction('Tasks Page - View Task');
-        parent.Ts.MainPage.openNewTask(id);
+        var checked = $(this).prop("checked");
+        parent.Ts.System.logAction('Tasks Page - Change Task Status');
 
-        //parent.Ts.Services.Assets.UpdateRecentlyViewed('o' + id, function (resultHtml) {
-        //    $('.recent-container').empty();
-        //    $('.recent-container').html(resultHtml);
-        //});
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
 
     });
 
-    $('#moreTasks').click(function (e) {
-        _assignedTab = GetAssignedTab();
-        _createdTab = GetCreatedTab();
-        _start = GetStart();
-        fetchItems();
-    });
+    fetchTasks();
 
-    $('.frame-container').bind('scroll', function () {
-        if (_isLoading == true) return;
-        //if ($('.results-done').is(':visible')) return;
-        if (_allAssignedLoaded && _allCreatedLoaded) {
-            return;
-        }
+    //$('.tabs').on('click', 'a', function (e) {
+    //    debugger;
+    //    e.preventDefault();
+    //    $('.tab-created-tasks').removeClass('active');
+    //    $(this).parent().addClass('active');
+    //    parent.Ts.System.logAction('Tasks Page - Change Filter');
 
-        if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            _assignedTab = GetAssignedTab();
-            _createdTab = GetCreatedTab();
-            _start = GetStart();
-            fetchItems();
-        }
-
-        if ($(this).scrollTop() > 100) {
-            $('.scrollup').fadeIn();
-        } else {
-            $('.scrollup').fadeOut();
-        }
-    });
-
-    $('.scrollup').click(function () {
-        $('.frame-container').animate({
-            scrollTop: 0
-        }, 600);
-        $('.scrollup').fadeOut();
-        return false;
-    });
-
-    fetchItems();
-
-    $('.tabs').on('click', 'a', function (e) {
-        debugger;
-        e.preventDefault();
-        $('.tab-created-tasks').removeClass('active');
-        $(this).parent().addClass('active');
-        parent.Ts.System.logAction('Tasks Page - Change Filter');
-
-        if ($(this).hasClass('tab-assigned-tasks')) {
-            $('#createdColumn').hide();
-            $('#assignedColumn').show();
-            debugger;
-            _createdTab = 0;
-            _allAssignedLoaded = false;
-            _assignedTab = GetAssignedTab();
-            _start = 0;
-        }
-        else {
-            $('#assignedColumn').hide();
-            $('#createdColumn').show();
-            _assignedTab = 0;
-            _allCreatedLoaded = false;
-            _createdTab = GetCreatedTab();
-            _start = 0;
-        }
+    //    if ($(this).hasClass('tab-assigned-tasks')) {
+    //        $('#createdColumn').hide();
+    //        $('#assignedColumn').show();
+    //        debugger;
+    //        _createdTab = 0;
+    //        _allAssignedLoaded = false;
+    //        _assignedTab = GetAssignedTab();
+    //        _start = 0;
+    //    }
+    //    else {
+    //        $('#assignedColumn').hide();
+    //        $('#createdColumn').show();
+    //        _assignedTab = 0;
+    //        _allCreatedLoaded = false;
+    //        _createdTab = GetCreatedTab();
+    //        _start = 0;
+    //    }
 
 
-        //fetchItems();
-    });
+    //    fetchTasks();
+    //});
 
     Handlebars.registerHelper("formatDate", function (datetime) {
-        return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+        if (datetime != null) {
+            return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+        }
+        else return null;
+    });
+
+    Handlebars.registerHelper("taskComplete", function (taskdate) {
+        return taskdate != null ? ' checked="checked"' : '';
     });
 });
+
+

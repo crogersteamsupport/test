@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public bool AllDay { get; set; }
     [DataMember] public DateTime? StartDateUTC { get; set; }
     [DataMember] public DateTime? EndDateUTC { get; set; }
+    [DataMember] public bool IsHoliday { get; set; }
           
   }
   
@@ -34,6 +35,7 @@ namespace TeamSupport.Data
     public CalendarEventProxy GetProxy()
     {
       CalendarEventProxy result = new CalendarEventProxy();
+      result.IsHoliday = this.IsHoliday;
       result.AllDay = this.AllDay;
       result.CreatorID = this.CreatorID;
       result.RepeatFrequency = this.RepeatFrequency;

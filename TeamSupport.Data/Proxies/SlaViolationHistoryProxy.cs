@@ -19,6 +19,7 @@ namespace TeamSupport.Data
     [DataMember] public int TicketID { get; set; }
     [DataMember] public SlaViolationType ViolationType { get; set; }
     [DataMember] public DateTime DateViolated { get; set; }
+    [DataMember] public int? SlaTriggerId { get; set; }
           
   }
   
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
     public SlaViolationHistoryItemProxy GetProxy()
     {
       SlaViolationHistoryItemProxy result = new SlaViolationHistoryItemProxy();
+      result.SlaTriggerId = this.SlaTriggerId;
       result.ViolationType = this.ViolationType;
       result.TicketID = this.TicketID;
       result.GroupID = this.GroupID;

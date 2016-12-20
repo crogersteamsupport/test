@@ -137,6 +137,7 @@
 	      }).responseText;
 	    }
 	  }).popover('show');
+	  resetSLAInfo();
 	});
 
 	$("body").on("mouseenter", ".TicketAnchor", function (event) {

@@ -39,3 +39,23 @@
 .checkbox { margin-bottom: 0 !important}
 
 .widthfix { width: 1px}
+
+td {
+    position: relative;
+    padding: 5px 10px;
+}
+
+tr.strikeout td:before {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    margin-bottom:40px;
+    left: 0;
+    border-bottom: 1px solid #111;
+    color:grey;
+    width: 100%;
+}
+
+.taskLine {
+    margin-top:10px;
+}

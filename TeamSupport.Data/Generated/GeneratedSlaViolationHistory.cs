@@ -46,6 +46,12 @@ namespace TeamSupport.Data
       set { Row["GroupID"] = CheckValue("GroupID", value); }
     }
     
+    public int? SlaTriggerId
+    {
+      get { return Row["SlaTriggerId"] != DBNull.Value ? (int?)Row["SlaTriggerId"] : null; }
+      set { Row["SlaTriggerId"] = CheckValue("SlaTriggerId", value); }
+    }
+    
 
     
     public SlaViolationType ViolationType
@@ -174,7 +180,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaViolationHistory] SET     [UserID] = @UserID,    [GroupID] = @GroupID,    [TicketID] = @TicketID,    [ViolationType] = @ViolationType,    [DateViolated] = @DateViolated  WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaViolationHistory] SET     [UserID] = @UserID,    [GroupID] = @GroupID,    [TicketID] = @TicketID,    [ViolationType] = @ViolationType,    [DateViolated] = @DateViolated,    [SlaTriggerId] = @SlaTriggerId  WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SlaViolationHistoryID", SqlDbType.Int, 4);
@@ -219,13 +225,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("SlaTriggerId", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaViolationHistory] (    [UserID],    [GroupID],    [TicketID],    [ViolationType],    [DateViolated]) VALUES ( @UserID, @GroupID, @TicketID, @ViolationType, @DateViolated); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaViolationHistory] (    [UserID],    [GroupID],    [TicketID],    [ViolationType],    [DateViolated],    [SlaTriggerId]) VALUES ( @UserID, @GroupID, @TicketID, @ViolationType, @DateViolated, @SlaTriggerId); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("SlaTriggerId", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateViolated", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -374,7 +394,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [SlaViolationHistoryID], [UserID], [GroupID], [TicketID], [ViolationType], [DateViolated] FROM [dbo].[SlaViolationHistory] WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SlaViolationHistoryID], [UserID], [GroupID], [TicketID], [ViolationType], [DateViolated], [SlaTriggerId] FROM [dbo].[SlaViolationHistory] WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("SlaViolationHistoryID", slaViolationHistoryID);
         Fill(command);

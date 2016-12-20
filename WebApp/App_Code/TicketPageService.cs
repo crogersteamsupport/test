@@ -32,7 +32,7 @@ namespace TSWebServices
     {
 
         public TicketPageService() { }
-
+        
         [WebMethod]
         public TicketPageInfo GetTicketInfo(int ticketNumber)
         {
@@ -86,6 +86,9 @@ namespace TSWebServices
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
 
+            TicketStatuses ticketStatus = new TicketStatuses(TSAuthentication.GetLoginUser());
+            ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+            info.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
             SlaTicket slaTicket = SlaTickets.GetSlaTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
 
             if (slaTicket != null)
@@ -351,6 +354,57 @@ namespace TSWebServices
             List<TicketCategoryOrder> items = JsonConvert.DeserializeObject<List<TicketCategoryOrder>>(Settings.OrganizationDB.ReadString(KeyName, defaultOrder));
 
             return items.ToArray();
+        }
+
+        [WebMethod]
+        public PluginProxy GetTicketPagePlugin(int pluginID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID)
+            {
+                return plugin.GetProxy();
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public PluginProxy SaveTicketPagePlugin(int pluginID, string name, string code)
+        {
+            Plugin plugin;
+
+            if (pluginID < 0)
+            {
+                Plugins plugins = new Plugins(TSAuthentication.GetLoginUser());
+                plugin = plugins.AddNewPlugin();
+                plugin.Code = code;
+                plugin.CreatorID = TSAuthentication.UserID;
+                plugin.DateCreated = DateTime.UtcNow;
+                plugin.Name = name;
+                plugin.OrganizationID = TSAuthentication.OrganizationID;
+            }
+            else
+            {
+                plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+                if (plugin.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+                {
+                    plugin.Name = name;
+                    plugin.Code = code;
+                }
+            }
+
+            plugin.BaseCollection.Save();
+            return plugin.GetProxy();
+        }
+
+        [WebMethod]
+        public void DeleteTicketPagePlugin(int pluginID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+            {
+                plugin.Delete();
+                plugin.BaseCollection.Save();
+            }
         }
 
         [WebMethod]
@@ -812,13 +866,14 @@ namespace TSWebServices
             {
                 TicketStatuses ticketStatus = new TicketStatuses(loginUser);
                 ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+                slaInfo.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
 
                 slaInfo.IsSlaPending = slaTickets[0].IsPending;
                 slaInfo.SlaTriggerId = slaTickets[0].SlaTriggerId;
             }
 
             return slaInfo;
-        }
+		}
 
         [WebMethod]
         public string GetSuggestedSolutionDefaultInput(int ticketid)
@@ -850,6 +905,18 @@ namespace TSWebServices
 
         }
 
+        [DataContract]
+        public class SlaInfo
+        {
+            [DataMember]
+            public TicketsViewItemProxy Ticket { get; set; }
+            [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
+        }
 
         [DataContract]
         public class TicketPageInfo
@@ -944,19 +1011,8 @@ namespace TSWebServices
             public string CatName { get; set; }
             [DataMember]
             public string Disabled { get; set; }
-        }
-
-        [DataContract]
-        public class SlaInfo
-        {
             [DataMember]
-            public TicketsViewItemProxy Ticket { get; set; }
-            [DataMember]
-            public bool IsSlaPaused { get; set; }
-            [DataMember]
-            public int? SlaTriggerId { get; set; }
-            [DataMember]
-            public bool IsSlaPending { get; set; }
+            public string ItemID { get; set; }
         }
 
         //Private Methods
@@ -1080,8 +1136,10 @@ namespace TSWebServices
             List<AttachmentProxy> result = new List<AttachmentProxy>();
             foreach (AttachmentProxy attachment in attach.GetAttachmentProxies())
             {
-                result.Add(attachment);
+                if (!result.Exists(a => a.FileName == attachment.FileName))
+                   result.Add(attachment);
             }
+
             return result.ToArray();
         }
 
