@@ -246,7 +246,7 @@ namespace TSWebServices
 
             wiki.ParentID = parent;
             wiki.Body = wikiBody;
-            wiki.ArticleName = wikiTitle;
+            wiki.ArticleName = (wikiTitle == "") ? "untitled" : wikiTitle;
             wiki.PublicView = publicView;
             wiki.Private = privateView;
             wiki.PortalView = portalView;
