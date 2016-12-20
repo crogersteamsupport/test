@@ -182,8 +182,12 @@ public partial class Frames_AdminCompany : BaseFramePage
 	table.Rows.Add(new string[] { "Two Factor Verification:", organization.TwoStepVerificationEnabled.ToString() });
 	table.Rows.Add(new string[] { "How many days before user passwords expire:", organization.DaysBeforePasswordExpire.ToString() });
 	table.Rows.Add(new string[] { "Do not include attachments on outbound emails:", organization.NoAttachmentsInOutboundEmail.ToString() });
+    table.Rows.Add(new string[] { "Require Group Assignment On Tickets:", organization.RequireGroupAssignmentOnTickets.ToString() });
 
-	rptProperties.DataSource = table;
+        
+
+
+    rptProperties.DataSource = table;
     rptProperties.DataBind();
   }
 

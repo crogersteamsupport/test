@@ -388,10 +388,25 @@ function SetupTicketProperties() {
     });
   }
 
+  if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+      if ($('#ticket-group').val() == "")
+          $('#ticket-group').closest('.form-group').addClass('hasError');
+      else
+          $('#ticket-group').closest('.form-group').removeClass('hasError');
+  }
+
   $('#ticket-group').change(function (e) {
       var self = $(this);
       _ticketGroupID = self.val();
-      if (_ticketGroupID == '-1') _ticketGroupID = null;
+      if (_ticketGroupID == '-1') {
+          _ticketGroupID = null;
+          if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+                  $('#ticket-group').closest('.form-group').addClass('hasError');
+          }
+      }
+      else
+          $('#ticket-group').closest('.form-group').removeClass('hasError');
+
   });
 
   //Type
