@@ -134,6 +134,13 @@ function BuildWikiEditEvents() {
         var parentid = $('#Wiki-Edit-Parent').val();
         var wikiID;
 
+        if (title == '')
+        {
+            alert('Please enter a valid title.')
+            return;
+        }
+       
+
         if (_isCreatingNewWiki) {
           wikiID = 0;
         }
