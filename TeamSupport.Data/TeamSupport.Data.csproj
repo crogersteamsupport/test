@@ -301,6 +301,8 @@
     <Compile Include="BusinessObjects\Tags.cs" />
     <Compile Include="BusinessObjects\TaskAssociations.cs" />
     <Compile Include="BusinessObjects\TaskAssociationsView.cs" />
+    <Compile Include="BusinessObjects\TaskEmailPostHistory.cs" />
+    <Compile Include="BusinessObjects\TaskEmailPosts.cs" />
     <Compile Include="BusinessObjects\TaskLogs.cs" />
     <Compile Include="BusinessObjects\TasksView.cs" />
     <Compile Include="BusinessObjects\TicketAutomationActions.cs" />
@@ -422,6 +424,8 @@
     <Compile Include="FieldMaps\TagsFieldMap.cs" />
     <Compile Include="FieldMaps\TaskAssociationsFieldMap.cs" />
     <Compile Include="FieldMaps\TaskAssociationsViewFieldMap.cs" />
+    <Compile Include="FieldMaps\TaskEmailPostHistoryFieldMap.cs" />
+    <Compile Include="FieldMaps\TaskEmailPostsFieldMap.cs" />
     <Compile Include="FieldMaps\TaskLogsFieldMap.cs" />
     <Compile Include="FieldMaps\TasksViewFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationActionsFieldMap.cs" />
@@ -720,6 +724,8 @@
     <Compile Include="Generated\GeneratedTags.cs" />
     <Compile Include="Generated\GeneratedTaskAssociations.cs" />
     <Compile Include="Generated\GeneratedTaskAssociationsView.cs" />
+    <Compile Include="Generated\GeneratedTaskEmailPostHistory.cs" />
+    <Compile Include="Generated\GeneratedTaskEmailPosts.cs" />
     <Compile Include="Generated\GeneratedTaskLogs.cs" />
     <Compile Include="Generated\GeneratedTasksView.cs" />
     <Compile Include="Generated\GeneratedTechDocs.cs" />
@@ -795,6 +801,8 @@
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
     <Compile Include="Proxies\TaskAssociationsProxy.cs" />
     <Compile Include="Proxies\TaskAssociationsViewProxy.cs" />
+    <Compile Include="Proxies\TaskEmailPostHistoryProxy.cs" />
+    <Compile Include="Proxies\TaskEmailPostsProxy.cs" />
     <Compile Include="Proxies\TaskLogsProxy.cs" />
     <Compile Include="Proxies\TasksViewProxy.cs" />
     <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />
