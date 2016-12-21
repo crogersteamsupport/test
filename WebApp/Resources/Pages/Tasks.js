@@ -26,15 +26,12 @@ $(document).ready(function () {
 
     });
 
-    $('#pendingTaskList').on('click', 'a.tasklink', function () {
-        //e.preventDefault();
-        debugger;
-        alert('do scrub');
-        //var id = $(this).data('reminderid');
-        //parent.Ts.System.logAction('Tasks Page - View Task');
-        //parent.Ts.MainPage.openNewTask(id);
-
-    });
+    //$('#pendingTaskList').on('click', 'a.tasklink', function () {
+    //    //e.preventDefault();
+    //    //var id = $(this).data('reminderid');
+    //    //parent.Ts.System.logAction('Tasks Page - View Task');
+    //    //parent.Ts.MainPage.openNewTask(id);
+    //});
 
     function LoadMyTasks(tasks) {
         var container = $('.assignedresults');
