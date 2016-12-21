@@ -19,6 +19,7 @@ namespace TeamSupport.Data
     [DataMember] public int SlaTriggerId { get; set; }
     [DataMember] public DateTime PausedOn { get; set; }
     [DataMember] public DateTime? ResumedOn { get; set; }
+    [DataMember] public int? BusinessPausedTime { get; set; }
           
   }
   
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
     public SlaPausedTimProxy GetProxy()
     {
       SlaPausedTimProxy result = new SlaPausedTimProxy();
+      result.BusinessPausedTime = this.BusinessPausedTime;
       result.SlaTriggerId = this.SlaTriggerId;
       result.TicketStatusId = this.TicketStatusId;
       result.TicketId = this.TicketId;

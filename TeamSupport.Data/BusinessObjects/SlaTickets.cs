@@ -178,7 +178,8 @@ namespace TeamSupport.Data
                                             CalendarEvents holidays,
                                             LoginUser loginUser,
                                             Dictionary<int, double> businessPausedTimes,
-                                            Logs logs = null)
+                                            Logs logs = null,
+                                            bool overwritePrevious = false)
         {
             TimeSpan totalPausedTime = new TimeSpan();
             SlaPausedTimes slaPausedTimes = new SlaPausedTimes(loginUser);
@@ -186,7 +187,11 @@ namespace TeamSupport.Data
 
             foreach (SlaPausedTime slaPausedTime in slaPausedTimes)
             {
-                TimeSpan rangePausedTime = SlaPausedTimes.CalculatePausedTime(loginUser,
+                bool hasBeenCalculated = slaPausedTime.BusinessPausedTime != null;
+
+                if (!hasBeenCalculated || (hasBeenCalculated && overwritePrevious))
+                {
+                    TimeSpan rangePausedTime = SlaPausedTimes.CalculatePausedTime(loginUser,
                                                                             organization,
                                                                             slaTrigger,
                                                                             slaPausedTime.PausedOnUtc,
@@ -195,9 +200,16 @@ namespace TeamSupport.Data
                                                                             daysToPause,
                                                                             holidays,
                                                                             logs);
-                totalPausedTime = totalPausedTime.Add(rangePausedTime);
-                //return the results to stored them in the db.
-                businessPausedTimes.Add(slaPausedTime.Id, rangePausedTime.TotalSeconds);
+                    totalPausedTime = totalPausedTime.Add(rangePausedTime);
+                    
+                    //return the results to stored them in the db.
+                    businessPausedTimes.Add(slaPausedTime.Id, rangePausedTime.TotalSeconds);
+                }
+                else if (hasBeenCalculated && !overwritePrevious)
+                {
+                    TimeSpan previouslyCalculatedPausedTime = TimeSpan.FromSeconds((int)slaPausedTime.BusinessPausedTime);
+                    totalPausedTime = totalPausedTime.Add(previouslyCalculatedPausedTime);
+                }
             }
 
             return totalPausedTime;

@@ -658,10 +658,16 @@ namespace TeamSupport.ServiceLibrary
 
                     Organization organization = Organizations.GetOrganization(scheduledReportCreator, scheduledReportCreator.OrganizationID);
                     MailMessage message = EmailTemplates.GetScheduledReport(LoginUser, scheduledReport);
-                    scheduledReport.SetRecipientsAndAttachment(message, organization);
+                    List<string> invalidEmailAddress = new List<string>();
+                    scheduledReport.SetRecipientsAndAttachment(message, organization, ref invalidEmailAddress);
 
                     Log("Email message created", LogType.Public);
                     Log(string.Format("Email Recipients: {0}", string.Join(",", message.To.Select(p => p.Address).ToArray())), LogType.Both);
+                    
+                    if (invalidEmailAddress.Any())
+                    {
+                        Log(string.Format("Invalid Email Recipients, they were excluded: {0}", string.Join(",", invalidEmailAddress.ToArray())), LogType.Both);
+                    }
 
                     if (_isDebug == true)
                     {
@@ -738,9 +744,9 @@ namespace TeamSupport.ServiceLibrary
                         message.Subject = string.Format("[{0}] {1}", Settings.ReadString("Debug Email Subject", "TEST MODE"), message.Subject);
                     }
 
-						Log("Queueing email(s)", LogType.Public);
-						AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
-						scheduledReport.IsSuccessful = true;
+					Log("Queueing email(s)", LogType.Public);
+					AddMessage(scheduledReport.OrganizationId, string.Format("Scheduled Report Sent [{0}]", scheduledReport.Id), message, null, new string[] { reportAttachmentFile });
+					scheduledReport.IsSuccessful = true;
                 }
                 else
                 {
@@ -766,10 +772,6 @@ namespace TeamSupport.ServiceLibrary
             {
                 Logs.WriteException(ex);
                 ExceptionLogs.LogException(LoginUser, ex, _threadPosition.ToString() + " - Report Sender", scheduledReport.Row);
-                StringBuilder builder = new StringBuilder();
-                builder.AppendLine("Log File: " + _threadPosition.ToString());
-                builder.AppendLine(ex.Message);
-                builder.AppendLine(ex.StackTrace);
             }
         }
 
@@ -801,33 +803,40 @@ namespace TeamSupport.ServiceLibrary
             List<MailAddress> addresses = message.To.ToList();
             string body = message.Body;
             string subject = message.Subject;
+            MailAddress replyMailAddress = null;
+
+            try
+            {
+                replyMailAddress = GetMailAddress(replyAddress);
+            }
+            catch (Exception)
+            {
+                replyMailAddress = GetMailAddress(organization.GetReplyToAddress());
+            }
+
+            Logs.WriteEvent(string.Format("ReplyTo Address[{0}]", replyAddress.Replace("<", "").Replace(">", "")));
 
             foreach (MailAddress address in addresses)
             {
-                message.To.Clear();
-                message.To.Add(GetMailAddress(address.Address, address.DisplayName));
-                Logs.WriteEvent(string.Format("Successfuly added email address [{0}]", address.ToString()));
-                message.HeadersEncoding = Encoding.UTF8;
-                message.Body = body;
-                message.Subject = subject;
-                MailAddress replyMailAddress = null;
-
                 try
                 {
-                    replyMailAddress = GetMailAddress(replyAddress);
+                    message.To.Clear();
+                    message.To.Add(GetMailAddress(address.Address, address.DisplayName));
+                    Logs.WriteEvent(string.Format("Successfuly added email address [{0}]", address.ToString()));
+                    message.HeadersEncoding = Encoding.UTF8;
+                    message.Body = body;
+                    message.Subject = subject;
+                    message.From = replyMailAddress;
+                    EmailTemplates.ReplaceMailAddressParameters(message);
+                    Emails.AddEmail(LoginUser, organizationID, null, description, message, attachments, timeToSend);
+
+                    if (message.Subject == null) message.Subject = "";
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    replyMailAddress = GetMailAddress(organization.GetReplyToAddress());
+                    Log("Error when creating and adding email message.");
+                    Log(ex.Message + Environment.NewLine + ex.StackTrace);
                 }
-
-                Logs.WriteEvent(string.Format("ReplyTo Address[{0}]", replyAddress.Replace("<", "").Replace(">", "")));
-
-                message.From = replyMailAddress;
-                EmailTemplates.ReplaceMailAddressParameters(message);
-                Emails.AddEmail(LoginUser, organizationID, null, description, message, attachments, timeToSend);
-
-                if (message.Subject == null) message.Subject = "";
             }
         }
 

@@ -8,11 +8,11 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class SlaPausedTime : BaseItem
+  public partial class SlaPausedTim : BaseItem
   {
     private SlaPausedTimes _slaPausedTimes;
     
-    public SlaPausedTime(DataRow row, SlaPausedTimes slaPausedTimes): base(row, slaPausedTimes)
+    public SlaPausedTim(DataRow row, SlaPausedTimes slaPausedTimes): base(row, slaPausedTimes)
     {
       _slaPausedTimes = slaPausedTimes;
     }
@@ -97,7 +97,7 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class SlaPausedTimes : BaseCollection, IEnumerable<SlaPausedTime>
+  public partial class SlaPausedTimes : BaseCollection, IEnumerable<SlaPausedTim>
   {
     public SlaPausedTimes(LoginUser loginUser): base (loginUser)
     {
@@ -117,9 +117,9 @@ namespace TeamSupport.Data
 
 
 
-    public SlaPausedTime this[int index]
+    public SlaPausedTim this[int index]
     {
-      get { return new SlaPausedTime(Table.Rows[index], this); }
+      get { return new SlaPausedTim(Table.Rows[index], this); }
     }
     
 
@@ -127,10 +127,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(SlaPausedTime slaPausedTime);
-    partial void AfterRowInsert(SlaPausedTime slaPausedTime);
-    partial void BeforeRowEdit(SlaPausedTime slaPausedTime);
-    partial void AfterRowEdit(SlaPausedTime slaPausedTime);
+    partial void BeforeRowInsert(SlaPausedTim slaPausedTim);
+    partial void AfterRowInsert(SlaPausedTim slaPausedTim);
+    partial void BeforeRowEdit(SlaPausedTim slaPausedTim);
+    partial void AfterRowEdit(SlaPausedTim slaPausedTim);
     partial void BeforeRowDelete(int id);
     partial void AfterRowDelete(int id);    
 
@@ -141,11 +141,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public SlaPausedTimProxy[] GetSlaPausedTimeProxies()
+    public SlaPausedTimProxy[] GetSlaPausedTimProxies()
     {
       List<SlaPausedTimProxy> list = new List<SlaPausedTimProxy>();
 
-      foreach (SlaPausedTime item in this)
+      foreach (SlaPausedTim item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -288,17 +288,17 @@ namespace TeamSupport.Data
 
 		try
 		{
-		  foreach (SlaPausedTime slaPausedTime in this)
+		  foreach (SlaPausedTim slaPausedTim in this)
 		  {
-			if (slaPausedTime.Row.RowState == DataRowState.Added)
+			if (slaPausedTim.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(slaPausedTime);
+			  BeforeRowInsert(slaPausedTim);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = slaPausedTime.Row[parameter.ParameterName];
+				  parameter.Value = slaPausedTim.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -309,26 +309,26 @@ namespace TeamSupport.Data
 			  Table.Columns["Id"].AutoIncrement = false;
 			  Table.Columns["Id"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				slaPausedTime.Row["Id"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(slaPausedTime);
+				slaPausedTim.Row["Id"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(slaPausedTim);
 			}
-			else if (slaPausedTime.Row.RowState == DataRowState.Modified)
+			else if (slaPausedTim.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(slaPausedTime);
+			  BeforeRowEdit(slaPausedTim);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = slaPausedTime.Row[parameter.ParameterName];
+				parameter.Value = slaPausedTim.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(slaPausedTime);
+			  AfterRowEdit(slaPausedTim);
 			}
-			else if (slaPausedTime.Row.RowState == DataRowState.Deleted)
+			else if (slaPausedTim.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)slaPausedTime.Row["Id", DataRowVersion.Original];
+			  int id = (int)slaPausedTim.Row["Id", DataRowVersion.Original];
 			  deleteCommand.Parameters["Id"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -349,10 +349,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (SlaPausedTime slaPausedTime in this)
+      foreach (SlaPausedTim slaPausedTim in this)
       {
-        if (slaPausedTime.Row.Table.Columns.Contains("CreatorID") && (int)slaPausedTime.Row["CreatorID"] == 0) slaPausedTime.Row["CreatorID"] = LoginUser.UserID;
-        if (slaPausedTime.Row.Table.Columns.Contains("ModifierID")) slaPausedTime.Row["ModifierID"] = LoginUser.UserID;
+        if (slaPausedTim.Row.Table.Columns.Contains("CreatorID") && (int)slaPausedTim.Row["CreatorID"] == 0) slaPausedTim.Row["CreatorID"] = LoginUser.UserID;
+        if (slaPausedTim.Row.Table.Columns.Contains("ModifierID")) slaPausedTim.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -365,38 +365,38 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public SlaPausedTime FindById(int id)
+    public SlaPausedTim FindById(int id)
     {
-      foreach (SlaPausedTime slaPausedTime in this)
+      foreach (SlaPausedTim slaPausedTim in this)
       {
-        if (slaPausedTime.Id == id)
+        if (slaPausedTim.Id == id)
         {
-          return slaPausedTime;
+          return slaPausedTim;
         }
       }
       return null;
     }
 
-    public virtual SlaPausedTime AddNewSlaPausedTime()
+    public virtual SlaPausedTim AddNewSlaPausedTim()
     {
       if (Table.Columns.Count < 1) LoadColumns("SlaPausedTimes");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new SlaPausedTime(row, this);
+      return new SlaPausedTim(row, this);
     }
     
     public virtual void LoadById(int id)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [Id], [TicketId], [TicketStatusId], [SlaTriggerId], [PausedOn], [ResumedOn] FROM [dbo].[SlaPausedTimes] WHERE ([Id] = @Id);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [Id], [TicketId], [TicketStatusId], [SlaTriggerId], [PausedOn], [ResumedOn], [BusinessPausedTime] FROM [dbo].[SlaPausedTimes] WHERE ([Id] = @Id);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("Id", id);
         Fill(command);
       }
     }
     
-    public static SlaPausedTime GetSlaPausedTime(LoginUser loginUser, int id)
+    public static SlaPausedTim GetSlaPausedTim(LoginUser loginUser, int id)
     {
       SlaPausedTimes slaPausedTimes = new SlaPausedTimes(loginUser);
       slaPausedTimes.LoadById(id);
@@ -411,13 +411,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<SlaPausedTime> Members
+    #region IEnumerable<SlaPausedTim> Members
 
-    public IEnumerator<SlaPausedTime> GetEnumerator()
+    public IEnumerator<SlaPausedTim> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new SlaPausedTime(row, this);
+        yield return new SlaPausedTim(row, this);
       }
     }
 
