@@ -6,6 +6,10 @@ var _createdTab = 0;
 var _start = 0;
 
 $(document).ready(function () {
+    $('#tasks-Refresh').click(function (e) {
+        window.location = window.location;
+    });
+
     $('.action-new').click(function (e) {
         e.preventDefault();
         parent.Ts.System.logAction('Tasks Page - New Task');
