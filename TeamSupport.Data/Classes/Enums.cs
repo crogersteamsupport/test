@@ -351,4 +351,11 @@ namespace TeamSupport.Data
 		Once = 3,
       Daily = 4
 	}
+
+    public enum TaskEmailPostType
+    {
+        Modified = 0,
+        Assigned = 1,
+        Complete = 2
+    }
 }
