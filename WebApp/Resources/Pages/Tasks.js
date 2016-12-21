@@ -252,9 +252,38 @@ $(document).ready(function () {
         return taskdate != null ? ' checked="checked"' : '';
     });
 
-    Handlebars.registerHelper("mapAssociation", function (refType, refID) {
+    Handlebars.registerHelper("mapAssociation", function (association) {
         var str = '';
-        str = '<span><a href="#" class="association">' + refType + ' ' + refID + '</a></span>'
+        
+        var refcode = '';
+
+        switch(association.RefType) {
+            case 3:
+                refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
+                break;
+            case 6:
+                refcode = '<i class="fa fa-users" title="' + association.Group + '"></i>'
+                break;
+            case 9:
+                refcode = '<i class="fa fa-building" title="' + association.Company + '"></i>'
+                break;
+            case 13:
+                refcode = '<i class="fa fa-archive" title="'+ association.Product +'"></i>'
+                break;
+            case 17:
+                refcode = '<i class="fa fa-ticket" title="' + association.TicketName + '"></i>'
+                break;
+            case 22:
+                refcode = '<i class="fa fa-user" title="' + association.User + '"></i>'
+                break;
+            default:
+                refcode = null;
+        }
+
+        if (refcode != null) {
+            str = '<span><a href="#" class="association">' + refcode + '</a></span>'; ;
+        }
+
         return new Handlebars.SafeString(str);
     });
 });

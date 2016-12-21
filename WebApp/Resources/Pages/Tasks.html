@@ -180,7 +180,7 @@
                 <td>Assigned To</td>
                 <td>Due</td>
                 <td>Reminder Date</td>
-                <td>Association</td>
+                <td>Associations</td>
                 <td></td>
             </tr>
         </thead>
@@ -196,7 +196,7 @@
                 <td>{{formatDate Task.DueDate}}</td>
                 <td>
                     {{#Associations}}
-                    {{mapAssociation RefType RefID}}
+                    {{mapAssociation this}}
                     {{/Associations}}
                 </td>
                 <td>
