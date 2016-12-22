@@ -83,10 +83,15 @@ function LoadPluginTemplate(type) {
     var source = $('#entry-template').html();
     var template = Handlebars.compile(source);
     window.parent.parent.parent.Ts.Services.TicketPage.GetTicketPagePluginTemplates(type, function (result) {
-        var c = "Kevin"
-        //<div class="col-md-3">{{Cat.Name}}</div>
-        var html = template({ collapse: 'collapse-ticket', heading: 'heading-ticket', title: 'Ticket', content: c });
-        $('#acc-template').html(html);
+
+        for (var i = 0; i < result.length; i++) {
+            var content = "";
+            for (var j = 0; j < result[i].items.length; j++) {
+                content += '<div class="col-md-3">{{'+result[i].name+'.'+result[i].items[j]+'}}</div>'
+            }
+            var html = template({ "collapse": 'collapse-ticket', "heading": 'heading-ticket', "title": result[i].name, "content": content });
+            $('#acc-template').append(html);
+        }
     });
 
 };

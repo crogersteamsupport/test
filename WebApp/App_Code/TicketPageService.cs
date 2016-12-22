@@ -463,21 +463,24 @@ namespace TSWebServices
                 result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "User", "UsersView"));
                 result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "User Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Users));
                 result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer", "OrganizationsView"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer Address", "Addresses"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer PhoneNumber", "PhoneNumbers"));
                 result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Customer Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Organizations));
                 result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact", "ContactsView"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact Address", "Addresses"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact PhoneNumber", "PhoneNumbers"));
                 result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Contact Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Contacts));
             }
-            return null;
+            return JsonConvert.SerializeObject(result.ToArray());
         }
 
         private ExpandoObject GetTableTemplate(LoginUser loginUser, string templateName, string tableName)
         {
             dynamic cat = new ExpandoObject();
             cat.name = templateName;
-
             SqlCommand command = new SqlCommand();
-            command.CommandText = "SELECT TOP 1 * FROM " + tableName;
-            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+            command.CommandText = "SELECT * FROM " + tableName;
+            DataTable table = SqlExecutor.ExecuteSchema(loginUser, command);
             cat.items = table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
             return cat;
         }
