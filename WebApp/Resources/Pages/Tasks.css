@@ -30,6 +30,13 @@
     outline-style:none !important;
 }
 
+.attIcon {margin:2px 2px;width: 16px;height: 16px;float: left;background-image:url('../Images/icons/Attachment.png');cursor:pointer}
+.ticketIcon {margin:2px 2px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
+.groupIcon {margin:2px 2px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
+.companyIcon {margin:2px 2px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.productIcon {margin:2px 2px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
+.userIcon {margin:2px 2px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+
 .taskinfo h4{display:inline; font-size:16px;}
 .taskinfo p { margin: 0; text-align:right;}
 .taskinfo { font-size: 12px;}

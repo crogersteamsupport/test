@@ -19,7 +19,6 @@ $(document).ready(function () {
 
     $('#pendingTaskList').on('click', 'a.tasklink', function () {
         //e.preventDefault();
-        debugger;
         var id = $(this).data('reminderid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
@@ -102,7 +101,6 @@ $(document).ready(function () {
             data = { taskList: tasks };
             console.log(data);
 
-            debugger;
             $("#handlebarsTaskList").html(template(data));
         }
         _isLoading = false;
@@ -120,7 +118,6 @@ $(document).ready(function () {
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
         parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (pageData) {
-            debugger;
             $('.searchresults').fadeTo(0, 1);
 
             if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
@@ -254,38 +251,51 @@ $(document).ready(function () {
     });
 
     Handlebars.registerHelper("mapAssociation", function (association) {
-        var str = '';
-        
-        var refcode = '';
+        var result = '';
+        var functionName = '';
+        var associationName = '';
+        var iconClass = '';
 
-        switch(association.RefType) {
-            case 3:
-                refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
-                break;
+        switch (association.RefType) {
+            //case 3: leaving attachments off for now
+            //    associationName = association.Attachment;
+            //    iconClass = attIcon;
+            //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
+            //    break;
             case 6:
-                refcode = '<i class="fa fa-users" title="' + association.Group + '"></i>'
+                associationName = association.Group;
+                iconClass = "groupIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openGroup(' + association.RefID + '); return false;';
                 break;
             case 9:
-                refcode = '<i class="fa fa-building" title="' + association.Company + '"></i>'
+                associationName = association.Company;
+                iconClass = "companyIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer('+ association.RefID +'); return false;';
                 break;
             case 13:
-                refcode = '<i class="fa fa-archive" title="'+ association.Product +'"></i>'
+                associationName = association.Product;
+                iconClass = "productIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewProduct(' + association.RefID + '); return false;';
                 break;
             case 17:
-                refcode = '<i class="fa fa-ticket" title="' + association.TicketName + '"></i>'
+                associationName = association.TicketName;
+                iconClass = "ticketIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openTicketByID(' + association.RefID + '); return false;'
                 break;
             case 22:
-                refcode = '<i class="fa fa-user" title="' + association.User + '"></i>'
+                associationName = association.User;
+                iconClass = "userIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
                 break;
             default:
-                refcode = null;
+                functionName = null;
         }
 
-        if (refcode != null) {
-            str = '<span><a href="#" class="association">' + refcode + '</a></span>'; ;
+        if (functionName != null) {
+            result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass +'" href="#" onclick="' + functionName + '" title="'+ associationName +'"></a></span>'
         }
 
-        return new Handlebars.SafeString(str);
+        return new Handlebars.SafeString(result);
     });
 });
 
