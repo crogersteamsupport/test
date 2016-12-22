@@ -89,7 +89,7 @@
         </thead>
         <tbody id="pendingtasks">
             {{#taskList}}
-            <tr>
+            <tr class="{{formatRow this.Task}}">
                 <td>
                     <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
                 </td>

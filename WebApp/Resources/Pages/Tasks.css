@@ -47,6 +47,10 @@
 
 .widthfix { width: 1px}
 
+.table tbody tr > td.success {
+  background-color: #dff0d8 !important;
+}
+
 td {
     position: relative;
     padding: 5px 10px;
@@ -58,7 +62,8 @@ tr.strikeout td:before {
     top: 50%;
     margin-bottom:40px;
     left: 0;
-    border-bottom: 1px solid #111;
+    border-bottom: 1px solid grey;
+    opacity: .4;
     color:grey;
     width: 100%;
 }

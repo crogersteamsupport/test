@@ -246,6 +246,22 @@ $(document).ready(function () {
         else return null;
     });
 
+    Handlebars.registerHelper("formatRow", function (task) {
+        var cssClasses = '';
+        if (task.TaskIsComplete)
+        {
+            cssClasses = 'strikeout';
+        }
+        else if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+            cssClasses = 'danger';
+        }
+        else {
+            return null;
+        }
+
+        return cssClasses;
+    });
+
     Handlebars.registerHelper("taskComplete", function (taskdate) {
         return taskdate != null ? ' checked="checked"' : '';
     });
