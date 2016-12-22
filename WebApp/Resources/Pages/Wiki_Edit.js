@@ -148,6 +148,7 @@ function BuildWikiEditEvents() {
           wikiID = _wikiID;
         }
         if (wikiID.toString() !== parentid) {
+
           SaveWiki(wikiID, parentid, body, title, public, private, portal, comment);
         }
         else { alert('Please select a parent article other than the one you are editing.') };
