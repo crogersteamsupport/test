@@ -474,6 +474,45 @@ namespace TeamSupport.Data
             }
             return TimeSpan.FromMinutes(minutes);
         }
+
+        public EmailTemplate ReplaceAssociations(LoginUser loginUser, int reminderID)
+        {
+            string associationsParameterName = "{{TaskAssociations}}";
+            if (Subject.ToLower().Contains(associationsParameterName.ToLower()) || Body.ToLower().Contains(associationsParameterName.ToLower()))
+            {
+                Attachments attachments = new Attachments(loginUser);
+                attachments.LoadByReference(ReferenceType.Tasks, reminderID);
+
+                TaskAssociationsView associations = new TaskAssociationsView(loginUser);
+                associations.LoadByReminderIDOnly(reminderID);
+
+                StringBuilder result = new StringBuilder();
+                if (attachments.Count == 0)
+                {
+                    if (associations.Count == 0)
+                    {
+                        result.Append("[None]");
+                    }
+                    else
+                    {
+                        result.Append(associations.GetText());
+                    }
+                }
+                else
+                {
+                    if (associations.Count == 0)
+                    {
+                        result.Append(attachments.GetText());
+                    }
+                    else
+                    {
+                        result.Append(attachments.GetText() + ", " + associations.GetText());
+                    }
+                }
+                ReplaceParameter("TaskAssociations", result.ToString());
+            }
+            return this;
+        }
     }
 
     public partial class EmailTemplates
@@ -951,11 +990,11 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 35, -1);
             template.ReplaceCommonParameters().ReplaceFields("User", user);
-            template.ReplaceParameter("TaskName", reminder.TaskName);
-            template.ReplaceParameter("TaskDescription", reminder.Description);
-            if (reminder.TaskDueDate.HasValue)
+            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskDescription", task.Description);
+            if (task.TaskDueDate.HasValue)
             {
-                DateTime taskDueDate = reminder.TaskDueDate ?? DateTime.Now;
+                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -963,16 +1002,17 @@ namespace TeamSupport.Data
                 template.ReplaceParameter("TaskDueDate", "[None]");
             }
 
-            if (reminder.TaskDateCompleted.HasValue)
+            if (task.TaskDateCompleted.HasValue)
             {
-                DateTime taskDateCompleted = reminder.TaskDateCompleted ?? DateTime.Now;
+                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
                 template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
             }
             else
             {
                 template.ReplaceParameter("TaskDateCompleted", "[None]");
             }
-            template.ReplaceParameter("TaskReminderDate", reminder.DueDate.ToString("G", loginUser.OrganizationCulture));
+            template.ReplaceParameter("TaskReminderDate", task.DueDate.ToString("G", loginUser.OrganizationCulture));
+
             return template.GetMessage();
         }
 
