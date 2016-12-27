@@ -6,6 +6,10 @@ var _createdTab = 0;
 var _start = 0;
 
 $(document).ready(function () {
+    $('#tasks-Refresh').click(function (e) {
+        window.location = window.location;
+    });
+
     $('.action-new').click(function (e) {
         e.preventDefault();
         parent.Ts.System.logAction('Tasks Page - New Task');
@@ -15,12 +19,18 @@ $(document).ready(function () {
 
     $('#pendingTaskList').on('click', 'a.tasklink', function () {
         //e.preventDefault();
-        debugger;
         var id = $(this).data('reminderid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
 
     });
+
+    //$('#pendingTaskList').on('click', 'a.tasklink', function () {
+    //    //e.preventDefault();
+    //    //var id = $(this).data('reminderid');
+    //    //parent.Ts.System.logAction('Tasks Page - View Task');
+    //    //parent.Ts.MainPage.openNewTask(id);
+    //});
 
     function LoadMyTasks(tasks) {
         var container = $('.assignedresults');
@@ -108,7 +118,6 @@ $(document).ready(function () {
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
         parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (pageData) {
-            debugger;
             $('.searchresults').fadeTo(0, 1);
 
             if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
@@ -237,8 +246,72 @@ $(document).ready(function () {
         else return null;
     });
 
+    Handlebars.registerHelper("formatRow", function (task) {
+        var cssClasses = '';
+        if (task.TaskIsComplete)
+        {
+            cssClasses = 'strikeout';
+        }
+        else if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+            cssClasses = 'danger';
+        }
+        else {
+            return null;
+        }
+
+        return cssClasses;
+    });
+
     Handlebars.registerHelper("taskComplete", function (taskdate) {
         return taskdate != null ? ' checked="checked"' : '';
+    });
+
+    Handlebars.registerHelper("mapAssociation", function (association) {
+        var result = '';
+        var functionName = '';
+        var associationName = '';
+        var iconClass = '';
+
+        switch (association.RefType) {
+            //case 3: leaving attachments off for now
+            //    associationName = association.Attachment;
+            //    iconClass = attIcon;
+            //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
+            //    break;
+            case 6:
+                associationName = association.Group;
+                iconClass = "groupIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openGroup(' + association.RefID + '); return false;';
+                break;
+            case 9:
+                associationName = association.Company;
+                iconClass = "companyIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer('+ association.RefID +'); return false;';
+                break;
+            case 13:
+                associationName = association.Product;
+                iconClass = "productIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewProduct(' + association.RefID + '); return false;';
+                break;
+            case 17:
+                associationName = association.TicketName;
+                iconClass = "ticketIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openTicketByID(' + association.RefID + '); return false;'
+                break;
+            case 22:
+                associationName = association.User;
+                iconClass = "userIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
+                break;
+            default:
+                functionName = null;
+        }
+
+        if (functionName != null) {
+            result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass +'" href="#" onclick="' + functionName + '" title="'+ associationName +'"></a></span>'
+        }
+
+        return new Handlebars.SafeString(result);
     });
 });
 

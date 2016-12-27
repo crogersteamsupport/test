@@ -1,7 +1,10 @@
 ﻿$(document).ready(function () {
   LoadOrder();
   CreateDOMEvents();
-  if (window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1078)
+  if (window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1078
+      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 13679
+      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1088
+      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 362372)
   {
       $('#btnAddTicketPlugin').remove();
 
@@ -60,7 +63,7 @@ function LoadOrder() {
 
 function CreateOrderElement(parent, cssclass, item) {
     if (item.ItemID) {
-        $(parent).append('<div data-itemid="' + item.ItemID + '" data-catid="' + item.CatID + '" class="admin-to-cat admin-plugin ' + cssclass + '"><i class="fa fa-bars color-lightgray"></i><span class="admin-to-cat-name">' + item.CatName + '</span><i class="fa fa-pencil color-lightgray"></i></div>');
+        $(parent).append('<div data-itemid="' + item.ItemID + '" data-catid="' + item.CatID + '" class="admin-to-cat admin-plugin ' + cssclass + '"><i class="fa fa-bars color-lightgray"></i><span class="admin-to-cat-name">' + item.CatName + '</span><i class="fa fa-pencil color-darkgray"></i></div>');
     }
     else {
         if (item.CatID == "hr") {

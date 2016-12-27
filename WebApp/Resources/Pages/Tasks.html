@@ -21,6 +21,9 @@
                     <button type="button" class="btn btn-default tab-assigned-tasks active">My Tasks</button>
                     <button type="button" class="btn btn-default tab-created-tasks">Assigned Tasks</button>
                 </div>
+                <div class="pull-right" style="margin-right:10px;">
+                    <button type="button" id="tasks-Refresh" class="btn btn-default"><i class="fa fa-refresh"></i></button>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -33,108 +36,8 @@
                     <div id="pendingTaskList">
                         <div id="handlebarsTaskList"></div>
                     </div>
-                    <!--<table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <td></td>
-                                <td>Name</td>
-                                <td>Assigned To</td>
-                                <td>Due</td>
-                                <td>Reminder Date</td>
-                                <td></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <i style="margin-right:-12px;" class="fa fa-angle-down"></i>
-                                    <input style="margin-left:20px;" type="checkbox" />
-                                </td>
-                                <td>This is an amazing task with stuff</td>
-                                <td>Travis Pitts</td>
-                                <td>1/5/2017</td>
-                                <td>1/1/2017</td>
-                                <td>
-                                    <i class="fa fa-pencil"></i>
-                                    <i class="fa fa-list" aria-hidden="true"></i>
-                                </td>
-                            </tr>
-                            <tr class="">
-                                <td><input style="margin-left:20px;" type="checkbox" /></td>
-                                <td style="padding-left:40px;">Break everything</td>
-                                <td>Matt Townsen</td>
-                                <td>12/5/2016</td>
-                                <td></td>
-                                <td><i class="fa fa-pencil"></i></td>
-                            </tr>
-                            <tr>
-                                <td><input style="margin-left:20px;" type="checkbox" /></td>
-                                <td style="padding-left:40px;">Break everything again</td>
-                                <td>Matt Townsen</td>
-                                <td>12/5/2016</td>
-                                <td></td>
-                                <td><i class="fa fa-pencil"></i></td>
-                            </tr>
-                            <tr>
-                                <td><input style="margin-left:20px;" type="checkbox" /></td>
-                                <td style="padding-left:40px;">Torch what's left</td>
-                                <td>Matt Townsen</td>
-                                <td>12/5/2016</td>
-                                <td></td>
-                                <td><i class="fa fa-pencil"></i></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input style="margin-left:20px;" type="checkbox" />
-                                </td>
-                                <td>This is an amazing task with stuff</td>
-                                <td>Travis Pitts</td>
-                                <td>1/5/2017</td>
-                                <td></td>
-                                <td> <i class="fa fa-pencil"></i></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" />
-                                </td>
-                                <td>This is an amazing task with stuff</td>
-                                <td>Travis Pitts</td>
-                                <td>1/5/2017</td>
-                                <td></td>
-                                <td> <i class="fa fa-pencil"></i></td>
-                            </tr>
-                        </tbody>
-                    </table>-->
                 </div>
             </div>
-            <!--<div class="col-md-12 col-sm-12">
-                <div id="Completed">
-                    <h3>Completed Tasks</h3>
-                    <span class="pull-right" style="margin-right:20px;">
-                        <a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i></a>
-                    </span>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <td></td>
-                                <td>Name</td>
-                                <td>Assigned To</td>
-                                <td>Due</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" />
-                                </td>
-                                <td>Thing 2</td>
-                                <td>Matt Damon</td>
-                                <td>10/7/2016</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>-->
         </div>
     </div>
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -180,23 +83,27 @@
                 <td>Assigned To</td>
                 <td>Due</td>
                 <td>Reminder Date</td>
-                <td>Association</td>
+                <td>Associations</td>
                 <td></td>
             </tr>
         </thead>
         <tbody id="pendingtasks">
             {{#taskList}}
-            <tr>
+            <tr class="{{formatRow this.Task}}">
                 <td>
-                    <input {{taskComplete TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{ReminderID}}"/>
+                    <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
                 </td>
-                <td>{{TaskName}}</td>
-                <td>{{UserID}}</td>
-                <td>{{formatDate TaskDueDate}}</td>
-                <td>{{formatDate DueDate}}</td>
-                <td></td>
+                <td>{{Task.TaskName}}</td>
+                <td>{{AssignedTo}}</td>
+                <td>{{formatDate Task.TaskDueDate}}</td>
+                <td>{{formatDate Task.DueDate}}</td>
                 <td>
-                    <a href="#" class="tasklink" id="cb{{ReminderID}}" data-reminderid="{{ReminderID}}">
+                    {{#Associations}}
+                    {{mapAssociation this}}
+                    {{/Associations}}
+                </td>
+                <td>
+                    <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
                         <i class="fa fa-external-link"></i>
                     </a>
                 </td>

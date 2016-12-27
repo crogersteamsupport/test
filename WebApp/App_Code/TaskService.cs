@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace TSWebServices
 {
@@ -23,7 +24,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public ReminderProxy[] GetTasks(int from, int count, bool searchPending, bool searchComplete, bool searchCreated)
+        public List<ClientTask> GetTasks(int from, int count, bool searchPending, bool searchComplete, bool searchCreated)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
@@ -38,7 +39,36 @@ namespace TSWebServices
                 results.LoadAssignedToUser(from, count, loginUser.UserID, true, true);
             }
 
-            return results.GetReminderProxies();
+            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+        }
+
+        public List<ClientTask> convertToClientTasksList(ReminderProxy[] reminderProxies, LoginUser loginUser)
+        {
+            List<ClientTask> clientTasks = new List<ClientTask>();
+
+            for (int x = 0; x < reminderProxies.Length; x++)
+            {
+                ClientTask task = new ClientTask();
+                task.Task = reminderProxies[x];
+
+                Users userHelper = new Users(loginUser);
+                userHelper.LoadByUserID(task.Task.UserID);
+
+                if (userHelper.Any())
+                {
+                    task.AssignedTo = userHelper[0].FirstName + ' ' + userHelper[0].LastName;
+                }
+
+                //TaskAssociations taskAssociationHelper = new TaskAssociations(loginUser);
+                //taskAssociationHelper.GetTaskAssociation(loginutask.Task.ReminderID);
+                task.Associations = LoadAssociations(task.Task.ReminderID);
+
+                clientTasks.Add(task);
+
+                //add subtasks hook in here later... godspeed
+            }
+
+            return clientTasks;
         }
 
         [WebMethod]
@@ -52,7 +82,7 @@ namespace TSWebServices
             {
                 //Load Pending
                 result.AssignedItems = GetTasks(0, pageSize, true, false, false);
-                if (result.AssignedItems.Length == 0)
+                if (result.AssignedItems.Count() == 0)
                 {
                     //Load Completed
                     result.AssignedItems = GetTasks(0, 20, false, true, false);
@@ -64,7 +94,7 @@ namespace TSWebServices
             {
                 //Load Completed
                 result.CreatedItems = GetTasks(0, 20, false, true, true);
-                if (result.CreatedItems.Length == 0)
+                if (result.CreatedItems.Count() == 0)
                 {
                     //Load Pending
                     result.CreatedItems = GetTasks(0, 20, true, false, true);
@@ -80,15 +110,17 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
             FirstLoad result = new FirstLoad();
+
             switch (assignedTab)
             {
+
                 case -1:
                     result.AssignedCount = GetAssignedCount(loginUser);
                     if (result.AssignedCount > 0)
                     {
                         //Load Pending
                         result.AssignedItems = GetTasks(0, pageSize, true, false, false);
-                        if (result.AssignedItems.Length == 0)
+                        if (result.AssignedItems.Count() == 0)
                         {
                             //Load Completed
                             result.AssignedItems = GetTasks(0, 20, false, true, false);
@@ -117,7 +149,7 @@ namespace TSWebServices
                     {
                         //Load Completed
                         result.CreatedItems = GetTasks(0, 20, false, true, true);
-                        if (result.CreatedItems.Length == 0)
+                        if (result.CreatedItems.Count() == 0)
                         {
                             //Load Pending
                             result.CreatedItems = GetTasks(0, 20, true, false, true);
@@ -433,7 +465,14 @@ namespace TSWebServices
         }
     }
 
-
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    public class ClientTask
+    {
+        public ReminderProxy Task { get; set; }
+        public ReminderProxy[] SubTasks { get; set; }
+        public TaskAssociationsViewItemProxy[] Associations { get; set; }
+        public string AssignedTo { get; set; }
+    }
 
     [DataContract(Namespace = "http://teamsupport.com/")]
     public class FirstLoad
@@ -441,11 +480,11 @@ namespace TSWebServices
         [DataMember]
         public int AssignedCount { get; set; }
         [DataMember]
-        public ReminderProxy[] AssignedItems { get; set; }
+        public List<ClientTask> AssignedItems { get; set; }
         [DataMember]
         public int CreatedCount { get; set; }
         [DataMember]
-        public ReminderProxy[] CreatedItems { get; set; }
+        public List<ClientTask> CreatedItems { get; set; }
     }
 
     [DataContract(Namespace = "http://teamsupport.com/")]
