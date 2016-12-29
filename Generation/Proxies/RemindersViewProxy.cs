@@ -9,10 +9,10 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(TasksViewItemProxy))]
-  public class TasksViewItemProxy
+  [KnownType(typeof(RemindersViewItemProxy))]
+  public class RemindersViewItemProxy
   {
-    public TasksViewItemProxy() {}
+    public RemindersViewItemProxy() {}
     [DataMember] public int ReminderID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public int RefType { get; set; }
@@ -24,28 +24,22 @@ namespace TeamSupport.Data
     [DataMember] public bool HasEmailSent { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public string TaskName { get; set; }
-    [DataMember] public DateTime? TaskDueDate { get; set; }
-    [DataMember] public bool TaskIsComplete { get; set; }
-    [DataMember] public DateTime? TaskDateCompleted { get; set; }
-    [DataMember] public int? TaskParentID { get; set; }
-    [DataMember] public string TaskParentName { get; set; }
     [DataMember] public string UserName { get; set; }
     [DataMember] public string Creator { get; set; }
+    [DataMember] public string ReminderType { get; set; }
+    [DataMember] public string ReminderTarget { get; set; }
           
   }
   
-  public partial class TasksViewItem : BaseItem
+  public partial class RemindersViewItem : BaseItem
   {
-    public TasksViewItemProxy GetProxy()
+    public RemindersViewItemProxy GetProxy()
     {
-      TasksViewItemProxy result = new TasksViewItemProxy();
+      RemindersViewItemProxy result = new RemindersViewItemProxy();
+      result.ReminderTarget = this.ReminderTarget;
+      result.ReminderType = this.ReminderType;
       result.Creator = this.Creator;
       result.UserName = this.UserName;
-      result.TaskParentName = this.TaskParentName;
-      result.TaskParentID = this.TaskParentID;
-      result.TaskIsComplete = this.TaskIsComplete;
-      result.TaskName = this.TaskName;
       result.CreatorID = this.CreatorID;
       result.HasEmailSent = this.HasEmailSent;
       result.IsDismissed = this.IsDismissed;
@@ -58,8 +52,6 @@ namespace TeamSupport.Data
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
-      result.TaskDateCompleted = this.TaskDateCompletedUtc == null ? this.TaskDateCompletedUtc : DateTime.SpecifyKind((DateTime)this.TaskDateCompletedUtc, DateTimeKind.Utc); 
-      result.TaskDueDate = this.TaskDueDateUtc == null ? this.TaskDueDateUtc : DateTime.SpecifyKind((DateTime)this.TaskDueDateUtc, DateTimeKind.Utc); 
       result.DueDate = this.DueDateUtc == null ? this.DueDateUtc : DateTime.SpecifyKind((DateTime)this.DueDateUtc, DateTimeKind.Utc); 
        
       return result;

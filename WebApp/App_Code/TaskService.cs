@@ -51,14 +51,16 @@ namespace TSWebServices
                 ClientTask task = new ClientTask();
                 task.Task = reminderProxies[x];
 
-                Users userHelper = new Users(loginUser);
-                userHelper.LoadByUserID(task.Task.UserID);
-
-                if (userHelper.Any())
+                if (task.Task.UserID.HasValue)
                 {
-                    task.AssignedTo = userHelper[0].FirstName + ' ' + userHelper[0].LastName;
-                }
+                    Users userHelper = new Users(loginUser);
+                    userHelper.LoadByUserID((int)task.Task.UserID);
 
+                    if (userHelper.Any())
+                    {
+                        task.AssignedTo = userHelper[0].FirstName + ' ' + userHelper[0].LastName;
+                    }
+                }
                 //TaskAssociations taskAssociationHelper = new TaskAssociations(loginUser);
                 //taskAssociationHelper.GetTaskAssociation(loginutask.Task.ReminderID);
                 task.Associations = LoadAssociations(task.Task.ReminderID);
