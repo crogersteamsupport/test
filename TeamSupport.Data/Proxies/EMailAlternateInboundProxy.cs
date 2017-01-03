@@ -19,8 +19,9 @@ namespace TeamSupport.Data
     [DataMember] public int? GroupToAssign { get; set; }
     [DataMember] public int? DefaultTicketType { get; set; }
     [DataMember] public int? ProductID { get; set; }
-          
-  }
+    [DataMember] public string SendingEMailAddress { get; set; }
+
+    }
   
   public partial class EMailAlternateInboundItem : BaseItem
   {
@@ -33,9 +34,10 @@ namespace TeamSupport.Data
       result.Description = this.Description;
       result.OrganizationID = this.OrganizationID;
       result.SystemEMailID = this.SystemEMailID;
-       
-       
-       
+      result.SendingEMailAddress = this.SendingEMailAddress != "" ? this.SendingEMailAddress : "";
+
+
+
       return result;
     }	
   }

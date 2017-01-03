@@ -184,6 +184,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     cbIsCustomerInsightsActive.Checked = organization.IsCustomerInsightsActive;
 	cbTwoStepVerification.Checked = organization.TwoStepVerificationEnabled;
 	cbNoAttachmentsInOutboundEmail.Checked = organization.NoAttachmentsInOutboundEmail;
+    cbRequireGroupAssignmentOnTickets.Checked = organization.RequireGroupAssignmentOnTickets;
     textPWExpire.Value = organization.DaysBeforePasswordExpire;
 
     if (string.IsNullOrEmpty(organization.TimeZoneID))
@@ -280,6 +281,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     organization.IsCustomerInsightsActive = cbIsCustomerInsightsActive.Checked;
 	organization.TwoStepVerificationEnabled = cbTwoStepVerification.Checked;
 	organization.NoAttachmentsInOutboundEmail = cbNoAttachmentsInOutboundEmail.Checked;
+    organization.RequireGroupAssignmentOnTickets = cbRequireGroupAssignmentOnTickets.Checked;
     organization.DaysBeforePasswordExpire = (int)textPWExpire.Value;
 
     try

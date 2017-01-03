@@ -833,9 +833,9 @@ AdminInt = function () {
       }
     }
 
-    var updateTicketStatus = parent.find('.int-crm-update-type').prop('checked');
-    if (typeof updateTicketStatus == 'undefined') {
-      updateTicketStatus = true;
+    var updateTicketType = parent.find('.int-crm-update-type').prop('checked');
+    if (typeof updateTicketType == 'undefined') {
+        updateTicketType = true;
     }
 
     var linkID = parent.data('link') == undefined || (_isNewJiraInstance && crmType == 'Jira') ? -1 : parent.data('link').CRMLinkID;
@@ -858,8 +858,8 @@ AdminInt = function () {
           actionTypeIDToPush,
           hostName,
           defaultProject,
-          (parent.find('.int-crm-update-status').length > 0 ? parent.find('.int-crm-update-status').prop('checked') : null),
           updateTicketStatus,
+          updateTicketType,
           matchAccountsByName,
           useSandBoxServer,
           alwaysUseDefaultProjectKey,

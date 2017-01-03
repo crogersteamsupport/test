@@ -481,7 +481,7 @@ function SetupTicketProperties(order) {
     jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
     LoadPlugins(info);
 
-    if (!window.parent.Ts.System.User.ChangeKbVisibility && window.parent.Ts.System.User.IsSystemAdmin)
+    if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin)
         $('#action-new-KB').prop('disabled', true);
 
 
@@ -1669,12 +1669,21 @@ function LoadTicketControls() {
               AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
           }
       }
+
       $('#ticket-group').selectize({
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
         },
         closeAfterSelect: true
       });
+
+      if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+          if ($('#ticket-group').val() == "")
+              $('#ticket-group').closest('.form-group').addClass('hasError');
+          else
+              $('#ticket-group').closest('.form-group').removeClass('hasError');
+      }
+
     });
   }
 
@@ -1896,8 +1905,15 @@ function SetupTicketPropertyEvents() {
 
   $('#ticket-group').change(function (e) {
     var self = $(this);
-    var GroupID = self.val();
-    if (GroupID == '-1') GroupID = null; 
+    var GroupID = self.val();.0
+    if (GroupID == '-1') {
+        GroupID = null;
+        if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+            $('#ticket-group').closest('.form-group').addClass('hasError');
+        }
+    }
+    else
+        $('#ticket-group').closest('.form-group').removeClass('hasError');
     if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
       window.parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
         if (result !== null) {
@@ -2562,6 +2578,12 @@ function LoadGroups() {
         }
       });
     }
+
+    if ($('#ticket-group').val() == -1)
+        $('#ticket-group').closest('.form-group').addClass('hasError');
+    else
+        $('#ticket-group').closest('.form-group').removeClass('hasError');
+
 }
 
 function SetupProductVersionsControl(product) {
