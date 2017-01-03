@@ -85,6 +85,7 @@ namespace TeamSupport.Handlers
 						case "importlog": ProcessImportLog(context, int.Parse(segments[2])); break;
                         case "screenrecordingsettings": ProcessScreenRecordingSettings(context); break;
                         case "scheduledreportlog": ProcessScheduledReportLog(context, int.Parse(segments[2])); break;
+                        case "chatattachments": ProcessChatAttachments(context, organizationID, int.Parse(segments[2]), int.Parse(segments[3])); break;
                         default: context.Response.End(); break;
 					}
 				}
@@ -1463,6 +1464,33 @@ namespace TeamSupport.Handlers
             context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + fileName + "\"");
             context.Response.ContentType = fileType;
             context.Response.WriteFile(logPath);
+        }
+
+        //http://localhost/dc/1078/chatattachments/54782/2164854
+        private void ProcessChatAttachments(HttpContext context, int organizationID, int chatID, int attachmentID)
+        {
+            HttpBrowserCapabilities browser = context.Request.Browser;
+            if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+
+            string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads);
+            attachmentPath += "\\" + chatID;
+
+            attachmentPath = Path.Combine(attachmentPath, attachment.FileName);
+
+            if (!File.Exists(attachmentPath))
+            {
+                context.Response.Write("Invalid log file.");
+                context.Response.ContentType = "text/html";
+                return;
+            }
+
+            string openType = "attachment";
+            string fileType = "text/plain";
+
+            context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + attachment.FileName + "\"");
+            context.Response.ContentType = fileType;
+            context.Response.WriteFile(attachmentPath);
         }
     }
 }

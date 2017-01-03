@@ -303,6 +303,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     //image: '../images/nav/16/knowledge.png',
                     icon: 'awesome fa fa-book',
                     onclick: function () {
+                        console.log(element.SuggestedSolutionDefaultInput)
                         suggestedSolutions(element.SuggestedSolutionDefaultInput, function (ticketID, isArticle) {
                             if (isArticle) {
                                 _mainFrame.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {

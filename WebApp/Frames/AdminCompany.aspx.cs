@@ -202,7 +202,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     //builder.Append("<td>Available Image:</td>");
     builder.Append("<div><strong>Customer Chat Link:</strong></div>");
     builder.Append("<div>");
-    string script = string.Format("window.open('{1}/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;", organization.ChatID.ToString(), SystemSettings.GetAppUrl());
+        string script = string.Format("window.open('{1}/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;", organization.ChatID.ToString(), "https://chat.alpha.teamsupport.com"); //SystemSettings.GetAppUrl());
 
     string link = string.Format("<a href=\"#\" onclick=\"{0}\"><img src=\"{2}/dc/{1}/chat/image\" border=\"0\" /></a>", script, organization.OrganizationID, SystemSettings.GetAppUrl());
     textChatCode.Text = link;
