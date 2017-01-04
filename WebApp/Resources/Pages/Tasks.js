@@ -7,6 +7,12 @@ var _start = 0;
 
 $(document).ready(function () {
     $('#tasks-Refresh').click(function (e) {
+        if ($('.tab-assigned-tasks').hasClass('active')) {
+            alert('my tasks refresh');
+        }
+        else {
+            alert('assigned tasks refresh')
+        }
         window.location = window.location;
     });
 
@@ -118,6 +124,7 @@ $(document).ready(function () {
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
         parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (pageData) {
+            debugger;
             $('.searchresults').fadeTo(0, 1);
 
             if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
