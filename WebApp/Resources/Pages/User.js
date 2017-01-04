@@ -195,7 +195,8 @@ UserPage = function () {
 
     if (window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.Express || window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.HelpDesk) {
       $('#mniProducts').hide();
-    }
+      $('#mniTasks').hide();
+  }
 
     if (user.IsSystemAdmin == false) {
       $('#mniAdmin').hide();
