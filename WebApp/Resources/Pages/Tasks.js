@@ -3,7 +3,10 @@ var _allAssignedLoaded = false;
 var _allCreatedLoaded = false;
 var _assignedTab = -1;
 var _createdTab = 0;
+var _closedTab = 0;
 var _start = 0;
+
+var _currentTab = 0;
 
 $(document).ready(function () {
     $('#tasks-Refresh').click(function (e) {
@@ -23,7 +26,7 @@ $(document).ready(function () {
 
     });
 
-    $('#pendingTaskList').on('click', 'a.tasklink', function () {
+    $('#TaskList').on('click', 'a.tasklink', function () {
         //e.preventDefault();
         var id = $(this).data('reminderid');
         parent.Ts.System.logAction('Tasks Page - View Task');
@@ -123,17 +126,17 @@ $(document).ready(function () {
         showLoadingIndicator();
 
         //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
-        parent.Ts.Services.Task.LoadPage(_start, _pageSize, _assignedTab, _createdTab, function (pageData) {
-            debugger;
+        parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
             $('.searchresults').fadeTo(0, 1);
 
             if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
                 ShowNoTasks();
             }
             else {
-                switch (_assignedTab) {
-                    case -1:
-                        if (pageData.AssignedCount > 0) {
+                debugger;
+                switch (_currentTab) {
+                    case 0:
+                        if (pageData.AssignedItems.length > 0) {
                             LoadMyTasks(pageData.AssignedItems);
                             //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
                             //    set completed active
@@ -143,29 +146,51 @@ $(document).ready(function () {
                             HideAssigned();
                         }
                         break;
-                    case 0:
+                    case 1:
+                        LoadCreated(pageData.CreatedItems);
+                        break;
+                    case 2:
+                        LoadMyTasks(pageData.AssignedItems);
                         break;
                     default:
                         LoadMyTasks(pageData.AssignedItems);
                 }
 
-                switch (_createdTab) {
-                    case -1:
-                        if (pageData.CreatedCount > 0) {
-                            LoadCreated(pageData.CreatedItems);
-                            //if (fristLoad.AssignedItems[0].IsDismissed == 0) {
-                            //    set pending active
-                            //}
-                        }
-                        else {
-                            HideCreated();
-                        }
-                        break;
-                    case 0:
-                        break;
-                    default:
-                        LoadCreated(pageData.CreatedItems);
-                }
+                //switch (_createdTab) {
+                //    case -1:
+                //        if (pageData.CreatedCount > 0) {
+                //            LoadCreated(pageData.CreatedItems);
+                //            //if (fristLoad.AssignedItems[0].IsDismissed == 0) {
+                //            //    set pending active
+                //            //}
+                //        }
+                //        else {
+                //            HideCreated();
+                //        }
+                //        break;
+                //    case 0:
+                //        break;
+                //    default:
+                //        LoadCreated(pageData.CreatedItems);
+                //}
+
+                //switch (_closedTab) {
+                //    case -1:
+                //        if (pageData.AssignedCount > 0) {
+                //            LoadMyTasks(pageData.AssignedItems);
+                //            //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
+                //            //    set completed active
+                //            //}
+                //        }
+                //        else {
+                //            HideAssigned();
+                //        }
+                //        break;
+                //    case 0:
+                //        break;
+                //    default:
+                //        LoadMyTasks(pageData.AssignedItems);
+                //}
 
                 //if (pageData.AssignedItems.length < _pageSize && pageData.CreatedItems < _pageSize) {
                 //    $('.tasks-more').hide();
@@ -183,11 +208,12 @@ $(document).ready(function () {
 
     $('.tab-assigned-tasks').on('click', function (e) {
         e.preventDefault();
-        $('.tab-created-tasks').removeClass('active');
+        $('.tabs button').removeClass('active');
         $(this).addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _allAssignedLoaded = false;
-        _assignedTab = 1;
+        _currentTab = 0;
+        _assignedTab = 0;
         _createdTab = 0;
         _start = 0;
         fetchTasks();
@@ -195,10 +221,28 @@ $(document).ready(function () {
 
     $('.tab-created-tasks').on('click', function (e) {
         e.preventDefault();
-        $('.tab-assigned-tasks').removeClass('active');
+        $('.tabs button').removeClass('active');
         $(this).addClass('active');
         parent.Ts.System.logAction('Tasks Page - Change Filter');
+        _currentTab = 1;
+        _allCreatedLoaded = false;
+        _createdTab = 1;
         _assignedTab = 0;
+        _start = 0;
+        fetchTasks();
+    });
+
+    $('.tab-closed-tasks').on('click', function (e) {
+        e.preventDefault();
+        $('.tabs button').removeClass('active');
+        //$('.tab-assigned-tasks').removeClass('active');
+        $(this).addClass('active');
+
+        
+
+        parent.Ts.System.logAction('Tasks Page - Change Filter');
+        _assignedTab = 0;
+        _currentTab = 2
         _allCreatedLoaded = false;
         _createdTab = 1
         _assignedTab = 0;
@@ -206,7 +250,7 @@ $(document).ready(function () {
         fetchTasks();
     });
 
-    $('#pendingTaskList').on('click', '.change-task-status', function (e) {
+    $('#TaskList').on('click', '.change-task-status', function (e) {
         var id = $(this).data('reminderid');
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');
@@ -255,11 +299,7 @@ $(document).ready(function () {
 
     Handlebars.registerHelper("formatRow", function (task) {
         var cssClasses = '';
-        if (task.TaskIsComplete)
-        {
-            cssClasses = 'strikeout';
-        }
-        else if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+        if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
             cssClasses = 'danger';
         }
         else {

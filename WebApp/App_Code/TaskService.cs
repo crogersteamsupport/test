@@ -23,20 +23,31 @@ namespace TSWebServices
 
         }
 
+        public enum pageTab {
+            mytasks = 0,
+            assigned,
+            completed
+        }
+
         [WebMethod]
-        public List<ClientTask> GetTasks(int from, int count, bool searchPending, bool searchComplete, bool searchCreated)
+        public List<ClientTask> GetTasks(int from, int count, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
 
             Reminders results = new Reminders(loginUser);
-            if (searchCreated)
+            if (tab == pageTab.mytasks)
             {
-                results.LoadCreatedByUser(from, count, loginUser.UserID, true, true);
+                results.LoadAssignedToUser(from, count, loginUser.UserID, true, false);
             }
-            else
+            else if (tab == pageTab.assigned)
             {
-                results.LoadAssignedToUser(from, count, loginUser.UserID, true, true);
+                results.LoadCreatedByUser(from, count, loginUser.UserID, true, false);
+                //results.LoadCompleted(from, count, loginUser.UserID, false, true);
+            }
+            else if (tab == pageTab.completed)
+            {
+                results.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
 
             return convertToClientTasksList(results.GetReminderProxies(), loginUser);
@@ -73,103 +84,126 @@ namespace TSWebServices
             return clientTasks;
         }
 
+        //[WebMethod]
+        //public FirstLoad GetFirstLoad(int pageSize)
+        //{
+        //    LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+        //    FirstLoad result = new FirstLoad();
+        //    result.AssignedCount = GetAssignedCount(loginUser);
+        //    if (result.AssignedCount > 0)
+        //    {
+        //        //Load Pending
+        //        result.AssignedItems = GetTasks(0, pageSize, true, false, false);
+        //        if (result.AssignedItems.Count() == 0)
+        //        {
+        //            //Load Completed
+        //            result.AssignedItems = GetTasks(0, 20, false, true, false);
+        //        }
+        //    }
+
+        //    result.CreatedCount = GetCreatedCount(loginUser);
+        //    if (result.CreatedCount > 0)
+        //    {
+        //        //Load Completed
+        //        result.CreatedItems = GetTasks(0, 20, false, true, true);
+        //        if (result.CreatedItems.Count() == 0)
+        //        {
+        //            //Load Pending
+        //            result.CreatedItems = GetTasks(0, 20, true, false, true);
+        //        }
+        //    }
+
+        //    return result;
+        //}
+
         [WebMethod]
-        public FirstLoad GetFirstLoad(int pageSize)
+        public FirstLoad LoadPage(int start, int pageSize, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
             FirstLoad result = new FirstLoad();
-            result.AssignedCount = GetAssignedCount(loginUser);
-            if (result.AssignedCount > 0)
+
+
+            switch (tab)
             {
-                //Load Pending
-                result.AssignedItems = GetTasks(0, pageSize, true, false, false);
-                if (result.AssignedItems.Count() == 0)
-                {
-                    //Load Completed
-                    result.AssignedItems = GetTasks(0, 20, false, true, false);
-                }
-            }
-
-            result.CreatedCount = GetCreatedCount(loginUser);
-            if (result.CreatedCount > 0)
-            {
-                //Load Completed
-                result.CreatedItems = GetTasks(0, 20, false, true, true);
-                if (result.CreatedItems.Count() == 0)
-                {
-                    //Load Pending
-                    result.CreatedItems = GetTasks(0, 20, true, false, true);
-                }
-            }
-
-            return result;
-        }
-
-        [WebMethod]
-        public FirstLoad LoadPage(int start, int pageSize, int assignedTab, int createdTab)
-        {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-
-            FirstLoad result = new FirstLoad();
-
-            switch (assignedTab)
-            {
-
-                case -1:
-                    result.AssignedCount = GetAssignedCount(loginUser);
-                    if (result.AssignedCount > 0)
-                    {
-                        //Load Pending
-                        result.AssignedItems = GetTasks(0, pageSize, true, false, false);
-                        if (result.AssignedItems.Count() == 0)
-                        {
-                            //Load Completed
-                            result.AssignedItems = GetTasks(0, 20, false, true, false);
-                        }
-                    }
+                //My Tasks
+                case pageTab.mytasks:
+                    result.AssignedItems = GetTasks(0, 20, tab);
                     break;
-                case 0:
+                //Assigned Tasks
+                case pageTab.assigned:
+                    result.CreatedItems = GetTasks(0, 20, tab);
                     break;
-                case 1:
-                    result.AssignedItems = GetTasks(start, pageSize, true, false, false);
-                    break;
-                case 2:
-                    result.AssignedItems = GetTasks(start, pageSize, false, true, false);
+                //Completed Tasks
+                case pageTab.completed:
+                    result.AssignedItems = GetTasks(0, 20, tab);
                     break;
                 default:
-                    result.AssignedItems = GetTasks(start, pageSize, true, true, false);
                     break;
             }
 
 
-            switch (createdTab)
-            {
-                case -1:
-                    result.CreatedCount = GetCreatedCount(loginUser);
-                    if (result.CreatedCount > 0)
-                    {
-                        //Load Completed
-                        result.CreatedItems = GetTasks(0, 20, false, true, true);
-                        if (result.CreatedItems.Count() == 0)
-                        {
-                            //Load Pending
-                            result.CreatedItems = GetTasks(0, 20, true, false, true);
-                        }
-                    }
-                    break;
-                case 0:
-                    break;
-                case 1:
-                    result.CreatedItems = GetTasks(start, pageSize, true, false, true);
-                    break;
-                case 2:
-                    result.CreatedItems = GetTasks(start, pageSize, false, true, true);
-                    break;
-                default:
-                    result.CreatedItems = GetTasks(start, pageSize, true, true, true);
-                    break;
-            }
+
+
+
+            //switch (assignedTab)
+            //{
+
+            //    case -1:
+            //        result.AssignedCount = GetAssignedCount(loginUser);
+            //        if (result.AssignedCount > 0)
+            //        {
+            //            //Load Pending
+            //            result.AssignedItems = GetTasks(0, pageSize, true, false, false);
+            //            if (result.AssignedItems.Count() == 0)
+            //            {
+            //                //Load Completed
+            //                result.AssignedItems = GetTasks(0, 20, false, true, false);
+            //            }
+            //        }
+            //        break;
+            //    case 0:
+            //        break;
+            //    case 1:
+            //        result.AssignedItems = GetTasks(start, pageSize, true, false, false);
+            //        break;
+            //    case 2:
+            //        result.AssignedItems = GetTasks(start, pageSize, false, true, false);
+            //        break;
+            //    default:
+            //        result.AssignedItems = GetTasks(start, pageSize, true, true, false);
+            //        break;
+            //}
+
+
+            //switch (createdTab)
+            //{
+            //    case -1:
+            //        result.CreatedCount = GetCreatedCount(loginUser);
+            //        if (result.CreatedCount > 0)
+            //        {
+            //            //Load Completed
+            //            result.CreatedItems = GetTasks(0, 20, false, true, true);
+            //            if (result.CreatedItems.Count() == 0)
+            //            {
+            //                //Load Pending
+            //                result.CreatedItems = GetTasks(0, 20, true, false, true);
+            //            }
+            //        }
+            //        break;
+            //    case 0:
+            //        break;
+            //    case 1:
+            //        result.CreatedItems = GetTasks(start, pageSize, true, false, true);
+            //        break;
+            //    case 2:
+            //        result.CreatedItems = GetTasks(start, pageSize, false, true, true);
+            //        break;
+            //    default:
+            //        result.CreatedItems = GetTasks(start, pageSize, true, true, true);
+            //        break;
+            //}
 
             return result;
         }

@@ -275,6 +275,96 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-  }
+
+        public void LoadCompleted(int from, int count, int userID, bool searchPending, bool searchComplete)
+        {
+            //Remember this will change once we add the isComplete field
+            //string pendingQuery = @"
+            //SELECT 
+            //    *
+            //FROM
+            //    Reminders
+            //WHERE
+            //    CreatorID = @UserID 
+            //    OR UserID <> @UserID
+            //    AND TaskIsComplete = 1 ";
+
+            string completeQuery = @"
+            SELECT 
+                *
+            FROM
+                Reminders
+            WHERE
+                CreatorID = @UserID 
+                AND UserID <> @UserID
+                AND TaskIsComplete = 1 ";
+
+            string pageQuery = @"
+            WITH 
+                q AS ({0}),
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskIsComplete ASC, TaskDateCompleted DESC, TaskDueDate, DueDate) AS 'RowNum' FROM q)
+            SELECT
+                ReminderID
+                , OrganizationID
+                , RefType
+                , RefID
+                , Description
+                , DueDate
+                , UserID
+                , IsDismissed
+                , HasEmailSent
+                , CreatorID
+                , DateCreated
+                , TaskName
+                , TaskDueDate
+                , TaskIsComplete
+                , TaskDateCompleted
+                , TaskParentID
+            FROM 
+                r
+            WHERE
+                RowNum BETWEEN @From AND @To";
+
+            //User user = Users.GetUser(loginUser, loginUser.UserID);
+            //if (user.TicketRights == TicketRightType.Customers)
+            //{
+            //    companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+            //    contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+            //}
+
+            //if (active != null)
+            //{
+            //    companyQuery = companyQuery + " AND o.IsActive = @IsActive";
+            //    contactQuery = contactQuery + " AND u.IsActive = @IsActive";
+            //    command.Parameters.AddWithValue("@IsActive", (bool)active);
+            //}
+
+            StringBuilder query;
+
+            //if (searchPending && searchComplete)
+            //{
+            //    query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
+            //}
+            //else if (searchPending)
+            //{
+            //    query = new StringBuilder(string.Format(pageQuery, pendingQuery));
+            //}
+            //else
+            //{
+                query = new StringBuilder(string.Format(pageQuery, completeQuery));
+            //}
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = query.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@From", from + 1);
+                command.Parameters.AddWithValue("@To", from + count);
+                Fill(command);
+            }
+        }
+
+    }
   
 }
