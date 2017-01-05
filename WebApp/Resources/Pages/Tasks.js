@@ -105,7 +105,24 @@ $(document).ready(function () {
         if (tasks.length < 1) {
             //$('.results-done').show();
         } else {
-            var source = $("#task-template").html();
+            var source;
+            
+            switch (_currentTab)
+            {
+                case 0:
+                    source = $("#mytask-task-template").html();
+                    break;
+                case 1:
+                    source = $("#assigned-task-template").html();
+                    break;
+                case 2:
+                    source = $("#closed-task-template").html();
+                    break;
+                default:
+                    source = $("#task-template").html();
+            }
+
+            //var source = $("#task-template").html();
             var template = Handlebars.compile(source);
             data = { taskList: tasks };
             console.log(data);
