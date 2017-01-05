@@ -111,7 +111,7 @@ namespace TeamSupport.Data
             WHERE
                 CreatorID = @UserID 
                 AND UserID <> @UserID
-                AND TaskIsComplete = 0 ";
+                AND TaskIsComplete = 0";
 
         string completeQuery = @"
             SELECT 
@@ -199,7 +199,7 @@ namespace TeamSupport.Data
                 Reminders
             WHERE
                 UserID = @UserID
-                AND isDismissed = 0 ";
+                AND TaskIsComplete = 0";
 
         string completeQuery = @"
             SELECT 
@@ -208,7 +208,7 @@ namespace TeamSupport.Data
                 Reminders
             WHERE
                 UserID = @UserID
-                AND isDismissed = 1 ";
+                AND TaskIsComplete = 1 ";
 
         string pageQuery = @"
             WITH 
