@@ -3781,7 +3781,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error deleting losing ticket from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("We have encountered a possible error merging your tickets. Please check and ensure the loser was deleted and the tickets merged as expected. If not or if you have any concerns please contact support.");
             }
 
             try

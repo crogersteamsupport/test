@@ -289,6 +289,7 @@ $(document).ready(function () {
   script.setAttribute('id', 'dropboxjs');
   firstScript.parentNode.insertBefore(script, firstScript);
   slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+  
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -1580,7 +1581,14 @@ function LoadTicketControls() {
   }
 
   if ($('#ticket-assigned').length) {
-    window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+      window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+      var isActive = users.find(function (user) {
+          return user.Name === _ticketInfo.Ticket.UserName;
+      });
+
+      if (isActive == undefined)
+          $("#ticket-assigned").attr('placeholder', _ticketInfo.Ticket.UserName + ' (Inactive)');
+
       $('#ticket-assigned').selectize({
         dataAttr: 'assigned',
         onDropdownClose: function ($dropdown) {
@@ -1623,13 +1631,13 @@ function LoadTicketControls() {
       selectize.addOption({ value: -1, text: 'Unassigned', data: '' });
 
       for (var i = 0; i < users.length; i++) {
-        selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
+          selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
+
         if (users[i].IsSelected) {
           _ticketCurrUser = users[i].ID;
           SetAssignedUser(users[i].ID);
         }
       }
-
     });
   }
 
@@ -2608,7 +2616,12 @@ function SetupProductVersionsControl(product) {
         }catch(e){}
     }
     if ($('#ticket-Resolved').length) {
-      $('#ticket-Versions').selectize({
+        $('#ticket-Versions').selectize({
+            render: {
+                item: function (item, escape) {
+                    return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
+                }
+            },
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
         },
@@ -2617,7 +2630,12 @@ function SetupProductVersionsControl(product) {
     }
 
     if ($('#ticket-Resolved').length) {
-      $('#ticket-Resolved').selectize({
+        $('#ticket-Resolved').selectize({
+            render: {
+                item: function (item, escape) {
+                    return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
+                }
+            },
         onDropdownClose: function ($dropdown) {
           $($dropdown).prev().find('input').blur();
         },
@@ -4117,6 +4135,13 @@ function UpdateActionElement(val) {
 };
 
 function CreateHandleBarHelpers() {
+    Handlebars.registerHelper('WaterCoolerRelationships', function () {
+        //if (this.WatercoolerReferences)
+        //    return BuildWaterCoolerAssociationToolTip(this.WatercoolerReferences);
+        //else
+            return "";
+    });
+
   Handlebars.registerHelper('UserImageTag', function () {
   	if (this.item.CreatorID > 0) {
   		return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/48/' + new Date().getTime() + '" />';
@@ -4202,6 +4227,58 @@ function CreateHandleBarHelpers() {
   });
 };
 
+
+function BuildWaterCoolerAssociationToolTip(references)
+{
+    var tixatt = references.Tickets;
+    var tixattstr = "";
+    var tixHasAtt = false;
+    if (tixatt.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixatt.length; i++) {
+            tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + window.parent.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="mainFrame.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
+        }
+    }
+
+    var tixgrp = references.Groups;
+    var tixgrpstr = "";
+    if (tixgrp.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixgrp.length; i++) {
+            tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openGroup(' + tixgrp[i].AttachmentID + '); return false;">' + tixgrp[i].GroupName + '</a><br/>';
+        }
+    }
+
+    var tixprod = references.Products;
+    var tixprodstr = "";
+    if (tixprod.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixprod.length; i++) {
+            tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openNewProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
+        }
+    }
+
+    var tixcompany = references.Company;
+    var tixcompanystr = "";
+    if (tixcompany.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixcompany.length; i++) {
+            tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openNewCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
+        }
+    }
+
+    var tixuser = references.User;
+    var tixuserstr = "";
+    if (tixuser.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixuser.length; i++) {
+            tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
+        }
+    }
+
+    return "<span class='fa fa-info-circle fa-lg wcTooltip' title='" + tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr + "'></span>";
+}
+
 function CreateTimeLineDelegates() {
   $("#action-timeline").on("mouseenter", ".action-options", function (event) {
     $(this).find(".action-options-icon").hide();
@@ -4210,6 +4287,8 @@ function CreateTimeLineDelegates() {
     $(this).find(".action-option-items").hide();
     $(this).find(".action-options-icon").fadeIn();
   });
+
+  //$('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 
   $('#action-timeline').on('click', 'a.action-option-pin', function (e) {
     e.preventDefault();
