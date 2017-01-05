@@ -270,7 +270,8 @@ $(document).ready(function () {
     Handlebars.registerHelper("formatTaskName", function (Task) {
         var name = Task.TaskName;
 
-        if (Task.TaskName == null || Task.TaskName == "") {
+        if (Task.TaskName == null) {
+            debugger;
             if (Task.Description == null || Task.Description == "") {
                 name = 'No Title';
             }
