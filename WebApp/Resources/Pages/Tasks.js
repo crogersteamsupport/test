@@ -273,6 +273,13 @@ $(document).ready(function () {
         else return null;
     });
 
+    Handlebars.registerHelper("formatTaskName", function (name) {
+        if (name == null) {
+            name = 'No Title';
+        }
+        return name;
+    });
+
     Handlebars.registerHelper("formatRow", function (task) {
         var cssClasses = '';
         if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
