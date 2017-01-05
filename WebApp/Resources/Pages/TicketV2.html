@@ -14,6 +14,7 @@
 	<link href="../Css/prism.css" rel="stylesheet" />
     <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
     <link href="../Css/summernote/summernote.css" rel="stylesheet" />
+    <link href="../Css/tipTip.css" rel="stylesheet" type="text/css" />
     <link href="TicketV2.css" rel="stylesheet" type="text/css" />
 
     <!--<script src="../Js/deployJava.js"  type="text/javascript"></script>-->
@@ -43,7 +44,7 @@
     <!--<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css" rel="stylesheet">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.js"></script>-->
     <script src="../Js/summernote.min.js"></script>
-
+    <script src="../Js/jquery.tipTip.minified.js" type="text/javascript"></script>
     <script src="../Js/Ts/ts.editor.summernote.js"></script>
     <script src="../../../tinymce/plugins/moxiemanager/js/moxman.loader.min.js"></script>
 </head>
@@ -344,7 +345,7 @@
                   </span>
                   {{/unless}}
                   <div class="ticket-badge">
-                    {{{TimeLineLabel}}}
+                    {{{TimeLineLabel}}} {{{WaterCoolerRelationships}}}
                   </div>
                   <div class="timeline-header">
                     {{{UserImageTag}}}

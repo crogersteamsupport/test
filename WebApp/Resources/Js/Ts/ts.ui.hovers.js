@@ -68,7 +68,26 @@
 		}).popover('show');
 	});
 
-
+	$("body").on("mouseenter", ".VersionAnchor", function (event) {
+	    var e = $(this);
+	    e.unbind('hover');
+	    var ticketid = e.data('ticketid');
+	    var versionid = e.data('versionid');
+	    var b = e.closest("label");
+	    e.popover({
+	        html: true,
+	        container: 'body',
+	        trigger: 'manual',
+	        delay: { "show": 1, "hide": 1000 },
+	        content: function () {
+	            return $.ajax({
+	                url: '../../../Tips/Version.aspx?VersionID=' + versionid + '&TicketID=' + ticketid,
+	                dataType: 'html',
+	                async: false
+	            }).responseText;
+	        }
+	    }).popover('show');
+	});
 
 	$("body").on("mouseenter", ".AssetAnchor", function (event) {
 	  var e = $(this);
@@ -165,7 +184,7 @@
   })
 
 $('body').on('click', function (e) {
-	$('.ProductAnchor').each(function () {
+    $('.ProductAnchor, .VersionAnchor').each(function () {
         //the 'is' for buttons that trigger popups
         //the 'has' for icons within a button that triggers a popup
         if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
