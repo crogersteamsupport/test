@@ -165,18 +165,20 @@ namespace TeamSupport.Data
 
         StringBuilder query;
 
-        if (searchPending && searchComplete)
-        {
-            query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
-        }
-        else if (searchPending)
-        {
-            query = new StringBuilder(string.Format(pageQuery, pendingQuery));
-        }
-        else
-        {
-            query = new StringBuilder(string.Format(pageQuery, completeQuery));
-        }
+        query = new StringBuilder(string.Format(pageQuery, pendingQuery));
+
+        //    if (searchPending && searchComplete)
+        //{
+        //    query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
+        //}
+        //else if (searchPending)
+        //{
+        //    query = new StringBuilder(string.Format(pageQuery, pendingQuery));
+        //}
+        //else
+        //{
+        //    query = new StringBuilder(string.Format(pageQuery, completeQuery));
+        //}
 
       using (SqlCommand command = new SqlCommand())
       {
@@ -252,18 +254,20 @@ namespace TeamSupport.Data
 
         StringBuilder query;
 
-        if (searchPending && searchComplete)
-        {
-            query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
-        }
-        else if (searchPending)
-        {
-            query = new StringBuilder(string.Format(pageQuery, pendingQuery));
-        }
-        else
-        {
-            query = new StringBuilder(string.Format(pageQuery, completeQuery));
-        }
+        query = new StringBuilder(string.Format(pageQuery, pendingQuery));
+
+        //    if (searchPending && searchComplete)
+        //{
+        //    query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
+        //}
+        //else if (searchPending)
+        //{
+        //    query = new StringBuilder(string.Format(pageQuery, pendingQuery));
+        //}
+        //else
+        //{
+        //    query = new StringBuilder(string.Format(pageQuery, completeQuery));
+        //}
 
       using (SqlCommand command = new SqlCommand())
       {
@@ -295,8 +299,8 @@ namespace TeamSupport.Data
             FROM
                 Reminders
             WHERE
-                CreatorID = @UserID 
-                AND UserID <> @UserID
+                (CreatorID = @UserID 
+                OR UserID = @UserID)
                 AND TaskIsComplete = 1 ";
 
             string pageQuery = @"
