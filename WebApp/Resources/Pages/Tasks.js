@@ -92,7 +92,6 @@ $(document).ready(function () {
     }
 
     function insertSearchResults(container, items) {
-        debugger;
         container.empty();
         appendSearchResults(container, items);
     }
@@ -145,11 +144,6 @@ $(document).ready(function () {
         parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
             $('.searchresults').fadeTo(0, 1);
 
-            //if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
-            //    ShowNoTasks();
-            //}
-            //else {
-            debugger;
             switch (_currentTab) {
                 case 0:
                     LoadMyTasks(pageData.AssignedItems)
@@ -273,10 +267,18 @@ $(document).ready(function () {
         else return null;
     });
 
-    Handlebars.registerHelper("formatTaskName", function (name) {
-        if (name == null) {
-            name = 'No Title';
+    Handlebars.registerHelper("formatTaskName", function (Task) {
+        var name = Task.TaskName;
+
+        if (Task.TaskName == null || Task.TaskName == "") {
+            if (Task.Description == null || Task.Description == "") {
+                name = 'No Title';
+            }
+            else {
+                name = Task.Description;
+            }
         }
+
         return name;
     });
 
