@@ -100,7 +100,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        tokpopup = window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
         
         //Account for popup blockers
         setTimeout(function () {
@@ -120,7 +120,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        tokpopup = window.open('https://chat.alpha.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
 
         setTimeout(function () {
             if (!tokpopup || tokpopup.outerHeight === 0) {
