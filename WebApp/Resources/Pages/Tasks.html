@@ -22,22 +22,26 @@
                     <button type="button" class="btn btn-default tab-created-tasks">Assigned Tasks</button>
                     <button type="button" class="btn btn-default tab-closed-tasks">Closed Tasks</button>
                 </div>
-                <div class="pull-right" style="margin-right:10px;">
+                <div class="pull-right btn-group" style="margin-right:10px;">
                     <button type="button" id="tasks-Refresh" class="btn btn-default"><i class="fa fa-refresh"></i></button>
+                    <button class="action-new btn btn-primary"><i class="fa fa-plus"></i>&nbsp; New Task</button>
                 </div>
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
             <div class="col-md-12 col-sm-12">
-                <div id="Pending">
+                <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                <!--<span class="pull-right">
+                    <a href="#" data-toggle="modal" data-target="#myModal" class="action-new"><button class="btn btn-sm btn-primary"><i class="fa fa-plus"></i>&nbsp; New Task</button></a>
+                </span>-->
+                <div class="results">
                     <!--<h3>My Tasks</h3>-->
-                    <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                    <span class="pull-right" style="margin-right:20px;">
-                        <a href="#" data-toggle="modal" data-target="#myModal" class="action-new"><i class="fa fa-plus"></i></a>
-                    </span>
                     <div id="TaskList">
                         <div id="handlebarsTaskList"></div>
                     </div>
+                </div>
+                <div class="results-empty">
+                    <h3 class="">You currently have no tasks, click <a href="#">"New Task"</a> to get started!</h3>
                 </div>
             </div>
         </div>

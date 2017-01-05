@@ -1,20 +1,24 @@
 ﻿var _pageSize = 10;
 var _allAssignedLoaded = false;
 var _allCreatedLoaded = false;
-var _assignedTab = -1;
-var _createdTab = 0;
-var _closedTab = 0;
 var _start = 0;
 
 var _currentTab = 0;
 
 $(document).ready(function () {
     $('#tasks-Refresh').click(function (e) {
-        if ($('.tab-assigned-tasks').hasClass('active')) {
-            alert('my tasks refresh');
-        }
-        else {
-            alert('assigned tasks refresh')
+        switch (_currentTab) {
+            case 0:
+                alert('My Tasks Refresh')
+                break;
+            case 1:
+                alert('My Tasks Refresh')
+                break;
+            case 2:
+                alert('Closed Tasks Refresh')
+                break;
+            default:
+                alert('hello');
         }
         window.location = window.location;
     });
@@ -34,13 +38,6 @@ $(document).ready(function () {
 
     });
 
-    //$('#pendingTaskList').on('click', 'a.tasklink', function () {
-    //    //e.preventDefault();
-    //    //var id = $(this).data('reminderid');
-    //    //parent.Ts.System.logAction('Tasks Page - View Task');
-    //    //parent.Ts.MainPage.openNewTask(id);
-    //});
-
     function LoadMyTasks(tasks) {
         var container = $('.assignedresults');
         if (tasks.length < _pageSize) {
@@ -50,6 +47,7 @@ $(document).ready(function () {
             insertSearchResults(container, tasks);
             if (tasks.length == 0) {
                 $('.results-empty').show();
+                $('.results').hide();
             }
             //else {
             //    debugger;
@@ -94,6 +92,7 @@ $(document).ready(function () {
     }
 
     function insertSearchResults(container, items) {
+        debugger;
         container.empty();
         appendSearchResults(container, items);
     }
@@ -103,12 +102,12 @@ $(document).ready(function () {
         $('.results-empty').hide();
 
         if (tasks.length < 1) {
-            //$('.results-done').show();
+            $('.results').hide();
+            $('.results-empty').show();
         } else {
             var source;
-            
-            switch (_currentTab)
-            {
+
+            switch (_currentTab) {
                 case 0:
                     source = $("#mytask-task-template").html();
                     break;
@@ -128,15 +127,15 @@ $(document).ready(function () {
             console.log(data);
 
             $("#handlebarsTaskList").html(template(data));
+
+            $('.results').show();
         }
         _isLoading = false;
     }
 
-
     function isNullOrWhiteSpace(str) {
         return str === null || String(str).match(/^ *$/) !== null;
     }
-
 
     function fetchTasks() {
 
@@ -146,74 +145,36 @@ $(document).ready(function () {
         parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
             $('.searchresults').fadeTo(0, 1);
 
-            if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
-                ShowNoTasks();
+            //if (_assignedTab == -1 && _createdTab == -1 && pageData.AssignedCount == 0 && pageData.CreatedCount == 0) {
+            //    ShowNoTasks();
+            //}
+            //else {
+            debugger;
+            switch (_currentTab) {
+                case 0:
+                    LoadMyTasks(pageData.AssignedItems)
+                    //if (pageData.AssignedItems.length > 0) {
+                    //    LoadMyTasks(pageData.AssignedItems);
+                    //    //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
+                    //    //    set completed active
+                    //    //}
+                    //}
+                    //else {
+                    //    //HideAssigned();
+                    //}
+                    break;
+                case 1:
+                    LoadCreated(pageData.CreatedItems);
+                    break;
+                case 2:
+                    LoadMyTasks(pageData.AssignedItems);
+                    break;
+                default:
+                    LoadMyTasks(pageData.AssignedItems);
             }
-            else {
-                debugger;
-                switch (_currentTab) {
-                    case 0:
-                        if (pageData.AssignedItems.length > 0) {
-                            LoadMyTasks(pageData.AssignedItems);
-                            //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
-                            //    set completed active
-                            //}
-                        }
-                        else {
-                            HideAssigned();
-                        }
-                        break;
-                    case 1:
-                        LoadCreated(pageData.CreatedItems);
-                        break;
-                    case 2:
-                        LoadMyTasks(pageData.AssignedItems);
-                        break;
-                    default:
-                        LoadMyTasks(pageData.AssignedItems);
-                }
+            //}
 
-                //switch (_createdTab) {
-                //    case -1:
-                //        if (pageData.CreatedCount > 0) {
-                //            LoadCreated(pageData.CreatedItems);
-                //            //if (fristLoad.AssignedItems[0].IsDismissed == 0) {
-                //            //    set pending active
-                //            //}
-                //        }
-                //        else {
-                //            HideCreated();
-                //        }
-                //        break;
-                //    case 0:
-                //        break;
-                //    default:
-                //        LoadCreated(pageData.CreatedItems);
-                //}
-
-                //switch (_closedTab) {
-                //    case -1:
-                //        if (pageData.AssignedCount > 0) {
-                //            LoadMyTasks(pageData.AssignedItems);
-                //            //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
-                //            //    set completed active
-                //            //}
-                //        }
-                //        else {
-                //            HideAssigned();
-                //        }
-                //        break;
-                //    case 0:
-                //        break;
-                //    default:
-                //        LoadMyTasks(pageData.AssignedItems);
-                //}
-
-                //if (pageData.AssignedItems.length < _pageSize && pageData.CreatedItems < _pageSize) {
-                //    $('.tasks-more').hide();
-                //    //$('.results-done').show();
-                //}
-            }
+            $('.results-loading').hide();
         });
     }
 
@@ -252,10 +213,7 @@ $(document).ready(function () {
     $('.tab-closed-tasks').on('click', function (e) {
         e.preventDefault();
         $('.tabs button').removeClass('active');
-        //$('.tab-assigned-tasks').removeClass('active');
         $(this).addClass('active');
-
-        
 
         parent.Ts.System.logAction('Tasks Page - Change Filter');
         _assignedTab = 0;
@@ -274,6 +232,7 @@ $(document).ready(function () {
 
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
 
+        $(this).parent().parent().fadeOut(600, function () { $(this).remove() });
     });
 
     fetchTasks();
@@ -350,7 +309,7 @@ $(document).ready(function () {
             case 9:
                 associationName = association.Company;
                 iconClass = "companyIcon";
-                functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer('+ association.RefID +'); return false;';
+                functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer(' + association.RefID + '); return false;';
                 break;
             case 13:
                 associationName = association.Product;
@@ -372,7 +331,7 @@ $(document).ready(function () {
         }
 
         if (functionName != null) {
-            result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass +'" href="#" onclick="' + functionName + '" title="'+ associationName +'"></a></span>'
+            result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass + '" href="#" onclick="' + functionName + '" title="' + associationName + '"></a></span>'
         }
 
         return new Handlebars.SafeString(result);
