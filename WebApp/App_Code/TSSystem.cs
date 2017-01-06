@@ -184,11 +184,13 @@ namespace TSWebServices
                     ticketTypes.LoadByOrganizationID(TSAuthentication.OrganizationID, org.ProductType);
                     foreach (TicketType ticketType in ticketTypes)
                     {
-                        string mniID = "mniTicketType_" + ticketType.TicketTypeID.ToString();
-                        if (IsMenuItemActive(user, mniID))
-                        {
-                            ticketItem.AddItem(new TsMenuItem("tickettype", mniID, ticketType.Name, ticketType.IconUrl, string.Format(data, "vcr/1_9_0/Pages/TicketTabs.html?TicketTypeID=" + ticketType.TicketTypeID.ToString(), "vcr/1_9_0/PaneInfo/Tickets.html")));
-                        }
+                        if (ticketType.IsActive) {
+                				string mniID = "mniTicketType_" + ticketType.TicketTypeID.ToString();
+                				if (IsMenuItemActive(user, mniID))
+                				{
+                    				ticketItem.AddItem(new TsMenuItem("tickettype", mniID, ticketType.Name, ticketType.IconUrl, string.Format(data, "vcr/1_9_0/Pages/TicketTabs.html?TicketTypeID=" + ticketType.TicketTypeID.ToString(), "vcr/1_9_0/PaneInfo/Tickets.html")));
+                				}
+            			}
                     }
                 }
 

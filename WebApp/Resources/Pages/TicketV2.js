@@ -289,7 +289,6 @@ $(document).ready(function () {
   script.setAttribute('id', 'dropboxjs');
   firstScript.parentNode.insertBefore(script, firstScript);
   slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
-  
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -530,7 +529,6 @@ function SetupTicketProperties(order) {
     if (typeof refresh === "undefined") {
       window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
-
 
   });
 };
@@ -1682,7 +1680,8 @@ function LoadTicketControls() {
   var types = window.parent.Ts.Cache.getTicketTypes();
   if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
       for (var i = 0; i < types.length; i++) {
-          if (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID) {
+          if ((types[i].IsActive && (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID))
+                || (!types[i].IsActive && _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID)) {
               AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
               if (types[i].ProductFamilyID != null && _productFamilyID != types[i].ProductFamilyID) {
                   alert('This ticket type belongs to a different product line. Please set the correct ticket type.');
@@ -1691,14 +1690,14 @@ function LoadTicketControls() {
       }
 
       if ($('#ticket-type')[0].childElementCount == 0) {
-          //parent.show().find('img').hide();
-          //container.remove();
           alert('There are no ticket types available for this product line. Please contact your TeamSupport administrator.');
       }
   }
   else {
       for (var i = 0; i < types.length; i++) {
-          AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+          if (types[i].IsActive || (!types[i].IsActive && types[i].TicketTypeID === _ticketTypeID)) {
+              AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+          }
       }
   }
 

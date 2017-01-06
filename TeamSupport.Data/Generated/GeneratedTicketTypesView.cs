@@ -43,6 +43,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool IsActive
+    {
+      get { return (bool)Row["IsActive"]; }
+      set { Row["IsActive"] = CheckValue("IsActive", value); }
+    }
+    
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
@@ -222,7 +228,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTypesView] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [IconUrl] = @IconUrl,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ProductFamilyID] = @ProductFamilyID,    [ProductFamilyName] = @ProductFamilyName  WHERE ([TicketTypeID] = @TicketTypeID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTypesView] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [IconUrl] = @IconUrl,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ProductFamilyID] = @ProductFamilyID,    [ProductFamilyName] = @ProductFamilyName,    [IsActive] = @IsActive  WHERE ([TicketTypeID] = @TicketTypeID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketTypeID", SqlDbType.Int, 4);
@@ -302,13 +308,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsActive", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTypesView] (    [TicketTypeID],    [Name],    [Description],    [Position],    [OrganizationID],    [IconUrl],    [IsVisibleOnPortal],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ProductFamilyID],    [ProductFamilyName]) VALUES ( @TicketTypeID, @Name, @Description, @Position, @OrganizationID, @IconUrl, @IsVisibleOnPortal, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ProductFamilyID, @ProductFamilyName); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTypesView] (    [TicketTypeID],    [Name],    [Description],    [Position],    [OrganizationID],    [IconUrl],    [IsVisibleOnPortal],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ProductFamilyID],    [ProductFamilyName],    [IsActive]) VALUES ( @TicketTypeID, @Name, @Description, @Position, @OrganizationID, @IconUrl, @IsVisibleOnPortal, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ProductFamilyID, @ProductFamilyName, @IsActive); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("IsActive", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductFamilyName", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
