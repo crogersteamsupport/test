@@ -377,6 +377,7 @@
             $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeProductFamilies").ClientID %>').get_value(),
             $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeIcons").ClientID %>').get_value(),
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked,
+            $get('<%= wndEditType.ContentContainer.FindControl("cbIsActive").ClientID %>').checked, //vv
             function (html) {
               $('#divTypes').html(html);
               if (_type == 5) loadTicketTypeCombo();
