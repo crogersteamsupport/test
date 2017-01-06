@@ -233,6 +233,9 @@ namespace TeamSupport.Api
       action.IsKnowledgeBase = ticket.IsKnowledgeBase;
       action.TicketID = ticket.TicketID;
       actions.Save();
+
+      UpdateFieldsOfSeparateTable(command, ticket, isNewTicket: true);
+
       return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
     }
 
@@ -246,7 +249,7 @@ namespace TeamSupport.Api
 		ticket.UpdateCustomFieldsFromXml(command.Data);
 
 		ticket = Tickets.GetTicket(command.LoginUser, ticket.TicketID);
-		UpdateFieldsOfSeparateTable(command, ticket.TicketID);
+		UpdateFieldsOfSeparateTable(command, ticket);
 
 		return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
 	}
@@ -372,12 +375,12 @@ namespace TeamSupport.Api
       return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
     }
 
-		/// <summary>
-		/// Update the Ticket related fields that live in their own table.
-		/// </summary>
-		/// <param name="command">Command received in the request to read and process the data in the request body.</param>
-		/// <param name="ticketId">TicketId to update its record.</param>
-		private static void UpdateFieldsOfSeparateTable(RestCommand command, int ticketId)
+        /// <summary>
+        /// Update the Ticket related fields that live in their own table.
+        /// </summary>
+        /// <param name="command">Command received in the request to read and process the data in the request body.</param>
+        /// <param name="ticketId">TicketId to update its record.</param>
+        private static void UpdateFieldsOfSeparateTable(RestCommand command, Ticket ticket, bool isNewTicket = false)
 		{
 			try
 			{
@@ -395,7 +398,7 @@ namespace TeamSupport.Api
 							case "jirakey":
 								string jiraKey = node.InnerText;
 								TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(command.LoginUser);
-								ticketLinkToJira.LoadByTicketID(ticketId);
+								ticketLinkToJira.LoadByTicketID(ticket.TicketID);
 
 								if (ticketLinkToJira != null
 									&& ticketLinkToJira.Any())
@@ -403,12 +406,42 @@ namespace TeamSupport.Api
 									string oldJiraKey = ticketLinkToJira[0].JiraKey;
 									ticketLinkToJira[0].JiraKey = jiraKey;
 									ticketLinkToJira.Save();
-									ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketId, string.Format("Changed JiraKey from '{0}' to '{1}'.", oldJiraKey, jiraKey));
+									ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, string.Format("Changed JiraKey from '{0}' to '{1}'.", oldJiraKey, jiraKey));
 								}
-								break;
+                                else if (isNewTicket)
+                                {
+                                    TicketLinkToJiraItem newJiraLink = ticketLinkToJira.AddNewTicketLinkToJiraItem();
+                                    newJiraLink.TicketID = ticket.TicketID;
+                                    newJiraLink.SyncWithJira = true;
+                                    newJiraLink.JiraID = null;
+                                    newJiraLink.JiraKey = jiraKey;
+                                    newJiraLink.JiraLinkURL = null;
+                                    newJiraLink.JiraStatus = null;
+                                    newJiraLink.CreatorID = command.LoginUser.UserID;
+
+                                    //Next line and 2 If statements are the same as in \webapp\app_code\ticketservice.cs SetSyncWithJira(). Might need to consider making a common funcion for both
+                                    newJiraLink.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, command.LoginUser);
+
+                                    //If product is not associated to an instance then get the 'default' instance
+                                    if (newJiraLink.CrmLinkID == null || newJiraLink.CrmLinkID <= 0)
+                                    {
+                                        CRMLinkTable crmlink = new CRMLinkTable(command.LoginUser);
+                                        crmlink.LoadByOrganizationID(ticket.OrganizationID);
+
+                                        newJiraLink.CrmLinkID = crmlink.Where(p => p.InstanceName == "Default"
+                                                                                            && p.CRMType.ToLower() == IntegrationType.Jira.ToString().ToLower())
+                                                                                            .Select(p => p.CRMLinkID).FirstOrDefault();
+                                    }
+
+                                    if (newJiraLink.CrmLinkID != null && newJiraLink.CrmLinkID > 0)
+                                    {
+                                        newJiraLink.Collection.Save();
+                                    }
+                                }
+                                break;
 							case "tags":
 								TagLinks currentTagLinks = new TagLinks(command.LoginUser);
-								currentTagLinks.LoadByReference(ReferenceType.Tickets, ticketId);
+								currentTagLinks.LoadByReference(ReferenceType.Tickets, ticket.TicketID);
 								XmlNodeList nodeList = node.ChildNodes;
 								List<int> newTags = new List<int>();
 
@@ -432,14 +465,14 @@ namespace TeamSupport.Api
 
 								foreach(int tag in newTags)
 								{
-									TagLink newTagLink = currentTagLinks.Where(p => p.TagID == tag && p.RefID == ticketId).SingleOrDefault();
+									TagLink newTagLink = currentTagLinks.Where(p => p.TagID == tag && p.RefID == ticket.TicketID).SingleOrDefault();
 									if (newTagLink == null)
 									{
 										TagLinks tagLink = new TagLinks(command.LoginUser);
 										newTagLink = tagLink.AddNewTagLink();
 										newTagLink.TagID = tag;
 										newTagLink.RefType = ReferenceType.Tickets;
-										newTagLink.RefID = ticketId;
+										newTagLink.RefID = ticket.TicketID;
 										tagLink.Save();
 									}
 								}
