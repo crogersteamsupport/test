@@ -1680,7 +1680,8 @@ function LoadTicketControls() {
   var types = window.parent.Ts.Cache.getTicketTypes();
   if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
       for (var i = 0; i < types.length; i++) {
-          if ((types[i].IsActive && (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID))) {
+          if ((types[i].IsActive && (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID))
+                || (!types[i].IsActive && _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID)) {
               AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
               if (types[i].ProductFamilyID != null && _productFamilyID != types[i].ProductFamilyID) {
                   alert('This ticket type belongs to a different product line. Please set the correct ticket type.');
@@ -1694,7 +1695,7 @@ function LoadTicketControls() {
   }
   else {
       for (var i = 0; i < types.length; i++) {
-          if (types[i].IsActive) {
+          if (types[i].IsActive || (!types[i].IsActive && types[i].TicketTypeID === _ticketTypeID)) {
               AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
           }
       }
