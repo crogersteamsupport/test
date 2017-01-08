@@ -174,13 +174,13 @@ namespace TeamSupport.ServiceLibrary
 
                 User owner = Users.GetUser(LoginUser, (int)task.UserID);
 
-                MailMessage message = EmailTemplates.GetTaskModified(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, task.UserID), task);
+                MailMessage message = EmailTemplates.GetTaskModified(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
 
                 String description = String.Format("Task modified notification sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.ReminderID, description);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, task.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)task.UserID, description);
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
                 //AddMessage(taskOrganization, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
@@ -228,13 +228,13 @@ namespace TeamSupport.ServiceLibrary
 
                 User owner = Users.GetUser(LoginUser, (int)task.UserID);
 
-                MailMessage message = EmailTemplates.GetTaskAssigned(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, task.UserID), task);
+                MailMessage message = EmailTemplates.GetTaskAssigned(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
 
                 String description = String.Format("Task assigned notification sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.ReminderID, description);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, task.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)task.UserID, description);
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
                 //AddMessage(taskOrganization, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
@@ -282,14 +282,14 @@ namespace TeamSupport.ServiceLibrary
 
                 User owner = Users.GetUser(LoginUser, (int)task.UserID);
 
-                MailMessage message = EmailTemplates.GetTaskComplete(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, task.UserID), task);
+                MailMessage message = EmailTemplates.GetTaskComplete(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
                 //EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
 
                 String description = String.Format("Task complete notification sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.ReminderID, description);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, task.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)task.UserID, description);
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
                 //AddMessage(taskOrganization, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);

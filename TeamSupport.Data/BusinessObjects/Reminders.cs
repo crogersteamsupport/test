@@ -92,7 +92,18 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Reminders WHERE (HasEmailSent = 0) AND (IsDismissed = 0) AND (DueDate <= GETUTCDATE()) ORDER BY DueDate";
+        command.CommandText = @"
+            SELECT 
+                *
+            FROM 
+                Reminders 
+            WHERE 
+                HasEmailSent = 0
+                AND IsDismissed = 0
+                AND UserID IS NOT NULL
+                AND DueDate <= GETUTCDATE()
+            ORDER BY
+                DueDate";
         command.CommandType = CommandType.Text;
         Fill(command);
       }
