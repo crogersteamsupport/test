@@ -2,112 +2,55 @@
 var _allAssignedLoaded = false;
 var _allCreatedLoaded = false;
 var _start = 0;
-
 var _currentTab = 0;
+
+function showLoadingIndicator() {
+    $('.results-loading').show();
+}
+
+function hideLoadingIndicator() {
+    debugger;
+    alert($('.results-loading'));
+    $('.results-loading').hide();
+}
+
+function onShow() {
+    //switch (_currentTab) {
+    //    case 0:
+    //        alert('My Tasks Refresh')
+    //        break;
+    //    case 1:
+    //        alert('Assigned Tasks Refresh')
+    //        break;
+    //    case 2:
+    //        alert('Closed Tasks Refresh')
+    //        break;
+    //    default:
+    //        alert('hello');
+    //}
+    //debugger;
+    //showLoadingIndicator();
+    //fetchTasks();
+    //hideLoadingIndicator();
+
+    //return false;
+    
+    ////$('.results-loading').hide();
+    window.location = window.location;
+}
 
 $(document).ready(function () {
     $('#tasks-Refresh').click(function (e) {
-        switch (_currentTab) {
-            case 0:
-                alert('My Tasks Refresh')
-                break;
-            case 1:
-                alert('My Tasks Refresh')
-                break;
-            case 2:
-                alert('Closed Tasks Refresh')
-                break;
-            default:
-                alert('hello');
-        }
-        window.location = window.location;
+        fetchTasks();
+        //window.location = window.location;
     });
 
     $('.action-new').click(function (e) {
         //e.preventDefault();
-        $('#myModal').modal('show');
         parent.Ts.System.logAction('Tasks Page - New Task');
-        //parent.Ts.MainPage.newTask();
+        parent.Ts.MainPage.newTask();
 
     });
-
-    LoadUsers();
-
-    $('#DueDate').datetimepicker({});
-    $('#ReminderDate').datetimepicker({});
-
-    $('#taskSaveBtn').click(function (e) {
-        debugger;
-        //e.preventDefault();
-        //e.stopPropagation();
-
-        $('#taskSaveBtn').prop("disabled", true);
-
-        parent.Ts.System.logAction('New Task Page - Added New Task');
-
-        var taskInfo = new Object();
-        taskInfo.TaskName = $("#inputName").val();
-        taskInfo.Description = $("#Description").val();
-        taskInfo.UserID = $("#ddlUser").val();
-        taskInfo.TaskIsComplete = $("#cbComplete").prop('checked');
-        taskInfo.TaskDueDate = $("#DueDate").val();
-        taskInfo.IsDismissed = !$("#cbReminder").prop('checked');
-        taskInfo.DueDate = $("#ReminderDate").val();
-
-        //taskInfo.Tickets = new Array();
-        //$('#commentatt:first').find('.ticket-queue').find('.ticket-removable-item').each(function () {
-        //    taskInfo.Tickets[taskInfo.Tickets.length] = $(this).data('Ticket');
-        //});
-
-        //taskInfo.Groups = new Array();
-        //$('#commentatt:first').find('.group-queue').find('.ticket-removable-item').each(function () {
-        //    taskInfo.Groups[taskInfo.Groups.length] = $(this).data('Group');
-        //});
-
-        //taskInfo.Products = new Array();
-        //$('#commentatt:first').find('.product-queue').find('.ticket-removable-item').each(function () {
-        //    taskInfo.Products[taskInfo.Products.length] = $(this).data('Product');
-        //});
-
-        //taskInfo.Company = new Array();
-        //$('#commentatt:first').find('.customer-queue').find('.ticket-removable-item').each(function () {
-        //    taskInfo.Company[taskInfo.Company.length] = $(this).data('Company');
-        //});
-
-        //taskInfo.User = new Array();
-        //$('#commentatt:first').find('.user-queue').find('.ticket-removable-item').each(function () {
-        //    taskInfo.User[taskInfo.User.length] = $(this).data('User');
-        //});
-
-        //if (taskInfo.Tickets.length > 0) window.parent.parent.Ts.System.logAction('New Task - Ticket Inserted');
-        //if (taskInfo.Groups.length > 0) window.parent.parent.Ts.System.logAction('New Task - Group Inserted');
-        //if (taskInfo.Products.length > 0) window.parent.parent.Ts.System.logAction('New Task - Product Inserted');
-        //if (taskInfo.Company.length > 0) window.parent.parent.Ts.System.logAction('New Task - Company Inserted');
-        //if (taskInfo.User.length > 0) window.parent.parent.Ts.System.logAction('New Task - User Inserted');
-
-        //var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
-
-        window.parent.parent.Ts.Services.Task.NewTask(parent.JSON.stringify(taskInfo), function (newTask) {
-            if (attcontainer.length > 0) {
-                attcontainer.each(function (i, o) {
-                    var data = $(o).data('data');
-                    data.url = '../../../Upload/Tasks/' + newTask.ReminderID;
-                    data.jqXHR = data.submit();
-                    $(o).data('data', data);
-                });
-            }
-            //parent.Ts.MainPage.openNewTask(newTask.ReminderID);
-            //parent.Ts.MainPage.closenewTaskTab();
-        });
-
-        $('#myModal').modal('hide');
-
-        $(this).parent().removeClass("saving");
-        $('.frame-content').animate({ scrollTop: 0 }, 600);
-
-
-    });
-
 
     $('#TaskList').on('click', 'a.tasklink', function () {
         //e.preventDefault();
@@ -163,11 +106,6 @@ $(document).ready(function () {
         else {
             appendSearchResults(container, tasks);
         }
-    }
-
-    function showLoadingIndicator() {
-        _isLoading = true;
-        $('.results-loading').show();
     }
 
     function insertSearchResults(container, items) {

@@ -48,57 +48,6 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">New Task</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                Task Name
-                                <input type="text" id="inputName" placeholder="" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="row taskLine">
-                            <div class="col-sm-12">
-                                Description
-                                <textarea id="Description" class="form-control" rows="6"></textarea>
-                            </div>
-                        </div>
-                        <div class="row taskLine">
-                            <div class="col-sm-6">
-                                Assigned To
-                                <select class="form-control" id="ddlUser">
-                                    <!--<option value="-1">Unassigned</option>-->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row taskLine">
-                            <div class="col-sm-6">
-                                <div class="taskLine" style="width:200px;">
-                                    Due Date
-                                    <input id="ReminderDate" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="taskLine" style="width:200px;">
-                                    Reminder Date
-                                    <input id="DueDate" class="form-control" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" id="taskSaveBtn" class="btn btn-primary">Save Task</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 </body>
 <script id="mytask-task-template" type="text/x-handlebars-template">
     <div id="taskList"></div>
