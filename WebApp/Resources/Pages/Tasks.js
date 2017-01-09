@@ -9,40 +9,154 @@ function showLoadingIndicator() {
 }
 
 function hideLoadingIndicator() {
-    debugger;
     alert($('.results-loading'));
     $('.results-loading').hide();
 }
 
-function onShow() {
-    //switch (_currentTab) {
-    //    case 0:
-    //        alert('My Tasks Refresh')
-    //        break;
-    //    case 1:
-    //        alert('Assigned Tasks Refresh')
-    //        break;
-    //    case 2:
-    //        alert('Closed Tasks Refresh')
-    //        break;
-    //    default:
-    //        alert('hello');
-    //}
-    //debugger;
-    //showLoadingIndicator();
-    //fetchTasks();
-    //hideLoadingIndicator();
+function fetchTasks() {
 
-    //return false;
-    
-    ////$('.results-loading').hide();
-    window.location = window.location;
+    showLoadingIndicator();
+
+    //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
+    parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
+        $('.searchresults').fadeTo(0, 1);
+
+        switch (_currentTab) {
+            case 0:
+                LoadMyTasks(pageData.AssignedItems)
+                //if (pageData.AssignedItems.length > 0) {
+                //    LoadMyTasks(pageData.AssignedItems);
+                //    //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
+                //    //    set completed active
+                //    //}
+                //}
+                //else {
+                //    //HideAssigned();
+                //}
+                break;
+            case 1:
+                LoadCreated(pageData.CreatedItems);
+                break;
+            case 2:
+                LoadMyTasks(pageData.AssignedItems);
+                break;
+            default:
+                LoadMyTasks(pageData.AssignedItems);
+        }
+        //}
+
+        $('.results-loading').hide();
+    });
+}
+
+function LoadMyTasks(tasks) {
+    var container = $('.assignedresults');
+    if (tasks.length < _pageSize) {
+        _allAssignedLoaded = true;
+    }
+    if (_start == 0) {
+        insertSearchResults(container, tasks);
+        if (tasks.length == 0) {
+            $('.results-empty').show();
+            $('.results').hide();
+        }
+        //else {
+        //    debugger;
+        //    $('.assigned-results-empty').hide();
+        //    if (tasks[0].TaskIsComplete) {
+        //        //$('.assigned-tasks-filter').removeClass('active');
+        //        $('.assigned-tasks-filter-completed').addClass('active');
+        //    }
+        //}
+    }
+    else {
+        appendSearchResults(container, tasks);
+    }
+}
+
+function LoadCreated(tasks) {
+    var container = $('.createdresults');
+    if (tasks.length < _pageSize) {
+        _allCreatedLoaded = true;
+    }
+    if (_start == 0) {
+        insertSearchResults(container, tasks);
+        if (tasks.length == 0) {
+            $('.created-results-empty').show();
+        }
+        //else {
+        //    $('.created-results-empty').hide();
+        //    if (!tasks[0].TaskIsComplete) {
+        //        $('.created-tasks-filter li.active').removeClass('active');
+        //        $('.created-tasks-filter-pending').parent().addClass('active');
+        //    }
+        //}
+    }
+    else {
+        appendSearchResults(container, tasks);
+    }
+}
+
+function insertSearchResults(container, items) {
+    container.empty();
+    appendSearchResults(container, items);
+}
+
+function appendSearchResults(container, tasks) {
+    $('.results-loading').hide();
+    $('.results-empty').hide();
+
+    if (tasks.length < 1) {
+        $('.results').hide();
+        $('.results-empty').show();
+    } else {
+        var source;
+
+        switch (_currentTab) {
+            case 0:
+                source = $("#mytask-task-template").html();
+                break;
+            case 1:
+                source = $("#assigned-task-template").html();
+                break;
+            case 2:
+                source = $("#closed-task-template").html();
+                break;
+            default:
+                source = $("#task-template").html();
+        }
+
+        //var source = $("#task-template").html();
+        var template = Handlebars.compile(source);
+        data = { taskList: tasks };
+        console.log(data);
+
+        $("#handlebarsTaskList").html(template(data));
+
+        $('.results').show();
+    }
+    _isLoading = false;
+}
+
+function isNullOrWhiteSpace(str) {
+    return str === null || String(str).match(/^ *$/) !== null;
+}
+
+function LoadUsers() {
+    parent.Ts.Services.Customers.LoadUsers(function (users) {
+        for (var i = 0; i < users.length; i++) {
+            $('<option>').attr('value', users[i].UserID).text(users[i].FirstName + ' ' + users[i].LastName).data('o', users[i]).appendTo('#ddlUser');
+        }
+    });
+}
+
+function onShow() {
+    fetchTasks();
 }
 
 $(document).ready(function () {
     $('#tasks-Refresh').click(function (e) {
         fetchTasks();
-        //window.location = window.location;
     });
 
     $('.action-new').click(function (e) {
@@ -60,142 +174,7 @@ $(document).ready(function () {
 
     });
 
-    function LoadMyTasks(tasks) {
-        var container = $('.assignedresults');
-        if (tasks.length < _pageSize) {
-            _allAssignedLoaded = true;
-        }
-        if (_start == 0) {
-            insertSearchResults(container, tasks);
-            if (tasks.length == 0) {
-                $('.results-empty').show();
-                $('.results').hide();
-            }
-            //else {
-            //    debugger;
-            //    $('.assigned-results-empty').hide();
-            //    if (tasks[0].TaskIsComplete) {
-            //        //$('.assigned-tasks-filter').removeClass('active');
-            //        $('.assigned-tasks-filter-completed').addClass('active');
-            //    }
-            //}
-        }
-        else {
-            appendSearchResults(container, tasks);
-        }
-    }
-
-    function LoadCreated(tasks) {
-        var container = $('.createdresults');
-        if (tasks.length < _pageSize) {
-            _allCreatedLoaded = true;
-        }
-        if (_start == 0) {
-            insertSearchResults(container, tasks);
-            if (tasks.length == 0) {
-                $('.created-results-empty').show();
-            }
-            //else {
-            //    $('.created-results-empty').hide();
-            //    if (!tasks[0].TaskIsComplete) {
-            //        $('.created-tasks-filter li.active').removeClass('active');
-            //        $('.created-tasks-filter-pending').parent().addClass('active');
-            //    }
-            //}
-        }
-        else {
-            appendSearchResults(container, tasks);
-        }
-    }
-
-    function insertSearchResults(container, items) {
-        container.empty();
-        appendSearchResults(container, items);
-    }
-
-    function appendSearchResults(container, tasks) {
-        $('.results-loading').hide();
-        $('.results-empty').hide();
-
-        if (tasks.length < 1) {
-            $('.results').hide();
-            $('.results-empty').show();
-        } else {
-            var source;
-
-            switch (_currentTab) {
-                case 0:
-                    source = $("#mytask-task-template").html();
-                    break;
-                case 1:
-                    source = $("#assigned-task-template").html();
-                    break;
-                case 2:
-                    source = $("#closed-task-template").html();
-                    break;
-                default:
-                    source = $("#task-template").html();
-            }
-
-            //var source = $("#task-template").html();
-            var template = Handlebars.compile(source);
-            data = { taskList: tasks };
-            console.log(data);
-
-            $("#handlebarsTaskList").html(template(data));
-
-            $('.results').show();
-        }
-        _isLoading = false;
-    }
-
-    function isNullOrWhiteSpace(str) {
-        return str === null || String(str).match(/^ *$/) !== null;
-    }
-
-    function fetchTasks() {
-
-        showLoadingIndicator();
-
-        //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
-        parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
-            $('.searchresults').fadeTo(0, 1);
-
-            switch (_currentTab) {
-                case 0:
-                    LoadMyTasks(pageData.AssignedItems)
-                    //if (pageData.AssignedItems.length > 0) {
-                    //    LoadMyTasks(pageData.AssignedItems);
-                    //    //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
-                    //    //    set completed active
-                    //    //}
-                    //}
-                    //else {
-                    //    //HideAssigned();
-                    //}
-                    break;
-                case 1:
-                    LoadCreated(pageData.CreatedItems);
-                    break;
-                case 2:
-                    LoadMyTasks(pageData.AssignedItems);
-                    break;
-                default:
-                    LoadMyTasks(pageData.AssignedItems);
-            }
-            //}
-
-            $('.results-loading').hide();
-        });
-    }
-
-    function LoadUsers() {
-        parent.Ts.Services.Customers.LoadUsers(function (users) {
-            for (var i = 0; i < users.length; i++) {
-                $('<option>').attr('value', users[i].UserID).text(users[i].FirstName + ' ' + users[i].LastName).data('o', users[i]).appendTo('#ddlUser');
-            }
-        });
-    }
+    
 
     //$('.action-new').click(function (e) {
     //    e.preventDefault();
@@ -296,7 +275,6 @@ $(document).ready(function () {
         var name = Task.TaskName;
 
         if (Task.TaskName == null) {
-            debugger;
             if (Task.Description == null || Task.Description == "") {
                 name = 'No Title';
             }
