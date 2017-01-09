@@ -453,6 +453,7 @@ namespace TSWebServices
             return null;
         }
 
+        [WebMethod]
         public string GetTicketPagePluginTemplates(string templateType)
         {
             List<ExpandoObject> result = new List<ExpandoObject>();
@@ -482,6 +483,7 @@ namespace TSWebServices
             command.CommandText = "SELECT * FROM " + tableName;
             DataTable table = SqlExecutor.ExecuteSchema(loginUser, command);
             cat.items = table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+            Array.Sort(cat.items);
             return cat;
         }
 
@@ -493,6 +495,7 @@ namespace TSWebServices
             CustomFields fields = new CustomFields(loginUser);
             fields.LoadByReferenceType(organizationID, refType);
             cat.items = fields.Cast<CustomField>().Select(x => x.Name).ToArray();
+            Array.Sort(cat.items);
             return cat;
         }
 
