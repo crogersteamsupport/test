@@ -89,6 +89,20 @@
 	    }).popover('show');
 	});
 
+	$("body").on("mouseenter", ".wcTooltip", function (event) {
+	    var e = $(this);
+	    var data = e.data('info');
+	    e.unbind('hover');
+	    e.popover({
+	        html: true,
+	        container: 'body',
+	        trigger: 'manual',
+	        delay: { "show": 1, "hide": 1000 },
+	        placement: 'left',
+	        content: data
+	    }).popover('show');
+	});
+
 	$("body").on("mouseenter", ".AssetAnchor", function (event) {
 	  var e = $(this);
 	  e.unbind('hover');
@@ -184,7 +198,7 @@
   })
 
 $('body').on('click', function (e) {
-    $('.ProductAnchor, .VersionAnchor').each(function () {
+    $('.ProductAnchor, .VersionAnchor, .wcTooltip').each(function () {
         //the 'is' for buttons that trigger popups
         //the 'has' for icons within a button that triggers a popup
         if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {

@@ -949,3 +949,13 @@
 .slaPausedIcon {
     color: #428bca !important;
 }
+
+.fa-info-circle {
+    color: #3d6da7 !important;
+    cursor: pointer;
+}
+
+.wcTooltip{
+    margin-right: 10px;
+
+}

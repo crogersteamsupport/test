@@ -152,11 +152,11 @@ namespace TeamSupport.ServiceLibrary
         void MergeVideoFiles()
         {
             Logs.WriteEvent("----- Merging webm files ...");
-            outputFileLocation = Path.Combine(Path.GetDirectoryName(webmFiles[0]), "archive.webm");
+            outputFileLocation = Path.Combine(Path.GetDirectoryName(webmFiles[0]), "archive.mp4");
             Process proc = new Process();
             //proc.StartInfo.WorkingDirectory = ffmpegPath;
             proc.StartInfo.FileName = Path.Combine(ffmpegPath,"ffmpeg.exe");
-            proc.StartInfo.Arguments = $@"-i {webmFiles[0]} -i {webmFiles[1]} -acodec copy -vcodec copy  {outputFileLocation}";
+            proc.StartInfo.Arguments = $@"-i {webmFiles[0]} -i {webmFiles[1]} -map 0:0 -map 1:1 -codec:a aac -ab 128k -codec:v libx264 -vf scale=1920:1080 -aspect 16:9 -r 30 {outputFileLocation}";
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.UseShellExecute = false;
             if (!proc.Start())
@@ -217,6 +217,8 @@ namespace TeamSupport.ServiceLibrary
             {
                 dir.Delete(true);
             }
+
+            webmFiles.Clear();
 
             TokStorage dbItem = new TokStorage(LoginUser);
 

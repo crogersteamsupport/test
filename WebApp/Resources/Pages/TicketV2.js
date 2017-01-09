@@ -289,6 +289,7 @@ $(document).ready(function () {
   script.setAttribute('id', 'dropboxjs');
   firstScript.parentNode.insertBefore(script, firstScript);
   slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+  $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -4135,9 +4136,9 @@ function UpdateActionElement(val) {
 
 function CreateHandleBarHelpers() {
     Handlebars.registerHelper('WaterCoolerRelationships', function () {
-        //if (this.WatercoolerReferences)
-        //    return BuildWaterCoolerAssociationToolTip(this.WatercoolerReferences);
-        //else
+        if (this.WatercoolerReferences)
+            return BuildWaterCoolerAssociationToolTip(this.WatercoolerReferences);
+        else
             return "";
     });
 
@@ -4235,7 +4236,7 @@ function BuildWaterCoolerAssociationToolTip(references)
     if (tixatt.length > 0) {
         tixHasAtt = true;
         for (var i = 0; i < tixatt.length; i++) {
-            tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + window.parent.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="mainFrame.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
+            tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + window.parent.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="window.parent.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
         }
     }
 
@@ -4275,7 +4276,7 @@ function BuildWaterCoolerAssociationToolTip(references)
         }
     }
 
-    return "<span class='fa fa-info-circle fa-lg wcTooltip' title='" + tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr + "'></span>";
+    return "<span class='fa fa-info-circle fa-lg wcTooltip' title='' data-info='" + tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr + "'></span>";
 }
 
 function CreateTimeLineDelegates() {
@@ -4286,8 +4287,6 @@ function CreateTimeLineDelegates() {
     $(this).find(".action-option-items").hide();
     $(this).find(".action-options-icon").fadeIn();
   });
-
-  //$('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 
   $('#action-timeline').on('click', 'a.action-option-pin', function (e) {
     e.preventDefault();
