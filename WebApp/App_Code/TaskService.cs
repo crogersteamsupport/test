@@ -23,7 +23,8 @@ namespace TSWebServices
 
         }
 
-        public enum pageTab {
+        public enum pageTab
+        {
             mytasks = 0,
             assigned,
             completed
@@ -57,28 +58,43 @@ namespace TSWebServices
         {
             List<ClientTask> clientTasks = new List<ClientTask>();
 
-            for (int x = 0; x < reminderProxies.Length; x++)
+            if (reminderProxies.Any())
             {
-                ClientTask task = new ClientTask();
-                task.Task = reminderProxies[x];
-
-                if (task.Task.UserID.HasValue)
+                for (int x = 0; x < reminderProxies.Length; x++)
                 {
-                    Users userHelper = new Users(loginUser);
-                    userHelper.LoadByUserID((int)task.Task.UserID);
+                    ClientTask task = new ClientTask();
+                    task.SubTasks = new List<ReminderProxy>();
 
-                    if (userHelper.Any())
+                    task.Task = reminderProxies[x];
+
+                    if (task.Task.UserID.HasValue)
                     {
-                        task.AssignedTo = userHelper[0].FirstName + ' ' + userHelper[0].LastName;
+                        Users userHelper = new Users(loginUser);
+                        userHelper.LoadByUserID((int)task.Task.UserID);
+
+                        if (userHelper.Any())
+                        {
+                            task.AssignedTo = userHelper[0].FirstName + ' ' + userHelper[0].LastName;
+                        }
                     }
+                    //TaskAssociations taskAssociationHelper = new TaskAssociations(loginUser);
+                    //taskAssociationHelper.GetTaskAssociation(loginutask.Task.ReminderID);
+                    task.Associations = LoadAssociations(task.Task.ReminderID);
+
+                    if (task.Task.TaskParentID == null)
+                    {
+                        clientTasks.Add(task);
+                    }
+
+                    //add subtasks hook in here later... godspeed
                 }
-                //TaskAssociations taskAssociationHelper = new TaskAssociations(loginUser);
-                //taskAssociationHelper.GetTaskAssociation(loginutask.Task.ReminderID);
-                task.Associations = LoadAssociations(task.Task.ReminderID);
 
-                clientTasks.Add(task);
-
-                //add subtasks hook in here later... godspeed
+                var subtasks = reminderProxies.Where(m => m.TaskParentID != null).ToList();
+                for (int x = 0; x < subtasks.Count; x++)
+                {
+                    var clientTask = clientTasks.Where(m => m.Task.ReminderID == subtasks[x].TaskParentID).First();
+                    clientTask.SubTasks.Add(subtasks[x]);
+                }
             }
 
             return clientTasks;
@@ -662,7 +678,7 @@ namespace TSWebServices
     public class ClientTask
     {
         public ReminderProxy Task { get; set; }
-        public ReminderProxy[] SubTasks { get; set; }
+        public List<ReminderProxy> SubTasks { get; set; }
         public TaskAssociationsViewItemProxy[] Associations { get; set; }
         public string AssignedTo { get; set; }
     }
