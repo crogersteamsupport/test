@@ -51,9 +51,9 @@ $(document).ready(function () {
             $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
             $('#fieldComplete').text(task.TaskIsComplete ? "yes": "no");
-            $('#fieldDueDate').text(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+            $('#fieldDueDate').html(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
-            $('#fieldReminderDate').text(window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+            $('#fieldReminderDate').html(task.DueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
             if (task.IsDismissed) {
                 $('#reminderDateGroup').hide();
             }
@@ -480,6 +480,17 @@ $(document).ready(function () {
         });
     });
 
+    $('#fieldDueDate').on('click', '#clearDueDate', function (e) {
+        window.parent.parent.Ts.Services.Task.ClearDueDate(_reminderID, function () {
+            top.Ts.System.logAction('Task Detail - Clear Due Date');
+            $('#fieldDueDate').text("[None]");
+        },
+        function (error) {
+            header.show();
+            alert('There was an error clearing the due date.');
+        });
+    });
+
     $('#fieldDueDate').click(function (e) {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
@@ -516,7 +527,7 @@ $(document).ready(function () {
                   container.remove();
                   window.parent.parent.Ts.Services.Task.SetTaskDueDate(_reminderID, value, function (result) {
                       var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-                      parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                      parent.html((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>'))
                       $('#taskEdit').removeClass("disabled");
                       top.Ts.System.logAction('Task Detail - Due Date Change');
                   },
@@ -549,6 +560,17 @@ $(document).ready(function () {
         function (error) {
             header.show();
             alert('There was an error saving the task is dismissed.');
+        });
+    });
+
+    $('#fieldReminderDate').on('click', '#clearReminderDate', function (e) {
+        window.parent.parent.Ts.Services.Task.ClearReminderDate(_reminderID, function () {
+            top.Ts.System.logAction('Task Detail - Clear Reminder Date');
+            $('#fieldReminderDate').text("[None]");
+        },
+        function (error) {
+            header.show();
+            alert('There was an error clearing the reminder date.');
         });
     });
 
@@ -588,7 +610,7 @@ $(document).ready(function () {
                   container.remove();
                   window.parent.parent.Ts.Services.Task.SetDueDate(_reminderID, value, function (result) {
                       var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-                      parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                      parent.html((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>'))
                       $('#taskEdit').removeClass("disabled");
                       top.Ts.System.logAction('Task Detail - Reminder Date Change');
                   },
