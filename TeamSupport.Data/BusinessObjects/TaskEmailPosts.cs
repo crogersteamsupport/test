@@ -77,6 +77,17 @@ namespace TeamSupport.Data
             else
                 return emails[0];
         }
+
+        public void LoadByReminderID(int reminderID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM TaskEmailPosts WHERE ReminderID = @ReminderID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ReminderID", reminderID);
+                Fill(command);
+            }
+        }
     }
 
 }

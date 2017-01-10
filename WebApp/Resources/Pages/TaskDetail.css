@@ -172,3 +172,8 @@ float: left;
 .subtaskButtonsAdjustement {
     margin-top: 4px !important;
 }
+
+.clearDate {
+    float: right;
+    margin-top: -4px !important;
+}

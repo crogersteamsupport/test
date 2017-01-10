@@ -91,7 +91,7 @@ namespace TeamSupport.ServiceLibrary
 
         public override void Run()
         {
-            TaskEmailPosts.UnlockThread(LoginUser, (int)_threadPosition);
+        TaskEmailPosts.UnlockThread(LoginUser, (int)_threadPosition);
             while (!IsStopped)
             {
                 TaskEmailPost taskEmailPost = GetNextTaskEmailPost(LoginUser.ConnectionString, (int)_threadPosition, _isDebug);
@@ -173,6 +173,11 @@ namespace TeamSupport.ServiceLibrary
                 }
 
                 User owner = Users.GetUser(LoginUser, (int)task.UserID);
+                if (owner.UserID == modifier.UserID)
+                {
+                    Logs.WriteEvent("Modifier and Owner are the same person.");
+                    return;
+                }
 
                 MailMessage message = EmailTemplates.GetTaskModified(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
@@ -184,6 +189,8 @@ namespace TeamSupport.ServiceLibrary
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
                 //AddMessage(taskOrganization, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
+                Emails.AddEmail(LoginUser, task.OrganizationID, null, message.Subject, message);
+                Logs.WriteEvent("Message queued");
             }
             catch (Exception ex)
             {
@@ -227,6 +234,11 @@ namespace TeamSupport.ServiceLibrary
                 }
 
                 User owner = Users.GetUser(LoginUser, (int)task.UserID);
+                if (owner.UserID == modifier.UserID)
+                {
+                    Logs.WriteEvent("Modifier and Owner are the same person.");
+                    return;
+                }
 
                 MailMessage message = EmailTemplates.GetTaskAssigned(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
@@ -238,6 +250,8 @@ namespace TeamSupport.ServiceLibrary
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
                 //AddMessage(taskOrganization, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
+                Emails.AddEmail(LoginUser, task.OrganizationID, null, message.Subject, message);
+                Logs.WriteEvent("Message queued");
             }
             catch (Exception ex)
             {
@@ -283,7 +297,15 @@ namespace TeamSupport.ServiceLibrary
                 User owner = Users.GetUser(LoginUser, (int)task.UserID);
 
                 MailMessage message = EmailTemplates.GetTaskComplete(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
-                message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
+                if (owner.UserID == modifier.UserID)
+                {
+                    User creator = Users.GetUser(LoginUser, (int)task.CreatorID);
+                    message.To.Add(GetMailAddress(creator.Email, creator.FirstLastName));
+                }
+                else
+                {
+                    message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
+                }
                 //message.Subject = message.Subject + " [pvt]";
                 //EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
 
@@ -293,6 +315,8 @@ namespace TeamSupport.ServiceLibrary
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
                 //AddMessage(taskOrganization, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
+                Emails.AddEmail(LoginUser, task.OrganizationID, null, message.Subject, message);
+                Logs.WriteEvent("Message queued");
             }
             catch (Exception ex)
             {
