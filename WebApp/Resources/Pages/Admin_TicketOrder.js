@@ -2,15 +2,6 @@
   LoadOrder();
   CreateDOMEvents();
   LoadPluginTemplate('ticket');
-    
-  if (window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1078
-      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 13679
-      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1088
-      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 362372)
-  {
-      $('#btnAddTicketPlugin').remove();
-
-  }
 });
 
 var _pluginID = -1;
@@ -114,7 +105,7 @@ function CreateDOMEvents() {
         $('#btnPluginDelete').addClass('hidden');
         $('#div-main').addClass('hidden');
         $('#div-plugin').removeClass('hidden');
-        $('#plugin-show-variables').text('Show variables >>');
+        $('#plugin-show-variables').text('Show Placeholders >>');
         $('#plugin-variables').addClass('hidden');
     });
 
@@ -125,7 +116,7 @@ function CreateDOMEvents() {
             $('#plugin-code').val(result.Code);
             $('#plugin-name').closest('.form-group').removeClass('has-error');
             $('#btnPluginDelete').removeClass('hidden');
-            $('#plugin-show-variables').text('Show variables >>');
+            $('#plugin-show-variables').text('Show Placeholders >>');
             $('#plugin-variables').addClass('hidden');
             $('#div-main').addClass('hidden');
             $('#div-plugin').removeClass('hidden');
@@ -149,6 +140,11 @@ function CreateDOMEvents() {
             widgetData.ticket = data.ticket;
             $('#sample').html(data.code);
 
+        }, function () {
+            alert('Please enter a valid ticket number');
+            $('#sample').html('');
+
+
         });
         
     });
@@ -158,11 +154,11 @@ function CreateDOMEvents() {
         e.preventDefault();
         var el = $('#plugin-show-variables');
         if (el.text().indexOf('Show') > -1) {
-            el.text('<< Hide variables');
+            el.text('<< Hide Placeholders');
             $('#plugin-variables').removeClass('hidden');
         }
         else {
-            el.text('Show variables >>');
+            el.text('Show Placeholders >>');
             $('#plugin-variables').addClass('hidden');
         }
     });
