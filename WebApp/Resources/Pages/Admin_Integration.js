@@ -791,8 +791,6 @@ AdminInt = function () {
     		}
 
     		if (excludedTicketStatuses === null || excludedTicketStatuses == '') {
-    			parent.find('.int-crm-update-status').prop('checked', false);
-    			parent.find('#restrictedTicketTypesList').hide();
     			excludedTicketStatuses = null;
     		}
     	}
