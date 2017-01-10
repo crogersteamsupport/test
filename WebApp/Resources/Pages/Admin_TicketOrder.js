@@ -14,6 +14,7 @@
 });
 
 var _pluginID = -1;
+var widgetData = {};
 
 
 
@@ -130,6 +131,28 @@ function CreateDOMEvents() {
             $('#div-plugin').removeClass('hidden');
         });
     });
+
+    $('#btnPluginRefresh').click(function (e) {
+        e.preventDefault();
+
+        var ticketNo = $('#sampleTicketNo').val();
+        //if (!isNaN(parseFloat(ticketNo)) && isFinite(ticketNo) != true)
+        var code = $('#plugin-code').val();
+        $('#sample').html('<i class="fa fa-refresh fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>');
+        window.parent.parent.parent.Ts.Services.TicketPage.GetTicketPagePluginSample(ticketNo, code, function (result) {
+            if (result == null)
+            {
+                alert('Please enter a valid ticket number');
+                return;
+            }
+            data = JSON.parse(result);
+            widgetData.ticket = data.ticket;
+            $('#sample').html(data.code);
+
+        });
+        
+    });
+
 
     $('#plugin-show-variables').click(function (e) {
         e.preventDefault();

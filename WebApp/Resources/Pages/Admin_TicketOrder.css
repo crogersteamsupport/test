@@ -14,4 +14,5 @@
 .admin-to-cat .fa-times,.admin-to-cat .fa-pencil { cursor: pointer; }
 .admin-to-cat span { padding: 0 10px;}
 .fa-bars { cursor: url(../cursors/grab.cur), move !important; }
-.preview-wrapper { width: 270px; }
+.preview { width: 270px; }
+.preview-wrapper { margin:auto; text-align:center; width: 270px; padding-top:15px; }
