@@ -166,8 +166,8 @@ $(document).ready(function () {
 
     });
 
-    $('#TaskList').on('click', 'a.tasklink', function () {
-        //e.preventDefault();
+    $('#TaskList').on('click', 'a.tasklink', function (e) {
+        e.preventDefault();
         var id = $(this).data('reminderid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
