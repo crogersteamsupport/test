@@ -198,12 +198,13 @@
   })
 
 $('body').on('click', function (e) {
-    $('.ProductAnchor, .VersionAnchor, .wcTooltip').each(function () {
-        //the 'is' for buttons that trigger popups
-        //the 'has' for icons within a button that triggers a popup
-        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+    $("*").each(function () {
+        // Bootstrap sets a data field with key `bs.popover` on elements that have a popover.
+        // Note that there is no corresponding **HTML attribute** on the elements so we cannot
+        // perform a search by attribute.
+        var popover = $.data(this, "bs.popover");
+        if (popover)
             $(this).popover('hide');
-        }
     });
 });
 

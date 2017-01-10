@@ -809,6 +809,15 @@ function isFormValid(callback) {
 
         if (cfHasError) { InsertCreateError("Please fill in the red required custom fields."); }
         
+          //Check if we have any errors
+        if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+            if ($('#ticket-group').val() == "") {
+                InsertCreateError("A group is required to create a ticket.");
+                result = false;
+            }
+
+        }
+
         //If custom required check if the ticket is a KB if not then see if we have at least one customer
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false)
         { 
@@ -1679,8 +1688,10 @@ function loadVersions(product) {
     var versions = product.Versions;
 
     for (var i = 0; i < versions.length; i++) {
-      selectizeVersion.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
-      selectizeResolved.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+        try{
+            selectizeVersion.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+            selectizeResolved.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+        } catch (e) { }
     }
   }
 }
