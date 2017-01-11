@@ -3963,7 +3963,7 @@ WHERE t.TicketID = @TicketID
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
             // Store this sessionId in the database for later use:
             //string sessionId = session.Id;
-            var archive = OpenTok.StartArchive(sessionId);
+            var archive = OpenTok.StartArchive(sessionId,"",true, true, OutputMode.INDIVIDUAL);
             return archive.Id.ToString();
         }
 
