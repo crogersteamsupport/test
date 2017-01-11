@@ -139,8 +139,11 @@ ORDER BY cr.DateCreated ASC
                 command.CommandText = @"  
                                         SELECT *
                                         FROM ChatRequests cr
+                                            LEFT JOIN ChatClients cc
+                                            ON cc.ChatClientID = cr.RequestorID
                                         WHERE cr.IsAccepted = 0
 	                                        AND cr.OrganizationID = @OrganizationID
+                                            AND ((DATEADD(second, @Seconds, cc.LastPing) > GETUTCDATE() OR cc.LastPing IS NULL  OR cr.RequestorType = 0) AND DATEADD(minute, 30, cr.DateCreated) > GETUTCDATE())
 	                                        AND (
 		                                        cr.GroupID IS NULL
 		                                        OR cr.GroupID IN (
@@ -158,6 +161,7 @@ ORDER BY cr.DateCreated ASC
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@UserID", userID);
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@Seconds", StayAliveSeconds);
                 Fill(command);
             }
         }
