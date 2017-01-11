@@ -174,7 +174,7 @@ $(document).ready(function () {
 
     });
 
-    
+
 
     //$('.action-new').click(function (e) {
     //    e.preventDefault();
@@ -287,12 +287,15 @@ $(document).ready(function () {
     });
 
     Handlebars.registerHelper("formatRow", function (task) {
-        var cssClasses = '';
-        if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
-            cssClasses = 'danger';
-        }
-        else {
-            return null;
+        var cssClasses = null;
+
+        if (task.TaskDueDate != null) {
+            if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+                cssClasses = 'danger';
+            }
+            else {
+                return null;
+            }
         }
 
         return cssClasses;
