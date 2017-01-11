@@ -389,7 +389,7 @@ function SetupTicketProperties() {
   }
 
   if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-      if ($('#ticket-group').val() == "")
+      if ($('#ticket-group').val() == "" || $('#ticket-group').val() == "-1")
           $('#ticket-group').closest('.form-group').addClass('hasError');
       else
           $('#ticket-group').closest('.form-group').removeClass('hasError');
@@ -811,7 +811,7 @@ function isFormValid(callback) {
         
           //Check if we have any errors
         if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-            if ($('#ticket-group').val() == "-1") {
+            if ($('#ticket-group').val() == "-1" || $('#ticket-group').val() == "") {
                 InsertCreateError("A group is required to create a ticket.");
                 result = false;
             }
