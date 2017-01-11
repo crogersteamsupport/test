@@ -480,8 +480,8 @@ function SetupTicketProperties(order) {
         jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
         LoadPlugins(info);
 
-        if (!window.parent.Ts.System.User.ChangeKbVisibility && window.parent.Ts.System.User.IsSystemAdmin)
-            $('#action-new-KB').prop('disabled', true);
+    if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin)
+        $('#action-new-KB').prop('disabled', true);
 
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserID === _ticketInfo.UserID) {
@@ -1645,32 +1645,41 @@ function LoadTicketControls() {
         });
     }
 
-    if ($('#ticket-group').length) {
-        window.parent.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
-            AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
-            if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
-                for (var i = 0; i < groups.length; i++) {
-                    if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID || _ticketInfo.Ticket.GroupID === groups[i].ID) {
-                        AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
-                        if (groups[i].ProductFamilyID != null && _productFamilyID != groups[i].ProductFamilyID) {
-                            alert('This ticket group belongs to a different product line. Please set the correct ticket group.');
-                        }
-                    }
-                }
-            }
-            else {
-                for (var i = 0; i < groups.length; i++) {
-                    AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
-                }
-            }
-            $('#ticket-group').selectize({
-                onDropdownClose: function ($dropdown) {
-                    $($dropdown).prev().find('input').blur();
-                },
-                closeAfterSelect: true
-            });
-        });
-    }
+  if ($('#ticket-group').length) {
+    window.parent.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
+      AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
+      if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+          for (var i = 0; i < groups.length; i++) {
+              if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID || _ticketInfo.Ticket.GroupID === groups[i].ID) {
+                  AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
+                  if (groups[i].ProductFamilyID != null && _productFamilyID != groups[i].ProductFamilyID) {
+                      alert('This ticket group belongs to a different product line. Please set the correct ticket group.');
+                  }
+              }
+          }
+      }
+      else {
+          for (var i = 0; i < groups.length; i++) {
+              AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
+          }
+      }
+
+      $('#ticket-group').selectize({
+        onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+        },
+        closeAfterSelect: true
+      });
+
+      if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+          if ($('#ticket-group').val() == "")
+              $('#ticket-group').closest('.form-group').addClass('hasError');
+          else
+              $('#ticket-group').closest('.form-group').removeClass('hasError');
+      }
+
+    });
+  }
 
 
     _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
@@ -1889,25 +1898,32 @@ function SetupTicketPropertyEvents() {
         });
     });
 
-    $('#ticket-group').change(function (e) {
-        var self = $(this);
-        var GroupID = self.val();
-        if (GroupID == '-1') GroupID = null;
-        if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
-            window.parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
-                if (result !== null) {
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
-                }
-                _ticketGroupID = GroupID;
-                if (window.parent.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
-                    window.parent.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, GroupID);
-                }
-            },
-            function (error) {
-                alert('There was an error setting the group.');
-            });
+  $('#ticket-group').change(function (e) {
+    var self = $(this);
+    var GroupID = self.val();.0
+    if (GroupID == '-1') {
+        GroupID = null;
+        if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+            $('#ticket-group').closest('.form-group').addClass('hasError');
         }
-    });
+    }
+    else
+        $('#ticket-group').closest('.form-group').removeClass('hasError');
+    if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
+      window.parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
+        if (result !== null) {
+          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+        }
+        _ticketGroupID = GroupID;
+        if (window.parent.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
+          window.parent.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, GroupID);
+        }
+      },
+      function (error) {
+        alert('There was an error setting the group.');
+      });
+    }
+  });
 
     $('#ticket-type').change(function (e) {
         var self = $(this);
@@ -2559,6 +2575,12 @@ function LoadGroups() {
             }
         });
     }
+
+    if ($('#ticket-group').val() == -1)
+        $('#ticket-group').closest('.form-group').addClass('hasError');
+    else
+        $('#ticket-group').closest('.form-group').removeClass('hasError');
+
 }
 
 function SetupProductVersionsControl(product) {

@@ -134,6 +134,13 @@ function BuildWikiEditEvents() {
         var parentid = $('#Wiki-Edit-Parent').val();
         var wikiID;
 
+        if (title == '')
+        {
+            alert('Please enter a valid title.')
+            return;
+        }
+       
+
         if (_isCreatingNewWiki) {
           wikiID = 0;
         }
@@ -141,6 +148,7 @@ function BuildWikiEditEvents() {
           wikiID = _wikiID;
         }
         if (wikiID.toString() !== parentid) {
+
           SaveWiki(wikiID, parentid, body, title, public, private, portal, comment);
         }
         else { alert('Please select a parent article other than the one you are editing.') };

@@ -1,17 +1,11 @@
 ﻿$(document).ready(function () {
   LoadOrder();
   CreateDOMEvents();
-  if (window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1078
-      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 13679
-      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 1088
-      && window.parent.parent.parent.Ts.System.Organization.OrganizationID != 362372)
-  {
-      $('#btnAddTicketPlugin').remove();
-
-  }
+  LoadPluginTemplate('ticket');
 });
 
 var _pluginID = -1;
+var widgetData = {};
 
 
 
@@ -75,6 +69,26 @@ function CreateOrderElement(parent, cssclass, item) {
     }
 };
 
+function LoadPluginTemplate(type) {
+
+    $('#acc-template').empty();
+    var source = $('#entry-template').html();
+    var template = Handlebars.compile(source);
+    window.parent.parent.parent.Ts.Services.TicketPage.GetTicketPagePluginTemplates(type, function (result) {
+        var data = JSON.parse(result);
+        for (var i = 0; i < data.length; i++) {
+            var content = "";
+            for (var j = 0; j < data[i].items.length; j++) {
+                content += '<div class="col-md-3">{{' + data[i].name + '.' + data[i].items[j] + '}}</div>'
+            }
+            var html = template({ "collapse": 'collapse-' + i, "heading": 'heading-' + i, "title": data[i].name, "content": content });
+            $('#acc-template').append(html);
+        }
+    });
+
+};
+
+
 function CreateDOMEvents() {
     //refresh page
     $('#btnRefresh').click(function (e) {
@@ -88,8 +102,11 @@ function CreateDOMEvents() {
         $('#plugin-name').val('');
         $('#plugin-code').val('');
         $('#plugin-name').closest('.form-group').removeClass('has-error');
-        $('#modal-plugin').modal('show');
-
+        $('#btnPluginDelete').addClass('hidden');
+        $('#div-main').addClass('hidden');
+        $('#div-plugin').removeClass('hidden');
+        $('#plugin-show-variables').text('Show Placeholders >>');
+        $('#plugin-variables').addClass('hidden');
     });
 
     $('body').on('click', '.admin-to-cat .fa-pencil', function (e) {
@@ -98,21 +115,63 @@ function CreateDOMEvents() {
             $('#plugin-name').val(result.Name);
             $('#plugin-code').val(result.Code);
             $('#plugin-name').closest('.form-group').removeClass('has-error');
-            $('#modal-plugin').modal('show');
+            $('#btnPluginDelete').removeClass('hidden');
+            $('#plugin-show-variables').text('Show Placeholders >>');
+            $('#plugin-variables').addClass('hidden');
+            $('#div-main').addClass('hidden');
+            $('#div-plugin').removeClass('hidden');
         });
     });
 
-    $('#plugin-variables').hide();
+    $('#btnPluginRefresh').click(function (e) {
+        e.preventDefault();
+
+        var ticketNo = $('#sampleTicketNo').val();
+        //if (!isNaN(parseFloat(ticketNo)) && isFinite(ticketNo) != true)
+        var code = $('#plugin-code').val();
+        $('#sample').html('<i class="fa fa-refresh fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>');
+        window.parent.parent.parent.Ts.Services.TicketPage.GetTicketPagePluginSample(ticketNo, code, function (result) {
+            if (result == null)
+            {
+                alert('Please enter a valid ticket number');
+                return;
+            }
+            data = JSON.parse(result);
+            widgetData.ticket = data.ticket;
+            $('#sample').html(data.code);
+
+        }, function () {
+            alert('Please enter a valid ticket number');
+            $('#sample').html('');
+
+
+        });
+        
+    });
+
+
     $('#plugin-show-variables').click(function (e) {
         e.preventDefault();
-        $('#plugin-show-variables').hide();
-        $('#plugin-variables').show();
+        var el = $('#plugin-show-variables');
+        if (el.text().indexOf('Show') > -1) {
+            el.text('<< Hide Placeholders');
+            $('#plugin-variables').removeClass('hidden');
+        }
+        else {
+            el.text('Show Placeholders >>');
+            $('#plugin-variables').addClass('hidden');
+        }
     });
 
     $('#plugin-hide-variables').click(function (e) {
         e.preventDefault();
-        $('#plugin-show-variables').show();
-        $('#plugin-variables').hide();
+    });
+
+    
+    $('#btnPluginCancel').click(function (e) {
+        e.preventDefault();
+        $('#div-main').removeClass('hidden');
+        $('#div-plugin').addClass('hidden');
     });
 
     $('#btnPluginSave').click(function (e) {
@@ -133,10 +192,15 @@ function CreateDOMEvents() {
                 item.Disabled = "false";
                 CreateOrderElement('.admin-ticket-page-fields', 'admin-ticket-page-field', item);
                 $('.admin-ticket-page-fields, .admin-ticket-page-fields-disabled').sortable("refresh");
-                SaveOrder('.admin-ticket-page-fields', '.admin-ticket-page-field', 'TicketFieldsOrder');
             }
+            else {
+                $("body").find('[data-itemid="' + _pluginID + '"]').find('.admin-to-cat-name').text($('#plugin-name').val());
+            }
+            SaveOrder('.admin-ticket-page-fields', '.admin-ticket-page-field', 'TicketFieldsOrder');
+            $('#div-main').removeClass('hidden');
+            $('#div-plugin').addClass('hidden');
         });
-        $('#modal-plugin').modal('hide');
+
     });
     
     $('#btnPluginDelete').click(function (e) {
@@ -144,10 +208,10 @@ function CreateDOMEvents() {
         if (confirm('Are you sure you would like to delete this plugin?')) {
             window.parent.parent.parent.Ts.Services.TicketPage.DeleteTicketPagePlugin(_pluginID);
             $("body").find('[data-itemid="' + _pluginID + '"]').remove();
-            $('#modal-plugin').modal('hide');
+            $('#div-main').removeClass('hidden');
+            $('#div-plugin').addClass('hidden');
             SaveOrder('.admin-ticket-page-fields', '.admin-ticket-page-field', 'TicketFieldsOrder');
         }
-
     });
 
     $('#btnAddSpacerNewTicket').click(function (e) {

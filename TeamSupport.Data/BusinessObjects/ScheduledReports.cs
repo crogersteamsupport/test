@@ -92,15 +92,15 @@ namespace TeamSupport.Data
 
                     break;
 				case ScheduledReportFrequency.Monthly:
-					//we need: startdate, every, weekday (1:Sun, ..., 7:Sat), 
-					//				monthday (if < 5 then weekday can have a value: the 1st monday.. the 3rd wednesday, etc;
-					//						else weekday has to be null: the 5th of the month, the 20th of the month, etc)
+                    //we need: startdate, every, weekday (1:Sun, ..., 7:Sat), 
+                    //				monthday (if < 5 then weekday can have a value: the 1st monday.. the 3rd wednesday, etc;
+                    //						else weekday has to be null: the 5th of the month, the 20th of the month, etc)
 
-					DateTime startOfTheMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+                    DateTime startOfTheMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
 
 					while (dateOnly < DateTime.UtcNow)
 					{
-						if (Monthday < 5)
+						if (Monthday < 5 && Weekday != null)
 						{
 							int totalDaysInAWeek = 7;
 							dayOfWeek = (DayOfWeek)(byte)Weekday - 1;
@@ -121,22 +121,15 @@ namespace TeamSupport.Data
 						else
 						{
 							Weekday = null;
+                            DateTime startOfThisMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+                            dateOnly = startOfThisMonth.AddMonths((byte)Every);
+                            int monthTemp = dateOnly.Month;
+                            dateOnly = dateOnly.AddDays((byte)Monthday - 1); //Calculation starts on first of the month, so substract it.
 
-							if (DateTime.UtcNow > StartDateUtc)
-							{
-								if (DateTime.UtcNow.DayOfYear < startOfTheMonth.AddDays((byte)Monthday).DayOfYear)
-								{
-									dateOnly = startOfTheMonth.AddDays((byte)Monthday);
-								}
-								else
-								{
-									startOfTheMonth = new DateTime(StartDateUtc.Year, StartDateUtc.Month, 1);
-									dateOnly = startOfTheMonth.AddDays((byte)Monthday);
-								}
-							}
-
-                            //Add the rest of the Every "N" months, the first one was calculated above.
-                            dateOnly = dateOnly.AddMonths((byte)Every - 1);
+                            if (dateOnly.Month > monthTemp)
+                            {
+                                dateOnly = dateOnly.AddDays(-dateOnly.Day);
+                            }
 						}
 					}
 
