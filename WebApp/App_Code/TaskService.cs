@@ -51,6 +51,9 @@ namespace TSWebServices
                 results.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
 
+            ReminderProxy[] reminderProxies = results.GetReminderProxies();
+
+
             return convertToClientTasksList(results.GetReminderProxies(), loginUser);
         }
 
@@ -89,12 +92,12 @@ namespace TSWebServices
                     //add subtasks hook in here later... godspeed
                 }
 
-                var subtasks = reminderProxies.Where(m => m.TaskParentID != null).ToList();
-                for (int x = 0; x < subtasks.Count; x++)
-                {
-                    var clientTask = clientTasks.Where(m => m.Task.ReminderID == subtasks[x].TaskParentID).First();
-                    clientTask.SubTasks.Add(subtasks[x]);
-                }
+                //var subtasks = reminderProxies.Where(m => m.TaskParentID != null).ToList();
+                //for (int x = 0; x < subtasks.Count; x++)
+                //{
+                //    var clientTask = clientTasks.Where(m => m.Task.ReminderID == subtasks[x].TaskParentID).First();
+                //    clientTask.SubTasks.Add(subtasks[x]);
+                //}
             }
 
             return clientTasks;
@@ -153,7 +156,7 @@ namespace TSWebServices
                     break;
                 //Completed Tasks
                 case pageTab.completed:
-                    result.AssignedItems = GetTasks(0, 20, tab);
+                    result.CompletedItems = GetTasks(0, 20, tab);
                     break;
                 default:
                     break;
@@ -694,6 +697,8 @@ namespace TSWebServices
         public int CreatedCount { get; set; }
         [DataMember]
         public List<ClientTask> CreatedItems { get; set; }
+        [DataMember]
+        public List<ClientTask> CompletedItems { get; set; }
     }
 
     [DataContract(Namespace = "http://teamsupport.com/")]
