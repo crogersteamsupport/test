@@ -100,7 +100,7 @@ $(document).ready(function () {
             initiator = initiator + ' - ' + chat.CompanyName;
         }
 
-        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + chat.InitiatorDisplayName + '</a>').click(function (e) {
+        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + initiator + '</a>').click(function (e) {
             e.preventDefault();
 
             $('.list-group-item-success').removeClass('list-group-item-success');
