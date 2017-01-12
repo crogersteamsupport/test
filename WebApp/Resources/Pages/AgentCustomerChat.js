@@ -94,6 +94,12 @@ $(document).ready(function () {
     }
 
     function SetupActiveRequest(chat, shouldTrigger) {
+        var initiator = chat.InitiatorDisplayName;
+
+        if (typeof chat.CompanyName !== "undefined" && chat.CompanyName) {
+            initiator = initiator + ' - ' + chat.CompanyName;
+        }
+
         var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + chat.InitiatorDisplayName + '</a>').click(function (e) {
             e.preventDefault();
 

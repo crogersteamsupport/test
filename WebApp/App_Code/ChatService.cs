@@ -918,6 +918,7 @@ namespace TSWebServices
             public int ChatID { get; set; }
             public int ChatRequestID { get; set; }
             public int OrganizationID { get; set; }
+            public string CompanyName { get; set; }
             public int? InitiatorUserID { get; set; }
             public DateTime DateCreated { get; set; }
             public string InitiatorMessage { get; set; }
@@ -945,6 +946,7 @@ namespace TSWebServices
                 InitiatorDisplayName = string.Format("{0} {1}", initiator.FirstName, initiator.LastName);
                 InitiatorEmail = initiator.Email;
                 Description = request.Message;
+                CompanyName = initiator.CompanyName;
                 Messages = new List<ChatViewMessage>();
                 if (messages != null)
                 {
