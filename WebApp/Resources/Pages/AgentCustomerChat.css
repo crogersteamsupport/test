@@ -108,3 +108,9 @@ a { cursor: pointer; }
 }
 
 #tokStatusText { padding: 5px; }
+
+#new-message
+{
+    height:73px;
+    width:50px
+}
