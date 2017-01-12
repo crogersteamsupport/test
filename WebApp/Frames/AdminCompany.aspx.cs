@@ -173,6 +173,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Internal SLA:", level == null ? "[None Assigned]" :level.Name});
 
     table.Rows.Add(new string[] { "Show Group Members First in Ticket Assignment List:", organization.ShowGroupMembersFirstInTicketAssignmentList.ToString() });
+    table.Rows.Add(new string[] { "Require Group Assignment On Tickets:", organization.RequireGroupAssignmentOnTickets.ToString() });
     table.Rows.Add(new string[] { "Update Ticket Children Group With Parent:", organization.UpdateTicketChildrenGroupWithParent.ToString() });
     table.Rows.Add(new string[] { "Hide Alert Dismiss for Non Admins:", organization.HideDismissNonAdmins.ToString() });
     if ((organization.ProductType == ProductType.Enterprise || organization.ProductType == ProductType.BugTracking))
@@ -182,7 +183,7 @@ public partial class Frames_AdminCompany : BaseFramePage
 	table.Rows.Add(new string[] { "Two Factor Verification:", organization.TwoStepVerificationEnabled.ToString() });
 	table.Rows.Add(new string[] { "How many days before user passwords expire:", organization.DaysBeforePasswordExpire.ToString() });
 	table.Rows.Add(new string[] { "Do not include attachments on outbound emails:", organization.NoAttachmentsInOutboundEmail.ToString() });
-    table.Rows.Add(new string[] { "Require Group Assignment On Tickets:", organization.RequireGroupAssignmentOnTickets.ToString() });
+
 
         
 
@@ -202,7 +203,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     //builder.Append("<td>Available Image:</td>");
     builder.Append("<div><strong>Customer Chat Link:</strong></div>");
     builder.Append("<div>");
-        string script = string.Format("window.open('{1}/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;", organization.ChatID.ToString(), SystemSettings.GetAppUrl()); //SystemSettings.GetAppUrl());
+    string script = string.Format("window.open('{1}/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;", organization.ChatID.ToString(), SystemSettings.GetAppUrl());
 
     string link = string.Format("<a href=\"#\" onclick=\"{0}\"><img src=\"{2}/dc/{1}/chat/image\" border=\"0\" /></a>", script, organization.OrganizationID, SystemSettings.GetAppUrl());
     textChatCode.Text = link;
