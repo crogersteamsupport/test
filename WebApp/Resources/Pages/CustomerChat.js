@@ -229,7 +229,7 @@ function setupChat(chatID, participantID, callback) {
         if (!isTyping) {
             isTyping = true;
             clearTimeout(typingTimer);
-            var triggered = pressenceChannel.trigger('client-user-typing', pressenceChannel.members.me.info.name + ' is typing...');
+            var triggered = pressenceChannel.trigger('client-user-typing', { userName: pressenceChannel.members.me.info.name });
         }
     });
 
