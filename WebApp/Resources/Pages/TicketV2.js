@@ -2588,7 +2588,7 @@ function LoadGroups() {
 
 function SetupProductVersionsControl(product) {
   if ($('#ticket-Versions').length) {
-      $('#ticket-Versions').selectize({
+      var $select = $('#ticket-Versions').selectize({
           render: {
               item: function (item, escape) {
                   return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
@@ -2607,7 +2607,7 @@ function SetupProductVersionsControl(product) {
     }
   }
   if ($('#ticket-Resolved').length) {
-      $('#ticket-Resolved').selectize({
+      var $select = $('#ticket-Resolved').selectize({
           render: {
               item: function (item, escape) {
                   return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
