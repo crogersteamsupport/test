@@ -54,17 +54,20 @@ $(document).ready(function () {
         parent.Ts.MainPage.openNewTask(id);
     });
 
-    LoadUsers();
+    LoadUsers(function () {
+        $("#ddlUser").val(window.parent.Ts.System.User.UserID);
+    });
     initAssociationControls();
     resetDisplay();
 
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
-    function LoadUsers() {
+    function LoadUsers(callback) {
         parent.Ts.Services.Customers.LoadUsers(function (users) {
             for (var i = 0; i < users.length; i++) {
                 $('<option>').attr('value', users[i].UserID).text(users[i].FirstName + ' ' + users[i].LastName).data('o', users[i]).appendTo('#ddlUser');
             }
+            callback();
         });
     }
 
