@@ -512,6 +512,96 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string GetPluginTicketCustomFields(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+            values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Organizations, ticketID);
+            return values.GetJson();
+        }
+
+        [WebMethod]
+        public string GetPluginTicketUser(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            if (ticket.UserID == null) return "{}";
+            UsersViewItem user = UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)ticket.UserID);
+
+            dynamic result = new ExpandoObject();
+            result = user.GetExpandoObject();
+
+            Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+            addresses.LoadByID(user.UserID, ReferenceType.Users);
+            result.addresses = addresses.GetExpandoObject();
+
+            PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+            numbers.LoadByID(user.UserID, ReferenceType.Users);
+            result.phoneNumbers = numbers.GetExpandoObject();
+
+            CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+            values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Users, user.UserID);
+            result.customValues = values.GetExpandoObject();
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
+        public string GetPluginTicketContacts(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            ContactsView contacts = new ContactsView(TSAuthentication.GetLoginUser());
+            contacts.LoadByTicketID(ticketID);
+            dynamic result = new ExpandoObject();
+            result = contacts.GetExpandoObject();
+
+            for (int i = 0; i < contacts.Count; i++)
+            {
+                Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+                addresses.LoadByID(contacts[i].UserID, ReferenceType.Users);
+                result[i].addresses = addresses.GetExpandoObject();
+
+                PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+                numbers.LoadByID(contacts[i].UserID, ReferenceType.Users);
+                result[i].phoneNumbers = numbers.GetExpandoObject();
+
+                CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+                values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Contacts, contacts[i].UserID);
+                result[i].customValues = values.GetExpandoObject();
+            }
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
+        public string GetPluginTicketCustomers(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            OrganizationsView organizations = new OrganizationsView(TSAuthentication.GetLoginUser());
+            organizations.LoadByTicketID(ticketID);
+            dynamic result = new ExpandoObject();
+            result = organizations.GetExpandoObject();
+
+            for (int i = 0; i < organizations.Count; i++)
+            {
+                Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+                addresses.LoadByID(organizations[i].OrganizationID, ReferenceType.Organizations);
+                result[i].addresses = addresses.GetExpandoObject();
+
+                PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+                numbers.LoadByID(organizations[i].OrganizationID, ReferenceType.Organizations);
+                result[i].phoneNumbers = numbers.GetExpandoObject();
+
+                CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+                values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Organizations, organizations[i].OrganizationID);
+                result[i].customValues = values.GetExpandoObject();
+            }
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
         public string GetTicketPagePluginTemplates(string templateType)
         {
             List<ExpandoObject> result = new List<ExpandoObject>();

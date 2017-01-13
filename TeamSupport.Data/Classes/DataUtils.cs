@@ -622,7 +622,18 @@ namespace TeamSupport.Data
 			return result.ToArray();
 		}
 
-		public static string DataTableToJson(DataTable table)
+        public static ExpandoObject DataRowToExpandoObject(DataRow row)
+        {
+            var expando = new ExpandoObject();
+            foreach (DataColumn column in row.Table.Columns)
+            {
+                var dict = expando as IDictionary<String, object>;
+                dict.Add(column.ColumnName, row[column] == DBNull.Value ? null : row[column]);
+            }
+            return expando;
+        }
+
+        public static string DataTableToJson(DataTable table)
 		{
 			return JsonConvert.SerializeObject(DataTableToExpandoObject(table));
 		}

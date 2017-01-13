@@ -2,12 +2,14 @@
   LoadOrder();
   CreateDOMEvents();
   LoadPluginTemplate('ticket');
+
+  if (window.parent.parent.parent.Ts.System.Organization.ProductType != window.parent.parent.parent.Ts.ProductType.Enterprise) {
+      $('#btnAddTicketPlugin').remove();
+  }
 });
 
 var _pluginID = -1;
-var widgetData = {};
-
-
+var _ticketWidget = null;
 
 function LoadOrder() {
     //get ticket categories and append them to list
@@ -137,7 +139,11 @@ function CreateDOMEvents() {
                 return;
             }
             data = JSON.parse(result);
-            widgetData.ticket = data.ticket;
+            _ticketWidget = new TicketWidget(data.ticket);
+            _ticketWidget.getContacts();
+            _ticketWidget.getCustomers();
+            _ticketWidget.getUser();
+            _ticketWidget.getCustomFields();
             $('#sample').html(data.code);
 
         }, function () {
