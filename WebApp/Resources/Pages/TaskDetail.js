@@ -718,6 +718,13 @@ $(document).ready(function () {
         }
     });
 
+    $('#subtasksAdd').click(function (e) {
+        //e.preventDefault();
+        parent.Ts.System.logAction('Tasks Detail Page - New Task');
+        parent.Ts.MainPage.newTask(_reminderID, _taskName);
+
+    });
+
     $('#tblSubtasks').on('click', '.tasklink', function (e) {
         e.preventDefault();
 

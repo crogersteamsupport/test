@@ -325,6 +325,7 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminder newTask = (new Reminders(loginUser)).AddNewReminder();
 
+            newTask.TaskParentID = info.TaskParentID;
             newTask.OrganizationID = TSAuthentication.OrganizationID;
             newTask.TaskName = info.TaskName;
             newTask.Description = info.Description;
@@ -710,15 +711,15 @@ namespace TSWebServices
         [DataMember]
         public string Description { get; set; }
         [DataMember]
-        public int UserID { get; set; }
+        public int? UserID { get; set; }
         [DataMember]
         public bool TaskIsComplete { get; set; }
         [DataMember]
-        public DateTime TaskDueDate { get; set; }
+        public DateTime? TaskDueDate { get; set; }
         [DataMember]
         public bool IsDismissed { get; set; }
         [DataMember]
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         [DataMember]
         public List<int> Tickets { get; set; }
         [DataMember]
@@ -729,5 +730,7 @@ namespace TSWebServices
         public List<int> Company { get; set; }
         [DataMember]
         public List<int> User { get; set; }
+        [DataMember]
+        public int? TaskParentID { get; set; }
     }
 }

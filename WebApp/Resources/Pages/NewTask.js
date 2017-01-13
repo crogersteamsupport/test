@@ -8,6 +8,9 @@
 /// <reference path="ts/ts.grids.models.tickets.js" />
 /// <reference path="~/Default.aspx" />
 
+var _taskParentID;
+var _parentTaskName;
+
 $(document).ready(function () {
     $('body').layout({
         defaults: {
@@ -26,10 +29,34 @@ $(document).ready(function () {
     initScheduledReportEditor($('#Description'), function (ed) {
     });
 
+    _taskParentID = top.Ts.Utils.getQueryValue("taskparentid", window);
+    _parentTaskName = top.Ts.Utils.getQueryValue("parenttaskname", window);
+
+    if (_taskParentID) {
+        var parentName = $('<h6>')
+            .addClass('parentName');
+
+        $('<a>')
+          .attr('href', '#')
+          .addClass('parentLink')
+          .data('reminderid', _taskParentID)
+          .text(_parentTaskName + ' >')
+          .appendTo(parentName)
+
+        $('.parentLinkContainer').prepend(parentName);
+    }
+
+    $('.parentLinkContainer').on('click', '.parentLink', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('New Task - View Parent Task');
+        parent.Ts.MainPage.openNewTask(id);
+    });
+
     LoadUsers(function () {
         $("#ddlUser").val(window.parent.Ts.System.User.UserID);
     });
-
     initAssociationControls();
     resetDisplay();
 
@@ -37,6 +64,7 @@ $(document).ready(function () {
 
     function LoadUsers(callback) {
         parent.Ts.Services.Customers.LoadUsers(function (users) {
+            $('<option>').attr('value', '-1').text('Unassigned').appendTo('#ddlUser');
             for (var i = 0; i < users.length; i++) {
                 $('<option>').attr('value', users[i].UserID).text(users[i].FirstName + ' ' + users[i].LastName).data('o', users[i]).appendTo('#ddlUser');
             }
@@ -85,6 +113,16 @@ $(document).ready(function () {
         //$('#DueDate').attr("data-format", dateformat);
         //$('#ReminderDate').attr("data-format", dateformat);
         $('.datetimepicker').datetimepicker({});
+    });
+
+    $('#clearDueDate').click(function (e) {
+        top.Ts.System.logAction('New Task - Clear Due Date');
+        $('#DueDate').val('');
+    });
+
+    $('#clearReminderDate').click(function (e) {
+        top.Ts.System.logAction('New Task - Clear Reminder Date');
+        $('#ReminderDate').val('');
     });
 
     $('#cbReminder').on('click', function () {
@@ -172,7 +210,7 @@ $(document).ready(function () {
     $('#associationsContainer').on('click', '.associationDelete', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this task association?')) {
-            window.parent.parent.Ts.System.logAction('Task Detail - Delete Association');
+            window.parent.parent.Ts.System.logAction('New Task - Delete Association');
             var blockDiv = $(this).parent();
             if (blockDiv.data('attachmentID')) {
                 parent.privateServices.DeleteAttachment(blockDiv.data('attachmentID'), function (e) {
@@ -508,12 +546,16 @@ $(document).ready(function () {
 
         $('#taskSaveBtn').prop("disabled", true);
 
-        parent.Ts.System.logAction('New Task Page - Added New Task');
+        parent.Ts.System.logAction('New Task - Save New Task');
 
         var taskInfo = new Object();
+        taskInfo.TaskParentID = _taskParentID;
         taskInfo.TaskName = $("#inputName").val();
         taskInfo.Description = $("#Description").val();
-        taskInfo.UserID = $("#ddlUser").val();
+        if ($("#ddlUser").val() != -1)
+        {
+            taskInfo.UserID = $("#ddlUser").val();
+        }
         taskInfo.TaskIsComplete = $("#cbComplete").prop('checked');
         taskInfo.TaskDueDate = $("#DueDate").val();
         taskInfo.IsDismissed = !$("#cbReminder").prop('checked');
