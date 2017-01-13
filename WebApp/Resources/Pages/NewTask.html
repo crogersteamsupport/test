@@ -93,7 +93,14 @@
                                             <div class="col-md-12">
                                                 <label for="DueDate" class="col-md-2 control-label">Due Date</label>
                                                 <div class="col-md-10">
-                                                    <input class="col-md-8 form-control datetimepicker" id="DueDate" placeholder="Due Date">
+                                                    <div class="row">
+                                                        <div class="col-md-4 dateAdjustement">
+                                                            <input class="col-md-8 form-control datetimepicker" id="DueDate" placeholder="Due Date">
+                                                        </div>
+                                                        <div class="col-md-6 ">
+                                                            <i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -117,55 +124,62 @@
                                             <div class="col-md-12">
                                                 <label for="ReminderDate" class="col-md-2 control-label">Reminder Date</label>
                                                 <div class="col-md-10">
-                                                    <input class="col-md-8 form-control datetimepicker" id="ReminderDate" placeholder="Reminder Date">
+                                                    <div class="row">
+                                                        <div class="col-md-4 dateAdjustement">
+                                                            <input class="form-control datetimepicker" id="ReminderDate" placeholder="Reminder Date">
+                                                        </div>
+                                                        <div class="col-md-6 ">
+                                                            <i id="clearReminderDate" class="fa fa-times clearDate"></i>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="box mb10">
-                                <div class="box-header" style="padding-bottom: 20px;">
-                                    <h3>Associations</h3>
-                                    <div class="attachrow">
-                                        <span class="addatt" title="Add Attachments"></span>
-                                        <span class="addticket" title="Associate Ticket"></span>
-                                        <span class="adduser" title="Associate User"></span>
-                                        <span class="addcustomer" title="Associate Company"></span>
-                                        <span class="addgroup" title="Associate Group"></span>
-                                        <span class="addproduct" title="Associate Product"></span>
-                                        <div class="arrow-up"></div>
-                                    </div>
-                                    <div class="attcontainer subcontainer" id="commentatt">
-                                        <div class="upload-queue"></div>
-                                        <div class="ticket-queue"></div>
-                                        <div class="user-queue"></div>
-                                        <div class="group-queue"></div>
-                                        <div class="customer-queue"></div>
-                                        <div class="product-queue"></div>
+                                <div class="box mb10">
+                                    <div class="box-header" style="padding-bottom: 20px;">
+                                        <h3>Associations</h3>
+                                        <div class="attachrow">
+                                            <span class="addatt" title="Add Attachments"></span>
+                                            <span class="addticket" title="Associate Ticket"></span>
+                                            <span class="adduser" title="Associate User"></span>
+                                            <span class="addcustomer" title="Associate Company"></span>
+                                            <span class="addgroup" title="Associate Group"></span>
+                                            <span class="addproduct" title="Associate Product"></span>
+                                            <div class="arrow-up"></div>
+                                        </div>
+                                        <div class="attcontainer subcontainer" id="commentatt">
+                                            <div class="upload-queue"></div>
+                                            <div class="ticket-queue"></div>
+                                            <div class="user-queue"></div>
+                                            <div class="group-queue"></div>
+                                            <div class="customer-queue"></div>
+                                            <div class="product-queue"></div>
 
-                                        <span class="ur">
-                                            <form id="attachmentinput" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-                                                <input type="file" name="file[]">
-                                                <a class="ui-state-default ts-link task-tooltip" href="#" title="You can drag and drop your attachments here.">+add attachment</a>
-                                            </form>
-                                            <!--<input id="ticketinsert" class="insert-ticket" type="text" />-->
-                                            <input id="ticketinput" class="main-quick-ticket" type="text" />
-                                            <input id="userinput" class="user-search" type="text" />
-                                            <input id="customerinput" class="company-search" type="text" />
-                                            <input id="groupinput" class="group-search" type="text" />
-                                            <input id="productinput" class="product-search" type="text" />
-                                        </span>
-                                    </div>
-                                    <hr id="associationsBreak" class="associationsBreakAdjustement" />
-                                    <div id="associationsContainer">
+                                            <span class="ur">
+                                                <form id="attachmentinput" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                                                    <input type="file" name="file[]">
+                                                    <a class="ui-state-default ts-link task-tooltip" href="#" title="You can drag and drop your attachments here.">+add attachment</a>
+                                                </form>
+                                                <!--<input id="ticketinsert" class="insert-ticket" type="text" />-->
+                                                <input id="ticketinput" class="main-quick-ticket" type="text" />
+                                                <input id="userinput" class="user-search" type="text" />
+                                                <input id="customerinput" class="company-search" type="text" />
+                                                <input id="groupinput" class="group-search" type="text" />
+                                                <input id="productinput" class="product-search" type="text" />
+                                            </span>
+                                        </div>
+                                        <hr id="associationsBreak" class="associationsBreakAdjustement" />
+                                        <div id="associationsContainer">
 
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="mt20">
-                                <button class="btn btn-large btn-primary" id="taskSaveBtn">Save</button>
-                                <button id="taskCancelBtn" class="btn btn-default">Cancel</button>
+                                <div class="mt20">
+                                    <button class="btn btn-large btn-primary" id="taskSaveBtn">Save</button>
+                                    <button id="taskCancelBtn" class="btn btn-default">Cancel</button>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -64,6 +64,7 @@ $(document).ready(function () {
 
     function LoadUsers(callback) {
         parent.Ts.Services.Customers.LoadUsers(function (users) {
+            $('<option>').attr('value', '-1').text('Unassigned').appendTo('#ddlUser');
             for (var i = 0; i < users.length; i++) {
                 $('<option>').attr('value', users[i].UserID).text(users[i].FirstName + ' ' + users[i].LastName).data('o', users[i]).appendTo('#ddlUser');
             }
@@ -112,6 +113,16 @@ $(document).ready(function () {
         //$('#DueDate').attr("data-format", dateformat);
         //$('#ReminderDate').attr("data-format", dateformat);
         $('.datetimepicker').datetimepicker({});
+    });
+
+    $('#clearDueDate').click(function (e) {
+        top.Ts.System.logAction('New Task - Clear Due Date');
+        $('#DueDate').val('');
+    });
+
+    $('#clearReminderDate').click(function (e) {
+        top.Ts.System.logAction('New Task - Clear Reminder Date');
+        $('#ReminderDate').val('');
     });
 
     $('#cbReminder').on('click', function () {
@@ -541,7 +552,10 @@ $(document).ready(function () {
         taskInfo.TaskParentID = _taskParentID;
         taskInfo.TaskName = $("#inputName").val();
         taskInfo.Description = $("#Description").val();
-        taskInfo.UserID = $("#ddlUser").val();
+        if ($("#ddlUser").val() != -1)
+        {
+            taskInfo.UserID = $("#ddlUser").val();
+        }
         taskInfo.TaskIsComplete = $("#cbComplete").prop('checked');
         taskInfo.TaskDueDate = $("#DueDate").val();
         taskInfo.IsDismissed = !$("#cbReminder").prop('checked');
