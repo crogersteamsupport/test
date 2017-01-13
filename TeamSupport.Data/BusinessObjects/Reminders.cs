@@ -137,7 +137,7 @@ namespace TeamSupport.Data
         string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskIsComplete ASC, TaskDateCompleted DESC, TaskDueDate, DueDate) AS 'RowNum' FROM q)
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY CASE WHEN TaskDueDate IS NULL THEN 1 ELSE 0 END, TaskIsComplete ASC, TaskDateCompleted DESC, TaskDueDate, DueDate) AS 'RowNum' FROM q)
             SELECT
                 ReminderID
                 , OrganizationID
@@ -226,7 +226,7 @@ namespace TeamSupport.Data
         string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskIsComplete ASC, TaskDueDate ASC) AS 'RowNum' FROM q)
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY CASE WHEN TaskDueDate IS NULL THEN 1 ELSE 0 END, TaskIsComplete ASC, TaskDueDate ASC) AS 'RowNum' FROM q)
             SELECT
                 ReminderID
                 , OrganizationID

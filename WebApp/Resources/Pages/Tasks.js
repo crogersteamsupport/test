@@ -19,31 +19,22 @@ function fetchTasks() {
 
     //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
     parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
+
         $('.searchresults').fadeTo(0, 1);
 
         switch (_currentTab) {
             case 0:
                 LoadMyTasks(pageData.AssignedItems)
-                //if (pageData.AssignedItems.length > 0) {
-                //    LoadMyTasks(pageData.AssignedItems);
-                //    //if (fristLoad.AssignedItems[0].IsDismissed == 1) {
-                //    //    set completed active
-                //    //}
-                //}
-                //else {
-                //    //HideAssigned();
-                //}
                 break;
             case 1:
                 LoadCreated(pageData.CreatedItems);
                 break;
             case 2:
-                LoadMyTasks(pageData.AssignedItems);
+                LoadCompleted(pageData.CompletedItems);
                 break;
             default:
                 LoadMyTasks(pageData.AssignedItems);
         }
-        //}
 
         $('.results-loading').hide();
     });
@@ -60,14 +51,6 @@ function LoadMyTasks(tasks) {
             $('.results-empty').show();
             $('.results').hide();
         }
-        //else {
-        //    debugger;
-        //    $('.assigned-results-empty').hide();
-        //    if (tasks[0].TaskIsComplete) {
-        //        //$('.assigned-tasks-filter').removeClass('active');
-        //        $('.assigned-tasks-filter-completed').addClass('active');
-        //    }
-        //}
     }
     else {
         appendSearchResults(container, tasks);
@@ -82,15 +65,26 @@ function LoadCreated(tasks) {
     if (_start == 0) {
         insertSearchResults(container, tasks);
         if (tasks.length == 0) {
-            $('.created-results-empty').show();
+            $('.results-empty').show();
+            $('.results').hide();
         }
-        //else {
-        //    $('.created-results-empty').hide();
-        //    if (!tasks[0].TaskIsComplete) {
-        //        $('.created-tasks-filter li.active').removeClass('active');
-        //        $('.created-tasks-filter-pending').parent().addClass('active');
-        //    }
-        //}
+    }
+    else {
+        appendSearchResults(container, tasks);
+    }
+}
+
+function LoadCompleted(tasks) {
+    var container = $('.completedresults');
+    if (tasks.length < _pageSize) {
+        _allCreatedLoaded = true;
+    }
+    if (_start == 0) {
+        insertSearchResults(container, tasks);
+        if (tasks.length == 0) {
+            $$('.results-empty').show();
+            $('.results').hide();
+        }
     }
     else {
         appendSearchResults(container, tasks);
@@ -166,15 +160,15 @@ $(document).ready(function () {
 
     });
 
-    $('#TaskList').on('click', 'a.tasklink', function () {
-        //e.preventDefault();
+    $('#TaskList').on('click', 'a.tasklink', function (e) {
+        e.preventDefault();
         var id = $(this).data('reminderid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
 
     });
 
-    
+
 
     //$('.action-new').click(function (e) {
     //    e.preventDefault();
@@ -287,12 +281,15 @@ $(document).ready(function () {
     });
 
     Handlebars.registerHelper("formatRow", function (task) {
-        var cssClasses = '';
-        if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
-            cssClasses = 'danger';
-        }
-        else {
-            return null;
+        var cssClasses = null;
+
+        if (task.TaskDueDate != null) {
+            if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+                cssClasses = 'danger';
+            }
+            else {
+                return null;
+            }
         }
 
         return cssClasses;

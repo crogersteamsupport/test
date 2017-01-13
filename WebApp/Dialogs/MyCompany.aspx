@@ -149,6 +149,11 @@
 		<tr>
             <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbNoAttachmentsInOutboundEmail" runat="server" Text="Do not include attachments on outbound emails"/></td>
         </tr>
+		<tr>
+            <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbRequireGroupAssignmentOnTickets" runat="server" Text="Require a group assignment when creating or saving a ticket"/></td>
+        </tr>
+
+          
         <tr>
           <td>Business Day Start:</td>
           <td>

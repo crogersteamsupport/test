@@ -32,7 +32,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
             convert_urls: true,
             autoresize_bottom_margin: 20,
             remove_script_host: false,
-            relative_urls: false,
+            relative_urls: true,
             template_external_list_url: "tinymce/jscripts/template_list.js",
             external_link_list_url: "tinymce/jscripts/link_list.js",
             external_image_list_url: "tinymce/jscripts/image_list.js",
