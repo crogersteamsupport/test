@@ -2076,10 +2076,10 @@ function () { }, function (e) { console.log(e) });
         }
     },
 
-    newTask: function (tab, orgID) {
+    newTask: function (taskParentID, parentTaskName) {
         var query;
-        if (tab != undefined)
-            query = "?open=" + tab + "&organizationid=" + orgID;
+        if (taskParentID != undefined)
+            query = "?taskparentid=" + taskParentID + "&parenttaskname=" + parentTaskName;
         this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
     },
     closenewTaskTab: function () {

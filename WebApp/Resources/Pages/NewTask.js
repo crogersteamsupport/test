@@ -8,6 +8,9 @@
 /// <reference path="ts/ts.grids.models.tickets.js" />
 /// <reference path="~/Default.aspx" />
 
+var _taskParentID;
+var _parentTaskName;
+
 $(document).ready(function () {
     $('body').layout({
         defaults: {
@@ -24,6 +27,31 @@ $(document).ready(function () {
     });
 
     initScheduledReportEditor($('#Description'), function (ed) {
+    });
+
+    _taskParentID = top.Ts.Utils.getQueryValue("taskparentid", window);
+    _parentTaskName = top.Ts.Utils.getQueryValue("parenttaskname", window);
+
+    if (_taskParentID) {
+        var parentName = $('<h6>')
+            .addClass('parentName');
+
+        $('<a>')
+          .attr('href', '#')
+          .addClass('parentLink')
+          .data('reminderid', _taskParentID)
+          .text(_parentTaskName + ' >')
+          .appendTo(parentName)
+
+        $('.parentLinkContainer').prepend(parentName);
+    }
+
+    $('.parentLinkContainer').on('click', '.parentLink', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('New Task - View Parent Task');
+        parent.Ts.MainPage.openNewTask(id);
     });
 
     LoadUsers();
@@ -168,7 +196,7 @@ $(document).ready(function () {
     $('#associationsContainer').on('click', '.associationDelete', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this task association?')) {
-            window.parent.parent.Ts.System.logAction('Task Detail - Delete Association');
+            window.parent.parent.Ts.System.logAction('New Task - Delete Association');
             var blockDiv = $(this).parent();
             if (blockDiv.data('attachmentID')) {
                 parent.privateServices.DeleteAttachment(blockDiv.data('attachmentID'), function (e) {
@@ -504,9 +532,10 @@ $(document).ready(function () {
 
         $('#taskSaveBtn').prop("disabled", true);
 
-        parent.Ts.System.logAction('New Task Page - Added New Task');
+        parent.Ts.System.logAction('New Task - Save New Task');
 
         var taskInfo = new Object();
+        taskInfo.TaskParentID = _taskParentID;
         taskInfo.TaskName = $("#inputName").val();
         taskInfo.Description = $("#Description").val();
         taskInfo.UserID = $("#ddlUser").val();
