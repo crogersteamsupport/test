@@ -390,7 +390,6 @@ function SetupTicketPage() {
     $("input[type=text], textarea").autoGrow();
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
-        console.log(order);
         SetupTicketProperties(order);
     });
 
@@ -2326,6 +2325,13 @@ function SetupTagsSection() {
     }
 };
 
+function PrependTask(parent, id, value, data) {
+    debugger;
+    var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
+    var taskHTML = _compiledTaskTemplate({ id: id, value: value });
+    return $(taskHTML).prependTo(parent).data('task', data);
+}
+
 function AddTags(tags) {
     var tagDiv = $("#ticket-tags");
     tagDiv.empty();
@@ -3189,10 +3195,10 @@ function AddTasks(tasks) {
     var tasksDiv = $("#ticket-task-span");
     tasksDiv.empty();
 
-    for (var i = 0; i < tasks.length; i++) {
-        var label = '<span class="TaskAnchor" data-placement="left">' + ellipseString(tasks[i].Description, 30) + '<br>' + tasks[i].DueDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()) + '</span';
+    for (var i = 0; i < tasks.length; i++) {                                  
+        //var label = '<span class="TaskAnchor" data-placement="left">' + ellipseString(tasks[i].Description, 30) + '<br>' + tasks[i].DueDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()) + '</span';
         //label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
-        var reminderElem = PrependTag(tasksDiv, tasks[i].ReminderID, label, tasks[i]);
+        var reminderElem = PrependTask(tasksDiv, tasks[i].ReminderID, tasks[i].TaskName, tasks[i]);
     };
 }
 
