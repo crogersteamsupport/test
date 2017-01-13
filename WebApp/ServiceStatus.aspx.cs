@@ -51,7 +51,7 @@ WHERE IsWaiting = 1
 
         isFailed = CheckCount(isFailed, rowBuilder, 500, "Email Processing", "There are too many records in the EmailPosts table, check EmailProcessor service.", @"
 SELECT COUNT(*) FROM EmailPosts
-WHERE DATEDIFF(SECOND, GETUTCDATE(), DATEADD(SECOND, HoldTime, DateCreated)) < 0 
+WHERE CreatorID <> -5 AND DATEDIFF(SECOND, GETUTCDATE(), DATEADD(SECOND, HoldTime, DateCreated)) < 0 
 ");
 
         //result.Append(string.Format("<h2 style=\"color:{1};\">{0} is{2} running.</h2>", name, !isFailed ? "green" : "red", !isFailed ? "" : " NOT"));
