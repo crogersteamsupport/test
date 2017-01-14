@@ -521,6 +521,15 @@ namespace TSWebServices
             return values.GetJson();
         }
 
+        public string GetPluginTicketActions(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            Actions actions = new Actions(TSAuthentication.GetLoginUser());
+            actions.LoadByTicketID(ticketID);
+            return actions.GetJson();
+        }
+
         [WebMethod]
         public string GetPluginTicketUser(int ticketID)
         {

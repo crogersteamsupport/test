@@ -86,7 +86,7 @@
             for (var i = 0; i < data.length; i++) {
                 var content = "";
                 for (var j = 0; j < data[i].items.length; j++) {
-                    content += '<div class="col-md-3">{{' + data[i].name + '.' + data[i].items[j] + '}}</div>'
+                    content += '<div class="col-md-3"><a class="placeholder-link" href="#">{{' + data[i].name + '.' + data[i].items[j] + '}}</a></div>'
                 }
                 var html = template({ "collapse": 'collapse-' + i, "heading": 'heading-' + i, "title": data[i].name, "content": content });
                 $('#acc-template').append(html);
@@ -130,6 +130,10 @@
             });
         });
 
+        $('#plugin-variables').on('click', '.placeholder-link', function (e) {
+            e.preventDefault();
+            _codeMirror.getDoc().replaceSelection($(this).text());
+        });
         $('#btnPluginRefresh').click(function (e) {
             e.preventDefault();
 
