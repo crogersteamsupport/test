@@ -173,6 +173,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Internal SLA:", level == null ? "[None Assigned]" :level.Name});
 
     table.Rows.Add(new string[] { "Show Group Members First in Ticket Assignment List:", organization.ShowGroupMembersFirstInTicketAssignmentList.ToString() });
+    table.Rows.Add(new string[] { "Require Group Assignment On Tickets:", organization.RequireGroupAssignmentOnTickets.ToString() });
     table.Rows.Add(new string[] { "Update Ticket Children Group With Parent:", organization.UpdateTicketChildrenGroupWithParent.ToString() });
     table.Rows.Add(new string[] { "Hide Alert Dismiss for Non Admins:", organization.HideDismissNonAdmins.ToString() });
     if ((organization.ProductType == ProductType.Enterprise || organization.ProductType == ProductType.BugTracking))
@@ -183,7 +184,11 @@ public partial class Frames_AdminCompany : BaseFramePage
 	table.Rows.Add(new string[] { "How many days before user passwords expire:", organization.DaysBeforePasswordExpire.ToString() });
 	table.Rows.Add(new string[] { "Do not include attachments on outbound emails:", organization.NoAttachmentsInOutboundEmail.ToString() });
 
-	rptProperties.DataSource = table;
+
+        
+
+
+    rptProperties.DataSource = table;
     rptProperties.DataBind();
   }
 

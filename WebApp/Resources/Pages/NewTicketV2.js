@@ -388,10 +388,25 @@ function SetupTicketProperties() {
     });
   }
 
+  if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+      if ($('#ticket-group').val() == "" || $('#ticket-group').val() == "-1")
+          $('#ticket-group').closest('.form-group').addClass('hasError');
+      else
+          $('#ticket-group').closest('.form-group').removeClass('hasError');
+  }
+
   $('#ticket-group').change(function (e) {
       var self = $(this);
       _ticketGroupID = self.val();
-      if (_ticketGroupID == '-1') _ticketGroupID = null;
+      if (_ticketGroupID == '-1') {
+          _ticketGroupID = null;
+          if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+                  $('#ticket-group').closest('.form-group').addClass('hasError');
+          }
+      }
+      else
+          $('#ticket-group').closest('.form-group').removeClass('hasError');
+
   });
 
   //Type
@@ -522,7 +537,7 @@ function SaveTicket() {
         var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
         info.DueDate = _dueDate;
 
-        info.CategoryID = ($('#ticket-Category').length) ? $('#ticket-Category').val() : null;//$('#ticket-Category').val();
+        info.CategoryID = ($('#ticket-Community').length) ? $('#ticket-Community').val() : null;//$('#ticket-Category').val();
         info.ProductID = ($('#ticket-Product').length && $('#ticket-Product').val() !== '') ? $('#ticket-Product').val() : '-1';//($('#ticket-Product').val() == '') ? '-1' : $('#ticket-Product').val();
         info.ReportedID = ($('#ticket-Versions').length && $('#ticket-Versions').val() !== '') ? $('#ticket-Versions').val() : '-1';//($('#ticket-Versions').val() == '') ? '-1' : $('#ticket-Versions').val();
         info.ResolvedID = ($('#ticket-Resolved').length && $('#ticket-Resolved').val() !== '') ? $('#ticket-Resolved').val() : '-1';//($('#ticket-Resolved').val() == '') ? '-1' : $('#ticket-Resolved').val();
@@ -794,6 +809,15 @@ function isFormValid(callback) {
 
         if (cfHasError) { InsertCreateError("Please fill in the red required custom fields."); }
         
+          //Check if we have any errors
+        if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+            if ($('#ticket-group').val() == "-1" || $('#ticket-group').val() == "") {
+                InsertCreateError("A group is required to create a ticket.");
+                result = false;
+            }
+
+        }
+
         //If custom required check if the ticket is a KB if not then see if we have at least one customer
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false)
         { 
@@ -1664,8 +1688,10 @@ function loadVersions(product) {
     var versions = product.Versions;
 
     for (var i = 0; i < versions.length; i++) {
-      selectizeVersion.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
-      selectizeResolved.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+        try {
+            selectizeVersion.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+            selectizeResolved.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+        } catch (e) { }
     }
   }
 }

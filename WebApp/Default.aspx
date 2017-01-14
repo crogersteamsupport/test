@@ -6,6 +6,7 @@
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <html>
 <head id="Head1" runat="server">
+  <meta name="robots" content="noindex, nofollow">
   <title>Teamsupport</title>
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
 	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg">
@@ -104,10 +105,11 @@
         }
     })
     $(window).on('beforeunload', function () {
-        //if (backspaceIsPressed) {
-        //    backspaceIsPressed = false
-        //    return "Are you sure you want to leave this page?"
-        //}
+        if (backspaceIsPressed) {
+            backspaceIsPressed = false
+            return "Are you sure you want to leave this page?"
+        }
+
         if (!isSignedOut)
         {
             var iframes = document.getElementsByTagName('iframe'); //all iframes on page
