@@ -14,7 +14,7 @@
     });
 
     var _pluginID = -1;
-    var _ticketWidget = null;
+    var ticketWidget = null;
 
     function LoadOrder() {
         //get ticket categories and append them to list
@@ -148,20 +148,12 @@
                     return;
                 }
                 data = JSON.parse(result);
-                _ticketWidget = new TicketWidget(data.ticket);
-                _ticketWidget.getContacts();
-                _ticketWidget.getCustomers();
-                _ticketWidget.getUser();
-                _ticketWidget.getCustomFields();
+                ticketWidget = new TicketWidget(data.ticket);
                 $('#sample').html(data.code);
-
             }, function () {
                 alert('Please enter a valid ticket number');
                 $('#sample').html('');
-
-
             });
-
         });
 
 
