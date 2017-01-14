@@ -1901,6 +1901,7 @@ namespace TSWebServices
             {
                 CRMLinkTable crmlink = new CRMLinkTable(TSAuthentication.GetLoginUser());
                 crmlink.LoadByOrganizationID(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).OrganizationID);
+
                 foreach (DataRow crmRow in crmlink.Table.Rows)
                 {
                     if (crmRow["CRMType"].ToString() == "Jira")
@@ -1909,7 +1910,12 @@ namespace TSWebServices
                         linkToJira.LoadByTicketID(ticketID);
 
                         TicketLinkToJiraItemProxy ticketLinktoJiraProxy = GetLinkToJira(ticketID);
-                        if (ticketLinktoJiraProxy != null && linkToJira.Count > 0)
+                        int crmLinkId = int.Parse(crmRow["CRMLinkID"].ToString());
+
+                        if (ticketLinktoJiraProxy != null
+                            && linkToJira.Count > 0
+                            && ticketLinktoJiraProxy.CrmLinkID == linkToJira[0].CrmLinkID
+                            && crmLinkId == ticketLinktoJiraProxy.CrmLinkID)
                         {
                             if (ticketLinktoJiraProxy.JiraID != null && !String.IsNullOrEmpty(ticketLinktoJiraProxy.JiraKey))
                             {
@@ -3775,7 +3781,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error deleting losing ticket from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("We have encountered a possible error merging your tickets. Please check and ensure the loser was deleted and the tickets merged as expected. If not or if you have any concerns please contact support.");
             }
 
             try
@@ -3961,6 +3967,13 @@ WHERE t.TicketID = @TicketID
             return archive.Id.ToString();
         }
 
+        [WebMethod]
+        public string StartArchivingScreen(string sessionId)
+        {
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            var archive = OpenTok.StartArchive(sessionId, "", true, true, OutputMode.INDIVIDUAL);
+            return archive.Id.ToString();
+        }
 
         [WebMethod]
         public string StopArchiving(string archiveId)

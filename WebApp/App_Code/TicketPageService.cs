@@ -214,6 +214,7 @@ namespace TSWebServices
             {
                 if (!viewItem.IsWC)
                 {
+
                     Attachments attachments = new Attachments(loginUser);
                     attachments.LoadByActionID(viewItem.RefID);
 
@@ -227,6 +228,7 @@ namespace TSWebServices
                 else
                 {
                     TimeLineItem wcItem = new TimeLineItem();
+                    WaterCoolerThread thread = new WaterCoolerThread();
                     wcItem.item = viewItem.GetProxy();
 
                     WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
@@ -262,6 +264,15 @@ namespace TSWebServices
                       }
 
                       wcItem.WaterCoolerReplies = wcReplies.ToArray();
+
+                      WatercoolerAttachments threadAttachments = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                      threadAttachments.LoadByMessageID(viewItem.RefID);
+                      thread.Groups = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
+                      thread.Tickets = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
+                      thread.Products = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
+                      thread.Company = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
+                      thread.User = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+                      wcItem.WatercoolerReferences = thread;
                       timeLineItems.Add(wcItem);
                     }
                 }
@@ -354,6 +365,57 @@ namespace TSWebServices
             List<TicketCategoryOrder> items = JsonConvert.DeserializeObject<List<TicketCategoryOrder>>(Settings.OrganizationDB.ReadString(KeyName, defaultOrder));
 
             return items.ToArray();
+        }
+
+        [WebMethod]
+        public PluginProxy GetTicketPagePlugin(int pluginID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID)
+            {
+                return plugin.GetProxy();
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public PluginProxy SaveTicketPagePlugin(int pluginID, string name, string code)
+        {
+            Plugin plugin;
+
+            if (pluginID < 0)
+            {
+                Plugins plugins = new Plugins(TSAuthentication.GetLoginUser());
+                plugin = plugins.AddNewPlugin();
+                plugin.Code = code;
+                plugin.CreatorID = TSAuthentication.UserID;
+                plugin.DateCreated = DateTime.UtcNow;
+                plugin.Name = name;
+                plugin.OrganizationID = TSAuthentication.OrganizationID;
+            }
+            else
+            {
+                plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+                if (plugin.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+                {
+                    plugin.Name = name;
+                    plugin.Code = code;
+                }
+            }
+
+            plugin.BaseCollection.Save();
+            return plugin.GetProxy();
+        }
+
+        [WebMethod]
+        public void DeleteTicketPagePlugin(int pluginID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+            {
+                plugin.Delete();
+                plugin.BaseCollection.Save();
+            }
         }
 
         [WebMethod]
@@ -937,6 +999,8 @@ namespace TSWebServices
             public AttachmentProxy[] Attachments { get; set; }
             [DataMember]
             public WaterCoolerReply[] WaterCoolerReplies { get; set; }
+
+            public WaterCoolerThread WatercoolerReferences { get; set; }
         }
 
         [DataContract]
@@ -960,6 +1024,8 @@ namespace TSWebServices
             public string CatName { get; set; }
             [DataMember]
             public string Disabled { get; set; }
+            [DataMember]
+            public string ItemID { get; set; }
         }
 
         //Private Methods

@@ -555,48 +555,54 @@ $(document).ready(function () {
   	if (!$(this).hasClass('editable'))
   		return false;
 
-  	top.Ts.System.logAction('Product Detail - Edit Email Reply To Address');
   	var header = $(this).hide();
-  	var container = $('<div>')
-      .insertAfter(header);
+  	window.parent.Ts.System.logAction('Product Detail - Edit Email Reply To Address');
+  	var container = $('<div>').insertAfter(header);
 
   	var container1 = $('<div>')
-        .addClass('col-xs-8')
-      .appendTo(container);
+		.addClass('col-xs-9')
+		.attr('style', 'padding-left: 1px')
+		.appendTo(container);
 
-  	$('<input type="text">')
-      .addClass('col-xs-8 form-control')
-      .val($(this).text())
-      .appendTo(container1)
-      .focus();
+  	var select = $('<select>').addClass('form-control').attr('id', 'ddlfieldEmailReplyAddress').appendTo(container1);
+
+  	window.parent.Ts.Services.Organizations.LoadEMailAlternateByOrgID(window.parent.Ts.System.Organization.OrganizationID, function (email) {
+  	    $('<option>').attr('value', '-1').text('Not Set').appendTo(select);
+  	    for (var i = 0; i < email.length; i++) {
+  	        if (email[i].SendingEMailAddress != null) {
+  	            var opt = $('<option>').attr('value', i).text(email[i].SendingEMailAddress);
+  	            if (header.text() == email[i].SendingEMailAddress)
+  	                opt.attr('selected', 'selected');
+  	            opt.appendTo(select);
+  	        }
+  	    }
+  	});
 
   	$('<i>')
-      .addClass('col-xs-1 fa fa-times')
-      .click(function (e) {
-      	$(this).closest('div').remove();
-      	header.show();
-      	$('#productEdit').removeClass("disabled");
-      })
-      .insertAfter(container1);
-  	$('<i>')
-      .addClass('col-xs-1 fa fa-check')
-      .click(function (e) {
-      	top.Ts.System.logAction('Product Detail - Email Reply To Address Edit');
-      	var isForProductVersion = false;
-      	top.Ts.Services.Products.SetEmailReplyToAddress(_productID, $(this).prev().find('input').val(), function (result) {
-      		header.text(result);
-      		$('#fieldEmailReplyToAddress').text(result);
-      	},
-        function (error) {
-        	header.show();
-        	alert('There was an error saving the product email reply to address.');
-        });
+	  .addClass('col-xs-1 fa fa-times')
+	  .click(function (e) {
+	      $(this).closest('div').remove();
+	      header.show();
+	      $('#productEdit').removeClass("disabled");
+	  })
+	  .insertAfter(container1);
 
-      	$('#productEdit').removeClass("disabled");
-      	$(this).closest('div').remove();
-      	header.show();
-      })
-      .insertAfter(container1);
+  	$('#ddlfieldEmailReplyAddress').on('change', function () {
+  	    var value = $(this).val();
+  	    var name = this.options[this.selectedIndex].innerHTML;
+  	    container.remove();
+  	    window.parent.Ts.System.logAction('Product Detail - Save Email Reply To Address');
+
+  	    top.Ts.Services.Products.SetEmailReplyToAddress(_productID, name, function (result) {
+  	        header.text(name);
+  	        header.show();
+  	        $('#productEdit').removeClass("disabled");
+  	    }, function () {
+  	        alert("There was a problem saving your product property.");
+  	        $('#productEdit').removeClass("disabled");
+  	    });
+  	});
+
   	$('#productEdit').addClass("disabled");
   });
 

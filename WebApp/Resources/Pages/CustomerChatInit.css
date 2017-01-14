@@ -1,0 +1,16 @@
+﻿.panel { margin-bottom: 0px; }
+
+.panel-body {
+    padding: 0px;
+    height: calc(100vh - 45px);
+    padding-top: 10px;
+}
+
+.panel-heading { background-color: #3d6da7 !important; color: white !important; }
+
+.chat-logo {
+    background: #fff url('/dc/1078/chat/logo') no-repeat;
+    height: 200px;
+    width: 99px;
+}
+.description-label { width: 100%; }

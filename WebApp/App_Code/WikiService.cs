@@ -246,10 +246,11 @@ namespace TSWebServices
 
             wiki.ParentID = parent;
             wiki.Body = wikiBody;
-            wiki.ArticleName = wikiTitle;
+            wiki.ArticleName = (wikiTitle == "") ? "untitled" : wikiTitle;
             wiki.PublicView = publicView;
             wiki.Private = privateView;
             wiki.PortalView = portalView;
+            wiki.IsDeleted = false;
             wiki.ModifiedDate = DateTime.UtcNow;
             wiki.ModifiedBy = loggedInUser.UserID;
 

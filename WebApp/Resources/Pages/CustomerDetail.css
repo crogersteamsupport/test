@@ -1,6 +1,9 @@
 ﻿body {
 }
 .form-horizontal .control-label{font-weight:normal;color:#888;text-align:left;font-size:12px}
+.tab-pane .form-horizontal .form-group {
+    margin: 15px 15px 0 15px;
+}
 /*.form-group {margin-bottom: 0px;}*/
 .borderbottom{border-bottom: 1px dashed #e3e3e3;}
 .mr15{margin-right:15px;}
@@ -13,7 +16,7 @@
   
 #addressPanel {margin-top: 20px;}
 
-.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus
+.main-nav .nav-tabs > li.active > a, .main-nav .nav-tabs > li.active > a:hover, .main-nav .nav-tabs > li.active > a:focus
 {
     background-color: #428BCA !important;
     color: white !important;

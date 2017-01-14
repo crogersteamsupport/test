@@ -1624,6 +1624,15 @@ namespace TSWebServices
             return JsonConvert.SerializeObject(result);
         }
 
+        [WebMethod]
+        public EMailAlternateInboundItemProxy[] LoadEMailAlternateByOrgID(int OrganizationID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            EMailAlternateInbound items = new EMailAlternateInbound(loginUser);
+            items.LoadByOrganizationID(OrganizationID);
+            return items.GetEMailAlternateInboundItemProxies();
+        }
+
     }
 
     [DataContract]

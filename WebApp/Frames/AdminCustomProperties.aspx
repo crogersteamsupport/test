@@ -150,6 +150,9 @@
               <div id="divVisibleOnPortal">
                   <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />&nbsp&nbsp
               </div>
+              <div id="divIsActive">
+                  <asp:CheckBox ID="cbIsActive" runat="server" Text="Is Active" />&nbsp&nbsp
+              </div>
           </div>
           <div style="float: right; margin: 0px 0px 0 0;">
             <asp:Button ID="btnOk1" runat="server" Text="OK" OnClientClick="closeEditTypeWindow(true); return false;" />&nbsp
@@ -311,6 +314,7 @@
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = false;
         $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = false;
+        $get('<%= wndEditType.ContentContainer.FindControl("cbIsActive").ClientID %>').checked = false;
 
         if (id != null) {
           PageMethods.GetTypeObject(_type, id, function(result) {
@@ -324,6 +328,8 @@
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsShipping").ClientID %>').checked = result.IsShipping;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = result.IsDiscontinued;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = result.IsVisibleOnPortal;
+            $get('<%= wndEditType.ContentContainer.FindControl("cbIsActive").ClientID %>').checked = result.IsActive;
+
               if (_type == 5) {
                   loadTicketTypeImageCombo(result.IconUrl.toLowerCase());
                   loadTicketTypeProductFamilyCombo(result.ProductFamilyID);
@@ -371,6 +377,7 @@
             $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeProductFamilies").ClientID %>').get_value(),
             $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeIcons").ClientID %>').get_value(),
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked,
+            $get('<%= wndEditType.ContentContainer.FindControl("cbIsActive").ClientID %>').checked, //vv
             function (html) {
               $('#divTypes').html(html);
               if (_type == 5) loadTicketTypeCombo();

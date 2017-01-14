@@ -90,7 +90,9 @@
       }
     }
 
-    var backspaceIsPressed = false
+    var backspaceIsPressed = false;
+    var isSignedOut = false;
+
     $(document).keydown(function (event) {
         if (event.which == 8) {
             backspaceIsPressed = true
@@ -102,17 +104,20 @@
         }
     })
     $(window).on('beforeunload', function () {
-        //if (backspaceIsPressed) {
-        //    backspaceIsPressed = false
-        //    return "Are you sure you want to leave this page?"
-        //}
+        if (backspaceIsPressed) {
+            backspaceIsPressed = false
+            return "Are you sure you want to leave this page?"
+        }
 
-        var iframes = document.getElementsByTagName('iframe'); //all iframes on page
-        for (var i = 0; i < iframes.length; i++) {
-            try {
-                if (iframes[i].contentWindow.tinyMCE.activeEditor)
-                    return "Are you sure you want to leave this page?"
-            } catch (e) { }
+        if (!isSignedOut)
+        {
+            var iframes = document.getElementsByTagName('iframe'); //all iframes on page
+            for (var i = 0; i < iframes.length; i++) {
+                try {
+                    if (iframes[i].contentWindow.tinyMCE.activeEditor)
+                        return "Are you sure you want to leave this page?"
+                } catch (e) { }
+            }
         }
 
     })
@@ -176,6 +181,7 @@
         <asp:ServiceReference Path="~/Services/PublicService.asmx" />
         <asp:ServiceReference Path="~/Services/PrivateServices.asmx" />
         <asp:ServiceReference Path="~/Services/LoginService.asmx" />
+        <asp:ServiceReference Path="~/Services/ChatService.asmx" />
       </services>
     <scripts>
     
@@ -191,6 +197,7 @@
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.tabs.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.menutree.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.pages.main.js" />
+        <asp:ScriptReference Path="https://js.pusher.com/3.1/pusher.min.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>

@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public bool NotifyGroupOnViolation { get; set; }
     [DataMember] public int WarningTime { get; set; }
     [DataMember] public bool UseBusinessHours { get; set; }
+    [DataMember] public bool NoBusinessHours { get; set; }
     [DataMember] public bool PauseOnHoliday { get; set; }
     [DataMember] public int Weekdays { get; set; }
     [DataMember] public DateTime? DayStart { get; set; }
@@ -52,6 +53,7 @@ namespace TeamSupport.Data
       result.TimeZone = this.TimeZone;
       result.Weekdays = this.Weekdays;
       result.PauseOnHoliday = this.PauseOnHoliday;
+      result.NoBusinessHours = this.NoBusinessHours;
       result.UseBusinessHours = this.UseBusinessHours;
       result.WarningTime = this.WarningTime;
       result.NotifyGroupOnViolation = this.NotifyGroupOnViolation;

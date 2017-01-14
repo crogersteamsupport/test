@@ -78,7 +78,7 @@ public partial class Frames_AdminSla : BaseFramePage
 
     StringBuilder builder = new StringBuilder();
 
-    builder.Append("<table width=\"100%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\"><thead><tr><th /><th /><th>Severity</th><th>Initial Response</th><th>Last Action</th><th>To Closed</th><th>Warning Time</th><th>Business Hours</th><th>Pause on Company Holidays</th><th>Days of Week</th><th>Start Time</th><th>End Time</th><th>Time Zone</th></tr></thead><tbody>");
+    builder.Append("<table width=\"100%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\"><thead><tr><th /><th /><th>Severity</th><th>Initial Response</th><th>Last Action</th><th>To Closed</th><th>Warning Time</th><th>Pause on Company Holidays</th><th>Business Hours</th><th>Days of Week</th><th>Start Time</th><th>End Time</th><th>Time Zone</th></tr></thead><tbody>");
 
     foreach (SlaTriggersViewItem item in triggers)
     {
@@ -93,12 +93,12 @@ public partial class Frames_AdminSla : BaseFramePage
         DataUtils.MinutesToDisplayTime(item.TimeLastAction, "0"),
         DataUtils.MinutesToDisplayTime(item.TimeToClose, "0"),
         DataUtils.MinutesToDisplayTime(item.WarningTime, "0"),
-        item.UseBusinessHours.ToString(),
         item.PauseOnHoliday.ToString(),
-        GetDays(item.Weekdays),
-        (item.DayStart != null ? TimeZoneInfo.ConvertTimeFromUtc(item.DayStartUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(item.TimeZone)).ToString("hh:mm tt") : ""),
-        (item.DayEnd != null ? TimeZoneInfo.ConvertTimeFromUtc(item.DayEndUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(item.TimeZone)).ToString("hh:mm tt") : ""),
-        item.TimeZone
+        (item.NoBusinessHours) ? "No" : (item.UseBusinessHours) ? "Account" : "Custom",
+        (!item.NoBusinessHours && !item.UseBusinessHours) ? GetDays(item.Weekdays) : "",
+        (!item.NoBusinessHours && !item.UseBusinessHours) ? (item.DayStart != null ? TimeZoneInfo.ConvertTimeFromUtc(item.DayStartUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(item.TimeZone)).ToString("hh:mm tt") : "") : "",
+        (!item.NoBusinessHours && !item.UseBusinessHours) ? (item.DayEnd != null ? TimeZoneInfo.ConvertTimeFromUtc(item.DayEndUtc.Value, TimeZoneInfo.FindSystemTimeZoneById(item.TimeZone)).ToString("hh:mm tt") : "") : "",
+        (!item.NoBusinessHours && !item.UseBusinessHours) ? item.TimeZone : ""
         ));
     }
 

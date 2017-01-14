@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Mail;
 using System.Collections.Generic;
 //using Microsoft.AspNet.SignalR.Client;//ToDo //vv Not Yet. Per Kevin, services service need to be able to access the signalr server first. To do at a future date.
@@ -37,6 +36,7 @@ namespace TeamSupport.ServiceLibrary
 
                         if (ticket != null)
                         {
+                            bool isStatusPaused = ticket.IsSlaStatusPaused();
                             bool isClosed = ticket.DateClosed != null;
                             DateTime? newSlaViolationTimeClosed = null;
                             DateTime? newSlaWarningTimeClosed = null;
@@ -45,14 +45,20 @@ namespace TeamSupport.ServiceLibrary
                             DateTime? newSlaViolationInitialResponse = null;
                             DateTime? newSlaWarningInitialResponse = null;
 
-                            if (!isClosed)
+                            if (!isClosed && !isStatusPaused)
                             {
                                 DateTime? lastActionDateCreated = Actions.GetLastActionDateCreated(LoginUser, ticket.TicketID);
                                 int totalActions = Actions.TotalActionsForSla(LoginUser, ticket.TicketID);
 
                                 Organization organization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
                                 SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(LoginUser, slaTicket.SlaTriggerId);
-                                BusinessHours businessHours = new BusinessHours()
+
+                                if (slaTrigger != null)
+                                {
+                                    Logs.WriteEventFormat("Trigger {0} not found.", slaTicket.SlaTriggerId);
+                                }
+
+                                SlaTickets.BusinessHours businessHours = new SlaTickets.BusinessHours()
                                 {
                                     DayStartUtc = organization.BusinessDayStartUtc,
                                     DayEndUtc = organization.BusinessDayEndUtc,
@@ -61,6 +67,7 @@ namespace TeamSupport.ServiceLibrary
 
                                 //Check if we should use SLA's business hours instead of Account's
                                 if (!slaTrigger.UseBusinessHours
+                                    && !slaTrigger.NoBusinessHours
                                     && slaTrigger.DayStartUtc.HasValue
                                     && slaTrigger.DayEndUtc.HasValue)
                                 {
@@ -68,7 +75,7 @@ namespace TeamSupport.ServiceLibrary
                                     businessHours.DayEndUtc = slaTrigger.DayEndUtc.Value;
                                     businessHours.BusinessDays = slaTrigger.Weekdays;
                                 }
-                                else if (!slaTrigger.UseBusinessHours)
+                                else if (!slaTrigger.UseBusinessHours && !slaTrigger.NoBusinessHours)
                                 {
                                     Logs.WriteEventFormat("Using Account's business hours {0} to {1} because while the trigger is set to use sla's business hours one of them has no value. Sla DayStartUtc {2}, Sla DayEndUtc {3}",
                                         organization.BusinessDayStartUtc.ToShortTimeString(),
@@ -93,20 +100,23 @@ namespace TeamSupport.ServiceLibrary
                                     holidays.LoadHolidays(organization.OrganizationID);
                                 }
 
-                                TimeSpan pausedTimeSpan = CalculatePausedTime(ticket.TicketID, businessHours, slaTrigger, daysToPause, holidays, Logs, LoginUser);//vv
+                                Dictionary<int, double> businessPausedTimes = new Dictionary<int, double>();
+                                TimeSpan pausedTimeSpan = SlaTickets.CalculatePausedTime(ticket.TicketID, organization, businessHours, slaTrigger, daysToPause, holidays, LoginUser, businessPausedTimes, Logs);
+                                Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpan.ToString());
 
-                                newSlaViolationTimeClosed = CalculateSLA(ticket.DateCreatedUtc, businessHours, slaTrigger, slaTrigger.TimeToClose, pausedTimeSpan, daysToPause, holidays, Logs);
+                                UpdateBusinessPausedTimes(LoginUser, businessPausedTimes); //vv
+
+                                newSlaViolationTimeClosed = SlaTickets.CalculateSLA(ticket.DateCreatedUtc, businessHours, slaTrigger, slaTrigger.TimeToClose, pausedTimeSpan, daysToPause, holidays);
 
                                 if (newSlaViolationTimeClosed != null)
                                 {
-                                    newSlaWarningTimeClosed = CalculateSLAWarning((DateTime)newSlaViolationTimeClosed.Value,
+                                    newSlaWarningTimeClosed = SlaTickets.CalculateSLAWarning(newSlaViolationTimeClosed.Value,
                                                                                     businessHours,
-                                                                                    slaTrigger.UseBusinessHours,
+                                                                                    slaTrigger.NoBusinessHours,
                                                                                     slaTrigger.TimeToClose,
                                                                                     slaTrigger.WarningTime,
                                                                                     daysToPause,
-                                                                                    holidays,
-                                                                                    Logs);
+                                                                                    holidays);
                                 }
 
                                 if (lastActionDateCreated == null)
@@ -116,25 +126,23 @@ namespace TeamSupport.ServiceLibrary
                                 }
                                 else
                                 {
-                                    newSlaViolationLastAction = CalculateSLA(lastActionDateCreated.Value,
+                                    newSlaViolationLastAction = SlaTickets.CalculateSLA(lastActionDateCreated.Value,
                                                                                 businessHours,
                                                                                 slaTrigger,
                                                                                 slaTrigger.TimeLastAction,
                                                                                 pausedTimeSpan,
                                                                                 daysToPause,
-                                                                                holidays,
-                                                                                Logs);
+                                                                                holidays);
 
                                     if (newSlaViolationLastAction != null)
                                     {
-                                        newSlaWarningLastAction = CalculateSLAWarning((DateTime)newSlaViolationLastAction.Value,
+                                        newSlaWarningLastAction = SlaTickets.CalculateSLAWarning((DateTime)newSlaViolationLastAction.Value,
                                                                                         businessHours,
-                                                                                        slaTrigger.UseBusinessHours,
+                                                                                        slaTrigger.NoBusinessHours,
                                                                                         slaTrigger.TimeLastAction,
                                                                                         slaTrigger.WarningTime,
                                                                                         daysToPause,
-                                                                                        holidays,
-                                                                                        Logs);
+                                                                                        holidays);
                                     }
                                 }
 
@@ -145,47 +153,29 @@ namespace TeamSupport.ServiceLibrary
                                 }
                                 else
                                 {
-                                    newSlaViolationInitialResponse = CalculateSLA(ticket.DateCreatedUtc,
+                                    newSlaViolationInitialResponse = SlaTickets.CalculateSLA(ticket.DateCreatedUtc,
                                                                                     businessHours,
                                                                                     slaTrigger,
                                                                                     slaTrigger.TimeInitialResponse,
                                                                                     pausedTimeSpan,
                                                                                     daysToPause,
-                                                                                    holidays,
-                                                                                    Logs);
+                                                                                    holidays);
 
                                     if (newSlaViolationInitialResponse != null)
                                     {
-                                        newSlaWarningInitialResponse = CalculateSLAWarning((DateTime)newSlaViolationInitialResponse.Value,
+                                        newSlaWarningInitialResponse = SlaTickets.CalculateSLAWarning((DateTime)newSlaViolationInitialResponse.Value,
                                                                                             businessHours,
-                                                                                            slaTrigger.UseBusinessHours,
+                                                                                            slaTrigger.NoBusinessHours,
                                                                                             slaTrigger.TimeInitialResponse,
                                                                                             slaTrigger.WarningTime,
                                                                                             daysToPause,
-                                                                                            holidays,
-                                                                                            Logs);
+                                                                                            holidays);
                                     }
                                 }
                             }
                             else
                             {
-                                Logs.WriteEvent("Ticket is Closed, clearing its SLA values.");
-
-                                //TODO //vv Do we want to delete the paused times and slaticket record if the ticket is closed? how is it done today?
-                                /*
-                                  if (isClosed)
-                                  {
-                                    slaTicket.Delete();
-                                    SlaPausedTimes slaPausedTimes = new SlaPausedTimes(LoginUser);
-                                    slaPausedTimes.LoadByTicketId(ticket.TicketID);
-                                    slaPausedTimes.DeleteAll();
-                                    //vv slaPausedTimes.Save(); //Check if we need this!
-                                  }
-                                  else
-                                  {
-                                    slaTicket.IsPending = false;
-                                  }
-                                 */
+                                Logs.WriteEventFormat("Ticket is {0}, clearing its SLA values.", isClosed ? "Closed" : "Status Paused");
                             }
 
                             if (HasAnySlaChanges(ticket,
@@ -327,712 +317,12 @@ namespace TeamSupport.ServiceLibrary
             return hasChanges;
         }
 
-        public static DateTime? CalculateSLA(DateTime DateCreated,
-                                            BusinessHours businessHours,
-                                            SlaTrigger slaTrigger,
-                                            int minutes,
-                                            TimeSpan pausedTimeSpan,
-                                            List<DateTime> daysToPause,
-                                            CalendarEvents holidays,
-                                            Logs logs)
+        private static void UpdateBusinessPausedTimes(LoginUser loginUser, Dictionary<int, double> businessPausedTimes)
         {
-            bool slaUseBusinessHours = slaTrigger.UseBusinessHours;
-            DateTime? slaDayStart = businessHours.DayStartUtc;
-            DateTime? slaDayEnd = businessHours.DayEndUtc;
-            int slaBusinessDays = businessHours.BusinessDays;
-            DateTime? ExpireDate = new DateTime();
-            int adjustedMinutes = 0;
-
-            if (slaUseBusinessHours && (slaDayStart == null || slaDayEnd == null || slaBusinessDays < 1 || minutes < 1))
+            foreach(KeyValuePair<int, double> pair in businessPausedTimes)
             {
-                ExpireDate = null;
+                SlaPausedTimes.UpdateBusinessPausedTime(loginUser, pair.Key, pair.Value);
             }
-            else
-            {
-                if ((slaUseBusinessHours && slaBusinessDays == 0)
-                    || (!slaUseBusinessHours && DateTime.Compare(slaDayStart.Value, slaDayEnd.Value) == 0 && slaBusinessDays == 127)) //127 means all days are selected.
-                {
-                    ExpireDate = DateCreated.AddMinutes(minutes);
-                }
-                else
-                {
-                    int startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                    int endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
-                    int currentMinuteInTheProcess = DateCreated.Minute + (DateCreated.Hour * 60);
-                    int minutesInOneDay = (24 * 60);
-
-                    //When converted the input to UTC the end time might be less than the start time. E.g. central 8 to 22, is stored as utc 14 to 4
-                    if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
-                    {
-                        adjustedMinutes = slaDayStart.Value.Minute + slaDayStart.Value.Hour * 60;
-                        slaDayStart = slaDayStart.Value.AddMinutes(-adjustedMinutes);
-                        slaDayEnd = slaDayEnd.Value.AddMinutes(-adjustedMinutes);
-                        DateCreated = DateCreated.AddMinutes(-adjustedMinutes);
-                        startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                        endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
-                        currentMinuteInTheProcess = (DateCreated.Minute + (DateCreated.Hour * 60));
-                    }
-
-                    //Make sure endOfDayMinutes is greater than startOfDayMinutes
-                    if (startOfDayMinutes >= endOfDayMinutes)
-                    {
-                        //Add 1 day worth of minutes
-                        endOfDayMinutes = endOfDayMinutes + minutesInOneDay;
-                    }
-
-                    int minutesInBusinessDay = endOfDayMinutes - startOfDayMinutes;
-
-                    //Make sure the start time falls within business hours
-                    if (currentMinuteInTheProcess > endOfDayMinutes)
-                    {
-                        //Reset the time to start of bussiness day AND add 1 day
-                        DateCreated = DateCreated.Date.AddDays(1).Add(slaDayStart.Value.TimeOfDay);
-                    }
-                    else if (currentMinuteInTheProcess < startOfDayMinutes)
-                    {
-                        DateCreated = DateCreated.Date.Add(slaDayStart.Value.TimeOfDay);
-                    }
-
-                    //Repeat until we find the first business day, non-pause day, non-holiday
-                    while (!IsValidDay(DateCreated, slaBusinessDays, daysToPause, holidays))
-                    {
-                        DateCreated = DateCreated.AddDays(1);
-                        //If this happened then we need to set it with the start of day hour
-                        DateCreated = new DateTime(DateCreated.Year, DateCreated.Month, DateCreated.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0);
-                    }
-
-                    //DateCreated now contains a valid date to start SLA with business days
-                    currentMinuteInTheProcess = DateCreated.Minute + (DateCreated.Hour * 60);
-
-                    int slaDays = (minutes / 60) / 24;
-                    int slaHours = (minutes - (slaDays * 24 * 60)) / 60;
-                    int slaMinutes = minutes - (slaDays * 24 * 60) - (slaHours * 60);
-
-                    ExpireDate = DateCreated;
-                    //1) process days
-                    while (slaDays > 0)
-                    {
-                        ExpireDate = ExpireDate.Value.AddDays(1);
-
-                        if (IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
-                        {
-                            slaDays--;
-                        }
-                    }
-
-                    //2) process hours
-                    while (slaHours > 0)
-                    {
-                        ExpireDate = ExpireDate.Value.AddHours(1);
-
-                        if (ExpireDate.Value.Hour > slaDayEnd.Value.Hour || (ExpireDate.Value.Hour == slaDayEnd.Value.Hour && ExpireDate.Value.Minute > slaDayEnd.Value.Minute))
-                        {
-                            ExpireDate = GetNextBusinessDay(ExpireDate.Value, slaBusinessDays);
-                            int minuteOffset = ExpireDate.Value.Minute - slaDayEnd.Value.Minute;
-                            ExpireDate = new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0);
-                            ExpireDate = ExpireDate.Value.AddMinutes(minuteOffset);
-                        }
-
-                        if (IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
-                        {
-                            slaHours--;
-                        }
-                        else
-                        {
-                            ExpireDate = GetNextBusinessDay(ExpireDate.Value, slaBusinessDays);
-                            ExpireDate = ExpireDate.Value.AddHours(-1);
-                        }
-                    }
-
-                    //3) process minutes
-                    while (slaMinutes > 0)
-                    {
-                        ExpireDate = ExpireDate.Value.AddMinutes(1);
-
-                        if (ExpireDate.Value.Hour == slaDayEnd.Value.Hour && ExpireDate.Value.Minute > slaDayEnd.Value.Minute)
-                        {
-                            ExpireDate = GetNextBusinessDay(ExpireDate.Value, slaBusinessDays);
-                            ExpireDate = new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0);
-                        }
-
-                        if (IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
-                        {
-                            slaMinutes--;
-                        }
-                        else
-                        {
-                            ExpireDate = GetNextBusinessDay(ExpireDate.Value, slaBusinessDays);
-                            ExpireDate = ExpireDate.Value.AddMinutes(-1);
-                        }
-                    }
-                }
-
-                ExpireDate = AddPausedTime((DateTime)ExpireDate, pausedTimeSpan, slaBusinessDays, slaDayStart, slaDayEnd, slaUseBusinessHours);
-
-                if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
-                {
-                    ExpireDate = ExpireDate.Value.AddMinutes(adjustedMinutes);
-                }
-            }
-
-            return ExpireDate;
-        }
-
-        public static DateTime? CalculateSLAWarning(DateTime ViolationDate,
-                                            BusinessHours businessHours,
-                                            bool slaUseBusinessHours,
-                                            int minutes,
-                                            int slaWarningTime,
-                                            List<DateTime> daysToPause,
-                                            CalendarEvents holidays,
-                                            Logs logs)
-        {
-            DateTime? slaDayStart = businessHours.DayStartUtc;
-            DateTime? slaDayEnd = businessHours.DayEndUtc;
-            int slaBusinessDays = businessHours.BusinessDays;
-            DateTime? ExpireDate = new DateTime();
-            int adjustedMinutes = 0;
-
-            if (slaDayStart == null || slaDayEnd == null || slaBusinessDays < 1 || minutes < 1)
-            {
-                ExpireDate = null;
-            }
-            else
-            {
-                //The Violation needs to be calculated first, which means the start date is already valid.
-                int startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                int endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
-
-                //When converted the input to UTC the end time might be less than the start time. E.g. central 8 to 22, is stored as utc 14 to 4
-                if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
-                {
-                    adjustedMinutes = slaDayStart.Value.Minute + slaDayStart.Value.Hour * 60;
-                    slaDayStart = slaDayStart.Value.AddMinutes(-adjustedMinutes);
-                    slaDayEnd = slaDayEnd.Value.AddMinutes(-adjustedMinutes);
-                    ViolationDate = ViolationDate.AddMinutes(-adjustedMinutes);
-                    startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                    endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
-                }
-
-                int slaDays = (slaWarningTime / 60) / 24;
-                int slaHours = (slaWarningTime - (slaDays * 24 * 60)) / 60;
-                int slaMinutes = slaWarningTime - (slaDays * 24 * 60) - (slaHours * 60);
-                ExpireDate = ViolationDate;
-
-                //1) process days
-                while (slaDays > 0)
-                {
-                    ExpireDate = ExpireDate.Value.AddDays(-1);
-
-                    if (IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
-                    {
-                        slaDays--;
-                    }
-                }
-
-                //2) process hours
-                while (slaHours > 0)
-                {
-                    ExpireDate = ExpireDate.Value.AddHours(-1);
-
-                    if (ExpireDate.Value.Hour < slaDayStart.Value.Hour)
-                    {
-                        ExpireDate = GetPreviousBusinessDay(ExpireDate.Value, slaBusinessDays);
-                        TimeSpan difference = (new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0)) - (DateTime)ExpireDate;
-                        ExpireDate = new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayEnd.Value.Hour, slaDayEnd.Value.Minute, 0);
-                        ExpireDate = ExpireDate.Value.AddMinutes(-1 * difference.Minutes).AddSeconds(-1 * difference.Seconds);
-                    }
-
-                    if (IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
-                    {
-                        slaHours--;
-                    }
-                }
-
-                //3) process minutes
-                while (slaMinutes > 0)
-                {
-                    ExpireDate = ExpireDate.Value.AddMinutes(-1);
-
-                    if (ExpireDate.Value.Hour < slaDayStart.Value.Hour)
-                    {
-                        ExpireDate = GetPreviousBusinessDay(ExpireDate.Value, slaBusinessDays);
-                        TimeSpan difference = (new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0)) - (DateTime)ExpireDate;
-                        ExpireDate = new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayEnd.Value.Hour, slaDayEnd.Value.Minute, 0);
-                        ExpireDate = ExpireDate.Value.AddMinutes(-1 * difference.Minutes).AddSeconds(-1 * difference.Seconds);
-                    }
-
-                    if (IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
-                    {
-                        slaMinutes--;
-                    }
-                }
-
-                if (ViolationDate.Hour == slaDayStart.Value.Hour && ViolationDate.Minute == slaDayStart.Value.Minute
-                    && ExpireDate.Value.CompareTo(ViolationDate) < 0)
-                {
-                    ExpireDate = ExpireDate.Value.AddDays(1);
-                }
-
-                if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
-                {
-                    ExpireDate = ExpireDate.Value.AddMinutes(adjustedMinutes);
-                }
-            }
-
-            return ExpireDate;
-        }
-
-        //public static DateTime? CalculateSLA_old(DateTime DateCreated,
-        //                                    Organization organization,
-        //                                    bool slaUseBusinessHours,
-        //                                    int minutes,
-        //                                    int slaWarningTime,
-        //                                    TimeSpan pausedTimeSpan,
-        //                                    List<DateTime> daysToPause,
-        //                                    bool pauseOnHoliday,
-        //                                    Logs logs)
-        //{
-        //    DateTime? organizationBusinessDayStart = organization.BusinessDayStartUtc;
-        //    DateTime? organizationBusinessDayEnd = organization.BusinessDayEndUtc;
-        //    int organizationBusinessDays = organization.BusinessDays;
-        //    DateTime? ExpireDate = new DateTime();
-        //    minutes = minutes - slaWarningTime;
-
-        //    if (organizationBusinessDayStart == null || organizationBusinessDayEnd == null || organizationBusinessDays < 1 || minutes < 1)
-        //    {
-        //        ExpireDate = null;
-        //    }
-        //    else
-        //    {
-        //        if (organizationBusinessDays == 0 || !slaUseBusinessHours)
-        //        {
-        //            ExpireDate = DateCreated.AddMinutes(minutes);
-        //        }
-        //        else
-        //        {
-        //            //full calculation
-        //            int startOfDayMinutes = organizationBusinessDayStart.Value.Minute + (organizationBusinessDayStart.Value.Hour * 60); //@Start
-        //            int endOfDayMinutes = organizationBusinessDayEnd.Value.Minute + (organizationBusinessDayEnd.Value.Hour * 60); //@End
-        //            int cur = DateCreated.Minute + (DateCreated.Hour * 60);
-        //            int minutesInOneDay = (24 * 60);
-
-        //            //Make sure endOfDayMinutes is greater than startOfDayMinutes
-        //            if (startOfDayMinutes >= endOfDayMinutes)
-        //            {
-        //                //Add 1 day worth of minutes
-        //                endOfDayMinutes = endOfDayMinutes + minutesInOneDay;
-        //            }
-
-        //            int minutesInBusinessDay = endOfDayMinutes - startOfDayMinutes;
-
-        //            //Make sure the start time falls within business hours
-        //            if (cur > endOfDayMinutes)
-        //            {
-        //                //Reset the time to start of bussiness day AND add 1 day
-        //                DateCreated = DateCreated.Date.AddDays(1).Add(organizationBusinessDayStart.Value.TimeOfDay);
-        //            }
-        //            else if (cur < startOfDayMinutes)
-        //            {
-        //                DateCreated = DateCreated.Date.Add(organizationBusinessDayStart.Value.TimeOfDay);
-        //            }
-
-        //            //Repeat until we find the first business day, non-pause day, non-holiday
-        //            while (!IsBusinessDay(DateCreated, organizationBusinessDays)
-        //                || daysToPause.Where(p => DateTime.Compare(p.Date, DateCreated.Date) == 0).Any()
-        //                || (pauseOnHoliday && SlaTriggers.IsOrganizationHoliday(organization.OrganizationID, DateCreated)))
-        //            {
-        //                DateCreated = DateCreated.AddDays(1);
-        //            }
-
-        //            //DateCreated now contains a valid date to start SLA with business days
-        //            cur = DateCreated.Minute + (DateCreated.Hour * 60);
-
-        //            if ((cur + minutes) <= endOfDayMinutes)
-        //            {
-        //                //Expiration falls within same business day, no need to find next business day
-        //                ExpireDate = DateCreated.AddMinutes(minutes);
-        //            }
-        //            else
-        //            {
-        //                //Offset the minutes used in the current day
-        //                minutes = minutes - (endOfDayMinutes - cur);
-        //                ExpireDate = DateCreated.Date.AddDays(1).Add(organizationBusinessDayStart.Value.TimeOfDay);
-
-        //                //Loop to find the business when all the minutes are gone
-        //                while (minutes > 0)
-        //                {
-        //                    //Add a day if this is a business day, pause day, or holiday and decrease minutes
-        //                    if (IsBusinessDay(ExpireDate.Value, organizationBusinessDays)
-        //                        && !daysToPause.Where(p => DateTime.Compare(p.Date, ExpireDate.Value.Date) == 0).Any()
-        //                        && (!pauseOnHoliday || (pauseOnHoliday && !SlaTriggers.IsOrganizationHoliday(organization.OrganizationID, ExpireDate.Value))))
-        //                    {
-        //                        if (minutes <= minutesInBusinessDay)
-        //                        {
-        //                            //Is this the end?
-        //                            ExpireDate = ExpireDate.Value.AddMinutes(minutes);
-        //                            minutes = 0;
-        //                        }
-        //                        else
-        //                        {
-        //                            //This is a business day, substract it from total minutes and include the day
-        //                            minutes = minutes - minutesInOneDay;
-        //                            ExpireDate = ExpireDate.Value.AddDays(1);
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-        //                        //This is not a business day, just move on to the next day
-        //                        ExpireDate = ExpireDate.Value.AddDays(1);
-        //                    }
-        //                }
-
-        //                //Process the leftover minutes
-        //                minutes = minutes * (-1);
-
-        //                if (minutes > 0)
-        //                {
-        //                    int days = 0;
-        //                    days = (minutes / minutesInBusinessDay) + 1;
-
-        //                    while (days > 0)
-        //                    {
-        //                        ExpireDate = ExpireDate.Value.AddDays(-1);
-
-        //                        if (IsBusinessDay(ExpireDate.Value, organizationBusinessDays)
-        //                            && !daysToPause.Where(p => DateTime.Compare(p.Date, ExpireDate.Value.Date) == 0).Any()
-        //                            && (!pauseOnHoliday || (pauseOnHoliday && !SlaTriggers.IsOrganizationHoliday(organization.OrganizationID, ExpireDate.Value))))
-        //                        {
-        //                            days--;
-        //                        }
-        //                    }
-
-        //                    ExpireDate = ExpireDate.Value.AddDays(days * (-1));
-        //                    minutes = minutes % minutesInBusinessDay;
-        //                    minutes = minutesInBusinessDay - minutes;
-        //                    ExpireDate = ExpireDate.Value.AddMinutes(minutes);
-        //                }
-        //            }
-        //        }
-
-        //        ExpireDate = AddPausedTime((DateTime)ExpireDate, pausedTimeSpan, organizationBusinessDays, organizationBusinessDayStart, organizationBusinessDayEnd, slaUseBusinessHours);
-        //    }
-
-        //    return ExpireDate;
-        //}
-
-        public static TimeSpan CalculatePausedTime(int ticketId,
-                                            BusinessHours businessHours,
-                                            SlaTrigger slaTrigger,
-                                            List<DateTime> daysToPause,
-                                            CalendarEvents holidays,
-                                            Logs logs,
-                                            LoginUser loginUser)
-        {
-            bool slaUseBusinessHours = slaTrigger.UseBusinessHours;
-            DateTime? slaDayStart = businessHours.DayStartUtc;
-            DateTime? slaDayEnd = businessHours.DayEndUtc;
-            int slaBusinessDays = businessHours.BusinessDays;
-            TimeSpan totalPausedTime = new TimeSpan();
-            DateTime pausedOn = new DateTime();
-            DateTime resumedOn = new DateTime();
-            SlaPausedTimes slaPausedTimes = new SlaPausedTimes(loginUser);
-            slaPausedTimes.LoadByTicketId(ticketId);
-            int adjustedMinutes = 0;
-
-            foreach (SlaPausedTime slaPausedTime in slaPausedTimes)
-            {
-                pausedOn = slaPausedTime.PausedOnUtc;
-                resumedOn = (DateTime)slaPausedTime.ResumedOnUtc;
-
-                if ((!IsBusinessDay(pausedOn, slaBusinessDays) && !IsBusinessDay(resumedOn, slaBusinessDays))
-                    && pausedOn.Date == resumedOn.Date && slaUseBusinessHours)
-                {
-                    logs.WriteEvent("Paused and Resumed on the same non-business day, so no time to add.");
-                }
-                else
-                {
-                    if ((slaUseBusinessHours && slaBusinessDays == 0)
-                        || (!slaUseBusinessHours && DateTime.Compare(slaDayStart.Value, slaDayEnd.Value) == 0 && slaBusinessDays == 127)) //127 means all days are selected.
-                    {
-                        totalPausedTime = resumedOn - pausedOn;
-                    }
-                    else
-                    {
-                        int startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                        int endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
-                        int minutesInOneDay = (24 * 60);
-
-                        //When converted the input to UTC the end time might be less than the start time. E.g. central 8 to 22, is stored as utc 14 to 4
-                        if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
-                        {
-                            adjustedMinutes = slaDayStart.Value.Minute + slaDayStart.Value.Hour * 60;
-                            slaDayStart = slaDayStart.Value.AddMinutes(-adjustedMinutes);
-                            slaDayEnd = slaDayEnd.Value.AddMinutes(-adjustedMinutes);
-                            pausedOn = pausedOn.AddMinutes(-adjustedMinutes);
-                            resumedOn = resumedOn.AddMinutes(-adjustedMinutes);
-                            startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                            endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
-                        }
-
-                        //Make sure endOfDayMinutes is greater than startOfDayMinutes
-                        if (startOfDayMinutes >= endOfDayMinutes)
-                        {
-                            //Add 1 day worth of minutes
-                            endOfDayMinutes = endOfDayMinutes + minutesInOneDay;
-                        }
-
-                        int minutesInBusinessDay = endOfDayMinutes - startOfDayMinutes;
-
-                        //Make sure the pausedon and resumedon are business days
-                        while (!IsValidDay(pausedOn, slaBusinessDays, daysToPause, holidays))
-                        {
-                            pausedOn = GetNextBusinessDay(pausedOn, slaBusinessDays);
-                        }
-
-                        while (!IsValidDay(resumedOn, slaBusinessDays, daysToPause, holidays))
-                        {
-                            resumedOn = GetNextBusinessDay(resumedOn, slaBusinessDays);
-                        }
-
-                        //If the pause spans to more than one (and same) days then loop, set a tempResumedOn to end of business days and moving the pausedOn to next business day start of day
-                        while (DateTime.Compare(pausedOn, resumedOn) < 0)
-                        {
-                            DateTime tempResumedOn = new DateTime();
-
-                            if (DateTime.Compare(pausedOn.Date, resumedOn.Date) < 0)
-                            {
-                                tempResumedOn = new DateTime(pausedOn.Year, pausedOn.Month, pausedOn.Day, slaDayEnd.Value.Hour, slaDayEnd.Value.Minute, 0);
-                            }
-                            else if (DateTime.Compare(pausedOn.Date, resumedOn.Date) == 0)
-                            {
-                                tempResumedOn = resumedOn;
-                            }
-
-                            int secondsPaused = 0;
-
-                            while (pausedOn.Date < tempResumedOn.Date)
-                            {
-                                //Check if the minutes where it was paused/resumed is inside business days, if not then set to startminutes
-                                int pausedOnMinute = pausedOn.Minute + (pausedOn.Hour * 60);
-
-                                if (pausedOnMinute < startOfDayMinutes || pausedOnMinute > endOfDayMinutes)
-                                {
-                                    pausedOnMinute = startOfDayMinutes;
-                                }
-
-                                int pausedOnSecond = (pausedOn.Minute + (pausedOn.Hour * 60)) * 60;
-
-                                if (pausedOnSecond < (startOfDayMinutes * 60) || pausedOnSecond > (endOfDayMinutes * 60))
-                                {
-                                    pausedOnSecond = startOfDayMinutes * 60;
-                                }
-
-                                secondsPaused = (endOfDayMinutes * 60) - pausedOnSecond;
-                                totalPausedTime = totalPausedTime.Add(TimeSpan.FromSeconds(secondsPaused));
-                                pausedOn = GetNextBusinessDay(pausedOn, slaBusinessDays);
-                                pausedOn = new DateTime(pausedOn.Year, pausedOn.Month, pausedOn.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0);
-                            }
-
-                            //same day
-                            if (pausedOn.Date == tempResumedOn.Date && pausedOn.TimeOfDay < tempResumedOn.TimeOfDay)
-                            {
-                                int resumedOnMinute = tempResumedOn.Minute + (tempResumedOn.Hour * 60);
-                                int resumedOnSecond = ((tempResumedOn.Minute + (tempResumedOn.Hour * 60)) * 60) + tempResumedOn.Second;
-
-                                if (resumedOnMinute < startOfDayMinutes)
-                                {
-                                    resumedOnMinute = startOfDayMinutes;
-                                }
-
-                                if (resumedOnMinute > endOfDayMinutes)
-                                {
-                                    resumedOnMinute = endOfDayMinutes;
-                                }
-
-                                if (resumedOnSecond < (startOfDayMinutes * 60))
-                                {
-                                    resumedOnSecond = (startOfDayMinutes * 60);
-                                }
-
-                                if (resumedOnSecond > (endOfDayMinutes * 60))
-                                {
-                                    resumedOnSecond = (endOfDayMinutes * 60);
-                                }
-
-                                secondsPaused = resumedOnSecond - ((((pausedOn.Hour * 60) + pausedOn.Minute) * 60) + pausedOn.Second);
-                                totalPausedTime = totalPausedTime.Add(TimeSpan.FromSeconds(secondsPaused));
-                            }
-
-                            //get the next valid day to start
-                            pausedOn = GetNextBusinessDay(pausedOn, slaBusinessDays);
-                            pausedOn = new DateTime(pausedOn.Year, pausedOn.Month, pausedOn.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0);
-
-                            while (!IsValidDay(pausedOn, slaBusinessDays, daysToPause, holidays))
-                            {
-                                pausedOn = GetNextBusinessDay(pausedOn, slaBusinessDays);
-                                pausedOn = new DateTime(pausedOn.Year, pausedOn.Month, pausedOn.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0);
-                            }
-                        }
-                    }
-                }
-            }
-
-            logs.WriteEventFormat("Total Paused Time: {0}", totalPausedTime.ToString());
-
-            return totalPausedTime;
-        }
-
-        public static bool IsValidDay(DateTime day, int businessDays, List<DateTime> daysToPause, CalendarEvents holidays)
-        {
-            bool IsValid = false;
-
-            //Checks:
-            /*
-			 1) Use business days to check: org business or trigger business
-			 2) Skip PausedOn days
-			 3) Skip Holidays
-			 */
-
-            //1
-            IsValid = IsBusinessDay(day, businessDays);
-
-            //2
-            if (IsValid && daysToPause != null && daysToPause.Where(p => p.Date.CompareTo(day.Date) == 0).Any())
-            {
-                IsValid = false;
-            }
-
-            //3
-            try
-            {
-                //holidays might only have items if the sla is set to pause on holidays. See Run() 
-                if (IsValid && holidays != null && holidays.Where(p => p.StartDateUTC.Value.CompareTo(day.Date) == 0 || p.EndDateUTC.Value.CompareTo(day.Date) == 0).Any())
-                {
-                    IsValid = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                ExceptionLogs.AddLog(LoginUser.Anonymous, "SlaProcessor", ex.Message, "IsValidDay", ex.StackTrace, "", "");
-            }
-
-            return IsValid;
-        }
-
-        public static bool IsBusinessDay(DateTime inputDate, int organizationBusinessDays)
-        {
-            bool isBusinessDay = false;
-
-            isBusinessDay = (organizationBusinessDays & (int)Math.Pow(2, (double)inputDate.DayOfWeek)) == Math.Pow(2, (double)inputDate.DayOfWeek);
-
-            return isBusinessDay;
-        }
-
-        public static DateTime GetNextBusinessDay(DateTime inputDate, int organizationBusinessDays)
-        {
-            DateTime businessDay = inputDate;
-
-            businessDay = businessDay.AddDays(1);
-
-            while ((organizationBusinessDays & (int)Math.Pow(2, (double)businessDay.DayOfWeek)) != Math.Pow(2, (double)businessDay.DayOfWeek))
-            {
-                businessDay = businessDay.AddDays(1);
-            }
-
-            return businessDay;
-        }
-
-        public static DateTime GetPreviousBusinessDay(DateTime inputDate, int organizationBusinessDays)
-        {
-            DateTime businessDay = inputDate;
-
-            businessDay = businessDay.AddDays(-1);
-
-            while ((organizationBusinessDays & (int)Math.Pow(2, (double)businessDay.DayOfWeek)) != Math.Pow(2, (double)businessDay.DayOfWeek))
-            {
-                businessDay = businessDay.AddDays(-1);
-            }
-
-            return businessDay;
-        }
-
-        public static DateTime AddPausedTime(DateTime inputDate,
-                                            TimeSpan pausedTimeSpan,
-                                            int organizationBusinessDays,
-                                            DateTime? organizationBusinessDayStart,
-                                            DateTime? organizationBusinessDayEnd,
-                                            bool slaUseBusinessHours)
-        {
-            DateTime slaWithPausedTime = new DateTime();
-            int startOfDayMinutes = organizationBusinessDayStart.Value.Minute + (organizationBusinessDayStart.Value.Hour * 60);
-            int endOfDayMinutes = organizationBusinessDayEnd.Value.Minute + (organizationBusinessDayEnd.Value.Hour * 60);
-            int minutesInOneDay = (24 * 60);
-
-            //Make sure endOfDayMinutes is greater than startOfDayMinutes
-            if (startOfDayMinutes >= endOfDayMinutes)
-            {
-                //Add 1 day worth of minutes
-                endOfDayMinutes = endOfDayMinutes + minutesInOneDay;
-            }
-
-            int minutesInBusinessDay = endOfDayMinutes - startOfDayMinutes;
-
-            if (slaUseBusinessHours)
-            {
-                slaWithPausedTime = inputDate;
-                //get full days first
-                int fullDays = (int)(pausedTimeSpan.TotalMinutes / minutesInBusinessDay);
-                pausedTimeSpan = pausedTimeSpan.Subtract(TimeSpan.FromMinutes(fullDays * minutesInBusinessDay));
-
-                while (pausedTimeSpan.TotalMinutes > 0)
-                {
-                    if ((slaWithPausedTime.Minute + (slaWithPausedTime.Hour * 60)) + pausedTimeSpan.TotalMinutes <= endOfDayMinutes)
-                    {
-                        slaWithPausedTime = slaWithPausedTime.AddMinutes(pausedTimeSpan.TotalMinutes);
-                        pausedTimeSpan = pausedTimeSpan.Subtract(TimeSpan.FromMinutes(pausedTimeSpan.TotalMinutes));
-                    }
-                    else
-                    {
-                        int addMinutes = endOfDayMinutes - (slaWithPausedTime.Minute + (slaWithPausedTime.Hour * 60));
-
-                        if (slaWithPausedTime.TimeOfDay == organizationBusinessDayStart.Value.TimeOfDay)
-                        {
-                            addMinutes = (int)pausedTimeSpan.TotalMinutes;
-                        }
-
-                        slaWithPausedTime = slaWithPausedTime.AddMinutes(addMinutes);
-                        pausedTimeSpan = pausedTimeSpan.Subtract(TimeSpan.FromMinutes(addMinutes));
-
-                        if (pausedTimeSpan.TotalMinutes > 0)
-                        {
-                            slaWithPausedTime = GetNextBusinessDay(slaWithPausedTime, organizationBusinessDays);
-                            slaWithPausedTime = slaWithPausedTime.Date + organizationBusinessDayStart.Value.TimeOfDay;
-                        }
-                    }
-                }
-
-                for (int i = 0; i < fullDays; i++)
-                {
-                    do
-                    {
-                        slaWithPausedTime = slaWithPausedTime.AddDays(1);
-                    } while (!IsBusinessDay(slaWithPausedTime, organizationBusinessDays));
-                }
-            }
-            else
-            {
-                slaWithPausedTime = inputDate.Add(pausedTimeSpan);
-            }
-
-            return slaWithPausedTime;
-        }
-
-        public class BusinessHours
-        {
-            public DateTime DayStartUtc { get; set; }
-            public DateTime DayEndUtc { get; set; }
-            public int BusinessDays { get; set; }
         }
     }
 
@@ -1083,17 +373,19 @@ namespace TeamSupport.ServiceLibrary
             UpdateHealth();
 
             bool isPaused = false;
+            bool isPending = false;
             SlaTicket slaTicket = SlaTickets.GetSlaTicket(LoginUser, ticket.TicketID);
             
             if (slaTicket != null)
             {
                 isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
+                isPending = slaTicket.IsPending;
             }
 
-            if (!isPaused)
+            if (!isPaused && !isPending)
             {
                 SlaTriggersView triggers = new SlaTriggersView(LoginUser);
-                triggers.LoadByTicket(ticket.TicketID);
+                triggers.LoadByTicketId(ticket.TicketID); //vv
                 bool warnGroup = false;
                 bool warnUser = false;
                 bool vioGroup = false;
@@ -1123,7 +415,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.InitialResponseViolationDate == null || Math.Abs(((DateTime)notification.InitialResponseViolationDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse, notification);
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse, notification, slaTicket.SlaTriggerId);
                             notification.InitialResponseViolationDate = notifyTime;
                         }
                     }
@@ -1136,7 +428,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.InitialResponseWarningDate == null || Math.Abs(((DateTime)notification.InitialResponseWarningDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse, notification);
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse, notification, slaTicket.SlaTriggerId);
                             notification.InitialResponseWarningDate = notifyTime;
                         }
                     }
@@ -1151,7 +443,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.LastActionViolationDate == null || Math.Abs(((DateTime)notification.LastActionViolationDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction, notification);
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction, notification, slaTicket.SlaTriggerId);
                             notification.LastActionViolationDate = notifyTime;
                         }
                     }
@@ -1164,7 +456,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.LastActionWarningDate == null || Math.Abs(((DateTime)notification.LastActionWarningDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction, notification);
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction, notification, slaTicket.SlaTriggerId);
                             notification.LastActionWarningDate = notifyTime;
                         }
                     }
@@ -1179,7 +471,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.TimeClosedViolationDate == null || Math.Abs(((DateTime)notification.TimeClosedViolationDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed, notification);
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed, notification, slaTicket.SlaTriggerId);
                             notification.TimeClosedViolationDate = notifyTime;
                         }
                     }
@@ -1192,7 +484,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.TimeClosedWarningDate == null || Math.Abs(((DateTime)notification.TimeClosedWarningDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed, notification);
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed, notification, slaTicket.SlaTriggerId);
                             notification.TimeClosedWarningDate = notifyTime;
                         }
                     }
@@ -1207,7 +499,7 @@ namespace TeamSupport.ServiceLibrary
       return (DateTime.UtcNow - notifyTime).TotalDays >= 1;
     }
 
-    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType, SlaNotification notification)
+    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType, SlaNotification notification, int triggerId)
     {
       Users users = new Users(LoginUser);
       User user = null;
@@ -1235,6 +527,7 @@ namespace TeamSupport.ServiceLibrary
         history.UserID = ticket.UserID;
         history.ViolationType = slaViolationType;
         history.TicketID = ticket.TicketID;
+        history.SlaTriggerId = triggerId;
         history.Collection.Save();
       }
 

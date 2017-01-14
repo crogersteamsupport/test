@@ -20,7 +20,7 @@ var _startDate = new Date();
       }
     }
     callFn();
-  };
+  }; 
 
   function initServices (callback)
   {
@@ -128,6 +128,10 @@ var _startDate = new Date();
     Ts.Services.Login.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Login.set_defaultFailedCallback(defaultFailedCallback);
 
+    Ts.Services.Chat = new TSWebServices.ChatService();
+    Ts.Services.Chat.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Chat.set_defaultFailedCallback(defaultFailedCallback);
+
     callback();
   }
 
@@ -202,7 +206,7 @@ var _startDate = new Date();
     },
 
     signOut: function (callback) {
-      Ts.Services.System.SignOut(function () { window.location = window.location; });
+        Ts.Services.System.SignOut(function () { window.isSignedOut = true; window.location = window.location; });
     },
 
 

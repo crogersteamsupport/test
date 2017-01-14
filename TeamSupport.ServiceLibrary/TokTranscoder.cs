@@ -80,7 +80,7 @@ namespace TeamSupport.ServiceLibrary
             bucketName = path[3];
             archiveID = path[5];
             s3Path = ($@"{path[4]}/{path[5]}/archive.zip");
-            uploadS3Path = ($@"{path[4]}/{path[5]}/archive.webm");
+            uploadS3Path = ($@"{path[4]}/{path[5]}/archive.mp4");
             outputFileLocation = Settings.ReadString("outputFilePath");
             downloadLocation = Settings.ReadString("downloadFilePath");
             ffmpegPath = Settings.ReadString("ffmpegPath");
@@ -138,7 +138,7 @@ namespace TeamSupport.ServiceLibrary
 
             using (ZipFile zip1 = ZipFile.Read(path))
             {
-                foreach (ZipEntry e in zip1)
+                foreach (ZipEntry e in zip1.OrderBy(e=>e.UncompressedSize))
                 {
                     if (Path.GetExtension(e.FileName) == ".webm")
                     {
@@ -152,20 +152,58 @@ namespace TeamSupport.ServiceLibrary
         void MergeVideoFiles()
         {
             Logs.WriteEvent("----- Merging webm files ...");
-            outputFileLocation = Path.Combine(Path.GetDirectoryName(webmFiles[0]), "archive.webm");
+            outputFileLocation = Path.Combine(Path.GetDirectoryName(webmFiles[0]), "archive.mp4");
+            Process proc1 = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = Path.Combine(ffmpegPath, "ffprobe.exe"),
+                    Arguments = $@"-v error -show_frames -of default=noprint_wrappers=1 {webmFiles[1]}",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                }
+            };
+
+
+            if (!proc1.Start())
+            {
+                Logs.WriteEvent("Error starting");
+                return;
+            }
+            StreamReader rw = proc1.StandardOutput;
+            var height = "";
+            var width = "";
+            string line;
+            while ((line = rw.ReadLine()) != null)
+            {
+                if (line.Contains("width"))
+                {
+                    width = line.Split('=')[1];
+                }
+                if (line.Contains("height"))
+                {
+                    height = line.Split('=')[1];
+                    break;
+                }
+            }
+            //proc1.Close();
+            proc1.Kill();
+
             Process proc = new Process();
-            //proc.StartInfo.WorkingDirectory = ffmpegPath;
             proc.StartInfo.FileName = Path.Combine(ffmpegPath,"ffmpeg.exe");
-            proc.StartInfo.Arguments = $@"-i {webmFiles[0]} -i {webmFiles[1]} -acodec copy -vcodec copy  {outputFileLocation}";
+            proc.StartInfo.Arguments = $@"-i {webmFiles[0]} -i {webmFiles[1]} -map 0:0 -map 1:1 -codec:a aac -ab 128k -codec:v libx264 -vf scale={width}:{height} -aspect 16:9 -r 30 {outputFileLocation}";
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.UseShellExecute = false;
+
             if (!proc.Start())
             {
                 Logs.WriteEvent("Error starting");
                 return;
             }
             StreamReader reader = proc.StandardError;
-            string line;
+            
             while ((line = reader.ReadLine()) != null)
             {
                 Logs.WriteEvent(line);
@@ -213,10 +251,9 @@ namespace TeamSupport.ServiceLibrary
             {
                 file.Delete();
             }
-            foreach (DirectoryInfo dir in di.GetDirectories())
-            {
-                dir.Delete(true);
-            }
+
+            di.Delete();
+            webmFiles.Clear();
 
             TokStorage dbItem = new TokStorage(LoginUser);
 
