@@ -1665,7 +1665,9 @@ function loadVersions(product) {
 
     for (var i = 0; i < versions.length; i++) {
       selectizeVersion.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
-      selectizeResolved.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+      if (selectizeResolved) {
+          selectizeResolved.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
+      }
     }
   }
 }
