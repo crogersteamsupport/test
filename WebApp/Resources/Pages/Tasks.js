@@ -33,7 +33,7 @@ function fetchTasks() {
                 LoadCompleted(pageData.CompletedItems);
                 break;
             default:
-                LoadMyTasks(pageData.AssignedItems);
+                LoadMyTasks(pageData.AssignedItems); 
         }
 
         $('.results-loading').hide();

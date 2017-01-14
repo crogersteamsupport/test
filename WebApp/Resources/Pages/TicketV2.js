@@ -3146,7 +3146,6 @@ function SetupTasksSection() {
         });
 
         $('#ticket-task-span').on('click', 'span.tagRemove', function (e) {
-            debugger;
             var reminder = $(this).parent()[0];
             reminderClose = true;
             var currentUserID = $(reminder).data().tag.CreatorID;
@@ -3164,6 +3163,13 @@ function SetupTasksSection() {
                 else
                     alert('There was a problem removing the reminder from the ticket.');
             }
+        });
+
+        $('.taskContainer').on('click', 'a.tasklink', function (e) {
+            e.preventDefault();
+            var id = $(this).data('reminderid');
+            parent.Ts.System.logAction('Tasks Page - View Task');
+            parent.Ts.MainPage.openNewTask(id);
         });
 
         //$('#ticket-task-span').on('click', '.tag-item', function (e) {
@@ -3195,10 +3201,20 @@ function AddTasks(tasks) {
     var tasksDiv = $("#ticket-task-span");
     tasksDiv.empty();
 
-    for (var i = 0; i < tasks.length; i++) {                                  
+    for (var i = 0; i < tasks.length; i++) {
+        var _TaskName = tasks[i].TaskName;
+
+        if (tasks[i].TaskName == null) {
+            if (tasks[i].Description == null || tasks[i].Description == "") {
+                _TaskName = 'No Title';
+            }
+            else {
+                _TaskName = tasks[i].Description;
+            }
+        }
         //var label = '<span class="TaskAnchor" data-placement="left">' + ellipseString(tasks[i].Description, 30) + '<br>' + tasks[i].DueDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()) + '</span';
         //label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
-        var reminderElem = PrependTask(tasksDiv, tasks[i].ReminderID, tasks[i].TaskName, tasks[i]);
+        var reminderElem = PrependTask(tasksDiv, tasks[i].ReminderID, _TaskName, tasks[i]);
     };
 }
 
