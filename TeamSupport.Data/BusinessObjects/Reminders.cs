@@ -18,7 +18,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Reminders WHERE (UserID = @UserID) AND (IsDismissed = 0) AND RefType <> 59 ORDER BY DueDate";
+        command.CommandText = "SELECT * FROM Reminders WHERE (UserID = @UserID) AND (IsDismissed = 0) ORDER BY DueDate";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@UserID", userID);
         Fill(command);
@@ -380,6 +380,17 @@ namespace TeamSupport.Data
             }
         }
 
+        public void LoadIncompleteByParentID(int parentID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Reminders WHERE TaskParentID = @ParentID AND TaskIsComplete = 0";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ParentID", parentID);
+                Fill(command);
+            }
+        }
+
     }
-  
+
 }

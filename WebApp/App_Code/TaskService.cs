@@ -521,6 +521,20 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool GetIncompleteSubtasks(int reminderID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminders incompleteSubtasks = new Reminders(loginUser);
+            incompleteSubtasks.LoadIncompleteByParentID(reminderID);
+            bool result = false;
+            if (incompleteSubtasks.Count > 0)
+            {
+                result = true;
+            }
+            return result;
+        }
+
+        [WebMethod]
         public void ClearDueDate(int reminderID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();

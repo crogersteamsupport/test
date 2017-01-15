@@ -470,14 +470,41 @@ $(document).ready(function () {
     $('#fieldComplete').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
-            top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-            $('#fieldComplete').text((result === true ? 'yes' : 'no'));
-        },
-        function (error) {
-            header.show();
-            alert('There was an error saving the task is complete.');
-        });
+        if ($(this).text() !== 'yes')
+        {
+            window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_reminderID, function (result) {
+                if (result)
+                {
+                    alert('Please complete all the subtasks before completing this task.')
+                }
+                else
+                {
+                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
+                        top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
+                        $('#fieldComplete').text((result === true ? 'yes' : 'no'));
+                    },
+                    function (error) {
+                        header.show();
+                        alert('There was an error saving the task is complete.');
+                    });
+                }
+            },
+            function (error) {
+                header.show();
+                alert('There was an error getting the subtasks.');
+            });
+        }
+        else
+        {
+            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
+                top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
+                $('#fieldComplete').text((result === true ? 'yes' : 'no'));
+            },
+            function (error) {
+                header.show();
+                alert('There was an error saving the task is complete.');
+            });
+        }
     });
 
     $('#fieldDueDate').on('click', '#clearDueDate', function (e) {
