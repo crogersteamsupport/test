@@ -114,3 +114,10 @@ a { cursor: pointer; }
     height:73px;
     width:50px
 }
+
+.disabled
+{
+    pointer-events: none;
+    cursor: default;
+    color: gray !important;
+}
