@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public int? BusinessPausedTime
+    {
+      get { return Row["BusinessPausedTime"] != DBNull.Value ? (int?)Row["BusinessPausedTime"] : null; }
+      set { Row["BusinessPausedTime"] = CheckValue("BusinessPausedTime", value); }
+    }
+    
 
     
     public int SlaTriggerId
@@ -169,7 +175,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaPausedTimes] SET     [TicketId] = @TicketId,    [TicketStatusId] = @TicketStatusId,    [SlaTriggerId] = @SlaTriggerId,    [PausedOn] = @PausedOn,    [ResumedOn] = @ResumedOn  WHERE ([Id] = @Id);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaPausedTimes] SET     [TicketId] = @TicketId,    [TicketStatusId] = @TicketStatusId,    [SlaTriggerId] = @SlaTriggerId,    [PausedOn] = @PausedOn,    [ResumedOn] = @ResumedOn,    [BusinessPausedTime] = @BusinessPausedTime  WHERE ([Id] = @Id);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("Id", SqlDbType.Int, 4);
@@ -214,13 +220,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("BusinessPausedTime", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaPausedTimes] (    [TicketId],    [TicketStatusId],    [SlaTriggerId],    [PausedOn],    [ResumedOn]) VALUES ( @TicketId, @TicketStatusId, @SlaTriggerId, @PausedOn, @ResumedOn); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaPausedTimes] (    [TicketId],    [TicketStatusId],    [SlaTriggerId],    [PausedOn],    [ResumedOn],    [BusinessPausedTime]) VALUES ( @TicketId, @TicketStatusId, @SlaTriggerId, @PausedOn, @ResumedOn, @BusinessPausedTime); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("BusinessPausedTime", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ResumedOn", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)

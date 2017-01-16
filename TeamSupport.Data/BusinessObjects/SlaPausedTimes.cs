@@ -35,12 +35,47 @@ namespace TeamSupport.Data
             DateTime? slaDayStart = businessHours.DayStartUtc;
             DateTime? slaDayEnd = businessHours.DayEndUtc;
 
-            if ((!SlaTickets.IsBusinessDay(pausedOn, slaBusinessDays) && !SlaTickets.IsBusinessDay(resumedOn, slaBusinessDays))
-                && pausedOn.Date == resumedOn.Date && slaUseBusinessHours)
+            int startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
+            int endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
+            int minutesInOneDay = (24 * 60);
+
+            //When converted the input to UTC the end time might be less than the start time. E.g. central 8 to 22, is stored as utc 14 to 4
+            if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
+            {
+                adjustedMinutes     = slaDayStart.Value.Minute + slaDayStart.Value.Hour * 60;
+                slaDayStart         = slaDayStart.Value.AddMinutes(-adjustedMinutes);
+                slaDayEnd           = slaDayEnd.Value.AddMinutes(-adjustedMinutes);
+                pausedOn            = pausedOn.AddMinutes(-adjustedMinutes);
+                resumedOn           = resumedOn.AddMinutes(-adjustedMinutes);
+                startOfDayMinutes   = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
+                endOfDayMinutes     = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
+            }
+
+            if (pausedOn.Date == resumedOn.Date && (slaUseBusinessHours || (!slaUseBusinessHours && !slaTrigger.NoBusinessHours)) //the last condition means it is using sla custom hours
+                && (
+                    (!SlaTickets.IsValidDay(pausedOn, slaBusinessDays, daysToPause, holidays) && !SlaTickets.IsValidDay(resumedOn, slaBusinessDays, daysToPause, holidays))
+                    || (pausedOn.TimeOfDay.TotalSeconds < slaDayStart.Value.TimeOfDay.TotalSeconds && resumedOn.TimeOfDay.TotalSeconds < slaDayStart.Value.TimeOfDay.TotalSeconds)
+                    || (pausedOn.TimeOfDay.TotalSeconds > slaDayEnd.Value.TimeOfDay.TotalSeconds && resumedOn.TimeOfDay.TotalSeconds > slaDayEnd.Value.TimeOfDay.TotalSeconds)
+                    )
+                )
             {
                 if (logs != null)
                 {
-                    logs.WriteEvent("Paused and Resumed on the same non-business day, so no time to add.");
+                    logs.WriteEvent("Paused and Resumed on the same non-valid day and time (non-business day, holiday, day to pause, outside business hours), so no time to add.");
+                }
+            }
+            else if (pausedOn.Date == resumedOn.Date && (slaUseBusinessHours || (!slaUseBusinessHours && !slaTrigger.NoBusinessHours)) //the last condition means it is using sla custom hours
+                && (
+                    (SlaTickets.IsValidDay(pausedOn, slaBusinessDays, daysToPause, holidays) && SlaTickets.IsValidDay(resumedOn, slaBusinessDays, daysToPause, holidays))
+                    && (pausedOn.TimeOfDay.TotalSeconds > slaDayStart.Value.TimeOfDay.TotalSeconds && pausedOn.TimeOfDay.TotalSeconds < slaDayEnd.Value.TimeOfDay.TotalSeconds)
+                    && (resumedOn.TimeOfDay.TotalSeconds > slaDayStart.Value.TimeOfDay.TotalSeconds && resumedOn.TimeOfDay.TotalSeconds < slaDayEnd.Value.TimeOfDay.TotalSeconds)
+                    )
+                )
+            {
+                pausedTime = resumedOn - pausedOn;
+                if (logs != null)
+                {
+                    logs.WriteEvent("Paused and Resumed on the same valid day and time (business day, non-holiday, not day to pause, inside business hours), simple resumedon - pausedon.");
                 }
             }
             else
@@ -50,25 +85,10 @@ namespace TeamSupport.Data
                     || slaTrigger.NoBusinessHours)
                 {
                     pausedTime = resumedOn - pausedOn;
+                    logs.WriteEvent("24/7, simple resumedon - pausedon.");
                 }
                 else
                 {
-                    int startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                    int endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
-                    int minutesInOneDay = (24 * 60);
-
-                    //When converted the input to UTC the end time might be less than the start time. E.g. central 8 to 22, is stored as utc 14 to 4
-                    if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
-                    {
-                        adjustedMinutes = slaDayStart.Value.Minute + slaDayStart.Value.Hour * 60;
-                        slaDayStart = slaDayStart.Value.AddMinutes(-adjustedMinutes);
-                        slaDayEnd = slaDayEnd.Value.AddMinutes(-adjustedMinutes);
-                        pausedOn = pausedOn.AddMinutes(-adjustedMinutes);
-                        resumedOn = resumedOn.AddMinutes(-adjustedMinutes);
-                        startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                        endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
-                    }
-
                     //Make sure endOfDayMinutes is greater than startOfDayMinutes
                     if (startOfDayMinutes >= endOfDayMinutes)
                     {
@@ -79,7 +99,6 @@ namespace TeamSupport.Data
                     int minutesInBusinessDay = endOfDayMinutes - startOfDayMinutes;
 
                     //Make sure the pausedon and resumedon are business days
-                    //vv
                     while (!SlaTickets.IsValidDay(pausedOn, slaBusinessDays, daysToPause, holidays))
                     {
                         pausedOn = SlaTickets.GetNextBusinessDay(pausedOn, slaBusinessDays);
@@ -90,7 +109,7 @@ namespace TeamSupport.Data
                         resumedOn = SlaTickets.GetNextBusinessDay(resumedOn, slaBusinessDays);
                     }
 
-                    //vv If the pause spans to more than one (and same) days then loop, set a tempResumedOn to end of business days and moving the pausedOn to next business day start of day
+                    //If the pause spans to more than one (and same) days then loop, set a tempResumedOn to end of business days and moving the pausedOn to next business day start of day
                     while (DateTime.Compare(pausedOn, resumedOn) < 0)
                     {
                         DateTime tempResumedOn = new DateTime();
@@ -126,16 +145,18 @@ namespace TeamSupport.Data
                         if (pausedOn.Date == tempResumedOn.Date && pausedOn.TimeOfDay < tempResumedOn.TimeOfDay)
                         {
                             int resumedOnMinute = tempResumedOn.Minute + (tempResumedOn.Hour * 60);
-                            int resumedOnSecond = ((tempResumedOn.Minute + (tempResumedOn.Hour * 60)) * 60) + tempResumedOn.Second;
+                            int resumedOnSecond = resumedOnSecond = (resumedOnMinute * 60) + tempResumedOn.Second;
 
                             if (resumedOnMinute < startOfDayMinutes)
                             {
                                 resumedOnMinute = startOfDayMinutes;
+                                resumedOnSecond = resumedOnSecond = (resumedOnMinute * 60) + tempResumedOn.Second;
                             }
 
                             if (resumedOnMinute > endOfDayMinutes)
                             {
                                 resumedOnMinute = endOfDayMinutes;
+                                resumedOnSecond = resumedOnSecond = (resumedOnMinute * 60) + tempResumedOn.Second;
                             }
 
                             if (resumedOnSecond < (startOfDayMinutes * 60))

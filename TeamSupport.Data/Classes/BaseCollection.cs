@@ -9,6 +9,8 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Xml;
 using System.Security;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 namespace TeamSupport.Data
 {
@@ -388,7 +390,7 @@ namespace TeamSupport.Data
         {
             MemoryStream stream = new MemoryStream();
             XmlTextWriter writer = new XmlTextWriter(stream, new UTF8Encoding(false));
-            writer.Formatting = Formatting.Indented;
+            writer.Formatting = System.Xml.Formatting.Indented;
             writer.WriteStartDocument();
             writer.WriteStartElement(elementName);
 
@@ -405,6 +407,12 @@ namespace TeamSupport.Data
         public string GetJson(bool includeCustomFields)
         {
             return "";
+        }
+
+        public ExpandoObject GetExpandoObject()
+        {
+            return DataUtils.DataRowToExpandoObject(Row);
+
         }
 
         public void CopyRowData(BaseItem item)
@@ -974,7 +982,7 @@ namespace TeamSupport.Data
 		{
 			MemoryStream stream = new MemoryStream();
 			XmlTextWriter writer = new XmlTextWriter(stream, new UTF8Encoding(false));
-			writer.Formatting = Formatting.Indented;
+			writer.Formatting = System.Xml.Formatting.Indented;
 			writer.WriteStartDocument();
 			writer.WriteStartElement(listName);
 			return writer;
@@ -1218,7 +1226,12 @@ ORDER BY {3}
 
         public string GetJson()
         {
-            return "";
+            return JsonConvert.SerializeObject(GetExpandoObject());
+        }
+
+        public  ExpandoObject[] GetExpandoObject()
+        {
+            return DataUtils.DataTableToExpandoObject(Table);
         }
 
         #endregion

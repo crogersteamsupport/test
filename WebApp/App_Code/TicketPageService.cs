@@ -20,8 +20,9 @@ using System.Linq;
 using System.Diagnostics;
 using ImageResizer;
 using System.Net;
-using Newtonsoft.Json;
 using System.IO;
+using System.Dynamic;
+using System.Text.RegularExpressions;
 
 namespace TSWebServices
 {
@@ -95,6 +96,19 @@ namespace TSWebServices
             {
                 info.SlaTriggerId = slaTicket.SlaTriggerId;
                 info.IsSlaPending = slaTicket.IsPending;
+            }
+
+            try
+            {
+                Plugins plugins = new Plugins(TSAuthentication.GetLoginUser());
+                plugins.LoadByOrganizationID(TSAuthentication.OrganizationID);
+                PluginProxy[] pluginProxies = plugins.GetPluginProxies();
+                ReplacePluginData(TSAuthentication.GetLoginUser(), ticket, pluginProxies);
+                info.Plugins = pluginProxies;
+            }
+            catch (Exception)
+            {
+
             }
 
             return info;
@@ -374,6 +388,294 @@ namespace TSWebServices
             if (plugin.OrganizationID == TSAuthentication.OrganizationID)
             {
                 return plugin.GetProxy();
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public string GetTicketPagePluginSample(int ticketNumber, string code)
+        {
+            dynamic result = new ExpandoObject();
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+            result.ticket = ticket.GetProxy();
+
+            PluginProxy plugin = new PluginProxy();
+            plugin.Code = code;
+            List<PluginProxy> plugins = new List<PluginProxy>();
+            plugins.Add(plugin);
+
+            ReplacePluginData(TSAuthentication.GetLoginUser(), ticket, plugins.ToArray());
+            result.code = plugins[0].Code;
+            return JsonConvert.SerializeObject(result);
+        }
+
+        private void ReplacePluginData(LoginUser loginUser, TicketsViewItem ticketView, PluginProxy[] plugins)
+        {
+            //Ticket
+            ReplaceTablePluginData(loginUser, "Ticket", plugins, ticketView.Row);
+            ReplaceCustomFieldPluginData(loginUser, "Ticket Custom Fields", ReferenceType.Tickets, ticketView.TicketID, plugins, ticketView.TicketTypeID);
+            EraseTablePluginData("Ticket Custom Fields", plugins);
+
+            //User
+            if (ticketView.UserID != null)
+            {
+                ReplaceTablePluginData(loginUser, "User", plugins, UsersView.GetUsersViewItem(loginUser, (int) ticketView.UserID).Row);
+                ReplaceCustomFieldPluginData(loginUser, "User Custom Fields", ReferenceType.Users, (int)ticketView.UserID, plugins);
+            }
+            else
+            {
+                EraseTablePluginData("User", plugins);
+                EraseTablePluginData("User Custom Fields", plugins);
+            }
+
+            //Customer
+            OrganizationsView organizations = new OrganizationsView(loginUser);
+            organizations.LoadByTicketID(ticketView.TicketID);
+            if (organizations.IsEmpty)
+            {
+                EraseTablePluginData("Customer", plugins);
+                EraseTablePluginData("Customer Address", plugins);
+                EraseTablePluginData("Customer PhoneNumber", plugins);
+                EraseTablePluginData("Customer Custom Fields", plugins);
+            }
+            else
+            {
+                int orgID = organizations[0].OrganizationID;
+                ReplaceTablePluginData(loginUser, "Customer", plugins, organizations[0].Row);
+
+                Addresses addresses = new Addresses(loginUser);
+                addresses.LoadByID(orgID, ReferenceType.Organizations);
+                if (addresses.IsEmpty) EraseTablePluginData("Customer Address", plugins);
+                else ReplaceTablePluginData(loginUser, "Customer Address", plugins, addresses[0].Row);
+
+                PhoneNumbers numbers = new PhoneNumbers(loginUser);
+                numbers.LoadByID(orgID, ReferenceType.Organizations);
+                if (numbers.IsEmpty) EraseTablePluginData("Customer PhoneNumber", plugins);
+                else ReplaceTablePluginData(loginUser, "Customer PhoneNumber", plugins, numbers[0].Row);
+
+                ReplaceCustomFieldPluginData(loginUser, "Customer Custom Fields", ReferenceType.Organizations, orgID, plugins);
+            }
+
+            ContactsView contacts = new ContactsView(loginUser);
+            contacts.LoadByTicketID((int)ticketView.TicketID);
+            if (contacts.IsEmpty)
+            {
+                EraseTablePluginData("Contact", plugins);
+                EraseTablePluginData("Contact Address", plugins);
+                EraseTablePluginData("Contact PhoneNumber", plugins);
+                EraseTablePluginData("Contact Custom Fields", plugins);
+            }
+            else
+            {
+                int contactID = contacts[0].UserID;
+                ReplaceTablePluginData(loginUser, "Contact", plugins, contacts[0].Row);
+
+                Addresses addresses = new Addresses(loginUser);
+                addresses.LoadByID(contactID, ReferenceType.Users);
+                if (addresses.IsEmpty) EraseTablePluginData("Contact Address", plugins);
+                else ReplaceTablePluginData(loginUser, "Contact Address", plugins, addresses[0].Row);
+
+                PhoneNumbers numbers = new PhoneNumbers(loginUser);
+                numbers.LoadByID(contactID, ReferenceType.Users);
+                if (numbers.IsEmpty) EraseTablePluginData("Contact PhoneNumber", plugins);
+                else ReplaceTablePluginData(loginUser, "Contact PhoneNumber", plugins, numbers[0].Row);
+
+                ReplaceCustomFieldPluginData(loginUser, "Contact Custom Fields", ReferenceType.Contacts, contactID, plugins);
+            }
+        }
+
+        private void EraseTablePluginData(string templateName, PluginProxy[] plugins)
+        {
+            foreach (PluginProxy plugin in plugins)
+            {
+                Regex regex = new Regex("{{"+templateName+".(.*?)(?:}})");
+                plugin.Code = regex.Replace(plugin.Code, "");
+            }
+        }
+
+        private void ReplaceTablePluginData(LoginUser loginUser, string templateName, PluginProxy[] plugins, DataRow row)
+        {
+            foreach (PluginProxy plugin in plugins)
+            {
+                foreach (DataColumn column in row.Table.Columns)
+                {
+                    plugin.Code = plugin.Code.Replace("{{" + templateName + "." + column.ColumnName + "}}", row[column].ToString());
+                }
+            }
+        }
+
+        private void ReplaceCustomFieldPluginData(LoginUser loginUser, string templateName, ReferenceType refType, int refID, PluginProxy[] plugins, int? auxID = null)
+        {
+            CustomFields fields = new CustomFields(loginUser);
+            fields.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
+
+            foreach (CustomField field in fields)
+            {
+                string value = field.GetValue(refID) as string;
+
+                if (string.IsNullOrWhiteSpace(value)) value = "";
+
+                foreach (PluginProxy plugin in plugins)
+                {
+                    plugin.Code = plugin.Code.Replace("{{" + templateName + "." + field.Name + "}}", value);
+                }
+            }
+        }
+
+        [WebMethod]
+        public string GetPluginTicketCustomFields(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+            values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Organizations, ticketID);
+            return values.GetJson();
+        }
+
+        public string GetPluginTicketActions(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            Actions actions = new Actions(TSAuthentication.GetLoginUser());
+            actions.LoadByTicketID(ticketID);
+            return actions.GetJson();
+        }
+
+        [WebMethod]
+        public string GetPluginTicketUser(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            if (ticket.UserID == null) return "{}";
+            UsersViewItem user = UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)ticket.UserID);
+
+            dynamic result = new ExpandoObject();
+            result = user.GetExpandoObject();
+
+            Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+            addresses.LoadByID(user.UserID, ReferenceType.Users);
+            result.addresses = addresses.GetExpandoObject();
+
+            PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+            numbers.LoadByID(user.UserID, ReferenceType.Users);
+            result.phoneNumbers = numbers.GetExpandoObject();
+
+            CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+            values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Users, user.UserID);
+            result.customValues = values.GetExpandoObject();
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
+        public string GetPluginTicketContacts(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            ContactsView contacts = new ContactsView(TSAuthentication.GetLoginUser());
+            contacts.LoadByTicketID(ticketID);
+            dynamic result = new ExpandoObject();
+            result = contacts.GetExpandoObject();
+
+            for (int i = 0; i < contacts.Count; i++)
+            {
+                Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+                addresses.LoadByID(contacts[i].UserID, ReferenceType.Users);
+                result[i].addresses = addresses.GetExpandoObject();
+
+                PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+                numbers.LoadByID(contacts[i].UserID, ReferenceType.Users);
+                result[i].phoneNumbers = numbers.GetExpandoObject();
+
+                CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+                values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Contacts, contacts[i].UserID);
+                result[i].customValues = values.GetExpandoObject();
+            }
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
+        public string GetPluginTicketCustomers(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            OrganizationsView organizations = new OrganizationsView(TSAuthentication.GetLoginUser());
+            organizations.LoadByTicketID(ticketID);
+            dynamic result = new ExpandoObject();
+            result = organizations.GetExpandoObject();
+
+            for (int i = 0; i < organizations.Count; i++)
+            {
+                Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+                addresses.LoadByID(organizations[i].OrganizationID, ReferenceType.Organizations);
+                result[i].addresses = addresses.GetExpandoObject();
+
+                PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+                numbers.LoadByID(organizations[i].OrganizationID, ReferenceType.Organizations);
+                result[i].phoneNumbers = numbers.GetExpandoObject();
+
+                CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+                values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Organizations, organizations[i].OrganizationID);
+                result[i].customValues = values.GetExpandoObject();
+            }
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
+        public string GetTicketPagePluginTemplates(string templateType)
+        {
+            List<ExpandoObject> result = new List<ExpandoObject>();
+            if (templateType.ToLower() == "ticket")
+            {
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Ticket", "TicketsView"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Ticket Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Tickets));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "User", "UsersView"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "User Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Users));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer", "OrganizationsView"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer Address", "Addresses"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer PhoneNumber", "PhoneNumbers"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Customer Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Organizations));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact", "ContactsView"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact Address", "Addresses"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact PhoneNumber", "PhoneNumbers"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Contact Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Contacts));
+            }
+            return JsonConvert.SerializeObject(result.ToArray());
+        }
+
+        private ExpandoObject GetTableTemplate(LoginUser loginUser, string templateName, string tableName)
+        {
+            dynamic cat = new ExpandoObject();
+            cat.name = templateName;
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT * FROM " + tableName;
+            DataTable table = SqlExecutor.ExecuteSchema(loginUser, command);
+            cat.items = table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+            Array.Sort(cat.items);
+            return cat;
+        }
+
+        private ExpandoObject GetCustomFieldNames(LoginUser loginUser, string templateName, int organizationID, ReferenceType refType)
+        {
+            dynamic cat = new ExpandoObject();
+            cat.name = templateName;
+
+            CustomFields fields = new CustomFields(loginUser);
+            fields.LoadByReferenceType(organizationID, refType);
+            cat.items = fields.Cast<CustomField>().Select(x => x.Name).ToArray();
+            Array.Sort(cat.items);
+            return cat;
+        }
+
+        public string GetTicketPagePluginCode(int pluginID, int ticketID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID && ticket.OrganizationID == plugin.OrganizationID) 
+            {
+                // replace fields
+                return plugin.Code;
             }
             return null;
         }
@@ -960,6 +1262,8 @@ namespace TSWebServices
             public int? SlaTriggerId { get; set; }
             [DataMember]
             public bool IsSlaPending { get; set; }
+            [DataMember]
+            public PluginProxy[] Plugins { get; set; }
         }
 
         [DataContract]
@@ -1317,5 +1621,6 @@ namespace TSWebServices
 
             }
         }
+
     }
 }

@@ -104,7 +104,7 @@ namespace TeamSupport.ServiceLibrary
                                 TimeSpan pausedTimeSpan = SlaTickets.CalculatePausedTime(ticket.TicketID, organization, businessHours, slaTrigger, daysToPause, holidays, LoginUser, businessPausedTimes, Logs);
                                 Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpan.ToString());
 
-                                UpdateBusinessPausedTimes(LoginUser, businessPausedTimes); //vv
+                                UpdateBusinessPausedTimes(LoginUser, businessPausedTimes);
 
                                 newSlaViolationTimeClosed = SlaTickets.CalculateSLA(ticket.DateCreatedUtc, businessHours, slaTrigger, slaTrigger.TimeToClose, pausedTimeSpan, daysToPause, holidays);
 
@@ -385,7 +385,7 @@ namespace TeamSupport.ServiceLibrary
             if (!isPaused && !isPending)
             {
                 SlaTriggersView triggers = new SlaTriggersView(LoginUser);
-                triggers.LoadByTicketId(ticket.TicketID); //vv
+                triggers.LoadByTicketId(ticket.TicketID);
                 bool warnGroup = false;
                 bool warnUser = false;
                 bool vioGroup = false;
