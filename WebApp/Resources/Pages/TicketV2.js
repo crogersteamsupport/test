@@ -57,7 +57,6 @@ var videoURL;
 var tokTimer;
 
 var slaCheckTimer;
-var ticketWidget = null;
 
 var getTicketCustomers = function (request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -304,6 +303,7 @@ var loadTicket = function (ticketNumber, refresh) {
                 _ticketSender.Name = result.FirstName + ' ' + result.LastName;
             }
         });
+        LoadPlugins(info);
         _ticketCreator = new Object();
         _ticketCreator.UserID = info.Ticket.CreatorID;
         _ticketCreator.Name = info.Ticket.CreatorName;
@@ -355,23 +355,16 @@ var loadTicket = function (ticketNumber, refresh) {
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
-        LoadPlugins(info);
 
     });
 };
 
 function LoadPlugins(info) {
-    ticketWidget = new TicketWidget(info.Ticket);
-
     if (info.Plugins) {
         for (var i = 0; i < info.Plugins.length; i++) {
             var plugin = $('#ticket-group-plugin-' + info.Plugins[i].PluginID);
             if (plugin.length > 0) {
-                try {
-                    plugin.html(info.Plugins[i].Code);
-                } catch (e) {
-
-                }
+                plugin.html(info.Plugins[i].Code);
             }
         }
     }
@@ -484,6 +477,7 @@ function SetupTicketProperties(order) {
         if (info == null) alert('no ticket');
 
         jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
+        LoadPlugins(info);
 
         if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin)
             $('#action-new-KB').prop('disabled', true);
@@ -552,7 +546,6 @@ function SetupTicketProperties(order) {
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
-        LoadPlugins(info);
 
     });
 };
@@ -2224,6 +2217,11 @@ function SetupCustomerSection() {
             window.parent.Ts.System.logAction('Ticket - Customer Removed');
         }
     });
+
+    //$('#ticket-task-span').on('click', '', function (e) {
+    //    alert('clicked');
+
+    //});
 };
 
 function AddCustomers(customers) {
@@ -2593,12 +2591,7 @@ function LoadGroups() {
 
 function SetupProductVersionsControl(product) {
     if ($('#ticket-Versions').length) {
-        var $select = $('#ticket-Versions').selectize({
-            render: {
-                item: function (item, escape) {
-                    return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
-                }
-            },
+        var $select = $("#ticket-Versions").selectize({
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
             },
@@ -2612,12 +2605,7 @@ function SetupProductVersionsControl(product) {
         }
     }
     if ($('#ticket-Resolved').length) {
-        var $select = $('#ticket-Resolved').selectize({
-            render: {
-                item: function (item, escape) {
-                    return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
-                }
-            },
+        var $select = $("#ticket-Resolved").selectize({
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
             },
