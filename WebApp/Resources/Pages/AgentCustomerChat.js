@@ -525,7 +525,7 @@ $(document).ready(function () {
 
 function EnableDisableTicketMenu() {
     parent.Ts.Services.Chat.GetTicketID(_activeChatID, function (ticketID) {
-        if (ticketID) {
+        if (ticketID && ticketID > 0) {
             if (!$('#Ticket-Create').hasClass("disabled")) {
                 $('#Ticket-Create').addClass("disabled");
             }
