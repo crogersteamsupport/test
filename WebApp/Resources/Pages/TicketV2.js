@@ -347,6 +347,7 @@ var loadTicket = function (ticketNumber, refresh) {
         AddSubscribers(_ticketInfo.Subscribers);
         AddQueues(_ticketInfo.Queuers);
         AddReminders(_ticketInfo.Reminders);
+        AddTasks(_ticketInfo.Tasks);
         AddInventory(_ticketInfo.Assets);
         LoadTicketHistory();
         SetupJiraFieldValues();
@@ -3072,7 +3073,8 @@ function SetupRemindersSection() {
 }
 
 function SetupTasksSection() {
-    AddTasks(_ticketInfo.Reminders);
+    debugger;
+    AddTasks(_ticketInfo.Tasks);
     if ($('#ticket-reminder-who').length) {
         $('#ticket-reminder-date').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
 
@@ -3211,19 +3213,19 @@ function AddTasks(tasks) {
     tasksDiv.empty();
 
     for (var i = 0; i < tasks.length; i++) {
-        var _TaskName = tasks[i].TaskName;
+        var _TaskName = tasks[i].Task.TaskName;
 
-        if (tasks[i].TaskName == null) {
-            if (tasks[i].Description == null || tasks[i].Description == "") {
+        if (tasks[i].Task.TaskName == null) {
+            if (tasks[i].Task.Description == null || tasks[i].Task.Description == "") {
                 _TaskName = 'No Title';
             }
             else {
-                _TaskName = tasks[i].Description;
+                _TaskName = tasks[i].Task.Description;
             }
         }
         //var label = '<span class="TaskAnchor" data-placement="left">' + ellipseString(tasks[i].Description, 30) + '<br>' + tasks[i].DueDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()) + '</span';
         //label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
-        var reminderElem = PrependTask(tasksDiv, tasks[i].ReminderID, _TaskName, tasks[i]);
+        var reminderElem = PrependTask(tasksDiv, tasks[i].Task.ReminderID, _TaskName, tasks[i].Task);
     };
 }
 
