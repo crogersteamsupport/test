@@ -370,7 +370,7 @@ function LoadPlugins(info) {
                 try {
                     plugin.html(info.Plugins[i].Code);
                 } catch (e) {
-                    
+
                 }
             }
         }
