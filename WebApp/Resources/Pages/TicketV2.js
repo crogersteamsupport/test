@@ -57,6 +57,7 @@ var videoURL;
 var tokTimer;
 
 var slaCheckTimer;
+var ticketWidget = null;
 
 var getTicketCustomers = function (request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -303,7 +304,6 @@ var loadTicket = function (ticketNumber, refresh) {
                 _ticketSender.Name = result.FirstName + ' ' + result.LastName;
             }
         });
-        LoadPlugins(info);
         _ticketCreator = new Object();
         _ticketCreator.UserID = info.Ticket.CreatorID;
         _ticketCreator.Name = info.Ticket.CreatorName;
@@ -355,16 +355,23 @@ var loadTicket = function (ticketNumber, refresh) {
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
+        LoadPlugins(info);
 
     });
 };
 
 function LoadPlugins(info) {
+    ticketWidget = new TicketWidget(info.Ticket);
+
     if (info.Plugins) {
         for (var i = 0; i < info.Plugins.length; i++) {
             var plugin = $('#ticket-group-plugin-' + info.Plugins[i].PluginID);
             if (plugin.length > 0) {
-                plugin.html(info.Plugins[i].Code);
+                try {
+                    plugin.html(info.Plugins[i].Code);
+                } catch (e) {
+
+                }
             }
         }
     }
@@ -477,10 +484,9 @@ function SetupTicketProperties(order) {
         if (info == null) alert('no ticket');
 
         jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
-        LoadPlugins(info);
 
-    if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin)
-        $('#action-new-KB').prop('disabled', true);
+        if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin)
+            $('#action-new-KB').prop('disabled', true);
 
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserID === _ticketInfo.UserID) {
@@ -546,6 +552,7 @@ function SetupTicketProperties(order) {
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
+        LoadPlugins(info);
 
     });
 };
@@ -1644,41 +1651,41 @@ function LoadTicketControls() {
         });
     }
 
-  if ($('#ticket-group').length) {
-    window.parent.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
-      AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
-      if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
-          for (var i = 0; i < groups.length; i++) {
-              if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID || _ticketInfo.Ticket.GroupID === groups[i].ID) {
-                  AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
-                  if (groups[i].ProductFamilyID != null && _productFamilyID != groups[i].ProductFamilyID) {
-                      alert('This ticket group belongs to a different product line. Please set the correct ticket group.');
-                  }
-              }
-          }
-      }
-      else {
-          for (var i = 0; i < groups.length; i++) {
-              AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
-          }
-      }
+    if ($('#ticket-group').length) {
+        window.parent.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
+            AppendSelect('#ticket-group', null, 'group', -1, 'Unassigned', false);
+            if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+                for (var i = 0; i < groups.length; i++) {
+                    if (groups[i].ProductFamilyID == null || _productFamilyID == groups[i].ProductFamilyID || _ticketInfo.Ticket.GroupID === groups[i].ID) {
+                        AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
+                        if (groups[i].ProductFamilyID != null && _productFamilyID != groups[i].ProductFamilyID) {
+                            alert('This ticket group belongs to a different product line. Please set the correct ticket group.');
+                        }
+                    }
+                }
+            }
+            else {
+                for (var i = 0; i < groups.length; i++) {
+                    AppendSelect('#ticket-group', groups[i], 'group', groups[i].ID, groups[i].Name, groups[i].IsSelected);
+                }
+            }
 
-      $('#ticket-group').selectize({
-        onDropdownClose: function ($dropdown) {
-          $($dropdown).prev().find('input').blur();
-        },
-        closeAfterSelect: true
-      });
+            $('#ticket-group').selectize({
+                onDropdownClose: function ($dropdown) {
+                    $($dropdown).prev().find('input').blur();
+                },
+                closeAfterSelect: true
+            });
 
-      if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-          if ($('#ticket-group').val() == "")
-              $('#ticket-group').closest('.form-group').addClass('hasError');
-          else
-              $('#ticket-group').closest('.form-group').removeClass('hasError');
-      }
+            if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+                if ($('#ticket-group').val() == "")
+                    $('#ticket-group').closest('.form-group').addClass('hasError');
+                else
+                    $('#ticket-group').closest('.form-group').removeClass('hasError');
+            }
 
-    });
-  }
+        });
+    }
 
 
     _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
@@ -1897,32 +1904,32 @@ function SetupTicketPropertyEvents() {
         });
     });
 
-  $('#ticket-group').change(function (e) {
-    var self = $(this);
-    var GroupID = self.val();.0
-    if (GroupID == '-1') {
-        GroupID = null;
-        if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-            $('#ticket-group').closest('.form-group').addClass('hasError');
+    $('#ticket-group').change(function (e) {
+        var self = $(this);
+        var GroupID = self.val(); .0
+        if (GroupID == '-1') {
+            GroupID = null;
+            if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
+                $('#ticket-group').closest('.form-group').addClass('hasError');
+            }
         }
-    }
-    else
-        $('#ticket-group').closest('.form-group').removeClass('hasError');
-    if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
-      window.parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
-        if (result !== null) {
-          window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+        else
+            $('#ticket-group').closest('.form-group').removeClass('hasError');
+        if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
+            window.parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
+                if (result !== null) {
+                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+                }
+                _ticketGroupID = GroupID;
+                if (window.parent.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
+                    window.parent.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, GroupID);
+                }
+            },
+            function (error) {
+                alert('There was an error setting the group.');
+            });
         }
-        _ticketGroupID = GroupID;
-        if (window.parent.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
-          window.parent.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, GroupID);
-        }
-      },
-      function (error) {
-        alert('There was an error setting the group.');
-      });
-    }
-  });
+    });
 
     $('#ticket-type').change(function (e) {
         var self = $(this);
@@ -2217,11 +2224,6 @@ function SetupCustomerSection() {
             window.parent.Ts.System.logAction('Ticket - Customer Removed');
         }
     });
-
-    //$('#ticket-task-span').on('click', '', function (e) {
-    //    alert('clicked');
-
-    //});
 };
 
 function AddCustomers(customers) {
@@ -2591,7 +2593,12 @@ function LoadGroups() {
 
 function SetupProductVersionsControl(product) {
     if ($('#ticket-Versions').length) {
-        var $select = $("#ticket-Versions").selectize({
+        var $select = $('#ticket-Versions').selectize({
+            render: {
+                item: function (item, escape) {
+                    return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
+                }
+            },
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
             },
@@ -2605,7 +2612,12 @@ function SetupProductVersionsControl(product) {
         }
     }
     if ($('#ticket-Resolved').length) {
-        var $select = $("#ticket-Resolved").selectize({
+        var $select = $('#ticket-Resolved').selectize({
+            render: {
+                item: function (item, escape) {
+                    return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
+                }
+            },
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
             },

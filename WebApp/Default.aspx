@@ -6,6 +6,7 @@
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <html>
 <head id="Head1" runat="server">
+  <meta name="robots" content="noindex, nofollow">
   <title>Teamsupport</title>
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
 	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg">

@@ -68,7 +68,26 @@
         }).popover('show');
     });
 
-
+	$("body").on("mouseenter", ".VersionAnchor", function (event) {
+	    var e = $(this);
+	    e.unbind('hover');
+	    var ticketid = e.data('ticketid');
+	    var versionid = e.data('versionid');
+	    var b = e.closest("label");
+	    e.popover({
+	        html: true,
+	        container: 'body',
+	        trigger: 'manual',
+	        delay: { "show": 1, "hide": 1000 },
+	        content: function () {
+	            return $.ajax({
+	                url: '../../../Tips/Version.aspx?VersionID=' + versionid + '&TicketID=' + ticketid,
+	                dataType: 'html',
+	                async: false
+	            }).responseText;
+	        }
+	    }).popover('show');
+	});
 
     $("body").on("mouseenter", ".AssetAnchor", function (event) {
         var e = $(this);
@@ -191,6 +210,16 @@
       top.Ts.MainPage.openTicketByID(ticketid, true);
   })
 
+$('body').on('click', function (e) {
+    $("*").each(function () {
+        // Bootstrap sets a data field with key `bs.popover` on elements that have a popover.
+        // Note that there is no corresponding **HTML attribute** on the elements so we cannot
+        // perform a search by attribute.
+        var popover = $.data(this, "bs.popover");
+        if (popover)
+            $(this).popover('hide');
+    });
+});
     $('body').on('click', function (e) {
         $('.ProductAnchor').each(function () {
             //the 'is' for buttons that trigger popups
