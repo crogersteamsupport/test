@@ -3967,6 +3967,13 @@ WHERE t.TicketID = @TicketID
             return archive.Id.ToString();
         }
 
+        [WebMethod]
+        public string StartArchivingScreen(string sessionId)
+        {
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            var archive = OpenTok.StartArchive(sessionId, "", true, true, OutputMode.INDIVIDUAL);
+            return archive.Id.ToString();
+        }
 
         [WebMethod]
         public string StopArchiving(string archiveId)

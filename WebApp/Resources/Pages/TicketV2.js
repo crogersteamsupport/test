@@ -966,24 +966,24 @@ function SetupActionEditor(elem, action) {
         }
     });
 
-    element.find('#recordScreenContainer').hide();
-    element.find('#ssDiv').hide();
-    element.find('#rcdtokScreen').click(function (e) {
-        window.parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
-            element.find('#rcdtokScreen').hide();
-            element.find('#stoptokScreen').show();
-            element.find('#deletetokScreen').hide();
-            //element.find('#muteTokScreen').show();
-            recordingID = resultID;
-            element.find('#tokScreenCountdown').show();
-            setTimeout(function () {
-                update(element);
-            }, 1000);
-            //countdown("tokScreenCountdown", 5, 0, element);
-            //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
-            element.find('#statusTextScreen').text("Currently Recording Screen...");
-        });
-    });
+  element.find('#recordScreenContainer').hide();
+  element.find('#ssDiv').hide(); 
+  element.find('#rcdtokScreen').click(function (e) {
+      window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
+  		element.find('#rcdtokScreen').hide();
+  		element.find('#stoptokScreen').show();
+  		element.find('#deletetokScreen').hide();
+  		//element.find('#muteTokScreen').show();
+  		recordingID = resultID;
+  		element.find('#tokScreenCountdown').show();
+  		setTimeout(function () {
+  			update(element);
+  		}, 1000);
+  		//countdown("tokScreenCountdown", 5, 0, element);
+  		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
+  		element.find('#statusTextScreen').text("Currently Recording Screen...");
+  	});
+  });
 
     //element.find('#muteTokScreen').hide();
     element.find('#muteTokScreen').click(function (e) {
