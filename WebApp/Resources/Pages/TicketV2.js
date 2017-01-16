@@ -3165,6 +3165,15 @@ function SetupTasksSection() {
             }
         });
 
+        $('.taskContainer').on('click', 'a.new-task', function (e) {
+
+            debugger;
+            e.preventDefault();
+            parent.Ts.System.logAction('Tasks Page - New Task');
+            parent.Ts.MainPage.newTask();
+
+        });
+
         $('.taskContainer').on('click', 'a.tasklink', function (e) {
             e.preventDefault();
             var id = $(this).data('reminderid');
