@@ -528,8 +528,8 @@ function EnableDisableTicketMenu() {
         if (ticketID && ticketID > 0) {
             if (!$('#Ticket-Create').hasClass("disabled")) {
                 $('#Ticket-Create').addClass("disabled");
+                clearInterval(_intervalUpdateActiveChats);
             }
-            clearInterval(_intervalUpdateActiveChats);
         }
     });
 }
