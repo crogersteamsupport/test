@@ -2327,9 +2327,8 @@ function SetupTagsSection() {
 };
 
 function PrependTask(parent, id, value, data) {
-    debugger;
     var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
-    var taskHTML = _compiledTaskTemplate({ id: id, value: value });
+    var taskHTML = _compiledTaskTemplate({ id: id, value: value, completed: data.TaskIsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
 }
 
@@ -3073,7 +3072,6 @@ function SetupRemindersSection() {
 }
 
 function SetupTasksSection() {
-    debugger;
     AddTasks(_ticketInfo.Tasks);
     if ($('#ticket-reminder-who').length) {
         $('#ticket-reminder-date').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
@@ -3147,6 +3145,14 @@ function SetupTasksSection() {
             });
         });
 
+        $('#ticket-task-span').on('click', '.change-task-status', function (e) {
+            var id = $(this).data('reminderid');
+            var checked = $(this).prop("checked");
+            parent.Ts.System.logAction('Tasks Page - Change Task Status');
+
+            parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+        });
+
         $('#ticket-task-span').on('click', 'span.tagRemove', function (e) {
             var reminder = $(this).parent()[0];
             reminderClose = true;
@@ -3168,8 +3174,6 @@ function SetupTasksSection() {
         });
 
         $('.taskContainer').on('click', 'a.new-task', function (e) {
-
-            debugger;
             e.preventDefault();
             parent.Ts.System.logAction('Tasks Page - New Task');
             parent.Ts.MainPage.newTask();
@@ -3208,7 +3212,6 @@ function AddReminders(reminders) {
 }
 
 function AddTasks(tasks) {
-    debugger;
     var tasksDiv = $("#ticket-task-span");
     tasksDiv.empty();
 
@@ -4365,6 +4368,19 @@ function CreateHandleBarHelpers() {
         if (this.Likes > 0) {
             return "+" + this.Likes;
         }
+    });
+
+    Handlebars.registerHelper("taskComplete", function (completed) {
+        var result = '';
+
+        if (completed != null) {
+            if (completed == true)
+            {
+                result = 'checked="checked"';
+            }
+        }
+        
+        return result;
     });
 };
 

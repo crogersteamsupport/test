@@ -951,7 +951,7 @@
     color: #428bca !important;
 }
 
-label { font-size: 10px; }
+label { font-size: 11px; }
 
 input[type=checkbox] { display:none; } /* to hide the checkbox itself */
 input[type=checkbox] + label:before {
