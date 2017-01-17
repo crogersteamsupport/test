@@ -218,7 +218,7 @@ namespace TeamSupport.Data
                 User user = loginUser.GetUser();
                 if (hubOrganizationTickets && !user.PortalLimitOrgTickets)
                 {
-                    command.CommandText = "SELECT COUNT(*) FROM OrganizationTickets ot WHERE (tot.OrganizationID = @OrganizationID OR ot.OrganizationID in (SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)) AND (ot.TicketID = @TicketID)";
+                    command.CommandText = "SELECT COUNT(*) FROM OrganizationTickets ot WHERE (ot.OrganizationID = @OrganizationID OR ot.OrganizationID in (SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)) AND (ot.TicketID = @TicketID)";
                 }
                 else
                 {
