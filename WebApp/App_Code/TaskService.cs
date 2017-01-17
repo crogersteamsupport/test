@@ -57,6 +57,16 @@ namespace TSWebServices
             return convertToClientTasksList(results.GetReminderProxies(), loginUser);
         }
 
+        public List<ClientTask> GetTasksByTicketID(int ticketID) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> resultItems = new List<string>();
+
+            Reminders results = new Reminders(loginUser);
+            results.LoadByTicketID(ticketID);
+
+            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+        }
+
         public List<ClientTask> convertToClientTasksList(ReminderProxy[] reminderProxies, LoginUser loginUser)
         {
             List<ClientTask> clientTasks = new List<ClientTask>();

@@ -2077,6 +2077,7 @@ function () { }, function (e) { console.log(e) });
     },
 
     newTask: function (taskParentID, parentTaskName) {
+        debugger;
         var query;
         if (taskParentID != undefined)
             query = "?taskparentid=" + taskParentID + "&parenttaskname=" + parentTaskName;

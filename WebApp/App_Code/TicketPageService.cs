@@ -77,6 +77,9 @@ namespace TSWebServices
             info.Queuers = GetQueuers(ticket);
             info.Attachments = GetAttachments(ticket);
 
+            TaskService taskService = new TaskService();
+            info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID).ToArray();
+
             Reminders reminders = new Reminders(ticket.Collection.LoginUser);
             reminders.LoadByItemAll(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
             info.Reminders = reminders.GetReminderProxies();
@@ -364,16 +367,7 @@ namespace TSWebServices
         [WebMethod]
         public TicketCategoryOrder[] GetTicketPageOrder(string KeyName)
         {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
-            string reminderCatName = "{'CatID':'Reminders','CatName':'Reminders','Disabled':'false'}";
-
-            if (organization.ProductType == ProductType.Enterprise)
-            {
-                reminderCatName = "{'CatID':'Tasks','CatName':'Tasks','Disabled':'false'}";
-            }
-
-            string defaultOrder = "[{'CatID':'AssignedTo','CatName':'Assigned To','Disabled':'false'},{'CatID':'Group','CatName':'Group','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Type','CatName':'Type','Disabled':'false'},{'CatID':'Status','CatName':'Status','Disabled':'false'},{'CatID':'Severity','CatName':'Severity','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SLAStatus','CatName':'SLA Status','Disabled':'false'},{'CatID':'VisibleToCustomers','CatName':'Visible To Customers','Disabled':'false'},{'CatID':'KnowledgeBase','CatName':'Knowledge Base','Disabled':'false'},{'CatID':'Community','CatName':'Community','Disabled':'false'},{'CatID':'DaysOpened','CatName':'Days Opened','Disabled':'false'},{'CatID':'TotalTimeSpent','CatName':'Total Time Spent','Disabled':'false'},{'CatID':'DueDate','CatName':'Due Date','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Customers','CatName':'Customers','Disabled':'false'},{'CatID':'CustomFields','CatName':'Custom Fields','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Product','CatName':'Product','Disabled':'false'},{'CatID':'Reported','CatName':'Reported','Disabled':'false'},{'CatID':'Resolved','CatName':'Resolved','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Inventory','CatName':'Inventory','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Tags','CatName':'Tags','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'}," + reminderCatName + ",{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'AssociatedTickets','CatName':'Associated Tickets','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'UserQueue','CatName':'User Queue','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SubscribedUsers','CatName':'Subscribed Users','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'true'},{'CatID':'Jira','CatName':'Jira','Disabled':'false'},{'CatID':'Attachments','CatName':'Attachments','Disabled':'false'}]";
+            string defaultOrder = "[{'CatID':'AssignedTo','CatName':'Assigned To','Disabled':'false'},{'CatID':'Group','CatName':'Group','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Type','CatName':'Type','Disabled':'false'},{'CatID':'Status','CatName':'Status','Disabled':'false'},{'CatID':'Severity','CatName':'Severity','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SLAStatus','CatName':'SLA Status','Disabled':'false'},{'CatID':'VisibleToCustomers','CatName':'Visible To Customers','Disabled':'false'},{'CatID':'KnowledgeBase','CatName':'Knowledge Base','Disabled':'false'},{'CatID':'Community','CatName':'Community','Disabled':'false'},{'CatID':'DaysOpened','CatName':'Days Opened','Disabled':'false'},{'CatID':'TotalTimeSpent','CatName':'Total Time Spent','Disabled':'false'},{'CatID':'DueDate','CatName':'Due Date','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Customers','CatName':'Customers','Disabled':'false'},{'CatID':'CustomFields','CatName':'Custom Fields','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Product','CatName':'Product','Disabled':'false'},{'CatID':'Reported','CatName':'Reported','Disabled':'false'},{'CatID':'Resolved','CatName':'Resolved','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Inventory','CatName':'Inventory','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Tags','CatName':'Tags','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Reminders','CatName':'Reminders','Disabled':'false'},{'CatID':'Tasks','CatName':'Tasks','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'AssociatedTickets','CatName':'Associated Tickets','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'UserQueue','CatName':'User Queue','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SubscribedUsers','CatName':'Subscribed Users','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'true'},{'CatID':'Jira','CatName':'Jira','Disabled':'false'},{'CatID':'Attachments','CatName':'Attachments','Disabled':'false'}]";
             List<TicketCategoryOrder> items = JsonConvert.DeserializeObject<List<TicketCategoryOrder>>(Settings.OrganizationDB.ReadString(KeyName, defaultOrder));
 
             return items.ToArray();
@@ -1262,6 +1256,8 @@ namespace TSWebServices
             public bool IsSlaPending { get; set; }
             [DataMember]
             public PluginProxy[] Plugins { get; set; }
+            [DataMember]
+            public ClientTask[] Tasks { get; set; }
         }
 
         [DataContract]

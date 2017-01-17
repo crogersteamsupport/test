@@ -347,6 +347,7 @@ var loadTicket = function (ticketNumber, refresh) {
         AddSubscribers(_ticketInfo.Subscribers);
         AddQueues(_ticketInfo.Queuers);
         AddReminders(_ticketInfo.Reminders);
+        AddTasks(_ticketInfo.Tasks);
         AddInventory(_ticketInfo.Assets);
         LoadTicketHistory();
         SetupJiraFieldValues();
@@ -2326,9 +2327,8 @@ function SetupTagsSection() {
 };
 
 function PrependTask(parent, id, value, data) {
-    debugger;
     var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
-    var taskHTML = _compiledTaskTemplate({ id: id, value: value });
+    var taskHTML = _compiledTaskTemplate({ id: id, value: value, completed: data.TaskIsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
 }
 
@@ -3072,7 +3072,7 @@ function SetupRemindersSection() {
 }
 
 function SetupTasksSection() {
-    AddTasks(_ticketInfo.Reminders);
+    AddTasks(_ticketInfo.Tasks);
     if ($('#ticket-reminder-who').length) {
         $('#ticket-reminder-date').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
 
@@ -3145,6 +3145,14 @@ function SetupTasksSection() {
             });
         });
 
+        $('#ticket-task-span').on('click', '.change-task-status', function (e) {
+            var id = $(this).data('reminderid');
+            var checked = $(this).prop("checked");
+            parent.Ts.System.logAction('Tasks Page - Change Task Status');
+
+            parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+        });
+
         $('#ticket-task-span').on('click', 'span.tagRemove', function (e) {
             var reminder = $(this).parent()[0];
             reminderClose = true;
@@ -3163,6 +3171,13 @@ function SetupTasksSection() {
                 else
                     alert('There was a problem removing the reminder from the ticket.');
             }
+        });
+
+        $('.taskContainer').on('click', 'a.new-task', function (e) {
+            e.preventDefault();
+            parent.Ts.System.logAction('Tasks Page - New Task');
+            parent.Ts.MainPage.newTask();
+
         });
 
         $('.taskContainer').on('click', 'a.tasklink', function (e) {
@@ -3197,24 +3212,23 @@ function AddReminders(reminders) {
 }
 
 function AddTasks(tasks) {
-    debugger;
     var tasksDiv = $("#ticket-task-span");
     tasksDiv.empty();
 
     for (var i = 0; i < tasks.length; i++) {
-        var _TaskName = tasks[i].TaskName;
+        var _TaskName = tasks[i].Task.TaskName;
 
-        if (tasks[i].TaskName == null) {
-            if (tasks[i].Description == null || tasks[i].Description == "") {
+        if (tasks[i].Task.TaskName == null) {
+            if (tasks[i].Task.Description == null || tasks[i].Task.Description == "") {
                 _TaskName = 'No Title';
             }
             else {
-                _TaskName = tasks[i].Description;
+                _TaskName = tasks[i].Task.Description;
             }
         }
         //var label = '<span class="TaskAnchor" data-placement="left">' + ellipseString(tasks[i].Description, 30) + '<br>' + tasks[i].DueDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()) + '</span';
         //label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
-        var reminderElem = PrependTask(tasksDiv, tasks[i].ReminderID, _TaskName, tasks[i]);
+        var reminderElem = PrependTask(tasksDiv, tasks[i].Task.ReminderID, _TaskName, tasks[i].Task);
     };
 }
 
@@ -4354,6 +4368,19 @@ function CreateHandleBarHelpers() {
         if (this.Likes > 0) {
             return "+" + this.Likes;
         }
+    });
+
+    Handlebars.registerHelper("taskComplete", function (completed) {
+        var result = '';
+
+        if (completed != null) {
+            if (completed == true)
+            {
+                result = 'checked="checked"';
+            }
+        }
+        
+        return result;
     });
 };
 
