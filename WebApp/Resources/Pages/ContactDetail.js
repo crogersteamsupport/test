@@ -152,6 +152,10 @@ $(document).ready(function () {
         $('#contactTabs a:first').tab('show');
     });
 
+    if (_mainFrame.Ts.System.Organization.ProductType == _mainFrame.Ts.ProductType.Enterprise) {
+        $('#contactReminder').hide();
+    }
+
     if (_mainFrame.Ts.System.Organization.ParentID != null) {
         $('#btnSendWelcome').hide();
     }

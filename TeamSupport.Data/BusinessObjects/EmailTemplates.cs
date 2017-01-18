@@ -528,6 +528,50 @@ namespace TeamSupport.Data
             }
         }
 
+        public void LoadAll(bool includeTSOnly, ProductType productType)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                if (productType == ProductType.Enterprise)
+                {
+                    //Exclude Reminders
+                    command.CommandText = @"
+                    SELECT
+                        *
+                    FROM
+                        EmailTemplates
+                    WHERE
+                        (
+                            IsTSOnly = @IsTSOnly
+                            OR IsTSOnly = 0
+                        )
+                        AND EmailTemplateID NOT IN (22,23,24)
+                    ORDER BY 
+                        Position";
+                }
+                else
+                {
+                    //Exclude Tasks
+                    command.CommandText = @"
+                    SELECT
+                        *
+                    FROM
+                        EmailTemplates
+                    WHERE
+                        (
+                            IsTSOnly = @IsTSOnly
+                            OR IsTSOnly = 0
+                        )
+                        AND EmailTemplateID NOT IN (35,36,37,38)
+                    ORDER BY 
+                        Position";
+                }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@IsTSOnly", includeTSOnly);
+                Fill(command);
+            }
+        }
+
         /// <summary>
         /// Adds parameters for {{ToFirstName}},{{ToLastName}},{{ToEmailAddress}}
         /// </summary>
