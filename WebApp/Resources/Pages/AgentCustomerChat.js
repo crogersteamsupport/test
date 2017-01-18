@@ -521,6 +521,14 @@ $(document).ready(function () {
     }
 
     _intervalUpdateActiveChats = setInterval('EnableDisableTicketMenu();', 5200);
+
+    $('#message').keydown(function (e) {
+        if (e.which == 13) {
+            $("#message-form").submit();
+        } else {
+            //nothing here for now
+        }
+    });
 });
 
 function EnableDisableTicketMenu() {
