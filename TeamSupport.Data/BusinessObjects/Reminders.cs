@@ -406,6 +406,171 @@ namespace TeamSupport.Data
             }
         }
 
+        public void LoadIncompleteAssociatedToCompany(int from, int count, int organizationID)
+        {
+            string completeQuery = @"
+            SELECT 
+                rem.*
+            FROM
+                Reminders rem
+                JOIN TaskAssociations ta
+                    ON rem.ReminderID = ta.ReminderID
+            WHERE
+                rem.TaskIsComplete = 0
+                AND ta.RefType = 9
+                AND ta.RefID = @organizationID";
+
+            string pageQuery = @"
+            WITH 
+                q AS ({0}),
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskDueDate, DueDate) AS 'RowNum' FROM q)
+            SELECT
+                ReminderID
+                , OrganizationID
+                , RefType
+                , RefID
+                , Description
+                , DueDate
+                , UserID
+                , IsDismissed
+                , HasEmailSent
+                , CreatorID
+                , DateCreated
+                , TaskName
+                , TaskDueDate
+                , TaskIsComplete
+                , TaskDateCompleted
+                , TaskParentID
+            FROM 
+                r
+            WHERE
+                RowNum BETWEEN @From AND @To";
+
+            StringBuilder query;
+
+            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = query.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationID", organizationID);
+                command.Parameters.AddWithValue("@From", from + 1);
+                command.Parameters.AddWithValue("@To", from + count);
+                Fill(command);
+            }
+        }
+
+        public void LoadCompleteAssociatedToCompany(int from, int count, int organizationID)
+        {
+            string completeQuery = @"
+            SELECT 
+                rem.*
+            FROM
+                Reminders rem
+                JOIN TaskAssociations ta
+                    ON rem.ReminderID = ta.ReminderID
+            WHERE
+                rem.TaskIsComplete = 1
+                AND ta.RefType = 9
+                AND ta.RefID = @organizationID";
+
+            string pageQuery = @"
+            WITH 
+                q AS ({0}),
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskDueDate, DueDate) AS 'RowNum' FROM q)
+            SELECT
+                ReminderID
+                , OrganizationID
+                , RefType
+                , RefID
+                , Description
+                , DueDate
+                , UserID
+                , IsDismissed
+                , HasEmailSent
+                , CreatorID
+                , DateCreated
+                , TaskName
+                , TaskDueDate
+                , TaskIsComplete
+                , TaskDateCompleted
+                , TaskParentID
+            FROM 
+                r
+            WHERE
+                RowNum BETWEEN @From AND @To";
+
+            StringBuilder query;
+
+            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = query.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationID", organizationID);
+                command.Parameters.AddWithValue("@From", from + 1);
+                command.Parameters.AddWithValue("@To", from + count);
+                Fill(command);
+            }
+        }
+
+        public void LoadByUserAndAssociatedToCompany(int from, int count, int organizationID, int userID)
+        {
+            string completeQuery = @"
+            SELECT 
+                rem.*
+            FROM
+                Reminders rem
+                JOIN TaskAssociations ta
+                    ON rem.ReminderID = ta.ReminderID
+            WHERE
+                (rem.CreatorID = @UserID OR rem.UserID = @UserID)
+                AND ta.RefType = 9
+                AND ta.RefID = @organizationID";
+
+            string pageQuery = @"
+            WITH 
+                q AS ({0}),
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskDueDate, DueDate) AS 'RowNum' FROM q)
+            SELECT
+                ReminderID
+                , OrganizationID
+                , RefType
+                , RefID
+                , Description
+                , DueDate
+                , UserID
+                , IsDismissed
+                , HasEmailSent
+                , CreatorID
+                , DateCreated
+                , TaskName
+                , TaskDueDate
+                , TaskIsComplete
+                , TaskDateCompleted
+                , TaskParentID
+            FROM 
+                r
+            WHERE
+                RowNum BETWEEN @From AND @To";
+
+            StringBuilder query;
+
+            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = query.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationID", organizationID);
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@From", from + 1);
+                command.Parameters.AddWithValue("@To", from + count);
+                Fill(command);
+            }
+        }
     }
 
 }
