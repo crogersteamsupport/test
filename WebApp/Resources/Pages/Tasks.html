@@ -42,6 +42,9 @@
                         <div id="handlebarsTaskList"></div>
                     </div>
                 </div>
+                <div class="pull-right more-tasks" style="display:none;">
+                    <a class="load-more-tasks" href="#">Load more</a>
+                </div>
                 <div class="results-empty">
                     <h3 class="">You currently have no tasks, click <a href="#">"New Task"</a> to get started!</h3>
                 </div>
@@ -49,7 +52,7 @@
         </div>
     </div>
 </body>
-<script id="mytask-task-template" type="text/x-handlebars-template">
+<script id="mytask-table-template" type="text/x-handlebars-template">
     <div id="taskList"></div>
     <table class="table">
         <thead>
@@ -62,46 +65,45 @@
                 <td>Associations</td>
             </tr>
         </thead>
-        <tbody id="pendingtasks">
-            {{#taskList}}
-            <tr class="{{formatRow this.Task}}">
-                <td>
-                    <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
-                </td>
-                <td>
-                    <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
-                        {{formatTaskName this.Task}}
-                    </a>
-                </td>
-                <!--<td>{{AssignedTo}}</td>-->
-                <td>{{formatDate Task.TaskDueDate}}</</td>
-                <td>{{formatDate Task.DueDate}}</td>
-                <td>
-                    {{#Associations}}
-                    {{mapAssociation this}}
-                    {{/Associations}}
-                </td>
-            </tr>
-
-            <!--{{#SubTasks}}
-            <tr class="">
-                <td>
-                    Poop
-                </td>
-                <td>
-
-                </td>
-                <td>
-
-                </td>
-            </tr>
-            {{/SubTasks}}-->
-
-            {{/taskList}}
-        </tbody>
+        <tbody id="my-tasks"></tbody>
     </table>
 </script>
-<script id="assigned-task-template" type="text/x-handlebars-template">
+<script id="mytasks-template" type="text/x-handlers-template">
+    {{#taskList}}
+    <tr class="{{formatRow this.Task}}">
+        <td>
+            <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
+        </td>
+        <td>
+            <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
+                {{formatTaskName this.Task}}
+            </a>
+        </td>
+        <!--<td>{{AssignedTo}}</td>-->
+        <td>{{formatDate Task.TaskDueDate}}</</td>
+        <td>{{formatDate Task.DueDate}}</td>
+        <td>
+            {{#Associations}}
+            {{mapAssociation this}}
+            {{/Associations}}
+        </td>
+    </tr>
+    <!--{{#SubTasks}}
+    <tr class="">
+        <td>
+            Poop
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+    </tr>
+    {{/SubTasks}}-->
+    {{/taskList}}
+</script>
+<script id="assigned-table-template" type="text/x-handlebars-template">
     <div id="taskList"></div>
     <table class="table">
         <thead>
@@ -114,31 +116,32 @@
                 <td>Associations</td>
             </tr>
         </thead>
-        <tbody id="pendingtasks">
-            {{#taskList}}
-            <tr class="{{formatRow this.Task}}">
-                <td>
-                    <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
-                </td>
-                <td>
-                    <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
-                        {{formatTaskName this.Task}}
-                    </a>
-                </td>
-                <td>{{AssignedTo}}</td>
-                <td>{{formatDate Task.TaskDueDate}}</td>
-                <td>{{formatDate Task.DueDate}}</td>
-                <td>
-                    {{#Associations}}
-                    {{mapAssociation this}}
-                    {{/Associations}}
-                </td>
-            </tr>
-            {{/taskList}}
-        </tbody>
+        <tbody id="assigned-tasks"></tbody>
     </table>
 </script>
-<script id="closed-task-template" type="text/x-handlebars-template">
+<script id="assigned-tasks-template" type="text/x-handlebars-template">
+    {{#taskList}}
+    <tr class="{{formatRow this.Task}}">
+        <td>
+            <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
+        </td>
+        <td>
+            <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
+                {{formatTaskName this.Task}}
+            </a>
+        </td>
+        <td>{{AssignedTo}}</td>
+        <td>{{formatDate Task.TaskDueDate}}</td>
+        <td>{{formatDate Task.DueDate}}</td>
+        <td>
+            {{#Associations}}
+            {{mapAssociation this}}
+            {{/Associations}}
+        </td>
+    </tr>
+    {{/taskList}}
+</script>
+<script id="closed-table-template" type="text/x-handlebars-template">
     <div id="taskList"></div>
     <table class="table">
         <thead>
@@ -152,29 +155,31 @@
                 <td>Date Completed</td>
             </tr>
         </thead>
-        <tbody id="pendingtasks">
-            {{#taskList}}
-            <tr class="{{formatRow this.Task}}">
-                <td>
-                    <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
-                </td>
-                <td>
-                    <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
-                        {{formatTaskName this.Task}}
-                    </a>
-                </td>
-                <td>{{AssignedTo}}</td>
-                <td>{{formatDate Task.TaskDueDate}}</td>
-                <td>{{formatDate Task.DueDate}}</td>
-                <td>
-                    {{#Associations}}
-                    {{mapAssociation this}}
-                    {{/Associations}}
-                </td>
-                <td>{{formatDate Task.TaskDateCompleted}}</td>
-            </tr>
-            {{/taskList}}
+        <tbody id="closed-tasks">
         </tbody>
     </table>
+</script>
+<script id="closed-tasks-template" type="text/x-handlebars-template">
+    {{#taskList}}
+    <tr class="{{formatRow this.Task}}">
+        <td>
+            <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
+        </td>
+        <td>
+            <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
+                {{formatTaskName this.Task}}
+            </a>
+        </td>
+        <td>{{AssignedTo}}</td>
+        <td>{{formatDate Task.TaskDueDate}}</td>
+        <td>{{formatDate Task.DueDate}}</td>
+        <td>
+            {{#Associations}}
+            {{mapAssociation this}}
+            {{/Associations}}
+        </td>
+        <td>{{formatDate Task.TaskDateCompleted}}</td>
+    </tr>
+    {{/taskList}}
 </script>
 </html>

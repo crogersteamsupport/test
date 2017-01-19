@@ -147,26 +147,25 @@ namespace TSWebServices
         //}
 
         [WebMethod]
-        public FirstLoad LoadPage(int start, int pageSize, pageTab tab)
+        public TasksModel LoadPage(int start, int pageSize, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-            FirstLoad result = new FirstLoad();
-
+            TasksModel result = new TasksModel();
 
             switch (tab)
             {
                 //My Tasks
                 case pageTab.mytasks:
-                    result.AssignedItems = GetTasks(0, 20, tab);
+                    result.AssignedItems = GetTasks(start, pageSize, tab);
                     break;
                 //Assigned Tasks
                 case pageTab.assigned:
-                    result.CreatedItems = GetTasks(0, 20, tab);
+                    result.CreatedItems = GetTasks(start, pageSize, tab);
                     break;
                 //Completed Tasks
                 case pageTab.completed:
-                    result.CompletedItems = GetTasks(0, 20, tab);
+                    result.CompletedItems = GetTasks(start, pageSize, tab);
                     break;
                 default:
                     break;
@@ -712,7 +711,7 @@ namespace TSWebServices
     }
 
     [DataContract(Namespace = "http://teamsupport.com/")]
-    public class FirstLoad
+    public class TasksModel
     {
         [DataMember]
         public int AssignedCount { get; set; }
