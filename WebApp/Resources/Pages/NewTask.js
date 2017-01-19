@@ -546,14 +546,18 @@ $(document).ready(function () {
 
         $('#taskSaveBtn').prop("disabled", true);
 
+        if ($("#inputName").val().length < 1) {
+            alert("Please enter a name");
+            return;
+        }
+
         parent.Ts.System.logAction('New Task - Save New Task');
 
         var taskInfo = new Object();
         taskInfo.TaskParentID = _taskParentID;
         taskInfo.TaskName = $("#inputName").val();
         taskInfo.Description = $("#Description").val();
-        if ($("#ddlUser").val() != -1)
-        {
+        if ($("#ddlUser").val() != -1) {
             taskInfo.UserID = $("#ddlUser").val();
         }
         taskInfo.TaskIsComplete = $("#cbComplete").prop('checked');
