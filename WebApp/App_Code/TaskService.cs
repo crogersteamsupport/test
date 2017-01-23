@@ -34,7 +34,6 @@ namespace TSWebServices
         public List<ClientTask> GetTasks(int from, int count, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            List<string> resultItems = new List<string>();
 
             Reminders results = new Reminders(loginUser);
             if (tab == pageTab.mytasks)
@@ -53,6 +52,17 @@ namespace TSWebServices
 
             ReminderProxy[] reminderProxies = results.GetReminderProxies();
 
+
+            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+        }
+
+        [WebMethod]
+        public List<ClientTask> GetCustomerTasks(int from, int count, int organizationID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminders results = new Reminders(loginUser);
+
+            results.LoadIncompleteAssociatedToCompany(from, count, organizationID);
 
             return convertToClientTasksList(results.GetReminderProxies(), loginUser);
         }

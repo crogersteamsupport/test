@@ -72,6 +72,7 @@
           <li id="ratingsTab"><a href="#company-ratings" data-toggle="tab">Ratings</a></li>
           <li id="calendarTab"><a href="#company-calendar" data-toggle="tab">Calendar</a></li>
           <li id="slaTab"><a href="#company-sla" data-toggle="tab">SLA</a></li>
+          <li id="taskTab"><a href="#company-tasks" data-toggle="tab">Tasks</a></li>
         </ul>
       </div>
     </div>
@@ -771,6 +772,62 @@
                         </div>
                     </div>
                 </div>
+                <div class="tab-pane fade" id="company-tasks">
+                    <div class="row">
+                        <div class="col-xs-12" id="taskContainer">
+                            
+                            <div class="box">
+                                <div class="box-header addSlaTrigger">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div id="tasks"></div>
+                                        <!--<div class="col-md-12">
+                                            <table class="table table-hover" id="tblSLATriggers">
+                                                <thead>
+                                                    <tr>
+                                                        <th><a href="#" class="slaHeader">SLA</a></th>
+                                                        <th><a href="#" class="slaHeader">Ticket Type</a></th>
+                                                        <th><a href="#" class="slaHeader">Severity</a></th>
+                                                        <th><a href="#" class="slaHeader">SLA Type</a></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                            <div class="slatriggers-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                                            <div class="slatriggers-empty" hidden>This customer has no SLA associated.</div>
+                                        </div>-->
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="box">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblSLAViolations">
+                                                <thead>
+                                                    <tr>
+                                                        <th><a href="#" class="slaHeader">Ticket #</a></th>
+                                                        <th><a href="#" class="slaHeader">Violation</a></th>
+                                                        <th><a href="#" class="slaHeader">Violation Date<i class="fa fa-sort-desc"></i></a></th>
+                                                        <th><a href="#" class="slaHeader">Sla Name</a></th>
+                                                        <th><a href="#" class="slaHeader">Ticket Type</a></th>
+                                                        <th><a href="#" class="slaHeader">Severity</a></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                            <div class="sla-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                                            <div class="sla-empty" hidden>This customer has no tickets with SLA violations.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1050,3 +1107,54 @@
 
 </body>
 </html>
+<script id="company-task-table-template" type="text/x-handlebars-template">
+    <div id="taskList"></div>
+    <table class="table">
+        <thead>
+            <tr>
+                <td></td>
+                <td>Name</td>
+                <td>Assigned To</td>
+                <td>Due</td>
+                <td>Reminder Date</td>
+                <td>Associations</td>
+            </tr>
+        </thead>
+        <tbody id="my-tasks"></tbody>
+    </table>
+</script>
+<script id="company-tasks-template" type="text/x-handlers-template">
+    {{#taskList}}
+    <tr class="{{formatRow this.Task}}">
+        <td>
+            <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
+        </td>
+        <td>
+            <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
+                {{formatTaskName this.Task}}
+            </a>
+        </td>
+        <td>{{AssignedTo}}</td>
+        <td>{{formatDate Task.TaskDueDate}}</</td>
+        <td>{{formatDate Task.DueDate}}</td>
+        <td>
+            {{#Associations}}
+            {{mapAssociation this}}
+            {{/Associations}}
+        </td>
+    </tr>
+    <!--{{#SubTasks}}
+    <tr class="">
+        <td>
+            Poop
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+    </tr>
+    {{/SubTasks}}-->
+    {{/taskList}}
+</script>

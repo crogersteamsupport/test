@@ -2505,6 +2505,18 @@ $(document).ready(function () {
         });
     }
 
+    function LoadTasks() {
+
+        parent.Ts.Services.Task.GetCustomerTasks(1, 20, organizationID, function (pageData) {
+            debugger;
+            var source = $("#company-task-table-template").html();
+            var template = Handlebars.compile(source);
+            $("#tasks").html(template());
+        });
+
+        alert('tasks load from here')
+    }
+
     $('#tblSLAViolations').on('click', '.slaView', function (e) {
         e.preventDefault();
         _mainFrame.Ts.System.logAction('Customer Detail - View Ticket Sla Violated');
@@ -2907,6 +2919,10 @@ $(document).ready(function () {
         else if (e.target.innerHTML == "SLA") {
             LoadSLATriggersGrid();
             LoadSLAViolationsGrid();
+        }
+        else if (e.target.innerHTML == "Tasks") {
+            LoadTasks();
+            _viewingContacts = false;
         }
     })
 
