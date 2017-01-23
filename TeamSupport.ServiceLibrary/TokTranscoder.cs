@@ -51,6 +51,8 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteEvent("Starting Run");
             UpdateHealth();
 
+            Amazon.Util.ProfileManager.RegisterProfile("TeamsupportAWS", "AKIAIMZYVL4GYTGOKB5A", "Qo6n8Fu5oTGMsE2opBz33HT5yGqAR7l5ORjhveGa");
+
             TokStorage ts = new TokStorage(LoginUser);
             ts.GetNonTranscoded();
 
