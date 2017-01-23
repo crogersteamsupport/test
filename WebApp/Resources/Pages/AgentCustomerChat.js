@@ -53,8 +53,7 @@ $(document).ready(function () {
     function SetupChatRequests() {
         parent.Ts.Services.Chat.GetChatRequests(function (data) {
             //console.log(data);
-            for (i = 0; i < data.length; i++)
-            {
+            for (i = 0; i < data.length; i++) {
                 SetupPendingRequest(data[i], (i == 0));
             }
 
@@ -132,7 +131,7 @@ $(document).ready(function () {
         $('.open-request').html($('.open-request > .userName').text()).removeClass('open-request').removeClass('list-group-item-info');
     }
 
-    function AcceptRequest(ChatRequestID, innerString, parentEl)  {
+    function AcceptRequest(ChatRequestID, innerString, parentEl) {
         parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, function (chatId) {
             setupChat(pusherKey, chatId, createMessageElement, function (channel) {
                 //console.log(channel);
@@ -178,8 +177,7 @@ $(document).ready(function () {
             $('.media-list').append(compiledTemplate);
             if (scrollView) ScrollMessages(true);
         }
-        else 
-        {
+        else {
             $('#active-chat_' + messageData.ChatID).addClass('list-group-item-info');
         }
     }
@@ -202,8 +200,7 @@ $(document).ready(function () {
             $('.chat-intro').append('<p>Initiated On: ' + moment(chat.DateCreated).format(dateFormat + ' hh:mm A') + '</p>');
             $('.chat-intro').append('<p>Initiated By: ' + chat.InitiatorMessage + '</p>');
 
-            for(i = 0; i <  chat.Messages.length; i++)
-            {
+            for (i = 0; i < chat.Messages.length; i++) {
                 createMessageElement(chat.Messages[i], false);
             }
             ScrollMessages(false);
@@ -211,6 +208,11 @@ $(document).ready(function () {
             if ($('#Ticket-Create').hasClass("disabled")) {
                 $('#Ticket-Create').removeClass("disabled");
             }
+
+            if (!$('#Ticket-Open').hasClass("disabled")) {
+                $('#Ticket-Open').addClass("disabled");
+            }
+
             _intervalUpdateActiveChats = setInterval('EnableDisableTicketMenu();', 5200);
         });
     }
@@ -325,7 +327,7 @@ $(document).ready(function () {
                         html = html + '</div>';
 
                         parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, html, _activeChatID, function (data) {
-;
+                            ;
                         });
 
                         top.Ts.System.logAction('Chat - Suggested Solution Inserted');
@@ -536,8 +538,13 @@ function EnableDisableTicketMenu() {
         if (ticketID && ticketID > 0) {
             if (!$('#Ticket-Create').hasClass("disabled")) {
                 $('#Ticket-Create').addClass("disabled");
-                clearInterval(_intervalUpdateActiveChats);
             }
+
+            if ($('#Ticket-Open').hasClass("disabled")) {
+                $('#Ticket-Open').removeClass("disabled");
+            }
+
+            clearInterval(_intervalUpdateActiveChats);
         }
     });
 }
