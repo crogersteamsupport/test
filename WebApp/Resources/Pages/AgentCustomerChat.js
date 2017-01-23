@@ -534,19 +534,21 @@ $(document).ready(function () {
 });
 
 function EnableDisableTicketMenu() {
-    parent.Ts.Services.Chat.GetTicketID(_activeChatID, function (ticketID) {
-        if (ticketID && ticketID > 0) {
-            if (!$('#Ticket-Create').hasClass("disabled")) {
-                $('#Ticket-Create').addClass("disabled");
-            }
+    if (_activeChatID !== null) {
+        parent.Ts.Services.Chat.GetTicketID(_activeChatID, function (ticketID) {
+            if (ticketID && ticketID > 0) {
+                if (!$('#Ticket-Create').hasClass("disabled")) {
+                    $('#Ticket-Create').addClass("disabled");
+                }
 
-            if ($('#Ticket-Open').hasClass("disabled")) {
-                $('#Ticket-Open').removeClass("disabled");
-            }
+                if ($('#Ticket-Open').hasClass("disabled")) {
+                    $('#Ticket-Open').removeClass("disabled");
+                }
 
-            clearInterval(_intervalUpdateActiveChats);
-        }
-    });
+                clearInterval(_intervalUpdateActiveChats);
+            }
+        });
+    }
 }
 
 $(document).bind('dragover', function (e) {
