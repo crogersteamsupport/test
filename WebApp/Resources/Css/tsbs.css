@@ -255,6 +255,16 @@ fieldset[disabled] .btn-default.active {
 .pt0 {padding-top: 0px !important;}
 .pl0 {padding-left: 0px !important;}
 .p0 {padding: 0px !important;}
+/* Added default border and bold red for error labels*/
+input.error {
+    border-color: #a94442;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+label.error {
+    color: #a94442;
+    font-weight: bold;
+}
+
 .maincontainer .nav-tabs > li.active > a, .maincontainer .nav-tabs > li.active > a:hover, .maincontainer .nav-tabs > li.active > a:focus{
     color:white;
     background-color: #1E7DCC;
