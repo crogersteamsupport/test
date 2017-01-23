@@ -548,6 +548,14 @@ function EnableDisableTicketMenu() {
                 clearInterval(_intervalUpdateActiveChats);
             }
         });
+
+        if ($('#Ticket-Add').hasClass("disabled")) {
+            $('#Ticket-Add').removeClass("disabled");
+        }
+    } else {
+        $('#Ticket-Create').addClass("disabled");
+        $('#Ticket-Open').addClass("disabled");
+        $('#Ticket-Add').addClass("disabled");
     }
 }
 
