@@ -62,7 +62,7 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminders results = new Reminders(loginUser);
 
-            results.LoadIncompleteAssociatedToCompany(from, count, organizationID);
+            results.LoadByCompany(from, count, organizationID);
 
             return convertToClientTasksList(results.GetReminderProxies(), loginUser);
         }
