@@ -139,7 +139,7 @@
       top.Ts.MainPage.openNewCustomer(orgid);
   })
 
-    $("body").on("mouseenter", ".TaskAnchor", function (event) {
+    $("body").on("mouseenter", ".tasklink", function (event) {
         //debugger;
         //var e = $(this);
         //e.unbind('hover');
@@ -159,11 +159,11 @@
         //    }
         //}).popover('show');
     })
-  .on("click", ".TaskAnchor", function (event) {
-      alert('Task anchor clicked');
-      //var self = $(this);
-      //var orgid = self.data('orgid');
-      //top.Ts.MainPage.openNewCustomer(orgid);
+  .on("click", ".tasklink", function (e) {
+      e.preventDefault();
+      var id = $(this).data('reminderid');
+      parent.Ts.System.logAction('Ticket Page - View Task');
+      parent.Ts.MainPage.openNewTask(id);
   })
 
     $("body").on("mouseenter", ".SLAAnchor", function (event) {

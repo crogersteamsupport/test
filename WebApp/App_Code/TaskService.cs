@@ -34,7 +34,6 @@ namespace TSWebServices
         public List<ClientTask> GetTasks(int from, int count, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            List<string> resultItems = new List<string>();
 
             Reminders results = new Reminders(loginUser);
             if (tab == pageTab.mytasks)
@@ -53,6 +52,17 @@ namespace TSWebServices
 
             ReminderProxy[] reminderProxies = results.GetReminderProxies();
 
+
+            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+        }
+
+        [WebMethod]
+        public List<ClientTask> GetCustomerTasks(int from, int count, int organizationID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminders results = new Reminders(loginUser);
+
+            results.LoadIncompleteAssociatedToCompany(from, count, organizationID);
 
             return convertToClientTasksList(results.GetReminderProxies(), loginUser);
         }
@@ -147,26 +157,25 @@ namespace TSWebServices
         //}
 
         [WebMethod]
-        public FirstLoad LoadPage(int start, int pageSize, pageTab tab)
+        public TasksModel LoadPage(int start, int pageSize, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-            FirstLoad result = new FirstLoad();
-
+            TasksModel result = new TasksModel();
 
             switch (tab)
             {
                 //My Tasks
                 case pageTab.mytasks:
-                    result.AssignedItems = GetTasks(0, 20, tab);
+                    result.AssignedItems = GetTasks(start, pageSize, tab);
                     break;
                 //Assigned Tasks
                 case pageTab.assigned:
-                    result.CreatedItems = GetTasks(0, 20, tab);
+                    result.CreatedItems = GetTasks(start, pageSize, tab);
                     break;
                 //Completed Tasks
                 case pageTab.completed:
-                    result.CompletedItems = GetTasks(0, 20, tab);
+                    result.CompletedItems = GetTasks(start, pageSize, tab);
                     break;
                 default:
                     break;
@@ -717,7 +726,7 @@ namespace TSWebServices
     }
 
     [DataContract(Namespace = "http://teamsupport.com/")]
-    public class FirstLoad
+    public class TasksModel
     {
         [DataMember]
         public int AssignedCount { get; set; }

@@ -1,6 +1,7 @@
-﻿var _pageSize = 10;
+﻿var _pageSize = 20;
 var _allAssignedLoaded = false;
 var _allCreatedLoaded = false;
+var _taskCount = 0;
 var _start = 0;
 var _currentTab = 0;
 
@@ -9,34 +10,37 @@ function showLoadingIndicator() {
 }
 
 function hideLoadingIndicator() {
-    alert($('.results-loading'));
     $('.results-loading').hide();
 }
 
-function fetchTasks() {
+function fetchTasks(callback) {
 
     showLoadingIndicator();
 
-    //parent.Ts.Services.Task.GetTasks($('#searchString').val(), start, 20, searchPending, searchComplete, false, function (items) {
-    parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
+    parent.Ts.Services.Task.LoadPage(_start + 1, _pageSize, _currentTab, function (pageData) {
 
         $('.searchresults').fadeTo(0, 1);
 
         switch (_currentTab) {
             case 0:
-                LoadMyTasks(pageData.AssignedItems)
+                LoadMyTasks(pageData.AssignedItems);
+                if (callback) callback(pageData.AssignedItems);
                 break;
             case 1:
                 LoadCreated(pageData.CreatedItems);
+                if (callback) callback(pageData.CreatedItems);
                 break;
             case 2:
                 LoadCompleted(pageData.CompletedItems);
+                if (callback) callback(pageData.CompletedItems);
                 break;
             default:
-                LoadMyTasks(pageData.AssignedItems); 
+                LoadMyTasks(pageData.AssignedItems);
+                if (callback) callback(pageData.AssignedItems);
         }
 
         $('.results-loading').hide();
+
     });
 }
 
@@ -91,12 +95,9 @@ function LoadCompleted(tasks) {
     }
 }
 
-function insertSearchResults(container, items) {
+function insertSearchResults(container, tasks) {
     container.empty();
-    appendSearchResults(container, items);
-}
 
-function appendSearchResults(container, tasks) {
     $('.results-loading').hide();
     $('.results-empty').hide();
 
@@ -108,16 +109,16 @@ function appendSearchResults(container, tasks) {
 
         switch (_currentTab) {
             case 0:
-                source = $("#mytask-task-template").html();
+                source = $("#mytask-table-template").html();
                 break;
             case 1:
-                source = $("#assigned-task-template").html();
+                source = $("#assigned-table-template").html();
                 break;
             case 2:
-                source = $("#closed-task-template").html();
+                source = $("#closed-table-template").html();
                 break;
             default:
-                source = $("#task-template").html();
+                source = $("#mytask-table-template").html();
         }
 
         //var source = $("#task-template").html();
@@ -127,9 +128,40 @@ function appendSearchResults(container, tasks) {
 
         $("#handlebarsTaskList").html(template(data));
 
+        appendSearchResults(null, tasks)
+
         $('.results').show();
     }
     _isLoading = false;
+}
+
+function appendSearchResults(container, tasks) {
+
+    data = { taskList: tasks };
+
+    var template;
+    var destination;
+
+    switch (_currentTab) {
+        case 0:
+            template = $("#mytasks-template").html();
+            destination = $("#my-tasks");
+            break;
+        case 1:
+            template = $("#assigned-tasks-template").html();
+            destination = $("#assigned-tasks");
+            break;
+        case 2:
+            template = $("#closed-tasks-template").html();
+            destination = $("#closed-tasks");
+            break;
+        default:
+            template = $("#pending-tasks-template").html();
+            destination = $("#pending-tasks");
+    }
+
+    var compiledTemplate = Handlebars.compile(template);
+    destination.append(compiledTemplate(data));
 }
 
 function isNullOrWhiteSpace(str) {
@@ -145,16 +177,23 @@ function LoadUsers() {
 }
 
 function onShow() {
-    fetchTasks();
+    $('#handlebarsTaskList').empty();
+    _start = 0;
+    fetchTasks(function () {
+
+    });
 }
 
 $(document).ready(function () {
     $('#tasks-Refresh').click(function (e) {
-        fetchTasks();
+        _start = 0;
+        fetchTasks(function () {
+
+        });
     });
 
     $('.action-new').click(function (e) {
-        //e.preventDefault();
+        e.preventDefault();
         parent.Ts.System.logAction('Tasks Page - New Task');
         parent.Ts.MainPage.newTask();
 
@@ -168,13 +207,16 @@ $(document).ready(function () {
 
     });
 
+    $('.load-more-tasks').on('click', function (e) {
+        e.preventDefault();
+        fetchTasks(function (tasks) {
+            _start += tasks.length;
 
-
-    //$('.action-new').click(function (e) {
-    //    e.preventDefault();
-    //    parent.Ts.System.logAction('Tasks Page - New Task');
-    //    parent.Ts.MainPage.newTask();
-    //});
+            if (tasks.length < _pageSize) {
+                $('.more-tasks').hide();
+            }
+        });
+    })
 
     $('.tab-assigned-tasks').on('click', function (e) {
         e.preventDefault();
@@ -186,7 +228,14 @@ $(document).ready(function () {
         _assignedTab = 0;
         _createdTab = 0;
         _start = 0;
-        fetchTasks();
+
+        fetchTasks(function (tasks) {
+            _start += tasks.length;
+
+            if (tasks.length == _pageSize) {
+                $('.more-tasks').show();
+            }
+        });
     });
 
     $('.tab-created-tasks').on('click', function (e) {
@@ -199,7 +248,14 @@ $(document).ready(function () {
         _createdTab = 1;
         _assignedTab = 0;
         _start = 0;
-        fetchTasks();
+
+        fetchTasks(function (tasks) {
+            _start += tasks.length;
+
+            if (tasks.length == _pageSize) {
+                $('.more-tasks').show();
+            }
+        });
     });
 
     $('.tab-closed-tasks').on('click', function (e) {
@@ -214,7 +270,14 @@ $(document).ready(function () {
         _createdTab = 1
         _assignedTab = 0;
         _start = 0;
-        fetchTasks();
+
+        fetchTasks(function (tasks) {
+            _start += tasks.length;
+
+            if (tasks.length == _pageSize) {
+                $('.more-tasks').show();
+            }
+        });
     });
 
     $('#TaskList').on('click', '.change-task-status', function (e) {
@@ -227,36 +290,13 @@ $(document).ready(function () {
         $(this).parent().parent().fadeOut(600, function () { $(this).remove() });
     });
 
-    fetchTasks();
+    fetchTasks(function (tasks) {
+        _start += tasks.length;
 
-    //$('.tabs').on('click', 'a', function (e) {
-    //    debugger;
-    //    e.preventDefault();
-    //    $('.tab-created-tasks').removeClass('active');
-    //    $(this).parent().addClass('active');
-    //    parent.Ts.System.logAction('Tasks Page - Change Filter');
-
-    //    if ($(this).hasClass('tab-assigned-tasks')) {
-    //        $('#createdColumn').hide();
-    //        $('#assignedColumn').show();
-    //        debugger;
-    //        _createdTab = 0;
-    //        _allAssignedLoaded = false;
-    //        _assignedTab = GetAssignedTab();
-    //        _start = 0;
-    //    }
-    //    else {
-    //        $('#assignedColumn').hide();
-    //        $('#createdColumn').show();
-    //        _assignedTab = 0;
-    //        _allCreatedLoaded = false;
-    //        _createdTab = GetCreatedTab();
-    //        _start = 0;
-    //    }
-
-
-    //    fetchTasks();
-    //});
+        if (tasks.length == _pageSize) {
+            $('.more-tasks').show();
+        }
+    });
 
     Handlebars.registerHelper("formatDate", function (datetime) {
         if (datetime != null) {

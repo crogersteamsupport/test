@@ -2505,6 +2505,23 @@ $(document).ready(function () {
         });
     }
 
+    function LoadTasks() {
+
+        parent.Ts.Services.Task.GetCustomerTasks(0, 20, organizationID, function (tasks) {
+            debugger;
+            var source = $("#company-task-table-template").html();
+            var template = Handlebars.compile(source);
+            $("#tasks").html(template());
+
+            data = { taskList: tasks };
+            var source = $("#company-tasks-template").html();
+            var template = Handlebars.compile(source);
+            $("#my-tasks").html(template(data));
+
+
+        });
+    }
+
     $('#tblSLAViolations').on('click', '.slaView', function (e) {
         e.preventDefault();
         _mainFrame.Ts.System.logAction('Customer Detail - View Ticket Sla Violated');
@@ -2907,6 +2924,10 @@ $(document).ready(function () {
         else if (e.target.innerHTML == "SLA") {
             LoadSLATriggersGrid();
             LoadSLAViolationsGrid();
+        }
+        else if (e.target.innerHTML == "Tasks") {
+            LoadTasks();
+            _viewingContacts = false;
         }
     })
 
@@ -3953,6 +3974,95 @@ function SetupParentSection(parents) {
         else {
             _mainFrame.Ts.System.logAction('Customer Detail - Remove Parent - Cancelled.');
         }
+    });
+
+    Handlebars.registerHelper("formatDate", function (datetime) {
+        if (datetime != null) {
+            return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+        }
+        else return null;
+    });
+
+    Handlebars.registerHelper("formatTaskName", function (Task) {
+        var name = Task.TaskName;
+
+        if (Task.TaskName == null) {
+            if (Task.Description == null || Task.Description == "") {
+                name = 'No Title';
+            }
+            else {
+                name = Task.Description;
+            }
+        }
+
+        return name;
+    });
+
+    Handlebars.registerHelper("formatRow", function (task) {
+        var cssClasses = null;
+
+        if (task.TaskDueDate != null) {
+            if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+                cssClasses = 'danger';
+            }
+            else {
+                return null;
+            }
+        }
+
+        return cssClasses;
+    });
+
+    Handlebars.registerHelper("taskComplete", function (taskdate) {
+        return taskdate != null ? ' checked="checked"' : '';
+    });
+
+    Handlebars.registerHelper("mapAssociation", function (association) {
+        var result = '';
+        var functionName = '';
+        var associationName = '';
+        var iconClass = '';
+
+        switch (association.RefType) {
+            //case 3: leaving attachments off for now
+            //    associationName = association.Attachment;
+            //    iconClass = attIcon;
+            //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
+            //    break;
+            case 6:
+                associationName = association.Group;
+                iconClass = "groupIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openGroup(' + association.RefID + '); return false;';
+                break;
+            case 9:
+                associationName = association.Company;
+                iconClass = "companyIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer(' + association.RefID + '); return false;';
+                break;
+            case 13:
+                associationName = association.Product;
+                iconClass = "productIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewProduct(' + association.RefID + '); return false;';
+                break;
+            case 17:
+                associationName = association.TicketName;
+                iconClass = "ticketIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openTicketByID(' + association.RefID + '); return false;'
+                break;
+            case 22:
+                associationName = association.User;
+                iconClass = "userIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
+                break;
+            default:
+                functionName = null;
+        }
+
+        if (functionName != null) {
+            result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass + '" href="#" onclick="' + functionName + '" title="' + associationName + '"></a></span>'
+        }
+
+        return new Handlebars.SafeString(result);
     });
 };
 
