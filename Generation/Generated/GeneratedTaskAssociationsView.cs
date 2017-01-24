@@ -30,6 +30,11 @@ namespace TeamSupport.Data
       get { return Row["User"] != DBNull.Value ? (string)Row["User"] : null; }
     }
     
+    public string Contact
+    {
+      get { return Row["Contact"] != DBNull.Value ? (string)Row["Contact"] : null; }
+    }
+    
     
     
 
@@ -177,7 +182,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TaskAssociationsView] SET     [TicketNumber] = @TicketNumber,    [TicketName] = @TicketName,    [User] = @User,    [Company] = @Company,    [Group] = @Group,    [Product] = @Product  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TaskAssociationsView] SET     [TicketNumber] = @TicketNumber,    [TicketName] = @TicketName,    [User] = @User,    [Company] = @Company,    [Group] = @Group,    [Product] = @Product,    [Contact] = @Contact  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReminderID", SqlDbType.Int, 4);
@@ -243,13 +248,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("Contact", SqlDbType.NVarChar, 459);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TaskAssociationsView] (    [ReminderID],    [RefID],    [RefType],    [TicketNumber],    [TicketName],    [User],    [Company],    [Group],    [Product]) VALUES ( @ReminderID, @RefID, @RefType, @TicketNumber, @TicketName, @User, @Company, @Group, @Product); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TaskAssociationsView] (    [ReminderID],    [RefID],    [RefType],    [TicketNumber],    [TicketName],    [User],    [Company],    [Group],    [Product],    [Contact]) VALUES ( @ReminderID, @RefID, @RefType, @TicketNumber, @TicketName, @User, @Company, @Group, @Product, @Contact); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("Contact", SqlDbType.NVarChar, 459);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("Product", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -426,7 +445,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReminderID], [RefID], [RefType], [TicketNumber], [TicketName], [User], [Company], [Group], [Product] FROM [dbo].[TaskAssociationsView] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReminderID], [RefID], [RefType], [TicketNumber], [TicketName], [User], [Company], [Group], [Product], [Contact] FROM [dbo].[TaskAssociationsView] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReminderID", reminderID);
         Fill(command);

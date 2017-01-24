@@ -71,6 +71,7 @@
 .addticket {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
 .addgroup {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
 .addcustomer {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.addcontact {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users3.png');cursor:pointer}
 .addproduct {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
 .adduser {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
 
@@ -78,6 +79,7 @@
 .ticketIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
 .groupIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
 .companyIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.contactIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users3.png');cursor:pointer}
 .productIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
 .userIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
 
@@ -157,7 +159,7 @@ float: left;
 .ts-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
 .ts-icon { width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
 
-.main-quick-ticket-blur, .company-search-blur, .user-search-blur, .insert-ticket-blur, .group-search-blur,.product-search-blur { font-style: italic;}
+.main-quick-ticket-blur, .company-search-blur, .contact-search-blur, .user-search-blur, .insert-ticket-blur, .group-search-blur,.product-search-blur { font-style: italic;}
 .main-quick-ticket, .company-search, .user-search, .insert-ticket, .group-search, .product-search {width:200px}
 
 .parentLink {

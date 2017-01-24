@@ -375,6 +375,11 @@ namespace TSWebServices
                 AddAssociation(newTask.ReminderID, CompanyID, ReferenceType.Organizations);
             }
 
+            foreach (int UserID in info.Contacts)
+            {
+                AddAssociation(newTask.ReminderID, UserID, ReferenceType.Contacts);
+            }
+
             foreach (int groupID in info.Groups)
             {
                 AddAssociation(newTask.ReminderID, groupID, ReferenceType.Groups);
@@ -761,6 +766,8 @@ namespace TSWebServices
         public List<int> Products { get; set; }
         [DataMember]
         public List<int> Company { get; set; }
+        [DataMember]
+        public List<int> Contacts { get; set; }
         [DataMember]
         public List<int> User { get; set; }
         [DataMember]

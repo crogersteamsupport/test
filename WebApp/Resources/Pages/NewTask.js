@@ -79,6 +79,7 @@ $(document).ready(function () {
         $("#ticketinput").hide();
         $("#userinput").hide();
         $("#customerinput").hide();
+        $("#contactinput").hide();
         $("#groupinput").hide();
         $("#productinput").hide();
     }
@@ -94,6 +95,7 @@ $(document).ready(function () {
         $('#commentatt').find('.ticket-queue').empty();
         $('#commentatt').find('.group-queue').empty();
         $('#commentatt').find('.customer-queue').empty();
+        $('#commentatt').find('.contact-queue').empty();
         $('#commentatt').find('.user-queue').empty();
         $('#commentatt').find('.product-queue').empty();
     }
@@ -139,6 +141,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
+        $(this).parent().parent().find("#contactinput").hide();
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").show();
@@ -151,6 +154,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#ticketinput").show();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
+        $(this).parent().parent().find("#contactinput").hide();
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
@@ -163,6 +167,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
+        $(this).parent().parent().find("#contactinput").hide();
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").show();
         $(this).parent().parent().find("#attachmentinput").hide();
@@ -175,6 +180,20 @@ $(document).ready(function () {
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").show();
+        $(this).parent().parent().find("#contactinput").hide();
+        $(this).parent().parent().find("#productinput").hide();
+        $(this).parent().parent().find("#userinput").hide();
+        $(this).parent().parent().find("#attachmentinput").hide();
+        $(this).parent().parent().find("#ticketinsert").hide();
+        $(this).parent().find(".arrow-up").css('left', '78px');
+        $('#associationsBreak').removeClass('associationsBreakAdjustement');
+    }).tooltip();
+    $('.addcontact').click(function (e) {
+        e.preventDefault();
+        $(this).parent().parent().find("#ticketinput").hide();
+        $(this).parent().parent().find("#groupinput").hide();
+        $(this).parent().parent().find("#customerinput").hide();
+        $(this).parent().parent().find("#contactinput").show();
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
@@ -187,6 +206,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").show();
         $(this).parent().parent().find("#customerinput").hide();
+        $(this).parent().parent().find("#contactinput").hide();
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
@@ -199,6 +219,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
+        $(this).parent().parent().find("#contactinput").hide();
         $(this).parent().parent().find("#productinput").show();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
@@ -231,6 +252,12 @@ $(document).ready(function () {
         execGetCustomer = window.parent.parent.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) {
             response(result);
         });
+    }
+
+    var execGetContact = null;
+    function getContacts(request, response) {
+        if (execGetContact) { execGetContact._executor.abort(); }
+        execGetContact = parent.parent.Ts.Services.Organizations.GetContacts(request.term, function (result) { response(result); });
     }
 
     var execGetUsers = null;
@@ -324,6 +351,48 @@ $(document).ready(function () {
                     var bg = $('<div>')
                     .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
                     .appendTo($(this).parent().parent().find('.customer-queue')).data('Company', ui.item.id);
+
+
+                    $('<span>')
+                    .text(ui.item.value)
+                    .addClass('filename')
+                    .appendTo(bg);
+
+                    $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
+                }
+            }
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading');
+        }
+    });
+
+    $('.contact-search')
+    .focusin(function () { $(this).val('').removeClass('contact-search-blur'); })
+    .focusout(function () { $(this).val('Search for a contact...').addClass('contact-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('contact-search-blur'); })
+    .val('Search for a contact...')
+    .autocomplete({
+        minLength: 3,
+        source: getContacts,
+        select: function (event, ui) {
+            if (ui.item) {
+                var isDupe;
+                $(this).parent().parent().find('.contact-queue').find('.ticket-removable-item').each(function () {
+                    if (ui.item.id == $(this).data('Contact')) {
+                        isDupe = true;
+                    }
+                });
+                if (!isDupe) {
+                    var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($(this).parent().parent().find('.contact-queue')).data('Contact', ui.item.id);
 
 
                     $('<span>')
@@ -585,6 +654,11 @@ $(document).ready(function () {
             taskInfo.Company[taskInfo.Company.length] = $(this).data('Company');
         });
 
+        taskInfo.Contacts = new Array();
+        $('#commentatt:first').find('.contact-queue').find('.ticket-removable-item').each(function () {
+            taskInfo.Contacts[taskInfo.Contacts.length] = $(this).data('Contact');
+        });
+
         taskInfo.User = new Array();
         $('#commentatt:first').find('.user-queue').find('.ticket-removable-item').each(function () {
             taskInfo.User[taskInfo.User.length] = $(this).data('User');
@@ -594,6 +668,7 @@ $(document).ready(function () {
         if (taskInfo.Groups.length > 0) window.parent.parent.Ts.System.logAction('New Task - Group Inserted');
         if (taskInfo.Products.length > 0) window.parent.parent.Ts.System.logAction('New Task - Product Inserted');
         if (taskInfo.Company.length > 0) window.parent.parent.Ts.System.logAction('New Task - Company Inserted');
+        if (taskInfo.Contacts.length > 0) window.parent.parent.Ts.System.logAction('New Task - Contact Inserted');
         if (taskInfo.User.length > 0) window.parent.parent.Ts.System.logAction('New Task - User Inserted');
 
         var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
