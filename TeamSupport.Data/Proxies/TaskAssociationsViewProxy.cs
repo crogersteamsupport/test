@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public string Company { get; set; }
     [DataMember] public string Group { get; set; }
     [DataMember] public string Product { get; set; }
+    [DataMember] public string Contact { get; set; }
           
   }
   
@@ -30,6 +31,7 @@ namespace TeamSupport.Data
     public TaskAssociationsViewItemProxy GetProxy()
     {
       TaskAssociationsViewItemProxy result = new TaskAssociationsViewItemProxy();
+      result.Contact = this.Contact;
       result.Product = this.Product;
       result.Group = this.Group;
       result.Company = this.Company;

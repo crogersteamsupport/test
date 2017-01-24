@@ -22,6 +22,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Company", "Company", false, false, false);
       _fieldMap.AddMap("Group", "Group", false, false, false);
       _fieldMap.AddMap("Product", "Product", false, false, false);
+      _fieldMap.AddMap("Contact", "Contact", false, false, false);
             
     }
   }
