@@ -3143,7 +3143,22 @@ WHERE
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE Reminders SET RefID=@newticketID WHERE (RefID = @oldticketID and RefType = @reftype)";
+                command.CommandText = @"
+                UPDATE
+                    Reminders
+                SET
+                    RefID = @newticketID
+                WHERE
+                    RefID = @oldticketID
+                    AND RefType = @reftype
+
+                UPDATE
+                    TaskAssociations
+                SET
+                    RefID = @newticketID
+                WHERE
+                    RefID = @oldticketID
+                    AND RefType = @reftype";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
