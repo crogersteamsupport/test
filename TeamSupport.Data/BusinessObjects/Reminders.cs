@@ -406,7 +406,7 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadIncompleteAssociatedToCompany(int from, int count, int organizationID)
+        public void LoadByCompany(int from, int count, int organizationID)
         {
             string completeQuery = @"
             SELECT 
@@ -416,14 +416,13 @@ namespace TeamSupport.Data
                 JOIN TaskAssociations ta
                     ON rem.ReminderID = ta.ReminderID
             WHERE
-                rem.TaskIsComplete = 0
-                AND ta.RefType = 9
+                ta.RefType = 9
                 AND ta.RefID = @organizationID";
 
             string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskDueDate, DueDate) AS 'RowNum' FROM q)
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskIsComplete asc, CASE WHEN TaskDueDate IS NULL THEN 1 ELSE 0 END, TaskIsComplete ASC, TaskDueDate, DueDate) AS 'RowNum' FROM q)
             SELECT
                 ReminderID
                 , OrganizationID
