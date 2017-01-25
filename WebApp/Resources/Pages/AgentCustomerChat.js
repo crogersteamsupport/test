@@ -1,5 +1,6 @@
 ﻿var _activeChatID = null;
 var dateFormat;
+var _intervalUpdateActiveChats = null;
 $(document).ready(function () {
     //apiKey = "45228242";
     var chatInfoObject = {};
@@ -52,8 +53,7 @@ $(document).ready(function () {
     function SetupChatRequests() {
         parent.Ts.Services.Chat.GetChatRequests(function (data) {
             //console.log(data);
-            for (i = 0; i < data.length; i++)
-            {
+            for (i = 0; i < data.length; i++) {
                 SetupPendingRequest(data[i], (i == 0));
             }
 
@@ -94,7 +94,13 @@ $(document).ready(function () {
     }
 
     function SetupActiveRequest(chat, shouldTrigger) {
-        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + chat.InitiatorDisplayName + '</a>').click(function (e) {
+        var initiator = chat.InitiatorDisplayName;
+
+        if (typeof chat.CompanyName !== "undefined" && chat.CompanyName) {
+            initiator = initiator + ' - ' + chat.CompanyName;
+        }
+
+        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + initiator + '</a>').click(function (e) {
             e.preventDefault();
 
             $('.list-group-item-success').removeClass('list-group-item-success');
@@ -125,7 +131,7 @@ $(document).ready(function () {
         $('.open-request').html($('.open-request > .userName').text()).removeClass('open-request').removeClass('list-group-item-info');
     }
 
-    function AcceptRequest(ChatRequestID, innerString, parentEl)  {
+    function AcceptRequest(ChatRequestID, innerString, parentEl) {
         parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, function (chatId) {
             setupChat(pusherKey, chatId, createMessageElement, function (channel) {
                 //console.log(channel);
@@ -171,8 +177,7 @@ $(document).ready(function () {
             $('.media-list').append(compiledTemplate);
             if (scrollView) ScrollMessages(true);
         }
-        else 
-        {
+        else {
             $('#active-chat_' + messageData.ChatID).addClass('list-group-item-info');
         }
     }
@@ -195,11 +200,20 @@ $(document).ready(function () {
             $('.chat-intro').append('<p>Initiated On: ' + moment(chat.DateCreated).format(dateFormat + ' hh:mm A') + '</p>');
             $('.chat-intro').append('<p>Initiated By: ' + chat.InitiatorMessage + '</p>');
 
-            for(i = 0; i <  chat.Messages.length; i++)
-            {
+            for (i = 0; i < chat.Messages.length; i++) {
                 createMessageElement(chat.Messages[i], false);
             }
             ScrollMessages(false);
+
+            if ($('#Ticket-Create').hasClass("disabled")) {
+                $('#Ticket-Create').removeClass("disabled");
+            }
+
+            if (!$('#Ticket-Open').hasClass("disabled")) {
+                $('#Ticket-Open').addClass("disabled");
+            }
+
+            _intervalUpdateActiveChats = setInterval('EnableDisableTicketMenu();', 5200);
         });
     }
 
@@ -313,7 +327,7 @@ $(document).ready(function () {
                         html = html + '</div>';
 
                         parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, html, _activeChatID, function (data) {
-;
+                            ;
                         });
 
                         top.Ts.System.logAction('Chat - Suggested Solution Inserted');
@@ -390,7 +404,7 @@ $(document).ready(function () {
             });
         });
 
-        //Open the Ticket assocaited with this chat
+        //Open the Ticket associated with this chat
         $('#Ticket-Open').click(function (e) {
             e.preventDefault();
             parent.Ts.Services.Chat.GetTicketID(_activeChatID, function (ticketID) {
@@ -507,7 +521,43 @@ $(document).ready(function () {
             }
         });
     }
+
+    _intervalUpdateActiveChats = setInterval('EnableDisableTicketMenu();', 5200);
+
+    $('#message').keydown(function (e) {
+        if (e.which == 13) {
+            $("#message-form").submit();
+        } else {
+            //nothing here for now
+        }
+    });
 });
+
+function EnableDisableTicketMenu() {
+    if (_activeChatID !== null) {
+        parent.Ts.Services.Chat.GetTicketID(_activeChatID, function (ticketID) {
+            if (ticketID && ticketID > 0) {
+                if (!$('#Ticket-Create').hasClass("disabled")) {
+                    $('#Ticket-Create').addClass("disabled");
+                }
+
+                if ($('#Ticket-Open').hasClass("disabled")) {
+                    $('#Ticket-Open').removeClass("disabled");
+                }
+
+                clearInterval(_intervalUpdateActiveChats);
+            }
+        });
+
+        if ($('#Ticket-Add').hasClass("disabled")) {
+            $('#Ticket-Add').removeClass("disabled");
+        }
+    } else {
+        $('#Ticket-Create').addClass("disabled");
+        $('#Ticket-Open').addClass("disabled");
+        $('#Ticket-Add').addClass("disabled");
+    }
+}
 
 $(document).bind('dragover', function (e) {
     var dropZone = $('.current-chat'),

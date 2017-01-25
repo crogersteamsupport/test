@@ -900,6 +900,9 @@ Ts.Pages.Main.prototype = {
                             try {
                                 if (contentFrame.contentWindow.onShow) contentFrame.contentWindow.onShow();
                             } catch (err) { }
+                            try {
+                                if (contentFrame.contentWindow.ScrollMessages) contentFrame.contentWindow.ScrollMessages(true);
+                            } catch (err) { }
                         }
                     }
 

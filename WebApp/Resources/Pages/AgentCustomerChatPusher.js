@@ -40,7 +40,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
                                 .replace('{{MessageDirection}}', 'left')
                                 .replace('{{UserName}}', data.userName)
                                 .replace('{{Avatar}}', '../images/blank_avatar.png')
-                                .replace('{{message}}', data.userName + ' is typing... ')
+                                .replace('{{message}}', data.userName + ' is typing...')
                                 .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'));
 
         $('.media-list').append(typeTemplate);
