@@ -104,7 +104,7 @@ namespace TeamSupport.ServiceLibrary
                                 TimeSpan pausedTimeSpan = SlaTickets.CalculatePausedTime(ticket.TicketID, organization, businessHours, slaTrigger, daysToPause, holidays, LoginUser, businessPausedTimes, Logs);
                                 Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpan.ToString());
 
-                                UpdateBusinessPausedTimes(LoginUser, businessPausedTimes);
+                                UpdateBusinessPausedTimes(LoginUser, businessPausedTimes); //vv
 
                                 newSlaViolationTimeClosed = SlaTickets.CalculateSLA(ticket.DateCreatedUtc, businessHours, slaTrigger, slaTrigger.TimeToClose, pausedTimeSpan, daysToPause, holidays);
 
@@ -244,6 +244,22 @@ namespace TeamSupport.ServiceLibrary
                         }
 
                         System.Threading.Thread.Sleep(100);
+                    }
+                    catch (System.Data.SqlClient.SqlException sqlEx)
+                    {
+                        //Handle the deadlock exception, any other bubble up.
+                        if (sqlEx.Number == 1205 || sqlEx.Message.Contains("deadlocked"))
+                        {
+                            ExceptionLogs.LogException(LoginUser, sqlEx, "SLA Calculator", "Sync");
+                            Logs.WriteEventFormat("Exception. Message {0}{1}StackTrace {2}", sqlEx.Message, Environment.NewLine, sqlEx.StackTrace);
+                            slaTicket.IsPending = true;
+                            slaTicket.Collection.Save();
+                            Logs.WriteEventFormat("SlaTicket: TicketId {0} TriggerId {1} still pending.", slaTicket.TicketId, slaTicket.SlaTriggerId);
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -385,7 +401,7 @@ namespace TeamSupport.ServiceLibrary
             if (!isPaused && !isPending)
             {
                 SlaTriggersView triggers = new SlaTriggersView(LoginUser);
-                triggers.LoadByTicketId(ticket.TicketID);
+                triggers.LoadByTicketId(ticket.TicketID); //vv
                 bool warnGroup = false;
                 bool warnUser = false;
                 bool vioGroup = false;
