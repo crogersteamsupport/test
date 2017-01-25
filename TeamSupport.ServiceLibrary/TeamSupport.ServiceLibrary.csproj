@@ -187,6 +187,8 @@
     <Compile Include="HubSpotSources\WindowsWebClient.cs" />
     <Compile Include="IndexSources\AssetIndexDataSource.cs" />
     <Compile Include="ImportProcessor.cs" />
+    <Compile Include="MailChimp\ListsObject.cs" />
+    <Compile Include="MailChimp\MailChimp.cs" />
     <Compile Include="TokTranscoder.cs" />
     <Compile Include="WebHooks.cs" />
     <Compile Include="IndexSources\IndexDataSource.cs" />

@@ -1,5 +1,5 @@
 ﻿Imports TeamSupport.Data
-Imports System.Xml
+Imports System.IO
 Imports System.Net
 Imports System.Text
 
@@ -11,6 +11,7 @@ Namespace TeamSupport
 
             Private Const BatchSize As Integer = 4000
             Private datacenter As String
+            Private apiVersion As String = "3.0"
 
             Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.MailChimp)
@@ -37,8 +38,13 @@ Namespace TeamSupport
                     Dim emailBatches As New List(Of StringBuilder)()
                     Dim emailBatch As StringBuilder = Nothing
                     Dim unsubBatch As StringBuilder = Nothing
+                    Dim emailsAdded As List(Of String) = New List(Of String)
+                    Dim emailsRemoved As List(Of String) = New List(Of String)
                     Dim emailIndex As Integer = 0
                     Dim unsubIndex As Integer = 0
+                    Dim memberBodySingleItem = "{{
+                            		""email_address"":""{0}"", ""status"":""{1}"", ""merge_fields"": {{ ""FNAME"": ""{2}"", ""LNAME"": ""{3}""{4} }}
+                            	}},"
 
                     For Each customer As Organization In theseCustomers
 
@@ -50,44 +56,45 @@ Namespace TeamSupport
                                 Return False
                             End If
 
-                            If contact.IsActive And customer.IsActive Then
-
+                            If contact.IsActive AndAlso customer.IsActive Then
                                 If (CRMLinkRow.LastLink Is Nothing Or CType(contact.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink _
                                     Or CType(customer.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink) And Not contact.MarkDeleted Then
                                     If emailBatch Is Nothing Then
-                                      emailBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken1 _
-                                                                       & "&id=" & listID _
-                                                                       & "&double_optin=false")
+                                        emailBatch = New StringBuilder()
                                     End If
 
-                                    emailBatch.Append("&batch[" & emailIndex & "][EMAIL]=" & contact.Email)
-                                    emailBatch.Append("&batch[" & emailIndex & "][EMAIL_TYPE]=html")
-                                    emailBatch.Append("&batch[" & emailIndex & "][FNAME]=" & contact.FirstName)
-                                    emailBatch.Append("&batch[" & emailIndex & "][LNAME]=" & contact.LastName)
+                                    Dim companyName As String = String.Empty
 
                                     'Send company name to MMERGE3 field of MC. Only for TeamSupport (1078)
-                                    If CRMLinkRow.OrganizationID = 1078 Then
-                                      Log.Write(String.Format("OrgId {0}: Company name of the most recently updated contact (if multiple) sent to the MMERGE3 field.", CRMLinkRow.OrganizationID.ToString()))
-                                      Dim contactView As ContactsView = New ContactsView(User)
-                                      Dim filter As Specialized.NameValueCollection = New Specialized.NameValueCollection()
-                                      filter.Add("email", contact.Email)
-                                      contactView.LoadByParentOrganizationID(CRMLinkRow.OrganizationID, filter, orderBy:="DateModified DESC", limitNumber:=1, useMaxDop:=True)
+                                    If CRMLinkRow.OrganizationID = 1078 OrElse CRMLinkRow.OrganizationID = 13679 Then
+                                        Dim contactView As ContactsView = New ContactsView(User)
+                                        Dim filter As Specialized.NameValueCollection = New Specialized.NameValueCollection()
+                                        filter.Add("email", contact.Email)
+                                        contactView.LoadByParentOrganizationID(CRMLinkRow.OrganizationID, filter, orderBy:="DateModified DESC", limitNumber:=1, useMaxDop:=True)
 
-                                      Dim contactCompany As String = String.Empty
-                                      If Not contactView Is Nothing AndAlso contactView.Count > 0 Then
-                                        contactCompany = contactView(0).Organization
-                                      End If
+                                        Dim contactCompany As String = String.Empty
+                                        If Not contactView Is Nothing AndAlso contactView.Count > 0 Then
+                                            contactCompany = contactView(0).Organization
+                                        End If
 
-                                      emailBatch.Append("&batch[" & emailIndex & "][MMERGE3]=" & Web.HttpUtility.UrlEncode(contactCompany))
-                                      emailBatch.Append("&update_existing=true")
+                                        companyName = ", ""MMERGE3"": """ & Web.HttpUtility.UrlEncode(contactCompany) + """"
                                     End If
 
-                                    emailIndex += 1
+                                    If (String.IsNullOrEmpty(contact.Email)) Then
+                                        Log.Write("This contact was excluded of the batch because it contains no email: " + String.Format(memberBodySingleItem, contact.Email, "subscribed", contact.FirstName, contact.LastName, companyName))
+                                    ElseIf (emailsAdded.Count > 0 AndAlso emailsAdded.Find(Function(x) x = contact.Email) = contact.Email) Then
+                                        Log.Write("This contact was excluded of the batch because the email is duplicated in other contact in this batch: " + String.Format(memberBodySingleItem, contact.Email, "subscribed", contact.FirstName, contact.LastName, companyName))
+                                    ElseIf (Not contact.Email.Contains("@")) Then
+                                        Log.Write("This contact was excluded of the batch because it does not appear to have a valid email: " + String.Format(memberBodySingleItem, contact.Email, "subscribed", contact.FirstName, contact.LastName, companyName))
+                                    Else
+                                        emailBatch.Append(String.Format(memberBodySingleItem, contact.Email.Trim(), "subscribed", contact.FirstName, contact.LastName, companyName))
+                                        emailsAdded.Add(contact.Email.Trim())
+                                        emailIndex += 1
+                                    End If
                                 End If
 
                                 If emailIndex = BatchSize Then
                                     emailBatches.Add(emailBatch)
-
                                     emailIndex = 0
                                     emailBatch = Nothing
                                 End If
@@ -97,15 +104,21 @@ Namespace TeamSupport
                                     Or CType(customer.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink Then
 
                                     If unsubBatch Is Nothing Then
-                                      unsubBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken1 _
-                                                                       & "&id=" & listID _
-                                                                       & "&send_goodbye=false")
+                                        unsubBatch = New StringBuilder()
                                     End If
 
-                                    unsubBatch.Append("&emails[" & unsubIndex & "]=" & contact.Email)
-                                    unsubIndex += 1
+                                    If (String.IsNullOrEmpty(contact.Email)) Then
+                                        Log.Write("This contact was excluded for unsubscribe because it contains no email: " + String.Format(memberBodySingleItem, contact.Email, "subscribed", contact.FirstName, contact.LastName, emailsRemoved))
+                                    ElseIf (emailsRemoved.Count > 0 AndAlso emailsRemoved.Find(Function(x) x = contact.Email) = contact.Email) Then
+                                        Log.Write("This contact was excluded for unsubscribe because the email is duplicated in other contact in this batch: " + String.Format(memberBodySingleItem, contact.Email, "subscribed", contact.FirstName, contact.LastName, emailsRemoved))
+                                    ElseIf (Not contact.Email.Contains("@")) Then
+                                        Log.Write("This contact was excluded for unsubscribe because it does not appear to have a valid email: " + String.Format(memberBodySingleItem, contact.Email, "subscribed", contact.FirstName, contact.LastName, emailsRemoved))
+                                    Else
+                                        unsubBatch.Append(String.Format(memberBodySingleItem, contact.Email, "unsubscribed", contact.FirstName, contact.LastName, String.Empty))
+                                        emailsRemoved.Add(contact.Email.Trim())
+                                        unsubIndex += 1
+                                    End If
                                 End If
-
                             End If
                         Next
                     Next
@@ -117,19 +130,19 @@ Namespace TeamSupport
                     If emailBatches.Count > 0 Then
                         'send the lists to mailchimp
                         For Each mailList As StringBuilder In emailBatches
-                            If Not BatchSubscribe(mailList.ToString()) Then
+                            If Not BatchSubscribeUnsubscribe_v3(mailList.ToString().Substring(0, mailList.ToString().Length - 1), listID) Then
                                 Log.Write("Error in BatchSubscribe.")
                                 Return False
                             End If
                         Next
 
-                        Log.Write("Addresses sent to Mailchimp in " & emailBatches.Count.ToString() & " batches.")
+                        Log.Write(emailsAdded.Count.ToString() + " email addresses sent to Mailchimp in " & emailBatches.Count.ToString() & " batches.")
                     Else
                         Log.Write("No new email addresses to sync.")
                     End If
 
                     If unsubBatch IsNot Nothing Then
-                        If Not BatchUnsubscribe(unsubBatch.ToString()) Then
+                        If Not BatchSubscribeUnsubscribe_v3(unsubBatch.ToString().Substring(0, unsubBatch.ToString().Length - 1), listID) Then
                             Log.Write("Error in BatchUnsubscribe.")
                             Return False
                         End If
@@ -153,47 +166,95 @@ Namespace TeamSupport
             Private Function GetImportListID() As String
                 Dim returnID As String = Nothing
 
-        Dim Lists As XmlDocument = GetMailChimpXML("?method=lists&apikey=" & CRMLinkRow.SecurityToken1)
-                Dim ImportList As XElement = Nothing
+                Dim MCUri As New Uri("https://" & datacenter & ".api.mailchimp.com/" & apiVersion & "/lists?apikey=" & CRMLinkRow.SecurityToken1)
+                Dim response As String = ServiceLibrary.MailChimp.MakeHttpWebRequestGet(MCUri.AbsoluteUri)
+                Dim listsObject As ServiceLibrary.ListsObject.Lists = Newtonsoft.Json.JsonConvert.DeserializeObject(Of ServiceLibrary.ListsObject.Lists)(response)
 
-                If Lists IsNot Nothing Then
-                    Dim alllists As XElement = XElement.Load(New XmlNodeReader(Lists))
-
-                    If alllists.Descendants("struct").Count > 0 Then
-                        For Each thisList As XElement In alllists.Descendants("struct")
-                            If Trim(thisList.Element("name").Value).ToLower() = Trim(CRMLinkRow.Username).ToLower() Then
-                                ImportList = thisList
-                                Exit For
-                            End If
-                        Next
-                    End If
-
-                    If ImportList IsNot Nothing Then
-                        returnID = ImportList.Element("id").Value
-                    End If
+                If listsObject IsNot Nothing AndAlso listsObject.TotalItems > 0 Then
+                    For Each list As ServiceLibrary.ListsObject.List In listsObject.lists
+                        If (Trim(list.name).ToLower() = Trim(CRMLinkRow.Username).ToLower()) Then
+                            returnID = list.id
+                            Exit For
+                        End If
+                    Next
                 End If
 
                 Return returnID
             End Function
 
-            Private Function GetMailChimpXML(ByVal PathAndQuery As String) As XmlDocument
-                Dim MCUri As New Uri("https://" & datacenter & ".api.mailchimp.com/1.3/" & PathAndQuery & "&output=xml")
-
-                Return GetXML(MCUri)
-            End Function
+            'Private Function GetMailChimpXML(ByVal PathAndQuery As String) As XmlDocument
+            '    Dim MCUri As New Uri("https://" & datacenter & ".api.mailchimp.com/" & apiVersion & "/" & PathAndQuery)
+            '    Return GetXML(MCUri)
+            'End Function
 
             Private Function BatchSubscribe(ByVal postString As String) As Boolean
                 Dim MCUri As New Uri("https://" & datacenter & ".api.mailchimp.com/1.3/?method=listBatchSubscribe")
-                Dim postData As String = "&output=xml" & postString
+                Dim postData As String = postString
 
                 Return PostQueryString(Nothing, MCUri, postData) = HttpStatusCode.OK
             End Function
 
+            Private Function BatchSubscribeUnsubscribe_v3(ByVal postString As String, ByVal listID As String) As Boolean
+                Dim result As Boolean = False
+                Dim MCUri As New Uri("https://" & datacenter & ".api.mailchimp.com/" & apiVersion & "/lists/" + listID)
+                Dim bodyPost As String = postString
+
+                Try
+                    Dim encodedCredentials = DataUtils.GetEncodedCredentials("anystring", CRMLinkRow.SecurityToken1)
+                    bodyPost = "{ ""members"": [" + bodyPost + "], ""update_existing"": true }"
+
+                    Using response As HttpWebResponse = ServiceLibrary.MailChimp.MakeHTTPRequestPost(encodedCredentials, MCUri.AbsoluteUri, "POST", "application/json", bodyPost)
+                        Dim responseReader As New StreamReader(response.GetResponseStream())
+                        responseReader.Close()
+                        response.Close()
+
+                        If (response.StatusCode = 200 AndAlso response.StatusDescription.ToLower() = "ok") Then
+                            result = True
+                        End If
+                    End Using
+                Catch ex As Exception
+                    Log.Write(ex.Message)
+                    Log.Write(MCUri.AbsoluteUri)
+                    Log.Write("body post: " + bodyPost)
+                    result = False
+                End Try
+
+                Return result
+            End Function
+
             Private Function BatchUnsubscribe(ByVal postString As String) As Boolean
-                Dim MCUri As New Uri("https://" & datacenter & ".api.mailchimp.com/1.3/?method=listBatchUnsubscribe")
-                Dim postData As String = "&output=xml" & postString
+                Dim MCUri As New Uri("https://" & datacenter & ".api.mailchimp.com/" & apiVersion & "/?method=listBatchUnsubscribe")
+                Dim postData As String = postString
 
                 Return PostQueryString(Nothing, MCUri, postData) = HttpStatusCode.OK
+            End Function
+
+            Private Function MakeHTTPRequest(
+                                            ByVal encodedCredentials As String,
+                                            ByVal URI As String,
+                                            ByVal method As String,
+                                            ByVal contentType As String,
+                                            ByVal userAgent As String,
+                                            ByVal body As String) As HttpWebResponse
+
+                Dim request As HttpWebRequest = WebRequest.Create(URI)
+                request.Headers.Add("Authorization", "Basic " + encodedCredentials)
+                request.Method = method
+                request.ContentType = contentType
+                request.UserAgent = userAgent
+
+                If method.ToUpper = "POST" OrElse method.ToUpper = "PUT" Then
+                    Dim bodyByteArray = UTF8Encoding.UTF8.GetBytes(body)
+                    request.ContentLength = bodyByteArray.Length
+
+                    Using requestStream As Stream = request.GetRequestStream()
+                        requestStream.Write(bodyByteArray, 0, bodyByteArray.Length)
+                        requestStream.Close()
+                        Log.Write("requestStream closed. Exiting Using.")
+                    End Using
+                End If
+
+                Return request.GetResponse()
             End Function
         End Class
 
