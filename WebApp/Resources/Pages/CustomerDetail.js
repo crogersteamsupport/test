@@ -2508,17 +2508,10 @@ $(document).ready(function () {
     function LoadTasks() {
 
         parent.Ts.Services.Task.GetCustomerTasks(0, 20, organizationID, function (tasks) {
-            debugger;
-            var source = $("#company-task-table-template").html();
-            var template = Handlebars.compile(source);
-            $("#tasks").html(template());
-
-            data = { taskList: tasks };
+            var data = { taskList: tasks };
             var source = $("#company-tasks-template").html();
             var template = Handlebars.compile(source);
-            $("#my-tasks").html(template(data));
-
-
+            $("#tasks").html(template(data));
         });
     }
 

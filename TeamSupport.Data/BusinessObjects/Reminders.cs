@@ -460,6 +460,60 @@ namespace TeamSupport.Data
             }
         }
 
+        public void LoadByContact(int from, int count, int contactID)
+        {
+            string completeQuery = @"
+            SELECT 
+                rem.*
+            FROM
+                Reminders rem
+                JOIN TaskAssociations ta
+                    ON rem.ReminderID = ta.ReminderID
+            WHERE
+                ta.RefType = 32
+                AND ta.RefID = @contactID";
+
+            string pageQuery = @"
+            WITH 
+                q AS ({0}),
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskIsComplete asc, CASE WHEN TaskDueDate IS NULL THEN 1 ELSE 0 END, TaskIsComplete ASC, TaskDueDate, DueDate) AS 'RowNum' FROM q)
+            SELECT
+                ReminderID
+                , OrganizationID
+                , RefType
+                , RefID
+                , Description
+                , DueDate
+                , UserID
+                , IsDismissed
+                , HasEmailSent
+                , CreatorID
+                , DateCreated
+                , TaskName
+                , TaskDueDate
+                , TaskIsComplete
+                , TaskDateCompleted
+                , TaskParentID
+            FROM 
+                r
+            WHERE
+                RowNum BETWEEN @From AND @To";
+
+            StringBuilder query;
+
+            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = query.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@contactID", contactID);
+                command.Parameters.AddWithValue("@From", from + 1);
+                command.Parameters.AddWithValue("@To", from + count);
+                Fill(command);
+            }
+        }
+
         public void LoadCompleteAssociatedToCompany(int from, int count, int organizationID)
         {
             string completeQuery = @"
