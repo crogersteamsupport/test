@@ -2,6 +2,7 @@
 var _participantID = null;
 var _timer;
 var showAvatars = true;
+var isTyping = false;
 $(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("chatid", window);
     _activeChatID = chatID;
@@ -213,7 +214,6 @@ function setupChat(chatID, participantID, callback) {
     //});
 
 
-    var isTyping = false;
     var typingTimer;                //timer identifier
     var doneTypingInterval = 5000;  //time in ms, 5 second for example
     var $input = $('#message');
