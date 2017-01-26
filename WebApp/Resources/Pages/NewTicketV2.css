@@ -667,7 +667,7 @@
     .ts-icon-sla-bad { background-position: -512px 0px; }
     .nonrequired-field-error-font {color: #cd0a0a !important}
     .ticket-closed { font-style: italic; text-decoration:line-through;}
-    .hasError label, .hasError .selectize-input {color: #cd0a0a !important}
+    .hasError label, .hasError .selectize-input {color: #cd0a0a !important; font-weight: bold}
     .hasError .selectize-input { border: 1px solid #a94442 !important; }
 
     .fieldError label, .fieldError .selectize-input {color: #cd0a0a !important}

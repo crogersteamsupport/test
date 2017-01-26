@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     //[DataMember] public int ModifierID { get; set; }
     [DataMember] public string IconUrl { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public bool IsActive { get; set; }
           
   }
   
@@ -32,7 +33,7 @@ namespace TeamSupport.Data
     public TicketTypeProxy GetProxy()
     {
       TicketTypeProxy result = new TicketTypeProxy();
-
+      result.IsActive = this.IsActive;
       result.ProductFamilyID = this.ProductFamilyID;
       result.IconUrl = this.IconUrl;
       //result.ModifierID = this.ModifierID;
