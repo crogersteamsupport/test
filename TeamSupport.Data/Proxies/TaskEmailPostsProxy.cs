@@ -20,6 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public int ReminderID { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public string LockProcessID { get; set; }
+    [DataMember] public int? OldUserID { get; set; }
           
   }
   
@@ -28,6 +29,7 @@ namespace TeamSupport.Data
     public TaskEmailPostProxy GetProxy()
     {
       TaskEmailPostProxy result = new TaskEmailPostProxy();
+      result.OldUserID = this.OldUserID;
       result.LockProcessID = this.LockProcessID;
       result.CreatorID = this.CreatorID;
       result.ReminderID = this.ReminderID;

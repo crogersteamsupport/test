@@ -562,7 +562,7 @@ namespace TeamSupport.Data
                             IsTSOnly = @IsTSOnly
                             OR IsTSOnly = 0
                         )
-                        AND EmailTemplateID NOT IN (35,36,37,38)
+                        AND EmailTemplateID NOT IN (35,36,37,38,39)
                     ORDER BY 
                         Position";
                 }
@@ -1174,6 +1174,43 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 38, -1);
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
+            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskDescription", task.Description);
+            if (task.TaskDueDate.HasValue)
+            {
+                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDueDate", "[None]");
+            }
+
+            if (task.TaskDateCompleted.HasValue)
+            {
+                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDateCompleted", "[None]");
+            }
+            if (task.DueDate.HasValue)
+            {
+                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskReminderDate", "[None]");
+            }
+            return template.GetMessage();
+        }
+
+        public static MailMessage GetTaskOldUser(LoginUser loginUser, UsersViewItem modifier, UsersViewItem oldUser, UsersViewItem owner, TasksViewItem task)
+        {
+            EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 38, -1);
+            template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("OldOwner", oldUser).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.TaskName);
             template.ReplaceParameter("TaskDescription", task.Description);
             if (task.TaskDueDate.HasValue)

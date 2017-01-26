@@ -88,6 +88,18 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
+
+        public void LoadByReminderIDAndPostType(int reminderID, TaskEmailPostType postType)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM TaskEmailPosts WHERE ReminderID = @ReminderID AND TaskEmailPostType = @PostType";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ReminderID", reminderID);
+                command.Parameters.AddWithValue("@PostType", postType);
+                Fill(command);
+            }
+        }
     }
 
 }

@@ -400,6 +400,24 @@ namespace TSWebServices
 
             return newTask.GetProxy();
         }
+        
+        private void SendOldUserNotification(int creatorID, int oldUserID, int reminderID)
+        {
+            TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
+            existingPosts.LoadByReminderIDAndPostType(reminderID, TaskEmailPostType.OldUser);
+            if (existingPosts.Count == 0)
+            {
+                TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
+                TaskEmailPost post = posts.AddNewTaskEmailPost();
+                post.TaskEmailPostType = (int)TaskEmailPostType.OldUser;
+                post.HoldTime = 120;
+
+                post.CreatorID = creatorID;
+                post.ReminderID = reminderID;
+                post.OldUserID = oldUserID;
+                posts.Save();
+            }
+        }
 
         private void SendAssignedNotification(int creatorID, int reminderID)
         {
@@ -476,6 +494,17 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminder task = Reminders.GetReminder(loginUser, reminderID);
+
+            if (task.UserID != null && loginUser.UserID != task.UserID && value != task.UserID)
+            {
+                SendOldUserNotification(loginUser.UserID, (int)task.UserID, task.ReminderID);
+            }
+
+            if (value != -1 && loginUser.UserID != value && value != task.UserID)
+            {
+                SendAssignedNotification(loginUser.UserID, task.ReminderID);
+            }
+
             if (value == -1)
             {
                 task.UserID = null;
@@ -488,11 +517,6 @@ namespace TSWebServices
             User u = Users.GetUser(loginUser, value);
             string description = String.Format("{0} set task user to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
             TaskLogs.AddTaskLog(loginUser, reminderID, description);
-
-            if (task.UserID != null && loginUser.UserID != task.UserID)
-            {
-                SendAssignedNotification(loginUser.UserID, task.ReminderID);
-            }
 
             return value;
         }

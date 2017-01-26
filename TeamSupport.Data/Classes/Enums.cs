@@ -356,6 +356,7 @@ namespace TeamSupport.Data
     {
         Modified = 0,
         Assigned = 1,
-        Complete = 2
+        Complete = 2,
+        OldUser = 3
     }
 }

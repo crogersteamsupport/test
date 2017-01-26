@@ -35,6 +35,12 @@ namespace TeamSupport.Data
       set { Row["LockProcessID"] = CheckValue("LockProcessID", value); }
     }
     
+    public int? OldUserID
+    {
+      get { return Row["OldUserID"] != DBNull.Value ? (int?)Row["OldUserID"] : null; }
+      set { Row["OldUserID"] = CheckValue("OldUserID", value); }
+    }
+    
 
     
     public int CreatorID
@@ -171,7 +177,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TaskEmailPostHistory] SET     [TaskEmailPostType] = @TaskEmailPostType,    [HoldTime] = @HoldTime,    [ReminderID] = @ReminderID,    [LockProcessID] = @LockProcessID  WHERE ([TaskEmailPostID] = @TaskEmailPostID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TaskEmailPostHistory] SET     [TaskEmailPostType] = @TaskEmailPostType,    [HoldTime] = @HoldTime,    [ReminderID] = @ReminderID,    [LockProcessID] = @LockProcessID,    [OldUserID] = @OldUserID  WHERE ([TaskEmailPostID] = @TaskEmailPostID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TaskEmailPostID", SqlDbType.Int, 4);
@@ -209,13 +215,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("OldUserID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TaskEmailPostHistory] (    [TaskEmailPostID],    [TaskEmailPostType],    [HoldTime],    [DateCreated],    [ReminderID],    [CreatorID],    [LockProcessID]) VALUES ( @TaskEmailPostID, @TaskEmailPostType, @HoldTime, @DateCreated, @ReminderID, @CreatorID, @LockProcessID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TaskEmailPostHistory] (    [TaskEmailPostID],    [TaskEmailPostType],    [HoldTime],    [DateCreated],    [ReminderID],    [CreatorID],    [LockProcessID],    [OldUserID]) VALUES ( @TaskEmailPostID, @TaskEmailPostType, @HoldTime, @DateCreated, @ReminderID, @CreatorID, @LockProcessID, @OldUserID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("OldUserID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("LockProcessID", SqlDbType.VarChar, 250);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -378,7 +398,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TaskEmailPostID], [TaskEmailPostType], [HoldTime], [DateCreated], [ReminderID], [CreatorID], [LockProcessID] FROM [dbo].[TaskEmailPostHistory] WHERE ([TaskEmailPostID] = @TaskEmailPostID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TaskEmailPostID], [TaskEmailPostType], [HoldTime], [DateCreated], [ReminderID], [CreatorID], [LockProcessID], [OldUserID] FROM [dbo].[TaskEmailPostHistory] WHERE ([TaskEmailPostID] = @TaskEmailPostID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TaskEmailPostID", taskEmailPostID);
         Fill(command);
