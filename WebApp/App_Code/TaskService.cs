@@ -67,6 +67,16 @@ namespace TSWebServices
             return convertToClientTasksList(results.GetReminderProxies(), loginUser);
         }
 
+        [WebMethod]
+        public List<ClientTask> GetContactTasks(int from, int count, int contactID) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Reminders results = new Reminders(loginUser);
+
+            results.LoadByContact(from, count, contactID);
+
+            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+        }
+
         public List<ClientTask> GetTasksByTicketID(int ticketID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
