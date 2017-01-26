@@ -370,10 +370,12 @@ namespace TeamSupport.ServiceLibrary
 
         Tickets tickets = new Tickets(LoginUser);
         tickets.LoadAllUnnotifiedAndExpiredSla();
+        Logs.WriteEventFormat("Unnotified and expired slas: {0}", tickets.Count);
 
         foreach (Ticket ticket in tickets)
         {
           if (IsStopped) break;
+          Logs.WriteEventFormat("Attempting to process: {0}", ticket.TicketID);
           ProcessTicket(ticket);
           System.Threading.Thread.Sleep(0);
         }
@@ -390,6 +392,7 @@ namespace TeamSupport.ServiceLibrary
 
             bool isPaused = false;
             bool isPending = false;
+            Logs.WriteEvent("Getting SlaTicket record");
             SlaTicket slaTicket = SlaTickets.GetSlaTicket(LoginUser, ticket.TicketID);
             
             if (slaTicket != null)
@@ -397,6 +400,8 @@ namespace TeamSupport.ServiceLibrary
                 isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
                 isPending = slaTicket.IsPending;
             }
+
+            Logs.WriteEventFormat("IsPaused: {0}; IsPending: {1}", isPaused.ToString(), isPending.ToString());
 
             if (!isPaused && !isPending)
             {
