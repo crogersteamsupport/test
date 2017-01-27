@@ -51,7 +51,7 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteEvent("Starting Run");
             UpdateHealth();
 
-            Amazon.Util.ProfileManager.RegisterProfile("TeamsupportAWS", "AKIAIMZYVL4GYTGOKB5A", "Qo6n8Fu5oTGMsE2opBz33HT5yGqAR7l5ORjhveGa");
+            Amazon.Util.ProfileManager.RegisterProfile("TeamsupportAWS", SystemSettings.ReadString("AWS-Key", ""), SystemSettings.ReadString("AWS-Password", ""));
 
             TokStorage ts = new TokStorage(LoginUser);
             ts.GetNonTranscoded();
@@ -73,6 +73,7 @@ namespace TeamSupport.ServiceLibrary
 
 
         }
+
 
 
         void InitSettings(string amazonPath)
