@@ -50,7 +50,8 @@ $(document).ready(function () {
 
             $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
-            $('#fieldComplete').text(task.TaskIsComplete ? "yes": "no");
+            $('#fieldComplete').text(task.TaskIsComplete ? "yes" : "no");
+            $('#taskComplete').text(task.TaskIsComplete ? "Incomplete" : "Complete");
             $('#fieldDueDate').html(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
             $('#fieldReminderDate').html(task.DueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
@@ -313,15 +314,55 @@ $(document).ready(function () {
         window.location = window.location;
     });
 
-    $('#taskEdit').click(function (e) {
-        $('p, #taskName').toggleClass("editable");
-        $(this).toggleClass("btn-primary");
-        $(this).toggleClass("btn-success");
-        if ($(this).hasClass("btn-primary"))
-            $(this).html('<i class="fa fa-pencil"></i> Edit');
+    $('#taskComplete').click(function (e) {
+        if ($(this).text() !== 'Incomplete')
+        {
+            window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_reminderID, function (result) {
+                if (result)
+                {
+                    alert('Please complete all the subtasks before completing this task.')
+                }
+                else
+                {
+                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
+                        top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
+                        $('#fieldComplete').text((result === true ? 'yes' : 'no'));
+                        $('#taskComplete').text((result === true ? 'Incomplete' : 'Complete'));
+                    },
+                    function (error) {
+                        header.show();
+                        alert('There was an error saving the task is complete.');
+                    });
+                }
+            },
+            function (error) {
+                header.show();
+                alert('There was an error getting the subtasks.');
+            });
+        }
         else
-            $(this).html('<i class="fa fa-pencil"></i> Save');
+        {
+            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'Incomplete'), function (result) {
+                top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
+                $('#fieldComplete').text((result === true ? 'yes' : 'no'));
+                $('#taskComplete').text((result === true ? 'Incomplete' : 'Complete'));
+            },
+            function (error) {
+                header.show();
+                alert('There was an error saving the task is complete.');
+            });
+        }
     });
+
+    //$('#taskEdit').click(function (e) {
+    //    $('p, #taskName').toggleClass("editable");
+    //    $(this).toggleClass("btn-primary");
+    //    $(this).toggleClass("btn-success");
+    //    if ($(this).hasClass("btn-primary"))
+    //        $(this).html('<i class="fa fa-pencil"></i> Edit');
+    //    else
+    //        $(this).html('<i class="fa fa-pencil"></i> Save');
+    //});
 
     $('#taskName').click(function (e) {
         e.preventDefault();
@@ -1253,7 +1294,7 @@ $(document).ready(function () {
         LoadHistory(1);
     });
 
-    $('.taskProperties p, #taskName').toggleClass("editable");
+    //$('.taskProperties p, #taskName').toggleClass("editable");
 });
 
 

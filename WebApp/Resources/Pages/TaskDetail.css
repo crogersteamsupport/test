@@ -41,7 +41,7 @@
 .taskProperties p {word-wrap:break-word;font-size: 12px}
 
 .form-group p.editable, .editable {
-    color:#428BCA;
+    color: black;
     cursor:pointer;
 }
 
@@ -178,4 +178,9 @@ float: left;
 .clearDate {
     float: right;
     margin-top: -4px !important;
+}
+
+#infoBreak {
+    margin-top: 15px;
+    margin-bottom: 5px;
 }
