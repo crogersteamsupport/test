@@ -183,6 +183,7 @@
         <asp:ServiceReference Path="~/Services/PrivateServices.asmx" />
         <asp:ServiceReference Path="~/Services/LoginService.asmx" />
         <asp:ServiceReference Path="~/Services/ChatService.asmx" />
+        <asp:ServiceReference Path="~/Services/TaskService.asmx" />
       </services>
     <scripts>
     

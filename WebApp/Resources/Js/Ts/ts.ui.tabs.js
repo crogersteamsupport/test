@@ -313,3 +313,5 @@ Ts.Ui.Tabs.Tab.Type.ProductVersion = 'product_version';
 Ts.Ui.Tabs.Tab.Type.NewProductVersion = 'new_product_version';
 Ts.Ui.Tabs.Tab.Type.NewProductFamily = 'new_product_family';
 Ts.Ui.Tabs.Tab.Type.ProductFamily = 'product_family';
+Ts.Ui.Tabs.Tab.Type.Task = 'task';
+Ts.Ui.Tabs.Tab.Type.NewTask= 'new_task';

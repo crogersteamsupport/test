@@ -123,3 +123,11 @@
 .productLineRow {
     margin-bottom: 20px;
 }
+
+.attIcon {margin:2px 2px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/icons/Attachment.png');cursor:pointer}
+.ticketIcon {margin:2px 2px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
+.groupIcon {margin:2px 2px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
+.companyIcon {margin:2px 2px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.contactIcon {margin:2px 0px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Users3.png');cursor:pointer}
+.productIcon {margin:2px 2px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Products.png');cursor:pointer}
+.userIcon {margin:2px 2px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Users.png');cursor:pointer}

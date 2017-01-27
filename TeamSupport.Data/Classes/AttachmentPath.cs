@@ -34,7 +34,8 @@ namespace TeamSupport.Data
         CustomerHubLogo,
         ScheduledReports,
         ScheduledReportsLogs,
-        ChatUploads
+        ChatUploads,
+        Tasks
     };
 
     /// <summary>

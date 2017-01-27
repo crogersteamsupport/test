@@ -152,6 +152,10 @@ $(document).ready(function () {
         $('#contactTabs a:first').tab('show');
     });
 
+    if (_mainFrame.Ts.System.Organization.ProductType == _mainFrame.Ts.ProductType.Enterprise) {
+        $('#contactReminder').hide();
+    }
+
     if (_mainFrame.Ts.System.Organization.ParentID != null) {
         $('#btnSendWelcome').hide();
     }
@@ -284,6 +288,21 @@ $(document).ready(function () {
         }
         else
             alert("Please fill in all the fields");
+    });
+
+    $('#taskContainer').on('click', 'a.tasklink', function (e) {
+        e.preventDefault();
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('Tasks Page - View Task');
+        parent.Ts.MainPage.openNewTask(id);
+    });
+
+    $('#taskContainer').on('click', '.change-task-status', function (e) {
+        var id = $(this).data('reminderid');
+        var checked = $(this).prop("checked");
+        parent.Ts.System.logAction('Tasks Page - Change Task Status');
+
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
     });
 
     $('#contactDelete').click(function (e) {
@@ -799,6 +818,8 @@ $(document).ready(function () {
             LoadInventory();
         else if (e.target.innerHTML == "Ratings")
             LoadRatings('', 1);
+        else if (e.target.innerHTML == "Tasks")
+            LoadTasks();
     })
 
     $('#emailPanel').on('click', '.delEmail', function (e) {
@@ -1523,6 +1544,16 @@ $(document).ready(function () {
         LoadRatings(ratingFilter, 1);
     });
 
+    function LoadTasks() {
+        parent.Ts.Services.Task.GetContactTasks(0, 20, userID, function (tasks) {
+            console.log(tasks);
+            var data = { taskList: tasks };
+            var source = $("#contact-tasks-template").html();
+            var template = Handlebars.compile(source);
+            $("#tasks").html(template(data));
+        });
+    }
+
     _mainFrame.Ts.Services.Tickets.Load5MostRecentByContactID(userID, function (tickets) {
         var max = 5;
         if (tickets.length < 5)
@@ -2138,6 +2169,95 @@ $(document).ready(function () {
             //}
         });
     }
+
+    Handlebars.registerHelper("formatDate", function (datetime) {
+        if (datetime != null) {
+            return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+        }
+        else return null;
+    });
+
+    Handlebars.registerHelper("formatTaskName", function (Task) {
+        var name = Task.TaskName;
+
+        if (Task.TaskName == null) {
+            if (Task.Description == null || Task.Description == "") {
+                name = 'No Title';
+            }
+            else {
+                name = Task.Description;
+            }
+        }
+
+        return name;
+    });
+
+    Handlebars.registerHelper("formatRow", function (task) {
+        var cssClasses = null;
+
+        if (task.TaskDueDate != null) {
+            if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+                cssClasses = 'danger';
+            }
+            else {
+                return null;
+            }
+        }
+
+        return cssClasses;
+    });
+
+    Handlebars.registerHelper("taskComplete", function (taskdate) {
+        return taskdate != null ? ' checked="checked"' : '';
+    });
+
+    Handlebars.registerHelper("mapAssociation", function (association) {
+        var result = '';
+        var functionName = '';
+        var associationName = '';
+        var iconClass = '';
+
+        switch (association.RefType) {
+            //case 3: leaving attachments off for now
+            //    associationName = association.Attachment;
+            //    iconClass = attIcon;
+            //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
+            //    break;
+            case 6:
+                associationName = association.Group;
+                iconClass = "groupIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openGroup(' + association.RefID + '); return false;';
+                break;
+            case 9:
+                associationName = association.Company;
+                iconClass = "companyIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer(' + association.RefID + '); return false;';
+                break;
+            case 13:
+                associationName = association.Product;
+                iconClass = "productIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewProduct(' + association.RefID + '); return false;';
+                break;
+            case 17:
+                associationName = association.TicketName;
+                iconClass = "ticketIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openTicketByID(' + association.RefID + '); return false;'
+                break;
+            case 22:
+                associationName = association.User;
+                iconClass = "userIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
+                break;
+            default:
+                functionName = null;
+        }
+
+        if (functionName != null) {
+            result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass + '" href="#" onclick="' + functionName + '" title="' + associationName + '"></a></span>'
+        }
+
+        return new Handlebars.SafeString(result);
+    });
 
 });
 
