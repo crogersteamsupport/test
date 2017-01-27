@@ -301,6 +301,60 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
             if (organizations.IsEmpty) return null;
             else return organizations[0].OrganizationID;
         }
+
+        public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser)
+        {
+            Organization result = null;
+
+            Organizations organizations = new Organizations(loginUser);
+            organizations.LoadByParentID(parentOrganizationID, true);
+
+            if (organizations.Any())
+            {
+                List<KeyValuePair<int, string>> organizationSubDomainList = new List<KeyValuePair<int, string>>();
+
+                //Takes all the suborganizations of the parent org and parses out the subdomains into a list for comparison
+                foreach (var org in organizations.Distinct())
+                {
+                    if (!String.IsNullOrEmpty(org.CompanyDomains))
+                    {
+                        List<string> companydomains = org.CompanyDomains.Split(',').ToList();
+
+                        foreach (var domain in companydomains)
+                        {
+                            organizationSubDomainList.Add(new KeyValuePair<int, string>(org.OrganizationID, domain));
+                        }
+                    }
+                }
+
+                //assigns subdomain of organization if match is found
+                if (organizationSubDomainList.Any())
+                {
+                    var subOrgList = organizationSubDomainList.Where(m => m.Value.Trim() == emailDomain);
+
+                    if (subOrgList.Any())
+                    {
+                        result = organizations.Where(m => m.OrganizationID == subOrgList.First().Key).First();
+                    }
+                }
+            }
+
+            //if we still don't have a suborganizationID assigned to result check if there is unknown company, otherwise create one
+            if (result == null)
+            {
+                if (organizations.Any())
+                {
+                    var unknownCompanies = organizations.Where(m => m.Name.Contains("_Unknown Company"));
+                    if (unknownCompanies.Any())
+                    {
+                        result = unknownCompanies.First();
+                    }
+                }
+            }
+
+            return result;
+        }
+
     }
 
     public class SignUpParams

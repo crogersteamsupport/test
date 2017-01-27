@@ -227,13 +227,15 @@ UserPage = function () {
 
     var types = window.parent.parent.Ts.Cache.getTicketTypes();
     for (var i = 0; i < types.length; i++) {
-      var ttmi = $('<li>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
-      $('<label>')
-        .addClass('checkbox')
-        .text(types[i].Name)
-        .append($('<input>').attr('type', 'checkbox'))
-        .appendTo(ttmi);
-      ttmi.appendTo('#ulTicketTypes');
+        if (types[i].IsActive) {
+            var ttmi = $('<li>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
+            $('<label>')
+              .addClass('checkbox')
+              .text(types[i].Name)
+              .append($('<input>').attr('type', 'checkbox'))
+              .appendTo(ttmi);
+            ttmi.appendTo('#ulTicketTypes');
+        }
     }
 
   }

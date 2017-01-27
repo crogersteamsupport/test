@@ -25,6 +25,7 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public bool IsActive { get; set; }
           
   }
   
@@ -33,6 +34,7 @@ namespace TeamSupport.Data
     public TicketTypeProxy GetProxy()
     {
       TicketTypeProxy result = new TicketTypeProxy();
+      result.IsActive = this.IsActive;
       result.ProductFamilyID = this.ProductFamilyID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;

@@ -158,5 +158,10 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
         {
             return ReadString("MobileURL", "https://m.teamsupport.com/");
         }
+
+        public static string GetPusherKey()
+        {
+            return ReadString("PusherKey", "1");
+        }
     }
 }

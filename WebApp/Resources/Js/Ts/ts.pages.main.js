@@ -68,7 +68,8 @@ Ts.Pages.Main.prototype = {
             if (Ts.System.User.IsChatUser) {
                 $('.menu-chatstatus').show();
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    tmrChat = setInterval(getChatUpdates, chatInterval);
+                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    setupChatRequestUpdates();
                     $('.main-status-chat').removeClass('ui-state-disabled');
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Online');
@@ -162,10 +163,12 @@ Ts.Pages.Main.prototype = {
                 Ts.System.ChatUserSettings = setting;
                 if (tmrChat) clearInterval(tmrChat);
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    tmrChat = setInterval(getChatUpdates, chatInterval);
+                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    setupChatRequestUpdates();
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Online');
                 } else {
+                    turnOffChatRequestUpdates();
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small').removeClass('ts-icon-chat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Offline');
                 }
@@ -684,6 +687,44 @@ Ts.Pages.Main.prototype = {
             }
         }
 
+        var pusher = null;
+        var request_channel = null;
+        function setupChatRequestUpdates() {        
+            top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+                var chatGUID = top.Ts.System.Organization.ChatID;
+                pusher = new Pusher(key);
+                request_channel = pusher.subscribe('chat-requests-' + chatGUID);
+                
+                request_channel.bind('new-chat-request', function (data) {
+
+                    var menuID = self.MainMenu.getSelected().getId();
+                    var isMain = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
+                    if (!isMain || menuID != 'mniChat') self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
+
+                    window.focus();
+                    $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
+                    alert(data.message);
+
+                    window.focus();
+
+                    $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
+                    $.jGrowl(data.message, {
+                        life: 5000,
+                        theme: data.theme,
+                        header: data.title
+                    });
+                });
+
+            });
+        }
+
+        function turnOffChatRequestUpdates() {
+            top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+                var chatGUID = top.Ts.System.Organization.ChatID;
+                pusher.unsubscribe('chat-requests-' + chatGUID);
+            });
+        }
+
         function flashTitle() {
             if (document.title != 'TeamSupport') {
                 document.title = 'TeamSupport';
@@ -861,6 +902,9 @@ Ts.Pages.Main.prototype = {
                             } catch (err) { }
                             try {
                                 if (contentFrame.contentWindow.onShow) contentFrame.contentWindow.onShow();
+                            } catch (err) { }
+                            try {
+                                if (contentFrame.contentWindow.ScrollMessages) contentFrame.contentWindow.ScrollMessages(true);
                             } catch (err) { }
                         }
                     }

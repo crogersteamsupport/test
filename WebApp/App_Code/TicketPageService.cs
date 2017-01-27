@@ -231,6 +231,7 @@ namespace TSWebServices
             {
                 if (!viewItem.IsWC)
                 {
+
                     Attachments attachments = new Attachments(loginUser);
                     attachments.LoadByActionID(viewItem.RefID);
 
@@ -244,6 +245,7 @@ namespace TSWebServices
                 else
                 {
                     TimeLineItem wcItem = new TimeLineItem();
+                    WaterCoolerThread thread = new WaterCoolerThread();
                     wcItem.item = viewItem.GetProxy();
 
                     WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
@@ -278,8 +280,17 @@ namespace TSWebServices
                             wcReplies.Add(replyItem);
                         }
 
-                        wcItem.WaterCoolerReplies = wcReplies.ToArray();
-                        timeLineItems.Add(wcItem);
+                      wcItem.WaterCoolerReplies = wcReplies.ToArray();
+
+                      WatercoolerAttachments threadAttachments = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                      threadAttachments.LoadByMessageID(viewItem.RefID);
+                      thread.Groups = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
+                      thread.Tickets = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
+                      thread.Products = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
+                      thread.Company = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
+                      thread.User = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+                      wcItem.WatercoolerReferences = thread;
+                      timeLineItems.Add(wcItem);
                     }
                 }
             }
@@ -1306,6 +1317,8 @@ namespace TSWebServices
             public AttachmentProxy[] Attachments { get; set; }
             [DataMember]
             public WaterCoolerReply[] WaterCoolerReplies { get; set; }
+
+            public WaterCoolerThread WatercoolerReferences { get; set; }
         }
 
         [DataContract]

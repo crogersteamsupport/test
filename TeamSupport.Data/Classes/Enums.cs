@@ -75,7 +75,8 @@ namespace TeamSupport.Data
 		CustomerHubLogo = 57,
         ContactNotes = 58,
         Sla = 59,
-        Tasks = 60
+        ChatAttachments = 60,
+        Tasks = 61
     };
 
 	public enum SlaViolationType

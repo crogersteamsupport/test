@@ -201,6 +201,17 @@ ORDER BY DateCreated, PosterName
         Fill(command);
       }
     }
-  }
+
+        public void LoadAllByChatID(int chatID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT * FROM CHATMESSAGES WHERE ChatID = @ChatID ORDER BY DATECREATED";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ChatID", chatID);
+                Fill(command);
+            }
+        }
+    }
   
 }

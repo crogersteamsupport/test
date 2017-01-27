@@ -2908,6 +2908,8 @@ SELECT ticketnumber, t.*, sn.*
 FROM Tickets t
 LEFT JOIN SlaNotifications sn ON t.TicketID = sn.TicketID
 WHERE  
+t.DateClosed IS NULL
+AND
 (
   ( 
     t.SlaViolationTimeClosed IS NOT NULL AND

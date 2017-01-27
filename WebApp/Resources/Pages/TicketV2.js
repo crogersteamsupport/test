@@ -281,15 +281,16 @@ $(document).ready(function () {
     //Setup WC Area
     SetupWCArea();
 
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
-    var firstScript = document.getElementsByTagName('script')[0];
-    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
-    script.setAttribute('id', 'dropboxjs');
-    firstScript.parentNode.insertBefore(script, firstScript);
-    slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.async = true;
+  script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+  var firstScript = document.getElementsByTagName('script')[0];
+  script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+  script.setAttribute('id', 'dropboxjs');
+  firstScript.parentNode.insertBefore(script, firstScript);
+  slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+  $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -548,7 +549,7 @@ function SetupTicketProperties(order) {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
 
-    });
+  });
 };
 
 function SetupToolTips() {
@@ -959,24 +960,24 @@ function SetupActionEditor(elem, action) {
         }
     });
 
-    element.find('#recordScreenContainer').hide();
-    element.find('#ssDiv').hide();
-    element.find('#rcdtokScreen').click(function (e) {
-        window.parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
-            element.find('#rcdtokScreen').hide();
-            element.find('#stoptokScreen').show();
-            element.find('#deletetokScreen').hide();
-            //element.find('#muteTokScreen').show();
-            recordingID = resultID;
-            element.find('#tokScreenCountdown').show();
-            setTimeout(function () {
-                update(element);
-            }, 1000);
-            //countdown("tokScreenCountdown", 5, 0, element);
-            //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
-            element.find('#statusTextScreen').text("Currently Recording Screen...");
-        });
-    });
+  element.find('#recordScreenContainer').hide();
+  element.find('#ssDiv').hide(); 
+  element.find('#rcdtokScreen').click(function (e) {
+      window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
+  		element.find('#rcdtokScreen').hide();
+  		element.find('#stoptokScreen').show();
+  		element.find('#deletetokScreen').hide();
+  		//element.find('#muteTokScreen').show();
+  		recordingID = resultID;
+  		element.find('#tokScreenCountdown').show();
+  		setTimeout(function () {
+  			update(element);
+  		}, 1000);
+  		//countdown("tokScreenCountdown", 5, 0, element);
+  		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
+  		element.find('#statusTextScreen').text("Currently Recording Screen...");
+  	});
+  });
 
     //element.find('#muteTokScreen').hide();
     element.find('#muteTokScreen').click(function (e) {
@@ -1591,33 +1592,40 @@ function LoadTicketControls() {
         $('#Ticket-Subscribe').children().addClass('color-green');
     }
 
-    if ($('#ticket-assigned').length) {
-        window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-            $('#ticket-assigned').selectize({
-                dataAttr: 'assigned',
-                onDropdownClose: function ($dropdown) {
-                    $($dropdown).prev().find('input').blur();
-                },
-                onChange: function (value) {
-                    if (value == '-1') value = null;
-                    if (value !== ((_ticketCurrUser !== null) ? _ticketCurrUser.toString() : _ticketCurrUser)) {
-                        window.parent.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-                            window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
-                            LoadGroups();
-                        },
-                        function (error) {
-                            alert('There was an error setting the assigned user.');
-                        });
-                    }
-                    _ticketSender = new Object();
-                    _ticketSender.UserID = window.parent.Ts.System.User.UserID;
-                    _ticketSender.Name = userFullName;
-                },
-                closeAfterSelect: true,
-                render: {
-                    option: function (item, escape) {
-                        var optionlabel = item.text;
-                        if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
+  if ($('#ticket-assigned').length) {
+      window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+      var isActive = users.find(function (user) {
+          return user.Name === _ticketInfo.Ticket.UserName;
+      });
+
+      if (isActive == undefined)
+          $("#ticket-assigned").attr('placeholder', _ticketInfo.Ticket.UserName + ' (Inactive)');
+
+      $('#ticket-assigned').selectize({
+        dataAttr: 'assigned',
+        onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+        },
+        onChange: function (value) {
+          if (value == '-1') value = null;
+          if (value !== ((_ticketCurrUser !== null) ? _ticketCurrUser.toString() : _ticketCurrUser)) {
+            window.parent.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+              window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+              LoadGroups();
+            },
+            function (error) {
+              alert('There was an error setting the assigned user.');
+            });
+          }
+          _ticketSender = new Object();
+          _ticketSender.UserID = window.parent.Ts.System.User.UserID;
+          _ticketSender.Name = userFullName;
+        },
+        closeAfterSelect: true,
+        render: {
+          option: function (item, escape) {
+            var optionlabel = item.text;
+            if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
 
                         if (item.data.IsSender && item.data.IsCreator)
                             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender and Creator)</div>';
@@ -1634,16 +1642,16 @@ function LoadTicketControls() {
             var selectize = $("#ticket-assigned")[0].selectize;
             selectize.addOption({ value: -1, text: 'Unassigned', data: '' });
 
-            for (var i = 0; i < users.length; i++) {
-                selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
-                if (users[i].IsSelected) {
-                    _ticketCurrUser = users[i].ID;
-                    SetAssignedUser(users[i].ID);
-                }
-            }
+      for (var i = 0; i < users.length; i++) {
+          selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
 
-        });
-    }
+        if (users[i].IsSelected) {
+          _ticketCurrUser = users[i].ID;
+          SetAssignedUser(users[i].ID);
+        }
+      }
+    });
+  }
 
     if ($('#ticket-group').length) {
         window.parent.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
@@ -1682,29 +1690,30 @@ function LoadTicketControls() {
     }
 
 
-    _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
-    var types = window.parent.Ts.Cache.getTicketTypes();
-    if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
-        for (var i = 0; i < types.length; i++) {
-            if (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID) {
-                AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
-                if (types[i].ProductFamilyID != null && _productFamilyID != types[i].ProductFamilyID) {
-                    alert('This ticket type belongs to a different product line. Please set the correct ticket type.');
-                }
-            }
-        }
+  _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
+  var types = window.parent.Ts.Cache.getTicketTypes();
+  if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+      for (var i = 0; i < types.length; i++) {
+          if ((types[i].IsActive && (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID))
+                || (!types[i].IsActive && _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID)) {
+              AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+              if (types[i].ProductFamilyID != null && _productFamilyID != types[i].ProductFamilyID) {
+                  alert('This ticket type belongs to a different product line. Please set the correct ticket type.');
+              }
+          }
+      }
 
-        if ($('#ticket-type')[0].childElementCount == 0) {
-            //parent.show().find('img').hide();
-            //container.remove();
-            alert('There are no ticket types available for this product line. Please contact your TeamSupport administrator.');
-        }
-    }
-    else {
-        for (var i = 0; i < types.length; i++) {
-            AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
-        }
-    }
+      if ($('#ticket-type')[0].childElementCount == 0) {
+          alert('There are no ticket types available for this product line. Please contact your TeamSupport administrator.');
+      }
+  }
+  else {
+      for (var i = 0; i < types.length; i++) {
+          if (types[i].IsActive || (!types[i].IsActive && types[i].TicketTypeID === _ticketTypeID)) {
+              AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+          }
+      }
+  }
 
     $('#ticket-type').selectize({
         onDropdownClose: function ($dropdown) {
@@ -2614,38 +2623,48 @@ function SetupProductVersionsControl(product) {
         });
         var resolvedInput = $select[0].selectize;
 
-        if (resolvedInput) {
-            resolvedInput.destroy();
-        }
+    if (resolvedInput) {
+      resolvedInput.destroy();
     }
-    $('#ticket-Versions').empty();
-    if (product !== null && product.Versions.length > 0) {
-        var versions = product.Versions;
-
-        for (var i = 0; i < versions.length; i++) {
-            try {
-                AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
-                AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
-            } catch (e) { }
-        }
-        if ($('#ticket-Resolved').length) {
-            $('#ticket-Versions').selectize({
-                onDropdownClose: function ($dropdown) {
-                    $($dropdown).prev().find('input').blur();
-                },
-                closeAfterSelect: true
-            });
-        }
-
-        if ($('#ticket-Resolved').length) {
-            $('#ticket-Resolved').selectize({
-                onDropdownClose: function ($dropdown) {
-                    $($dropdown).prev().find('input').blur();
-                },
-                closeAfterSelect: true
-            });
-        }
+  }
+  $('#ticket-Versions').empty();
+  if (product !== null && product.Versions.length > 0) {
+  	var versions = product.Versions;
+  	
+  	for (var i = 0; i < versions.length; i++) {
+        try{
+            AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+            AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
+        }catch(e){}
     }
+    if ($('#ticket-Resolved').length) {
+        $('#ticket-Versions').selectize({
+            render: {
+                item: function (item, escape) {
+                    return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
+                }
+            },
+        onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+        },
+        closeAfterSelect: true
+      });
+    }
+
+    if ($('#ticket-Resolved').length) {
+        $('#ticket-Resolved').selectize({
+            render: {
+                item: function (item, escape) {
+                    return '<div data-ticketid="' + _ticketID + '" data-versionid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option VersionAnchor">' + escape(item.text) + '</div>';
+                }
+            },
+        onDropdownClose: function ($dropdown) {
+          $($dropdown).prev().find('input').blur();
+        },
+        closeAfterSelect: true
+      });
+    }
+  }
 }
 
 function SetProductVersionAndResolved(versionId, resolvedId) {
@@ -4294,12 +4313,19 @@ function UpdateActionElement(val) {
 };
 
 function CreateHandleBarHelpers() {
-    Handlebars.registerHelper('UserImageTag', function () {
-        if (this.item.CreatorID > 0) {
-            return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/48/' + new Date().getTime() + '" />';
-        }
-        else return "";
+    Handlebars.registerHelper('WaterCoolerRelationships', function () {
+        if (this.WatercoolerReferences)
+            return BuildWaterCoolerAssociationToolTip(this.WatercoolerReferences);
+        else
+            return "";
     });
+
+  Handlebars.registerHelper('UserImageTag', function () {
+  	if (this.item.CreatorID > 0) {
+  		return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/48/' + new Date().getTime() + '" />';
+  	}
+  	else return "";
+  });
 
     Handlebars.registerHelper('FormatDateTime', function (Date) {
         return Date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())
@@ -4391,6 +4417,58 @@ function CreateHandleBarHelpers() {
         return result;
     });
 };
+
+
+function BuildWaterCoolerAssociationToolTip(references)
+{
+    var tixatt = references.Tickets;
+    var tixattstr = "";
+    var tixHasAtt = false;
+    if (tixatt.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixatt.length; i++) {
+            tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + window.parent.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="window.parent.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
+        }
+    }
+
+    var tixgrp = references.Groups;
+    var tixgrpstr = "";
+    if (tixgrp.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixgrp.length; i++) {
+            tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openGroup(' + tixgrp[i].AttachmentID + '); return false;">' + tixgrp[i].GroupName + '</a><br/>';
+        }
+    }
+
+    var tixprod = references.Products;
+    var tixprodstr = "";
+    if (tixprod.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixprod.length; i++) {
+            tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openNewProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
+        }
+    }
+
+    var tixcompany = references.Company;
+    var tixcompanystr = "";
+    if (tixcompany.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixcompany.length; i++) {
+            tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openNewCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
+        }
+    }
+
+    var tixuser = references.User;
+    var tixuserstr = "";
+    if (tixuser.length > 0) {
+        tixHasAtt = true;
+        for (var i = 0; i < tixuser.length; i++) {
+            tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
+        }
+    }
+
+    return "<span class='fa fa-info-circle fa-lg wcTooltip' title='' data-info='" + tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr + "'></span>";
+}
 
 function CreateTimeLineDelegates() {
     $("#action-timeline").on("mouseenter", ".action-options", function (event) {
@@ -5517,47 +5595,47 @@ var resetSLAInfo = function () {
 }
 
 var setSLAInfo = function () {
-    $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
-    if (_ticketInfo.IsSlaPaused !== undefined
-            && _ticketInfo.IsSlaPaused
+  $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
+  if (_ticketInfo.IsSlaPaused !== undefined
+          && _ticketInfo.IsSlaPaused
+          && !_ticketInfo.Ticket.IsClosed
+          && _ticketInfo.SlaTriggerId !== null
+          && _ticketInfo.SlaTriggerId > 0) {
+      $('#ticket-SLAStatus').find('i').removeClass('fa-bomb');
+      $('#ticket-SLAStatus').find('i').addClass('fa-pause');
+      $('#ticket-SLAStatus').find('i').addClass('slaPausedIcon');
+      $('#ticket-SLANote').text('Paused');
+  }
+  else if (_ticketInfo.Ticket.SlaViolationTime === null
+      && ((_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)
+            || (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && _ticketInfo.IsSlaPending !== null && !_ticketInfo.IsSlaPending))
+      ) {
+    $('#ticket-SLAStatus').find('i').addClass('color-green');
+    $('#ticket-SLANote').text('');
+    $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+    $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+    $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
+  }
+  else if (_ticketInfo.SlaTriggerId !== null
+            && _ticketInfo.SlaTriggerId > 0
+            && _ticketInfo.IsSlaPaused !== undefined
+            && !_ticketInfo.IsSlaPaused
             && !_ticketInfo.Ticket.IsClosed
-            && _ticketInfo.SlaTriggerId !== null
-            && _ticketInfo.SlaTriggerId > 0) {
-        $('#ticket-SLAStatus').find('i').removeClass('fa-bomb');
-        $('#ticket-SLAStatus').find('i').addClass('fa-pause');
-        $('#ticket-SLAStatus').find('i').addClass('slaPausedIcon');
-        $('#ticket-SLANote').text('Paused');
-    }
-    else if (_ticketInfo.Ticket.SlaViolationTime === null
-        && ((_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)
-              || (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && _ticketInfo.IsSlaPending !== null && !_ticketInfo.IsSlaPending))
-        ) {
-        $('#ticket-SLAStatus').find('i').addClass('color-green');
-        $('#ticket-SLANote').text('');
-        $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
-        $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
-        $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
-    }
-    else if (_ticketInfo.SlaTriggerId !== null
-              && _ticketInfo.SlaTriggerId > 0
-              && _ticketInfo.IsSlaPaused !== undefined
-              && !_ticketInfo.IsSlaPaused
-              && !_ticketInfo.Ticket.IsClosed
-              && _ticketInfo.IsSlaPending !== null
-              && _ticketInfo.IsSlaPending) {
-        $('#ticket-SLAStatus').find('i').addClass('color-yellow');
-        $('#ticket-SLANote').text('Calculating...');
-        $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
-        $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
-        $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
-    }
-    else {
-        $('#ticket-SLAStatus')
-          .find('i')
-          .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
-        $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
-        $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
-        $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
+            && _ticketInfo.IsSlaPending !== null
+            && _ticketInfo.IsSlaPending) {
+      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+      $('#ticket-SLANote').text('Calculating...');
+      $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+      $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+      $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
+  }
+  else {
+    $('#ticket-SLAStatus')
+      .find('i')
+      .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
+    $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+    $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+    $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
 
         if (_ticketInfo.Ticket.SlaViolationDate !== null) {
             $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));

@@ -68,26 +68,40 @@
         }).popover('show');
     });
 
-	$("body").on("mouseenter", ".VersionAnchor", function (event) {
-	    var e = $(this);
-	    e.unbind('hover');
-	    var ticketid = e.data('ticketid');
-	    var versionid = e.data('versionid');
-	    var b = e.closest("label");
-	    e.popover({
-	        html: true,
-	        container: 'body',
-	        trigger: 'manual',
-	        delay: { "show": 1, "hide": 1000 },
-	        content: function () {
-	            return $.ajax({
-	                url: '../../../Tips/Version.aspx?VersionID=' + versionid + '&TicketID=' + ticketid,
-	                dataType: 'html',
-	                async: false
-	            }).responseText;
-	        }
-	    }).popover('show');
-	});
+    $("body").on("mouseenter", ".VersionAnchor", function (event) {
+        var e = $(this);
+        e.unbind('hover');
+        var ticketid = e.data('ticketid');
+        var versionid = e.data('versionid');
+        var b = e.closest("label");
+        e.popover({
+            html: true,
+            container: 'body',
+            trigger: 'manual',
+            delay: { "show": 1, "hide": 1000 },
+            content: function () {
+                return $.ajax({
+                    url: '../../../Tips/Version.aspx?VersionID=' + versionid + '&TicketID=' + ticketid,
+                    dataType: 'html',
+                    async: false
+                }).responseText;
+            }
+        }).popover('show');
+    });
+
+    $("body").on("mouseenter", ".wcTooltip", function (event) {
+        var e = $(this);
+        var data = e.data('info');
+        e.unbind('hover');
+        e.popover({
+            html: true,
+            container: 'body',
+            trigger: 'manual',
+            delay: { "show": 1, "hide": 1000 },
+            placement: 'left',
+            content: data
+        }).popover('show');
+    });
 
     $("body").on("mouseenter", ".AssetAnchor", function (event) {
         var e = $(this);
