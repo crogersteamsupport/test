@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Chat/Archived/Chat.master" AutoEventWireup="true" CodeFile="OfflineThanks.aspx.cs" Inherits="Chat_OfflineThanks" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Chat/Chat.master" AutoEventWireup="true" CodeFile="OfflineThanks.aspx.cs" Inherits="Chat_OfflineThanks" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>

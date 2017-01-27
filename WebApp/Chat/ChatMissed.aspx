@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Chat/Archived/Chat.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Chat/Chat.master" AutoEventWireup="true"
   CodeFile="ChatMissed.aspx.cs" Inherits="Chat_ChatOffline" %>
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
