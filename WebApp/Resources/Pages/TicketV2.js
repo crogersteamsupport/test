@@ -3187,6 +3187,14 @@ function SetupTasksSection() {
             parent.Ts.MainPage.openNewTask(id);
         });
 
+        $('#TaskList').on('click', '.change-task-status', function (e) {
+            var id = $(this).data('reminderid');
+            var checked = $(this).prop("checked");
+            parent.Ts.System.logAction('Tasks Page - Change Task Status');
+
+            parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+        });
+
         //$('#ticket-task-span').on('click', '.tag-item', function (e) {
         //    var reminder = $(this).data('tag');
         //    $('#reminderID').text(reminder.ReminderID);

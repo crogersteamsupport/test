@@ -408,6 +408,8 @@ namespace TeamSupport.Data
 
         public void LoadByCompany(int from, int count, int organizationID)
         {
+            //Paging implemented but currently excluded
+
             string completeQuery = @"
             SELECT 
                 rem.*
@@ -441,9 +443,9 @@ namespace TeamSupport.Data
                 , TaskDateCompleted
                 , TaskParentID
             FROM 
-                r
-            WHERE
-                RowNum BETWEEN @From AND @To";
+                r";
+            //WHERE
+            //    RowNum BETWEEN @From AND @To";
 
             StringBuilder query;
 
@@ -454,14 +456,16 @@ namespace TeamSupport.Data
                 command.CommandText = query.ToString();
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@organizationID", organizationID);
-                command.Parameters.AddWithValue("@From", from + 1);
-                command.Parameters.AddWithValue("@To", from + count);
+                //command.Parameters.AddWithValue("@From", from + 1);
+                //command.Parameters.AddWithValue("@To", from + count);
                 Fill(command);
             }
         }
 
         public void LoadByContact(int from, int count, int contactID)
         {
+            //Paging has been written for but is currently excluded.
+
             string completeQuery = @"
             SELECT 
                 rem.*
@@ -495,9 +499,9 @@ namespace TeamSupport.Data
                 , TaskDateCompleted
                 , TaskParentID
             FROM 
-                r
-            WHERE
-                RowNum BETWEEN @From AND @To";
+                r";
+            //WHERE
+            //    RowNum BETWEEN @From AND @To;
 
             StringBuilder query;
 
@@ -508,8 +512,8 @@ namespace TeamSupport.Data
                 command.CommandText = query.ToString();
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@contactID", contactID);
-                command.Parameters.AddWithValue("@From", from + 1);
-                command.Parameters.AddWithValue("@To", from + count);
+                //command.Parameters.AddWithValue("@From", from + 1);
+                //command.Parameters.AddWithValue("@To", from + count);
                 Fill(command);
             }
         }

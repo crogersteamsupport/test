@@ -290,6 +290,21 @@ $(document).ready(function () {
             alert("Please fill in all the fields");
     });
 
+    $('#taskContainer').on('click', 'a.tasklink', function (e) {
+        e.preventDefault();
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('Tasks Page - View Task');
+        parent.Ts.MainPage.openNewTask(id);
+    });
+
+    $('#taskContainer').on('click', '.change-task-status', function (e) {
+        var id = $(this).data('reminderid');
+        var checked = $(this).prop("checked");
+        parent.Ts.System.logAction('Tasks Page - Change Task Status');
+
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+    });
+
     $('#contactDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this contact?')) {
             parent.privateServices.DeleteUser(userID, function (e) {
