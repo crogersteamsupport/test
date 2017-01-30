@@ -3195,7 +3195,7 @@ function SetupTasksSection() {
         $('.taskContainer').on('click', 'a.new-task', function (e) {
             e.preventDefault();
             parent.Ts.System.logAction('Tasks Page - New Task');
-            parent.Ts.MainPage.newTaskFromSource(17, _ticketID);
+            parent.Ts.MainPage.newTaskFromSource(17, _ticketID, _ticketInfo.Ticket.Name, _ticketInfo.Ticket.TicketNumber);
 
         });
 

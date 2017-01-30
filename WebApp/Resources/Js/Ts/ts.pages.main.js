@@ -2134,24 +2134,19 @@ function () { }, function (e) { console.log(e) });
     },
 
     newTask: function (taskParentID, parentTaskName) {
-        debugger;
         var query;
         if (taskParentID != undefined)
             query = "?taskparentid=" + taskParentID + "&parenttaskname=" + parentTaskName;
         this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
     },
-    newTaskFromSource: function (refType, refID)
+    newTaskFromSource: function (refType, refID, ticketName, ticketNumber)
     {
-        
-        debugger;
         var query;
-        if (refType && refID)
-        {
-            alert(refType + ' ' + refID);
-            debugger;
-            query = "?refType=" + refType + "&refID=" + refID;
+        if (refType && refID) {
+            var encodedTicketName = encodeURIComponent(ticketName);
+            query = "?reftype=" + refType + "&refid=" + refID + "&ticketname=" + encodedTicketName + "&ticketnumber=" + ticketNumber;
             this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTaskFromSource, 'newTask', 'Add Task', true, true, true, null, null, query, null);
-        }
+        };
     },
     closenewTaskTab: function () {
         var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
