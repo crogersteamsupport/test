@@ -29,8 +29,15 @@ $(document).ready(function () {
     initScheduledReportEditor($('#Description'), function (ed) {
     });
 
-    _taskParentID = top.Ts.Utils.getQueryValue("taskparentid", window);
-    _parentTaskName = top.Ts.Utils.getQueryValue("parenttaskname", window);
+    _taskParentID = window.parent.parent.Ts.Utils.getQueryValue("taskparentid", window);
+    _parentTaskName = window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window);
+
+    _ticketNumber = window.parent.parent.Ts.Utils.getQueryValue("ticketnumber", window);
+    _encodedTicketName = window.parent.parent.Ts.Utils.getQueryValue("ticketname", window);
+
+    _refType = window.parent.parent.Ts.Utils.getQueryValue("reftype", window);
+    _refID = window.parent.parent.Ts.Utils.getQueryValue("refid", window);
+
 
     if (_taskParentID) {
         var parentName = $('<h6>')
@@ -390,6 +397,7 @@ $(document).ready(function () {
                     }
                 });
                 if (!isDupe) {
+                    var x = $(this).parent().parent();
                     var bg = $('<div>')
                     .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
                     .appendTo($(this).parent().parent().find('.contact-queue')).data('Contact', ui.item.id);
@@ -692,4 +700,39 @@ $(document).ready(function () {
     $('#taskCancelBtn').click(function (e) {
         parent.Ts.MainPage.closenewTaskTab();
     });
+
+    //if these are passed in the url make the necessary association
+    if (_refType && _refID) {
+        switch (Number(_refType)) {
+            case 6:
+                break;
+            case 9:
+                break;
+            case 13:
+                break;
+            case 17:
+                var bg = $('<div>')
+                        .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                        .appendTo($('#taskForm').find('.ticket-queue')).data('Ticket', _refID);
+
+                $('<span>')
+                .text(_ticketNumber + ": " + decodeURIComponent(_encodedTicketName))
+                .addClass('filename')
+                .appendTo(bg);
+
+                $('<span>')
+                .addClass('ui-icon ui-icon-close')
+                .click(function (e) {
+                    e.preventDefault();
+                    $('#taskForm').find('#commentatt').closest('div').fadeOut(500, function () { $('#commentatt').remove(); });
+                })
+                .appendTo(bg);
+                break;
+            case 22:
+
+                break;
+            default:
+                functionName = null;
+        }
+    }
 });
