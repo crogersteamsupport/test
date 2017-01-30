@@ -3079,7 +3079,8 @@ namespace TeamSupport.ServiceLibrary
     {
       SortedList<string, int> userList = GetUserAndContactList();
       SortedList<string, int> userOnlyList = GetUserList();
-
+      SortedList<string, int> usersFirstAndLastNameList = GetUserNameAndLastNameList();
+            
       TicketTypes ticketTypes = new TicketTypes(_importUser);
       ticketTypes.LoadAllPositions(_organizationID);
 
@@ -3378,6 +3379,10 @@ namespace TeamSupport.ServiceLibrary
           {
             ticket.UserID = userID;
           }
+          else if (usersFirstAndLastNameList.TryGetValue(emailOfUserAssignedTo.ToUpper(), out userID))
+            {
+                ticket.UserID = userID;
+            }
         }
 
         string emailOfCloser = ReadString("EmailOfCloser", string.Empty);
@@ -6085,6 +6090,25 @@ WHERE (u.OrganizationID = @OrganizationID)
 AND (u.MarkDeleted = 0)
 GROUP BY REPLACE(u.Email, ' ', '')
 ";
+      command.CommandType = CommandType.Text;
+      command.Parameters.AddWithValue("@OrganizationID", _organizationID);
+      return GetList(command);
+    }
+
+    private SortedList<string, int> GetUserNameAndLastNameList()
+    {
+      SqlCommand command = new SqlCommand();
+      command.CommandText = @"
+        SELECT
+	        DISTINCT u.FirstName + ' ' + u.LastName,
+            MAX(u.UserID) AS UserID
+        FROM
+            Users u 
+        WHERE
+            u.OrganizationID = @OrganizationID
+            AND u.MarkDeleted = 0
+        GROUP BY
+	        u.FirstName + ' ' + u.LastName";
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@OrganizationID", _organizationID);
       return GetList(command);
