@@ -56,12 +56,16 @@ $(document).ready(function () {
                 $('#taskComplete').html("<i class='fa fa-check'></i>");
                 $('#taskComplete').addClass("completedButton");
                 $('#taskComplete').removeClass("emptyButton");
+                $('#taskComplete').attr("data-original-title", "Uncomplete this task");
+                $('#taskComplete').tooltip('fixTitle');
             }
             else {
                 $('#fieldComplete').text("no");
                 $('#taskComplete').html("Mark Completed");
                 $('#taskComplete').addClass("emptyButton");
                 $('#taskComplete').removeClass("completedButton");
+                $('#taskComplete').attr("data-original-title", "Complete this task");
+                $('#taskComplete').tooltip('fixTitle');
             }
             $('#fieldDueDate').html(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
@@ -341,6 +345,8 @@ $(document).ready(function () {
                             $('#taskComplete').html("<i class='fa fa-check'></i>");
                             $('#taskComplete').addClass("completedButton");
                             $('#taskComplete').removeClass("emptyButton");
+                            $('#taskComplete').attr("data-original-title", "Uncomplete this task");
+                            $('#taskComplete').tooltip('fixTitle');
                     },
                     function (error) {
                         header.show();
@@ -361,6 +367,8 @@ $(document).ready(function () {
                 $('#taskComplete').html("Mark Completed");
                 $('#taskComplete').addClass("emptyButton");
                 $('#taskComplete').removeClass("completedButton");
+                $('#taskComplete').attr("data-original-title", "Complete this task");
+                $('#taskComplete').tooltip('fixTitle');
             },
             function (error) {
                 header.show();
