@@ -1542,6 +1542,16 @@ namespace TSWebServices
             List<WaterCoolerReply> wcReplies = new List<WaterCoolerReply>();
             wcItem.WaterCoolerReplies = wcReplies.ToArray();
 
+            WatercoolerAttachments threadAttachments = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            WaterCoolerThread thread = new WaterCoolerThread();
+            threadAttachments.LoadByMessageID(wcItem.item.RefID);
+            thread.Groups = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
+            thread.Tickets = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
+            thread.Products = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
+            thread.Company = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
+            thread.User = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+            wcItem.WatercoolerReferences = thread;
+
             return wcItem;
         }
 
