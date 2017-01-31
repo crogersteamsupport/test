@@ -2145,13 +2145,13 @@ function () { }, function (e) { console.log(e) });
     //    var div = $('.main-tab-content .main-Task-' + reminderID);
     //    div.remove();
     //},
-    //closeNewTaskTab: function (reminderID) {
-    //    var tab = this.MainTabs.find(reminderID, Ts.Ui.Tabs.Tab.Type.Task);
-    //    if (tab) {
-    //        this.closeTab(tab);
-    //        tab.remove();
-    //    }
-    //},
+    closeNewTaskTab: function (reminderID) {
+        var tab = this.MainTabs.find(reminderID, Ts.Ui.Tabs.Tab.Type.Task);
+        if (tab) {
+            this.closeTab(tab);
+            tab.remove();
+        }
+    },
 
     AppNotify: function (title, message, options) {
 

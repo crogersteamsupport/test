@@ -30,5 +30,16 @@ namespace TeamSupport.Data
         //ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
         //ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Organizations, organizationID, description);
     }
-  }
+
+        public void DeleteByReminderIDOnly(int reminderID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "DELETE TaskAssociations WHERE ReminderID = @ReminderID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ReminderID", reminderID);
+                ExecuteNonQuery(command, "TaskAssociations");
+            }
+        }
+    }
 }

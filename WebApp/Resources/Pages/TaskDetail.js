@@ -27,6 +27,7 @@ $(document).ready(function () {
 
     _reminderID = window.parent.parent.Ts.Utils.getQueryValue("reminderid", window);
     parent.privateServices.SetUserSetting('SelectedReminderID', _reminderID);
+    var _isAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
 
     LoadProperties();
     initAssociationControls();
@@ -37,6 +38,13 @@ $(document).ready(function () {
 
     function LoadProperties() {
         window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
+            if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID || task.UserID == window.parent.parent.Ts.System.User.UserID) {
+                $('#taskDelete').show();
+            }
+            else {
+                $('#taskDelete').hide();
+            }
+
             if (task.TaskName) {
                 $('#taskName').text(ellipseString(task.TaskName, 73));
             }
@@ -327,6 +335,20 @@ $(document).ready(function () {
 
     $('#taskRefresh').click(function (e) {
         window.location = window.location;
+    });
+
+    $('#taskDelete').click(function (e) {
+        if (confirm('Are you sure you would like to remove this task?')) {
+            parent.privateServices.DeleteTask(_reminderID, function (e) {
+                window.parent.parent.Ts.System.logAction('Task Detail - Delete Task');
+                //if (window.parent.document.getElementById('iframe-mniCustomers'))
+                //    window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
+                _mainFrame.Ts.MainPage.closeNewTaskTab(_reminderID);
+                //_mainFrame.Ts.MainPage.closeNewContact(userID);
+            });
+
+
+        }
     });
 
     $('#taskComplete').click(function (e) {
