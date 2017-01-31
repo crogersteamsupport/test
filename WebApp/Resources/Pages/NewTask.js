@@ -729,8 +729,8 @@ $(document).ready(function () {
                 .appendTo(bg);
                 break;
             case 22:
-
                 break;
+            case 32:
             default:
                 functionName = null;
         }
