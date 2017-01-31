@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <title></title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <!--<link href="../Css/jquery-ui-bs3.min.css" rel="stylesheet" type="text/css" />-->
     <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
@@ -15,7 +13,6 @@
     <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
     <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
     <link href="NewTask.css" rel="stylesheet" type="text/css" />
-
     <!--<script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>-->
     <script src="../Js/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
@@ -67,9 +64,7 @@
                                             <div class="col-md-12">
                                                 <label for="ddlUser" class="col-md-2 control-label">Assigned to </label>
                                                 <div class="col-md-10">
-                                                    <select class="form-control" id="ddlUser">
-                                                        <!--<option value="-1">Unassigned</option>-->
-                                                    </select>
+                                                    <select class="form-control" id="ddlUser"></select>
                                                 </div>
                                             </div>
                                         </div>
@@ -154,17 +149,15 @@
                                             <div class="upload-queue"></div>
                                             <div class="ticket-queue"></div>
                                             <div class="user-queue"></div>
-                                            <div class="group-queue"></div>
                                             <div class="customer-queue"></div>
                                             <div class="contact-queue"></div>
+                                            <div class="group-queue"></div>
                                             <div class="product-queue"></div>
-
                                             <span class="ur">
                                                 <form id="attachmentinput" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
                                                     <input type="file" name="file[]">
                                                     <a class="ui-state-default ts-link task-tooltip" href="#" title="You can drag and drop your attachments here.">+add attachment</a>
                                                 </form>
-                                                <!--<input id="ticketinsert" class="insert-ticket" type="text" />-->
                                                 <input id="ticketinput" class="main-quick-ticket" type="text" />
                                                 <input id="userinput" class="user-search" type="text" />
                                                 <input id="customerinput" class="company-search" type="text" />
@@ -175,7 +168,6 @@
                                         </div>
                                         <hr id="associationsBreak" class="associationsBreakAdjustement" />
                                         <div id="associationsContainer">
-
                                         </div>
                                     </div>
                                 </div>

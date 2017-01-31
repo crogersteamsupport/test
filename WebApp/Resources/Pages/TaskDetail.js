@@ -766,7 +766,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '78px');
+        $(this).parent().find(".arrow-up").css('left', '102px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addgroup').click(function (e) {
@@ -779,7 +779,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '104px');
+        $(this).parent().find(".arrow-up").css('left', '128px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addproduct').click(function (e) {
@@ -792,7 +792,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '125px');
+        $(this).parent().find(".arrow-up").css('left', '150px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
 
