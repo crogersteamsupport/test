@@ -740,6 +740,27 @@ namespace TeamSupport.Services
     }
 
     [WebMethod(true)]
+    public void DeleteTask(int reminderID)
+    {
+        TaskAssociations associations = new TaskAssociations(UserSession.LoginUser);
+        associations.DeleteByReminderIDOnly(reminderID);
+
+        Reminders subtasks = new Reminders(UserSession.LoginUser);
+        subtasks.LoadIncompleteByParentID(reminderID);
+        foreach (Data.Reminder subtask in subtasks)
+        {
+            DeleteTask(subtask.ReminderID);
+        }
+
+        Data.Reminder task = Reminders.GetReminder(UserSession.LoginUser, reminderID);
+
+        string description = String.Format("{0} deleted task {1} ", UserSession.CurrentUser.FirstLastName, task.TaskName);
+        ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Tasks, reminderID, description);
+        task.Delete();
+        task.Collection.Save();
+    }
+        
+    [WebMethod(true)]
     public void DeleteNote(int noteID)
     {
       Note note = Notes.GetNote(UserSession.LoginUser, noteID);

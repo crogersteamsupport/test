@@ -27,6 +27,7 @@ $(document).ready(function () {
 
     _reminderID = window.parent.parent.Ts.Utils.getQueryValue("reminderid", window);
     parent.privateServices.SetUserSetting('SelectedReminderID', _reminderID);
+    var _isAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
 
     LoadProperties();
     initAssociationControls();
@@ -37,6 +38,13 @@ $(document).ready(function () {
 
     function LoadProperties() {
         window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
+            if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID || task.UserID == window.parent.parent.Ts.System.User.UserID) {
+                $('#taskDelete').show();
+            }
+            else {
+                $('#taskDelete').hide();
+            }
+
             if (task.TaskName) {
                 $('#taskName').text(ellipseString(task.TaskName, 73));
             }
@@ -50,8 +58,23 @@ $(document).ready(function () {
 
             $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
-            $('#fieldComplete').text(task.TaskIsComplete ? "yes" : "no");
-            $('#taskComplete').text(task.TaskIsComplete ? "Incomplete" : "Complete");
+
+            if (task.TaskIsComplete) {
+                $('#fieldComplete').text("yes");
+                $('#taskComplete').html("<i class='fa fa-check'></i>");
+                $('#taskComplete').addClass("completedButton");
+                $('#taskComplete').removeClass("emptyButton");
+                $('#taskComplete').attr("data-original-title", "Uncomplete this task");
+                $('#taskComplete').tooltip('fixTitle');
+            }
+            else {
+                $('#fieldComplete').text("no");
+                $('#taskComplete').html("Mark Completed");
+                $('#taskComplete').addClass("emptyButton");
+                $('#taskComplete').removeClass("completedButton");
+                $('#taskComplete').attr("data-original-title", "Complete this task");
+                $('#taskComplete').tooltip('fixTitle');
+            }
             $('#fieldDueDate').html(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
             $('#fieldReminderDate').html(task.DueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
@@ -314,8 +337,22 @@ $(document).ready(function () {
         window.location = window.location;
     });
 
+    $('#taskDelete').click(function (e) {
+        if (confirm('Are you sure you would like to remove this task?')) {
+            parent.privateServices.DeleteTask(_reminderID, function (e) {
+                window.parent.parent.Ts.System.logAction('Task Detail - Delete Task');
+                //if (window.parent.document.getElementById('iframe-mniCustomers'))
+                //    window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
+                _mainFrame.Ts.MainPage.closeNewTaskTab(_reminderID);
+                //_mainFrame.Ts.MainPage.closeNewContact(userID);
+            });
+
+
+        }
+    });
+
     $('#taskComplete').click(function (e) {
-        if ($(this).text() !== 'Incomplete')
+        if ($(this).html() !== '<i class="fa fa-check"></i>')
         {
             window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_reminderID, function (result) {
                 if (result)
@@ -326,8 +363,12 @@ $(document).ready(function () {
                 {
                     window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                        $('#fieldComplete').text((result === true ? 'yes' : 'no'));
-                        $('#taskComplete').text((result === true ? 'Incomplete' : 'Complete'));
+                            $('#fieldComplete').text("yes");
+                            $('#taskComplete').html("<i class='fa fa-check'></i>");
+                            $('#taskComplete').addClass("completedButton");
+                            $('#taskComplete').removeClass("emptyButton");
+                            $('#taskComplete').attr("data-original-title", "Uncomplete this task");
+                            $('#taskComplete').tooltip('fixTitle');
                     },
                     function (error) {
                         header.show();
@@ -344,8 +385,12 @@ $(document).ready(function () {
         {
             window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'Incomplete'), function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                $('#fieldComplete').text((result === true ? 'yes' : 'no'));
-                $('#taskComplete').text((result === true ? 'Incomplete' : 'Complete'));
+                $('#fieldComplete').text("no");
+                $('#taskComplete').html("Mark Completed");
+                $('#taskComplete').addClass("emptyButton");
+                $('#taskComplete').removeClass("completedButton");
+                $('#taskComplete').attr("data-original-title", "Complete this task");
+                $('#taskComplete').tooltip('fixTitle');
             },
             function (error) {
                 header.show();

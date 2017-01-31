@@ -136,7 +136,7 @@ Ts.Pages.Main.prototype = {
 
         $('.menu-help-chat').click(function (e) {
             e.preventDefault();
-            window.open('https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
+            window.open('https://release-chat.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
         });
 
 
@@ -2165,13 +2165,13 @@ function () { }, function (e) { console.log(e) });
     //    var div = $('.main-tab-content .main-Task-' + reminderID);
     //    div.remove();
     //},
-    //closeNewTaskTab: function (reminderID) {
-    //    var tab = this.MainTabs.find(reminderID, Ts.Ui.Tabs.Tab.Type.Task);
-    //    if (tab) {
-    //        this.closeTab(tab);
-    //        tab.remove();
-    //    }
-    //},
+    closeNewTaskTab: function (reminderID) {
+        var tab = this.MainTabs.find(reminderID, Ts.Ui.Tabs.Tab.Type.Task);
+        if (tab) {
+            this.closeTab(tab);
+            tab.remove();
+        }
+    },
 
     AppNotify: function (title, message, options) {
 
