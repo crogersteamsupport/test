@@ -1295,6 +1295,19 @@ Ts.Pages.Main.prototype = {
                     }
                     //$('.main-info-content').load('vcr/1_9_0/PaneInfo/inventory.html');
                     break;
+                case Ts.Ui.Tabs.Tab.Type.NewTaskFromSource:
+                    var query = '';
+                    if (tab.getData()) query = tab.getData();
+                    div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-newTask main-ticket-newTask')
+                    .appendTo('.main-tab-content');
+
+                    $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_9_0/Pages/NewTask.html' + query);
+                    break;
 
                 default:
 
@@ -2121,11 +2134,19 @@ function () { }, function (e) { console.log(e) });
     },
 
     newTask: function (taskParentID, parentTaskName) {
-        debugger;
         var query;
         if (taskParentID != undefined)
             query = "?taskparentid=" + taskParentID + "&parenttaskname=" + parentTaskName;
         this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
+    },
+    newTaskFromSource: function (refType, refID, ticketName, ticketNumber)
+    {
+        var query;
+        if (refType && refID) {
+            var encodedTicketName = encodeURIComponent(ticketName);
+            query = "?reftype=" + refType + "&refid=" + refID + "&ticketname=" + encodedTicketName + "&ticketnumber=" + ticketNumber;
+            this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTaskFromSource, 'newTask', 'Add Task', true, true, true, null, null, query, null);
+        };
     },
     closenewTaskTab: function () {
         var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
@@ -2139,7 +2160,6 @@ function () { }, function (e) { console.log(e) });
         mainFrame.Ts.Services.Task.GetShortNameFromID(reminderID, function (result) {
             this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Task, reminderID, result, true, true, false, null, null, query, null);
         });
-
     },
     //closeNewTask: function (reminderID) {
     //    var div = $('.main-tab-content .main-Task-' + reminderID);
