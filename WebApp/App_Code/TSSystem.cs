@@ -226,8 +226,8 @@ namespace TSWebServices
 
         if (user.IsChatUser && org.ChatSeats > 0 && IsMenuItemActive(user, "mniChat"))
         {
-            //items.Add(new TsMenuItem("chat", "mniChat", "Customer Chat", "vcr/1_9_0/images/nav/20/chat.png", string.Format(data, "Frames/Chat.aspx", "vcr/1_9_0/PaneInfo/Chat.html")));
-            items.Add(new TsMenuItem("chat", "mniChat", "Customer Chat", "vcr/1_9_0/images/nav/20/chat.png", string.Format(data, "vcr/1_9_0/Pages/AgentCustomerChat.html", "vcr/1_9_0/PaneInfo/Chat.html")));
+            items.Add(new TsMenuItem("chat", "mniChat", "Customer Chat", "vcr/1_9_0/images/nav/20/chat.png", string.Format(data, "Frames/Chat.aspx", "vcr/1_9_0/PaneInfo/Chat.html")));
+            //items.Add(new TsMenuItem("chat", "mniChat", "Customer Chat", "vcr/1_9_0/images/nav/20/chat.png", string.Format(data, "vcr/1_9_0/Pages/AgentCustomerChat.html", "vcr/1_9_0/PaneInfo/Chat.html")));
         }
 
                 if (org.ProductType != ProductType.Express && IsMenuItemActive(user, "mniWC2"))

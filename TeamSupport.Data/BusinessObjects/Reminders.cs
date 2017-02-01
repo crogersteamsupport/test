@@ -395,6 +395,17 @@ namespace TeamSupport.Data
             }
         }
 
+        public void LoadByParentID(int parentID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Reminders WHERE TaskParentID = @ParentID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ParentID", parentID);
+                Fill(command);
+            }
+        }
+
         public void LoadIncompleteByParentID(int parentID)
         {
             using (SqlCommand command = new SqlCommand())

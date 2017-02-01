@@ -374,6 +374,11 @@ $(document).ready(function () {
             case 22:
                 associationName = association.User;
                 iconClass = "userIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openUser(' + association.RefID + '); return false;'
+                break;
+            case 32:
+                associationName = association.Contact;
+                iconClass = "contactIcon";
                 functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
                 break;
             default:

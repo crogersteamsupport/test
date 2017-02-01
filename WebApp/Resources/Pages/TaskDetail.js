@@ -27,6 +27,7 @@ $(document).ready(function () {
 
     _reminderID = window.parent.parent.Ts.Utils.getQueryValue("reminderid", window);
     parent.privateServices.SetUserSetting('SelectedReminderID', _reminderID);
+    var _isAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
 
     LoadProperties();
     initAssociationControls();
@@ -37,6 +38,13 @@ $(document).ready(function () {
 
     function LoadProperties() {
         window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
+            if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID || task.UserID == window.parent.parent.Ts.System.User.UserID) {
+                $('#taskDelete').show();
+            }
+            else {
+                $('#taskDelete').hide();
+            }
+
             if (task.TaskName) {
                 $('#taskName').text(ellipseString(task.TaskName, 73));
             }
@@ -56,12 +64,16 @@ $(document).ready(function () {
                 $('#taskComplete').html("<i class='fa fa-check'></i>");
                 $('#taskComplete').addClass("completedButton");
                 $('#taskComplete').removeClass("emptyButton");
+                $('#taskComplete').attr("data-original-title", "Uncomplete this task");
+                $('#taskComplete').tooltip('fixTitle');
             }
             else {
                 $('#fieldComplete').text("no");
                 $('#taskComplete').html("Mark Completed");
                 $('#taskComplete').addClass("emptyButton");
                 $('#taskComplete').removeClass("completedButton");
+                $('#taskComplete').attr("data-original-title", "Complete this task");
+                $('#taskComplete').tooltip('fixTitle');
             }
             $('#fieldDueDate').html(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
@@ -325,6 +337,20 @@ $(document).ready(function () {
         window.location = window.location;
     });
 
+    $('#taskDelete').click(function (e) {
+        if (confirm('Are you sure you would like to remove this task?')) {
+            parent.privateServices.DeleteTask(_reminderID, function (e) {
+                window.parent.parent.Ts.System.logAction('Task Detail - Delete Task');
+                //if (window.parent.document.getElementById('iframe-mniCustomers'))
+                //    window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
+                _mainFrame.Ts.MainPage.closeNewTaskTab(_reminderID);
+                //_mainFrame.Ts.MainPage.closeNewContact(userID);
+            });
+
+
+        }
+    });
+
     $('#taskComplete').click(function (e) {
         if ($(this).html() !== '<i class="fa fa-check"></i>')
         {
@@ -341,6 +367,8 @@ $(document).ready(function () {
                             $('#taskComplete').html("<i class='fa fa-check'></i>");
                             $('#taskComplete').addClass("completedButton");
                             $('#taskComplete').removeClass("emptyButton");
+                            $('#taskComplete').attr("data-original-title", "Uncomplete this task");
+                            $('#taskComplete').tooltip('fixTitle');
                     },
                     function (error) {
                         header.show();
@@ -361,6 +389,8 @@ $(document).ready(function () {
                 $('#taskComplete').html("Mark Completed");
                 $('#taskComplete').addClass("emptyButton");
                 $('#taskComplete').removeClass("completedButton");
+                $('#taskComplete').attr("data-original-title", "Complete this task");
+                $('#taskComplete').tooltip('fixTitle');
             },
             function (error) {
                 header.show();
@@ -781,7 +811,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '78px');
+        $(this).parent().find(".arrow-up").css('left', '102px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addgroup').click(function (e) {
@@ -794,7 +824,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '104px');
+        $(this).parent().find(".arrow-up").css('left', '128px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addproduct').click(function (e) {
@@ -807,7 +837,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '125px');
+        $(this).parent().find(".arrow-up").css('left', '150px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
 
