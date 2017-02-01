@@ -125,8 +125,18 @@ Ts.Pages.Main.prototype = {
 
         $('.menu-signout').click(function (e) {
             e.preventDefault();
-            mainFrame.Ts.System.logAction('Main Page - Signed Out');
-            mainFrame.Ts.System.signOut();
+            var iframes = document.getElementsByTagName('iframe'); 
+            for (var i = 0; i < iframes.length; i++) {
+                try {
+                    if (iframes[i].contentWindow.tinyMCE.activeEditor)
+                        var result = confirm("Are you sure you want to leave this page");
+                } catch (e) { }
+            }
+            if (result) {
+                window.isSignedOut = true;
+                mainFrame.Ts.System.logAction('Main Page - Signed Out');
+                mainFrame.Ts.System.signOut();
+            }
         });
 
         $('.menu-help-support').click(function (e) {
