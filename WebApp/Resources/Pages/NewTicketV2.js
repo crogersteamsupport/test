@@ -892,7 +892,7 @@ function SetupDescriptionEditor() {
     });
 
     $('#rcdtokScreen').click(function (e) {
-    	parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+        parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
     		$('#rcdtokScreen').hide();
     		$('#stoptokScreen').show();
     		$('#deletetokScreen').hide();
@@ -1688,7 +1688,7 @@ function loadVersions(product) {
     var versions = product.Versions;
 
     for (var i = 0; i < versions.length; i++) {
-        try {
+        try{
             selectizeVersion.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
             selectizeResolved.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
         } catch (e) { }

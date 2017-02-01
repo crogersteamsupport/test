@@ -51,7 +51,7 @@ function GetSearchResults() {
     //var ticketLoadFilter = mainFrame.Ts.Utils.queryToTicketFilter(window);
     //ticketLoadFilter.SearchText2 = window.parent.$('#SuggestedSolutionsInput').val();
     //mainFrame.Ts.Services.Tickets.GetTicketRange(1, 50, ticketLoadFilter, function (results) { showSearchResults(results); });
-    var ticketID = 0;
+    var ticketID = 0;debugger
     if (window.parent._ticketID) {
         ticketID = window.parent._ticketID;
     }

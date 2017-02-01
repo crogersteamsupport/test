@@ -91,18 +91,18 @@ namespace TeamSupport.Data
       AddNotification(loginUser, chatID, id,type,string.Format("{0} {1} has joined the chat.", part.FirstName, part.LastName));
     }
 
-    public static void LeaveChat(LoginUser loginUser, int id, ChatParticipantType type, int chatID)
+    public static ChatMessageProxy LeaveChat(LoginUser loginUser, int id, ChatParticipantType type, int chatID)
     {
       Chat chat = Chats.GetChat(loginUser, chatID);
       ChatParticipant self = ChatParticipants.GetChatParticipant(loginUser, id, type, chatID);
-      if (self == null) return;
+      if (self == null) return null;
 
       self.DateLeft = DateTime.UtcNow;
       self.Collection.Save();
 
-      AddNotification(loginUser, chatID, id, type, string.Format("{0} {1} has left the chat.", self.FirstName, self.LastName));
+            ChatMessageProxy message = AddNotification(loginUser, chatID, id, type, string.Format("{0} {1} has left the chat.", self.FirstName, self.LastName));
 
-      if (self.ParticipantType != ChatParticipantType.User) return;
+      if (self.ParticipantType != ChatParticipantType.User) return message;
 
       ChatParticipants participants = new ChatParticipants(loginUser);
       participants.LoadByChatID(chatID);
@@ -125,9 +125,11 @@ namespace TeamSupport.Data
         }
       }
 
+            return message;
+
     }
 
-    public static void AddNotification(LoginUser loginUser, int chatID, int id, ChatParticipantType type, string message)
+    public static ChatMessageProxy AddNotification(LoginUser loginUser, int chatID, int id, ChatParticipantType type, string message)
     {
       ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
       chatMessage.ChatID = chatID;
@@ -136,6 +138,7 @@ namespace TeamSupport.Data
       chatMessage.PosterID = id;
       chatMessage.PosterType = type;
       chatMessage.Collection.Save();
+            return chatMessage.GetProxy();
     }
 
     public static void KickOutDisconnectedClients(LoginUser loginUser, int organizationID)
