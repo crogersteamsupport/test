@@ -950,3 +950,9 @@
 .slaPausedIcon {
     color: #428bca !important;
 }
+
+.wcTooltip
+{
+    color: #3276B1;
+    margin-right: 10px;
+}
