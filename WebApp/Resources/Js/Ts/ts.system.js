@@ -211,7 +211,7 @@ var _startDate = new Date();
     },
 
     signOut: function (callback) {
-        Ts.Services.System.SignOut(function () { window.isSignedOut = true; window.location = window.location; });
+        Ts.Services.System.SignOut(function () {  window.location = window.location; });
     },
 
 

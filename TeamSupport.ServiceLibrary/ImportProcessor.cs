@@ -5955,7 +5955,7 @@ namespace TeamSupport.ServiceLibrary
       string value = GetMappedValue(field, defaultValue.ToString());
       DateTime result = defaultValue;
       DateTime.TryParse(value, out result);
-      return result;
+      return TimeZoneInfo.ConvertTimeToUtc(result);
     }
 
     private DateTime? ReadDateNull(string field, string existingValue)
@@ -5966,7 +5966,7 @@ namespace TeamSupport.ServiceLibrary
       {
         return null;
       }
-      return result;
+      return TimeZoneInfo.ConvertTimeToUtc(result);
     }
 
     private bool ReadBool(string field, string existingValue)

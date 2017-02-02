@@ -2388,11 +2388,11 @@ namespace TeamSupport.Data
 					{
 						if (rawValues[i].ToLower().IndexOf("t") > -1 || rawValues[i].ToLower().IndexOf("1") > -1 || rawValues[i].ToLower().IndexOf("y") > -1)
 						{
-							filterValues.Add("1");
+							filterValues.Add("true");
 						}
 						else if (rawValues[i].ToLower().IndexOf("f") > -1 || rawValues[i].ToLower().IndexOf("0") > -1 || rawValues[i].ToLower().IndexOf("n") > -1)
 						{
-							filterValues.Add("0");
+							filterValues.Add("false");
 						}
 						if (i == 0)
 						{
