@@ -1280,6 +1280,7 @@ $(document).ready(function () {
 
             $('.upload-queue div.ticket-removable-item').each(function (i, o) {
                 var data = $(o).data('data');
+                debugger;
                 data.url = '../../../Upload/Tasks/' + _reminderID;
                 data.jqXHR = data.submit();
                 $(o).data('data', data);

@@ -3127,5 +3127,11 @@ ORDER BY
             }
         }
 
+        public void MigrateOrgType(LoginUser loginUser, int organizationID, ProductType productType) {
+            //Leo add sql hooks here.
+
+
+        }
+
     }
 }
