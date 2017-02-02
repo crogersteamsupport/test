@@ -892,7 +892,7 @@ function SetupDescriptionEditor() {
     });
 
     $('#rcdtokScreen').click(function (e) {
-        parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+        parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
     		$('#rcdtokScreen').hide();
     		$('#stoptokScreen').show();
     		$('#deletetokScreen').hide();
