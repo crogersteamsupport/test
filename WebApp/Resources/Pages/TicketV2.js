@@ -2627,7 +2627,8 @@ function SetupProductVersionsControl(product) {
       resolvedInput.destroy();
     }
   }
-  $('#ticket-Versions').empty();
+    $('#ticket-Versions').empty();
+    $('#ticket-Resolved').empty();
   if (product !== null && product.Versions.length > 0) {
   	var versions = product.Versions;
   	
