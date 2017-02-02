@@ -514,7 +514,7 @@ namespace TeamSupport.ServiceLibrary
         }
         private void LogVerbose(string message)
         {
-            LogVerbose(message);
+            if (_isVerbose) LogVerbose(message);
         }
     }
 
