@@ -155,8 +155,8 @@ namespace TeamSupport.ServiceLibrary
 
             try
             {
-                Logs.WriteLine();
-                Logs.WriteLine();
+                LogVerbose("");
+                LogVerbose("");
                 if (isRebuilder)
                 {
                     LogVerbose(string.Format("Started rebuilding index for org: {0}", org.OrganizationID.ToString()));
