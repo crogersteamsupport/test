@@ -152,7 +152,6 @@ UserPage = function () {
     $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
     $('#activatedOn').text(user.ActivatedOn.toDateString());
     $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
-    $('#userTicketPageVersion').text((user.IsClassicView == true ? 'Yes' : 'No'));
     if (user.verificationPhoneNumber !== null && user.verificationPhoneNumber !== "") $('#userTwoFactorCell').text(user.verificationPhoneNumber);
 
     if (user.LinkedIn == '')
