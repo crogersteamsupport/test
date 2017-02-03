@@ -969,7 +969,7 @@ function SetupActionEditor(elem, action) {
   element.find('#recordScreenContainer').hide();
   element.find('#ssDiv').hide(); 
   element.find('#rcdtokScreen').click(function (e) {
-      window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
+      window.parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
   		element.find('#rcdtokScreen').hide();
   		element.find('#stoptokScreen').show();
   		element.find('#deletetokScreen').hide();
@@ -2631,7 +2631,8 @@ function SetupProductVersionsControl(product) {
       resolvedInput.destroy();
     }
   }
-  $('#ticket-Versions').empty();
+    $('#ticket-Versions').empty();
+    $('#ticket-Resolved').empty();
   if (product !== null && product.Versions.length > 0) {
   	var versions = product.Versions;
   	
