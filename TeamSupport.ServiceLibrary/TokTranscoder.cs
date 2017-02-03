@@ -198,7 +198,7 @@ namespace TeamSupport.ServiceLibrary
             {
                 proc1.Close();
                 proc1.Kill();
-4            }
+            }
             catch (Exception)
             {
             }
@@ -270,6 +270,11 @@ namespace TeamSupport.ServiceLibrary
 
         void CleanUpFiles()
         {
+            TokStorage dbItem = new TokStorage(LoginUser);
+            dbItem.LoadByArchiveID(_archiveID);
+            dbItem[0].Transcoded = true;
+            dbItem[0].Collection.Save();
+
             Logs.WriteEvent("----- Cleaning up files and marking as processed");
             string dest = Path.GetDirectoryName(_webmFiles[0]);
             System.IO.DirectoryInfo di = new DirectoryInfo(dest);
@@ -281,12 +286,6 @@ namespace TeamSupport.ServiceLibrary
 
             di.Delete();
             _webmFiles.Clear();
-
-            TokStorage dbItem = new TokStorage(LoginUser);
-
-            dbItem.LoadByArchiveID(_archiveID);
-            dbItem[0].Transcoded = true;
-            dbItem[0].Collection.Save();
 
         }
 
