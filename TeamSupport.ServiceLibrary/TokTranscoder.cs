@@ -162,9 +162,13 @@ namespace TeamSupport.ServiceLibrary
                     FileName = Path.Combine(_ffmpegPath, "ffprobe.exe"),
                     Arguments = $@"-v error -show_frames -of default=noprint_wrappers=1 {_webmFiles[1]}",
                     UseShellExecute = false,
-                    RedirectStandardOutput = false,
+                    RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    CreateNoWindow = true
+                    RedirectStandardInput = true,
+                    CreateNoWindow = true,
+                    ErrorDialog = false,
+                    WindowStyle = ProcessWindowStyle.Hidden
+
                 }
             };
 
@@ -197,7 +201,10 @@ namespace TeamSupport.ServiceLibrary
             proc.StartInfo.FileName = Path.Combine(_ffmpegPath,"ffmpeg.exe");
             proc.StartInfo.Arguments = $@"-i {_webmFiles[0]} -i {_webmFiles[1]} -map 0:0 -map 1:1 -codec:a aac -ab 128k -codec:v libx264 -vf scale={width}:{height} -aspect 16:9 -r 30 {_outputFileLocation}";
             proc.StartInfo.RedirectStandardError = true;
-            proc.StartInfo.RedirectStandardOutput = false;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardInput = true;
+            proc.StartInfo.ErrorDialog = false;
+            proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             proc.StartInfo.UseShellExecute = false;
 
             if (!proc.Start())
@@ -212,6 +219,7 @@ namespace TeamSupport.ServiceLibrary
                 Logs.WriteEvent(line);
             }
             proc.WaitForExit();
+            proc.Close();
         }
 
         void UploadHighResVideo()
