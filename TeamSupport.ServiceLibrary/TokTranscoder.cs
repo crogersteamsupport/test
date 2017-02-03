@@ -162,7 +162,7 @@ namespace TeamSupport.ServiceLibrary
                     FileName = Path.Combine(_ffmpegPath, "ffprobe.exe"),
                     Arguments = $@"-v error -show_frames -of default=noprint_wrappers=1 {_webmFiles[1]}",
                     UseShellExecute = false,
-                    RedirectStandardOutput = true,
+                    RedirectStandardOutput = false,
                     RedirectStandardError = true,
                     CreateNoWindow = true
                 }
@@ -197,6 +197,7 @@ namespace TeamSupport.ServiceLibrary
             proc.StartInfo.FileName = Path.Combine(_ffmpegPath,"ffmpeg.exe");
             proc.StartInfo.Arguments = $@"-i {_webmFiles[0]} -i {_webmFiles[1]} -map 0:0 -map 1:1 -codec:a aac -ab 128k -codec:v libx264 -vf scale={width}:{height} -aspect 16:9 -r 30 {_outputFileLocation}";
             proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.RedirectStandardOutput = false;
             proc.StartInfo.UseShellExecute = false;
 
             if (!proc.Start())
