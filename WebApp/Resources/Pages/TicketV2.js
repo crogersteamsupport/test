@@ -4323,7 +4323,7 @@ function CreateHandleBarHelpers() {
 
   Handlebars.registerHelper('UserImageTag', function () {
   	if (this.item.CreatorID > 0) {
-  		return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/48/' + new Date().getTime() + '" />';
+  		return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/120/' + new Date().getTime() + '" />';
   	}
   	else return "";
   });

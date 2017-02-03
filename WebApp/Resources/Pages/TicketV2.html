@@ -141,7 +141,7 @@
 
 
                             <li class="action-new">
-                                <img id="new-action-avatar" class="user-avatar pull-left" style="height:40px;" src="../../../dc/{{OrganizationID}}/UserAvatar/{{UserID}}/40" />
+                                <img id="new-action-avatar" class="user-avatar pull-left" style="height:40px;" src="../../../dc/{{OrganizationID}}/UserAvatar/{{UserID}}/120" />
                                 <div class="panel panel-default">
                                     <p class="text-muted">add a <a id="action-add-public" href=""> public action </a> / <a id="action-add-private" href=" "> private action  /</a> <a id="action-add-wc" href=" "> watercooler</a>.</p>
                                 </div>
@@ -381,7 +381,7 @@
                   <div id="timeline-wc-responses" class="timeline-wc-responses">
                     {{#each WaterCoolerReplies}}
                     <div data-messageid="{{WaterCoolerReplyProxy.MessageID}}" class="timeline-wc-reply">
-						  	<img class="user-avatar pull-left wc-avatar" src="../../../dc/{{WaterCoolerReplyProxy.OrganizationID}}/UserAvatar/{{WaterCoolerReplyProxy.UserID}}/40">
+						  	<img class="user-avatar pull-left wc-avatar" src="../../../dc/{{WaterCoolerReplyProxy.OrganizationID}}/UserAvatar/{{WaterCoolerReplyProxy.UserID}}/120">
                       <div>
                         <a class="TeamSupportBlue">{{WaterCoolerReplyProxy.UserName}}</a><small class="text-muted">  {{FormatDateTime WaterCoolerReplyProxy.LastModified}}  </small>
 
@@ -418,7 +418,7 @@
                         </script>
                         <script id="wc-new-reply-template" type="text/x-handlebars-template">
                             <div data-messageid="{{MessageID}}" class="timeline-wc-reply">
-                                <img class="user-avatar pull-left wc-avatar" src="../../../dc/{{OrganizationID}}/UserAvatar/{{UserID}}/48">
+                                <img class="user-avatar pull-left wc-avatar" src="../../../dc/{{OrganizationID}}/UserAvatar/{{UserID}}/120">
                                 <div>
                                     <a class="TeamSupportBlue">{{UserName}}</a><small class="text-muted">  {{FormatDateTime LastModified}}  </small>
 
