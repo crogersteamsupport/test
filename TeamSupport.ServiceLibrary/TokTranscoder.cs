@@ -196,11 +196,9 @@ namespace TeamSupport.ServiceLibrary
             }
             try
             {
-                proc1.WaitForExit(30000);
                 proc1.Close();
                 proc1.Kill();
-
-            }
+4            }
             catch (Exception)
             {
             }
@@ -231,7 +229,6 @@ namespace TeamSupport.ServiceLibrary
 
             try
             {
-                proc.WaitForExit(30000);
                 proc.Close();
                 proc.Kill();
 
