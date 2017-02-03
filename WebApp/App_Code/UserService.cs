@@ -178,7 +178,7 @@ namespace TSWebServices
 
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
 
-				path = String.Format("/dc/{0}/UserAvatar/{1}/73/{2}", user.OrganizationID, userID, Guid.NewGuid()); 
+				path = String.Format("/dc/{0}/UserAvatar/{1}/120/{2}", user.OrganizationID, userID, Guid.NewGuid()); 
             return path;
         }
 
