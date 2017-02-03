@@ -983,7 +983,8 @@ function SetupActionEditor(elem, action) {
               //countdown("tokScreenCountdown", 5, 0, element);
               //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
               element.find('#statusTextScreen').text("Currently Recording Screen...");
-          }
+              });
+      }
       else {
           window.parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
               element.find('#rcdtokScreen').hide();
@@ -998,8 +999,8 @@ function SetupActionEditor(elem, action) {
               //countdown("tokScreenCountdown", 5, 0, element);
               //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
               element.find('#statusTextScreen').text("Currently Recording Screen...");
-          }
-  	});
+          });
+      }
   });
 
     //element.find('#muteTokScreen').hide();
