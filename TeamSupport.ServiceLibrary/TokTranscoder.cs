@@ -171,7 +171,7 @@ namespace TeamSupport.ServiceLibrary
 
                 }
             };
-
+            proc1.EnableRaisingEvents = false;
 
             if (!proc1.Start())
             {
@@ -194,10 +194,19 @@ namespace TeamSupport.ServiceLibrary
                     break;
                 }
             }
-            //proc1.Close();
-            proc1.WaitForExit();
+            try
+            {
+                proc1.WaitForExit(30000);
+                proc1.Close();
+                proc1.Kill();
+
+            }
+            catch (Exception)
+            {
+            }
 
             Process proc = new Process();
+            proc.EnableRaisingEvents = false;
             proc.StartInfo.FileName = Path.Combine(_ffmpegPath,"ffmpeg.exe");
             proc.StartInfo.Arguments = $@"-i {_webmFiles[0]} -i {_webmFiles[1]} -map 0:0 -map 1:1 -codec:a aac -ab 128k -codec:v libx264 -vf scale={width}:{height} -aspect 16:9 -r 30 {_outputFileLocation}";
             proc.StartInfo.RedirectStandardError = true;
@@ -206,6 +215,7 @@ namespace TeamSupport.ServiceLibrary
             proc.StartInfo.ErrorDialog = false;
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             proc.StartInfo.UseShellExecute = false;
+
 
             if (!proc.Start())
             {
@@ -218,8 +228,17 @@ namespace TeamSupport.ServiceLibrary
             {
                 Logs.WriteEvent(line);
             }
-            proc.WaitForExit();
-            proc.Close();
+
+            try
+            {
+                proc.WaitForExit(30000);
+                proc.Close();
+                proc.Kill();
+
+            }
+            catch (Exception)
+            {
+            }
         }
 
         void UploadHighResVideo()
