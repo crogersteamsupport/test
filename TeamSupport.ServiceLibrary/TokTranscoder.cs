@@ -191,7 +191,7 @@ namespace TeamSupport.ServiceLibrary
                 }
             }
             //proc1.Close();
-            proc1.Kill();
+            proc1.WaitForExit();
 
             Process proc = new Process();
             proc.StartInfo.FileName = Path.Combine(_ffmpegPath,"ffmpeg.exe");
@@ -210,7 +210,7 @@ namespace TeamSupport.ServiceLibrary
             {
                 Logs.WriteEvent(line);
             }
-            proc.Close();
+            proc.WaitForExit();
         }
 
         void UploadHighResVideo()
