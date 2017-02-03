@@ -892,20 +892,38 @@ function SetupDescriptionEditor() {
     });
 
     $('#rcdtokScreen').click(function (e) {
-        parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
-    		$('#rcdtokScreen').hide();
-    		$('#stoptokScreen').show();
-    		$('#deletetokScreen').hide();
-    		$('#muteTokScreen').show();
-    		recordingID = resultID;
-    		$('#tokScreenCountdown').show();
-    		setTimeout(function () {
-    			update();
-    		}, 1000);
-    		//countdown("tokScreenCountdown", 5, 0, element);
-    		//recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
-    		$('#statusTextScreen').text("Currently Recording Screen...");
-    	});
+        if (parent.Ts.System.User.OrganizationID == 1078) {
+            parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
+                $('#rcdtokScreen').hide();
+                $('#stoptokScreen').show();
+                $('#deletetokScreen').hide();
+                $('#muteTokScreen').show();
+                recordingID = resultID;
+                $('#tokScreenCountdown').show();
+                setTimeout(function () {
+                    update();
+                }, 1000);
+                //countdown("tokScreenCountdown", 5, 0, element);
+                //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
+                $('#statusTextScreen').text("Currently Recording Screen...");
+            });
+        }
+        else {
+            parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+                $('#rcdtokScreen').hide();
+                $('#stoptokScreen').show();
+                $('#deletetokScreen').hide();
+                $('#muteTokScreen').show();
+                recordingID = resultID;
+                $('#tokScreenCountdown').show();
+                setTimeout(function () {
+                    update();
+                }, 1000);
+                //countdown("tokScreenCountdown", 5, 0, element);
+                //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
+                $('#statusTextScreen').text("Currently Recording Screen...");
+            });
+        }
     });
 
     $('#muteTokScreen').hide();
