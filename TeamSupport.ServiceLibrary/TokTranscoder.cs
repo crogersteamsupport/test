@@ -48,7 +48,6 @@ namespace TeamSupport.ServiceLibrary
 
         public override void Run()
         {
-            Logs.WriteEvent("Starting Run");
             UpdateHealth();
 
             Amazon.Util.ProfileManager.RegisterProfile("TeamsupportAWS", SystemSettings.ReadString("AWS-Key", ""), SystemSettings.ReadString("AWS-Password", ""));
