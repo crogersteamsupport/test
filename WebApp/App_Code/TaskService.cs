@@ -38,11 +38,11 @@ namespace TSWebServices
             Reminders results = new Reminders(loginUser);
             if (tab == pageTab.mytasks)
             {
-                results.LoadAssignedToUser(from, count, loginUser.UserID, true, false);
+                results.LoadMyTasks(from, count, loginUser.UserID, true, false);
             }
             else if (tab == pageTab.assigned)
             {
-                results.LoadCreatedByUser(from, count, loginUser.UserID, true, false);
+                results.LoadAssignedTasks(from, count, loginUser.UserID, true, false);
                 //results.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
             else if (tab == pageTab.completed)
@@ -68,7 +68,8 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public List<ClientTask> GetContactTasks(int from, int count, int contactID) {
+        public List<ClientTask> GetContactTasks(int from, int count, int contactID)
+        {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminders results = new Reminders(loginUser);
 
@@ -77,7 +78,8 @@ namespace TSWebServices
             return convertToClientTasksList(results.GetReminderProxies(), loginUser);
         }
 
-        public List<ClientTask> GetTasksByTicketID(int ticketID) {
+        public List<ClientTask> GetTasksByTicketID(int ticketID)
+        {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
 
@@ -110,61 +112,16 @@ namespace TSWebServices
                             task.AssignedTo = userHelper[0].FirstName + ' ' + userHelper[0].LastName;
                         }
                     }
-                    //TaskAssociations taskAssociationHelper = new TaskAssociations(loginUser);
-                    //taskAssociationHelper.GetTaskAssociation(loginutask.Task.ReminderID);
+
                     task.Associations = LoadAssociations(task.Task.ReminderID);
 
-                    if (task.Task.TaskParentID == null)
-                    {
-                        clientTasks.Add(task);
-                    }
-
-                    //add subtasks hook in here later... godspeed
+                    clientTasks.Add(task);
                 }
 
-                //var subtasks = reminderProxies.Where(m => m.TaskParentID != null).ToList();
-                //for (int x = 0; x < subtasks.Count; x++)
-                //{
-                //    var clientTask = clientTasks.Where(m => m.Task.ReminderID == subtasks[x].TaskParentID).First();
-                //    clientTask.SubTasks.Add(subtasks[x]);
-                //}
             }
 
             return clientTasks;
         }
-
-        //[WebMethod]
-        //public FirstLoad GetFirstLoad(int pageSize)
-        //{
-        //    LoginUser loginUser = TSAuthentication.GetLoginUser();
-
-        //    FirstLoad result = new FirstLoad();
-        //    result.AssignedCount = GetAssignedCount(loginUser);
-        //    if (result.AssignedCount > 0)
-        //    {
-        //        //Load Pending
-        //        result.AssignedItems = GetTasks(0, pageSize, true, false, false);
-        //        if (result.AssignedItems.Count() == 0)
-        //        {
-        //            //Load Completed
-        //            result.AssignedItems = GetTasks(0, 20, false, true, false);
-        //        }
-        //    }
-
-        //    result.CreatedCount = GetCreatedCount(loginUser);
-        //    if (result.CreatedCount > 0)
-        //    {
-        //        //Load Completed
-        //        result.CreatedItems = GetTasks(0, 20, false, true, true);
-        //        if (result.CreatedItems.Count() == 0)
-        //        {
-        //            //Load Pending
-        //            result.CreatedItems = GetTasks(0, 20, true, false, true);
-        //        }
-        //    }
-
-        //    return result;
-        //}
 
         [WebMethod]
         public TasksModel LoadPage(int start, int pageSize, pageTab tab)
@@ -190,68 +147,6 @@ namespace TSWebServices
                 default:
                     break;
             }
-
-
-
-
-
-            //switch (assignedTab)
-            //{
-
-            //    case -1:
-            //        result.AssignedCount = GetAssignedCount(loginUser);
-            //        if (result.AssignedCount > 0)
-            //        {
-            //            //Load Pending
-            //            result.AssignedItems = GetTasks(0, pageSize, true, false, false);
-            //            if (result.AssignedItems.Count() == 0)
-            //            {
-            //                //Load Completed
-            //                result.AssignedItems = GetTasks(0, 20, false, true, false);
-            //            }
-            //        }
-            //        break;
-            //    case 0:
-            //        break;
-            //    case 1:
-            //        result.AssignedItems = GetTasks(start, pageSize, true, false, false);
-            //        break;
-            //    case 2:
-            //        result.AssignedItems = GetTasks(start, pageSize, false, true, false);
-            //        break;
-            //    default:
-            //        result.AssignedItems = GetTasks(start, pageSize, true, true, false);
-            //        break;
-            //}
-
-
-            //switch (createdTab)
-            //{
-            //    case -1:
-            //        result.CreatedCount = GetCreatedCount(loginUser);
-            //        if (result.CreatedCount > 0)
-            //        {
-            //            //Load Completed
-            //            result.CreatedItems = GetTasks(0, 20, false, true, true);
-            //            if (result.CreatedItems.Count() == 0)
-            //            {
-            //                //Load Pending
-            //                result.CreatedItems = GetTasks(0, 20, true, false, true);
-            //            }
-            //        }
-            //        break;
-            //    case 0:
-            //        break;
-            //    case 1:
-            //        result.CreatedItems = GetTasks(start, pageSize, true, false, true);
-            //        break;
-            //    case 2:
-            //        result.CreatedItems = GetTasks(start, pageSize, false, true, true);
-            //        break;
-            //    default:
-            //        result.CreatedItems = GetTasks(start, pageSize, true, true, true);
-            //        break;
-            //}
 
             return result;
         }
@@ -410,7 +305,7 @@ namespace TSWebServices
 
             return newTask.GetProxy();
         }
-        
+
         private void SendOldUserNotification(int creatorID, int oldUserID, int reminderID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());

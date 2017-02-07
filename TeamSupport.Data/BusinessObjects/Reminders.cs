@@ -126,28 +126,30 @@ namespace TeamSupport.Data
 
         //Tasks
         //Inspired by SearchService.GetAllCompaniesAndContacts
-        public void LoadCreatedByUser(int from, int count, int userID, bool searchPending, bool searchComplete)
+        public void LoadAssignedTasks(int from, int count, int userID, bool searchPending, bool searchComplete)
         {
-            //Remember this will change once we add the isComplete field
-            string pendingQuery = @"
-            SELECT 
-                *
-            FROM
-                Reminders
-            WHERE
-                CreatorID = @UserID 
-                AND UserID <> @UserID
-                AND TaskIsComplete = 0";
-
-            string completeQuery = @"
-            SELECT 
-                *
-            FROM
-                Reminders
-            WHERE
-                CreatorID = @UserID 
-                AND UserID <> @UserID
-                AND TaskIsComplete = 1 ";
+            string pendingQuery = @"SELECT
+                    ST.CreatorID,
+                    ST.DateCreated,
+                    ST.Description,
+                    ST.DueDate,
+                    ST.HasEmailSent,
+                    ST.IsDismissed,
+                    ST.OrganizationID,
+                    ST.RefID,
+                    ST.RefType,
+                    ST.ReminderID,
+                    ST.TaskDateCompleted,
+                    ST.TaskDueDate,
+                    ST.TaskIsComplete,
+                    ST.TaskParentID,
+                    CASE WHEN T.TaskName is not null THEN T.TaskName + ' > ' + ST.TaskName
+                        ELSE ST.TaskName END AS TaskName,
+                    ST.UserID
+                FROM [Reminders] as ST
+                    left join [Reminders] as T on ST.TaskParentID = T.ReminderID
+                Where (ST.CreatorID = @UserID) AND (ST.UserID <> @UserID)
+                    AND ST.TaskIsComplete = 0";
 
             string pageQuery = @"
             WITH 
@@ -217,26 +219,32 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadAssignedToUser(int from, int count, int userID, bool searchPending, bool searchComplete)
+        public void LoadMyTasks(int from, int count, int userID, bool searchPending, bool searchComplete)
         {
             //Remember this will change once we add the isComplete field
-            string pendingQuery = @"
-            SELECT 
-                *
-            FROM
-                Reminders
-            WHERE
-                UserID = @UserID
-                AND TaskIsComplete = 0";
-
-            string completeQuery = @"
-            SELECT 
-                *
-            FROM
-                Reminders
-            WHERE
-                UserID = @UserID
-                AND TaskIsComplete = 1 ";
+            string pendingQuery =
+                @"SELECT
+                    ST.CreatorID,
+                    ST.DateCreated,
+                    ST.Description,
+                    ST.DueDate,
+                    ST.HasEmailSent,
+                    ST.IsDismissed,
+                    ST.OrganizationID,
+                    ST.RefID,
+                    ST.RefType,
+                    ST.ReminderID,
+                    ST.TaskDateCompleted,
+                    ST.TaskDueDate,
+                    ST.TaskIsComplete,
+                    ST.TaskParentID,
+                    CASE WHEN T.TaskName is not null THEN T.TaskName + ' > ' + ST.TaskName
+                        ELSE ST.TaskName END AS TaskName,
+                    ST.UserID
+                FROM [Reminders] as ST
+                    left join [Reminders] as T on ST.TaskParentID = T.ReminderID
+                Where (ST.UserID = @UserID)
+                    AND ST.TaskIsComplete = 0";
 
             string pageQuery = @"
             WITH 
@@ -319,15 +327,29 @@ namespace TeamSupport.Data
             //    OR UserID <> @UserID
             //    AND TaskIsComplete = 1 ";
 
-            string completeQuery = @"
-            SELECT 
-                *
-            FROM
-                Reminders
-            WHERE
-                (CreatorID = @UserID 
-                OR UserID = @UserID)
-                AND TaskIsComplete = 1 ";
+            string completeQuery =
+                 @"SELECT
+                    ST.CreatorID,
+                    ST.DateCreated,
+                    ST.Description,
+                    ST.DueDate,
+                    ST.HasEmailSent,
+                    ST.IsDismissed,
+                    ST.OrganizationID,
+                    ST.RefID,
+                    ST.RefType,
+                    ST.ReminderID,
+                    ST.TaskDateCompleted,
+                    ST.TaskDueDate,
+                    ST.TaskIsComplete,
+                    ST.TaskParentID,
+                    CASE WHEN T.TaskName is not null THEN T.TaskName + ' > ' + ST.TaskName
+                        ELSE ST.TaskName END AS TaskName,
+                    ST.UserID
+                FROM[Reminders] as ST
+                    left join[Reminders] as T on ST.TaskParentID = T.ReminderID
+                Where(ST.CreatorID = @UserID OR ST.UserID = @UserID)
+                    AND ST.TaskIsComplete = 1";
 
             string pageQuery = @"
             WITH 
