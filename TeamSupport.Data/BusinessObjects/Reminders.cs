@@ -444,12 +444,28 @@ namespace TeamSupport.Data
             //Paging implemented but currently excluded
 
             string completeQuery = @"
-            SELECT 
-                rem.*
-            FROM
-                Reminders rem
+            SELECT
+                    ST.CreatorID,
+                    ST.DateCreated,
+                    ST.Description,
+                    ST.DueDate,
+                    ST.HasEmailSent,
+                    ST.IsDismissed,
+                    ST.OrganizationID,
+                    ST.RefID,
+                    ST.RefType,
+                    ST.ReminderID,
+                    ST.TaskDateCompleted,
+                    ST.TaskDueDate,
+                    ST.TaskIsComplete,
+                    ST.TaskParentID,
+                    CASE WHEN T.TaskName is not null THEN T.TaskName + ' > ' + ST.TaskName
+                        ELSE ST.TaskName END AS TaskName,
+                    ST.UserID
+                FROM[Reminders] as ST
+                    left join[Reminders] as T on ST.TaskParentID = T.ReminderID
                 JOIN TaskAssociations ta
-                    ON rem.ReminderID = ta.ReminderID
+                    ON ST.ReminderID = ta.ReminderID
             WHERE
                 ta.RefType = 9
                 AND ta.RefID = @organizationID";
@@ -500,12 +516,28 @@ namespace TeamSupport.Data
             //Paging has been written for but is currently excluded.
 
             string completeQuery = @"
-            SELECT 
-                rem.*
-            FROM
-                Reminders rem
+            SELECT
+                    ST.CreatorID,
+                    ST.DateCreated,
+                    ST.Description,
+                    ST.DueDate,
+                    ST.HasEmailSent,
+                    ST.IsDismissed,
+                    ST.OrganizationID,
+                    ST.RefID,
+                    ST.RefType,
+                    ST.ReminderID,
+                    ST.TaskDateCompleted,
+                    ST.TaskDueDate,
+                    ST.TaskIsComplete,
+                    ST.TaskParentID,
+                    CASE WHEN T.TaskName is not null THEN T.TaskName + ' > ' + ST.TaskName
+                        ELSE ST.TaskName END AS TaskName,
+                    ST.UserID
+                FROM[Reminders] as ST
+                    left join[Reminders] as T on ST.TaskParentID = T.ReminderID
                 JOIN TaskAssociations ta
-                    ON rem.ReminderID = ta.ReminderID
+                    ON ST.ReminderID = ta.ReminderID
             WHERE
                 ta.RefType = 32
                 AND ta.RefID = @contactID";
