@@ -315,6 +315,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public ChatUserSettingProxy ToggleSpecifiedUserChatStatus(int userID)
+        {
+            ChatUserSetting setting = ChatUserSettings.GetChatUserSetting(TSAuthentication.GetLoginUser(), userID);
+            setting.IsAvailable = !setting.IsAvailable;
+            setting.Collection.Save();
+            return setting.GetProxy();
+        }
+
+        [WebMethod]
         public BasicUser[] GetUsers()
         {
             Users users = new Users(TSAuthentication.GetLoginUser());
@@ -1378,9 +1387,9 @@ namespace TSWebServices
                 }
 
                 if (!u.InOffice)
-                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title={0}></span>", u.InOfficeComment);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
                 else
-                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title={0}></span>", u.InOfficeComment);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
 
 
                     html.AppendFormat(@"<li>
@@ -1787,31 +1796,26 @@ namespace TSWebServices
             if (info.id != -1)
             {
                 CalendarEvent cal = CalendarEvents.GetCalendarEvent(TSAuthentication.GetLoginUser(), info.id);
-                DateTimeOffset.TryParse(info.start, null as IFormatProvider,
-                               DateTimeStyles.AdjustToUniversal,
-                               out dto);
-                if ((DateTime.TryParse(info.start, out dt)))
-                {
-                    cal.StartDate = DateTime.Parse(info.start);
-                    cal.StartDateUTC = dto.DateTime;
-                }
-                else
+                if (info.start == null)
                     return false;
 
-                if (DateTime.TryParse(info.end, out dt))
+                var startDate = (new DateTime(1970, 1, 1)).AddMilliseconds(double.Parse(info.start));
+                cal.StartDate = startDate;
+                cal.StartDateUTC = startDate;
+
+                if (info.end != null)
                 {
-                    DateTimeOffset.TryParse(info.end, null as IFormatProvider,
-                                   DateTimeStyles.AdjustToUniversal,
-                                   out dto);
+                    var endDate = (new DateTime(1970, 1, 1)).AddMilliseconds(double.Parse(info.end));
+
                     if (info.allDay)
                     {
-                        cal.EndDate = (DateTime.Parse(info.end)).AddHours(23).AddMinutes(59);
-                        cal.EndDateUTC = dto.DateTime.AddHours(23).AddMinutes(59);
+                        cal.EndDate = endDate.AddHours(22).AddMinutes(59);
+                        cal.EndDateUTC = endDate.AddHours(22).AddMinutes(59);
                     }
                     else
                     {
-                        cal.EndDate = DateTime.Parse(info.end);
-                        cal.EndDateUTC = dto.DateTime;
+                        cal.EndDate = endDate;
+                        cal.EndDateUTC = endDate;
                     }
                 }
                 cal.Title = info.title;
@@ -1951,35 +1955,31 @@ namespace TSWebServices
             }
             else
             {
-                CalendarEvent cal = (new CalendarEvents(TSAuthentication.GetLoginUser()).AddNewCalendarEvent());
-
-                if ((DateTime.TryParse(info.start, out dt)))
-                {
-                    DateTimeOffset.TryParse(info.start, null as IFormatProvider,
-                                   DateTimeStyles.AdjustToUniversal,
-                                   out dto);
-                    cal.StartDate = DateTime.Parse(info.start);
-                    cal.StartDateUTC = dto.DateTime;
-                }
-                else
+                if (info.start == null)
                     return false;
 
-                if (DateTime.TryParse(info.end, out dt))
-                {
-                    DateTimeOffset.TryParse(info.end, null as IFormatProvider,
-                                   DateTimeStyles.AdjustToUniversal,
-                                   out dto);
+                CalendarEvent cal = (new CalendarEvents(TSAuthentication.GetLoginUser()).AddNewCalendarEvent());
+                var startDate = (new DateTime(1970, 1, 1)).AddMilliseconds(double.Parse(info.start));
+                cal.StartDate = startDate;
+                cal.StartDateUTC = startDate;
+
+                if (info.end != null)
+                { 
+                    var endDate = (new DateTime(1970, 1, 1)).AddMilliseconds(double.Parse(info.end));
+
                     if (info.allDay)
                     {
-                        cal.EndDate = (DateTime.Parse(info.end)).AddHours(23).AddMinutes(59);
-                        cal.EndDateUTC = dto.DateTime.AddHours(23).AddMinutes(59);
+                        cal.EndDate = endDate.AddHours(22).AddMinutes(59);
+                        cal.EndDateUTC = endDate.AddHours(22).AddMinutes(59);
                     }
                     else
                     {
-                        cal.EndDate = DateTime.Parse(info.end);
-                        cal.EndDateUTC = dto.DateTime;
+                        cal.EndDate = endDate;
+                        cal.EndDateUTC = endDate;
                     }
                 }
+
+
                 cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
                 cal.Title = info.title;
                 cal.Description = info.description;

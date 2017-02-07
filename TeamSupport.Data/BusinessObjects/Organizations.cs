@@ -3128,9 +3128,89 @@ ORDER BY
         }
 
         public void MigrateOrgType(LoginUser loginUser, int organizationID, ProductType productType) {
-            //Leo add sql hooks here.
+            using (SqlCommand command = new SqlCommand())
+            {
+                if (productType == ProductType.Enterprise)
+                {
+                    command.CommandText = @"
+                        UPDATE
+				            OrganizationSettings
+                        SET
+                            SettingValue = REPLACE(SettingValue, '""CatID"":""Reminders"",""CatName"":""Reminders""', '""CatID"":""Tasks"",""CatName"":""Tasks""')
+                        WHERE
+				            OrganizationID = @organizationID
+                            AND SettingKey = 'TicketFieldsOrder'
 
+                        UPDATE
+				            OrganizationSettings
+                        SET
+                            SettingValue = REPLACE(SettingValue, ',{""CatID"":""Reminders"",""CatName"":""Reminders"",""Disabled"":""false""}', '')
+                        WHERE
+				            OrganizationID = @organizationID
+                            AND SettingKey = 'NewTicketFieldsOrder'
 
+                        INSERT INTO
+                            TaskAssociations
+                        SELECT
+                            r.ReminderID,
+                            r.RefID,
+                            r.RefType,
+                            -5,
+                            GETUTCDATE()
+                        FROM
+                            Reminders r
+                            LEFT JOIN TaskAssociations ta
+                                ON r.ReminderID = ta.ReminderID
+                        WHERE
+                            r.OrganizationID = @organizationID
+                            AND r.RefType NOT IN (59,60,61)
+                            AND ta.ReminderID IS NULL
+
+                        UPDATE
+	                        u
+                        SET
+	                        u.MenuItems = u.MenuItems + ',mniTasks'
+                        FROM
+	                        Users u
+                        WHERE
+	                        u.OrganizationID = @organizationID
+	                        AND u.MenuItems IS NOT NULL
+                    ";
+                }
+                else
+                {
+                    command.CommandText = @"
+                        UPDATE
+				            OrganizationSettings
+                        SET
+                            SettingValue = REPLACE(SettingValue, '""CatID"":""Tasks"",""CatName"":""Tasks""', '""CatID"":""Reminders"",""CatName"":""Reminders""')
+                        WHERE
+				            OrganizationID = @organizationID
+                            AND SettingKey = 'TicketFieldsOrder'
+
+                        UPDATE
+				            OrganizationSettings
+                        SET
+                            SettingValue = SettingValue + ',{""CatID"":""Reminders"",""CatName"":""Reminders"",""Disabled"":""false""}'
+                        WHERE
+				            OrganizationID = @organizationID
+                            AND SettingKey = 'NewTicketFieldsOrder'
+
+                        UPDATE
+	                        u
+                        SET
+	                        u.MenuItems = REPLACE(u.MenuItems, ',mniTasks', '')
+                        FROM
+	                        Users u
+                        WHERE
+	                        u.OrganizationID = @organizationID
+	                        AND u.MenuItems IS NOT NULL
+                    ";
+                }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationID", organizationID);
+                ExecuteNonQuery(command, "OrganizationSettings");
+            }
         }
 
     }

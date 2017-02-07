@@ -1594,11 +1594,14 @@ function LoadTicketControls() {
 
   if ($('#ticket-assigned').length) {
       window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-      var isActive = users.find(function (user) {
-          return user.Name === _ticketInfo.Ticket.UserName;
+      var isActive;
+      $.each(users, function (index, item) {
+          if(item.Name === _ticketInfo.Ticket.UserName)
+            isActive = true;
+
       });
 
-      if (isActive == undefined)
+      if (!isActive)
           $("#ticket-assigned").attr('placeholder', _ticketInfo.Ticket.UserName + ' (Inactive)');
 
       $('#ticket-assigned').selectize({
@@ -3826,7 +3829,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     select.selectize({
         allowEmptyOption: true,
         onItemAdd: function (value, $item) {
-            if (field.IsRequired && field.IsFirstIndexSelect == true && value == "") {
+            if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('hasError');
             }
             else {
