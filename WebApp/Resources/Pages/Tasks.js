@@ -17,7 +17,7 @@ function fetchTasks(callback) {
 
     showLoadingIndicator();
 
-    parent.Ts.Services.Task.LoadPage(_start + 1, _pageSize, _currentTab, function (pageData) {
+    parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
 
         $('.searchresults').fadeTo(0, 1);
 
