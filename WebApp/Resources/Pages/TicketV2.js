@@ -1625,8 +1625,10 @@ function LoadTicketControls() {
 
           });
 
-          if (!isActive && _ticketInfo.Ticket.UserName != null)
+          if (!isActive && _ticketInfo.Ticket.UserName != null) {
               $("#ticket-assigned").attr('placeholder', _ticketInfo.Ticket.UserName + ' (Inactive)');
+              _ticketCurrUser = -99;
+          }
 
       $('#ticket-assigned').selectize({
         dataAttr: 'assigned',
