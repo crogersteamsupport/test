@@ -1594,15 +1594,17 @@ function LoadTicketControls() {
 
   if ($('#ticket-assigned').length) {
       window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-      var isActive;
-      $.each(users, function (index, item) {
-          if(item.Name === _ticketInfo.Ticket.UserName)
-            isActive = true;
+          var isActive = false;
+          $.each(users, function (index, item) {
+              if (item.Name === _ticketInfo.Ticket.UserName)
+                  isActive = true;
 
-      });
+          });
 
-      if (!isActive)
-          $("#ticket-assigned").attr('placeholder', _ticketInfo.Ticket.UserName + ' (Inactive)');
+          if (!isActive && _ticketInfo.Ticket.UserName != null) {
+              $("#ticket-assigned").attr('placeholder', _ticketInfo.Ticket.UserName + ' (Inactive)');
+              _ticketCurrUser = -99;
+          }
 
       $('#ticket-assigned').selectize({
         dataAttr: 'assigned',

@@ -2497,7 +2497,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     select.selectize({
         allowEmptyOption: true,
         onItemAdd: function (value, $item) {
-            if (field.IsRequired && field.IsFirstIndexSelect == true && value == "") {
+            if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('hasError');
             }
             else {
