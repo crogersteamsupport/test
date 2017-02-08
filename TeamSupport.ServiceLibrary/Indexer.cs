@@ -60,6 +60,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         private bool _isVerbose = false;
+        private int _idToLog = 0;
 
         private void UnlockIndex(int organizationID)
         {
@@ -110,7 +111,8 @@ namespace TeamSupport.ServiceLibrary
             bool isRebuilder = GetIsRebuilderMode();
             int daysSinceLastRebuild = Settings.ReadInt("DaysSinceLastRebuild", 14);
             int minutesSinceLastActive = Settings.ReadInt("MinutesSinceLastActive", 30);
-            _isVerbose = Settings.ReadBool("VerboseLogging", false);
+            bool useVerbose = Settings.ReadBool("VerboseLogging", false); 
+            _idToLog = Settings.ReadInt("VerboseLoggingOrg", 0);
 
             while (!IsStopped)
             {
@@ -122,6 +124,13 @@ namespace TeamSupport.ServiceLibrary
                     {
                         System.Threading.Thread.Sleep(10000);
                         continue;
+                    }
+
+                    _isVerbose = useVerbose;
+
+                    if (useVerbose && _idToLog > -1)
+                    {
+                        _isVerbose = organization.OrganizationID == _idToLog;
                     }
 
                     try
