@@ -807,7 +807,7 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        public void LoadHubtickets(LoginUser loginUser, int organizationID, TicketLoadFilter filter, List<CustomPortalColumnProxy> portalColumns, int from = 0, int to = 100000000)
+        public void LoadHubtickets(LoginUser loginUser, int organizationID, TicketLoadFilter filter, List<CustomPortalColumnProxy> portalColumns, int from, int to)
         {
             using (SqlCommand command = new SqlCommand())
             {
