@@ -193,6 +193,10 @@ $(document).ready(function () {
         $('.productFamilyRow, .productFamilyColumn, .productLineRow').show();
     }
 
+    if (_mainFrame.Ts.System.Organization.ProductType == _mainFrame.Ts.ProductType.Enterprise) {
+        $('#taskTab').show();
+    }
+
     LoadNotes();
     //LoadHistory();
     LoadFiles();

@@ -353,7 +353,6 @@ $(document).ready(function () {
     });
 
     mainFrame.Ts.Services.Users.GetUserPhoto(-99, function (att) {
-        debugger;
         $('.mainavatarlrg').attr("src", att);
     });
 

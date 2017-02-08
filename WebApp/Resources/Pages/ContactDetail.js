@@ -154,6 +154,7 @@ $(document).ready(function () {
 
     if (_mainFrame.Ts.System.Organization.ProductType == _mainFrame.Ts.ProductType.Enterprise) {
         $('#contactReminder').hide();
+        $('#taskTab').show();
     }
 
     if (_mainFrame.Ts.System.Organization.ParentID != null) {
