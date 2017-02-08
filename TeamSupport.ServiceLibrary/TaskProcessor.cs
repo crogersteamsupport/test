@@ -412,7 +412,7 @@ namespace TeamSupport.ServiceLibrary
 
         public override void ReleaseAllLocks()
         {
-            EmailPosts.UnlockAll(LoginUser);
+            TaskEmailPosts.UnlockAll(LoginUser);
         }
     }
 }

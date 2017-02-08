@@ -47,7 +47,7 @@ namespace TeamSupport.Service
         case "TSCustomerInsights": result = new CustomerInsightsProcessor(); break;
         case "TSReportSender": result = new ServiceThreadPool<ReportSender>("ReportSender"); break;
         case "TokTranscoder": result = new ServiceThreadPool<TokTranscoder>("TokTranscoder"); break;
-        case "TSTaskProcessor": result = new TaskProcessor(); break;
+        case "TSTaskProcessor": result = new ServiceThreadPool<TaskProcessor>("TaskProcessor"); break;
         default: result = null; break;
       }
 
