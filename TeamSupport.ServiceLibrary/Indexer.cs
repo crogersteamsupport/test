@@ -111,8 +111,6 @@ namespace TeamSupport.ServiceLibrary
             bool isRebuilder = GetIsRebuilderMode();
             int daysSinceLastRebuild = Settings.ReadInt("DaysSinceLastRebuild", 14);
             int minutesSinceLastActive = Settings.ReadInt("MinutesSinceLastActive", 30);
-            bool useVerbose = Settings.ReadBool("VerboseLogging", false); 
-            _idToLog = Settings.ReadInt("VerboseLoggingOrg", 0);
 
             while (!IsStopped)
             {
@@ -126,11 +124,11 @@ namespace TeamSupport.ServiceLibrary
                         continue;
                     }
 
-                    _isVerbose = useVerbose;
-
-                    if (useVerbose && _idToLog > -1)
+                    _isVerbose = Settings.ReadBool("VerboseLogging", false);
+                    int idToLog = Settings.ReadInt("VerboseLoggingOrg", 0);
+                    if (_isVerbose && idToLog > 0)
                     {
-                        _isVerbose = organization.OrganizationID == _idToLog;
+                        _isVerbose = organization.OrganizationID == idToLog;
                     }
 
                     try
