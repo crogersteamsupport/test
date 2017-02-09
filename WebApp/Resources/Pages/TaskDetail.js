@@ -1310,6 +1310,7 @@ $(document).ready(function () {
             $('.faketextcontainer').show();
             $('#messagecontents').val('');
             resetDisplay();
+            LoadAssociations();
         }
     });
 
