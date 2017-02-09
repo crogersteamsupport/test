@@ -38,7 +38,13 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else
                 {
-                    orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive ?? 30, daysSinceLastRebuild ?? 14);
+                    int days = daysSinceLastRebuild ?? 14;
+                    if (DateTime.Now.Hour > 6)
+                    {
+                        days = 100;
+                    }
+
+                    orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive ?? 30, days);
                     result = orgs.IsEmpty ? null : orgs[0];
                     if (result != null)
                     {
