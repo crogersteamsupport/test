@@ -134,7 +134,7 @@ namespace TeamSupport.ServiceLibrary
 
         void ExtractZip(string path)
         {
-            Logs.WriteEvent("----- Extracting Zip ...");
+            Logs.WriteEvent("----- Extracting Zip ..." + path);
             string activeDirectory = Path.GetDirectoryName(path);
 
             using (ZipFile zip1 = ZipFile.Read(path))
@@ -144,6 +144,7 @@ namespace TeamSupport.ServiceLibrary
                     if (Path.GetExtension(e.FileName) == ".webm")
                     {
                         e.Extract(Path.GetDirectoryName(path), ExtractExistingFileAction.OverwriteSilently);
+                        Logs.WriteEvent($@"Extracting File : {Path.Combine(activeDirectory, e.FileName)}");
                         _webmFiles.Add(Path.Combine(activeDirectory, e.FileName));
                     }
                 }
@@ -172,6 +173,7 @@ namespace TeamSupport.ServiceLibrary
             };
             proc1.EnableRaisingEvents = false;
 
+            Logs.WriteEvent("----- Running  ffprobe to get video resolution ...");
             if (!proc1.Start())
             {
                 Logs.WriteEvent("Error starting");
@@ -201,6 +203,8 @@ namespace TeamSupport.ServiceLibrary
             catch (Exception)
             {
             }
+            Logs.WriteEvent("----- Running  ffprobe complete ...");
+
 
             Process proc = new Process();
             proc.EnableRaisingEvents = false;
@@ -213,7 +217,7 @@ namespace TeamSupport.ServiceLibrary
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             proc.StartInfo.UseShellExecute = false;
 
-
+            Logs.WriteEvent("----- Running ffmpeg to convert video files ...");
             if (!proc.Start())
             {
                 Logs.WriteEvent("Error starting");
@@ -232,9 +236,11 @@ namespace TeamSupport.ServiceLibrary
                 proc.Kill();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logs.WriteEvent("----- Error killing or closing  ffmpeg : " +  ex.Message);
             }
+            Logs.WriteEvent("----- Running ffmpeg complete ...");
         }
 
         void UploadHighResVideo()
