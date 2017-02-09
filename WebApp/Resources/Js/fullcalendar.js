@@ -4659,7 +4659,7 @@ DayGrid.mixin({
 		classes.unshift('fc-day-grid-event');
 
 		// Only display a timed events time if it is the starting segment
-		if (!event.allDay && seg.isStart) {
+		if (!event.isallDay && seg.isStart) {
 			timeHtml = '<span class="fc-time">' + htmlEscape(this.getEventTimeText(event)) + '</span>';
 		}
 
