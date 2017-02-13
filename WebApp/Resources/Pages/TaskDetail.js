@@ -80,9 +80,9 @@ $(document).ready(function () {
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
             }
-            $('#fieldDueDate').html(task.TaskDueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
+            $('#fieldDueDate').html(task.TaskDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
-            $('#fieldReminderDate').html(task.DueDate == null ? "[None]" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
+            $('#fieldReminderDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
             if (task.IsDismissed) {
                 $('#reminderDateGroup').hide();
             }
@@ -302,7 +302,15 @@ $(document).ready(function () {
 
                 var userCel = $('<td>').append(subtasks[i].UserName).appendTo(row);
 
-                var dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
+                var dueDateCel;
+                if (subtasks[i].TaskDueDate)
+                {
+                    dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
+                }
+                else
+                {
+                    dueDateCel = $('<td>').append('None').appendTo(row);
+                }
 
                 //$('<tr>').html('<td>' + subtasks[i].TaskName + '</td><td>' + subtasks[i].UserID + '</td><td>' + subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td>')
                 
@@ -343,7 +351,7 @@ $(document).ready(function () {
     });
 
     $('#taskDelete').click(function (e) {
-        if (confirm('Are you sure you would like to remove this task?')) {
+        if (confirm('Are you sure you would like to remove this task and all its subtasks?')) {
             parent.privateServices.DeleteTask(_reminderID, function (e) {
                 window.parent.parent.Ts.System.logAction('Task Detail - Delete Task');
                 //if (window.parent.document.getElementById('iframe-mniCustomers'))
@@ -608,9 +616,10 @@ $(document).ready(function () {
     });
 
     $('#fieldDueDate').on('click', '#clearDueDate', function (e) {
+        e.stopPropagation();
         window.parent.parent.Ts.Services.Task.ClearDueDate(_reminderID, function () {
             top.Ts.System.logAction('Task Detail - Clear Due Date');
-            $('#fieldDueDate').text("[None]");
+            $('#fieldDueDate').text("None");
         },
         function (error) {
             header.show();
@@ -691,9 +700,10 @@ $(document).ready(function () {
     });
 
     $('#fieldReminderDate').on('click', '#clearReminderDate', function (e) {
+        e.stopPropagation();
         window.parent.parent.Ts.Services.Task.ClearReminderDate(_reminderID, function () {
             top.Ts.System.logAction('Task Detail - Clear Reminder Date');
-            $('#fieldReminderDate').text("[None]");
+            $('#fieldReminderDate').text("None");
         },
         function (error) {
             header.show();

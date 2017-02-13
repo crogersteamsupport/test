@@ -255,9 +255,15 @@ namespace TSWebServices
             newTask.Description = info.Description;
             newTask.UserID = info.UserID;
             newTask.TaskIsComplete = info.TaskIsComplete;
-            newTask.TaskDueDate = info.TaskDueDate;
+            if (info.TaskDueDate != null)
+            {
+                newTask.TaskDueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.TaskDueDate);
+            }
             newTask.IsDismissed = info.IsDismissed;
-            newTask.DueDate = info.DueDate;
+            if (info.TaskDueDate != null)
+            {
+                newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
+            }
 
             newTask.RefType = ReferenceType.Tasks;
             newTask.RefID = -1;
@@ -531,7 +537,7 @@ namespace TSWebServices
             {
                 description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.TaskDueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
             }
-            task.TaskDueDate = (DateTime)value;
+            task.TaskDueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
             task.Collection.Save();
             TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
 
@@ -540,7 +546,7 @@ namespace TSWebServices
                 SendModifiedNotification(loginUser.UserID, task.ReminderID);
             }
 
-            return value.ToString() != "" ? value.ToString() : null;
+            return value.ToString() != "" ? task.TaskDueDate.ToString() : null;
         }
 
         [WebMethod]
@@ -592,7 +598,7 @@ namespace TSWebServices
             {
                 description.Append(String.Format("Changed Reminder Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
             }
-            task.DueDate = (DateTime)value;
+            task.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
             task.Collection.Save();
             TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
 
@@ -601,7 +607,7 @@ namespace TSWebServices
                 SendModifiedNotification(loginUser.UserID, task.ReminderID);
             }
 
-            return value.ToString() != "" ? value.ToString() : null;
+            return value.ToString() != "" ? task.DueDate.ToString() : null;
         }
 
         [WebMethod]
