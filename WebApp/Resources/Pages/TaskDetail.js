@@ -302,7 +302,15 @@ $(document).ready(function () {
 
                 var userCel = $('<td>').append(subtasks[i].UserName).appendTo(row);
 
-                var dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
+                var dueDateCel;
+                if (subtasks[i].TaskDueDate)
+                {
+                    dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
+                }
+                else
+                {
+                    dueDateCel = $('<td>').append('None').appendTo(row);
+                }
 
                 //$('<tr>').html('<td>' + subtasks[i].TaskName + '</td><td>' + subtasks[i].UserID + '</td><td>' + subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td>')
                 
