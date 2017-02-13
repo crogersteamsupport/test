@@ -144,7 +144,7 @@
                             description: this.description,
                             validend: this.end,
                             end: this.displayend,
-                            allDay: this.allday,
+                            allDay: false,
                             isallDay: this.allday,
                             references: this.references,
                             creatorID: this.creatorID,
@@ -745,8 +745,8 @@
         var startDateTz =  $('#inputStartTime').val() + (today.dst() == true ? " 1:00 am" : " 12:00 am");
         var endDateTz = $('#inputEndTime').val() + (today.dst() == true ? " 12:00 am" : " 1:00 am");
 
-        calendarinfo.start = convertToValidDate($('#inputAllDay').is(':checked') ? startDateTz : $('#inputStartTime').val());
-        calendarinfo.end = convertToValidDate($('#inputAllDay').is(':checked') ? endDateTz : $('#inputEndTime').val());
+        calendarinfo.start = $('#inputAllDay').is(':checked') ? moment(convertToValidDate(startDateTz)).valueOf() : moment(convertToValidDate($('#inputStartTime').val())).valueOf();
+        calendarinfo.end = $('#inputAllDay').is(':checked') ? moment(convertToValidDate(endDateTz)).valueOf() : moment(convertToValidDate($('#inputEndTime').val())).valueOf();
         calendarinfo.description = $('#inputDescription').val();
         calendarinfo.allday = $('#inputAllDay').is(':checked')
         calendarinfo.PageType = pageType;
