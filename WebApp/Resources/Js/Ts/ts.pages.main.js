@@ -68,7 +68,7 @@ Ts.Pages.Main.prototype = {
             if (Ts.System.User.IsChatUser) {
                 $('.menu-chatstatus').show();
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    tmrChat = setInterval(getChatUpdates, chatInterval);
                     setupChatRequestUpdates();
                     $('.main-status-chat').removeClass('ui-state-disabled');
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small');
