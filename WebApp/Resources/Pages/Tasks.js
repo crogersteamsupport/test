@@ -282,12 +282,19 @@ $(document).ready(function () {
 
     $('#TaskList').on('click', '.change-task-status', function (e) {
         var id = $(this).data('reminderid');
+        var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');
 
-        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
-
-        $(this).parent().parent().fadeOut(600, function () { $(this).remove() });
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
+            if (!data.IncompleteSubtasks) {
+                checkbox.parent().parent().fadeOut(600, function () { checkbox.remove() });
+            }
+            else {
+                checkbox.prop("checked", false);
+                alert('There are subtasks pending completion, please finish them before completing the parent task.')
+            }
+        });
     });
 
     fetchTasks(function (tasks) {
