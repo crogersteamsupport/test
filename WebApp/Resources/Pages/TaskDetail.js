@@ -347,6 +347,7 @@ $(document).ready(function () {
     }
 
     $('#taskRefresh').click(function (e) {
+        e.preventDefault();
         window.location = window.location;
     });
 
@@ -1328,7 +1329,8 @@ $(document).ready(function () {
         }
     });
 
-    $('#associationsRefresh').on('click', function () {
+    $('#associationsRefresh').on('click', function (e) {
+        e.preventDefault();
         LoadAssociations();
     });
 
@@ -1337,7 +1339,8 @@ $(document).ready(function () {
         //Pending implementation
     });
 
-    $('#subtasksRefresh').on('click', function () {
+    $('#subtasksRefresh').on('click', function (e) {
+        e.preventDefault();
         window.parent.parent.Ts.System.logAction('Task - Subtasks Refresh');
         LoadSubtasks(1);
     });
@@ -1350,7 +1353,8 @@ $(document).ready(function () {
         }
     });
 
-    $('#historyRefresh').on('click', function () {
+    $('#historyRefresh').on('click', function (e) {
+        e.preventDefault();
         window.parent.parent.Ts.System.logAction('Task - History Refresh');
         LoadHistory(1);
     });
