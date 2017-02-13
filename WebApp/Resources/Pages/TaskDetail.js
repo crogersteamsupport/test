@@ -34,7 +34,12 @@ $(document).ready(function () {
     LoadAssociations();
     LoadSubtasks();
 
-    var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
+    var ellipseString = function (text, max) {
+        if (text != null) {
+            return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text;
+        }
+        else return null;
+    };
 
     function LoadProperties() {
         window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
@@ -228,7 +233,7 @@ $(document).ready(function () {
                             link.text(ellipseString(associations[i].User, 100));
                             link.attr('href', '#');
                             link.attr('target', '_blank');
-                            link.attr('onclick', 'window.parent.parent.Ts.MainPage.openNewContact(' + associations[i].RefID + '); return false;');
+                            link.attr('onclick', 'window.parent.parent.Ts.MainPage.openUser(' + associations[i].RefID + '); return false;');
                             break;
                         case window.parent.parent.Ts.ReferenceTypes.Organizations:
                             atticon.addClass('companyIcon');
@@ -1280,7 +1285,6 @@ $(document).ready(function () {
 
             $('.upload-queue div.ticket-removable-item').each(function (i, o) {
                 var data = $(o).data('data');
-                debugger;
                 data.url = '../../../Upload/Tasks/' + _reminderID;
                 data.jqXHR = data.submit();
                 $(o).data('data', data);
