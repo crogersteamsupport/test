@@ -351,7 +351,7 @@ $(document).ready(function () {
     });
 
     $('#taskDelete').click(function (e) {
-        if (confirm('Are you sure you would like to remove this task?')) {
+        if (confirm('Are you sure you would like to remove this task and all its subtasks?')) {
             parent.privateServices.DeleteTask(_reminderID, function (e) {
                 window.parent.parent.Ts.System.logAction('Task Detail - Delete Task');
                 //if (window.parent.document.getElementById('iframe-mniCustomers'))
