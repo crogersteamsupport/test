@@ -184,6 +184,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     cbIsCustomerInsightsActive.Checked = organization.IsCustomerInsightsActive;
 	cbTwoStepVerification.Checked = organization.TwoStepVerificationEnabled;
 	cbNoAttachmentsInOutboundEmail.Checked = organization.NoAttachmentsInOutboundEmail;
+    cbRequireGroupAssignmentOnTickets.Checked = organization.RequireGroupAssignmentOnTickets;
     textPWExpire.Value = organization.DaysBeforePasswordExpire;
 
     if (string.IsNullOrEmpty(organization.TimeZoneID))
@@ -197,6 +198,8 @@ public partial class Dialogs_Organization : BaseDialogPage
     cmbFontSize.SelectedValue = Convert.ToInt32(organization.FontSize).ToString();
 
     cbLinkTicketCustomersWithProducts.Checked = Settings.OrganizationDB.ReadBool("ShowOnlyCustomerProducts", false);
+    cbAutoAssignCustomerWithAssetOnTickets.Checked = organization.AutoAssignCustomerWithAssetOnTickets;
+    cbAutoAssociateCustomerToTicketBasedOnAssetAssignment.Checked = organization.AutoAssociateCustomerToTicketBasedOnAssetAssignment;
 
     timeBDEnd.SelectedDate = organization.BusinessDayEnd;
     timeBDStart.SelectedDate = organization.BusinessDayStart;
@@ -230,6 +233,8 @@ public partial class Dialogs_Organization : BaseDialogPage
     {
     }
     Settings.OrganizationDB.WriteBool("ShowOnlyCustomerProducts", cbLinkTicketCustomersWithProducts.Checked);
+    organization.AutoAssignCustomerWithAssetOnTickets = cbAutoAssignCustomerWithAssetOnTickets.Checked;
+    organization.AutoAssociateCustomerToTicketBasedOnAssetAssignment = cbAutoAssociateCustomerToTicketBasedOnAssetAssignment.Checked;
     organization.CultureName = cmbDateFormat.SelectedValue;
     organization.UseEuropeDate = (cmbDateFormat.SelectedValue == "en-GB");
 
@@ -276,6 +281,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     organization.IsCustomerInsightsActive = cbIsCustomerInsightsActive.Checked;
 	organization.TwoStepVerificationEnabled = cbTwoStepVerification.Checked;
 	organization.NoAttachmentsInOutboundEmail = cbNoAttachmentsInOutboundEmail.Checked;
+    organization.RequireGroupAssignmentOnTickets = cbRequireGroupAssignmentOnTickets.Checked;
     organization.DaysBeforePasswordExpire = (int)textPWExpire.Value;
 
     try

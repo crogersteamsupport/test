@@ -281,6 +281,7 @@
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
     <Compile Include="BusinessObjects\OrganizationProductsView.cs" />
     <Compile Include="BusinessObjects\Organizations.cs" />
+    <Compile Include="BusinessObjects\Plugins.cs" />
     <Compile Include="BusinessObjects\ProductFamilies.cs" />
     <Compile Include="BusinessObjects\RecentlyViewedItems.cs" />
     <Compile Include="BusinessObjects\Reminders.cs" />
@@ -288,12 +289,16 @@
     <Compile Include="BusinessObjects\ReportFolders.cs" />
     <Compile Include="BusinessObjects\ReportTicketsView.cs" />
     <Compile Include="BusinessObjects\ReportViews.cs" />
+    <Compile Include="BusinessObjects\ScheduledReports.cs" />
     <Compile Include="BusinessObjects\SearchCustomFilters.cs" />
     <Compile Include="BusinessObjects\SearchSorters.cs" />
     <Compile Include="BusinessObjects\SearchStandardFilters.cs" />
     <Compile Include="BusinessObjects\Services.cs" />
     <Compile Include="BusinessObjects\ServiceSettings.cs" />
     <Compile Include="BusinessObjects\SimpleImportFieldsView.cs" />
+    <Compile Include="BusinessObjects\SlaPausedDays.cs" />
+    <Compile Include="BusinessObjects\SlaPausedTimes.cs" />
+    <Compile Include="BusinessObjects\SlaTickets.cs" />
     <Compile Include="BusinessObjects\SlaViolationHistory.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
     <Compile Include="BusinessObjects\Tags.cs" />
@@ -335,8 +340,7 @@
     <Compile Include="Classes\NamedGZipStream.cs" />
     <Compile Include="Classes\SqlExecutor.cs" />
     <Compile Include="Classes\TeamSupportSync.cs" />
-    <Compile Include="Classes\TSHighrise.cs" />
-    <Compile Include="Classes\TSHubSpot.cs" />
+    <Compile Include="Classes\TSEventLog.cs" />
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsOptionsFieldMap.cs" />
@@ -396,6 +400,7 @@
     <Compile Include="FieldMaps\OrganizationProductsViewFieldMap.cs" />
     <Compile Include="FieldMaps\PhoneOptionsFieldMap.cs" />
     <Compile Include="FieldMaps\PhoneQueueFieldMap.cs" />
+    <Compile Include="FieldMaps\PluginsFieldMap.cs" />
     <Compile Include="FieldMaps\ProductFamiliesFieldMap.cs" />
     <Compile Include="FieldMaps\RecentlyViewedItemsFieldMap.cs" />
     <Compile Include="FieldMaps\RemindersFieldMap.cs" />
@@ -403,12 +408,17 @@
     <Compile Include="FieldMaps\ReportFoldersFieldMap.cs" />
     <Compile Include="FieldMaps\ReportTicketsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ReportViewsFieldMap.cs" />
+    <Compile Include="FieldMaps\ScheduledReportsFieldMap.cs" />
+    <Compile Include="FieldMaps\ScheduledReportsRecurrencyFieldMap.cs" />
     <Compile Include="FieldMaps\SearchCustomFiltersFieldMap.cs" />
     <Compile Include="FieldMaps\SearchSortersFieldMap.cs" />
     <Compile Include="FieldMaps\SearchStandardFiltersFieldMap.cs" />
     <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ServicesFieldMap.cs" />
     <Compile Include="FieldMaps\SimpleImportFieldsViewFieldMap.cs" />
+    <Compile Include="FieldMaps\SlaPausedDaysFieldMap.cs" />
+    <Compile Include="FieldMaps\SlaPausedTimesFieldMap.cs" />
+    <Compile Include="FieldMaps\SlaTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\SlaViolationHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
     <Compile Include="FieldMaps\TagsFieldMap.cs" />
@@ -669,6 +679,7 @@
     <Compile Include="Generated\GeneratedPhoneOptions.cs" />
     <Compile Include="Generated\GeneratedPhoneQueue.cs" />
     <Compile Include="Generated\GeneratedPhoneTypes.cs" />
+    <Compile Include="Generated\GeneratedPlugins.cs" />
     <Compile Include="Generated\GeneratedPortalLoginHistory.cs" />
     <Compile Include="Generated\GeneratedPortalOptions.cs" />
     <Compile Include="Generated\GeneratedProductFamilies.cs" />
@@ -688,6 +699,8 @@
     <Compile Include="Generated\GeneratedReportTables.cs" />
     <Compile Include="Generated\GeneratedReportTicketsView.cs" />
     <Compile Include="Generated\GeneratedReportViews.cs" />
+    <Compile Include="Generated\GeneratedScheduledReports.cs" />
+    <Compile Include="Generated\GeneratedScheduledReportsRecurrency.cs" />
     <Compile Include="Generated\GeneratedSearchCustomFilters.cs" />
     <Compile Include="Generated\GeneratedSearchSorters.cs" />
     <Compile Include="Generated\GeneratedSearchStandardFilters.cs" />
@@ -696,6 +709,9 @@
     <Compile Include="Generated\GeneratedSimpleImportFieldsView.cs" />
     <Compile Include="Generated\GeneratedSlaLevels.cs" />
     <Compile Include="Generated\GeneratedSlaNotifications.cs" />
+    <Compile Include="Generated\GeneratedSlaPausedDays.cs" />
+    <Compile Include="Generated\GeneratedSlaPausedTimes.cs" />
+    <Compile Include="Generated\GeneratedSlaTickets.cs" />
     <Compile Include="Generated\GeneratedSlaTriggers.cs" />
     <Compile Include="Generated\GeneratedSlaTriggersView.cs" />
     <Compile Include="Generated\GeneratedSlaViolationHistory.cs" />
@@ -768,8 +784,14 @@
     <Compile Include="Proxies\ImportsProxy.cs" />
     <Compile Include="Proxies\JiraInstanceProductsProxy.cs" />
     <Compile Include="Proxies\KBRatingsProxy.cs" />
+    <Compile Include="Proxies\PluginsProxy.cs" />
     <Compile Include="Proxies\ProductFamiliesProxy.cs" />
+    <Compile Include="Proxies\ScheduledReportsProxy.cs" />
+    <Compile Include="Proxies\ScheduledReportsRecurrencyProxy.cs" />
     <Compile Include="Proxies\SimpleImportFieldsViewProxy.cs" />
+    <Compile Include="Proxies\SlaPausedDaysProxy.cs" />
+    <Compile Include="Proxies\SlaPausedTimesProxy.cs" />
+    <Compile Include="Proxies\SlaTicketsProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
     <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />
     <Compile Include="Proxies\TicketTypesViewProxy.cs" />
@@ -954,6 +976,10 @@
     <Content Include="bin\x86\Debug\TeamSupport.Data.pdb" />
     <Content Include="bin\x86\Debug\TidyNet.dll" />
     <Content Include="bin\x86\Debug\TidyNet.pdb" />
+    <Content Include="Database\StoredProcedures\OrganizationsViewGet.sql" />
+    <Content Include="Database\StoredProcedures\TicketsForZohoGet.sql" />
+    <Content Include="Database\StoredProcedures\TicketsMinutesSinceFirstSyncedGet.sql" />
+    <Content Include="Database\StoredProcedures\TicketsToJiraGet.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />

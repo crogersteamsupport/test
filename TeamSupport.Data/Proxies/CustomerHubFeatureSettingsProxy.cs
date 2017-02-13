@@ -28,6 +28,15 @@ namespace TeamSupport.Data
     [DataMember] public int? DefaultGroupTypeID { get; set; }
     [DataMember] public bool EnableCustomerProductAssociation { get; set; }
     [DataMember] public bool EnableChat { get; set; }
+    [DataMember] public bool EnableCommunity { get; set; }
+    [DataMember] public bool EnableVideoRecording { get; set; }
+    [DataMember] public bool EnableScreenRecording { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public int? ModifierID { get; set; }
+    [DataMember] public bool EnableTicketSeverity { get; set; }
+    [DataMember] public bool EnableTicketSeverityModification { get; set; }
+    [DataMember] public bool RestrictProductVersions { get; set; }
+    [DataMember] public bool EnableTicketNameModification { get; set; }
           
   }
   
@@ -36,6 +45,14 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.EnableTicketNameModification = this.EnableTicketNameModification;
+      result.RestrictProductVersions = this.RestrictProductVersions;
+      result.EnableTicketSeverityModification = this.EnableTicketSeverityModification;
+      result.EnableTicketSeverity = this.EnableTicketSeverity;
+      result.ModifierID = this.ModifierID;
+      result.EnableScreenRecording = this.EnableScreenRecording;
+      result.EnableVideoRecording = this.EnableVideoRecording;
+      result.EnableCommunity = this.EnableCommunity;
       result.EnableChat = this.EnableChat;
       result.EnableCustomerProductAssociation = this.EnableCustomerProductAssociation;
       result.DefaultGroupTypeID = this.DefaultGroupTypeID;
@@ -52,6 +69,7 @@ namespace TeamSupport.Data
       result.CustomerHubID = this.CustomerHubID;
       result.CustomerHubFeatureSettingID = this.CustomerHubFeatureSettingID;
        
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
        
       return result;

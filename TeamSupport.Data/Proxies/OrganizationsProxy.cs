@@ -113,15 +113,20 @@ namespace TeamSupport.Data
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public int DaysBeforePasswordExpire { get; set; }
     [DataMember] public bool NoAttachmentsInOutboundEmail { get; set; }
-          
-  }
+    [DataMember] public bool AutoAssignCustomerWithAssetOnTickets { get; set; }
+    [DataMember] public bool AutoAssociateCustomerToTicketBasedOnAssetAssignment { get; set; }
+    [DataMember] public bool RequireGroupAssignmentOnTickets { get; set; }
+
+    }
   
   public partial class Organization : BaseItem
   {
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
-
+      result.RequireGroupAssignmentOnTickets = this.RequireGroupAssignmentOnTickets;
+      result.AutoAssociateCustomerToTicketBasedOnAssetAssignment = this.AutoAssociateCustomerToTicketBasedOnAssetAssignment;
+      result.AutoAssignCustomerWithAssetOnTickets = this.AutoAssignCustomerWithAssetOnTickets;
 	  result.DaysBeforePasswordExpire = this.DaysBeforePasswordExpire;
 	  result.NoAttachmentsInOutboundEmail = this.NoAttachmentsInOutboundEmail;
       result.ImportFileID = this.ImportFileID;

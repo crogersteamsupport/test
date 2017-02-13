@@ -62,4 +62,4 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
     padding-right: 15px;
 }
 
-}
+.seperator{color:grey; margin-left:10px !important; margin-right:10px !important; padding-top:4px !important;}

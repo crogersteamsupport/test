@@ -20,8 +20,9 @@ using System.Linq;
 using System.Diagnostics;
 using ImageResizer;
 using System.Net;
-using Newtonsoft.Json;
 using System.IO;
+using System.Dynamic;
+using System.Text.RegularExpressions;
 
 namespace TSWebServices
 {
@@ -32,7 +33,7 @@ namespace TSWebServices
     {
 
         public TicketPageService() { }
-
+        
         [WebMethod]
         public TicketPageInfo GetTicketInfo(int ticketNumber)
         {
@@ -52,6 +53,18 @@ namespace TSWebServices
             if (info.Ticket.Name.ToLower() == "<no subject>")
                 info.Ticket.Name = "";
 
+            //check if outside resource change ticket type and to modify the status
+            TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
+            statuses.LoadAvailableTicketStatuses(info.Ticket.TicketTypeID, null);
+
+            if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID))
+            {
+                info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
+                Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+                newticket.TicketStatusID = ticket.TicketStatusID;
+                newticket.Collection.Save();
+            }
+
             if (info.Ticket.CategoryName != null && info.Ticket.ForumCategory != null)
                 info.Ticket.CategoryDisplayString = ForumCategories.GetCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.ForumCategory);
             if (info.Ticket.KnowledgeBaseCategoryName != null)
@@ -62,6 +75,7 @@ namespace TSWebServices
             info.CustomValues = ticketService.GetParentCustomValues(ticket.TicketID);
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
+            info.Attachments = GetAttachments(ticket);
 
             Reminders reminders = new Reminders(ticket.Collection.LoginUser);
 				reminders.LoadByItemAll(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
@@ -72,6 +86,30 @@ namespace TSWebServices
             info.Assets = assets.GetAssetProxies();
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
+
+            TicketStatuses ticketStatus = new TicketStatuses(TSAuthentication.GetLoginUser());
+            ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+            info.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
+            SlaTicket slaTicket = SlaTickets.GetSlaTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+
+            if (slaTicket != null)
+            {
+                info.SlaTriggerId = slaTicket.SlaTriggerId;
+                info.IsSlaPending = slaTicket.IsPending;
+            }
+
+            try
+            {
+                Plugins plugins = new Plugins(TSAuthentication.GetLoginUser());
+                plugins.LoadByOrganizationID(TSAuthentication.OrganizationID);
+                PluginProxy[] pluginProxies = plugins.GetPluginProxies();
+                ReplacePluginData(TSAuthentication.GetLoginUser(), ticket, pluginProxies);
+                info.Plugins = pluginProxies;
+            }
+            catch (Exception)
+            {
+
+            }
 
             return info;
         }
@@ -326,10 +364,349 @@ namespace TSWebServices
         [WebMethod]
         public TicketCategoryOrder[] GetTicketPageOrder(string KeyName)
         {
-          string defaultOrder = "[{'CatID':'AssignedTo','CatName':'Assigned To','Disabled':'false'},{'CatID':'Group','CatName':'Group','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Type','CatName':'Type','Disabled':'false'},{'CatID':'Status','CatName':'Status','Disabled':'false'},{'CatID':'Severity','CatName':'Severity','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SLAStatus','CatName':'SLA Status','Disabled':'false'},{'CatID':'VisibleToCustomers','CatName':'Visible To Customers','Disabled':'false'},{'CatID':'KnowledgeBase','CatName':'Knowledge Base','Disabled':'false'},{'CatID':'Community','CatName':'Community','Disabled':'false'},{'CatID':'DaysOpened','CatName':'Days Opened','Disabled':'false'},{'CatID':'TotalTimeSpent','CatName':'Total Time Spent','Disabled':'false'},{'CatID':'DueDate','CatName':'Due Date','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Customers','CatName':'Customers','Disabled':'false'},{'CatID':'CustomFields','CatName':'Custom Fields','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Product','CatName':'Product','Disabled':'false'},{'CatID':'Reported','CatName':'Reported','Disabled':'false'},{'CatID':'Resolved','CatName':'Resolved','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Inventory','CatName':'Inventory','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Tags','CatName':'Tags','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Reminders','CatName':'Reminders','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'AssociatedTickets','CatName':'Associated Tickets','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'UserQueue','CatName':'User Queue','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SubscribedUsers','CatName':'Subscribed Users','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'true'},{'CatID':'Jira','CatName':'Jira','Disabled':'false'}]";
+          string defaultOrder = "[{'CatID':'AssignedTo','CatName':'Assigned To','Disabled':'false'},{'CatID':'Group','CatName':'Group','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Type','CatName':'Type','Disabled':'false'},{'CatID':'Status','CatName':'Status','Disabled':'false'},{'CatID':'Severity','CatName':'Severity','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SLAStatus','CatName':'SLA Status','Disabled':'false'},{'CatID':'VisibleToCustomers','CatName':'Visible To Customers','Disabled':'false'},{'CatID':'KnowledgeBase','CatName':'Knowledge Base','Disabled':'false'},{'CatID':'Community','CatName':'Community','Disabled':'false'},{'CatID':'DaysOpened','CatName':'Days Opened','Disabled':'false'},{'CatID':'TotalTimeSpent','CatName':'Total Time Spent','Disabled':'false'},{'CatID':'DueDate','CatName':'Due Date','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Customers','CatName':'Customers','Disabled':'false'},{'CatID':'CustomFields','CatName':'Custom Fields','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Product','CatName':'Product','Disabled':'false'},{'CatID':'Reported','CatName':'Reported','Disabled':'false'},{'CatID':'Resolved','CatName':'Resolved','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Inventory','CatName':'Inventory','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Tags','CatName':'Tags','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Reminders','CatName':'Reminders','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'AssociatedTickets','CatName':'Associated Tickets','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'UserQueue','CatName':'User Queue','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SubscribedUsers','CatName':'Subscribed Users','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'true'},{'CatID':'Jira','CatName':'Jira','Disabled':'false'},{'CatID':'Attachments','CatName':'Attachments','Disabled':'false'}]";
             List<TicketCategoryOrder> items = JsonConvert.DeserializeObject<List<TicketCategoryOrder>>(Settings.OrganizationDB.ReadString(KeyName, defaultOrder));
 
             return items.ToArray();
+        }
+
+        [WebMethod]
+        public PluginProxy GetTicketPagePlugin(int pluginID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID)
+            {
+                return plugin.GetProxy();
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public string GetTicketPagePluginSample(int ticketNumber, string code)
+        {
+            dynamic result = new ExpandoObject();
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+            result.ticket = ticket.GetProxy();
+
+            PluginProxy plugin = new PluginProxy();
+            plugin.Code = code;
+            List<PluginProxy> plugins = new List<PluginProxy>();
+            plugins.Add(plugin);
+
+            ReplacePluginData(TSAuthentication.GetLoginUser(), ticket, plugins.ToArray());
+            result.code = plugins[0].Code;
+            return JsonConvert.SerializeObject(result);
+        }
+
+        private void ReplacePluginData(LoginUser loginUser, TicketsViewItem ticketView, PluginProxy[] plugins)
+        {
+            //Ticket
+            ReplaceTablePluginData(loginUser, "Ticket", plugins, ticketView.Row);
+            ReplaceCustomFieldPluginData(loginUser, "Ticket Custom Fields", ReferenceType.Tickets, ticketView.TicketID, plugins, ticketView.TicketTypeID);
+            EraseTablePluginData("Ticket Custom Fields", plugins);
+
+            //User
+            if (ticketView.UserID != null)
+            {
+                ReplaceTablePluginData(loginUser, "User", plugins, UsersView.GetUsersViewItem(loginUser, (int) ticketView.UserID).Row);
+                ReplaceCustomFieldPluginData(loginUser, "User Custom Fields", ReferenceType.Users, (int)ticketView.UserID, plugins);
+            }
+            else
+            {
+                EraseTablePluginData("User", plugins);
+                EraseTablePluginData("User Custom Fields", plugins);
+            }
+
+            //Customer
+            OrganizationsView organizations = new OrganizationsView(loginUser);
+            organizations.LoadByTicketID(ticketView.TicketID);
+            if (organizations.IsEmpty)
+            {
+                EraseTablePluginData("Customer", plugins);
+                EraseTablePluginData("Customer Address", plugins);
+                EraseTablePluginData("Customer PhoneNumber", plugins);
+                EraseTablePluginData("Customer Custom Fields", plugins);
+            }
+            else
+            {
+                int orgID = organizations[0].OrganizationID;
+                ReplaceTablePluginData(loginUser, "Customer", plugins, organizations[0].Row);
+
+                Addresses addresses = new Addresses(loginUser);
+                addresses.LoadByID(orgID, ReferenceType.Organizations);
+                if (addresses.IsEmpty) EraseTablePluginData("Customer Address", plugins);
+                else ReplaceTablePluginData(loginUser, "Customer Address", plugins, addresses[0].Row);
+
+                PhoneNumbers numbers = new PhoneNumbers(loginUser);
+                numbers.LoadByID(orgID, ReferenceType.Organizations);
+                if (numbers.IsEmpty) EraseTablePluginData("Customer PhoneNumber", plugins);
+                else ReplaceTablePluginData(loginUser, "Customer PhoneNumber", plugins, numbers[0].Row);
+
+                ReplaceCustomFieldPluginData(loginUser, "Customer Custom Fields", ReferenceType.Organizations, orgID, plugins);
+            }
+
+            ContactsView contacts = new ContactsView(loginUser);
+            contacts.LoadByTicketID((int)ticketView.TicketID);
+            if (contacts.IsEmpty)
+            {
+                EraseTablePluginData("Contact", plugins);
+                EraseTablePluginData("Contact Address", plugins);
+                EraseTablePluginData("Contact PhoneNumber", plugins);
+                EraseTablePluginData("Contact Custom Fields", plugins);
+            }
+            else
+            {
+                int contactID = contacts[0].UserID;
+                ReplaceTablePluginData(loginUser, "Contact", plugins, contacts[0].Row);
+
+                Addresses addresses = new Addresses(loginUser);
+                addresses.LoadByID(contactID, ReferenceType.Users);
+                if (addresses.IsEmpty) EraseTablePluginData("Contact Address", plugins);
+                else ReplaceTablePluginData(loginUser, "Contact Address", plugins, addresses[0].Row);
+
+                PhoneNumbers numbers = new PhoneNumbers(loginUser);
+                numbers.LoadByID(contactID, ReferenceType.Users);
+                if (numbers.IsEmpty) EraseTablePluginData("Contact PhoneNumber", plugins);
+                else ReplaceTablePluginData(loginUser, "Contact PhoneNumber", plugins, numbers[0].Row);
+
+                ReplaceCustomFieldPluginData(loginUser, "Contact Custom Fields", ReferenceType.Contacts, contactID, plugins);
+            }
+        }
+
+        private void EraseTablePluginData(string templateName, PluginProxy[] plugins)
+        {
+            foreach (PluginProxy plugin in plugins)
+            {
+                Regex regex = new Regex("{{"+templateName+".(.*?)(?:}})");
+                plugin.Code = regex.Replace(plugin.Code, "");
+            }
+        }
+
+        private void ReplaceTablePluginData(LoginUser loginUser, string templateName, PluginProxy[] plugins, DataRow row)
+        {
+            foreach (PluginProxy plugin in plugins)
+            {
+                foreach (DataColumn column in row.Table.Columns)
+                {
+                    plugin.Code = plugin.Code.Replace("{{" + templateName + "." + column.ColumnName + "}}", row[column].ToString());
+                }
+            }
+        }
+
+        private void ReplaceCustomFieldPluginData(LoginUser loginUser, string templateName, ReferenceType refType, int refID, PluginProxy[] plugins, int? auxID = null)
+        {
+            CustomFields fields = new CustomFields(loginUser);
+            fields.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
+
+            foreach (CustomField field in fields)
+            {
+                string value = field.GetValue(refID) as string;
+
+                if (string.IsNullOrWhiteSpace(value)) value = "";
+
+                foreach (PluginProxy plugin in plugins)
+                {
+                    plugin.Code = plugin.Code.Replace("{{" + templateName + "." + field.Name + "}}", value);
+                }
+            }
+        }
+
+        [WebMethod]
+        public string GetPluginTicketCustomFields(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+            values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Organizations, ticketID);
+            return values.GetJson();
+        }
+
+        public string GetPluginTicketActions(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            Actions actions = new Actions(TSAuthentication.GetLoginUser());
+            actions.LoadByTicketID(ticketID);
+            return actions.GetJson();
+        }
+
+        [WebMethod]
+        public string GetPluginTicketUser(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            if (ticket.UserID == null) return "{}";
+            UsersViewItem user = UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)ticket.UserID);
+
+            dynamic result = new ExpandoObject();
+            result = user.GetExpandoObject();
+
+            Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+            addresses.LoadByID(user.UserID, ReferenceType.Users);
+            result.addresses = addresses.GetExpandoObject();
+
+            PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+            numbers.LoadByID(user.UserID, ReferenceType.Users);
+            result.phoneNumbers = numbers.GetExpandoObject();
+
+            CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+            values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Users, user.UserID);
+            result.customValues = values.GetExpandoObject();
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
+        public string GetPluginTicketContacts(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            ContactsView contacts = new ContactsView(TSAuthentication.GetLoginUser());
+            contacts.LoadByTicketID(ticketID);
+            dynamic result = new ExpandoObject();
+            result = contacts.GetExpandoObject();
+
+            for (int i = 0; i < contacts.Count; i++)
+            {
+                Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+                addresses.LoadByID(contacts[i].UserID, ReferenceType.Users);
+                result[i].addresses = addresses.GetExpandoObject();
+
+                PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+                numbers.LoadByID(contacts[i].UserID, ReferenceType.Users);
+                result[i].phoneNumbers = numbers.GetExpandoObject();
+
+                CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+                values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Contacts, contacts[i].UserID);
+                result[i].customValues = values.GetExpandoObject();
+            }
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
+        public string GetPluginTicketCustomers(int ticketID)
+        {
+            Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+            OrganizationsView organizations = new OrganizationsView(TSAuthentication.GetLoginUser());
+            organizations.LoadByTicketID(ticketID);
+            dynamic result = new ExpandoObject();
+            result = organizations.GetExpandoObject();
+
+            for (int i = 0; i < organizations.Count; i++)
+            {
+                Addresses addresses = new Addresses(TSAuthentication.GetLoginUser());
+                addresses.LoadByID(organizations[i].OrganizationID, ReferenceType.Organizations);
+                result[i].addresses = addresses.GetExpandoObject();
+
+                PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+                numbers.LoadByID(organizations[i].OrganizationID, ReferenceType.Organizations);
+                result[i].phoneNumbers = numbers.GetExpandoObject();
+
+                CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+                values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Organizations, organizations[i].OrganizationID);
+                result[i].customValues = values.GetExpandoObject();
+            }
+            return JsonConvert.SerializeObject(result);
+        }
+
+        [WebMethod]
+        public string GetTicketPagePluginTemplates(string templateType)
+        {
+            List<ExpandoObject> result = new List<ExpandoObject>();
+            if (templateType.ToLower() == "ticket")
+            {
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Ticket", "TicketsView"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Ticket Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Tickets));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "User", "UsersView"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "User Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Users));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer", "OrganizationsView"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer Address", "Addresses"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Customer PhoneNumber", "PhoneNumbers"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Customer Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Organizations));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact", "ContactsView"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact Address", "Addresses"));
+                result.Add(GetTableTemplate(TSAuthentication.GetLoginUser(), "Contact PhoneNumber", "PhoneNumbers"));
+                result.Add(GetCustomFieldNames(TSAuthentication.GetLoginUser(), "Contact Custom Fields", TSAuthentication.OrganizationID, ReferenceType.Contacts));
+            }
+            return JsonConvert.SerializeObject(result.ToArray());
+        }
+
+        private ExpandoObject GetTableTemplate(LoginUser loginUser, string templateName, string tableName)
+        {
+            dynamic cat = new ExpandoObject();
+            cat.name = templateName;
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT * FROM " + tableName;
+            DataTable table = SqlExecutor.ExecuteSchema(loginUser, command);
+            cat.items = table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+            Array.Sort(cat.items);
+            return cat;
+        }
+
+        private ExpandoObject GetCustomFieldNames(LoginUser loginUser, string templateName, int organizationID, ReferenceType refType)
+        {
+            dynamic cat = new ExpandoObject();
+            cat.name = templateName;
+
+            CustomFields fields = new CustomFields(loginUser);
+            fields.LoadByReferenceType(organizationID, refType);
+            cat.items = fields.Cast<CustomField>().Select(x => x.Name).ToArray();
+            Array.Sort(cat.items);
+            return cat;
+        }
+
+        public string GetTicketPagePluginCode(int pluginID, int ticketID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID && ticket.OrganizationID == plugin.OrganizationID) 
+            {
+                // replace fields
+                return plugin.Code;
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public PluginProxy SaveTicketPagePlugin(int pluginID, string name, string code)
+        {
+            Plugin plugin;
+
+            if (pluginID < 0)
+            {
+                Plugins plugins = new Plugins(TSAuthentication.GetLoginUser());
+                plugin = plugins.AddNewPlugin();
+                plugin.Code = code;
+                plugin.CreatorID = TSAuthentication.UserID;
+                plugin.DateCreated = DateTime.UtcNow;
+                plugin.Name = name;
+                plugin.OrganizationID = TSAuthentication.OrganizationID;
+            }
+            else
+            {
+                plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+                if (plugin.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+                {
+                    plugin.Name = name;
+                    plugin.Code = code;
+                }
+            }
+
+            plugin.BaseCollection.Save();
+            return plugin.GetProxy();
+        }
+
+        [WebMethod]
+        public void DeleteTicketPagePlugin(int pluginID)
+        {
+            Plugin plugin = Plugins.GetPlugin(TSAuthentication.GetLoginUser(), pluginID);
+            if (plugin.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+            {
+                plugin.Delete();
+                plugin.BaseCollection.Save();
+            }
         }
 
         [WebMethod]
@@ -421,6 +798,73 @@ namespace TSWebServices
             return GetActionTimelineItem(action);
         }
 
+        [WebMethod]
+        public TimeLineItem UpdateActionCopyingAttachment(ActionProxy proxy, int insertedKBTicketID)
+        {
+            TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+
+            if (action == null)
+            {
+                action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+                action.TicketID = proxy.TicketID;
+                action.CreatorID = TSAuthentication.UserID;
+                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
+                {
+                    if (!proxy.Description.Contains(user.Signature))
+                    {
+                        action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                    }
+                    else
+                    {
+                        action.Description = proxy.Description;
+                    }
+                }
+                else
+                {
+                    action.Description = proxy.Description;
+                }
+            }
+            else
+            {
+                if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
+                {
+                    if (!string.IsNullOrWhiteSpace(user.Signature))
+                    {
+                        if (!action.Description.Contains(user.Signature.Replace(" />", ">")))
+                        {
+                            action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                        }
+                        else
+                        {
+                            action.Description = proxy.Description;
+                        }
+                    }
+                    else
+                    {
+                        action.Description = proxy.Description;
+                    }
+                }
+                else
+                {
+                    action.Description = proxy.Description;
+                }
+            }
+
+            if (!CanEditAction(action)) return null;
+
+
+            action.ActionTypeID = proxy.ActionTypeID;
+            action.DateStarted = proxy.DateStarted;
+            action.TimeSpent = proxy.TimeSpent;
+            action.IsKnowledgeBase = proxy.IsKnowledgeBase;
+            action.IsVisibleOnPortal = proxy.IsVisibleOnPortal;
+            action.Collection.Save();
+
+            CopyInsertedKBAttachments(action.ActionID, insertedKBTicketID);
+
+            return GetActionTimelineItem(action);
+        }
 
         [WebMethod]
         public bool SetActionPortal(int actionID, bool isVisibleOnPortal)
@@ -705,11 +1149,32 @@ namespace TSWebServices
         }
 
 		[WebMethod]
-		public TicketsViewItemProxy GetTicketSLAInfo(int ticketNumber)
+		public SlaInfo GetTicketSLAInfo(int ticketNumber)
 		{
-			TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            SlaInfo slaInfo = new SlaInfo();
+            TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(loginUser, ticketNumber);
 			if (ticket == null) return null;
-			return ticket.GetProxy();
+
+            slaInfo.Ticket = ticket.GetProxy();
+
+            SlaTickets slaTickets = new SlaTickets(loginUser);
+            slaTickets.LoadByTicketId(ticket.TicketID);
+            slaInfo.IsSlaPaused = false;
+            slaInfo.IsSlaPending = false;
+            slaInfo.SlaTriggerId = null;
+
+            if (slaTickets != null && slaTickets.Count > 0)
+            {
+                TicketStatuses ticketStatus = new TicketStatuses(loginUser);
+                ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
+                slaInfo.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
+
+                slaInfo.IsSlaPending = slaTickets[0].IsPending;
+                slaInfo.SlaTriggerId = slaTickets[0].SlaTriggerId;
+            }
+
+            return slaInfo;
 		}
 
         [WebMethod]
@@ -742,6 +1207,18 @@ namespace TSWebServices
 
         }
 
+        [DataContract]
+        public class SlaInfo
+        {
+            [DataMember]
+            public TicketsViewItemProxy Ticket { get; set; }
+            [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
+        }
 
         [DataContract]
         public class TicketPageInfo
@@ -766,6 +1243,16 @@ namespace TSWebServices
             public AssetProxy[] Assets { get; set; }
             [DataMember]
             public TicketLinkToJiraItemProxy LinkToJira { get; set; }
+            [DataMember]
+            public AttachmentProxy[] Attachments { get; set; }
+            [DataMember]
+            public bool IsSlaPaused { get; set; }
+            [DataMember]
+            public int? SlaTriggerId { get; set; }
+            [DataMember]
+            public bool IsSlaPending { get; set; }
+            [DataMember]
+            public PluginProxy[] Plugins { get; set; }
         }
 
         [DataContract]
@@ -828,6 +1315,8 @@ namespace TSWebServices
             public string CatName { get; set; }
             [DataMember]
             public string Disabled { get; set; }
+            [DataMember]
+            public string ItemID { get; set; }
         }
 
         //Private Methods
@@ -941,6 +1430,20 @@ namespace TSWebServices
             {
                 result.Add(new UserInfo(user));
             }
+            return result.ToArray();
+        }
+
+        private AttachmentProxy[] GetAttachments(TicketsViewItem ticket)
+        {
+            Attachments attach = new Attachments(ticket.Collection.LoginUser);
+            attach.LoadByTicketId(ticket.TicketID);
+            List<AttachmentProxy> result = new List<AttachmentProxy>();
+            foreach (AttachmentProxy attachment in attach.GetAttachmentProxies())
+            {
+                if (!result.Exists(a => a.FileName == attachment.FileName))
+                   result.Add(attachment);
+            }
+
             return result.ToArray();
         }
 
@@ -1060,5 +1563,51 @@ namespace TSWebServices
 
 			return GetActionTimelineItem(action);
 		}
-	}
+
+        private void CopyInsertedKBAttachments(int actionID, int insertedKBTicketID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadKBByTicketID(insertedKBTicketID);
+            if (attachments.Count > 0)
+            {
+                Attachments clonedAttachments = new Attachments(loginUser);
+                foreach (Attachment attachment in attachments)
+                {
+                    Attachment clonedAttachment = clonedAttachments.AddNewAttachment();
+                    clonedAttachment.OrganizationID = attachment.OrganizationID;
+                    clonedAttachment.FileType = attachment.FileType;
+                    clonedAttachment.FileSize = attachment.FileSize;
+                    clonedAttachment.Description = attachment.Description;
+                    clonedAttachment.DateCreated = attachment.DateCreatedUtc;
+                    clonedAttachment.DateModified = attachment.DateModifiedUtc;
+                    clonedAttachment.CreatorID = attachment.CreatorID;
+                    clonedAttachment.ModifierID = attachment.ModifierID;
+                    clonedAttachment.RefType = attachment.RefType;
+                    clonedAttachment.SentToJira = attachment.SentToJira;
+                    clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
+                    clonedAttachment.FileName = attachment.FileName;
+                    clonedAttachment.RefID = actionID;
+
+                    string originalAttachmentRefID = attachment.RefID.ToString();
+                    string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
+                                                        + actionID.ToString()
+                                                        + attachment.Path.Substring(attachment.Path.IndexOf(originalAttachmentRefID) + originalAttachmentRefID.Length);
+
+                    if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
+                    }
+
+                    clonedAttachment.Path = clonedActionAttachmentPath;
+
+                    File.Copy(attachment.Path, clonedAttachment.Path);
+
+                }
+                clonedAttachments.BulkSave();
+
+            }
+        }
+
+    }
 }

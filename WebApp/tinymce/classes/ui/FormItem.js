@@ -1,4 +1,21 @@
+/**
+ * FormItem.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class is a container created by the form element with
+ * a label and control item.
+ *
+ * @class tinymce.ui.FormItem
+ * @extends tinymce.ui.Container
+ * @setting {String} label Label to display for the form item.
+ */
 define("tinymce/ui/FormItem", [
 	"tinymce/ui/Container"
 ], function(Container) {

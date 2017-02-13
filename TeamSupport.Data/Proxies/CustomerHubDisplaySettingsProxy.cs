@@ -22,6 +22,8 @@ namespace TeamSupport.Data
     [DataMember] public string Color3 { get; set; }
     [DataMember] public string Color4 { get; set; }
     [DataMember] public string Color5 { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public int? ModifierID { get; set; }
           
   }
   
@@ -30,6 +32,7 @@ namespace TeamSupport.Data
     public CustomerHubDisplaySettingProxy GetProxy()
     {
       CustomerHubDisplaySettingProxy result = new CustomerHubDisplaySettingProxy();
+      result.ModifierID = this.ModifierID;
       result.Color5 = this.Color5;
       result.Color4 = this.Color4;
       result.Color3 = this.Color3;
@@ -40,6 +43,7 @@ namespace TeamSupport.Data
       result.CustomerHubID = this.CustomerHubID;
       result.CustomerHubDisplaySettingID = this.CustomerHubDisplaySettingID;
        
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
        
       return result;

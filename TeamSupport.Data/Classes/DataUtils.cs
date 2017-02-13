@@ -289,8 +289,8 @@ namespace TeamSupport.Data
 					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS BIT");
 					break;
 				case CustomFieldType.Number:
-					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS decimal");
-					break;
+                    builder.Append("TRY_CAST(NULLIF(RTRIM(CustomValue), '') AS decimal");
+                    break;
 				default:
 					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
 					break;
@@ -622,7 +622,18 @@ namespace TeamSupport.Data
 			return result.ToArray();
 		}
 
-		public static string DataTableToJson(DataTable table)
+        public static ExpandoObject DataRowToExpandoObject(DataRow row)
+        {
+            var expando = new ExpandoObject();
+            foreach (DataColumn column in row.Table.Columns)
+            {
+                var dict = expando as IDictionary<String, object>;
+                dict.Add(column.ColumnName, row[column] == DBNull.Value ? null : row[column]);
+            }
+            return expando;
+        }
+
+        public static string DataTableToJson(DataTable table)
 		{
 			return JsonConvert.SerializeObject(DataTableToExpandoObject(table));
 		}
@@ -1001,6 +1012,7 @@ namespace TeamSupport.Data
 				else
 					user.IsPasswordExpired = true;
 			user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
+            user.PasswordCreatedUtc = DateTime.UtcNow;
 			try
 			{
 				if (isPortalUser)
@@ -1008,8 +1020,9 @@ namespace TeamSupport.Data
 					{
 						EmailPosts.SendResetCustomerHubPassword(loginUser, user.UserID, password);
 					}
-					else { 
-						EmailPosts.SendResetPortalPassword(loginUser, user.UserID, password);
+					else {
+                        user.IsPasswordExpired = true;
+                        EmailPosts.SendResetPortalPassword(loginUser, user.UserID, password);
 					}
 				else
 					EmailPosts.SendResetTSPassword(loginUser, user.UserID, password);
@@ -2122,8 +2135,6 @@ namespace TeamSupport.Data
 
 			foreach (string key in filters)
 			{
-				var value = filters[key];
-
 				if (!string.IsNullOrEmpty(key))
 				{
 					filterFieldName = new StringBuilder();
@@ -2256,6 +2267,12 @@ namespace TeamSupport.Data
 
 			if (!string.IsNullOrEmpty(field))
 			{
+                if (table.Rows == null || table.Rows.Count == 0)
+                {
+                    DataRow row = table.NewRow();
+                    table.Rows.Add(row);
+                }
+				
 				BaseItem baseItem = new BaseItem(table.Rows[0], baseCollection);
 				object fieldObject = baseItem.Row[field];
 
@@ -2372,6 +2389,10 @@ namespace TeamSupport.Data
 						if (rawValues[i].ToLower().IndexOf("t") > -1 || rawValues[i].ToLower().IndexOf("1") > -1 || rawValues[i].ToLower().IndexOf("y") > -1)
 						{
 							filterValues.Add("1");
+						}
+						else if (rawValues[i].ToLower().IndexOf("f") > -1 || rawValues[i].ToLower().IndexOf("0") > -1 || rawValues[i].ToLower().IndexOf("n") > -1)
+						{
+							filterValues.Add("0");
 						}
 						if (i == 0)
 						{

@@ -23,12 +23,17 @@ namespace TeamSupport.Data
     {
       get { return _tokStorage; }
     }
-        
-    
-    
-    
 
-    
+
+
+
+        
+    public bool Transcoded
+        {
+      get { return (bool)Row["Transcoded"]; }
+      set { Row["Transcoded"] = CheckValue("Transcoded", value); }
+    }
+
     public string AmazonPath
     {
       get { return Row["AmazonPath"] != DBNull.Value ? (string)Row["AmazonPath"] : null; }
@@ -169,9 +174,16 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TokStorage] SET     [AmazonPath] = @AmazonPath,    [CreatedDate] = @CreatedDate,    [ArchiveID] = @ArchiveID  WHERE ([OrganizationID] = @OrganizationID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TokStorage] SET     [AmazonPath] = @AmazonPath,    [CreatedDate] = @CreatedDate,    [ArchiveID] = @ArchiveID, [Transcoded] = @Transcoded  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
+		tempParameter = updateCommand.Parameters.Add("Transcoded", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -205,7 +217,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TokStorage] (    [OrganizationID],    [AmazonPath],    [CreatedDate],    [CreatorID],    [ArchiveID]) VALUES ( @OrganizationID, @AmazonPath, @CreatedDate, @CreatorID, @ArchiveID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TokStorage] (  [Transcoded],  [OrganizationID],    [AmazonPath],    [CreatedDate],    [CreatorID],    [ArchiveID]) VALUES ( @Transcoded, @OrganizationID, @AmazonPath, @CreatedDate, @CreatorID, @ArchiveID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ArchiveID", SqlDbType.VarChar, -1);
@@ -243,6 +255,12 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = insertCommand.Parameters.Add("Transcoded", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 
 		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
 		SqlCommand deleteCommand = connection.CreateCommand();
@@ -355,7 +373,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [AmazonPath], [CreatedDate], [CreatorID], [ArchiveID] FROM [dbo].[TokStorage] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [AmazonPath], [CreatedDate], [CreatorID], [ArchiveID], [Transcoded] FROM [dbo].[TokStorage] WHERE ([OrganizationID] = @OrganizationID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);

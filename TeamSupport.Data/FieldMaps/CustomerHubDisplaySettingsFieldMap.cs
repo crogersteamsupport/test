@@ -22,6 +22,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Color3", "Color3", false, false, false);
       _fieldMap.AddMap("Color4", "Color4", false, false, false);
       _fieldMap.AddMap("Color5", "Color5", false, false, false);
+      _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
+      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
             
     }
   }

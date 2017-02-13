@@ -1,4 +1,25 @@
+/**
+ * JSON.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * JSON parser and serializer class.
+ *
+ * @class tinymce.util.JSON
+ * @static
+ * @example
+ * // JSON parse a string into an object
+ * var obj = tinymce.util.JSON.parse(somestring);
+ *
+ * // JSON serialize a object into an string
+ * var str = tinymce.util.JSON.serialize(obj);
+ */
 define("tinymce/util/JSON", [], function() {
 	function serialize(o, quote) {
 		var i, v, t, name;
@@ -14,6 +35,7 @@ define("tinymce/util/JSON", [], function() {
 		if (t == 'string') {
 			v = '\bb\tt\nn\ff\rr\""\'\'\\\\';
 
+			/*eslint no-control-regex:0 */
 			return quote + o.replace(/([\u0080-\uFFFF\x00-\x1f\"\'\\])/g, function(a, b) {
 				// Make sure single quotes never get encoded inside double quotes for JSON compatibility
 				if (quote === '"' && a === "'") {

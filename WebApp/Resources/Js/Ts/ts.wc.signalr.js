@@ -15,7 +15,7 @@ function loadSignalR(url) {
     });
 
     //Debug reasons
-    $.connection.hub.logging = true;
+    //$.connection.hub.logging = true;
     $.connection.hub.url = url;
     // Start the connection only if on main wc page
 
@@ -25,18 +25,26 @@ function loadSignalR(url) {
     var tryingToReconnect = false;
 
     $.connection.hub.reconnecting(function () {
+        var mainWC = $("#iframe-mniWC2");
+        try {
+            if (mainWC[0].contentWindow.updateStatusReconnecting) { mainWC[0].contentWindow.updateStatusReconnecting(); }
+        } catch (err) { }
         tryingToReconnect = true;
     });
 
     $.connection.hub.reconnected(function () {
+        var mainWC = $("#iframe-mniWC2");
+        try {
+            if (mainWC[0].contentWindow.updateStatusReconnected) { mainWC[0].contentWindow.updateStatusReconnected(); }
+        } catch (err) { }
         tryingToReconnect = false;
     });
 
     $.connection.hub.disconnected(function () {
         if (tryingToReconnect) {
-            setTimeout(function () {
-                $.connection.hub.start();
-            }, 5000);
+                setTimeout(function () {
+                    $.connection.hub.start();
+                }, 5000);
             //location.reload(); // Reload the connection if it has disconnected
         }
     });
@@ -252,8 +260,18 @@ function loadSignalR(url) {
         }
     };
 
+    ticketSocket.client.ticketRefreshSla = function (ticketNum) {
+        if ($('.main-ticket-' + ticketNum).length > 0) {
+            $('.main-ticket-' + ticketNum).find('iframe')[0].contentWindow.resetSLAInfo();
+        }
+    };
+
     $.connection.hub.start(function () {
         chatHubClient.server.login();
+        var mainWC = $("#iframe-mniWC2");
+        try {
+            if (mainWC[0].contentWindow.updateStatusReconnected) { mainWC[0].contentWindow.updateStatusReconnected(); }
+        } catch (err) { }
     });
 
     originalTitle = document.title;

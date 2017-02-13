@@ -44,7 +44,7 @@ public partial class ChangePassword : System.Web.UI.Page
 
       foreach (User item in users)
       {
-        if (item.CryptedPassword == "UNVALIDATED")
+        if (item.CryptedPassword == "UNVALIDATED" || FormsAuthentication.HashPasswordForStoringInConfigFile("", "MD5") == item.CryptedPassword)
         {
           user = item;
           break;
@@ -74,6 +74,7 @@ public partial class ChangePassword : System.Web.UI.Page
         organization.Collection.Save();
         user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
         user.IsPasswordExpired = false;
+                user.PasswordCreatedUtc = DateTime.UtcNow;
         users.Save();
         //EmailPosts.SendChangedTSPassword(loginUser, user.UserID);
         return "";

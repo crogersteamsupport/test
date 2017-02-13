@@ -241,8 +241,8 @@ namespace TeamSupport.ServiceLibrary
                 case EmailPostType.ChangedPortalPassword:
                     ProcessChangedPortalPassword(GetIntParam(emailPost.Param1));
                     break;
-                case EmailPostType.ChangedCustomerHubPassword:
-                    ProcessChangedHubPassword(GetIntParam(emailPost.Param1));
+                case EmailPostType.WelcomeCustomerHubUser:
+                    ProcessWelcomeCustomerHubUser(GetIntParam(emailPost.Param1), emailPost.Param2);
                     break;
                 case EmailPostType.ResetCustomerHubPassword:
                     ProcessResetHubPassword(GetIntParam(emailPost.Param1), emailPost.Param2);
@@ -742,6 +742,8 @@ namespace TeamSupport.ServiceLibrary
                     return;
                 }
 
+                //If is IsClosedEmail and modifier is Portal user then do not exclude on email
+                //vv: change for ticket 25530. Not QA approved. bool removeModifier = true;
                 List<UserEmail> userList;
                 List<UserEmail> advUsers = new List<UserEmail>();
                 AddAdvancedPortalUsers(advUsers, ticket);
@@ -814,31 +816,19 @@ namespace TeamSupport.ServiceLibrary
                 }
 
                 TicketStatus status = TicketStatuses.GetTicketStatus(LoginUser, ticket.TicketStatusID);
+                //vv: change for ticket 25530. Not QA approved. Following lines commented out and re-added the original ones
+                //User modifierUser = AddPortalModifierIfClosing(userList, ticket, isBasic, status);
+                //removeModifier = modifierUser == null;
 
-                //If is IsClosedEmail and modifier is Portal user then do not exclude on email
-                bool removeModifier = true;
+                //if (removeModifier)
+                //{
+                //    RemoveUser(userList, modifierID);
+                //    Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
+                //}
 
-                if (status.IsClosedEmail && modifierID > 0)
-                {
-                    ContactsView contacts = new ContactsView(LoginUser);
-                    contacts.LoadByUserID(modifierID);
-                    ContactsViewItem contact = contacts.Where(p => p.OrganizationParentID == ticketOrganization.OrganizationID).FirstOrDefault();
-
-                    if (contact != null)
-                    {
-                        removeModifier = !contacts[0].IsPortalUser;
-                    }
-                }
-
-                if (removeModifier)
-                {
-                    RemoveUser(userList, modifierID);
-                    Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
-                }
-                else
-                {
-                    Logs.WriteEvent(string.Format("Modifier ({0}) is a Portal user so it won't be removed, so he/she can receive the closed email.", modifierName));
-                }
+                //vv re-added
+                RemoveUser(userList, modifierID);
+                Logs.WriteEvent(string.Format("Removing Modifier user from list: {0}", modifierID.ToString()));
 
 
                 if (userList.Count < 1)
@@ -912,6 +902,7 @@ namespace TeamSupport.ServiceLibrary
                             Logs.WriteEvent("Excluding creator off the modified ticket email when it is New.");
                         }
 
+                        //vv: change for ticket 25530. Not QA approved. if (userEmail != null && (modifierID != userEmail.UserID || (modifierID == userEmail.UserID && !removeModifier)) && !excludeCreator)
                         if (userEmail != null && modifierID != userEmail.UserID && !excludeCreator)
                         {
                             message.Body = body;
@@ -1198,7 +1189,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         public void ProcessWelcomeNewSignup(int userID, string password)
-        {
+        {/*
             User user = Users.GetUser(LoginUser, userID);
             Organization organization = Organizations.GetOrganization(LoginUser, user.OrganizationID);
 
@@ -1311,15 +1302,15 @@ namespace TeamSupport.ServiceLibrary
             AddMessage(organization.OrganizationID, "Reset Portal Password [" + user.FirstLastName + "]", message);
         }
 
-        public void ProcessChangedHubPassword(int userID)
+        public void ProcessWelcomeCustomerHubUser(int userID, string password)
         {
             User user = (User)Users.GetUser(LoginUser, userID);
             Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
             CustomerHubs hubs = new CustomerHubs(LoginUser);
             hubs.LoadByOrganizationID(organization.OrganizationID);
             if (hubs.IsEmpty) throw new Exception("No customer hub found for user: " + userID.ToString());
-            
-            MailMessage message = EmailTemplates.GetChangedPasswordHub(LoginUser, user.GetUserView(), hubs[0]);
+
+            MailMessage message = EmailTemplates.GetWelcomeCustomerHub(LoginUser, user.GetUserView(), hubs[0], password);
             message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
             AddMessage(organization.OrganizationID, "Portal Password Changed [" + user.FirstLastName + "]", message);
         }
@@ -1588,6 +1579,39 @@ namespace TeamSupport.ServiceLibrary
                     Logs.WriteEventFormat("{0} ({1}) <{2}> advanced portal user was not added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
                 }
             }
+        }
+
+        private User AddPortalModifierIfClosing(List<UserEmail> userList, Ticket ticket, bool isProcessingBasicPortal, TicketStatus status)
+        {
+            Users users;
+            User user = null;
+
+            if (status.IsClosedEmail && ticket.ModifierID > 0)
+            {
+                users = new Users(LoginUser);
+                users.LoadByUserID(ticket.ModifierID);
+
+                if (users != null && users.Count > 0)
+                {
+                    user = users.FirstOrDefault();
+
+                    if ((user.IsPortalUser && !isProcessingBasicPortal) || (!user.IsPortalUser && isProcessingBasicPortal))
+                    {
+                        AddUser(userList, user);
+                        Logs.WriteEventFormat("{0} ({1}) <{2}> modifier user was added to the list if it wasn't there already.", user.DisplayName, user.UserID.ToString(), user.Email);
+                    }
+                    else
+                    {
+                        Logs.WriteEventFormat("{0} ({1}) <{2}> modifier user is not a Portal User, not added to the list.", user.DisplayName, user.UserID.ToString(), user.Email);
+                    }
+                }
+                else
+                {
+                    Logs.WriteEventFormat("ModifierId {0} was not found", ticket.ModifierID.ToString());
+                }
+            }
+
+            return user;
         }
 
         private void AddUsersToAddresses(MailAddressCollection collection, List<UserEmail> users, int modifierID)

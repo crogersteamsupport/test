@@ -28,6 +28,8 @@ namespace TeamSupport.Data
     [DataMember] public bool HonorServiceAgreementExpirationDate { get; set; }
     [DataMember] public bool HonorSupportExpiration { get; set; }
     [DataMember] public bool RequireTermsAndConditions { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public int? ModifierID { get; set; }
           
   }
   
@@ -36,6 +38,7 @@ namespace TeamSupport.Data
     public CustomerHubAuthenticationItemProxy GetProxy()
     {
       CustomerHubAuthenticationItemProxy result = new CustomerHubAuthenticationItemProxy();
+      result.ModifierID = this.ModifierID;
       result.RequireTermsAndConditions = this.RequireTermsAndConditions;
       result.HonorSupportExpiration = this.HonorSupportExpiration;
       result.HonorServiceAgreementExpirationDate = this.HonorServiceAgreementExpirationDate;
@@ -52,6 +55,7 @@ namespace TeamSupport.Data
       result.CustomerHubID = this.CustomerHubID;
       result.CustomerHubAuthenticationID = this.CustomerHubAuthenticationID;
        
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
        
       return result;

@@ -11,6 +11,7 @@
   <meta charset="utf-8">
   <title>TeamSupport - Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
   <link href="vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Pages/Login.css" rel="stylesheet" type="text/css" />
   <script src="vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
@@ -53,7 +54,7 @@
 			 	<a href="http://www.teamsupport.com/customer-support-software-free-trial">Create a free account</a>
           </div>
           <div class="col-xs-6">
-            <a href="http://m.teamsupport.com">Mobile Site</a>
+            <a id="mobile-link" href="http://m.teamsupport.com">Mobile Site</a>
           </div>
         </div>
       </footer>

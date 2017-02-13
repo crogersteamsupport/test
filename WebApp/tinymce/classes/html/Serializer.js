@@ -1,4 +1,22 @@
+/**
+ * Serializer.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class is used to serialize down the DOM tree into a string using a Writer instance.
+ *
+ *
+ * @example
+ * new tinymce.html.Serializer().serialize(new tinymce.html.DomParser().parse('<p>text</p>'));
+ * @class tinymce.html.Serializer
+ * @version 3.4
+ */
 define("tinymce/html/Serializer", [
 	"tinymce/html/Writer",
 	"tinymce/html/Schema"

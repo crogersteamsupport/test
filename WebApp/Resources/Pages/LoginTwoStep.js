@@ -1,6 +1,6 @@
 ﻿var loginService = '/Services/LoginService.asmx/';
 var returnURL = '/default.aspx';
-var codeInfoTemplate = 'A verification code has been sent to the phone number:  {0}. </br> If this is not the correct number please contact your Team Support admin.';
+var codeInfoTemplate = 'A verification code has been sent to the phone number:  {0}. </br> If this is not the correct number please contact your TeamSupport admin.';
 
 $(document).ready(function () {
 	GetUserPhoneNumb();

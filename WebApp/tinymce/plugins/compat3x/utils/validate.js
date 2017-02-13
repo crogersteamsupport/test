@@ -1,4 +1,26 @@
+/**
+ * validate.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+	// String validation:
+
+	if (!Validator.isEmail('myemail'))
+		alert('Invalid email.');
+
+	// Form validation:
+
+	var f = document.forms['myform'];
+
+	if (!Validator.isEmail(f.myemail))
+		alert('Invalid email.');
+*/
 
 var Validator = {
 	isEmail : function(s) {

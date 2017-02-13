@@ -57,7 +57,23 @@ namespace TeamSupport.Data
       return result;
     }
 
-    public static object ExecuteScalar(LoginUser loginUser, string commandText)
+    public static DataTable ExecuteSchema(LoginUser loginUser, SqlCommand command)
+    {
+        DataTable result = new DataTable();
+        using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+        {
+            connection.Open();
+            command.Connection = connection;
+            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+            {
+                adapter.FillSchema(result, SchemaType.Source);
+            }
+            connection.Close();
+        }
+        return result;
+    }
+
+        public static object ExecuteScalar(LoginUser loginUser, string commandText)
     {
       return ExecuteScalar(loginUser, new SqlCommand(commandText));
     }

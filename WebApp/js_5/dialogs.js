@@ -215,9 +215,16 @@ function GetSlaLevelDialog(isNew, slaLevelID) {
     var manager = GetRadWindowManager();
     var wnd = manager.getWindowByName('wndSlaLevel');
     var url = 'Dialogs/SlaLevel.aspx';
+    var isCloning = isNew && slaLevelID != null && slaLevelID > 0;
+
     if (!isNew) {
         url = url + '?SlaLevelID=' + slaLevelID;
     }
+
+    if (isCloning) {
+        url = url + '?SlaLevelID=' + slaLevelID + '&IsCloning=true';
+    }
+
     wnd.setSize(300, 200);
 
     wnd.setUrl(url);
@@ -234,7 +241,7 @@ function GetSlaTriggerDialog(isNew, id, ticketTypeID) {
     else {
         url = url + '?SlaTriggerID=' + id;
     }
-    wnd.setSize(625, 500);
+    wnd.setSize(590, 650);
 
     wnd.setUrl(url);
     return wnd;

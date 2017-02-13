@@ -377,8 +377,10 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-					command.CommandText = "SELECT * FROM Users WHERE (AppChatID = @chatid)";
-                command.CommandType = CommandType.Text;
+                command.CommandText = "GetUsersByChatId";
+                command.CommandType = CommandType.StoredProcedure;
+                //command.CommandText = "SELECT * FROM Users WHERE (AppChatID = @chatid)";
+                //command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@chatid", chatID);
                 Fill(command);
             }
@@ -1319,6 +1321,8 @@ AND u.IsPortalUser = 1";
             User user = Users.GetUser(loginUser, userID);
             if (user != null)
             {
+                user.AppChatID = "";
+                user.AppChatStatus = false;
                 user.MarkDeleted = true;
                 user.Collection.Save();
             }

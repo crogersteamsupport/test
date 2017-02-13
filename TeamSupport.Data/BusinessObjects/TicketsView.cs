@@ -211,39 +211,34 @@ namespace TeamSupport.Data
             }
         }
 
-				public bool GetCustomerHasAccess(int organizationID, LoginUser loginUser)
-				{
+        public bool GetCustomerHasAccess(int organizationID, LoginUser loginUser, bool hubOrganizationTickets)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                User user = loginUser.GetUser();
+                if (hubOrganizationTickets && !user.PortalLimitOrgTickets)
+                {
+                    command.CommandText = "SELECT COUNT(*) FROM OrganizationTickets ot WHERE (tot.OrganizationID = @OrganizationID OR ot.OrganizationID in (SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)) AND (ot.TicketID = @TicketID)";
+                }
+                else
+                {
+                    command.CommandText = "SELECT COUNT(*) FROM UserTickets as UT WHERE (UT.TicketID = @TicketID) AND (UT.UserID = @UserID)";
+                }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", this.TicketID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                object obj2 = this.Collection.ExecuteScalar(command);
+                if ((obj2 == null) || (obj2 == DBNull.Value))
+                {
+                    return false;
+                }
+                return (((int)obj2) > 0);
+            }
+        }
 
-					using (SqlCommand command = new SqlCommand())
-					{
-						User userAcount = loginUser.GetUser();
-						if (!userAcount.PortalLimitOrgChildrenTickets)
-						{
-							command.CommandText = @"SELECT COUNT(*) 
-																			FROM OrganizationTickets ot 
-																			WHERE (
-																							ot.OrganizationID = @OrganizationID 
-																							OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @OrganizationID)
-																						) 
-																						AND (ot.TicketID = @TicketID)";
-						}
-						else
-						{
-							command.CommandText = @"SELECT COUNT(*) 
-																				FROM OrganizationTickets 
-																				WHERE (OrganizationID = @OrganizationID) 
-																					AND (TicketID = @TicketID)";
-						}
-						command.CommandType = CommandType.Text;
-						command.Parameters.AddWithValue("@TicketID", TicketID);
-						command.Parameters.AddWithValue("@OrganizationID", organizationID);
-						object o = Collection.ExecuteScalar(command);
-						if (o == null || o == DBNull.Value) return false;
-						return (int)o > 0;
-					}
-				}
 
-		public bool UserHasRights(User user)
+        public bool UserHasRights(User user)
         {
             return Ticket.UserHasRights(user, this.GroupID, this.UserID, this.TicketID, this.IsKnowledgeBase);
         }
@@ -686,6 +681,17 @@ ORDER BY TicketNumber DESC";
             }
         }
 
+        public void LoadForumPostsByUserID(int userID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "Select tv.* from TicketsView as tv inner join ForumTickets ft on tv.TicketID = ft.ticketid where tv.ticketID in (select ticketid from actions where CreatorID = @UserID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                Fill(command);
+            }
+        }
+
         public void LoadByContactID(int userID)
         {
             LoadByContactID(userID, "TicketNumber");
@@ -733,8 +739,8 @@ ORDER BY TicketNumber DESC";
 
         public void LoadByTicketTypeID(int ticketTypeID, int organizationId, NameValueCollection filters)
         {
-            //Get the column names, this row will be deleted before getting the actual data
-            this.LoadOneByOrganizationId(organizationId);
+            //Get the column names
+			LoadColumns("TicketsView");
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -753,17 +759,13 @@ ORDER BY TicketNumber DESC";
                     command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
                 }
 
-                this.DeleteAll();
                 Fill(command);
             }
         }
 
         public void LoadByTicketIDList(int organizationId, int ticketTypeId, List<int> ticketIds)
         {
-            //Get the column names, this row will be deleted before getting the actual data
-            this.LoadOneByOrganizationId(organizationId);
-
-            string orderBy = "ORDER BY TicketNumber";
+			string orderBy = "ORDER BY TicketNumber";
             string sql = string.Empty;
 
             using (SqlCommand command = new SqlCommand())
@@ -778,17 +780,16 @@ ORDER BY TicketNumber DESC";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@organizationId", organizationId);
 
-                this.DeleteAll();
                 Fill(command);
             }
         }
 
         public void LoadAllTicketIds(int organizationId, NameValueCollection filters, int? PageNumber = null, int? PageSize = null)
         {
-            //Get the column names, this row will be deleted before getting the actual data
-            this.LoadOneByOrganizationId(organizationId);
+            //Get the column names
+			LoadColumns("TicketsView");
 
-            string orderBy = "ORDER BY TicketNumber";
+			string orderBy = "ORDER BY TicketNumber";
             string sql = string.Empty;
 
             using (SqlCommand command = new SqlCommand())
@@ -802,7 +803,6 @@ ORDER BY TicketNumber DESC";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@organizationId", organizationId);
 
-                this.DeleteAll();
                 Fill(command);
             }
         }
@@ -892,6 +892,29 @@ ORDER BY TicketNumber DESC";
                 }
                 builder.Append(@" ORDER BY t.DateModified desc");
 
+
+                command.CommandText = builder.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@CustomerID", customerID);
+                command.Parameters.AddWithValue("@ticketID", ticketID);
+                Fill(command, "TicketsView");
+            }
+        }
+
+        public void LoadHubForumTopicByID(int ticketID, int organizationID, int customerID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.Append(@"SELECT t.*
+								FROM TicketsView as T
+                                Inner Join ForumTickets as FT on T.TicketID = FT.TicketID
+								WHERE 
+									t.ticketid = @ticketID
+									AND t.OrganizationID              = @OrganizationID 
+									AND t.IsVisibleOnPortal         = 1");
+                builder.Append(@" ORDER BY t.DateModified desc");
 
                 command.CommandText = builder.ToString();
                 command.CommandType = CommandType.Text;
@@ -1045,7 +1068,7 @@ ORDER BY TicketNumber DESC";
         public void LoadByRange(int from, int to, TicketLoadFilter filter)
         {
             SqlCommand command = GetLoadRangeCommand(LoginUser, from, to, filter);
-            Fill(command);
+            Fill(command, "", false);
         }
 
         public static SqlCommand GetLoadExportCommand(LoginUser loginUser, TicketLoadFilter filter)
@@ -1191,14 +1214,16 @@ ORDER BY TicketNumber DESC";
         ),
 
         PageQuery AS (
-          SELECT  * FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
+          SELECT  *, (SELECT MAX(RowNum) FROM RowQuery) AS 'TotalRecords' FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
         )
 
-        SELECT PageQuery.RowNum, {3}
-        FROM PageQuery
-        INNER JOIN UserTicketsView tv ON tv.TicketID = PageQuery.TicketID 
+        SELECT * INTO #Tickets FROM PageQuery;
+
+        SELECT Result.RowNum, Result.TotalRecords, {3}
+        FROM #Tickets AS Result
+        INNER JOIN UserTicketsView tv ON tv.TicketID = Result.TicketID
         WHERE tv.ViewerID = @ViewerID
-        ORDER BY PageQuery.RowNum ASC
+        ORDER BY Result.RowNum ASC
         ";
 
             command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);
@@ -1473,6 +1498,9 @@ ORDER BY TicketNumber DESC";
             if (filter.ForumCategoryID != null && filter.ForumCategoryID == -1)
             {
                 builder.Append(" AND (tv.ForumCategory IS NOT NULL)");
+            }
+            else if (filter.ForumCategoryID == null){
+                builder.Append(" AND (tv.ForumCategory IS NULL)");
             }
 
             if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)

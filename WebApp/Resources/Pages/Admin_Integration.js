@@ -249,13 +249,13 @@ AdminInt = function () {
       var list = $('.int-api-info').empty();
       $('<dt>').text('TeamSupport API token:').appendTo(list);
       $('<dd>').text(info.Token).appendTo(list);
-      $('<dt>').text('Current daily requests:').appendTo(list);
+      $('<dt>').text('Current requests in the last 24 hours:').appendTo(list);
       var current = info.RequestCount;
       if (info.RequestCount >= info.RequestMax) {
         current = '<strong class="ui-state-error">' + info.RequestCount + ' (You have reached your maximum amount of requests for the last 24 hours.)</strong>';
       }
       $('<dd>').html(current).appendTo(list);
-      $('<dt>').text('Maximum daily requests:').appendTo(list);
+      $('<dt>').text('Maximum requests per 24 hours:').appendTo(list);
       $('<dd>').text(info.RequestMax).appendTo(list);
       var link = 'https://' + window.parent.parent.Ts.System.Organization.OrganizationID + ':' + info.Token + '@'+ window.parent.parent.Ts.System.AppDomain + '/api/xml/users';
       $('.int-api-link-users').attr('href', link).text(link);
@@ -791,8 +791,6 @@ AdminInt = function () {
     		}
 
     		if (excludedTicketStatuses === null || excludedTicketStatuses == '') {
-    			parent.find('.int-crm-update-status').prop('checked', false);
-    			parent.find('#restrictedTicketTypesList').hide();
     			excludedTicketStatuses = null;
     		}
     	}
@@ -833,9 +831,9 @@ AdminInt = function () {
       }
     }
 
-    var updateTicketStatus = parent.find('.int-crm-update-type').prop('checked');
-    if (typeof updateTicketStatus == 'undefined') {
-      updateTicketStatus = true;
+    var updateTicketType = parent.find('.int-crm-update-type').prop('checked');
+    if (typeof updateTicketType == 'undefined') {
+        updateTicketType = true;
     }
 
     var linkID = parent.data('link') == undefined || (_isNewJiraInstance && crmType == 'Jira') ? -1 : parent.data('link').CRMLinkID;
@@ -858,8 +856,8 @@ AdminInt = function () {
           actionTypeIDToPush,
           hostName,
           defaultProject,
-          (parent.find('.int-crm-update-status').length > 0 ? parent.find('.int-crm-update-status').prop('checked') : null),
           updateTicketStatus,
+          updateTicketType,
           matchAccountsByName,
           useSandBoxServer,
           alwaysUseDefaultProjectKey,

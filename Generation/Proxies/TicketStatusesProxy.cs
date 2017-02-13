@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public bool PauseSLA { get; set; }
           
   }
   
@@ -34,6 +35,7 @@ namespace TeamSupport.Data
     public TicketStatusProxy GetProxy()
     {
       TicketStatusProxy result = new TicketStatusProxy();
+      result.PauseSLA = this.PauseSLA;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.OrganizationID = this.OrganizationID;

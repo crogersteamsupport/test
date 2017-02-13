@@ -41,6 +41,7 @@ namespace TeamSupport.Api
         {
           organizations = new OrganizationsView(command.LoginUser);
           organizations.LoadByParentID(command.Organization.OrganizationID, true);
+            ExceptionLogs.LogException(command.LoginUser, e, "API", "RestOrganizations. RestGetOrganization(). SQL filtering generation failed, fell into old method (no filters?).");
         }
       }
       return organizations.GetXml("Customers", "Customer", true, !hasBeenFiltered ? command.Filters : new System.Collections.Specialized.NameValueCollection(), command.IsPaging);

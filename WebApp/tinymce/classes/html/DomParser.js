@@ -1,4 +1,25 @@
+/**
+ * DomParser.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class parses HTML code into a DOM like structure of nodes it will remove redundant whitespace and make
+ * sure that the node tree is valid according to the specified schema.
+ * So for example: <p>a<p>b</p>c</p> will become <p>a</p><p>b</p><p>c</p>
+ *
+ * @example
+ * var parser = new tinymce.html.DomParser({validate: true}, schema);
+ * var rootNode = parser.parse('<h1>content</h1>');
+ *
+ * @class tinymce.html.DomParser
+ * @version 3.4
+ */
 define("tinymce/html/DomParser", [
 	"tinymce/html/Node",
 	"tinymce/html/Schema",

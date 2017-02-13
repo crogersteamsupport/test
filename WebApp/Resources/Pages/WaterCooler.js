@@ -1052,6 +1052,18 @@ function disconnect (windowid) {
         //chatAddMsg(windowid, "User is currently offline", "system");
     };
 
+function updateStatusReconnecting()
+{
+    $('#signalrStatus').removeClass('color-green');
+    $('#signalrStatus').addClass('color-red');
+}
+
+function updateStatusReconnected() {
+    $('#signalrStatus').removeClass('color-red');
+    $('#signalrStatus').addClass('color-green');
+}
+
+
 function updateUsers () {
         if (pageType == -1) {
             mainFrame.Ts.Services.WaterCooler.GetOnlineChatUsers(mainFrame.Ts.System.User.OrganizationID, function (users) {

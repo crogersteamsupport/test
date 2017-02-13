@@ -18,6 +18,7 @@ namespace TeamSupport.Data
     [DataMember] public string Name { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int Position { get; set; }
+    [DataMember] public bool VisibleOnPortal { get; set; }
     //[DataMember] public int OrganizationID { get; set; }
     //[DataMember] public DateTime DateCreated { get; set; }
     //[DataMember] public DateTime DateModified { get; set; }
@@ -37,7 +38,7 @@ namespace TeamSupport.Data
       result.Description = (this.Description);
       result.Name = (this.Name);
       result.TicketSeverityID = this.TicketSeverityID;
-       
+      result.VisibleOnPortal = this.VisibleOnPortal;
        
        
       return result;

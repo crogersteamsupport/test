@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public int? ModifierID
+    {
+      get { return Row["ModifierID"] != DBNull.Value ? (int?)Row["ModifierID"] : null; }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
+    }
+    
 
     
     public bool IsActive
@@ -68,6 +74,17 @@ namespace TeamSupport.Data
 
     
 
+    
+    public DateTime DateModified
+    {
+      get { return DateToLocal((DateTime)Row["DateModified"]); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
+    }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
     
     public DateTime DateCreated
     {
@@ -164,7 +181,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubCustomViews] SET     [CustomerHubID] = @CustomerHubID,    [CustomerHubViewID] = @CustomerHubViewID,    [CustomView] = @CustomView,    [IsActive] = @IsActive  WHERE ([CustomerHubCustomViewID] = @CustomerHubCustomViewID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubCustomViews] SET     [CustomerHubID] = @CustomerHubID,    [CustomerHubViewID] = @CustomerHubViewID,    [CustomView] = @CustomView,    [IsActive] = @IsActive,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([CustomerHubCustomViewID] = @CustomerHubCustomViewID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomerHubCustomViewID", SqlDbType.Int, 4);
@@ -202,13 +219,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubCustomViews] (    [CustomerHubID],    [CustomerHubViewID],    [CustomView],    [IsActive],    [DateCreated]) VALUES ( @CustomerHubID, @CustomerHubViewID, @CustomView, @IsActive, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubCustomViews] (    [CustomerHubID],    [CustomerHubViewID],    [CustomView],    [IsActive],    [DateCreated],    [DateModified],    [ModifierID]) VALUES ( @CustomerHubID, @CustomerHubViewID, @CustomView, @IsActive, @DateCreated, @DateModified, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -357,7 +402,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubCustomViewID], [CustomerHubID], [CustomerHubViewID], [CustomView], [IsActive], [DateCreated] FROM [dbo].[CustomerHubCustomViews] WHERE ([CustomerHubCustomViewID] = @CustomerHubCustomViewID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubCustomViewID], [CustomerHubID], [CustomerHubViewID], [CustomView], [IsActive], [DateCreated], [DateModified], [ModifierID] FROM [dbo].[CustomerHubCustomViews] WHERE ([CustomerHubCustomViewID] = @CustomerHubCustomViewID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomerHubCustomViewID", customerHubCustomViewID);
         Fill(command);

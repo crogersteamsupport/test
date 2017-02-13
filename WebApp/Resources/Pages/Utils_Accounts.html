@@ -122,19 +122,41 @@
             checkActive.change(function (e) {
               e.preventDefault();
               var user = $(this).parents('tr').data('o');
-              top.Ts.Services.Users.AdminSetActive(user.UserID, !user.IsActive);
+              top.Ts.Services.Users.AdminSetActive(user.UserID, checkActive.prop('checked'));
 
             });
             row.append($('<td>').append(checkActive));
+
+            var checkAdmin = $('<input />', { type: 'checkbox' })
+            if (user.IsSystemAdmin == true) checkAdmin.prop('checked', true);
+            checkAdmin.change(function (e) {
+                e.preventDefault();
+                var user = $(this).parents('tr').data('o');
+                
+                top.Ts.Services.Users.AdminSetAdmin(user.UserID, checkAdmin.prop('checked'));
+
+            });
+            row.append($('<td>').append(checkAdmin));
+
+            var checkBilling = $('<input />', { type: 'checkbox' })
+            if (user.IsFinanceAdmin == true) checkBilling.prop('checked', true);
+            checkBilling.change(function (e) {
+                e.preventDefault();
+                var user = $(this).parents('tr').data('o');
+                top.Ts.Services.Users.AdminSetBilling(user.UserID, checkBilling.prop('checked'));
+
+            });
+            row.append($('<td>').append(checkBilling));
 
             var checkSession = $('<input />', { type: 'checkbox' })
             checkSession.change(function (e) {
               e.preventDefault();
               var user = $(this).parents('tr').data('o');
-              top.Ts.Services.Users.SetSingleSessionEnforcement(user.UserID, !user.EnforceSingleSession);
+              top.Ts.Services.Users.SetSingleSessionEnforcement(user.UserID, checkSession.prop('checked'));
             });
             if (user.EnforceSingleSession == true) checkSession.prop('checked', true);
             row.append($('<td>').append(checkSession));
+
             var div = $('<div>');
             var link = $("<a>").attr("href", "#").addClass("getlink").text("Get Login").click(function (e) {
             	e.preventDefault();
@@ -197,6 +219,19 @@
         }
       });
 
+      $('.action-ticketnumber').click(function (e) {
+          e.preventDefault();
+          var org = $('.org-info').data('o');
+          var num = prompt("What is the next ticket number", 10000);
+          if (num != null) {
+              top.Ts.Services.Organizations.AdminSetNextTicketNumber(org.OrganizationID, num, function () {
+                  showOrgInfo(org.OrganizationID);
+              });
+          }
+      });
+
+                
+
       $('.action-delete').click(function (e) {
         e.preventDefault();
         var org = $('.org-info').data('o');
@@ -228,6 +263,17 @@
           alert("All portal users are now enabled.");
         });
       });
+
+      $('.action-hub').click(function (e) {
+          e.preventDefault();
+          var sendEmails = confirm("Would you like to send password emails?");
+          if (!confirm("Are you sure you would like to turn all the contacts into hub users?")) return;
+          var org = $('.org-info').data('o');
+          top.Ts.Services.Organizations.AdminSetAllHubsers(org.OrganizationID, sendEmails, function () {
+              alert("All hub users are now enabled.");
+          });
+      });
+
 
       $('.action-index').click(function (e) {
         e.preventDefault();
@@ -290,6 +336,8 @@
                 <button class="btn btn-default action-seats">Change Seat Count</button>
                 <button class="btn btn-default action-api">Change API Request Count</button>
                 <button class="btn btn-default action-portal">Turn all portal users on</button>
+                  <button class="btn btn-default action-hub">Turn all hub users on</button>
+                <button class="btn btn-default action-ticketnumber">Set Next Ticket Number</button>
               </div>
               <div>
                 <form class="form">
@@ -329,7 +377,9 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Last Login</th>
-                    <th>Is Active</th>
+                    <th>Active</th>
+                    <th>Admin</th>
+                    <th>Billing</th>
                     <th>Single Session Enforced</th>
   						<th>Get Login Link</th>
                   </tr>

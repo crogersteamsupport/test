@@ -1,4 +1,20 @@
+/**
+ * ListBox.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * Creates a new list box control.
+ *
+ * @-x-less ListBox.less
+ * @class tinymce.ui.ListBox
+ * @extends tinymce.ui.MenuButton
+ */
 define("tinymce/ui/ListBox", [
 	"tinymce/ui/MenuButton",
 	"tinymce/ui/Menu"
@@ -54,7 +70,7 @@ define("tinymce/ui/ListBox", [
 				self.state.set('menu', values);
 			}
 
-			self.state.set('text', settings.text || selectedText || values[0].text);
+			self.state.set('text', settings.text || selectedText);
 
 			self.classes.add('listbox');
 

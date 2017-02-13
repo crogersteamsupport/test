@@ -1,4 +1,19 @@
+/**
+ * Tools.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
+/**
+ * This class contains various utlity functions. These are also exposed
+ * directly on the tinymce namespace.
+ *
+ * @class tinymce.util.Tools
+ */
 define("tinymce/util/Tools", [
 	"tinymce/Env",
 	"tinymce/util/Arr"
@@ -70,7 +85,7 @@ define("tinymce/util/Tools", [
 	 * More details on this method can be found in the Wiki.
 	 *
 	 * @method create
-	 * @param {String} s Class name, inheritage and prefix.
+	 * @param {String} s Class name, inheritance and prefix.
 	 * @param {Object} p Collection of methods to add to the class.
 	 * @param {Object} root Optional root object defaults to the global window object.
 	 * @example

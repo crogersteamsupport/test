@@ -28,6 +28,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("HonorServiceAgreementExpirationDate", "HonorServiceAgreementExpirationDate", false, false, false);
       _fieldMap.AddMap("HonorSupportExpiration", "HonorSupportExpiration", false, false, false);
       _fieldMap.AddMap("RequireTermsAndConditions", "RequireTermsAndConditions", false, false, false);
+      _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
+      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
             
     }
   }

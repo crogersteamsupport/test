@@ -40,6 +40,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.btnTestEmail = new System.Windows.Forms.Button();
             this.btnFullContacts = new System.Windows.Forms.Button();
+            this.btnReportSender = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -119,7 +120,7 @@
             // 
             this.button1.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.ForeColor = System.Drawing.Color.Green;
-            this.button1.Location = new System.Drawing.Point(12, 231);
+            this.button1.Location = new System.Drawing.Point(239, 13);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(221, 29);
             this.button1.TabIndex = 28;
@@ -131,7 +132,7 @@
             // 
             this.button2.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button2.ForeColor = System.Drawing.Color.Green;
-            this.button2.Location = new System.Drawing.Point(12, 266);
+            this.button2.Location = new System.Drawing.Point(239, 50);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(221, 29);
             this.button2.TabIndex = 29;
@@ -143,7 +144,7 @@
             // 
             this.btnTestEmail.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnTestEmail.ForeColor = System.Drawing.Color.Green;
-            this.btnTestEmail.Location = new System.Drawing.Point(12, 405);
+            this.btnTestEmail.Location = new System.Drawing.Point(239, 159);
             this.btnTestEmail.Name = "btnTestEmail";
             this.btnTestEmail.Size = new System.Drawing.Size(221, 29);
             this.btnTestEmail.TabIndex = 30;
@@ -155,7 +156,7 @@
             // 
             this.btnFullContacts.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnFullContacts.ForeColor = System.Drawing.Color.Green;
-            this.btnFullContacts.Location = new System.Drawing.Point(12, 301);
+            this.btnFullContacts.Location = new System.Drawing.Point(239, 87);
             this.btnFullContacts.Name = "btnFullContacts";
             this.btnFullContacts.Size = new System.Drawing.Size(221, 29);
             this.btnFullContacts.TabIndex = 31;
@@ -163,22 +164,37 @@
             this.btnFullContacts.UseVisualStyleBackColor = true;
             this.btnFullContacts.Click += new System.EventHandler(this.btnFullContacts_Click);
             // 
+            // btnReportSender
+            // 
+            this.btnReportSender.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnReportSender.ForeColor = System.Drawing.Color.Green;
+            this.btnReportSender.Location = new System.Drawing.Point(239, 124);
+            this.btnReportSender.Name = "btnReportSender";
+            this.btnReportSender.Size = new System.Drawing.Size(221, 29);
+            this.btnReportSender.TabIndex = 33;
+            this.btnReportSender.Text = "Start Report Sender";
+            this.btnReportSender.UseVisualStyleBackColor = true;
+            this.btnReportSender.Click += new System.EventHandler(this.btnReportSender_Click);
+            // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(13, 337);
+            this.button3.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.ForeColor = System.Drawing.Color.Green;
+            this.button3.Location = new System.Drawing.Point(239, 196);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(220, 23);
-            this.button3.TabIndex = 32;
-            this.button3.Text = "Temp Test";
+            this.button3.Size = new System.Drawing.Size(221, 29);
+            this.button3.TabIndex = 34;
+            this.button3.Text = "Start Tok Transcoder";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(248, 446);
+            this.ClientSize = new System.Drawing.Size(477, 241);
             this.Controls.Add(this.button3);
+            this.Controls.Add(this.btnReportSender);
             this.Controls.Add(this.btnFullContacts);
             this.Controls.Add(this.btnTestEmail);
             this.Controls.Add(this.button2);
@@ -209,6 +225,7 @@
     private System.Windows.Forms.Button button2;
     private System.Windows.Forms.Button btnTestEmail;
     private System.Windows.Forms.Button btnFullContacts;
+		private System.Windows.Forms.Button btnReportSender;
         private System.Windows.Forms.Button button3;
     }
 }

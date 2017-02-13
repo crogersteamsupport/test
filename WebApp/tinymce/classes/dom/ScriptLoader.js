@@ -1,6 +1,40 @@
+/**
+ * ScriptLoader.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*globals console*/
 
+/**
+ * This class handles asynchronous/synchronous loading of JavaScript files it will execute callbacks
+ * when various items gets loaded. This class is useful to load external JavaScript files.
+ *
+ * @class tinymce.dom.ScriptLoader
+ * @example
+ * // Load a script from a specific URL using the global script loader
+ * tinymce.ScriptLoader.load('somescript.js');
+ *
+ * // Load a script using a unique instance of the script loader
+ * var scriptLoader = new tinymce.dom.ScriptLoader();
+ *
+ * scriptLoader.load('somescript.js');
+ *
+ * // Load multiple scripts
+ * var scriptLoader = new tinymce.dom.ScriptLoader();
+ *
+ * scriptLoader.add('somescript1.js');
+ * scriptLoader.add('somescript2.js');
+ * scriptLoader.add('somescript3.js');
+ *
+ * scriptLoader.loadQueue(function() {
+ *    alert('All scripts are now loaded.');
+ * });
+ */
 define("tinymce/dom/ScriptLoader", [
 	"tinymce/dom/DOMUtils",
 	"tinymce/util/Tools"
@@ -25,7 +59,6 @@ define("tinymce/dom/ScriptLoader", [
 		 * @method load
 		 * @param {String} url Absolute URL to script to add.
 		 * @param {function} callback Optional callback function to execute ones this script gets loaded.
-		 * @param {Object} scope Optional scope to execute callback in.
 		 */
 		function loadScript(url, callback) {
 			var dom = DOM, elm, id;
@@ -97,7 +130,7 @@ define("tinymce/dom/ScriptLoader", [
 		 * the script loader or to skip it from loading some script.
 		 *
 		 * @method markDone
-		 * @param {string} u Absolute URL to the script to mark as loaded.
+		 * @param {string} url Absolute URL to the script to mark as loaded.
 		 */
 		this.markDone = function(url) {
 			states[url] = LOADED;
@@ -131,6 +164,11 @@ define("tinymce/dom/ScriptLoader", [
 					scope: scope || this
 				});
 			}
+		};
+
+		this.remove = function(url) {
+			delete states[url];
+			delete scriptLoadedCallbacks[url];
 		};
 
 		/**

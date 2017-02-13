@@ -6,7 +6,8 @@
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <html>
 <head id="Head1" runat="server">
-  <title>Team Support</title>
+  <meta name="robots" content="noindex, nofollow">
+  <title>Teamsupport</title>
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
 	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg">
   <link href="vcr/1_9_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
@@ -30,6 +31,7 @@
   <script src="vcr/1_9_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
+  <script src="vcr/1_9_0/Js/Ts/ts.editor.js" type="text/javascript"></script>
 
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
@@ -59,7 +61,7 @@
     var g_PrivateServices;
     var _selectContactID = -1;
     var _selectCustomerID = -1;
-
+    var _tinyMCE;
     function teamSupportLoad() {
       g_uac = $('#fieldAuth').val();
       Ts.MainPage = new Ts.Pages.Main();
@@ -88,6 +90,69 @@
         } catch (e) { }
       }
     }
+
+    var backspaceIsPressed = false;
+    var isSignedOut = false;
+
+    $(document).keydown(function (event) {
+        if (event.which == 8) {
+            backspaceIsPressed = true
+        }
+    })
+    $(document).keyup(function (event) {
+        if (event.which == 8) {
+            backspaceIsPressed = false
+        }
+    })
+    $(window).on('beforeunload', function () {
+        if (backspaceIsPressed) {
+            backspaceIsPressed = false
+            return "Are you sure you want to leave this page?"
+        }
+
+        if (!isSignedOut)
+        {
+            var iframes = document.getElementsByTagName('iframe'); //all iframes on page
+            for (var i = 0; i < iframes.length; i++) {
+                try {
+                    if (iframes[i].contentWindow.tinyMCE.activeEditor)
+                        return "Are you sure you want to leave this page?"
+                } catch (e) { }
+            }
+        }
+
+    })
+
+    //document.onkeydown = function (event) {
+
+    //    if (!event) { /* This will happen in IE */
+    //        event = window.event;
+    //    }
+
+    //    var keyCode = event.keyCode;
+
+    //    if (keyCode == 8 &&
+    //        ((event.target || event.srcElement).tagName != "TEXTAREA") &&
+    //        ((event.target || event.srcElement).tagName != "INPUT")) {
+
+    //        if (navigator.userAgent.toLowerCase().indexOf("msie") == -1) {
+    //            event.stopPropagation();
+    //        } else {
+    //            alert("prevented");
+    //            event.returnValue = false;
+    //        }
+
+    //        return false;
+    //    }
+    //};
+
+    //window.onbeforeunload = function() {
+    //   return "Are you sure you want to leave TeamSupport?";
+    //   //if we return nothing here (just calling return;) then there will be no pop-up question at all
+    //   //return;
+    //};
+
+
   </script>
   <style type="text/css">
     html, body, form { height: 100%; margin: 0; padding: 0; overflow: hidden; }
@@ -190,12 +255,12 @@
         <span class="status-debug ui-helper-hidden"></span>
       </div>
     </div>
-    <div class="main-info ui-widget-content ts-noborder">
+<%--    <div class="main-info ui-widget-content ts-noborder">
       <div class="ui-widget-header">
         <a href="#" class="main-info-close">Hide this window</a></div>
       <div class="main-info-content">
       </div>
-    </div>
+    </div>--%>
     <div class="main-nav ui-widget-content ts-noborder">
       <div class="main-menutree">
       </div>

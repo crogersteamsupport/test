@@ -37,6 +37,7 @@ namespace TeamSupport.Service
         case "TSEmailProcessor": result = new ServiceThreadPool<EmailProcessor>("EmailProcessor"); break;
         case "TSEmailSender": result = new ServiceThreadPool<EmailSender>("EmailSender"); break;
         case "TSSlaProcessor": result = new SlaProcessor(); break;
+        case "TSSlaCalculator": result = new SlaCalculator(); break;
         case "TSIndexer": result = new ServiceThreadPool<Indexer>("Indexer"); break;
         case "TSIndexRebuilder": result = new ServiceThreadPool<Indexer>("Indexer"); break;
         case "TSCrmPool": result = new CrmPool(SystemUser.CRM); break;
@@ -44,6 +45,8 @@ namespace TeamSupport.Service
         case "TSImportProcessor": result = new ImportProcessor(); break;
         case "TSWebHooks": result = new WebHooks(); break;
         case "TSCustomerInsights": result = new CustomerInsightsProcessor(); break;
+        case "TSReportSender": result = new ServiceThreadPool<ReportSender>("ReportSender"); break;
+        case "TSTokTranscoder": result = new ServiceThreadPool<TokTranscoder>("TokTranscoder"); break;
         default: result = null; break;
       }
 

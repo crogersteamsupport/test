@@ -43,6 +43,7 @@
     <!--<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css" rel="stylesheet">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.js"></script>-->
     <script src="../Js/summernote.min.js"></script>
+    <script src="TicketWidget.js"></script>
 
     <script src="../Js/Ts/ts.editor.summernote.js"></script>
     <script src="../../../tinymce/plugins/moxiemanager/js/moxman.loader.min.js"></script>
@@ -492,7 +493,7 @@
           <script id="ticket-group-SLAStatus" type="text/x-handlebars-template">
             <div class="form-horizontal">
               <div class="form-group form-group-sm">
-                <label for="ticket-severity" class="col-sm-4 control-label select-label">SLA Status</label>
+                <label for="ticket-SLAStatus" class="col-sm-4 control-label select-label">SLA Status</label>
                 <div class="col-sm-8 ticket-input-container">
                   <label id="ticket-SLAStatus" class="ticket-sla-status pull-left control-label SLAAnchor">
                     <i class="fa fa-bomb"></i>
@@ -735,10 +736,21 @@
                 </div>
               </div>
             </script>
+            <script id="ticket-group-Attachments" type="text/x-handlebars-template">
+                <div class="form-group ticket-group">
+                    <div class="tagContainer">
+                        <label class="col-sm-4 control-label select-label attachment-label">Attachments</label>
+                        {{#each Attachments}}
+                        <a target="_blank" href="../../../dc/1/attachments/{{AttachmentID}}"><i class="glyphicon glyphicon-paperclip"></i>{{FileName}}</a><br />
+                        {{/each}}
+                    </div>
+                </div>
+            </script>
             <script id="ticket-group-CustomFields" type="text/x-handlebars-template">
               <div id="ticket-group-custom-fields">
               </div>
             </script>
+            
         </div>
       </div>
     </div>
@@ -766,7 +778,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<p>An Extension is required in order for Screen Sharing to function properly. Please select your browswer and install the extension. Once the installation is complete close this dialog and click the Record Screen button again.</p>
+						<p>An Extension is required in order for Screen Sharing to function properly. Please select your browser and install the extension. Once the installation is complete close this dialog and click the Record Screen button again.</p>
 						<p id="chromemodalbutton"><button type="button" class="btn btn-primary" onclick="top.Ts.MainPage.installChromePlugin();" id="install-button">Add to Chrome</button></p>
 					</div>
 				</div>

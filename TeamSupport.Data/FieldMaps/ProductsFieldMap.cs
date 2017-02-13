@@ -27,6 +27,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("JiraProjectKey", "JiraProjectKey", false, false, false);
       _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
       _fieldMap.AddMap("EmailReplyToAddress", "EmailReplyToAddress", false, false, false);
+      _fieldMap.AddMap("SlaLevelID", "SlaLevelID", false, false, false);
             
     }
   }

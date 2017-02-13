@@ -17,7 +17,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
-	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -103,22 +103,30 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup Condition="'$(Platform)' != 'x64'">
-	<Reference Include="dtSearchNetApi3, Culture=neutral, processorArchitecture=x86">
-		<SpecificVersion>False</SpecificVersion>
-		<HintPath>..\dtSearch\bin\dtSearchNetApi3.dll</HintPath>
-	</Reference>
+    <Reference Include="dtSearchNetApi3, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dtSearch\dtSearchNetApi3.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Platform)' == 'x64'">
-	<Reference Include="dtSearchNetApi3, Culture=neutral, processorArchitecture=x64">
-		<SpecificVersion>False</SpecificVersion>
-		<HintPath>..\dtSearch\bin64\dtSearchNetApi3.dll</HintPath>
-	</Reference>
-  </ItemGroup>  
-
+    <Reference Include="dtSearchNetApi3, Culture=neutral, processorArchitecture=x64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dtSearch\bin64\dtSearchNetApi3.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.Core">
+      <HintPath>..\packages\AWSSDK.Core.3.3.5\lib\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.S3">
+      <HintPath>..\packages\AWSSDK.S3.3.3.1.2\lib\net45\AWSSDK.S3.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\Net40\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\packages\DotNetZip.1.10.0\lib\net20\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO, Version=3.8.2.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -141,6 +149,8 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
@@ -177,6 +187,7 @@
     <Compile Include="HubSpotSources\WindowsWebClient.cs" />
     <Compile Include="IndexSources\AssetIndexDataSource.cs" />
     <Compile Include="ImportProcessor.cs" />
+    <Compile Include="TokTranscoder.cs" />
     <Compile Include="WebHooks.cs" />
     <Compile Include="IndexSources\IndexDataSource.cs" />
     <Compile Include="IndexSources\NoteIndexDataSource.cs" />
@@ -207,8 +218,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="ReportSenderTools\resources.json" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ReportSenderTools\highcharts-convert.js" />
+    <Content Include="ReportSenderTools\js\highcharts\highcharts.js" />
+    <Content Include="ReportSenderTools\js\jquery-latest.min.js" />
+    <Content Include="ReportSenderTools\phantomjs.exe" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

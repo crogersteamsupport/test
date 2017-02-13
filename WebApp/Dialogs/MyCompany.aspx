@@ -94,6 +94,14 @@
             <asp:CheckBox ID="cbRequireCustomer" runat="server" Text="Require customer for new ticket."/>
           </td>
         </tr>
+        <tr>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbAutoAssignCustomerWithAssetOnTickets" runat="server" Text="Auto Assign Customer With Asset On Tickets."/>
+          </td>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbAutoAssociateCustomerToTicketBasedOnAssetAssignment" runat="server" Text="Auto Associate Customer To Ticket Based On Asset Assignment."/>
+          </td>
+        </tr>
 
         <tr>
           <td class="labelColTD" colspan="2">
@@ -141,6 +149,11 @@
 		<tr>
             <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbNoAttachmentsInOutboundEmail" runat="server" Text="Do not include attachments on outbound emails"/></td>
         </tr>
+		<tr>
+            <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbRequireGroupAssignmentOnTickets" runat="server" Text="Require a group assignment when creating or saving a ticket"/></td>
+        </tr>
+
+          
         <tr>
           <td>Business Day Start:</td>
           <td>

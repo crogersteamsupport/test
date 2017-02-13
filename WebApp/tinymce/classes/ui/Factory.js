@@ -1,6 +1,23 @@
+/**
+ * Factory.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*global tinymce:true */
 
+/**
+ * This class is a factory for control instances. This enables you
+ * to create instances of controls without having to require the UI controls directly.
+ *
+ * It also allow you to override or add new control types.
+ *
+ * @class tinymce.ui.Factory
+ */
 define("tinymce/ui/Factory", [], function() {
 	"use strict";
 

@@ -1,7 +1,23 @@
+/**
+ * Entities.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
 /*jshint bitwise:false */
 /*eslint no-bitwise:0 */
 
+/**
+ * Entity encoder class.
+ *
+ * @class tinymce.html.Entities
+ * @static
+ * @version 3.4
+ */
 define("tinymce/html/Entities", [
 	"tinymce/util/Tools"
 ], function(Tools) {

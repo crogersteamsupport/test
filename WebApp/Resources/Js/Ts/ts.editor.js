@@ -1,17 +1,30 @@
 ﻿var execSuggestedSolutions = null;
 
+function getMainFrame() {
+    var result = window.parent;
+    var cnt = 0;
+    while (!(result.Ts && result.Ts.Services)) {
+        result = result.parent;
+        cnt++;
+        if (cnt > 5) return null;
+    }
+    return result;
+}
+
+var _mainFrame = getMainFrame();
+
 var initEditor = function (element, shouldResize, init, postinit) {
     execSuggestedSolutions = null;
-    top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+    _mainFrame.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
         var resizePluginCode = ''; 
         if (shouldResize)
         {
             resizePluginCode = 'autoresize';
         }
         var editorOptions = {
-        	plugins: "paste link code textcolor image imagetools moxiemanager table " + resizePluginCode,
+            plugins: "paste link code textcolor image imagetools moxiemanager table codesample " + resizePluginCode,
         	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
-        	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote | code | table",
+        	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
             statusbar: true,
             gecko_spellcheck: true,
             extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
@@ -19,7 +32,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
             convert_urls: true,
             autoresize_bottom_margin: 20,
             remove_script_host: false,
-            relative_urls: false,
+            relative_urls: true,
             template_external_list_url: "tinymce/jscripts/template_list.js",
             external_link_list_url: "tinymce/jscripts/link_list.js",
             external_image_list_url: "tinymce/jscripts/image_list.js",
@@ -27,38 +40,38 @@ var initEditor = function (element, shouldResize, init, postinit) {
             menubar: false,
             moxiemanager_leftpanel: false,
             moxiemanager_fullscreen: false,
-            moxiemanager_title: top.Ts.System.Organization.Name,
-            moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
+            moxiemanager_title: _mainFrame.Ts.System.Organization.Name,
+            moxiemanager_hidden_tools: (_mainFrame.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
             paste_data_images: true,
             moxiemanager_image_settings: {
-                moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
+                moxiemanager_rootpath: "/" + _mainFrame.Ts.System.Organization.OrganizationID + "/images/",
                 extensions: 'gif,jpg,jpeg,png'
             },
             images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
             setup: function (ed) {
                 ed.on('init', function (e) {
-                    top.Ts.System.refreshUser(function () {
-                        if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
-                            ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
+                    _mainFrame.Ts.System.refreshUser(function () {
+                        if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                            ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
-                        else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
-                            ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
+                        else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                            ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
-                        if (top.Ts.System.User.FontSize != "0") {
-                            ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
+                        if (_mainFrame.Ts.System.User.FontSize != "0") {
+                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
+                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize + 1);
                         }
-                        else if (top.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSize + 1);
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize + 1);
+                        else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
+                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
+                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize + 1);
                         }
 
                       if(postinit) postinit();
                     });
-                    
+                    _insertedKBTicketID = null;
                 });
 
                 //ed.on('paste', function (ed, e) {
@@ -70,21 +83,21 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     //image: '../images/nav/16/tickets.png',
                     icon: 'awesome fa fa-ticket',
                     onclick: function () {
-                        top.Ts.System.logAction('Ticket - Ticket Inserted');
+                        _mainFrame.Ts.System.logAction('Ticket - Ticket Inserted');
 
-                        top.Ts.MainPage.selectTicket(null, function (ticketID) {
-                            top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
+                        _mainFrame.Ts.MainPage.selectTicket(null, function (ticketID) {
+                            _mainFrame.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
                               ed.focus();
                               if (_ticketID) {
-                                top.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
+                                  _mainFrame.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
                                   appendRelated(tickets);
-                                  //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
+                                      //window._mainFrame.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
                                 }, function (error) {
                                   //container.remove();
                                   alert(error.get_message());
                                 });
                               }
-                                var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
+                              var html = '<a href="' + _mainFrame.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
                                 ed.focus();
@@ -105,10 +118,10 @@ var initEditor = function (element, shouldResize, init, postinit) {
                             alert("Sorry, this feature is not supported by your browser");
                         }
                         else {
-                            top.Ts.MainPage.pasteImage(null, function (result) {
+                          _mainFrame.Ts.MainPage.pasteImage(null, function (result) {
                                 ed.focus();
                                 if (result != "") {
-                                    var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                                    var html = '<img src="' + _mainFrame.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
                                     ed.selection.setContent(html);
                                     setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
                                     ed.execCommand('mceAutoResize');
@@ -124,7 +137,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     icon: 'awesome fa fa-clock-o',
                     //image: '../images/icons/dropbox.png',
                     onclick: function () {
-                        var html = Date(Date.UTC(Date.Now)) + ' ' + top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + ' : ';
+                        var html = Date(Date.UTC(Date.Now)) + ' ' + _mainFrame.Ts.System.User.FirstName + ' ' + _mainFrame.Ts.System.User.LastName + ' : ';
                         ed.selection.setContent(html);
                         ed.execCommand('mceAutoResize');
                         ed.focus();
@@ -144,7 +157,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
                                 ed.focus();
-                                top.Ts.System.logAction('Ticket - Dropbox Added');
+                                _mainFrame.Ts.System.logAction('Ticket - Dropbox Added');
                             },
                             cancel: function () {
                                 alert('There was a problem inserting the dropbox file.');
@@ -159,7 +172,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     //image: '../images/icons/Symbol_Record.png',
                     icon: 'awesome fa fa-video-camera',
                     onclick: function () {
-                        top.Ts.System.logAction('Ticket - Video Recording Button Clicked');
+                        _mainFrame.Ts.System.logAction('Ticket - Video Recording Button Clicked');
                         if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                             var dynamicPub = element.parent().find("#publisher");
                             element.parent().find("#recordVideoContainer").show();
@@ -173,7 +186,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
 
 
 
-                            top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                            _mainFrame.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
                                 sessionId = resultID[0];
                                 token = resultID[1];
                                 session = OT.initSession(apiKey, sessionId);
@@ -199,7 +212,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 	//image: '../images/icons/Symbol_Record.png',
                 	icon: 'awesome fa fa-circle',
                 	onclick: function () {
-                		top.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
+                	    _mainFrame.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                 			var dynamicPub = element.parent().find("#screenShare");
                 			element.parent().find("#recordScreenContainer").show();
@@ -229,7 +242,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
 											  		element.parent().find('#recordScreenContainer').hide();
                 				} else {
                 					// Screen sharing is available
-                					top.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                				    _mainFrame.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
                 						sessionId = resultID[0];
                 						token = resultID[1];
                 						apiKey = resultID[2];
@@ -292,7 +305,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     onclick: function () {
                         suggestedSolutions(element.SuggestedSolutionDefaultInput, function (ticketID, isArticle) {
                             if (isArticle) {
-                                top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+                                _mainFrame.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
                                     if (result === null) {
                                         alert('There was an error inserting your suggested solution ticket.');
                                         return;
@@ -300,6 +313,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                                     var ticket = result[0];
                                     var actions = result[1];
 
+                                    _insertedKBTicketID = ticket.TicketID;
                                     var html = '<div>';
 
                                     if (actions.length == 0) {
@@ -315,20 +329,20 @@ var initEditor = function (element, shouldResize, init, postinit) {
                                     ed.selection.setContent(html);
                                     ed.execCommand('mceAutoResize');
                                     ed.focus();
-                                    top.Ts.System.logAction('Ticket - Suggested Solution Inserted');
+                                    _mainFrame.Ts.System.logAction('Ticket - Suggested Solution Inserted');
                                 }, function () {
                                     alert('There was an error inserting your suggested solution ticket.');
                                 });
                             }
                             else {
-                                top.Ts.Services.Admin.GetHubURLwithCName(function (url) {
+                                _mainFrame.Ts.Services.Admin.GetHubURLwithCName(function (url) {
                                     var link = "https://" + url + "/knowledgeBase/" + ticketID;
                                     var html = $('<a href="' + link + '" target="_blank">' + link + '</a></br>')[0];
                                     ed.focus();
                                     ed.selection.setContent(html);
                                     ed.execCommand('mceAutoResize');
                                     ed.focus();
-                                    top.Ts.System.logAction('Ticket - Suggested Solution Link Inserted');
+                                    _mainFrame.Ts.System.logAction('Ticket - Suggested Solution Link Inserted');
                                 });
 
                             }
@@ -376,7 +390,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
 
                             switch (BrowserDetect.browser) {
                               case "Chrome":
-                                top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingChromeInfo', 0, function (alreadyReadInfo) {
+                                  _mainFrame.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingChromeInfo', 0, function (alreadyReadInfo) {
                                   if (alreadyReadInfo == 0) {
                                     $(".pAllowPluginsToRunInstructions").html("\
 To use screen recording in this browser before September of 2015 \
@@ -391,7 +405,7 @@ on the right side of the address bar");
                                 });
                                 break;
                               case "Firefox":
-                                top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingFirefoxInfo', 0, function (alreadyReadInfo) {
+                                  _mainFrame.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingFirefoxInfo', 0, function (alreadyReadInfo) {
                                   if (alreadyReadInfo == 0) {
                                     $(".pAllowPluginsToRunInstructions").html("\
 Please allow the screen recorder Java plugins to run on your browser by clicking on the \
@@ -402,7 +416,7 @@ on the left side of the address bar.");
                                 });
                                 break;
                               case "Explorer":
-                                top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingExplorerInfo', 0, function (alreadyReadInfo) {
+                                  _mainFrame.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingExplorerInfo', 0, function (alreadyReadInfo) {
                                   if (alreadyReadInfo == 0) {
                                     $(".pAllowPluginsToRunInstructions").html("\
 Please allow the screen recorder Java plugins to run on your browser by clicking on Allow button at the bottom of the page: \
@@ -413,7 +427,7 @@ Please allow the screen recorder Java plugins to run on your browser by clicking
                                 break;
                               case "Safari":
                                 if (BrowserDetect.OS == "Windows") {
-                                  top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInWindowsInfo', 0, function (alreadyReadInfo) {
+                                    _mainFrame.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInWindowsInfo', 0, function (alreadyReadInfo) {
                                     if (alreadyReadInfo == 0) {
                                       $(".pAllowPluginsToRunInstructions").html("\
 This browser in Windows usually fails to detect Java preventing the recorder to start. Read \
@@ -424,13 +438,13 @@ for more information or use an alternate browser like Firefox or Internet Explor
                                   });
                                 }
                                 else {
-                                  top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInfo', 0, function (alreadyReadInfo) {
+                                    _mainFrame.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingSafariInfo', 0, function (alreadyReadInfo) {
                                     if (alreadyReadInfo == 0) {
                                       $(".pAllowPluginsToRunInstructions").html("\
 The following steps will refresh your browser<br><br> \
 1. Allow the screen recorder Java plugins to run on your browser by clicking on the Trust button at the top of the page: <br>\
 <img src='../Images/icons/SafariInMacPluginDialog.png' alt='plugin dialog' width='30%' style='margin-top: 10px'><br><br> \
-2. Navigate to Safari > Preferences > Security > Internet Plugins - Website Settings > Java and change the " + top.Ts.System.AppDomain + " setting to Run in Unsafe Mode and click on the Trust button: <br>\
+2. Navigate to Safari > Preferences > Security > Internet Plugins - Website Settings > Java and change the " + _mainFrame.Ts.System.AppDomain + " setting to Run in Unsafe Mode and click on the Trust button: <br>\
 <img src='../Images/icons/SafariInMacUnsafeModeDialog.png' alt='plugin dialog' width='30%' style='margin-top: 10px'>");
                                       $('.divScreenRecorderMessages').show();
                                     }
@@ -439,7 +453,7 @@ The following steps will refresh your browser<br><br> \
 
                                 break;
                               default:
-                                top.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingInfo', 0, function (alreadyReadInfo) {
+                                  _mainFrame.Ts.Services.Settings.ReadUserSetting('ReadScreenRecordingInfo', 0, function (alreadyReadInfo) {
                                   if (alreadyReadInfo == 0) {
                                     $(".pAllowPluginsToRunInstructions").html("Please verify java is supported and allowed to run in your browser.");
                                     $('.divScreenRecorderMessages').show();
@@ -454,7 +468,7 @@ The following steps will refresh your browser<br><br> \
                               applet.code = "com.bixly.pastevid.driver.Launch";
                               applet.width = 200;
                               applet.height = 150;
-                              var orgId = top.Ts.System.Organization.OrganizationID;
+                              var orgId = _mainFrame.Ts.System.Organization.OrganizationID;
                               var param1 = document.createElement("param");
                               param1.name = "jnlp_href";
                               param1.value = "launch.jnlp";
@@ -492,28 +506,157 @@ The following steps will refresh your browser<br><br> \
     });
 }
 
+var initScheduledReportEditor = function (element, init) {
+    var editorOptions = {
+        plugins: "autoresize paste link code textcolor table codesample",
+        toolbar1: "insertPasteImage insertTicket image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote codesample | code | table",
+        statusbar: false,
+        gecko_spellcheck: true,
+        extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
+        content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css,Reports_Schedule.css",
+        body_class: "ui-widget ui-widget-content",
+        convert_urls: true,
+        autoresize_bottom_margin: 20,
+        remove_script_host: false,
+        relative_urls: false,
+        template_external_list_url: "tinymce/jscripts/template_list.js",
+        external_link_list_url: "tinymce/jscripts/link_list.js",
+        external_image_list_url: "tinymce/jscripts/image_list.js",
+        media_external_list_url: "tinymce/jscripts/media_list.js",
+        menubar: false,
+        moxiemanager_image_settings: {
+            moxiemanager_rootpath: "/" + _mainFrame.Ts.System.Organization.OrganizationID + "/images/",
+            extensions: 'gif,jpg,jpeg,png'
+        },
+        paste_data_images: true,
+        images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
+        setup: function (ed) {
+            ed.on('init', function (e) {
+                _mainFrame.Ts.System.refreshUser(function () {
+                    if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                        ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                    }
+                    else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                        ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                    }
+
+                    if (_mainFrame.Ts.System.User.FontSize != "0") {
+                        ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
+                    }
+                    else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
+                        ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSizeDescription);
+                    }
+                });
+            });
+
+            ed.on('paste', function (ed, e) {
+                setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+            });
+
+            ed.addButton('insertTicket', {
+                title: 'Insert Ticket',
+                icon: 'awesome fa fa-ticket',
+                onclick: function () {
+                    _mainFrame.Ts.System.logAction('Ticket - Ticket Inserted');
+
+                    _mainFrame.Ts.MainPage.selectTicket(null, function (ticketID) {
+                        _mainFrame.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
+                            ed.focus();
+                            var html = '<a href="' + _mainFrame.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
+                            ed.selection.setContent(html);
+                            ed.execCommand('mceAutoResize');
+                            ed.focus();
+                        }, function () {
+                            alert('There was a problem inserting the ticket link.');
+                        });
+                    });
+                }
+            });
+
+            ed.addButton('insertPasteImage', {
+                title: 'Insert Image from Clipboard',
+                icon: 'awesome fa fa-paste',
+                onclick: function () {
+
+                    if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer' || (BrowserDetect.browser == 'Mozilla' && BrowserDetect.version < 20)) {
+                        alert("Sorry, this feature is not supported by your browser");
+                    }
+                    else {
+                        _mainFrame.Ts.MainPage.pasteImage(null, function (result) {
+                            ed.focus();
+                            if (result != "") {
+                                var html = '<img src="' + _mainFrame.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                                ed.selection.setContent(html);
+                                setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                                ed.execCommand('mceAutoResize');
+                                ed.focus();
+                            }
+                        });
+                    }
+                }
+            });
+
+            ed.addButton('insertUser', {
+                title: 'Insert Userstamp',
+                icon: 'awesome fa fa-clock-o',
+                onclick: function () {
+                    var html = Date(Date.UTC(Date.Now)) + ' ' + _mainFrame.Ts.System.User.FirstName + ' ' + _mainFrame.Ts.System.User.LastName + ' : ';
+                    ed.selection.setContent(html);
+                    ed.execCommand('mceAutoResize');
+                    ed.focus();
+                }
+            });
+
+            ed.addButton('insertDropBox', {
+                title: 'Insert DropBox',
+                icon: 'awesome fa fa-dropbox',
+                onclick: function () {
+                    var options = {
+                        linkType: "preview",
+                        success: function (files) {
+                            ed.focus();
+                            var html = '<a href=' + files[0].link + '>' + files[0].name + '</a>';
+                            ed.selection.setContent(html);
+                            ed.execCommand('mceAutoResize');
+                            ed.focus();
+                            _mainFrame.Ts.System.logAction('Ticket - Dropbox Added');
+                        },
+                        cancel: function () {
+                            alert('There was a problem inserting the dropbox file.');
+                        }
+                    };
+                    Dropbox.choose(options);
+                }
+            });
+        }
+        , oninit: init
+    };
+    $(element).tinymce(editorOptions);
+}
+
 var onScreenRecordStart = function () {
   $('.fa-circle-o-notch').removeClass("fa-circle-o-notch fa-spin").addClass("fa-circle");
   switch (BrowserDetect.browser) {
     case "Chrome":
-      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
+        _mainFrame.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingChromeInfo', 1);
       break;
     case "Firefox":
-      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
+        _mainFrame.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingFirefoxInfo', 1);
       break;
     case "Explorer":
-      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
+        _mainFrame.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingExplorerInfo', 1);
       break;
     case "Safari":
       if (BrowserDetect.OS == "Windows") {
-        top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
+          _mainFrame.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInWindowsInfo', 1);
       }
       else {
-        top.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
+          _mainFrame.Services.Settings.WriteUserSetting('ReadScreenRecordingSafariInfo', 1);
       }
       break;
     default:
-      top.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
+        _mainFrame.Ts.Services.Settings.WriteUserSetting('ReadScreenRecordingInfo', 1);
   }
   $('.divScreenRecorderMessages').hide();
 };
@@ -527,10 +670,10 @@ var onScreenRecordComplete = function (url) {
     ed.selection.setContent(html);
     ed.execCommand('mceAutoResize');
     ed.focus();
-    top.Ts.System.logAction('Ticket - Screen Recorded');
+    _mainFrame.Ts.System.logAction('Ticket - Screen Recorded');
   }
   else {
-    top.Ts.System.logAction('Ticket - Screen Record Cancelled');
+      _mainFrame.Ts.System.logAction('Ticket - Screen Record Cancelled');
   }
 };
 
@@ -634,7 +777,7 @@ function suggestedSolutions(defaultInput, callback) {
 
     $('.afterSearch').show();
 
-    filter = new top.TeamSupport.Data.TicketLoadFilter();
+    filter = new _mainFrame.TeamSupport.Data.TicketLoadFilter();
     filter.IsKnowledgeBase = true;
     $('.dialog-select-ticket2').find('input').data('filter', filter);
 
@@ -643,7 +786,7 @@ function suggestedSolutions(defaultInput, callback) {
         source: selectTicket,
         select: function (event, ui) {
             $(this).data('item', ui.item).removeClass('ui-autocomplete-loading')
-            top.Ts.Services.Tickets.GetKBTicketAndActions(ui.item.data, function (result) {
+            _mainFrame.Ts.Services.Tickets.GetKBTicketAndActions(ui.item.data, function (result) {
                 var html = '<div>';
 
                 var actions = result[1];
@@ -673,14 +816,14 @@ function suggestedSolutions(defaultInput, callback) {
         if ($(".dialog-select-ticket2 input").data('item')) {
             callback($(".dialog-select-ticket2 input").data('item').data, true);
             $('#SuggestedSolutionsModal').modal('hide');
-            top.Ts.System.logAction('Inserted kb');
+            _mainFrame.Ts.System.logAction('Inserted kb');
         }
         else {
             var id = document.getElementById("SuggestedSolutionsIFrame").contentWindow.GetSelectedID();
             if (id) {
                 callback(id, true);
                 $('#SuggestedSolutionsModal').modal('hide');
-                top.Ts.System.logAction('Inserted suggested solution');
+                _mainFrame.Ts.System.logAction('Inserted suggested solution');
             }
             else {
                 alert('Select a knowledgebase article.');
@@ -694,14 +837,14 @@ function suggestedSolutions(defaultInput, callback) {
         if ($(".dialog-select-ticket2 input").data('item')) {
             callback($(".dialog-select-ticket2 input").data('item').data, false);
             $('#SuggestedSolutionsModal').modal('hide');
-            top.Ts.System.logAction('Inserted kb');
+            _mainFrame.Ts.System.logAction('Inserted kb');
         }
         else {
             var id = document.getElementById("SuggestedSolutionsIFrame").contentWindow.GetSelectedID();
             if (id) {
                 callback(id, false);
                 $('#SuggestedSolutionsModal').modal('hide');
-                top.Ts.System.logAction('Inserted suggested solution');
+                _mainFrame.Ts.System.logAction('Inserted suggested solution');
             }
             else {
                 alert('Select a knowledgebase article.');

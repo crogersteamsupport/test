@@ -67,7 +67,8 @@ function BuildWikiPage() {
       $("#EditWiki").show();
     }
     else {
-      $("#EditWiki").hide();
+      $('.page-loading').hide().next().show();
+      $("#EditWiki").show();
     };
 
   });

@@ -1,15 +1,332 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TeamSupport.Data;
-using System.Data.SqlClient;
-using System.Data;
 using System.Net.Mail;
+using System.Collections.Generic;
+//using Microsoft.AspNet.SignalR.Client;//ToDo //vv Not Yet. Per Kevin, services service need to be able to access the signalr server first. To do at a future date.
+using TeamSupport.Data;
 
 namespace TeamSupport.ServiceLibrary
 {
-  [Serializable]
+    [Serializable]
+    public class SlaCalculator : ServiceThread
+    {
+        public SlaCalculator()
+        {
+        }
+
+        public override void Run()
+        {
+            try
+            {
+                SlaTickets slaTickets = new SlaTickets(LoginUser);
+                slaTickets.LoadPending();
+
+                if (slaTickets != null && slaTickets.Count > 0)
+                {
+                    Logs.WriteEvent(string.Format("{0} pending tickets to calculate the SLA values for.", slaTickets.Count));
+                }
+
+                foreach (SlaTicket slaTicket in slaTickets)
+                {
+                    if (IsStopped) break;
+                    UpdateHealth();
+
+                    try
+                    {
+                        Ticket ticket = Tickets.GetTicket(LoginUser, slaTicket.TicketId);
+
+                        if (ticket != null)
+                        {
+                            bool isStatusPaused = ticket.IsSlaStatusPaused();
+                            bool isClosed = ticket.DateClosed != null;
+                            DateTime? newSlaViolationTimeClosed = null;
+                            DateTime? newSlaWarningTimeClosed = null;
+                            DateTime? newSlaViolationLastAction = null;
+                            DateTime? newSlaWarningLastAction = null;
+                            DateTime? newSlaViolationInitialResponse = null;
+                            DateTime? newSlaWarningInitialResponse = null;
+
+                            if (!isClosed && !isStatusPaused)
+                            {
+                                DateTime? lastActionDateCreated = Actions.GetLastActionDateCreated(LoginUser, ticket.TicketID);
+                                int totalActions = Actions.TotalActionsForSla(LoginUser, ticket.TicketID);
+
+                                Organization organization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
+                                SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(LoginUser, slaTicket.SlaTriggerId);
+
+                                if (slaTrigger != null)
+                                {
+                                    Logs.WriteEventFormat("Trigger {0} not found.", slaTicket.SlaTriggerId);
+                                }
+
+                                SlaTickets.BusinessHours businessHours = new SlaTickets.BusinessHours()
+                                {
+                                    DayStartUtc = organization.BusinessDayStartUtc,
+                                    DayEndUtc = organization.BusinessDayEndUtc,
+                                    BusinessDays = organization.BusinessDays
+                                };
+
+                                //Check if we should use SLA's business hours instead of Account's
+                                if (!slaTrigger.UseBusinessHours
+                                    && !slaTrigger.NoBusinessHours
+                                    && slaTrigger.DayStartUtc.HasValue
+                                    && slaTrigger.DayEndUtc.HasValue)
+                                {
+                                    businessHours.DayStartUtc = slaTrigger.DayStartUtc.Value;
+                                    businessHours.DayEndUtc = slaTrigger.DayEndUtc.Value;
+                                    businessHours.BusinessDays = slaTrigger.Weekdays;
+                                }
+                                else if (!slaTrigger.UseBusinessHours && !slaTrigger.NoBusinessHours)
+                                {
+                                    Logs.WriteEventFormat("Using Account's business hours {0} to {1} because while the trigger is set to use sla's business hours one of them has no value. Sla DayStartUtc {2}, Sla DayEndUtc {3}",
+                                        organization.BusinessDayStartUtc.ToShortTimeString(),
+                                        organization.BusinessDayEndUtc.ToShortTimeString(),
+                                        slaTrigger.DayStartUtc.HasValue ? slaTrigger.DayStartUtc.Value.ToShortTimeString() : "NULL",
+                                        slaTrigger.DayEndUtc.HasValue ? slaTrigger.DayEndUtc.Value.ToShortTimeString() : "NULL");
+                                }
+
+                                Logs.WriteEvent(string.Format("Ticket #{0} id {1}. LastAction: {2}, TotalActions: {3}, Org({4}) {5}, SlaTriggerId {6}.", ticket.TicketNumber,
+                                                                                                                                                        ticket.TicketID,
+                                                                                                                                                        lastActionDateCreated == null ? "none" : lastActionDateCreated.Value.ToString(),
+                                                                                                                                                        totalActions,
+                                                                                                                                                        organization.OrganizationID,
+                                                                                                                                                        organization.Name,
+                                                                                                                                                        slaTrigger.SlaTriggerID));
+                                List<DateTime> daysToPause = SlaTriggers.GetSpecificDaysToPause(slaTrigger.SlaTriggerID);
+                                bool pauseOnHoliday = slaTrigger.PauseOnHoliday;
+                                CalendarEvents holidays = new CalendarEvents(LoginUser);
+
+                                if (pauseOnHoliday)
+                                {
+                                    holidays.LoadHolidays(organization.OrganizationID);
+                                }
+
+                                Dictionary<int, double> businessPausedTimes = new Dictionary<int, double>();
+                                TimeSpan pausedTimeSpan = SlaTickets.CalculatePausedTime(ticket.TicketID, organization, businessHours, slaTrigger, daysToPause, holidays, LoginUser, businessPausedTimes, Logs);
+                                Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpan.ToString());
+
+                                UpdateBusinessPausedTimes(LoginUser, businessPausedTimes);
+
+                                newSlaViolationTimeClosed = SlaTickets.CalculateSLA(ticket.DateCreatedUtc, businessHours, slaTrigger, slaTrigger.TimeToClose, pausedTimeSpan, daysToPause, holidays);
+
+                                if (newSlaViolationTimeClosed != null)
+                                {
+                                    newSlaWarningTimeClosed = SlaTickets.CalculateSLAWarning(newSlaViolationTimeClosed.Value,
+                                                                                    businessHours,
+                                                                                    slaTrigger.NoBusinessHours,
+                                                                                    slaTrigger.TimeToClose,
+                                                                                    slaTrigger.WarningTime,
+                                                                                    daysToPause,
+                                                                                    holidays);
+                                }
+
+                                if (lastActionDateCreated == null)
+                                {
+                                    newSlaViolationLastAction = null;
+                                    newSlaWarningLastAction = null;
+                                }
+                                else
+                                {
+                                    newSlaViolationLastAction = SlaTickets.CalculateSLA(lastActionDateCreated.Value,
+                                                                                businessHours,
+                                                                                slaTrigger,
+                                                                                slaTrigger.TimeLastAction,
+                                                                                pausedTimeSpan,
+                                                                                daysToPause,
+                                                                                holidays);
+
+                                    if (newSlaViolationLastAction != null)
+                                    {
+                                        newSlaWarningLastAction = SlaTickets.CalculateSLAWarning((DateTime)newSlaViolationLastAction.Value,
+                                                                                        businessHours,
+                                                                                        slaTrigger.NoBusinessHours,
+                                                                                        slaTrigger.TimeLastAction,
+                                                                                        slaTrigger.WarningTime,
+                                                                                        daysToPause,
+                                                                                        holidays);
+                                    }
+                                }
+
+                                if (slaTrigger.TimeInitialResponse < 1 || totalActions > 0)
+                                {
+                                    newSlaViolationInitialResponse = null;
+                                    newSlaWarningInitialResponse = null;
+                                }
+                                else
+                                {
+                                    newSlaViolationInitialResponse = SlaTickets.CalculateSLA(ticket.DateCreatedUtc,
+                                                                                    businessHours,
+                                                                                    slaTrigger,
+                                                                                    slaTrigger.TimeInitialResponse,
+                                                                                    pausedTimeSpan,
+                                                                                    daysToPause,
+                                                                                    holidays);
+
+                                    if (newSlaViolationInitialResponse != null)
+                                    {
+                                        newSlaWarningInitialResponse = SlaTickets.CalculateSLAWarning((DateTime)newSlaViolationInitialResponse.Value,
+                                                                                            businessHours,
+                                                                                            slaTrigger.NoBusinessHours,
+                                                                                            slaTrigger.TimeInitialResponse,
+                                                                                            slaTrigger.WarningTime,
+                                                                                            daysToPause,
+                                                                                            holidays);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Logs.WriteEventFormat("Ticket is {0}, clearing its SLA values.", isClosed ? "Closed" : "Status Paused");
+                            }
+
+                            if (HasAnySlaChanges(ticket,
+                                                newSlaViolationTimeClosed,
+                                                newSlaWarningTimeClosed,
+                                                newSlaViolationLastAction,
+                                                newSlaWarningLastAction,
+                                                newSlaViolationInitialResponse,
+                                                newSlaWarningInitialResponse))
+                            {
+                                ticket.SlaViolationTimeClosed = newSlaViolationTimeClosed;
+                                ticket.SlaWarningTimeClosed = newSlaWarningTimeClosed;
+                                ticket.SlaViolationLastAction = newSlaViolationLastAction;
+                                ticket.SlaWarningLastAction = newSlaWarningLastAction;
+                                ticket.SlaViolationInitialResponse = newSlaViolationInitialResponse;
+                                ticket.SlaWarningInitialResponse = newSlaWarningInitialResponse;
+                                Tickets.UpdateTicketSla(LoginUser,
+                                                        ticket.TicketID,
+                                                        newSlaViolationInitialResponse,
+                                                        newSlaViolationLastAction,
+                                                        newSlaViolationTimeClosed,
+                                                        newSlaWarningInitialResponse,
+                                                        newSlaWarningLastAction,
+                                                        newSlaWarningTimeClosed);
+                                Logs.WriteEvent("Ticket SLA calculation completed.");
+
+                                string signalRUrl = Settings.ReadString("SignalRUrl");
+
+                                if (!string.IsNullOrEmpty(signalRUrl))
+                                {
+                                    //Dictionary<string, string> queryStringData = new Dictionary<string, string>();
+                                    //queryStringData.Add("userID", "-1");
+                                    //queryStringData.Add("organizationID", ticket.OrganizationID.ToString());
+                                    //HubConnection connection = new HubConnection(signalRUrl, queryStringData);
+                                    //IHubProxy signalRConnection = connection.CreateHubProxy("TicketSocket");
+
+                                    //try
+                                    //{
+                                    //    connection.Start().Wait();
+                                    //    signalRConnection.Invoke("RefreshSLA", ticket.TicketNumber);
+                                    //}
+                                    //catch (Exception ex)
+                                    //{
+                                    //    Logs.WriteEvent("Could not send signalR to refresh the SLA. Message: " + ex.Message);
+                                    //}
+                                }
+                            }
+                            else
+                            {
+                                Logs.WriteEvent("Ticket SLA calculation completed. SLA values did not change, ticket was not updated.");
+                            }
+
+                            slaTicket.IsPending = false;
+                            slaTicket.Collection.Save();
+                        }
+                        else
+                        {
+                            SlaPausedTimes slaPausedTimes = new SlaPausedTimes(LoginUser);
+                            slaPausedTimes.LoadByTicketId(slaTicket.TicketId);
+                            slaPausedTimes.DeleteAll();
+                            slaPausedTimes.Save();
+
+                            slaTicket.Delete();
+                            slaTicket.Collection.Save();
+                            Logs.WriteEventFormat("Ticket id {0} does not exist anymore, deleted from SlaTickets.", slaTicket.TicketId);
+                        }
+
+                        System.Threading.Thread.Sleep(100);
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionLogs.LogException(LoginUser, ex, "SLA Calculator", "Sync");
+                        Logs.WriteEventFormat("Exception. Message {0}{1}StackTrace {2}", ex.Message, Environment.NewLine, ex.StackTrace);
+
+                        slaTicket.IsPending = false;
+                        slaTicket.Collection.Save();
+                        Logs.WriteEventFormat("SlaTicket: TicketId {0} TriggerId {1} set to not pending.", slaTicket.TicketId, slaTicket.SlaTriggerId);
+                    }
+                }
+
+                if (slaTickets != null && slaTickets.Count > 0)
+                {
+                    Logs.WriteEvent(string.Format("Completed processing the {0} pending tickets to calculate the SLA values for.", slaTickets.Count));
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser, ex, "SLA Calculator", "Sync");
+                Logs.WriteEvent(string.Format("Exception. Message {0}{1}StackTrace {2}", ex.Message, Environment.NewLine, ex.StackTrace));
+            }
+        }
+
+        private static bool HasAnySlaChanges(Ticket ticket,
+                                            DateTime? newSlaViolationTimeClosed,
+                                            DateTime? newSlaWarningTimeClosed,
+                                            DateTime? newSlaViolationLastAction,
+                                            DateTime? newSlaWarningLastAction,
+                                            DateTime? newSlaViolationInitialResponse,
+                                            DateTime? newSlaWarningInitialResponse)
+        {
+            bool hasChanges = false;
+
+            if (!hasChanges && DateTime.Compare(ticket.SlaViolationTimeClosed == null ? new DateTime() : ticket.SlaViolationTimeClosed.Value, 
+                                                newSlaViolationTimeClosed == null ? new DateTime() : newSlaViolationTimeClosed.Value) != 0)
+            {
+                hasChanges = true;
+            }
+
+            if (!hasChanges && DateTime.Compare(ticket.SlaWarningTimeClosed == null ? new DateTime() : ticket.SlaWarningTimeClosed.Value,
+                                                newSlaWarningTimeClosed == null ? new DateTime() : newSlaWarningTimeClosed.Value) != 0)
+            {
+                hasChanges = true;
+            }
+
+            if (!hasChanges && DateTime.Compare(ticket.SlaViolationLastAction == null ? new DateTime() : ticket.SlaViolationLastAction.Value,
+                                                newSlaViolationLastAction == null ? new DateTime() : newSlaViolationLastAction.Value) != 0)
+            {
+                hasChanges = true;
+            }
+
+            if (!hasChanges && DateTime.Compare(ticket.SlaWarningLastAction == null ? new DateTime() : ticket.SlaWarningLastAction.Value,
+                                                newSlaWarningLastAction == null ? new DateTime() : newSlaWarningLastAction.Value) != 0)
+            {
+                hasChanges = true;
+            }
+
+            if (!hasChanges && DateTime.Compare(ticket.SlaViolationInitialResponse == null ? new DateTime() : ticket.SlaViolationInitialResponse.Value,
+                                                newSlaViolationInitialResponse == null ? new DateTime() : newSlaViolationInitialResponse.Value) != 0)
+            {
+                hasChanges = true;
+            }
+
+            if (!hasChanges && DateTime.Compare(ticket.SlaWarningInitialResponse == null ? new DateTime() : ticket.SlaWarningInitialResponse.Value,
+                                                newSlaWarningInitialResponse == null ? new DateTime() : newSlaWarningInitialResponse.Value) != 0)
+            {
+                hasChanges = true;
+            }
+
+            return hasChanges;
+        }
+
+        private static void UpdateBusinessPausedTimes(LoginUser loginUser, Dictionary<int, double> businessPausedTimes)
+        {
+            foreach(KeyValuePair<int, double> pair in businessPausedTimes)
+            {
+                SlaPausedTimes.UpdateBusinessPausedTime(loginUser, pair.Key, pair.Value);
+            }
+        }
+    }
+
+    [Serializable]
   public class SlaProcessor : ServiceThread
   {
     DateTime _lastDLSAdjustment = DateTime.MinValue;
@@ -51,125 +368,138 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
-    private void ProcessTicket(Ticket ticket)
-    {
-      UpdateHealth();
-      SlaTriggersView triggers = new SlaTriggersView(LoginUser);
-      triggers.LoadByTicket(ticket.TicketID);
-      bool warnGroup = false;
-      bool warnUser = false;
-      bool vioGroup = false;
-      bool vioUser = false;
-
-      foreach (SlaTriggersViewItem item in triggers)
-      {
-        warnGroup = item.NotifyGroupOnWarning || warnGroup;
-        warnUser = item.NotifyUserOnWarning || warnUser;
-        vioGroup = item.NotifyGroupOnViolation || vioGroup;
-        vioUser = item.NotifyUserOnViolation || vioUser;
-      }
-
-      SlaNotification notification = SlaNotifications.GetSlaNotification(LoginUser, ticket.TicketID);
-      if (notification == null)
-      {
-        notification = (new SlaNotifications(LoginUser)).AddNewSlaNotification();
-        notification.TicketID = ticket.TicketID;
-      }
-
-      DateTime notifyTime;
-
-      if (ticket.SlaViolationInitialResponse != null && ticket.SlaViolationInitialResponseUtc <= DateTime.UtcNow)
-      {
-
-        notifyTime = (DateTime)ticket.SlaViolationInitialResponseUtc;
-        if (!IsTooOld(notifyTime))
+        private void ProcessTicket(Ticket ticket)
         {
-          if (notification.InitialResponseViolationDate == null || Math.Abs(((DateTime)notification.InitialResponseViolationDateUtc - notifyTime).TotalMinutes) > 5)
-          {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse, notification);
-            notification.InitialResponseViolationDate = notifyTime;
-          }
+            UpdateHealth();
+
+            bool isPaused = false;
+            bool isPending = false;
+            SlaTicket slaTicket = SlaTickets.GetSlaTicket(LoginUser, ticket.TicketID);
+            
+            if (slaTicket != null)
+            {
+                isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
+                isPending = slaTicket.IsPending;
+            }
+
+            if (!isPaused && !isPending)
+            {
+                SlaTriggersView triggers = new SlaTriggersView(LoginUser);
+                triggers.LoadByTicketId(ticket.TicketID);
+                bool warnGroup = false;
+                bool warnUser = false;
+                bool vioGroup = false;
+                bool vioUser = false;
+
+                foreach (SlaTriggersViewItem item in triggers)
+                {
+                    warnGroup = item.NotifyGroupOnWarning || warnGroup;
+                    warnUser = item.NotifyUserOnWarning || warnUser;
+                    vioGroup = item.NotifyGroupOnViolation || vioGroup;
+                    vioUser = item.NotifyUserOnViolation || vioUser;
+                }
+
+                SlaNotification notification = SlaNotifications.GetSlaNotification(LoginUser, ticket.TicketID);
+                if (notification == null)
+                {
+                    notification = (new SlaNotifications(LoginUser)).AddNewSlaNotification();
+                    notification.TicketID = ticket.TicketID;
+                }
+
+                DateTime notifyTime;
+
+                if (ticket.SlaViolationInitialResponse != null && ticket.SlaViolationInitialResponseUtc <= DateTime.UtcNow)
+                {
+                    notifyTime = (DateTime)ticket.SlaViolationInitialResponseUtc;
+                    if (!IsTooOld(notifyTime))
+                    {
+                        if (notification.InitialResponseViolationDate == null || Math.Abs(((DateTime)notification.InitialResponseViolationDateUtc - notifyTime).TotalMinutes) > 5)
+                        {
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse, notification, slaTicket.SlaTriggerId);
+                            notification.InitialResponseViolationDate = notifyTime;
+                        }
+                    }
+                }
+                else if (ticket.SlaWarningInitialResponse != null && ticket.SlaWarningInitialResponseUtc <= DateTime.UtcNow)
+                {
+                    notifyTime = (DateTime)ticket.SlaWarningInitialResponseUtc;
+
+                    if (!IsTooOld(notifyTime))
+                    {
+                        if (notification.InitialResponseWarningDate == null || Math.Abs(((DateTime)notification.InitialResponseWarningDateUtc - notifyTime).TotalMinutes) > 5)
+                        {
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse, notification, slaTicket.SlaTriggerId);
+                            notification.InitialResponseWarningDate = notifyTime;
+                        }
+                    }
+                }
+
+
+                if (ticket.SlaViolationLastAction != null && ticket.SlaViolationLastActionUtc <= DateTime.UtcNow)
+                {
+                    notifyTime = (DateTime)ticket.SlaViolationLastActionUtc;
+
+                    if (!IsTooOld(notifyTime))
+                    {
+                        if (notification.LastActionViolationDate == null || Math.Abs(((DateTime)notification.LastActionViolationDateUtc - notifyTime).TotalMinutes) > 5)
+                        {
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction, notification, slaTicket.SlaTriggerId);
+                            notification.LastActionViolationDate = notifyTime;
+                        }
+                    }
+                }
+                else if (ticket.SlaWarningLastAction != null && ticket.SlaWarningLastActionUtc <= DateTime.UtcNow)
+                {
+                    notifyTime = (DateTime)ticket.SlaWarningLastActionUtc;
+
+                    if (!IsTooOld(notifyTime))
+                    {
+                        if (notification.LastActionWarningDate == null || Math.Abs(((DateTime)notification.LastActionWarningDateUtc - notifyTime).TotalMinutes) > 5)
+                        {
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction, notification, slaTicket.SlaTriggerId);
+                            notification.LastActionWarningDate = notifyTime;
+                        }
+                    }
+                }
+
+
+                if (ticket.SlaViolationTimeClosed != null && ticket.SlaViolationTimeClosedUtc <= DateTime.UtcNow)
+                {
+                    notifyTime = (DateTime)ticket.SlaViolationTimeClosedUtc;
+
+                    if (!IsTooOld(notifyTime))
+                    {
+                        if (notification.TimeClosedViolationDate == null || Math.Abs(((DateTime)notification.TimeClosedViolationDateUtc - notifyTime).TotalMinutes) > 5)
+                        {
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed, notification, slaTicket.SlaTriggerId);
+                            notification.TimeClosedViolationDate = notifyTime;
+                        }
+                    }
+                }
+                else if (ticket.SlaWarningTimeClosed != null && ticket.SlaWarningTimeClosedUtc <= DateTime.UtcNow)
+                {
+                    notifyTime = (DateTime)ticket.SlaWarningTimeClosedUtc;
+
+                    if (!IsTooOld(notifyTime))
+                    {
+                        if (notification.TimeClosedWarningDate == null || Math.Abs(((DateTime)notification.TimeClosedWarningDateUtc - notifyTime).TotalMinutes) > 5)
+                        {
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed, notification, slaTicket.SlaTriggerId);
+                            notification.TimeClosedWarningDate = notifyTime;
+                        }
+                    }
+                }
+
+                notification.Collection.Save();
+            }
         }
-      }
-      else if (ticket.SlaWarningInitialResponse != null && ticket.SlaWarningInitialResponseUtc <= DateTime.UtcNow)
-      {
-        notifyTime = (DateTime)ticket.SlaWarningInitialResponseUtc;
-
-        if (!IsTooOld(notifyTime))
-        {
-          if (notification.InitialResponseWarningDate == null || Math.Abs(((DateTime)notification.InitialResponseWarningDateUtc - notifyTime).TotalMinutes) > 5)
-          {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse, notification);
-            notification.InitialResponseWarningDate = notifyTime;
-          }
-        }
-      }
-
-
-      if (ticket.SlaViolationLastAction != null && ticket.SlaViolationLastActionUtc <= DateTime.UtcNow)
-      {
-        notifyTime = (DateTime)ticket.SlaViolationLastActionUtc;
-
-        if (!IsTooOld(notifyTime))
-        {
-          if (notification.LastActionViolationDate == null || Math.Abs(((DateTime)notification.LastActionViolationDateUtc - notifyTime).TotalMinutes) > 5)
-          {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction, notification);
-            notification.LastActionViolationDate = notifyTime;
-          }
-        }
-      }
-      else if (ticket.SlaWarningLastAction != null && ticket.SlaWarningLastActionUtc <= DateTime.UtcNow)
-      {
-        notifyTime = (DateTime)ticket.SlaWarningLastActionUtc;
-
-        if (!IsTooOld(notifyTime))
-        {
-          if (notification.LastActionWarningDate == null || Math.Abs(((DateTime)notification.LastActionWarningDateUtc - notifyTime).TotalMinutes) > 5)
-          {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction, notification);
-            notification.LastActionWarningDate = notifyTime;
-          }
-        }
-      }
-
-
-      if (ticket.SlaViolationTimeClosed != null && ticket.SlaViolationTimeClosedUtc <= DateTime.UtcNow)
-      {
-        notifyTime = (DateTime)ticket.SlaViolationTimeClosedUtc;
-
-        if (!IsTooOld(notifyTime))
-        {
-          if (notification.TimeClosedViolationDate == null || Math.Abs(((DateTime)notification.TimeClosedViolationDateUtc - notifyTime).TotalMinutes) > 5)
-          {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed, notification);
-            notification.TimeClosedViolationDate = notifyTime;
-          }
-        }
-      }
-      else if (ticket.SlaWarningTimeClosed != null && ticket.SlaWarningTimeClosedUtc <= DateTime.UtcNow)
-      {
-        notifyTime = (DateTime)ticket.SlaWarningTimeClosedUtc;
-
-        if (!IsTooOld(notifyTime))
-        {
-          if (notification.TimeClosedWarningDate == null || Math.Abs(((DateTime)notification.TimeClosedWarningDateUtc - notifyTime).TotalMinutes) > 5)
-          {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed, notification);
-            notification.TimeClosedWarningDate = notifyTime;
-          }
-        }
-      }
-
-      notification.Collection.Save();
-    }
 
     private bool IsTooOld(DateTime notifyTime)
     {
       return (DateTime.UtcNow - notifyTime).TotalDays >= 1;
     }
 
-    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType, SlaNotification notification)
+    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType, SlaNotification notification, int triggerId)
     {
       Users users = new Users(LoginUser);
       User user = null;
@@ -197,6 +527,7 @@ namespace TeamSupport.ServiceLibrary
         history.UserID = ticket.UserID;
         history.ViolationType = slaViolationType;
         history.TicketID = ticket.TicketID;
+        history.SlaTriggerId = triggerId;
         history.Collection.Save();
       }
 
