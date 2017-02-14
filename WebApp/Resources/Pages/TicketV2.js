@@ -4111,11 +4111,10 @@ var SetupJiraFields = function () {
 
         if (confirm(confirmMessage)) {
             e.preventDefault();
-            $('.ts-jira-buttons-container').show();
-            $('#issueKey').hide();
             window.parent.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
                 if (result === true) {
-                    //It was successful
+					$('.ts-jira-buttons-container').show();
+            		$('#issueKey').hide();
                 }
                 else {
                     alert('There was an error setting your Jira Issue Key. Please try again later');
