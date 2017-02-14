@@ -375,7 +375,7 @@ $(document).ready(function () {
                 }
                 else
                 {
-                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
+                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, true, function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                             $('#fieldComplete').text("yes");
                             $('#taskComplete').html("<i class='fa fa-check'></i>");
@@ -397,7 +397,7 @@ $(document).ready(function () {
         }
         else
         {
-            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'Incomplete'), function (result) {
+            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, false, function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                 $('#fieldComplete').text("no");
                 $('#taskComplete').html("Mark Completed");
