@@ -590,7 +590,12 @@ $(document).ready(function () {
                 {
                     window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                        $('#fieldComplete').text((result === true ? 'yes' : 'no'));
+                        $('#fieldComplete').text("yes");
+                        $('#taskComplete').html("<i class='fa fa-check'></i>");
+                        $('#taskComplete').addClass("completedButton");
+                        $('#taskComplete').removeClass("emptyButton");
+                        $('#taskComplete').attr("data-original-title", "Uncomplete this task");
+                        $('#taskComplete').tooltip('fixTitle');
                     },
                     function (error) {
                         header.show();
@@ -607,7 +612,12 @@ $(document).ready(function () {
         {
             window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                $('#fieldComplete').text((result === true ? 'yes' : 'no'));
+                $('#fieldComplete').text("no");
+                $('#taskComplete').html("Mark Completed");
+                $('#taskComplete').addClass("emptyButton");
+                $('#taskComplete').removeClass("completedButton");
+                $('#taskComplete').attr("data-original-title", "Complete this task");
+                $('#taskComplete').tooltip('fixTitle');
             },
             function (error) {
                 header.show();
