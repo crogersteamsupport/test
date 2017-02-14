@@ -125,11 +125,12 @@ Ts.Pages.Main.prototype = {
 
         $('.menu-signout').click(function (e) {
             e.preventDefault();
+            var result = true;
             var iframes = document.getElementsByTagName('iframe'); 
             for (var i = 0; i < iframes.length; i++) {
                 try {
                     if (iframes[i].contentWindow.tinyMCE.activeEditor)
-                        var result = confirm("Are you sure you want to leave this page");
+                        result = confirm("Are you sure you want to leave this page");
                 } catch (e) { }
             }
             if (result) {
