@@ -288,6 +288,25 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool UpdateSpecificUserStatus(int userID, bool value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            user.InOffice = value;
+            user.Collection.Save();
+            return value;
+            /*
+            WaterCooler watercooler = new WaterCooler(loginUser);
+            WaterCoolerItem item = watercooler.AddNewWaterCoolerItem();
+            item.Message = string.Format("<strong>{0}</strong> {1}", user.FirstLastName, user.InOffice ? "is now in the office." : "has left the office.");
+            item.OrganizationID = user.OrganizationID;
+            item.TimeStamp = DateTime.UtcNow;
+            item.UserID = user.UserID;
+            watercooler.Save();
+            */
+        }
+
+        [WebMethod]
         public UserProxy ToggleUserStatus()
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();

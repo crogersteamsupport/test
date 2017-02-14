@@ -81,6 +81,27 @@ $(document).ready(function () {
 
     });
 
+    $('.user-container').on('dblclick', '.ts-icon-online-small', function (e) {
+        if (parent.Ts.System.User.IsSystemAdmin) {
+            var item = $(this);
+            parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), false, function (result) {
+                item.removeClass('ts-icon-online-small');
+                item.addClass('ts-icon-offline-small');
+            });
+        }
+    });
+
+    $('.user-container').on('dblclick', '.ts-icon-offline-small', function (e) {
+        if (parent.Ts.System.User.IsSystemAdmin) {
+            var item = $(this);
+            parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), true, function (result) {
+                item.removeClass('ts-icon-offline-small');
+                item.addClass('ts-icon-online-small');
+            });
+        }
+    });
+
+
     //function Search()
     //{
     //    parent.Ts.Services.Users.GetUsersSearch(parent.Ts.System.User.OrganizationID, $('#searchString').val(), function (html) {
