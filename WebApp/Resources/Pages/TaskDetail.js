@@ -292,6 +292,14 @@ $(document).ready(function () {
                 }
                 
                 var row = $('<tr>').appendTo('#tblSubtasks > tbody:last');
+                var checkBoxCel = $('<td>').appendTo(row);
+                var checkBoxInput = $('<input>')
+                    .prop('type', 'checkbox')
+                    .prop('checked', subtasks[i].TaskIsComplete)
+                    .addClass('subtaskCheckBox')
+                    .data('reminderid', subtasks[i].ReminderID)
+                    .appendTo(checkBoxCel)
+
                 var nameCel = $('<td>').appendTo(row);
                 $('<a>')
                   .attr('href', '#')
@@ -890,6 +898,26 @@ $(document).ready(function () {
         parent.Ts.System.logAction('Tasks Detail Page - New Task');
         parent.Ts.MainPage.newTask(_reminderID, _taskName);
 
+    });
+
+    $('#tblSubtasks').on('click', '.subtaskCheckBox', function (e) {
+        //e.preventDefault();
+
+        var id = $(this).data('reminderid');
+
+        if ($(this).is(':checked')) {
+            parent.Ts.System.logAction('Task Detail Page - Complete Subtask');
+        }
+        else {
+            parent.Ts.System.logAction('Task Detail Page - Uncomplete Subtask');
+        }
+
+        window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(id, $(this).is(':checked'), function (result) {
+        },
+        function (error) {
+            header.show();
+            alert('There was an error saving the subtask is complete.');
+        });
     });
 
     $('#tblSubtasks').on('click', '.tasklink', function (e) {
