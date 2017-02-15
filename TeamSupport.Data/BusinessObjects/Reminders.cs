@@ -29,10 +29,33 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT * 
-                                        FROM Reminders as R
-                                        INNER JOIN TaskAssociations as TA ON R.ReminderID = TA.ReminderID
-                                        WHERE TA.RefType = 17 AND TA.RefID = @TicketID  ORDER BY DueDate";
+                command.CommandText = @"
+                SELECT
+                    ST.CreatorID,
+                    ST.DateCreated,
+                    ST.Description,
+                    ST.DueDate,
+                    ST.HasEmailSent,
+                    ST.IsDismissed,
+                    ST.OrganizationID,
+                    ST.RefID,
+                    ST.RefType,
+                    ST.ReminderID,
+                    ST.TaskDateCompleted,
+                    ST.TaskDueDate,
+                    ST.TaskIsComplete,
+                    ST.TaskParentID,
+                    CASE WHEN T.TaskName is not null THEN T.TaskName + ' > ' + ST.TaskName
+                        ELSE ST.TaskName END AS TaskName,
+                    ST.UserID
+                FROM[Reminders] as ST
+                    left join[Reminders] as T on ST.TaskParentID = T.ReminderID
+                JOIN TaskAssociations ta
+                    ON ST.ReminderID = ta.ReminderID
+                WHERE
+                    TA.RefType = 17 AND TA.RefID = @TicketID";
+
+
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@TicketID", ticketID);
                 Fill(command);

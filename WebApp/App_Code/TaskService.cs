@@ -255,9 +255,15 @@ namespace TSWebServices
             newTask.Description = info.Description;
             newTask.UserID = info.UserID;
             newTask.TaskIsComplete = info.TaskIsComplete;
-            newTask.TaskDueDate = info.TaskDueDate;
+            if (info.TaskDueDate != null)
+            {
+                newTask.TaskDueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.TaskDueDate);
+            }
             newTask.IsDismissed = info.IsDismissed;
-            newTask.DueDate = info.DueDate;
+            if (info.TaskDueDate != null)
+            {
+                newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
+            }
 
             newTask.RefType = ReferenceType.Tasks;
             newTask.RefID = -1;
@@ -444,19 +450,32 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool SetTaskIsCompleted(int reminderID, bool value)
+        public TaskCompletionStatus SetTaskIsCompleted(int reminderID, bool value)
         {
+            TaskCompletionStatus result = new TaskCompletionStatus(false, value);
+
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminder task = Reminders.GetReminder(loginUser, reminderID);
             task.TaskIsComplete = value;
+
+            //if a user is attempting to complete a task check for incomplete subtasks first
             if (value)
             {
+                if (GetIncompleteSubtasks(reminderID))
+                {
+                    result.IncompleteSubtasks = true;
+                    result.Value = !value;
+                    return result;
+                }
                 task.TaskDateCompleted = DateTime.UtcNow;
             }
             else
             {
+                result.IncompleteSubtasks = false;
+                result.Value = value;
                 task.TaskDateCompleted = null;
             }
+
             task.Collection.Save();
             string description = String.Format("{0} set task is complete to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
             TaskLogs.AddTaskLog(loginUser, reminderID, description);
@@ -470,7 +489,7 @@ namespace TSWebServices
                 SendModifiedNotification(loginUser.UserID, task.ReminderID);
             }
 
-            return value;
+            return result;
         }
 
         [WebMethod]
@@ -518,7 +537,7 @@ namespace TSWebServices
             {
                 description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.TaskDueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
             }
-            task.TaskDueDate = (DateTime)value;
+            task.TaskDueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
             task.Collection.Save();
             TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
 
@@ -527,7 +546,7 @@ namespace TSWebServices
                 SendModifiedNotification(loginUser.UserID, task.ReminderID);
             }
 
-            return value.ToString() != "" ? value.ToString() : null;
+            return value.ToString() != "" ? task.TaskDueDate.ToString() : null;
         }
 
         [WebMethod]
@@ -579,7 +598,7 @@ namespace TSWebServices
             {
                 description.Append(String.Format("Changed Reminder Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
             }
-            task.DueDate = (DateTime)value;
+            task.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
             task.Collection.Save();
             TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
 
@@ -588,7 +607,7 @@ namespace TSWebServices
                 SendModifiedNotification(loginUser.UserID, task.ReminderID);
             }
 
-            return value.ToString() != "" ? value.ToString() : null;
+            return value.ToString() != "" ? task.DueDate.ToString() : null;
         }
 
         [WebMethod]
@@ -701,5 +720,20 @@ namespace TSWebServices
         public List<int> User { get; set; }
         [DataMember]
         public int? TaskParentID { get; set; }
+    }
+
+    public class TaskCompletionStatus
+    {
+        public TaskCompletionStatus(bool incompleteSubtasks, bool value)
+        {
+            IncompleteSubtasks = incompleteSubtasks;
+            Value = value;
+        }
+
+        [DataMember]
+        public bool IncompleteSubtasks { get; set; }
+
+        [DataMember]
+        public bool Value { get; set; }
     }
 }

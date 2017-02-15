@@ -312,7 +312,7 @@ namespace TSWebServices
 
                 if (ticketLink != null
                         && ticketLink.Any()
-                        && organizationJiraLinks.Where(p => p.CRMLinkID == ticketLink[0].CrmLinkID && p.Active).Any())
+                        && organizationJiraLinks.Where(p => p.CRMLinkID == ticketLink[0].CrmLinkID).Any())
                 {
                     CRMLinkTableItem crmJiraInstance = CRMLinkTable.GetCRMLinkTableItem(loginUser, (int)ticketLink[0].CrmLinkID);
 
@@ -579,7 +579,7 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(loginUser, slaTriggerId);
-            
+
             return slaTrigger;
         }
 

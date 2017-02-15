@@ -1,5 +1,9 @@
 ﻿body {
-	background-color: #fff;
+   background-color: #fff;
+}
+
+body#tinymce {
+    height:300px;
 }
 
 .reports-header {

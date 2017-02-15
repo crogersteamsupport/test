@@ -3172,10 +3172,16 @@ function SetupTasksSection() {
 
         $('#ticket-task-span').on('click', '.change-task-status', function (e) {
             var id = $(this).data('reminderid');
+            var checkbox = $(this);
             var checked = $(this).prop("checked");
-            parent.Ts.System.logAction('Tasks Page - Change Task Status');
+            parent.Ts.System.logAction('Ticket Page - Change Task Status');
 
-            parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+            parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
+                if (data.IncompleteSubtasks) {
+                    checkbox.prop("checked", false);
+                    alert('There are subtasks pending completion, please finish them before completing the parent task.')
+                }
+            });
         });
 
         $('#ticket-task-span').on('click', 'span.tagRemove', function (e) {
@@ -4105,11 +4111,10 @@ var SetupJiraFields = function () {
 
         if (confirm(confirmMessage)) {
             e.preventDefault();
-            $('.ts-jira-buttons-container').show();
-            $('#issueKey').hide();
             window.parent.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
                 if (result === true) {
-                    //It was successful
+					$('.ts-jira-buttons-container').show();
+            		$('#issueKey').hide();
                 }
                 else {
                     alert('There was an error setting your Jira Issue Key. Please try again later');

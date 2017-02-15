@@ -26,8 +26,15 @@ $(document).ready(function () {
         }
     });
 
-    initScheduledReportEditor($('#Description'), function (ed) {
-    });
+    setupDescriptionEditor();
+
+    function setupDescriptionEditor() {
+        initScheduledReportEditor($('#Description'), function (ed) {
+        },
+        function (ed) {
+            $('#inputName').focus();
+        });
+    };
 
     _taskParentID = window.parent.parent.Ts.Utils.getQueryValue("taskparentid", window);
     _parentTaskName = window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window);

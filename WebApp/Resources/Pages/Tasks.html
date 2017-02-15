@@ -33,11 +33,7 @@
         <div class="row" style="margin-top:20px;">
             <div class="col-md-12 col-sm-12">
                 <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-                <!--<span class="pull-right">
-                    <a href="#" data-toggle="modal" data-target="#myModal" class="action-new"><button class="btn btn-sm btn-primary"><i class="fa fa-plus"></i>&nbsp; New Task</button></a>
-                </span>-->
                 <div class="results">
-                    <!--<h3>My Tasks</h3>-->
                     <div id="TaskList">
                         <div id="handlebarsTaskList"></div>
                     </div>
@@ -54,12 +50,11 @@
 </body>
 <script id="mytask-table-template" type="text/x-handlebars-template">
     <div id="taskList"></div>
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <td></td>
                 <td>Name</td>
-                <!--<td>Assigned To</td>-->
                 <td>Due</td>
                 <td>Reminder Date</td>
                 <td>Associations</td>
@@ -79,7 +74,6 @@
                 {{formatTaskName this.Task}}
             </a>
         </td>
-        <!--<td>{{AssignedTo}}</td>-->
         <td>{{formatDate Task.TaskDueDate}}</</td>
         <td>{{formatDate Task.DueDate}}</td>
         <td>
@@ -88,24 +82,11 @@
             {{/Associations}}
         </td>
     </tr>
-    <!--{{#SubTasks}}
-    <tr class="">
-        <td>
-            Poop
-        </td>
-        <td>
-
-        </td>
-        <td>
-
-        </td>
-    </tr>
-    {{/SubTasks}}-->
     {{/taskList}}
 </script>
 <script id="assigned-table-template" type="text/x-handlebars-template">
     <div id="taskList"></div>
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <td></td>
@@ -143,7 +124,7 @@
 </script>
 <script id="closed-table-template" type="text/x-handlebars-template">
     <div id="taskList"></div>
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <td></td>
