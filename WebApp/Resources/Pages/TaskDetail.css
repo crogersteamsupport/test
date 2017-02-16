@@ -196,3 +196,11 @@ float: left;
     color: #FFFFFF;
     border-color: #999;
 }
+
+.completedButton:hover {
+    color: white;
+}
+
+.completedButton:focus {
+    color: white;
+}
