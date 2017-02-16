@@ -200,36 +200,8 @@ namespace TeamSupport.Data
             WHERE
                 RowNum BETWEEN @From AND @To";
 
-            //User user = Users.GetUser(loginUser, loginUser.UserID);
-            //if (user.TicketRights == TicketRightType.Customers)
-            //{
-            //    companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
-            //    contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
-            //}
-
-            //if (active != null)
-            //{
-            //    companyQuery = companyQuery + " AND o.IsActive = @IsActive";
-            //    contactQuery = contactQuery + " AND u.IsActive = @IsActive";
-            //    command.Parameters.AddWithValue("@IsActive", (bool)active);
-            //}
-
             StringBuilder query;
-
             query = new StringBuilder(string.Format(pageQuery, pendingQuery));
-
-            //    if (searchPending && searchComplete)
-            //{
-            //    query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
-            //}
-            //else if (searchPending)
-            //{
-            //    query = new StringBuilder(string.Format(pageQuery, pendingQuery));
-            //}
-            //else
-            //{
-            //    query = new StringBuilder(string.Format(pageQuery, completeQuery));
-            //}
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -244,7 +216,6 @@ namespace TeamSupport.Data
 
         public void LoadMyTasks(int from, int count, int userID, bool searchPending, bool searchComplete)
         {
-            //Remember this will change once we add the isComplete field
             string pendingQuery =
                 @"SELECT
                     ST.CreatorID,
@@ -295,36 +266,9 @@ namespace TeamSupport.Data
             WHERE
                 RowNum BETWEEN @From AND @To";
 
-            //User user = Users.GetUser(loginUser, loginUser.UserID);
-            //if (user.TicketRights == TicketRightType.Customers)
-            //{
-            //    companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
-            //    contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
-            //}
-
-            //if (active != null)
-            //{
-            //    companyQuery = companyQuery + " AND o.IsActive = @IsActive";
-            //    contactQuery = contactQuery + " AND u.IsActive = @IsActive";
-            //    command.Parameters.AddWithValue("@IsActive", (bool)active);
-            //}
-
             StringBuilder query;
 
             query = new StringBuilder(string.Format(pageQuery, pendingQuery));
-
-            //    if (searchPending && searchComplete)
-            //{
-            //    query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
-            //}
-            //else if (searchPending)
-            //{
-            //    query = new StringBuilder(string.Format(pageQuery, pendingQuery));
-            //}
-            //else
-            //{
-            //    query = new StringBuilder(string.Format(pageQuery, completeQuery));
-            //}
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -339,17 +283,6 @@ namespace TeamSupport.Data
 
         public void LoadCompleted(int from, int count, int userID, bool searchPending, bool searchComplete)
         {
-            //Remember this will change once we add the isComplete field
-            //string pendingQuery = @"
-            //SELECT 
-            //    *
-            //FROM
-            //    Reminders
-            //WHERE
-            //    CreatorID = @UserID 
-            //    OR UserID <> @UserID
-            //    AND TaskIsComplete = 1 ";
-
             string completeQuery =
                  @"SELECT
                     ST.CreatorID,
@@ -400,34 +333,8 @@ namespace TeamSupport.Data
             WHERE
                 RowNum BETWEEN @From AND @To";
 
-            //User user = Users.GetUser(loginUser, loginUser.UserID);
-            //if (user.TicketRights == TicketRightType.Customers)
-            //{
-            //    companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
-            //    contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
-            //}
-
-            //if (active != null)
-            //{
-            //    companyQuery = companyQuery + " AND o.IsActive = @IsActive";
-            //    contactQuery = contactQuery + " AND u.IsActive = @IsActive";
-            //    command.Parameters.AddWithValue("@IsActive", (bool)active);
-            //}
-
             StringBuilder query;
-
-            //if (searchPending && searchComplete)
-            //{
-            //    query = new StringBuilder(string.Format(pageQuery, pendingQuery + " UNION ALL " + completeQuery));
-            //}
-            //else if (searchPending)
-            //{
-            //    query = new StringBuilder(string.Format(pageQuery, pendingQuery));
-            //}
-            //else
-            //{
             query = new StringBuilder(string.Format(pageQuery, completeQuery));
-            //}
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -600,6 +507,78 @@ namespace TeamSupport.Data
                 command.CommandText = query.ToString();
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@contactID", contactID);
+                //command.Parameters.AddWithValue("@From", from + 1);
+                //command.Parameters.AddWithValue("@To", from + count);
+                Fill(command);
+            }
+        }
+
+        public void LoadByUser(int from, int count, int userID)
+        {
+            //Paging has been written for but is currently excluded.
+
+            string completeQuery = @"
+            SELECT
+                    ST.CreatorID,
+                    ST.DateCreated,
+                    ST.Description,
+                    ST.DueDate,
+                    ST.HasEmailSent,
+                    ST.IsDismissed,
+                    ST.OrganizationID,
+                    ST.RefID,
+                    ST.RefType,
+                    ST.ReminderID,
+                    ST.TaskDateCompleted,
+                    ST.TaskDueDate,
+                    ST.TaskIsComplete,
+                    ST.TaskParentID,
+                    CASE WHEN T.TaskName is not null THEN T.TaskName + ' > ' + ST.TaskName
+                        ELSE ST.TaskName END AS TaskName,
+                    ST.UserID
+                FROM[Reminders] as ST
+                    left join[Reminders] as T on ST.TaskParentID = T.ReminderID
+                JOIN TaskAssociations ta
+                    ON ST.ReminderID = ta.ReminderID
+            WHERE
+                ta.RefType = 22
+                AND ta.RefID = @userID";
+
+            string pageQuery = @"
+            WITH 
+                q AS ({0}),
+                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY TaskIsComplete asc, CASE WHEN TaskDueDate IS NULL THEN 1 ELSE 0 END, TaskIsComplete ASC, TaskDueDate, DueDate) AS 'RowNum' FROM q)
+            SELECT
+                ReminderID
+                , OrganizationID
+                , RefType
+                , RefID
+                , Description
+                , DueDate
+                , UserID
+                , IsDismissed
+                , HasEmailSent
+                , CreatorID
+                , DateCreated
+                , TaskName
+                , TaskDueDate
+                , TaskIsComplete
+                , TaskDateCompleted
+                , TaskParentID
+            FROM 
+                r";
+            //WHERE
+            //    RowNum BETWEEN @From AND @To;
+
+            StringBuilder query;
+
+            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = query.ToString();
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@userID", userID);
                 //command.Parameters.AddWithValue("@From", from + 1);
                 //command.Parameters.AddWithValue("@To", from + count);
                 Fill(command);
