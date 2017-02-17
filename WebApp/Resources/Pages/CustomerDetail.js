@@ -1751,7 +1751,7 @@ $(document).ready(function () {
             //$('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
             $('#noteCustomerAlert').prop('checked', note.IsAlert);
-            $('#btnNotesSave').text("Edit Note");
+            $('#btnNotesSave').text("Save");
             $('#btnNotesCancel').show();
             $('#noteForm').show();
             $('#fieldNoteDesc').tinymce().setContent(desc);

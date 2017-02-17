@@ -85,7 +85,7 @@ $(document).ready(function () {
 
     });
 
-    $('.user-container').on('dblclick', '.ts-icon-online-small', function (e) {
+    $('.user-container').on('click', '.ts-icon-online-small', function (e) {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), false, function (result) {

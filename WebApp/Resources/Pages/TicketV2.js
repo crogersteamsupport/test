@@ -288,7 +288,8 @@ $(document).ready(function () {
   var firstScript = document.getElementsByTagName('script')[0];
   script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
   script.setAttribute('id', 'dropboxjs');
-  firstScript.parentNode.insertBefore(script, firstScript);
+  if (window.parent.Ts.System.User.OrganizationID != 1150007)
+    firstScript.parentNode.insertBefore(script, firstScript);
   slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
   $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 });
