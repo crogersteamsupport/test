@@ -65,7 +65,7 @@ $(document).ready(function () {
             $('#fieldUser').data('field', task.UserID);
 
             if (task.TaskIsComplete) {
-                $('#fieldComplete').text("yes");
+                $('#fieldComplete').text("Yes");
                 $('#taskComplete').html("<i class='fa fa-check'></i>");
                 $('#taskComplete').addClass("completedButton");
                 $('#taskComplete').removeClass("emptyButton");
@@ -73,7 +73,7 @@ $(document).ready(function () {
                 $('#taskComplete').tooltip('fixTitle');
             }
             else {
-                $('#fieldComplete').text("no");
+                $('#fieldComplete').text("No");
                 $('#taskComplete').html("Mark Completed");
                 $('#taskComplete').addClass("emptyButton");
                 $('#taskComplete').removeClass("completedButton");
@@ -81,7 +81,7 @@ $(document).ready(function () {
                 $('#taskComplete').tooltip('fixTitle');
             }
             $('#fieldDueDate').html(task.TaskDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
-            $('#fieldReminder').text(task.IsDismissed ? "no" : "yes");
+            $('#fieldReminder').text(task.IsDismissed ? "No" : "Yes");
             $('#fieldReminderDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
             if (task.IsDismissed) {
                 $('#reminderDateGroup').hide();
@@ -385,7 +385,7 @@ $(document).ready(function () {
                 {
                     window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, true, function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                            $('#fieldComplete').text("yes");
+                            $('#fieldComplete').text("Yes");
                             $('#taskComplete').html("<i class='fa fa-check'></i>");
                             $('#taskComplete').addClass("completedButton");
                             $('#taskComplete').removeClass("emptyButton");
@@ -407,7 +407,7 @@ $(document).ready(function () {
         {
             window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, false, function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                $('#fieldComplete').text("no");
+                $('#fieldComplete').text("No");
                 $('#taskComplete').html("Mark Completed");
                 $('#taskComplete').addClass("emptyButton");
                 $('#taskComplete').removeClass("completedButton");
@@ -587,7 +587,7 @@ $(document).ready(function () {
     $('#fieldComplete').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        if ($(this).text() !== 'yes')
+        if ($(this).text() !== 'Yes')
         {
             window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_reminderID, function (result) {
                 if (result)
@@ -596,9 +596,9 @@ $(document).ready(function () {
                 }
                 else
                 {
-                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
+                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'Yes'), function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                        $('#fieldComplete').text("yes");
+                        $('#fieldComplete').text("Yes");
                         $('#taskComplete').html("<i class='fa fa-check'></i>");
                         $('#taskComplete').addClass("completedButton");
                         $('#taskComplete').removeClass("emptyButton");
@@ -618,9 +618,9 @@ $(document).ready(function () {
         }
         else
         {
-            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'yes'), function (result) {
+            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'Yes'), function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                $('#fieldComplete').text("no");
+                $('#fieldComplete').text("No");
                 $('#taskComplete').html("Mark Completed");
                 $('#taskComplete').addClass("emptyButton");
                 $('#taskComplete').removeClass("completedButton");
@@ -702,9 +702,9 @@ $(document).ready(function () {
     $('#fieldReminder').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        window.parent.parent.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'no'), function (result) {
+        window.parent.parent.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'No'), function (result) {
             top.Ts.System.logAction('Task Detail - Toggle IsDismissed');
-            $('#fieldReminder').text((result === true ? 'no' : 'yes'));
+            $('#fieldReminder').text((result === true ? 'No' : 'Yes'));
             if (result) {
                 $('#reminderDateGroup').hide();
             }
