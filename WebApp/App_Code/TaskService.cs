@@ -611,6 +611,7 @@ namespace TSWebServices
                 description.Append(String.Format("Changed Reminder Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
             }
             task.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
+            task.HasEmailSent = false;
             task.Collection.Save();
             TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
 
