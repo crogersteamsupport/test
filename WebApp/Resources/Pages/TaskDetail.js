@@ -356,7 +356,7 @@ $(document).ready(function () {
 
     $('#taskRefresh').click(function (e) {
         e.preventDefault();
-        window.location = window.location;
+        location.reload();
     });
 
     $('#taskDelete').click(function (e) {
