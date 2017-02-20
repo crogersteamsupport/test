@@ -1761,18 +1761,27 @@ namespace TSWebServices
                     break;
                 case 1:
                     Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    Displayname = p.Name;
+                    if(p == null)
+                        Displayname = "";
+                    else
+                        Displayname = p.Name;
                     break;
                 case 2:
                     Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    Displayname = o.Name;
+                    if (o == null)
+                        Displayname = "";
+                    else
+                        Displayname = o.Name;
                     break;
                 case 3:
                     Displayname = Users.GetUserFullName(TSAuthentication.GetLoginUser(), calproxy.RefID);
                     break;
                 case 4:
                     Group g = Groups.GetGroup(TSAuthentication.GetLoginUser(), calproxy.RefID);
-                    Displayname = g.Name;
+                    if (g == null)
+                        Displayname = "";
+                    else
+                        Displayname = g.Name;
                     break;
             }
 

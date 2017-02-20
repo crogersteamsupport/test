@@ -1813,7 +1813,7 @@ $(document).ready(function () {
         $('#fieldNoteDesc').val('');
         $('#fieldNoteID').val('-1');
         $('#noteCustomerAlert').prop('checked', false);
-        $('#btnNotesSave').text("Save Note");
+        $('#btnNotesSave').text("Save");
         $('#noteForm').toggle();
         _mainFrame.Ts.System.logAction('Customer Detail - Cancel Note Edit / Add');
     });
@@ -1837,7 +1837,7 @@ $(document).ready(function () {
             $('#fieldNoteID').val('-1');
             $('#ddlNoteProductFamily').val('-1');
             $('#noteCustomerAlert').prop('checked', false);
-            $('#btnNotesSave').text("Save Note");
+            $('#btnNotesSave').text("Save");
             LoadNotes();
             $('#noteForm').toggle();
             $("#btnNotesSave").removeProp('disabled');
