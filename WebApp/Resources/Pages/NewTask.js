@@ -60,6 +60,8 @@ $(document).ready(function () {
           .appendTo(parentName)
 
         $('.parentLinkContainer').prepend(parentName);
+
+        $('#mainHeader').text('Subtask Information');
     }
 
     $('.parentLinkContainer').on('click', '.parentLink', function (e) {
