@@ -12,6 +12,8 @@ var _taskParentID;
 var _parentTaskName;
 
 $(document).ready(function () {
+    parent.Ts.MainPage.highlightNewTaskTab();
+
     $('body').layout({
         defaults: {
             spacing_open: 0,
@@ -58,6 +60,8 @@ $(document).ready(function () {
           .appendTo(parentName)
 
         $('.parentLinkContainer').prepend(parentName);
+
+        $('#mainHeader').text('Subtask Information');
     }
 
     $('.parentLinkContainer').on('click', '.parentLink', function (e) {
