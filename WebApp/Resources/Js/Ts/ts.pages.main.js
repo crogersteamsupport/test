@@ -1528,7 +1528,13 @@ Ts.Pages.Main.prototype = {
             tab.setIsHighlighted(isHighlighted);
         }
     },
-    installChromePlugin: function()
+    highlightNewTaskTab: function () {
+        var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
+        if (tab) {
+            tab.setIsHighlighted(true);
+        }
+    },
+    installChromePlugin: function ()
     {
     	chrome.webstore.install("https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg",
 function () { }, function (e) { console.log(e) });

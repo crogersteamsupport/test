@@ -12,6 +12,8 @@ var _taskParentID;
 var _parentTaskName;
 
 $(document).ready(function () {
+    parent.Ts.MainPage.highlightNewTaskTab();
+
     $('body').layout({
         defaults: {
             spacing_open: 0,
