@@ -20,9 +20,12 @@ $(document).ready(function () {
         $('#cbActive').prop('checked', true);
     }
 
-    if (!parent.Ts.System.User.IsSystemAdmin)
-    {
+    if (!parent.Ts.System.User.IsSystemAdmin) {
         $('#historyTab').hide();
+    }
+
+    if (parent.Ts.System.Organization.ProductType == parent.Ts.ProductType.Enterprise) {
+        $('#taskTab').show();
     }
 
     if (parent.Ts.Utils.getQueryValue("UserID", window) != null) {
@@ -30,17 +33,16 @@ $(document).ready(function () {
         parent.Ts.Services.Users.GetUser(userID, function (user) {
             $('#userName').text(user.FirstName + " " + user.LastName);
         });
-        
+
     }
-    else
-    {
+    else {
         $('#userName').text(parent.Ts.System.User.FirstName + " " + parent.Ts.System.User.LastName);
     }
-        
+
     $('#infoIframe').attr("src", "/vcr/1_9_0/Pages/User.html?UserID=" + userID);
     $('#userTabs a:first').tab('show');
     Search();
-    
+
 
     $('#infoIframe, #openIframe, #closedIframe, #allIframe, #queueIframe, #historyIframe, #userName').load(function () {
         $('.maincontainer').fadeTo(0, 1);
@@ -68,6 +70,8 @@ $(document).ready(function () {
             $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=22&RefID=" + userID);
         else if (e.target.innerHTML == "Ratings")
             LoadRatings('', 1);
+        else if (e.target.innerHTML == "Tasks")
+            LoadTasks();
     });
 
     var _tmrSearch = null;
@@ -81,6 +85,27 @@ $(document).ready(function () {
 
     });
 
+    $('.user-container').on('click', '.ts-icon-online-small', function (e) {
+        if (parent.Ts.System.User.IsSystemAdmin) {
+            var item = $(this);
+            parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), false, function (result) {
+                item.removeClass('ts-icon-online-small');
+                item.addClass('ts-icon-offline-small');
+            });
+        }
+    });
+
+    $('.user-container').on('dblclick', '.ts-icon-offline-small', function (e) {
+        if (parent.Ts.System.User.IsSystemAdmin) {
+            var item = $(this);
+            parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), true, function (result) {
+                item.removeClass('ts-icon-offline-small');
+                item.addClass('ts-icon-online-small');
+            });
+        }
+    });
+
+
     //function Search()
     //{
     //    parent.Ts.Services.Users.GetUsersSearch(parent.Ts.System.User.OrganizationID, $('#searchString').val(), function (html) {
@@ -88,12 +113,11 @@ $(document).ready(function () {
     //        $('.user-container').fadeTo(0, 1);
     //        $('.user-container').append(html);
     //        $('.user-tooltip').tooltip({ placement: 'bottom', container: 'body' });
-            
+
     //    });
     //}
 
-    function SearchDelete()
-    {
+    function SearchDelete() {
         parent.Ts.Services.Users.GetUsersSearch(parent.Ts.System.User.OrganizationID, $('#searchString').val(), function (html) {
             $('.user-container').empty();
             $('.user-container').fadeTo(0, 1);
@@ -124,13 +148,13 @@ $(document).ready(function () {
         $('#userName').text($(this).text());
         LoadRatings('', 1);
         activeID = userID;
-        
+
     });
 
     $('.user-container').on('click', '.user-chat', function (e) {
         e.preventDefault();
         window.parent.openChat($(this).parent().parent().parent().find('strong').text(), $(this).attr('cid'));
-        
+
     });
 
     $('#userNew').click(function () {
@@ -161,12 +185,11 @@ $(document).ready(function () {
     }
 
     $(window).bind('resize', function () {
-        if ($("ul#userTabs li.active").text() == "User Information")
-        {
+        if ($("ul#userTabs li.active").text() == "User Information") {
             $('#infoIframe').attr("src", "/vcr/1_9_0/Pages/User.html?UserID=" + userID);
             autoResize();
         }
-        
+
 
         ;
     });
@@ -207,13 +230,12 @@ $(document).ready(function () {
                     agents = agents + '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
                 }
 
-                if (parent.Ts.System.User.IsSystemAdmin)
-                {
+                if (parent.Ts.System.User.IsSystemAdmin) {
                     deleteIt = '<a href="#" class="delete-link" id="' + ratings[i].rating.AgentRatingID + '"><span class="fa fa-trash-o"></span></a>';
                 }
 
                 var tr = $('<tr>')
-                .html('<td><a href="' + parent.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="parent.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td><a href="#" onclick="parent.Ts.MainPage.openNewCustomer(' + ratings[i].org.OrganizationID + '); return false;">' + ratings[i].org.Name + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td><td>'+deleteIt+'</td>')
+                .html('<td><a href="' + parent.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="parent.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="parent.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td><a href="#" onclick="parent.Ts.MainPage.openNewCustomer(' + ratings[i].org.OrganizationID + '); return false;">' + ratings[i].org.Name + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td><td>' + deleteIt + '</td>')
                 .appendTo('#tblRatings > tbody:last');
                 agents = "";
             }
@@ -236,6 +258,16 @@ $(document).ready(function () {
             $('#positivePercent').text(results[2] + "%");
         });
 
+    }
+
+    function LoadTasks() {
+        parent.Ts.Services.Task.GetUserTasks(0, 20, userID, function (tasks) {
+            console.log(tasks);
+            var data = { taskList: tasks };
+            var source = $("#user-tasks-template").html();
+            var template = Handlebars.compile(source);
+            $("#tasks").html(template(data));
+        });
     }
 
     $('#positiveImage').click(function () {
@@ -277,6 +309,26 @@ $(document).ready(function () {
         Search();
     });
 
+    $('#taskContainer').on('click', 'a.tasklink', function (e) {
+        e.preventDefault();
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('Tasks Page - View Task');
+        parent.Ts.MainPage.openNewTask(id);
+    });
+
+    $('#taskContainer').on('click', '.change-task-status', function (e) {
+        var id = $(this).data('reminderid');
+        var checkbox = $(this);
+        var checked = $(this).prop("checked");
+        parent.Ts.System.logAction('Contact Page - Change Task Status');
+
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
+            if (data.IncompleteSubtasks) {
+                checkbox.prop("checked", false);
+                alert('There are subtasks pending completion, please finish them before completing the parent task.')
+            }
+        });
+    });
 });
 
 function Search() {
@@ -296,3 +348,92 @@ function Update() {
 function autoResize() {
     $('#infoIframe').attr('height', $('.maincontainer').outerHeight() - $('.main-nav').outerHeight());
 }
+
+Handlebars.registerHelper("formatDate", function (datetime) {
+    if (datetime != null) {
+        return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+    }
+    else return null;
+});
+
+Handlebars.registerHelper("formatTaskName", function (Task) {
+    var name = Task.TaskName;
+
+    if (Task.TaskName == null) {
+        if (Task.Description == null || Task.Description == "") {
+            name = 'No Title';
+        }
+        else {
+            name = Task.Description;
+        }
+    }
+
+    return name;
+});
+
+Handlebars.registerHelper("formatRow", function (task) {
+    var cssClasses = null;
+
+    if (task.TaskDueDate != null) {
+        if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+            cssClasses = 'danger';
+        }
+        else {
+            return null;
+        }
+    }
+
+    return cssClasses;
+});
+
+Handlebars.registerHelper("taskComplete", function (taskdate) {
+    return taskdate != null ? ' checked="checked"' : '';
+});
+
+Handlebars.registerHelper("mapAssociation", function (association) {
+    var result = '';
+    var functionName = '';
+    var associationName = '';
+    var iconClass = '';
+
+    switch (association.RefType) {
+        //case 3: leaving attachments off for now
+        //    associationName = association.Attachment;
+        //    iconClass = attIcon;
+        //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
+        //    break;
+        case 6:
+            associationName = association.Group;
+            iconClass = "groupIcon";
+            functionName = 'window.parent.parent.Ts.MainPage.openGroup(' + association.RefID + '); return false;';
+            break;
+        case 9:
+            associationName = association.Company;
+            iconClass = "companyIcon";
+            functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer(' + association.RefID + '); return false;';
+            break;
+        case 13:
+            associationName = association.Product;
+            iconClass = "productIcon";
+            functionName = 'window.parent.parent.Ts.MainPage.openNewProduct(' + association.RefID + '); return false;';
+            break;
+        case 17:
+            associationName = association.TicketName;
+            iconClass = "ticketIcon";
+            functionName = 'window.parent.parent.Ts.MainPage.openTicketByID(' + association.RefID + '); return false;'
+            break;
+        case 22:
+            associationName = association.User;
+            iconClass = "userIcon";
+            functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
+            break;
+        default:
+            functionName = null;
+    }
+
+    if (functionName != null) {
+        result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass + '" href="#" onclick="' + functionName + '" title="' + associationName + '"></a></span>'
+    }
+
+    return new Handlebars.SafeString(result);
+});

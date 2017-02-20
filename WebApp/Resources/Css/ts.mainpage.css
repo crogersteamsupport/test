@@ -18,7 +18,7 @@
 .main-header-status span { margin-left: 5px; display:block; float:left; }
 .main-header-status input.text { margin-left: 5px; float:left; margin-top: 0px; width: 250px; padding: .1em .1em; line-height: 1.2em; height: 1.2em;} 
 
-.main-company-logo {background: transparent url('../Images/header_company_logo.png') no-repeat; height: 40px; width: 175px; float:left; margin: 5px 0 0 .5em;}
+.main-company-logo {height: 35px; width: 140px; float:left; margin: 8px 42px 0 .5em;}
 .main-header-right { float: left; width: 410px; margin-left: -410px; line-height: 50px; color: #fff; text-align:right; font-weight:bold;  }
 .main-header-content { margin-right: 400px; padding: 0; line-height: 50px; color: #fff;}
 .main-header-content-wrapper { float: left; width: 100%; }

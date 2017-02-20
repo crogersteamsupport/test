@@ -474,6 +474,45 @@ namespace TeamSupport.Data
             }
             return TimeSpan.FromMinutes(minutes);
         }
+
+        public EmailTemplate ReplaceAssociations(LoginUser loginUser, int reminderID)
+        {
+            string associationsParameterName = "{{TaskAssociations}}";
+            if (Subject.ToLower().Contains(associationsParameterName.ToLower()) || Body.ToLower().Contains(associationsParameterName.ToLower()))
+            {
+                Attachments attachments = new Attachments(loginUser);
+                attachments.LoadByReference(ReferenceType.Tasks, reminderID);
+
+                TaskAssociationsView associations = new TaskAssociationsView(loginUser);
+                associations.LoadByReminderIDOnly(reminderID);
+
+                StringBuilder result = new StringBuilder();
+                if (attachments.Count == 0)
+                {
+                    if (associations.Count == 0)
+                    {
+                        result.Append("[None]");
+                    }
+                    else
+                    {
+                        result.Append(associations.GetText());
+                    }
+                }
+                else
+                {
+                    if (associations.Count == 0)
+                    {
+                        result.Append(attachments.GetText());
+                    }
+                    else
+                    {
+                        result.Append(attachments.GetText() + ", " + associations.GetText());
+                    }
+                }
+                ReplaceParameter("TaskAssociations", result.ToString());
+            }
+            return this;
+        }
     }
 
     public partial class EmailTemplates
@@ -483,6 +522,50 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"SELECT * FROM EmailTemplates WHERE IsTSOnly = @IsTSOnly OR IsTSOnly = 0 ORDER BY Position";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@IsTSOnly", includeTSOnly);
+                Fill(command);
+            }
+        }
+
+        public void LoadAll(bool includeTSOnly, ProductType productType)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                if (productType == ProductType.Enterprise)
+                {
+                    //Exclude Reminders
+                    command.CommandText = @"
+                    SELECT
+                        *
+                    FROM
+                        EmailTemplates
+                    WHERE
+                        (
+                            IsTSOnly = @IsTSOnly
+                            OR IsTSOnly = 0
+                        )
+                        AND EmailTemplateID NOT IN (22,23,24)
+                    ORDER BY 
+                        Position";
+                }
+                else
+                {
+                    //Exclude Tasks
+                    command.CommandText = @"
+                    SELECT
+                        *
+                    FROM
+                        EmailTemplates
+                    WHERE
+                        (
+                            IsTSOnly = @IsTSOnly
+                            OR IsTSOnly = 0
+                        )
+                        AND EmailTemplateID NOT IN (35,36,37,38,39)
+                    ORDER BY 
+                        Position";
+                }
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@IsTSOnly", includeTSOnly);
                 Fill(command);
@@ -924,7 +1007,17 @@ namespace TeamSupport.Data
 
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 22, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Ticket", ticket);
-            template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
+            template.ReplaceParameter("ReminderDescription", reminder.Description);
+            if (reminder.DueDate.HasValue)
+            {
+                DateTime dueDate = reminder.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("ReminderDueDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("ReminderDueDate", "[None]");
+            }
+            
             template.ReplaceActions(ticket, false);
             template.ReplaceContacts(ticket);
 
@@ -935,7 +1028,16 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 23, -1);
             template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Company", company);
-            template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
+            template.ReplaceParameter("ReminderDescription", reminder.Description);
+            if (reminder.DueDate.HasValue)
+            {
+                DateTime dueDate = reminder.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("ReminderDueDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("ReminderDueDate", "[None]");
+            }
             return template.GetMessage();
         }
 
@@ -943,7 +1045,202 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 24, -1);
             template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Contact", contact);
-            template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
+            template.ReplaceParameter("ReminderDescription", reminder.Description);
+            if (reminder.DueDate.HasValue)
+            {
+                DateTime dueDate = reminder.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("ReminderDueDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("ReminderDueDate", "[None]");
+            }
+            return template.GetMessage();
+        }
+
+        public static MailMessage GetReminderTaskEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, TasksViewItem task)
+        {
+            EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 35, -1);
+            template.ReplaceCommonParameters().ReplaceFields("User", user);
+            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskDescription", task.Description);
+            if (task.TaskDueDate.HasValue)
+            {
+                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDueDate", "[None]");
+            }
+
+            if (task.TaskDateCompleted.HasValue)
+            {
+                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDateCompleted", "[None]");
+            }
+            if (task.DueDate.HasValue)
+            {
+                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskReminderDate", "[None]");
+            }
+
+            return template.GetMessage();
+        }
+
+        public static MailMessage GetTaskModified(LoginUser loginUser, UsersViewItem modifier, UsersViewItem owner, TasksViewItem task)
+        {
+            EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 36, -1);
+            template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
+            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskDescription", task.Description);
+            if (task.TaskDueDate.HasValue)
+            {
+                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDueDate", "[None]");
+            }
+
+            if (task.TaskDateCompleted.HasValue)
+            {
+                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDateCompleted", "[None]");
+            }
+            if (task.DueDate.HasValue)
+            {
+                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskReminderDate", "[None]");
+            }
+            return template.GetMessage();
+        }
+
+        public static MailMessage GetTaskAssigned(LoginUser loginUser, UsersViewItem modifier, UsersViewItem owner, TasksViewItem task)
+        {
+            EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 37, -1);
+            template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
+            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskDescription", task.Description);
+            if (task.TaskDueDate.HasValue)
+            {
+                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDueDate", "[None]");
+            }
+
+            if (task.TaskDateCompleted.HasValue)
+            {
+                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDateCompleted", "[None]");
+            }
+            if (task.DueDate.HasValue)
+            {
+                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskReminderDate", "[None]");
+            }
+            return template.GetMessage();
+        }
+
+        public static MailMessage GetTaskComplete(LoginUser loginUser, UsersViewItem modifier, UsersViewItem owner, TasksViewItem task)
+        {
+            EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 38, -1);
+            template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
+            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskDescription", task.Description);
+            if (task.TaskDueDate.HasValue)
+            {
+                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDueDate", "[None]");
+            }
+
+            if (task.TaskDateCompleted.HasValue)
+            {
+                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDateCompleted", "[None]");
+            }
+            if (task.DueDate.HasValue)
+            {
+                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskReminderDate", "[None]");
+            }
+            return template.GetMessage();
+        }
+
+        public static MailMessage GetTaskOldUser(LoginUser loginUser, UsersViewItem modifier, UsersViewItem oldUser, UsersViewItem owner, TasksViewItem task)
+        {
+            EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 38, -1);
+            template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("OldOwner", oldUser).ReplaceFields("Owner", owner);
+            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskDescription", task.Description);
+            if (task.TaskDueDate.HasValue)
+            {
+                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDueDate", "[None]");
+            }
+
+            if (task.TaskDateCompleted.HasValue)
+            {
+                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskDateCompleted", "[None]");
+            }
+            if (task.DueDate.HasValue)
+            {
+                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
+            }
+            else
+            {
+                template.ReplaceParameter("TaskReminderDate", "[None]");
+            }
             return template.GetMessage();
         }
 

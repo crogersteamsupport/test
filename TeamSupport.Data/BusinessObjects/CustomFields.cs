@@ -284,7 +284,7 @@ namespace TeamSupport.Data
         }
     }
 
-		public void LoadPortalTicketCustomFields(int organizationID,  int ticketTypeID, int? productID, string orderBy = "Position")
+		public void LoadPortalTicketCustomFields(int organizationID,  int ticketTypeID, int? productID, string orderBy = "CustomFieldCategoryID, Position")
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
@@ -306,7 +306,7 @@ namespace TeamSupport.Data
 			}
 		}
 
-		public void LoadPortalTicketCustomFields(int organizationID, int ticketTypeID, int? productID, int parentID, string parentValue, string orderBy = "Position")
+		public void LoadPortalTicketCustomFields(int organizationID, int ticketTypeID, int? productID, int parentID, string parentValue, string orderBy = "CustomFieldCategoryID, Position")
 		{
 			using (SqlCommand command = new SqlCommand())
 			{

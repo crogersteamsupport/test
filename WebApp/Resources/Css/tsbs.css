@@ -77,6 +77,8 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 @media (min-width: 992px) { .container { max-width: 1920px; } }
 @media (min-width: 768px) { .container { max-width: 1920px; }}
 
+@media (max-width: 720px) { img { max-width: 100%; height: auto; } }
+
 
 /* Box styles */
 .box { margin-top: 15px; background-color:#fff; border: 1px solid #fff;   border-top: 5px solid #fff; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }

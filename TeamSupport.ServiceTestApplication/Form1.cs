@@ -29,6 +29,7 @@ namespace TeamSupport.ServiceTestApplication
     CustomerInsightsProcessor _cip;
 	ServiceThreadPool<ReportSender> _reportSender;
         ServiceThreadPool<TokTranscoder> _tokTranscoder;
+    ServiceThreadPool<TaskProcessor> _taskProcessor;
     
     public Form1()
     {
@@ -62,6 +63,7 @@ namespace TeamSupport.ServiceTestApplication
       if (_cip != null) _cip.Stop();
 	  if (_reportSender != null) _reportSender.Stop();
             if (_tokTranscoder != null) _tokTranscoder.Stop();
+      if (_taskProcessor != null) _taskProcessor.Stop();
         }
 
     private void StartProcess(ServiceThread thread, Button button)
@@ -209,6 +211,11 @@ namespace TeamSupport.ServiceTestApplication
         private void button3_Click_1(object sender, EventArgs e)
         {
             if (_tokTranscoder == null || _tokTranscoder.IsStopped) StartProcess(_tokTranscoder = new ServiceThreadPool<TokTranscoder>("TokTranscoder"), sender as Button); else StopProcess(_tokTranscoder, sender as Button);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (_taskProcessor == null || _taskProcessor.IsStopped) StartProcess(_taskProcessor = new ServiceThreadPool<TaskProcessor>("TaskProcessor"), sender as Button); else StopProcess(_taskProcessor, sender as Button);
         }
     }
 }

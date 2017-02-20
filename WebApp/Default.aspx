@@ -183,6 +183,7 @@
         <asp:ServiceReference Path="~/Services/PrivateServices.asmx" />
         <asp:ServiceReference Path="~/Services/LoginService.asmx" />
         <asp:ServiceReference Path="~/Services/ChatService.asmx" />
+        <asp:ServiceReference Path="~/Services/TaskService.asmx" />
       </services>
     <scripts>
     
@@ -228,7 +229,7 @@
         <div class="main-header-title">
           <div class="main-header-content-wrapper">
             <div class="main-header-content">
-              <div class="main-company-logo"></div>
+              <img class="main-company-logo" alt="company_logo" src="../vcr/1_9_0/Images/header_company_logo.png"/>
               <a class="main-header-new-ticket main-link-newticket" href="#"><span></span></a>
               <input class="ui-corner-all ui-widget-content main-quick-ticket" type="text" />
             </div>

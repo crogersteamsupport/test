@@ -63,7 +63,10 @@ $(document).ready(function () {
         queueFilter.IsEnqueued = true;
         queueFilter.ViewerID = userID;
         tabs.add(true, 'tickettab', 'queue', 'Queue', false, false, false, '', '', url + mainFrame.Ts.Utils.ticketFilterToQuery(queueFilter));
-        tabs.add(true, 'tickettab', 'reminders', 'Reminders', false, false, false, '', '', 'Reminders.html?UserID=' + userID);
+
+        if (mainFrame.Ts.System.Organization.ProductType != mainFrame.Ts.ProductType.Enterprise) {
+            tabs.add(true, 'tickettab', 'reminders', 'Reminders', false, false, false, '', '', 'Reminders.html?UserID=' + userID);
+        }
         loggingSection = 'My Tickets';
         afterLoad();
     }
@@ -165,8 +168,8 @@ $(document).ready(function () {
 });
 
 function onShow() {
-  var frame = $('.tickets-grid-iframe:visible')[0];
-  if (frame && frame.contentWindow.onShow) frame.contentWindow.onShow(); 
+    var frame = $('.tickets-grid-iframe:visible')[0];
+    if (frame && frame.contentWindow.onShow) frame.contentWindow.onShow();
 
 }
 
