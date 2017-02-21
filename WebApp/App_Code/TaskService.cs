@@ -737,6 +737,7 @@ namespace TSWebServices
 
     public class TaskCompletionStatus
     {
+        public TaskCompletionStatus() { }
         public TaskCompletionStatus(bool incompleteSubtasks, bool value)
         {
             IncompleteSubtasks = incompleteSubtasks;
