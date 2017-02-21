@@ -68,7 +68,7 @@ Ts.Pages.Main.prototype = {
             if (Ts.System.User.IsChatUser) {
                 $('.menu-chatstatus').show();
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    tmrChat = setInterval(getChatUpdates, chatInterval);
                     setupChatRequestUpdates();
                     $('.main-status-chat').removeClass('ui-state-disabled');
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small');
@@ -1263,23 +1263,23 @@ Ts.Pages.Main.prototype = {
                     break;
 
                 case Ts.Ui.Tabs.Tab.Type.NewTask:
-                    //div = $('.main-tab-content .main-ticket-newTask');
-                    //if (div.length < 1) {
-                    var query = '';
-                    if (tab.getData()) query = tab.getData();
-                    div = $('<div>')
-                    .addClass('main-tab-content-item main-tab-newTask main-ticket-newTask')
-                    .appendTo('.main-tab-content');
+                    div = $('.main-tab-content .main-ticket-newTask');
+                    if (div.length < 1) {
+                        var query = '';
+                        if (tab.getData()) query = tab.getData();
+                        div = $('<div>')
+                        .addClass('main-tab-content-item main-tab-newTask main-ticket-newTask')
+                        .appendTo('.main-tab-content');
 
-                    $('<iframe>')
-                    .attr('frameborder', 0)
-                    .attr('scrolling', 'no')
-                    .appendTo(div)
-                    .attr('src', 'vcr/1_9_0/Pages/NewTask.html' + query);
-                    //}
-                    //else {
-                    //    div.show();
-                    //}
+                        $('<iframe>')
+                        .attr('frameborder', 0)
+                        .attr('scrolling', 'no')
+                        .appendTo(div)
+                        .attr('src', 'vcr/1_9_0/Pages/NewTask.html' + query);
+                    }
+                    else {
+                        div.show();
+                    }
                     //$('.main-info-content').load('vcr/1_9_0/PaneInfo/Inventory.html');
                     break;
                 case Ts.Ui.Tabs.Tab.Type.Task:
@@ -1528,7 +1528,13 @@ Ts.Pages.Main.prototype = {
             tab.setIsHighlighted(isHighlighted);
         }
     },
-    installChromePlugin: function()
+    highlightNewTaskTab: function (isHighlighted) {
+        var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
+        if (tab) {
+            tab.setIsHighlighted(isHighlighted);
+        }
+    },
+    installChromePlugin: function ()
     {
     	chrome.webstore.install("https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg",
 function () { }, function (e) { console.log(e) });
@@ -2164,6 +2170,21 @@ function () { }, function (e) { console.log(e) });
         if (tab) {
             this.closeTab(tab);
             tab.remove();
+            var div = $('.main-tab-content .main-ticket-newTask');
+            if (div) {
+                div.remove();
+            }
+        }
+        else {
+            tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTaskFromSource);
+            if (tab) {
+                this.closeTab(tab);
+                tab.remove();
+                var div = $('.main-tab-content .main-ticket-newTask');
+                if (div) {
+                    div.remove();
+                }
+            }
         }
     },
     openNewTask: function (reminderID) {
