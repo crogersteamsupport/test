@@ -2175,6 +2175,17 @@ function () { }, function (e) { console.log(e) });
                 div.remove();
             }
         }
+        else {
+            tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTaskFromSource);
+            if (tab) {
+                this.closeTab(tab);
+                tab.remove();
+                var div = $('.main-tab-content .main-ticket-newTask');
+                if (div) {
+                    div.remove();
+                }
+            }
+        }
     },
     openNewTask: function (reminderID) {
         var query = "?reminderid=" + reminderID;
