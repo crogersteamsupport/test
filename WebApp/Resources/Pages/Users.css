@@ -77,6 +77,7 @@
     margin-left: 10px;
     position: relative;
     top: 2px;
+    cursor: pointer;
 }
 .ts-icon {
     background-image: url("../images/ts_icons_normal.png");
@@ -91,6 +92,7 @@
     margin-left: 10px;
     position: relative;
     top: 2px;
+    cursor: pointer;
 }
 
 .productLineRow {

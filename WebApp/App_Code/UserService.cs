@@ -288,6 +288,16 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool UpdateSpecificUserStatus(int userID, bool value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            user.InOffice = value;
+            user.Collection.Save();
+            return value;
+        }
+
+        [WebMethod]
         public UserProxy ToggleUserStatus()
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -1378,12 +1388,12 @@ namespace TSWebServices
                 }
 
                 if (!u.InOffice)
-                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title={0}></span>", u.InOfficeComment);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
                 else
-                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title={0}></span>", u.InOfficeComment);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
 
 
-                    html.AppendFormat(@"<li>
+                html.AppendFormat(@"<li>
                     <div class='row'>
                         <div class='col-xs-2 pl0'>
                             <div class='avatar'>
