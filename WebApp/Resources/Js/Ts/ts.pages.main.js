@@ -1528,10 +1528,10 @@ Ts.Pages.Main.prototype = {
             tab.setIsHighlighted(isHighlighted);
         }
     },
-    highlightNewTaskTab: function () {
+    highlightNewTaskTab: function (isHighlighted) {
         var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
         if (tab) {
-            tab.setIsHighlighted(true);
+            tab.setIsHighlighted(isHighlighted);
         }
     },
     installChromePlugin: function ()
@@ -2170,6 +2170,10 @@ function () { }, function (e) { console.log(e) });
         if (tab) {
             this.closeTab(tab);
             tab.remove();
+            var div = $('.main-tab-content .main-ticket-newTask');
+            if (div) {
+                div.remove();
+            }
         }
     },
     openNewTask: function (reminderID) {

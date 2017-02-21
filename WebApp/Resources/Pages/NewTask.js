@@ -12,7 +12,7 @@ var _taskParentID;
 var _parentTaskName;
 
 $(document).ready(function () {
-    parent.Ts.MainPage.highlightNewTaskTab();
+    parent.Ts.MainPage.highlightNewTaskTab(true);
 
     $('body').layout({
         defaults: {
@@ -702,6 +702,7 @@ $(document).ready(function () {
                 });
             }
             parent.Ts.MainPage.openNewTask(newTask.ReminderID);
+            parent.Ts.MainPage.highlightNewTaskTab(false);
             parent.Ts.MainPage.closenewTaskTab();
         });
         $(this).parent().removeClass("saving");

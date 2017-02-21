@@ -272,7 +272,7 @@ namespace TSWebServices
                 newTask.TaskDueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.TaskDueDate);
             }
             newTask.IsDismissed = info.IsDismissed;
-            if (info.TaskDueDate != null)
+            if (info.DueDate != null)
             {
                 newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
             }
