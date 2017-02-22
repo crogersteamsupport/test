@@ -7,6 +7,7 @@
 <html>
 <head id="Head1" runat="server">
   <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Teamsupport</title>
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
 	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg">
