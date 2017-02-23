@@ -546,7 +546,7 @@ namespace TeamSupport.Data
             }
             else if (customField.FieldType == CustomFieldType.Boolean)
             {
-               fieldName = string.Format("SELECT ISNULL(({0}),0)", fieldName);
+               fieldName = string.Format("SELECT (ISNULL(({0}),0))", fieldName);
             }
 
             builder.Append(builder.Length < 1 ? "SELECT " : ", ");
