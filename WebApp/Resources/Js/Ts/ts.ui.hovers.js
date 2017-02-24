@@ -153,6 +153,33 @@
       top.Ts.MainPage.openNewCustomer(orgid);
   })
 
+    $("body").on("mouseenter", ".tasklink", function (event) {
+        //debugger;
+        //var e = $(this);
+        //e.unbind('hover');
+        //var orgid = e.data('orgid');
+        //var ticketid = e.data('ticketid');
+        //e.popover({
+        //    html: true,
+        //    //container: 'body',
+        //    trigger: 'hover',
+        //    delay: { "show": 1, "hide": 1 },
+        //    content: function () {
+        //        return $.ajax({
+        //            url: '../../../Tips/Customer.aspx?CustomerID=' + orgid + '&TicketID=' + ticketid,
+        //            dataType: 'html',
+        //            async: false
+        //        }).responseText;
+        //    }
+        //}).popover('show');
+    })
+  .on("click", ".tasklink", function (e) {
+      e.preventDefault();
+      var id = $(this).data('reminderid');
+      parent.Ts.System.logAction('Ticket Page - View Task');
+      parent.Ts.MainPage.openNewTask(id);
+  })
+
     $("body").on("mouseenter", ".SLAAnchor", function (event) {
         var e = $(this);
         e.unbind('hover');
@@ -197,14 +224,23 @@
       top.Ts.MainPage.openTicketByID(ticketid, true);
   })
 
+$('body').on('click', function (e) {
+    $("*").each(function () {
+        // Bootstrap sets a data field with key `bs.popover` on elements that have a popover.
+        // Note that there is no corresponding **HTML attribute** on the elements so we cannot
+        // perform a search by attribute.
+        var popover = $.data(this, "bs.popover");
+        if (popover)
+            $(this).popover('hide');
+    });
+});
     $('body').on('click', function (e) {
-        $("*").each(function () {
-            // Bootstrap sets a data field with key `bs.popover` on elements that have a popover.
-            // Note that there is no corresponding **HTML attribute** on the elements so we cannot
-            // perform a search by attribute.
-            var popover = $.data(this, "bs.popover");
-            if (popover)
+        $('.ProductAnchor').each(function () {
+            //the 'is' for buttons that trigger popups
+            //the 'has' for icons within a button that triggers a popup
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
                 $(this).popover('hide');
+            }
         });
     });
 

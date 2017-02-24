@@ -42,7 +42,7 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteEvent("***********************************************************************************");
       
       MailMessage message;
-      UsersViewItem user = UsersView.GetUsersViewItem(LoginUser, reminder.UserID);
+      UsersViewItem user = UsersView.GetUsersViewItem(LoginUser, (int)reminder.UserID);
       if (user == null) return;
       string description = "";
       switch (reminder.RefType)
@@ -87,6 +87,15 @@ namespace TeamSupport.ServiceLibrary
           Logs.WriteEvent(description);
           ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, reminder.RefType, reminder.RefID, description);
           ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, contact.UserID, description);
+          break;
+        case ReferenceType.Tasks:
+          TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, reminder.ReminderID);
+          if (task == null) return;
+          message = EmailTemplates.GetReminderTaskEmail(LoginUser, reminder, user, task);
+          description = String.Format("Reminder sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
+          Logs.WriteEvent(description);
+          ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, reminder.ReminderID, description);
+          ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)reminder.UserID, description);
           break;
         default:
           message = null;

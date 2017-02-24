@@ -68,7 +68,7 @@ Ts.Pages.Main.prototype = {
             if (Ts.System.User.IsChatUser) {
                 $('.menu-chatstatus').show();
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    tmrChat = setInterval(getChatUpdates, chatInterval);
                     setupChatRequestUpdates();
                     $('.main-status-chat').removeClass('ui-state-disabled');
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small');
@@ -125,8 +125,19 @@ Ts.Pages.Main.prototype = {
 
         $('.menu-signout').click(function (e) {
             e.preventDefault();
-            mainFrame.Ts.System.logAction('Main Page - Signed Out');
-            mainFrame.Ts.System.signOut();
+            var result = true;
+            var iframes = document.getElementsByTagName('iframe'); 
+            for (var i = 0; i < iframes.length; i++) {
+                try {
+                    if (iframes[i].contentWindow.tinyMCE.activeEditor)
+                        result = confirm("Are you sure you want to leave this page");
+                } catch (e) { }
+            }
+            if (result) {
+                window.isSignedOut = true;
+                mainFrame.Ts.System.logAction('Main Page - Signed Out');
+                mainFrame.Ts.System.signOut();
+            }
         });
 
         $('.menu-help-support').click(function (e) {
@@ -828,6 +839,9 @@ Ts.Pages.Main.prototype = {
                         case Ts.Ui.Tabs.Tab.Type.ProductFamily:
                             div = $('.main-tab-ProductFamily');
                             break;
+                        case Ts.Ui.Tabs.Tab.Type.Task:
+                            div = $('.main-tab-Task');
+                            break;
                         default:
                     }
 
@@ -1248,6 +1262,64 @@ Ts.Pages.Main.prototype = {
                     $('.main-info-content').load('vcr/1_9_0/PaneInfo/ProductFamily.html');
                     break;
 
+                case Ts.Ui.Tabs.Tab.Type.NewTask:
+                    div = $('.main-tab-content .main-ticket-newTask');
+                    if (div.length < 1) {
+                        var query = '';
+                        if (tab.getData()) query = tab.getData();
+                        div = $('<div>')
+                        .addClass('main-tab-content-item main-tab-newTask main-ticket-newTask')
+                        .appendTo('.main-tab-content');
+
+                        $('<iframe>')
+                        .attr('frameborder', 0)
+                        .attr('scrolling', 'no')
+                        .appendTo(div)
+                        .attr('src', 'vcr/1_9_0/Pages/NewTask.html' + query);
+                    }
+                    else {
+                        div.show();
+                    }
+                    //$('.main-info-content').load('vcr/1_9_0/PaneInfo/Inventory.html');
+                    break;
+                case Ts.Ui.Tabs.Tab.Type.Task:
+                    var reminderID = tab.getId();
+                    div = $('.main-tab-content .main-Task-' + reminderID);
+                    if (div.length < 1) {
+                        var query = '';
+                        if (tab.getData()) query = tab.getData();
+                        div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-Task main-Task-' + reminderID)
+                    .appendTo('.main-tab-content');
+
+                        $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .attr('id', 'iframe-o-' + reminderID)
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_9_0/Pages/TaskDetail.html' + query);
+                    }
+                    else {
+                        mainFrame.privateServices.SetUserSetting('SelectedTaskID', reminderID);
+                        //                    mainFrame.privateServices.SetUserSetting('SelectedContactID', -1);
+                        div.show();
+                    }
+                    //$('.main-info-content').load('vcr/1_9_0/PaneInfo/inventory.html');
+                    break;
+                case Ts.Ui.Tabs.Tab.Type.NewTaskFromSource:
+                    var query = '';
+                    if (tab.getData()) query = tab.getData();
+                    div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-newTask main-ticket-newTask')
+                    .appendTo('.main-tab-content');
+
+                    $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_9_0/Pages/NewTask.html' + query);
+                    break;
+
                 default:
 
             }
@@ -1456,7 +1528,13 @@ Ts.Pages.Main.prototype = {
             tab.setIsHighlighted(isHighlighted);
         }
     },
-    installChromePlugin: function()
+    highlightNewTaskTab: function (isHighlighted) {
+        var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
+        if (tab) {
+            tab.setIsHighlighted(isHighlighted);
+        }
+    },
+    installChromePlugin: function ()
     {
     	chrome.webstore.install("https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg",
 function () { }, function (e) { console.log(e) });
@@ -2066,6 +2144,61 @@ function () { }, function (e) { console.log(e) });
     },
     closeNewProductFamilyTab: function (productFamilyID) {
         var tab = this.MainTabs.find(productFamilyID, Ts.Ui.Tabs.Tab.Type.ProductFamily);
+        if (tab) {
+            this.closeTab(tab);
+            tab.remove();
+        }
+    },
+
+    newTask: function (taskParentID, parentTaskName) {
+        var query;
+        if (taskParentID != undefined)
+            query = "?taskparentid=" + taskParentID + "&parenttaskname=" + parentTaskName;
+        this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
+    },
+    newTaskFromSource: function (refType, refID, ticketName, ticketNumber)
+    {
+        var query;
+        if (refType && refID) {
+            var encodedTicketName = encodeURIComponent(ticketName);
+            query = "?reftype=" + refType + "&refid=" + refID + "&ticketname=" + encodedTicketName + "&ticketnumber=" + ticketNumber;
+            this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTaskFromSource, 'newTask', 'Add Task', true, true, true, null, null, query, null);
+        };
+    },
+    closenewTaskTab: function () {
+        var tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTask);
+        if (tab) {
+            this.closeTab(tab);
+            tab.remove();
+            var div = $('.main-tab-content .main-ticket-newTask');
+            if (div) {
+                div.remove();
+            }
+        }
+        else {
+            tab = this.MainTabs.find('newTask', Ts.Ui.Tabs.Tab.Type.NewTaskFromSource);
+            if (tab) {
+                this.closeTab(tab);
+                tab.remove();
+                var div = $('.main-tab-content .main-ticket-newTask');
+                if (div) {
+                    div.remove();
+                }
+            }
+        }
+    },
+    openNewTask: function (reminderID) {
+        var query = "?reminderid=" + reminderID;
+        mainFrame.Ts.Services.Task.GetShortNameFromID(reminderID, function (result) {
+            this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Task, reminderID, result, true, true, false, null, null, query, null);
+        });
+    },
+    //closeNewTask: function (reminderID) {
+    //    var div = $('.main-tab-content .main-Task-' + reminderID);
+    //    div.remove();
+    //},
+    closeNewTaskTab: function (reminderID) {
+        var tab = this.MainTabs.find(reminderID, Ts.Ui.Tabs.Tab.Type.Task);
         if (tab) {
             this.closeTab(tab);
             tab.remove();

@@ -732,7 +732,7 @@
         max-height: 150px;
     }
 
-    .tagContainer {
+    .tagContainer,.taskContainer {
         background-color: #FFF;
         /*border: 1px solid #CCC;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;*/
@@ -956,3 +956,9 @@
     color: #3276B1;
     margin-right: 10px;
 }
+
+.new-task {
+    margin-bottom:0px !important;
+}
+
+label { font-size: 11px; }

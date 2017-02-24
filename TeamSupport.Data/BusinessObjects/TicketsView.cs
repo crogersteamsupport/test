@@ -807,7 +807,7 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        public void LoadHubtickets(LoginUser loginUser, int organizationID, TicketLoadFilter filter, List<CustomPortalColumnProxy> portalColumns, int from = 0, int to = 100000000)
+        public void LoadHubtickets(LoginUser loginUser, int organizationID, TicketLoadFilter filter, List<CustomPortalColumnProxy> portalColumns, int from, int to)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -848,7 +848,7 @@ ORDER BY TicketNumber DESC";
         ),
 
         PageQuery AS (
-          SELECT  * FROM RowQuery WHERE hiddenRowNum BETWEEN  @FromIndex AND @ToIndex
+          SELECT  * FROM RowQuery WHERE hiddenRowNum BETWEEN @FromIndex AND @ToIndex
         )
 
         SELECT [hiddenRowNum], {3}
@@ -860,7 +860,7 @@ ORDER BY TicketNumber DESC";
                 command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@FromIndex", from + 1);
-                command.Parameters.AddWithValue("@ToIndex", to + 1);
+                command.Parameters.AddWithValue("@ToIndex", to);
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
 
                 Fill(command);

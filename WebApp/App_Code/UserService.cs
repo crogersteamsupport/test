@@ -178,7 +178,7 @@ namespace TSWebServices
 
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
 
-				path = String.Format("/dc/{0}/UserAvatar/{1}/73/{2}", user.OrganizationID, userID, Guid.NewGuid()); 
+				path = String.Format("/dc/{0}/UserAvatar/{1}/120/{2}", user.OrganizationID, userID, Guid.NewGuid()); 
             return path;
         }
 
@@ -319,6 +319,15 @@ namespace TSWebServices
         public ChatUserSettingProxy ToggleUserChatStatus()
         {
             ChatUserSetting setting = ChatUserSettings.GetChatUserSetting(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+            setting.IsAvailable = !setting.IsAvailable;
+            setting.Collection.Save();
+            return setting.GetProxy();
+        }
+
+        [WebMethod]
+        public ChatUserSettingProxy ToggleSpecifiedUserChatStatus(int userID)
+        {
+            ChatUserSetting setting = ChatUserSettings.GetChatUserSetting(TSAuthentication.GetLoginUser(), userID);
             setting.IsAvailable = !setting.IsAvailable;
             setting.Collection.Save();
             return setting.GetProxy();
@@ -1965,7 +1974,7 @@ namespace TSWebServices
                 cal.StartDateUTC = startDate;
 
                 if (info.end != null)
-                {
+                { 
                     var endDate = (new DateTime(1970, 1, 1)).AddMilliseconds(double.Parse(info.end));
 
                     if (info.allDay)
@@ -1979,6 +1988,7 @@ namespace TSWebServices
                         cal.EndDateUTC = endDate;
                     }
                 }
+
 
                 cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
                 cal.Title = info.title;

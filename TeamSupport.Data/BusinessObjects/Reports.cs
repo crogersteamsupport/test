@@ -538,11 +538,15 @@ namespace TeamSupport.Data
 
             if (customField.FieldType == CustomFieldType.DateTime)
             {
-              fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
-              fieldName,
-              offset < TimeSpan.Zero ? "-" : "+",
-              Math.Abs(offset.Hours),
-              Math.Abs(offset.Minutes));
+                fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
+                fieldName,
+                offset < TimeSpan.Zero ? "-" : "+",
+                Math.Abs(offset.Hours),
+                Math.Abs(offset.Minutes));
+            }
+            else if (customField.FieldType == CustomFieldType.Boolean)
+            {
+               fieldName = string.Format("(SELECT ISNULL(({0}),0))", fieldName);
             }
 
             builder.Append(builder.Length < 1 ? "SELECT " : ", ");

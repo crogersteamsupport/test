@@ -110,7 +110,7 @@ namespace TeamSupport.ServiceLibrary
 						XmlDocument xmlDoc = new XmlDocument();
 						xmlDoc.LoadXml(responseText);
 
-						string xpath = "response/metrics/metrics";
+						string xpath = "PrettyPrintObject/metrics/metrics";
 						var nodes = xmlDoc.SelectNodes(xpath);
 						string contactMetricId = "200";
 						string companyMetricId = "company_200";

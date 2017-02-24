@@ -74,10 +74,10 @@ namespace TeamSupport.Data
 		PrimaryContacts = 56,
 		CustomerHubLogo = 57,
         ContactNotes = 58,
-
         Sla = 59,
-        ChatAttachments = 60
-	};
+        ChatAttachments = 60,
+        Tasks = 61
+    };
 
 	public enum SlaViolationType
 	{
@@ -352,4 +352,12 @@ namespace TeamSupport.Data
 		Once = 3,
       Daily = 4
 	}
+
+    public enum TaskEmailPostType
+    {
+        Modified = 0,
+        Assigned = 1,
+        Complete = 2,
+        OldUser = 3
+    }
 }

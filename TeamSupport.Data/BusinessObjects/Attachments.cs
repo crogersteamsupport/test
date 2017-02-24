@@ -355,5 +355,30 @@ order by o.Name, a.DateCreated desc
       }
     }
 
+    public string GetText()
+    {
+        if (this.Count > 0)
+        {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < this.Count; i++)
+            {
+                result.Append(this[i].FileName);
+                if (i < this.Count - 1)
+                {
+                    result.Append(", ");
+                }
+                else
+                {
+                    result.Append(".");
+                }
+            }
+            return result.ToString();
+        }
+        else
+        {
+            return "[None]";
+        }
+    }
+
   }
 }

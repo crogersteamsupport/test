@@ -2,9 +2,9 @@
     #ts-user-rail,#userProfile{float:left;}
     #ts-user-rail{margin-right:2em;}
 
-    #userPhotoContainer{ width:73px; height:73px;  margin-top:1em; float: left; text-align: center}
+    #userPhotoContainer{ width:140px; height:73px;  margin-top:1em; float: left; text-align: center}
     #userPhotoContainer img { margin-bottom: 1em; }
-    #user-top-info {float:left; margin-left: 20px; width: 80%}
+    #user-top-info {float:left; margin-left: 20px; width: 70%}
     
     form.file-upload { position: relative; overflow: hidden; direction: ltr; cursor: pointer; color: #333; width: 15em; height: 16px; line-height: 16px; float:left; margin-top: 0em; }
     form.file-upload input { position: absolute; top: 0; right: 0; margin: 0; border: 300px solid transparent; opacity: 0; -ms-filter: 'alpha(opacity=0)'; filter: alpha(opacity=0); -o-transform: translate(-300px, -300px) scale(10); -moz-transform: translate(-800px, 0) scale(10); cursor: pointer; height: 100%; }
