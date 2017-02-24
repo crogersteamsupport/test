@@ -47,6 +47,15 @@ namespace TSWebServices
       CustomFields customs = new CustomFields(fields.LoginUser);
       customs.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets);
 
+      CustomFields orgfields = new CustomFields(fields.LoginUser);
+      orgfields.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Organizations);
+      List<string> orgCustomFields = new List<string>();
+      foreach (CustomField c in orgfields)
+      {
+        orgCustomFields.Add(c.Name);
+      }
+
+
       TicketTypes ticketTypes = new TicketTypes(fields.LoginUser);
       ticketTypes.LoadAllPositions(TSAuthentication.OrganizationID);
 
@@ -319,6 +328,23 @@ namespace TSWebServices
             afiCustomerIsActive.AuxID = null;
             afiCustomerIsActive.OtherTrigger = "organizations.active";
             fieldItems.Add(afiCustomerIsActive);
+
+            AutoFieldItem afiCustomerCustomValue = new AutoFieldItem();
+            afiCustomerCustomValue.Alias = "Customer Custom Value";
+            afiCustomerCustomValue.DataType = "text";
+            afiCustomerCustomValue.FieldID = -999;
+            afiCustomerCustomValue.FieldName = "Customer Custom Value";
+            afiCustomerCustomValue.IsCustom = false;
+            afiCustomerCustomValue.IsVisible = true;
+            afiCustomerCustomValue.ListValues = orgCustomFields.ToArray();
+            afiCustomerCustomValue.LookupTableID = null;
+            afiCustomerCustomValue.Size = 0;
+            afiCustomerCustomValue.Description = "";
+            afiCustomerCustomValue.TableID = -2;
+            afiCustomerCustomValue.RefType = ReferenceType.Tickets;
+            afiCustomerCustomValue.AuxID = null;
+            afiCustomerCustomValue.OtherTrigger = "organizations.customvalue";
+            fieldItems.Add(afiCustomerCustomValue);
 
             result.Fields = fieldItems.ToArray();
 

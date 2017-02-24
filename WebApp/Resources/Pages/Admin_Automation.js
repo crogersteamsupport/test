@@ -440,6 +440,18 @@ AdminAuto = function () {
       execGetFieldValues = parent.parent.Ts.Services.System.GetLookupDisplayNames(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
     }
 
+    if (field.FieldID == -999)
+    {
+        var select = $('<select>')
+          .addClass('condition-custom-value')
+          .insertBefore($('.condition-measure'));
+        for (var i = 0; i < field.ListValues.length; i++) {
+            $('<option>').attr('value', field.ListValues[i]).text(field.ListValues[i]).appendTo(select);
+        }
+        select.combobox({ selected: function (e, ui) { isModified(true); } })
+
+    }
+
     if (field.DataType == 'bit') {
       var select = $('<select>')
         .addClass('condition-value')
@@ -486,7 +498,10 @@ AdminAuto = function () {
         proxy = new parent.parent.TeamSupport.Data.TicketAutomationTriggerLogicItemProxy();
         proxy.TriggerID = -1;
         proxy.TableID = $(this).find('.condition-field option:selected').data('field').TableID;
-        proxy.FieldID = $(this).find('.condition-field').val();
+        if($(this).find('.condition-field').val() != "-999")
+            proxy.FieldID = $(this).find('.condition-field').val();
+        else
+            proxy.FieldID = $(this).find('.condition-custom-value').val();
         proxy.IsCustom = $(this).find('.condition-field option:selected').data('field').IsCustom;
         proxy.Measure = $(this).find('.condition-measure').val();
         proxy.TestValue = $(this).find('.condition-value').val();
