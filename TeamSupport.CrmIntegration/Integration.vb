@@ -56,13 +56,13 @@ Namespace TeamSupport
             ''' <returns>Whether or not the sync processed successfully</returns>
             ''' <remarks>This should be used for all new integrations and older integrations can be updated to use it as time permits</remarks>
             Protected Function NewSyncAccounts(
-              ByVal GetCompanyXML     As GetCompanyXML, 
-              ByVal ParseCompanyXML   As ParseCompanyXML, 
-              ByVal GetPeopleXML      As GetPeopleXML, 
-              ByVal ParsePeopleXML    As ParsePeopleXML,
-              ByVal GetProductsXML    As GetProductsXML, 
-              ByVal ParseProductsXML  As ParseProductsXML,
-              ByVal GetCustomFields   As GetCustomFields
+              ByVal GetCompanyXML As GetCompanyXML,
+              ByVal ParseCompanyXML As ParseCompanyXML,
+              ByVal GetPeopleXML As GetPeopleXML,
+              ByVal ParsePeopleXML As ParsePeopleXML,
+              ByVal GetProductsXML As GetProductsXML,
+              ByVal ParseProductsXML As ParseProductsXML,
+              ByVal GetCustomFields As GetCustomFields
             ) As Boolean
                 Dim CompaniesToSync As XmlDocument
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
@@ -71,179 +71,179 @@ Namespace TeamSupport
                 CompaniesToSync = GetCompanyXML()
                 Log.Write("The GetCompanyXML method has been executed.")
                 If CompaniesToSync IsNot Nothing Then
-                  Dim companiesToSyncAsXElement As XElement = XElement.Load(New XmlNodeReader(CompaniesToSync))
-                  If companiesToSyncAsXElement.Descendants("error").Count() > 0 Then
-                    _exception = New IntegrationException(companiesToSyncAsXElement.Value)
-                    SyncError = True
-                  Else
-                    'parse company data
-                    Log.Write("CompaniesToSync Count: " + companiesToSyncAsXElement.Descendants("row").Count().ToString())
-                    If companiesToSyncAsXElement.Descendants("row").Count() > 0 Then
-                      CompanySyncData = ParseCompanyXML(CompaniesToSync)
-                      Log.Write("ParseCompanyXML method executed.")
-                      If CompanySyncData IsNot Nothing Then
+                    Dim companiesToSyncAsXElement As XElement = XElement.Load(New XmlNodeReader(CompaniesToSync))
+                    If companiesToSyncAsXElement.Descendants("error").Count() > 0 Then
+                        _exception = New IntegrationException(companiesToSyncAsXElement.Value)
+                        SyncError = True
+                    Else
+                        'parse company data
+                        Log.Write("CompaniesToSync Count: " + companiesToSyncAsXElement.Descendants("row").Count().ToString())
+                        If companiesToSyncAsXElement.Descendants("row").Count() > 0 Then
+                            CompanySyncData = ParseCompanyXML(CompaniesToSync)
+                            Log.Write("ParseCompanyXML method executed.")
+                            If CompanySyncData IsNot Nothing Then
 
-                          Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                          crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "company")
-                          Dim crmLinkError As CRMLinkError = Nothing
+                                Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "company")
+                                Dim crmLinkError As CRMLinkError = Nothing
 
-                          Log.Write(String.Format("Processed {0} accounts.", CompanySyncData.Count))
+                                Log.Write(String.Format("Processed {0} accounts.", CompanySyncData.Count))
 
-                          'update info for organizations
-                          For Each company As CompanyData In CompanySyncData
-                              crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(company.AccountID, string.Empty)
-                              Try
-                                UpdateOrgInfo(company, CRMLinkRow.OrganizationID)
-                                If crmLinkError IsNot Nothing then
-                                  crmLinkError.Delete()
-                                  crmLinkErrors.Save()
-                                End If
-                              Catch ex As Exception
-                                If crmLinkError Is Nothing then
-                                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                                  crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                                  crmLinkError.CRMType        = CRMLinkRow.CRMType
-                                  crmLinkError.Orientation    = "in"
-                                  crmLinkError.ObjectType     = "company"
-                                  crmLinkError.ObjectID       = company.AccountID
-                                  crmLinkError.ObjectData     = JsonConvert.SerializeObject(company)
-                                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                                  crmLinkError.OperationType  = "unknown"
-                                  newCrmLinkError.Save()
-                                Else
-                                  crmLinkError.ObjectData     = JsonConvert.SerializeObject(company)
-                                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-                                End If                                              
-                              End Try
-                          Next
-                          crmLinkErrors.Save()
+                                'update info for organizations
+                                For Each company As CompanyData In CompanySyncData
+                                    crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(company.AccountID, String.Empty)
+                                    Try
+                                        UpdateOrgInfo(company, CRMLinkRow.OrganizationID)
+                                        If crmLinkError IsNot Nothing Then
+                                            crmLinkError.Delete()
+                                            crmLinkErrors.Save()
+                                        End If
+                                    Catch ex As Exception
+                                        If crmLinkError Is Nothing Then
+                                            Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                            crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                            crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                            crmLinkError.CRMType = CRMLinkRow.CRMType
+                                            crmLinkError.Orientation = "in"
+                                            crmLinkError.ObjectType = "company"
+                                            crmLinkError.ObjectID = company.AccountID
+                                            crmLinkError.ObjectData = JsonConvert.SerializeObject(company)
+                                            crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                            crmLinkError.OperationType = "unknown"
+                                            newCrmLinkError.Save()
+                                        Else
+                                            crmLinkError.ObjectData = JsonConvert.SerializeObject(company)
+                                            crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                        End If
+                                    End Try
+                                Next
+                                crmLinkErrors.Save()
 
-                          Log.Write("Finished updating account information.")
-                          GetCustomFields("Account", String.Empty)
-                          Log.Write("Finished updating Accounts Custom Mappings")
+                                Log.Write("Finished updating account information.")
+                                GetCustomFields("Account", String.Empty)
+                                Log.Write("Finished updating Accounts Custom Mappings")
 
-                          If CRMLinkRow.PullCustomerProducts Then
-                            Log.Write("Updating products information...")
+                                If CRMLinkRow.PullCustomerProducts Then
+                                    Log.Write("Updating products information...")
 
-                            crmLinkErrors = New CRMLinkErrors(Me.User)
-                            crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "product")
+                                    crmLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "product")
 
-                            For Each company As CompanyData In CompanySyncData
-                                'get products data for each company
-                                Dim ProductsToSync As XmlDocument = GetProductsXML(company.AccountID)
+                                    For Each company As CompanyData In CompanySyncData
+                                        'get products data for each company
+                                        Dim ProductsToSync As XmlDocument = GetProductsXML(company.AccountID)
 
-                                If ProductsToSync IsNot Nothing Then
-                                    Dim ProductsSyncData As List(Of ProductData) = ParseProductsXML(ProductsToSync, company.AccountID)
+                                        If ProductsToSync IsNot Nothing Then
+                                            Dim ProductsSyncData As List(Of ProductData) = ParseProductsXML(ProductsToSync, company.AccountID)
 
-                                    If ProductsSyncData IsNot Nothing Then
-                                        For Each product As ProductData In ProductsSyncData
-                                          Try
-                                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(company.AccountID + product.Name + product.ExpirationDate.ToString(), string.Empty)
-                                            'update info for products
-                                            UpdateProductInfo(product, company.AccountID, CRMLinkRow.OrganizationID)
-                                            If crmLinkError IsNot Nothing then
-                                              crmLinkError.Delete()
-                                              crmLinkErrors.Save()
+                                            If ProductsSyncData IsNot Nothing Then
+                                                For Each product As ProductData In ProductsSyncData
+                                                    Try
+                                                        crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(company.AccountID + product.Name + product.ExpirationDate.ToString(), String.Empty)
+                                                        'update info for products
+                                                        UpdateProductInfo(product, company.AccountID, CRMLinkRow.OrganizationID)
+                                                        If crmLinkError IsNot Nothing Then
+                                                            crmLinkError.Delete()
+                                                            crmLinkErrors.Save()
+                                                        End If
+                                                    Catch ex As Exception
+                                                        If crmLinkError Is Nothing Then
+                                                            Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                                            crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                                            crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                                            crmLinkError.CRMType = CRMLinkRow.CRMType
+                                                            crmLinkError.Orientation = "in"
+                                                            crmLinkError.ObjectType = "product"
+                                                            crmLinkError.ObjectID = company.AccountID + product.Name + product.ExpirationDate.ToString()
+                                                            crmLinkError.ObjectData = JsonConvert.SerializeObject(product)
+                                                            crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                                            crmLinkError.OperationType = "unknown"
+                                                            newCrmLinkError.Save()
+                                                        Else
+                                                            crmLinkError.ObjectData = JsonConvert.SerializeObject(product)
+                                                            crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                                        End If
+                                                    End Try
+                                                Next
+
+                                                Log.Write("Updated product information for " & company.AccountName)
                                             End If
-                                          Catch ex As Exception
-                                            If crmLinkError Is Nothing then
-                                              Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                                              crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                                              crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                                              crmLinkError.CRMType        = CRMLinkRow.CRMType
-                                              crmLinkError.Orientation    = "in"
-                                              crmLinkError.ObjectType     = "product"
-                                              crmLinkError.ObjectID       = company.AccountID + product.Name + product.ExpirationDate.ToString()
-                                              crmLinkError.ObjectData     = JsonConvert.SerializeObject(product)
-                                              crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                                              crmLinkError.OperationType  = "unknown"
-                                              newCrmLinkError.Save()
-                                            Else
-                                              crmLinkError.ObjectData     = JsonConvert.SerializeObject(product)
-                                              crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-                                            End If                                              
-                                          End Try
-                                        Next
+                                        End If
+                                    Next
+                                    crmLinkErrors.Save()
+                                    Log.Write("Finished updating product information")
+                                End If
+                            End If
+                        End If
+                        Log.Write("Updating people information...")
 
-                                        Log.Write("Updated product information for " & company.AccountName)
+                        Dim PeopleToSync As XmlDocument = GetPeopleXML()
+                        Log.Write("The GetCompanyXML method has been executed.")
+                        If PeopleToSync IsNot Nothing Then
+                            Dim peopleToSyncAsXElement As XElement = XElement.Load(New XmlNodeReader(PeopleToSync))
+                            If peopleToSyncAsXElement.Descendants("error").Count() > 0 Then
+                                _exception = New IntegrationException(peopleToSyncAsXElement.Value)
+                                SyncError = True
+                            Else
+                                Dim PeopleSyncData As List(Of EmployeeData) = Nothing
+                                Log.Write("PeopleToSync Count: " + peopleToSyncAsXElement.Descendants("row").Count().ToString())
+                                If peopleToSyncAsXElement.Descendants("row").Count() > 0 Then
+                                    PeopleSyncData = ParsePeopleXML(PeopleToSync)
+                                    Log.Write("ParsePeopleXML method executed.")
+
+                                    If PeopleSyncData IsNot Nothing Then
+                                        Log.Write(String.Format("Processed {0} contacts.", PeopleSyncData.Count))
+
+                                        Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                        crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "contact")
+                                        Dim crmLinkError As CRMLinkError = Nothing
+
+                                        'update info for customers
+                                        For Each person As EmployeeData In PeopleSyncData
+                                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(person.ZohoID, String.Empty)
+                                            Try
+                                                UpdateContactInfo(person, person.ZohoID, CRMLinkRow.OrganizationID)
+                                                If crmLinkError IsNot Nothing Then
+                                                    crmLinkError.Delete()
+                                                    crmLinkErrors.Save()
+                                                End If
+                                            Catch ex As Exception
+                                                If crmLinkError Is Nothing Then
+                                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                                    crmLinkError.Orientation = "in"
+                                                    crmLinkError.ObjectType = "contact"
+                                                    crmLinkError.ObjectID = person.ZohoID
+                                                    crmLinkError.ObjectData = JsonConvert.SerializeObject(person)
+                                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                                    crmLinkError.OperationType = "unknown"
+                                                    newCrmLinkError.Save()
+                                                Else
+                                                    crmLinkError.ObjectData = JsonConvert.SerializeObject(person)
+                                                    crmLinkError.Exception = ex.ToString() + ex.StackTrace
+                                                End If
+                                            End Try
+                                        Next
+                                        crmLinkErrors.Save()
+                                        Log.Write("Finished updating people information")
+                                        GetCustomFields("Contact", Nothing)
+                                        Log.Write("Finished updating Contacts Custom Mappings")
+                                    Else
+                                        Log.Write("PeopleSyncData was nothing.")
                                     End If
                                 End If
-                            Next
-                            crmLinkErrors.Save()
-                            Log.Write("Finished updating product information")
-                          End If
-                      End If
+                            End If
+                        Else
+                            Log.Write("PeopleToSync was nothing.")
+                            SyncError = True
+                        End If
                     End If
-                    Log.Write("Updating people information...")
-
-                    Dim PeopleToSync As XmlDocument = GetPeopleXML()
-                    Log.Write("The GetCompanyXML method has been executed.")
-                    If PeopleToSync IsNot Nothing Then
-                      Dim peopleToSyncAsXElement As XElement = XElement.Load(New XmlNodeReader(PeopleToSync))
-                      If peopleToSyncAsXElement.Descendants("error").Count() > 0 Then
-                        _exception = New IntegrationException(peopleToSyncAsXElement.Value)
-                        SyncError = True
-                      Else
-                        Dim PeopleSyncData As List(Of EmployeeData) = Nothing
-                        Log.Write("PeopleToSync Count: " + peopleToSyncAsXElement.Descendants("row").Count().ToString())
-                        If peopleToSyncAsXElement.Descendants("row").Count() > 0 Then
-                          PeopleSyncData = ParsePeopleXML(PeopleToSync)
-                          Log.Write("ParsePeopleXML method executed.")
-
-                          If PeopleSyncData IsNot Nothing Then
-                              Log.Write(String.Format("Processed {0} contacts.", PeopleSyncData.Count))
-
-                              Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                              crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "contact")
-                              Dim crmLinkError As CRMLinkError = Nothing
-
-                              'update info for customers
-                              For Each person As EmployeeData In PeopleSyncData
-                                crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(person.ZohoID, string.Empty)
-                                Try
-                                  UpdateContactInfo(person, person.ZohoID, CRMLinkRow.OrganizationID)
-                                  If crmLinkError IsNot Nothing then
-                                    crmLinkError.Delete()
-                                    crmLinkErrors.Save()
-                                  End If
-                                Catch ex As Exception
-                                  If crmLinkError Is Nothing then
-                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                                    crmLinkError.CRMType        = CRMLinkRow.CRMType
-                                    crmLinkError.Orientation    = "in"
-                                    crmLinkError.ObjectType     = "contact"
-                                    crmLinkError.ObjectID       = person.ZohoID
-                                    crmLinkError.ObjectData     = JsonConvert.SerializeObject(person)
-                                    crmLinkError.Exception      = ex.ToString() + ex.StackTrace
-                                    crmLinkError.OperationType  = "unknown"
-                                    newCrmLinkError.Save()
-                                  Else
-                                    crmLinkError.ObjectData     = JsonConvert.SerializeObject(person)
-                                    crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
-                                  End If                                              
-                                End Try
-                              Next
-                              crmLinkErrors.Save()
-                              Log.Write("Finished updating people information")
-                              GetCustomFields("Contact", Nothing)
-                              Log.Write("Finished updating Contacts Custom Mappings")
-                          Else
-                            Log.Write("PeopleSyncData was nothing.")
-                          End If 
-                        End If 
-                      End If
-                    Else
-                      Log.Write("PeopleToSync was nothing.")
-                      SyncError = True
-                    End If 
-                  End If
                 Else
-                  Log.Write("CompaniesToSync was nothing.")
-                  SyncError = True
-                End If 
+                    Log.Write("CompaniesToSync was nothing.")
+                    SyncError = True
+                End If
 
                 Return Not SyncError
             End Function
@@ -278,7 +278,7 @@ Namespace TeamSupport
                                 End If
 
                                 Dim atLeastOneSucceded As Boolean = False
-                                
+
                                 'get a list of customers associated to the ticket
                                 Dim customers As New OrganizationsView(User)
                                 customers.LoadByTicketID(thisTicket.TicketID)
@@ -298,35 +298,35 @@ Namespace TeamSupport
                                     End If
                                 Next
 
-                                    CRMLinkRow.LastTicketID = thisTicket.TicketID
-                                    CRMLinkRow.Collection.Save()
+                                CRMLinkRow.LastTicketID = thisTicket.TicketID
+                                CRMLinkRow.Collection.Save()
 
-                                    ActionLogs.AddActionLog(
-                                        User,
-                                        ActionLogType.Insert,
-                                        ReferenceType.Tickets,
-                                        thisTicket.TicketID,
-                                        "Sent ticket data to " + Type.ToString() + ".")
+                                ActionLogs.AddActionLog(
+                                    User,
+                                    ActionLogType.Insert,
+                                    ReferenceType.Tickets,
+                                    thisTicket.TicketID,
+                                    "Sent ticket data to " + Type.ToString() + ".")
 
                                 If atLeastOneSucceded Then
-                                  If crmLinkError IsNot Nothing then
-                                    crmLinkError.Delete()
-                                    crmLinkErrors.Save()
-                                  End If
-                                ElseIf crmLinkError Is Nothing then
-                                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                                  crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
-                                  crmLinkError.CRMType          = CRMLinkRow.CRMType
-                                  crmLinkError.Orientation      = "out"
-                                  crmLinkError.ObjectType       = "ticket"
-                                  crmLinkError.ObjectFieldName  = "note"
-                                  crmLinkError.ObjectID         = thisTicket.TicketID.ToString()
-                                  crmLinkError.Exception        = "Error creating ticket as note."
-                                  crmLinkError.OperationType    = "create"
-                                  newCrmLinkError.Save()
+                                    If crmLinkError IsNot Nothing Then
+                                        crmLinkError.Delete()
+                                        crmLinkErrors.Save()
+                                    End If
+                                ElseIf crmLinkError Is Nothing Then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation = "out"
+                                    crmLinkError.ObjectType = "ticket"
+                                    crmLinkError.ObjectFieldName = "note"
+                                    crmLinkError.ObjectID = thisTicket.TicketID.ToString()
+                                    crmLinkError.Exception = "Error creating ticket as note."
+                                    crmLinkError.OperationType = "create"
+                                    newCrmLinkError.Save()
                                 Else
-                                  crmLinkError.Exception        = "Error creating ticket as note."                                
+                                    crmLinkError.Exception = "Error creating ticket as note."
                                 End If
                             Next
 
@@ -363,19 +363,20 @@ Namespace TeamSupport
 
                 'search for the crmlinkid = accountid in db to see if it already exists
                 findCompany.LoadByCRMLinkID(company.AccountID, ParentOrgID)
-				Dim logMessage As String = String.Empty
+                Dim logMessage As String = String.Empty
 
                 If findCompany.Count > 0 Then
                     thisCompany = findCompany(0)
                     'it exists, so update the name on the account if it has changed.
                     companyInfoNeedsUpdate = thisCompany.Name <> company.AccountName
                     thisCompany.Name = company.AccountName
-					logMessage = "Found by accountId"
+                    logMessage = "Found by accountId"
                 Else
                     'look for parentid = parentorgid and name = accountname, and use that
                     findCompany.LoadByParentID(ParentOrgID, False)
                     If findCompany.FindByName(company.AccountName) IsNot Nothing AndAlso CRMLinkRow.MatchAccountsByName Then
                         thisCompany = findCompany.FindByName(company.AccountName)
+                        companyInfoNeedsUpdate = thisCompany.CRMLinkID <> company.AccountID
                         'update accountid
                         thisCompany.CRMLinkID = company.AccountID
                         logMessage = "Found by Name"
@@ -400,11 +401,11 @@ Namespace TeamSupport
                 End If
 
                 If companyInfoNeedsUpdate Then
-                  thisCompany.Collection.Save()
-				  Log.Write(String.Format("{0}: {1} OrgId:{2} (AccountId: {3}). ", logMessage, company.AccountName, thisCompany.OrganizationID, company.AccountID))
+                    thisCompany.Collection.Save()
+                    Log.Write(String.Format("{0}: {1} OrgId:{2} (AccountId: {3}). ", logMessage, company.AccountName, thisCompany.OrganizationID, company.AccountID))
                 End If
 
-				logMessage = String.Empty
+                logMessage = String.Empty
                 Dim findAddress As New Addresses(User)
                 Dim thisAddress As Address
                 Dim addressNeedsUpdate As Boolean = False
@@ -417,17 +418,17 @@ Namespace TeamSupport
                     thisAddress.RefID = thisCompany.OrganizationID
                     thisAddress.RefType = ReferenceType.Organizations
                     thisAddress.Collection.Save()
-					logMessage = "added"
+                    logMessage = "added"
                 End If
 
                 With thisAddress
-                     If .Addr1 <> company.Street OrElse _
-                          .Addr2 <> company.Street2 OrElse _
-                          .City <> company.City OrElse _
-                          .State <> company.State OrElse _
-                          .Zip <> company.Zip OrElse _
-                          .Country <> company.Country Then
-                      addressNeedsUpdate = True
+                    If .Addr1 <> company.Street OrElse
+                         .Addr2 <> company.Street2 OrElse
+                         .City <> company.City OrElse
+                         .State <> company.State OrElse
+                         .Zip <> company.Zip OrElse
+                         .Country <> company.Country Then
+                        addressNeedsUpdate = True
                     End If
 
                     .Addr1 = company.Street
@@ -438,8 +439,8 @@ Namespace TeamSupport
                     .Country = company.Country
 
                     If addressNeedsUpdate Then
-                      .Collection.Save()
-                      Log.Write(String.Format("Address information {0}.", If(string.IsNullOrEmpty(logMessage), "updated", logMessage)))
+                        .Collection.Save()
+                        Log.Write(String.Format("Address information {0}.", If(String.IsNullOrEmpty(logMessage), "updated", logMessage)))
                     End If
                 End With
 
@@ -477,28 +478,28 @@ Namespace TeamSupport
                     Next
                 End If
 
-				logMessage = String.Empty
+                logMessage = String.Empty
 
                 If company.Phone Is Nothing OrElse company.Phone = String.Empty Then
                     If thisPhone IsNot Nothing Then
                         thisPhone.Collection.DeleteFromDB(thisPhone.PhoneID)
-						Log.Write("Account phone number deleted.")
+                        Log.Write("Account phone number deleted.")
                     End If
                 Else
-					logMessage = "updated"
+                    logMessage = "updated"
 
                     If thisPhone Is Nothing Then
                         thisPhone = (New PhoneNumbers(User)).AddNewPhoneNumber()
-						logMessage = "added"
+                        logMessage = "added"
                     End If
 
                     Dim phoneNeedsUpdate As Boolean = False
 
                     With thisPhone
-                        If .Number <> company.Phone OrElse _
-                            .RefType <> ReferenceType.Organizations OrElse _
+                        If .Number <> company.Phone OrElse
+                            .RefType <> ReferenceType.Organizations OrElse
                             .RefID <> thisCompany.OrganizationID Then
-                          phoneNeedsUpdate = True
+                            phoneNeedsUpdate = True
                         End If
 
                         .Number = company.Phone
@@ -506,21 +507,21 @@ Namespace TeamSupport
                         .RefID = thisCompany.OrganizationID
 
                         If CRMPhoneType IsNot Nothing Then
-                          If Not phoneNeedsUpdate Then
-                            phoneNeedsUpdate = If(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
-                          End If
+                            If Not phoneNeedsUpdate Then
+                                phoneNeedsUpdate = If(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
+                            End If
 
-                          .PhoneTypeID = CRMPhoneType.PhoneTypeID
+                            .PhoneTypeID = CRMPhoneType.PhoneTypeID
                         End If
 
                         If phoneNeedsUpdate Then
-                          .Collection.Save()
-                          Log.Write(String.Format("Account phone number {0}.", logMessage))
+                            .Collection.Save()
+                            Log.Write(String.Format("Account phone number {0}.", logMessage))
                         End If
                     End With
                 End If
 
-				logMessage = String.Empty
+                logMessage = String.Empty
                 Dim faxType As PhoneType = phoneTypes.FindByName("Fax")
 
                 If faxType Is Nothing Then
@@ -534,22 +535,22 @@ Namespace TeamSupport
                 If company.Fax Is Nothing OrElse company.Fax = String.Empty Then
                     If thisFax IsNot Nothing Then
                         thisFax.Collection.DeleteFromDB(thisFax.PhoneID)
-						Log.Write("Account Fax number deleted.")
+                        Log.Write("Account Fax number deleted.")
                     End If
                 Else
-					logMessage = "updated"
+                    logMessage = "updated"
                     If thisFax Is Nothing Then
                         thisFax = (New PhoneNumbers(User)).AddNewPhoneNumber()
-						logMessage = "added"
+                        logMessage = "added"
                     End If
 
                     With thisFax
-                        If .Number <> company.Fax OrElse _
-                          .RefType <> ReferenceType.Organizations OrElse _
-                          .RefID <> thisCompany.OrganizationID OrElse _
-                          .PhoneTypeID Is Nothing OrElse _
+                        If .Number <> company.Fax OrElse
+                          .RefType <> ReferenceType.Organizations OrElse
+                          .RefID <> thisCompany.OrganizationID OrElse
+                          .PhoneTypeID Is Nothing OrElse
                           .PhoneTypeID = faxType.PhoneTypeID Then
-                          faxNeedsUpdate = True
+                            faxNeedsUpdate = True
                         End If
 
                         .Number = company.Fax
@@ -558,8 +559,8 @@ Namespace TeamSupport
                         .PhoneTypeID = faxType.PhoneTypeID
 
                         If faxNeedsUpdate Then
-                          .Collection.Save()
-                          Log.Write(String.Format("Account fax number {0}.", logMessage))
+                            .Collection.Save()
+                            Log.Write(String.Format("Account fax number {0}.", logMessage))
                         End If
                     End With
                 End If
@@ -575,7 +576,7 @@ Namespace TeamSupport
                 result.OrganizationID = parentOrgId
 
                 phoneTypes.Save()
-				Log.Write(String.Format("PhoneType {0} added", typeName))
+                Log.Write(String.Format("PhoneType {0} added", typeName))
 
                 Return result
             End Function
@@ -587,309 +588,309 @@ Namespace TeamSupport
             ''' <param name="companyID">the CRM-specific ID of the company to which the customer belongs</param>
             ''' <param name="ParentOrgID">the parent Organization</param>
             ''' <remarks></remarks>
-			Protected Sub UpdateContactInfo(ByVal person As EmployeeData, ByVal companyID As String, ByVal ParentOrgID As String)
-				ParentOrgID = CRMLinkRow.OrganizationID
+            Protected Sub UpdateContactInfo(ByVal person As EmployeeData, ByVal companyID As String, ByVal ParentOrgID As String)
+                ParentOrgID = CRMLinkRow.OrganizationID
 
-				If Processor.IsStopped Then
-					Log.Write("Processor is stopped")
-					Return
-				End If
+                If Processor.IsStopped Then
+                    Log.Write("Processor is stopped")
+                    Return
+                End If
 
-				If person.Email = "" Then
-					Dim noEmailMessage As String = String.Format("Contact {0} {1} does not have email address therefore is not added.", person.FirstName, person.LastName)
-					Log.Write(noEmailMessage)
-					Throw New Exception(noEmailMessage)
-				End If
+                If person.Email = "" Then
+                    Dim noEmailMessage As String = String.Format("Contact {0} {1} does not have email address therefore is not added.", person.FirstName, person.LastName)
+                    Log.Write(noEmailMessage)
+                    Throw New Exception(noEmailMessage)
+                End If
 
-				Dim wasUpdated As Boolean = False
-				Log.Write(String.Format("Adding/updating contact information for {0} ({1},{2}).", person.Email, person.LastName, person.FirstName))
+                Dim wasUpdated As Boolean = False
+                Log.Write(String.Format("Adding/updating contact information for {0} ({1},{2}).", person.Email, person.LastName, person.FirstName))
 
-				Dim findCompany As New Organizations(User)
-				'make sure the company already exists
-				findCompany.LoadByCRMLinkID(companyID, ParentOrgID)
+                Dim findCompany As New Organizations(User)
+                'make sure the company already exists
+                findCompany.LoadByCRMLinkID(companyID, ParentOrgID)
 
-				If findCompany.Count > 0 Then
-					Dim thisCompany As Organization = findCompany(0)
-					Dim findUser As New Users(User)
-					Dim thisUser As User
-					Dim logMessage As String = "updated"
+                If findCompany.Count > 0 Then
+                    Dim thisCompany As Organization = findCompany(0)
+                    Dim findUser As New Users(User)
+                    Dim thisUser As User
+                    Dim logMessage As String = "updated"
 
-					findUser.LoadByOrganizationID(thisCompany.OrganizationID, False)
-					'First Condition uses SalesforceID, prevents duplicate contacts being created when the email address is updated in SalesForce
-					If person.SalesForceID IsNot Nothing And findUser.FindBySalesForceID(person.SalesForceID) IsNot Nothing Then
-						thisUser = findUser.FindBySalesForceID(person.SalesForceID)
-					ElseIf findUser.FindByEmail(person.Email) IsNot Nothing Then
-						thisUser = findUser.FindByEmail(person.Email)
-					Else
-						Dim pw = DataUtils.GenerateRandomPassword()
-						Dim crmlinkOrg As New Organizations(User)
-						crmlinkOrg.LoadByOrganizationID(ParentOrgID)
-						Dim isAdvancedPortal As Boolean = crmlinkOrg(0).IsAdvancedPortal
+                    findUser.LoadByOrganizationID(thisCompany.OrganizationID, False)
+                    'First Condition uses SalesforceID, prevents duplicate contacts being created when the email address is updated in SalesForce
+                    If person.SalesForceID IsNot Nothing And findUser.FindBySalesForceID(person.SalesForceID) IsNot Nothing Then
+                        thisUser = findUser.FindBySalesForceID(person.SalesForceID)
+                    ElseIf findUser.FindByEmail(person.Email) IsNot Nothing Then
+                        thisUser = findUser.FindByEmail(person.Email)
+                    Else
+                        Dim pw = DataUtils.GenerateRandomPassword()
+                        Dim crmlinkOrg As New Organizations(User)
+                        crmlinkOrg.LoadByOrganizationID(ParentOrgID)
+                        Dim isAdvancedPortal As Boolean = crmlinkOrg(0).IsAdvancedPortal
 
-						'add the contact
-						thisUser = (New Users(User)).AddNewUser()
-						thisUser.OrganizationID = thisCompany.OrganizationID
-						thisUser.IsActive = True
-						thisUser.IsPasswordExpired = True
-						thisUser.IsPortalUser = isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess
-						thisUser.CryptedPassword = Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(pw, "MD5")
-						thisUser.Collection.Save()
-						Log.Write("Contact was added.")
+                        'add the contact
+                        thisUser = (New Users(User)).AddNewUser()
+                        thisUser.OrganizationID = thisCompany.OrganizationID
+                        thisUser.IsActive = True
+                        thisUser.IsPasswordExpired = True
+                        thisUser.IsPortalUser = isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess
+                        thisUser.CryptedPassword = Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(pw, "MD5")
+                        thisUser.Collection.Save()
+                        Log.Write("Contact was added.")
 
-						If isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
-							EmailPosts.SendWelcomePortalUser(User, thisUser.UserID, pw)
-							Log.Write("EmailPost added for SendWelcomePortalUser")
-						End If
-					End If
-
-					Dim contactNeedsUpdate As Boolean = False
-
-					With thisUser
-						If .Email <> person.Email OrElse _
-							.FirstLastName <> If(person.FirstName IsNot Nothing, person.FirstName, "") OrElse _
-							.LastName <> person.LastName OrElse _
-							.Title <> person.Title OrElse _
-							.MarkDeleted OrElse _
-							.SalesForceID <> person.SalesForceID Then
-							contactNeedsUpdate = True
-						End If
-
-						.Email = person.Email
-						.FirstName = If(person.FirstName IsNot Nothing, person.FirstName, "")
-						.LastName = person.LastName
-						.Title = person.Title
-						.MarkDeleted = False
-						.SalesForceID = person.SalesForceID
-
-						If contactNeedsUpdate Then
-							.Collection.Save()
-							Log.Write(String.Format("Contact was {0}.", logMessage))
-							wasUpdated = True
-						End If
-					End With
-
-					Dim thesePhoneTypes As New PhoneTypes(User)
-					thesePhoneTypes.LoadAllPositions(ParentOrgID)
-					Dim CRMPhoneType As PhoneType = Nothing
-
-					'We'll save the phone number using the corresponding CRM ("phone" or "work") phone type.
-					Select Case Type
-						Case IntegrationType.Batchbook, IntegrationType.SalesForce, IntegrationType.ZohoCRM
-							CRMPhoneType = thesePhoneTypes.FindByName("Phone")
-
-							If CRMPhoneType Is Nothing Then
-								CRMPhoneType = AddPhoneType("Phone", thesePhoneTypes.Count, ParentOrgID)
-								thesePhoneTypes.LoadAllPositions(ParentOrgID)
-							End If
-						Case IntegrationType.Highrise
-							CRMPhoneType = thesePhoneTypes.FindByName("Work")
-
-							If CRMPhoneType Is Nothing Then
-								CRMPhoneType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
-								thesePhoneTypes.LoadAllPositions(ParentOrgID)
-							End If
-					End Select
-
-					'The worktype is used regardless of the CRM phone type to be able to update the numbers processed by the previous version of this class.
-					Dim workType As PhoneType = thesePhoneTypes.FindByName("Work")
-
-					If workType Is Nothing Then
-						workType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
-						thesePhoneTypes.LoadAllPositions(ParentOrgID)
-					End If
-
-					'All the CRMs uses Mobile for this phone type.
-					Dim mobileType As PhoneType = thesePhoneTypes.FindByName("Mobile")
-
-					If mobileType Is Nothing Then
-						mobileType = AddPhoneType("Mobile", thesePhoneTypes.Count, ParentOrgID)
-						thesePhoneTypes.LoadAllPositions(ParentOrgID)
-					End If
-
-					'All the CRMs uses Fax for this phone type.
-					Dim faxType As PhoneType = thesePhoneTypes.FindByName("Fax")
-
-					If faxType Is Nothing Then
-						faxType = AddPhoneType("Fax", thesePhoneTypes.Count, ParentOrgID)
-						thesePhoneTypes.LoadAllPositions(ParentOrgID)
-					End If
-
-					'2. Preparation. Get existing numbers, if any, to update instead of add new.
-					Dim phone As PhoneNumber = Nothing
-					Dim mobilePhone As PhoneNumber = Nothing
-					Dim faxPhone As PhoneNumber = Nothing
-
-					'We'll proceed to find an existing number to update instead of incorrectly adding a new number everytime the contact get sync.
-					'If more than one phone number exist with the type we are looking for, we might end up updating the incorrect number.
-					'Unfortunately there is not an easy way to prevent this undesirable effect.
-					'An alternative is to wipe all numbers and add the ones comming from the CRM. This has been reviewed and rejected by RJ.
-					'Error chances are less if we update the first existing number with the type being updated than deleting existing numbers.
-					'Specially because we are bringing only the first number from the CRM.
-					Dim findPhone As New PhoneNumbers(User)
-					findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
-
-					If findPhone.Count > 0 Then
-						'The previous version assigned phone to the work type when the work type existed.
-						'Because chances are low that the Work Type was deleted by a user chances are big that this is the number we need to update.
-						phone = findPhone.FindByPhoneTypeID(workType.PhoneTypeID)
-
-						'When no work number exist, there is a small chance that the work type was deleted.
-						'In this case, for a long time we did not add the phone, recently we updated the code to add the number without type.
-						'To handle this very low chance we look for a number without type.
-						If phone Is Nothing Then
-							For Each existingNumber As PhoneNumber In findPhone
-								If existingNumber.PhoneTypeID Is Nothing Then
-									phone = existingNumber
-									Exit For
-								End If
-							Next
-						End If
-
-						'If no number have been found so far, maybe the current version already updated this contact.
-						'Therefore we look for a number with the CRM phone type.
-						If phone Is Nothing AndAlso CRMPhoneType IsNot Nothing Then
-							phone = findPhone.FindByPhoneTypeID(CRMPhoneType.PhoneTypeID)
-						End If
-
-						If mobileType IsNot Nothing Then
-							mobilePhone = findPhone.FindByPhoneTypeID(mobileType.PhoneTypeID)
-						End If
-
-						If faxType IsNot Nothing Then
-							faxPhone = findPhone.FindByPhoneTypeID(faxType.PhoneTypeID)
-						End If
-					End If
-
-					'3. Action. Add/Update.
-					If person.Phone Is Nothing OrElse person.Phone = String.Empty Then
-						If phone IsNot Nothing Then
-							phone.Collection.DeleteFromDB(phone.PhoneID)
-							Log.Write("Contact Phone was deleted.")
-						End If
-					Else
-						logMessage = "updated"
-
-						If phone Is Nothing Then
-							phone = (New PhoneNumbers(User).AddNewPhoneNumber())
-							logMessage = "added"
-						End If
-
-						Dim phoneNeedsUpdate As Boolean = False
-
-						With phone
-							If .Number <> person.Phone OrElse _
-								.RefType <> ReferenceType.Users OrElse _
-								.RefID <> thisUser.UserID Then
-								phoneNeedsUpdate = True
-							End If
-
-							.Number = person.Phone
-							.RefType = ReferenceType.Users
-							.RefID = thisUser.UserID
-
-							If CRMPhoneType IsNot Nothing Then
-								If Not phoneNeedsUpdate Then
-									phoneNeedsUpdate = If(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
-								End If
-
-								.PhoneTypeID = CRMPhoneType.PhoneTypeID
-							End If
-
-							'Custom mapping for Tenmast.
-							If Type = IntegrationType.ZohoCRM Then
-								If Not phoneNeedsUpdate Then
-									phoneNeedsUpdate = .Extension <> person.Extension
-								End If
-
-								.Extension = person.Extension
-							End If
-
-							If phoneNeedsUpdate Then
-								.Collection.Save()
-								Log.Write(String.Format("Contact phone was {0}", logMessage))
-								wasUpdated = True
-							End If
-						End With
-					End If
-
-					If person.Cell Is Nothing OrElse person.Cell = String.Empty Then
-						If mobilePhone IsNot Nothing Then
-							mobilePhone.Collection.DeleteFromDB(mobilePhone.PhoneID)
-							Log.Write("Contact mobile was deleted.")
-						End If
-						Else
-							logMessage = "updated"
-
-							If mobilePhone Is Nothing Then
-								mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
-								logMessage = "added"
-							End If
-
-							Dim mobileNeedsUpdate As Boolean = False
-
-							With mobilePhone
-								If .Number <> person.Cell OrElse _
-									.RefType <> ReferenceType.Users OrElse _
-									.RefID <> thisUser.UserID OrElse _
-									.PhoneTypeID Is Nothing OrElse _
-									.PhoneTypeID <> mobileType.PhoneTypeID Then
-									mobileNeedsUpdate = True
-								End If
-
-								.Number = person.Cell
-								.RefType = ReferenceType.Users
-								.RefID = thisUser.UserID
-								.PhoneTypeID = mobileType.PhoneTypeID
-
-								If mobileNeedsUpdate Then
-									.Collection.Save()
-									Log.Write(String.Format("Contact mobile was {0}", logMessage))
-									wasUpdated = True
-								End If
-							End With
-						End If
-
-						If person.Fax Is Nothing OrElse person.Fax = String.Empty Then
-							If faxPhone IsNot Nothing Then
-								faxPhone.Collection.DeleteFromDB(faxPhone.PhoneID)
-								Log.Write("Contact fax was deleted.")
-							End If
-						Else
-							logMessage = "updated"
-
-							If faxPhone Is Nothing Then
-								faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
-								logMessage = "added"
-							End If
-
-							Dim faxNeedsUpdate As Boolean = False
-
-							With faxPhone
-								If .Number <> person.Fax OrElse _
-									.RefType <> ReferenceType.Users OrElse _
-									.RefID <> thisUser.UserID OrElse _
-									.PhoneTypeID Is Nothing OrElse _
-									.PhoneTypeID <> faxType.PhoneTypeID Then
-									faxNeedsUpdate = True
-								End If
-
-								.Number = person.Fax
-								.RefType = ReferenceType.Users
-								.RefID = thisUser.UserID
-								.PhoneTypeID = faxType.PhoneTypeID
-
-								If faxNeedsUpdate Then
-									.Collection.Save()
-									Log.Write(String.Format("Contact fax was {0}", logMessage))
-									wasUpdated = True
-								End If
-							End With
-						End If
+                        If isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
+                            EmailPosts.SendWelcomePortalUser(User, thisUser.UserID, pw)
+                            Log.Write("EmailPost added for SendWelcomePortalUser")
+                        End If
                     End If
 
-					If (Not wasUpdated) Then
-						Log.Write("Nothing needed to be updated.")
-					End If
+                    Dim contactNeedsUpdate As Boolean = False
+
+                    With thisUser
+                        If .Email <> person.Email OrElse
+                            .FirstName <> If(person.FirstName IsNot Nothing, person.FirstName, "") OrElse
+                            .LastName <> If(person.LastName IsNot Nothing, person.LastName, "") OrElse
+                            .Title <> If(person.Title IsNot Nothing, person.Title, "") OrElse
+                            .MarkDeleted OrElse
+                            .SalesForceID <> person.SalesForceID Then
+                            contactNeedsUpdate = True
+                        End If
+
+                        .Email = person.Email
+                        .FirstName = If(person.FirstName IsNot Nothing, person.FirstName, "")
+                        .LastName = person.LastName
+                        .Title = person.Title
+                        .MarkDeleted = False
+                        .SalesForceID = person.SalesForceID
+
+                        If contactNeedsUpdate Then
+                            .Collection.Save()
+                            Log.Write(String.Format("Contact was {0}.", logMessage))
+                            wasUpdated = True
+                        End If
+                    End With
+
+                    Dim thesePhoneTypes As New PhoneTypes(User)
+                    thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                    Dim CRMPhoneType As PhoneType = Nothing
+
+                    'We'll save the phone number using the corresponding CRM ("phone" or "work") phone type.
+                    Select Case Type
+                        Case IntegrationType.Batchbook, IntegrationType.SalesForce, IntegrationType.ZohoCRM
+                            CRMPhoneType = thesePhoneTypes.FindByName("Phone")
+
+                            If CRMPhoneType Is Nothing Then
+                                CRMPhoneType = AddPhoneType("Phone", thesePhoneTypes.Count, ParentOrgID)
+                                thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                            End If
+                        Case IntegrationType.Highrise
+                            CRMPhoneType = thesePhoneTypes.FindByName("Work")
+
+                            If CRMPhoneType Is Nothing Then
+                                CRMPhoneType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
+                                thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                            End If
+                    End Select
+
+                    'The worktype is used regardless of the CRM phone type to be able to update the numbers processed by the previous version of this class.
+                    Dim workType As PhoneType = thesePhoneTypes.FindByName("Work")
+
+                    If workType Is Nothing Then
+                        workType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
+                        thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                    End If
+
+                    'All the CRMs uses Mobile for this phone type.
+                    Dim mobileType As PhoneType = thesePhoneTypes.FindByName("Mobile")
+
+                    If mobileType Is Nothing Then
+                        mobileType = AddPhoneType("Mobile", thesePhoneTypes.Count, ParentOrgID)
+                        thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                    End If
+
+                    'All the CRMs uses Fax for this phone type.
+                    Dim faxType As PhoneType = thesePhoneTypes.FindByName("Fax")
+
+                    If faxType Is Nothing Then
+                        faxType = AddPhoneType("Fax", thesePhoneTypes.Count, ParentOrgID)
+                        thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                    End If
+
+                    '2. Preparation. Get existing numbers, if any, to update instead of add new.
+                    Dim phone As PhoneNumber = Nothing
+                    Dim mobilePhone As PhoneNumber = Nothing
+                    Dim faxPhone As PhoneNumber = Nothing
+
+                    'We'll proceed to find an existing number to update instead of incorrectly adding a new number everytime the contact get sync.
+                    'If more than one phone number exist with the type we are looking for, we might end up updating the incorrect number.
+                    'Unfortunately there is not an easy way to prevent this undesirable effect.
+                    'An alternative is to wipe all numbers and add the ones comming from the CRM. This has been reviewed and rejected by RJ.
+                    'Error chances are less if we update the first existing number with the type being updated than deleting existing numbers.
+                    'Specially because we are bringing only the first number from the CRM.
+                    Dim findPhone As New PhoneNumbers(User)
+                    findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
+
+                    If findPhone.Count > 0 Then
+                        'The previous version assigned phone to the work type when the work type existed.
+                        'Because chances are low that the Work Type was deleted by a user chances are big that this is the number we need to update.
+                        phone = findPhone.FindByPhoneTypeID(workType.PhoneTypeID)
+
+                        'When no work number exist, there is a small chance that the work type was deleted.
+                        'In this case, for a long time we did not add the phone, recently we updated the code to add the number without type.
+                        'To handle this very low chance we look for a number without type.
+                        If phone Is Nothing Then
+                            For Each existingNumber As PhoneNumber In findPhone
+                                If existingNumber.PhoneTypeID Is Nothing Then
+                                    phone = existingNumber
+                                    Exit For
+                                End If
+                            Next
+                        End If
+
+                        'If no number have been found so far, maybe the current version already updated this contact.
+                        'Therefore we look for a number with the CRM phone type.
+                        If phone Is Nothing AndAlso CRMPhoneType IsNot Nothing Then
+                            phone = findPhone.FindByPhoneTypeID(CRMPhoneType.PhoneTypeID)
+                        End If
+
+                        If mobileType IsNot Nothing Then
+                            mobilePhone = findPhone.FindByPhoneTypeID(mobileType.PhoneTypeID)
+                        End If
+
+                        If faxType IsNot Nothing Then
+                            faxPhone = findPhone.FindByPhoneTypeID(faxType.PhoneTypeID)
+                        End If
+                    End If
+
+                    '3. Action. Add/Update.
+                    If person.Phone Is Nothing OrElse person.Phone = String.Empty Then
+                        If phone IsNot Nothing Then
+                            phone.Collection.DeleteFromDB(phone.PhoneID)
+                            Log.Write("Contact Phone was deleted.")
+                        End If
+                    Else
+                        logMessage = "updated"
+
+                        If phone Is Nothing Then
+                            phone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                            logMessage = "added"
+                        End If
+
+                        Dim phoneNeedsUpdate As Boolean = False
+
+                        With phone
+                            If .Number <> person.Phone OrElse
+                                .RefType <> ReferenceType.Users OrElse
+                                .RefID <> thisUser.UserID Then
+                                phoneNeedsUpdate = True
+                            End If
+
+                            .Number = person.Phone
+                            .RefType = ReferenceType.Users
+                            .RefID = thisUser.UserID
+
+                            If CRMPhoneType IsNot Nothing Then
+                                If Not phoneNeedsUpdate Then
+                                    phoneNeedsUpdate = If(.PhoneTypeID Is Nothing OrElse .PhoneTypeID <> CRMPhoneType.PhoneTypeID, True, False)
+                                End If
+
+                                .PhoneTypeID = CRMPhoneType.PhoneTypeID
+                            End If
+
+                            'Custom mapping for Tenmast.
+                            If Type = IntegrationType.ZohoCRM Then
+                                If Not phoneNeedsUpdate Then
+                                    phoneNeedsUpdate = .Extension <> person.Extension
+                                End If
+
+                                .Extension = person.Extension
+                            End If
+
+                            If phoneNeedsUpdate Then
+                                .Collection.Save()
+                                Log.Write(String.Format("Contact phone was {0}", logMessage))
+                                wasUpdated = True
+                            End If
+                        End With
+                    End If
+
+                    If person.Cell Is Nothing OrElse person.Cell = String.Empty Then
+                        If mobilePhone IsNot Nothing Then
+                            mobilePhone.Collection.DeleteFromDB(mobilePhone.PhoneID)
+                            Log.Write("Contact mobile was deleted.")
+                        End If
+                    Else
+                        logMessage = "updated"
+
+                        If mobilePhone Is Nothing Then
+                            mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                            logMessage = "added"
+                        End If
+
+                        Dim mobileNeedsUpdate As Boolean = False
+
+                        With mobilePhone
+                            If .Number <> person.Cell OrElse
+                                .RefType <> ReferenceType.Users OrElse
+                                .RefID <> thisUser.UserID OrElse
+                                .PhoneTypeID Is Nothing OrElse
+                                .PhoneTypeID <> mobileType.PhoneTypeID Then
+                                mobileNeedsUpdate = True
+                            End If
+
+                            .Number = person.Cell
+                            .RefType = ReferenceType.Users
+                            .RefID = thisUser.UserID
+                            .PhoneTypeID = mobileType.PhoneTypeID
+
+                            If mobileNeedsUpdate Then
+                                .Collection.Save()
+                                Log.Write(String.Format("Contact mobile was {0}", logMessage))
+                                wasUpdated = True
+                            End If
+                        End With
+                    End If
+
+                    If person.Fax Is Nothing OrElse person.Fax = String.Empty Then
+                        If faxPhone IsNot Nothing Then
+                            faxPhone.Collection.DeleteFromDB(faxPhone.PhoneID)
+                            Log.Write("Contact fax was deleted.")
+                        End If
+                    Else
+                        logMessage = "updated"
+
+                        If faxPhone Is Nothing Then
+                            faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                            logMessage = "added"
+                        End If
+
+                        Dim faxNeedsUpdate As Boolean = False
+
+                        With faxPhone
+                            If .Number <> person.Fax OrElse
+                                .RefType <> ReferenceType.Users OrElse
+                                .RefID <> thisUser.UserID OrElse
+                                .PhoneTypeID Is Nothing OrElse
+                                .PhoneTypeID <> faxType.PhoneTypeID Then
+                                faxNeedsUpdate = True
+                            End If
+
+                            .Number = person.Fax
+                            .RefType = ReferenceType.Users
+                            .RefID = thisUser.UserID
+                            .PhoneTypeID = faxType.PhoneTypeID
+
+                            If faxNeedsUpdate Then
+                                .Collection.Save()
+                                Log.Write(String.Format("Contact fax was {0}", logMessage))
+                                wasUpdated = True
+                            End If
+                        End With
+                    End If
+                End If
+
+                If (Not wasUpdated) Then
+                    Log.Write("Nothing needed to be updated.")
+                End If
             End Sub
 
             ''' <summary>
@@ -916,33 +917,33 @@ Namespace TeamSupport
                 'make sure the company already exists
                 findCompany.LoadByCRMLinkID(companyID, ParentOrgID)
                 If findCompany.Count > 0 Then
-                  Dim thisCompany As Organization = findCompany(0)
+                    Dim thisCompany As Organization = findCompany(0)
 
-                  Dim products As Products = New Products(User)
-                  products.LoadByProductName(ParentOrgID, product.Name)
-                  Dim existingProduct As Product = Nothing
-                  If products.Count > 0 Then
-                    existingProduct = products(0)
-                  Else
-                    products = New Products(User)
-                    products.AddNewProduct()
-                    products(0).Name = product.Name
-                    products(0).OrganizationID = ParentOrgID
-                    products.Save()
-                    existingProduct = products(0)
-                    Log.Write(String.Format("Added product {0} in organization.", product.Name))
-                  End If
+                    Dim products As Products = New Products(User)
+                    products.LoadByProductName(ParentOrgID, product.Name)
+                    Dim existingProduct As Product = Nothing
+                    If products.Count > 0 Then
+                        existingProduct = products(0)
+                    Else
+                        products = New Products(User)
+                        products.AddNewProduct()
+                        products(0).Name = product.Name
+                        products(0).OrganizationID = ParentOrgID
+                        products.Save()
+                        existingProduct = products(0)
+                        Log.Write(String.Format("Added product {0} in organization.", product.Name))
+                    End If
 
-                  Dim organizationProducts As New OrganizationProducts(User)
-                  organizationProducts.LoadByOrganizationAndProductID(thisCompany.OrganizationID, existingProduct.ProductID)
-                  If organizationProducts.Count = 0 Then
-                    organizationProducts = New OrganizationProducts(User)
-                    organizationProducts.AddNewOrganizationProduct()
-                    organizationProducts(0).OrganizationID = thisCompany.OrganizationID
-                    organizationProducts(0).ProductID = existingProduct.ProductID
-                    organizationProducts.Save()
-                    Log.Write(String.Format("Added product {0} in customer.", product.Name))
-                  End If
+                    Dim organizationProducts As New OrganizationProducts(User)
+                    organizationProducts.LoadByOrganizationAndProductID(thisCompany.OrganizationID, existingProduct.ProductID)
+                    If organizationProducts.Count = 0 Then
+                        organizationProducts = New OrganizationProducts(User)
+                        organizationProducts.AddNewOrganizationProduct()
+                        organizationProducts(0).OrganizationID = thisCompany.OrganizationID
+                        organizationProducts(0).ProductID = existingProduct.ProductID
+                        organizationProducts.Save()
+                        Log.Write(String.Format("Added product {0} in customer.", product.Name))
+                    End If
                 End If
             End Sub
 
@@ -1150,8 +1151,8 @@ Namespace TeamSupport
                 End If
 
                 If thisCustom IsNot Nothing AndAlso thisCustom.Value <> Value Then
-                  thisCustom.Value = Value
-                  thisCustom.Collection.Save()
+                    thisCustom.Value = Value
+                    thisCustom.Collection.Save()
                 End If
             End Sub
         End Class
@@ -1183,20 +1184,20 @@ Namespace TeamSupport
             End Sub
         End Class
 
-		<Serializable()>
+        <Serializable()>
         Public Class CompanyData
-            Private _city         As String
-            Private _country      As String
-            Private _state        As String
-            Private _street       As String
-            Private _street2      As String
-            Private _zip          As String
-            Private _phone        As String
-            Private _fax          As String
-            Private _accountId    As String
-            Private _accountName  As String
+            Private _city As String
+            Private _country As String
+            Private _state As String
+            Private _street As String
+            Private _street2 As String
+            Private _zip As String
+            Private _phone As String
+            Private _fax As String
+            Private _accountId As String
+            Private _accountName As String
 
-			<XmlElement("ShippingCity")>
+            <XmlElement("ShippingCity")>
             Property City As String
                 Get
                     Return _city
@@ -1212,7 +1213,7 @@ Namespace TeamSupport
                 End Set
             End Property
 
-			<XmlElement("ShippingCountry")>
+            <XmlElement("ShippingCountry")>
             Property Country As String
                 Get
                     Return _country
@@ -1228,7 +1229,7 @@ Namespace TeamSupport
                 End Set
             End Property
 
-			<XmlElement("ShippingState")>
+            <XmlElement("ShippingState")>
             Property State As String
                 Get
                     Return _state
@@ -1244,7 +1245,7 @@ Namespace TeamSupport
                 End Set
             End Property
 
-			<XmlElement("ShippingStreet")>
+            <XmlElement("ShippingStreet")>
             Property Street As String
                 Get
                     Return _street
@@ -1256,7 +1257,7 @@ Namespace TeamSupport
                         Else
                             _street = value
                         End If
-                        
+
                     End If
                 End Set
             End Property
@@ -1276,7 +1277,7 @@ Namespace TeamSupport
                 End Set
             End Property
 
-			<XmlElement("ShippingPostalCode")>
+            <XmlElement("ShippingPostalCode")>
             Property Zip As String
                 Get
                     Return _zip
@@ -1292,7 +1293,7 @@ Namespace TeamSupport
                 End Set
             End Property
 
-			<XmlElement("Phone")>
+            <XmlElement("Phone")>
             Property Phone As String
                 Get
                     Return _phone
@@ -1308,7 +1309,7 @@ Namespace TeamSupport
                 End Set
             End Property
 
-			<XmlElement("Fax")>
+            <XmlElement("Fax")>
             Property Fax As String
                 Get
                     Return _fax
@@ -1324,7 +1325,7 @@ Namespace TeamSupport
                 End Set
             End Property
 
-			<XmlElement("Id")>
+            <XmlElement("Id")>
             Property AccountID As String
                 Get
                     Return _accountId
@@ -1340,7 +1341,7 @@ Namespace TeamSupport
                 End Set
             End Property
 
-			<XmlElement("Name")>
+            <XmlElement("Name")>
             Property AccountName As String
                 Get
                     Return _accountName
@@ -1372,16 +1373,16 @@ Namespace TeamSupport
         End Class
 
         Public Class EmployeeData
-            Private _firstName  As String
-            Private _lastName   As String
-            Private _title      As String
-            Private _email      As String
-            Private _phone      As String
-            Private _extension  As String
-            Private _cell       As String
-            Private _fax        As String
+            Private _firstName As String
+            Private _lastName As String
+            Private _title As String
+            Private _email As String
+            Private _phone As String
+            Private _extension As String
+            Private _cell As String
+            Private _fax As String
             Private _salesForceID As String
-            Private _zohoId    As String
+            Private _zohoId As String
             Private _highriseID As String
             Private _hubSpotvid As String
             Private _hubSpotId As String
@@ -1446,7 +1447,7 @@ Namespace TeamSupport
                     End If
                 End Set
             End Property
-            
+
             Property Phone As String
                 Get
                     Return _phone
@@ -1476,7 +1477,7 @@ Namespace TeamSupport
                     End If
                 End Set
             End Property
-            
+
             Property Cell As String
                 Get
                     Return _cell
@@ -1491,7 +1492,7 @@ Namespace TeamSupport
                     End If
                 End Set
             End Property
-            
+
             Property Fax As String
                 Get
                     Return _fax
@@ -1502,7 +1503,7 @@ Namespace TeamSupport
                             _fax = value.Substring(0, 50)
                         Else
                             _fax = value
-                        End if
+                        End If
                     End If
                 End Set
             End Property
@@ -1619,12 +1620,12 @@ Namespace TeamSupport
                     Next
                 End If
 
-				Try
-					File.AppendAllText(LogPath & "\" & FileName, Now.ToLongTimeString() + ": " & Text & Environment.NewLine)
-				Catch ex As IOException
-					'unfortunately if the file cannot be accessed we'll just keep going. Need to revisit this.
-				End Try
-                
+                Try
+                    File.AppendAllText(LogPath & "\" & FileName, Now.ToLongTimeString() + ": " & Text & Environment.NewLine)
+                Catch ex As IOException
+                    'unfortunately if the file cannot be accessed we'll just keep going. Need to revisit this.
+                End Try
+
             End Sub
 
         End Class
