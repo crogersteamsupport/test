@@ -416,12 +416,26 @@ AdminAuto = function () {
     });
 
 
-    if (fieldID) { fields.combobox('setValue', fieldID); }
+    if (fieldID)
+    {
+        if (fields.find('option[value="'+ fieldID+'"]').length > 0)
+        {
+            fields.combobox('setValue', fieldID);
+        }
+            else
+            fields.combobox('setValue', -999);
+    }
     var measures = $('<select>').addClass('condition-measure').appendTo(div).width('125px');
     loadComboMeasure(measures).combobox({ selected: function (e, ui) { isModified(true); } });
     if (measure) { measures.combobox('setValue', measure); }
     $('<span>').addClass('condition-value-container').appendTo(div);
     createConditionValue(div, fields.find('option:selected').data('field'), value);
+
+    if (fields.find('option[value="' + fieldID + '"]').length == 0) {
+        div.find('.condition-value-container').parent().find('.condition-custom-value').combobox('setValue', fieldID)
+    }
+    
+
     $('<span>').addClass('ts-icon ts-icon-remove').appendTo(div).click(function (e) {
       $(this).parent().remove(); isModified(true); parent.parent.Ts.System.logAction('Admin Automation - Condition Removed');
     });
@@ -431,7 +445,9 @@ AdminAuto = function () {
   }
 
   function createConditionValue(condition, field, value) {
-    var container = condition.find('.condition-value-container').empty();
+      var container = condition.find('.condition-value-container').empty();
+      condition.find('.condition-custom-value').remove();
+
     if (!field) return;
 
     var execGetFieldValues = null;
@@ -444,9 +460,11 @@ AdminAuto = function () {
     {
         var select = $('<select>')
           .addClass('condition-custom-value')
-          .insertBefore($('.condition-measure'));
+          .insertBefore(container.prev());
+
         for (var i = 0; i < field.ListValues.length; i++) {
-            $('<option>').attr('value', field.ListValues[i]).text(field.ListValues[i]).appendTo(select);
+            var customField = field.ListValues[i].split(':');
+            $('<option>').attr('value', customField[1]).text(customField[0]).appendTo(select);
         }
         select.combobox({ selected: function (e, ui) { isModified(true); } })
 

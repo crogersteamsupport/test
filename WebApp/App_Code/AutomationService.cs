@@ -52,7 +52,7 @@ namespace TSWebServices
       List<string> orgCustomFields = new List<string>();
       foreach (CustomField c in orgfields)
       {
-        orgCustomFields.Add(c.Name);
+        orgCustomFields.Add(c.Name +":"+c.CustomFieldID);
       }
 
 
@@ -230,7 +230,7 @@ namespace TSWebServices
 			AutoFieldItem afiAgentRatings = new AutoFieldItem();
 			afiAgentRatings.Alias = "Agent Rating";
 			afiAgentRatings.DataType = "list";
-			afiAgentRatings.FieldID = 999;
+			afiAgentRatings.FieldID = 101009;
 			afiAgentRatings.FieldName = "AgentRating";
 			afiAgentRatings.IsCustom = false;
 			afiAgentRatings.IsVisible = true;
@@ -247,7 +247,7 @@ namespace TSWebServices
             AutoFieldItem afiCDIValue = new AutoFieldItem();
             afiCDIValue.Alias = "Customer CDI Value";
             afiCDIValue.DataType = "text";
-            afiCDIValue.FieldID = 999;
+            afiCDIValue.FieldID = 101010;
             afiCDIValue.FieldName = "Customer CDI Value";
             afiCDIValue.IsCustom = false;
             afiCDIValue.IsVisible = true;
@@ -264,7 +264,7 @@ namespace TSWebServices
             AutoFieldItem afiCDITrend = new AutoFieldItem();
             afiCDITrend.Alias = "Customer CDI Trend";
             afiCDITrend.DataType = "text";
-            afiCDITrend.FieldID = 999;
+            afiCDITrend.FieldID = 101011;
             afiCDITrend.FieldName = "Customer CDI Trend";
             afiCDITrend.IsCustom = false;
             afiCDITrend.IsVisible = true;
@@ -281,7 +281,7 @@ namespace TSWebServices
             AutoFieldItem afiServiceLevelName = new AutoFieldItem();
             afiServiceLevelName.Alias = "Service Level Name";
             afiServiceLevelName.DataType = "text";
-            afiServiceLevelName.FieldID = 999;
+            afiServiceLevelName.FieldID = 101012;
             afiServiceLevelName.FieldName = "Service Level Name";
             afiServiceLevelName.IsCustom = false;
             afiServiceLevelName.IsVisible = true;
@@ -298,7 +298,7 @@ namespace TSWebServices
             AutoFieldItem afiServiceExpirationDate = new AutoFieldItem();
             afiServiceExpirationDate.Alias = "Service Expiration Date";
             afiServiceExpirationDate.DataType = "datetime";
-            afiServiceExpirationDate.FieldID = 999;
+            afiServiceExpirationDate.FieldID = 101013;
             afiServiceExpirationDate.FieldName = "Service Expiration Date";
             afiServiceExpirationDate.IsCustom = false;
             afiServiceExpirationDate.IsVisible = true;
@@ -315,7 +315,7 @@ namespace TSWebServices
             AutoFieldItem afiCustomerIsActive = new AutoFieldItem();
             afiCustomerIsActive.Alias = "Customer Is Active";
             afiCustomerIsActive.DataType = "bit";
-            afiCustomerIsActive.FieldID = 999;
+            afiCustomerIsActive.FieldID = 101014;
             afiCustomerIsActive.FieldName = "Customer Is Active";
             afiCustomerIsActive.IsCustom = false;
             afiCustomerIsActive.IsVisible = true;
