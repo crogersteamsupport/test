@@ -376,6 +376,7 @@ Namespace TeamSupport
                     findCompany.LoadByParentID(ParentOrgID, False)
                     If findCompany.FindByName(company.AccountName) IsNot Nothing AndAlso CRMLinkRow.MatchAccountsByName Then
                         thisCompany = findCompany.FindByName(company.AccountName)
+                        companyInfoNeedsUpdate = thisCompany.CRMLinkID <> company.AccountID
                         'update accountid
                         thisCompany.CRMLinkID = company.AccountID
                         logMessage = "Found by Name"
@@ -646,9 +647,9 @@ Namespace TeamSupport
 
                     With thisUser
                         If .Email <> person.Email OrElse
-                            .FirstLastName <> If(person.FirstName IsNot Nothing, person.FirstName, "") OrElse
-                            .LastName <> person.LastName OrElse
-                            .Title <> person.Title OrElse
+                            .FirstName <> If(person.FirstName IsNot Nothing, person.FirstName, "") OrElse
+                            .LastName <> If(person.LastName IsNot Nothing, person.LastName, "") OrElse
+                            .Title <> If(person.Title IsNot Nothing, person.Title, "") OrElse
                             .MarkDeleted OrElse
                             .SalesForceID <> person.SalesForceID Then
                             contactNeedsUpdate = True
