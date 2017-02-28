@@ -952,7 +952,7 @@ ORDER BY TicketNumber DESC";
                     if (i == 0) builder.Append("'" + tagArray[i] + "'");
                     else builder.Append(", '" + tagArray[i] + "'");
                 }
-
+                builder.Append(", '" + text.Trim() + "'");
                 builder.Append(@"))");
                 if (customerID > 0)
                 {
