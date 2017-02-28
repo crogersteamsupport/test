@@ -18,7 +18,24 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT * FROM Reminders WHERE (UserID = @UserID) AND (IsDismissed = 0) ORDER BY DueDate";
+                command.CommandText = @"SELECT 	 
+                                            R.ReminderID
+	                                        ,R.OrganizationID
+	                                        ,R.RefType
+	                                        ,R.RefID
+	                                        ,CASE WHEN R.RefType = 61 THEN R.TaskName ELSE R.Description END AS [Description]
+	                                        ,R.DueDate
+	                                        ,R.UserID
+	                                        ,R.IsDismissed
+	                                        ,R.HasEmailSent
+	                                        ,R.CreatorID
+	                                        ,R.DateCreated
+	                                        ,R.TaskName
+	                                        ,R.TaskDueDate
+	                                        ,R.TaskIsComplete
+	                                        ,R.TaskDateCompleted
+	                                        ,R.TaskParentID 
+                                        FROM Reminders WHERE (UserID = @UserID) AND (IsDismissed = 0) ORDER BY DueDate";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@UserID", userID);
                 Fill(command);
