@@ -645,6 +645,25 @@ namespace TSWebServices
                     SendModifiedNotification(loginUser.UserID, task.ReminderID);
                 }
 
+                if (refType == ReferenceType.Contacts)
+                {
+                    TeamSupport.Data.User user = Users.GetUser(loginUser, refID);
+                    taskAssociation = (new TaskAssociations(loginUser).AddNewTaskAssociation());
+                    taskAssociation.ReminderID = reminderID;
+                    taskAssociation.RefID = user.OrganizationID;
+                    taskAssociation.RefType = (int)ReferenceType.Organizations;
+                    taskAssociation.DateCreated = DateTime.UtcNow;
+                    taskAssociation.CreatorID = loginUser.UserID;
+                    try
+                    {
+                        taskAssociation.Collection.Save();
+                    }
+                    catch (Exception e)
+                    {
+                        //TaskAssociation do not allow duplicates. This could happen when the company is already associated with the task.
+                    }
+                }
+
                 return true;
             }
             catch (Exception e)
