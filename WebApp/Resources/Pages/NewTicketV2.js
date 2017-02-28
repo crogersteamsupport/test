@@ -2499,7 +2499,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         onItemAdd: function (value, $item) {
             if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('hasError');
-            }
+}
             else {
                 groupContainer.removeClass('hasError');
             }
@@ -2513,7 +2513,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
                 groupContainer.removeClass('hasCloseError');
             }
 
-            if (field.IsFirstIndexSelect == true && value == "") {
+            if (field.IsFirstIndexSelect == true && value == "" || field.ListValues.split("|")[0] == value) {
                 groupContainer.addClass('isEmpty');
             }
             else {
