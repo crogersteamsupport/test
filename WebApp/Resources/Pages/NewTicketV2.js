@@ -2513,7 +2513,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
                 groupContainer.removeClass('hasCloseError');
             }
 
-            if (field.IsFirstIndexSelect == true && value == "") {
+            if (field.IsFirstIndexSelect == true && value == "" || field.ListValues.split("|")[0] == value) {
                 groupContainer.addClass('isEmpty');
             }
             else {
