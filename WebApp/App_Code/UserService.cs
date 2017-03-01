@@ -1578,6 +1578,7 @@ namespace TSWebServices
             {
                 CalEvent cal = new CalEvent();
                 cal.color = "blue";
+
                 cal.title = r.Description;
                 cal.start = ((DateTime)r.GetProxy().DueDate).ToString("o");
                 cal.end = null;
@@ -1622,7 +1623,10 @@ namespace TSWebServices
                         }
                         else
                             continue;
-
+                    case ReferenceType.Tasks:
+                        cal.title = r.TaskName;
+                        cal.description = string.Empty;
+                        break;
                 }
 
 
