@@ -35,7 +35,7 @@ namespace TeamSupport.Data
 	                                        ,R.TaskIsComplete
 	                                        ,R.TaskDateCompleted
 	                                        ,R.TaskParentID 
-                                        FROM Reminders WHERE (UserID = @UserID) AND (IsDismissed = 0) ORDER BY DueDate";
+                                        FROM Reminders AS R WHERE (UserID = @UserID) AND (IsDismissed = 0) ORDER BY DueDate";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@UserID", userID);
                 Fill(command);
