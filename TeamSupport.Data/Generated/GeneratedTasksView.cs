@@ -217,11 +217,11 @@ namespace TeamSupport.Data
     partial void AfterRowInsert(TasksViewItem tasksViewItem);
     partial void BeforeRowEdit(TasksViewItem tasksViewItem);
     partial void AfterRowEdit(TasksViewItem tasksViewItem);
-    partial void BeforeRowDelete(int );
-    partial void AfterRowDelete(int );    
+    partial void BeforeRowDelete(int taskID);
+    partial void AfterRowDelete(int taskID);    
 
-    partial void BeforeDBDelete(int );
-    partial void AfterDBDelete(int );    
+    partial void BeforeDBDelete(int taskID);
+    partial void AfterDBDelete(int taskID);    
 
     #endregion
 
@@ -239,19 +239,19 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int )
+    public virtual void DeleteFromDB(int taskID)
     {
         SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TasksView] WH);";
         deleteCommand.Parameters.Add("", SqlDbType.Int);
-        deleteCommand.Parameters[""].Value = ;
+        deleteCommand.Parameters["taskID"].Value = taskID;
 
-        BeforeDBDelete();
-        BeforeRowDelete();
+        BeforeDBDelete(taskID);
+        BeforeRowDelete(taskID);
         TryDeleteFromDB(deleteCommand);
-        AfterRowDelete();
-        AfterDBDelete();
+        AfterRowDelete(taskID);
+        AfterDBDelete(taskID);
 	}
 
     public override void Save(SqlConnection connection)    {
@@ -612,11 +612,11 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public TasksViewItem FindBy(int )
+    public TasksViewItem FindBy(int taskID)
     {
       foreach (TasksViewItem tasksViewItem in this)
       {
-        if (tasksViewItem. == )
+        if (tasksViewItem.TaskID == taskID)
         {
           return tasksViewItem;
         }
@@ -632,21 +632,21 @@ namespace TeamSupport.Data
       return new TasksViewItem(row, this);
     }
     
-    public virtual void LoadBy(int )
+    public virtual void LoadBy(int taskID)
     {
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = "SET NOCOUNT OFF; SELECT [TaskID], [OrganizationID], [Name], [Description], [DueDate], [UserID], [IsComplete], [DateCompleted], [ParentID], [IsDismissed], [HasEmailSent], [ReminderDueDate], [TaskParentName], [UserName], [Creator], [CreatorID], [DateCreated], [ModifierID], [DateModified] FROM [dbo].[TasksView] WH);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("", );
+        command.Parameters.AddWithValue("taskID", taskID);
         Fill(command);
       }
     }
     
-    public static TasksViewItem GetTasksViewItem(LoginUser loginUser, int )
+    public static TasksViewItem GetTasksViewItem(LoginUser loginUser, int taskID)
     {
       TasksView tasksView = new TasksView(loginUser);
-      tasksView.LoadBy();
+      tasksView.LoadBy(taskID);
       if (tasksView.IsEmpty)
         return null;
       else

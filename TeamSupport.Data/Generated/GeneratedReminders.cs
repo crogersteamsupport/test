@@ -72,10 +72,10 @@ namespace TeamSupport.Data
       set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
-    public int RefType
+    public ReferenceType RefType
     {
-      get { return (int)Row["RefType"]; }
-      set { Row["RefType"] = CheckValue("RefType", value); }
+        get { return (ReferenceType)Row["RefType"]; }
+        set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int OrganizationID

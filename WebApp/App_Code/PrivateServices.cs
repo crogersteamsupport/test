@@ -754,7 +754,7 @@ namespace TeamSupport.Services
 
         Data.Reminder task = Reminders.GetReminder(UserSession.LoginUser, reminderID);
 
-        string description = String.Format("{0} deleted task {1} ", UserSession.CurrentUser.FirstLastName, task.TaskName);
+        string description = String.Format("{0} deleted task {1} ", UserSession.CurrentUser.FirstLastName, task.Description);
         ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Tasks, reminderID, description);
         task.Delete();
         task.Collection.Save();

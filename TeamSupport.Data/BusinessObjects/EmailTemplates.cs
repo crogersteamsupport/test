@@ -1062,11 +1062,11 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 35, -1);
             template.ReplaceCommonParameters().ReplaceFields("User", user);
-            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
-            if (task.TaskDueDate.HasValue)
+            if (task.DueDate.HasValue)
             {
-                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                DateTime taskDueDate = task.DueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1074,9 +1074,9 @@ namespace TeamSupport.Data
                 template.ReplaceParameter("TaskDueDate", "[None]");
             }
 
-            if (task.TaskDateCompleted.HasValue)
+            if (task.DateCompleted.HasValue)
             {
-                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                DateTime taskDateCompleted = task.DateCompleted ?? DateTime.Now;
                 template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1100,11 +1100,11 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 36, -1);
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
-            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
-            if (task.TaskDueDate.HasValue)
+            if (task.DueDate.HasValue)
             {
-                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                DateTime taskDueDate = task.DueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1112,9 +1112,9 @@ namespace TeamSupport.Data
                 template.ReplaceParameter("TaskDueDate", "[None]");
             }
 
-            if (task.TaskDateCompleted.HasValue)
+            if (task.DateCompleted.HasValue)
             {
-                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                DateTime taskDateCompleted = task.DateCompleted ?? DateTime.Now;
                 template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1137,11 +1137,11 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 37, -1);
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
-            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
-            if (task.TaskDueDate.HasValue)
+            if (task.DueDate.HasValue)
             {
-                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                DateTime taskDueDate = task.DueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1149,9 +1149,9 @@ namespace TeamSupport.Data
                 template.ReplaceParameter("TaskDueDate", "[None]");
             }
 
-            if (task.TaskDateCompleted.HasValue)
+            if (task.DateCompleted.HasValue)
             {
-                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                DateTime taskDateCompleted = task.DateCompleted ?? DateTime.Now;
                 template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1174,11 +1174,11 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 38, -1);
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
-            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
-            if (task.TaskDueDate.HasValue)
+            if (task.DueDate.HasValue)
             {
-                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                DateTime taskDueDate = task.DueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1186,9 +1186,9 @@ namespace TeamSupport.Data
                 template.ReplaceParameter("TaskDueDate", "[None]");
             }
 
-            if (task.TaskDateCompleted.HasValue)
+            if (task.DateCompleted.HasValue)
             {
-                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                DateTime taskDateCompleted = task.DateCompleted ?? DateTime.Now;
                 template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1211,11 +1211,11 @@ namespace TeamSupport.Data
         {
             EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 38, -1);
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("OldOwner", oldUser).ReplaceFields("Owner", owner);
-            template.ReplaceParameter("TaskName", task.TaskName);
+            template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
-            if (task.TaskDueDate.HasValue)
+            if (task.DueDate.HasValue)
             {
-                DateTime taskDueDate = task.TaskDueDate ?? DateTime.Now;
+                DateTime taskDueDate = task.DueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskDueDate", taskDueDate.ToString("G", loginUser.OrganizationCulture));
             }
             else
@@ -1223,9 +1223,9 @@ namespace TeamSupport.Data
                 template.ReplaceParameter("TaskDueDate", "[None]");
             }
 
-            if (task.TaskDateCompleted.HasValue)
+            if (task.DateCompleted.HasValue)
             {
-                DateTime taskDateCompleted = task.TaskDateCompleted ?? DateTime.Now;
+                DateTime taskDateCompleted = task.DateCompleted ?? DateTime.Now;
                 template.ReplaceParameter("TaskDateCompleted", taskDateCompleted.ToString("G", loginUser.OrganizationCulture));
             }
             else
