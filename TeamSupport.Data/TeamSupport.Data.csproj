@@ -307,6 +307,7 @@
     <Compile Include="BusinessObjects\TaskEmailPostHistory.cs" />
     <Compile Include="BusinessObjects\TaskEmailPosts.cs" />
     <Compile Include="BusinessObjects\TaskLogs.cs" />
+    <Compile Include="BusinessObjects\Tasks.cs" />
     <Compile Include="BusinessObjects\TasksView.cs" />
     <Compile Include="BusinessObjects\TicketAutomationActions.cs" />
     <Compile Include="BusinessObjects\TicketAutomationHistory.cs" />
@@ -433,6 +434,7 @@
     <Compile Include="FieldMaps\TaskEmailPostHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\TaskEmailPostsFieldMap.cs" />
     <Compile Include="FieldMaps\TaskLogsFieldMap.cs" />
+    <Compile Include="FieldMaps\TasksFieldMap.cs" />
     <Compile Include="FieldMaps\TasksViewFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationActionsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationHistoryFieldMap.cs" />
@@ -736,6 +738,7 @@
     <Compile Include="Generated\GeneratedTaskEmailPostHistory.cs" />
     <Compile Include="Generated\GeneratedTaskEmailPosts.cs" />
     <Compile Include="Generated\GeneratedTaskLogs.cs" />
+    <Compile Include="Generated\GeneratedTasks.cs" />
     <Compile Include="Generated\GeneratedTasksView.cs" />
     <Compile Include="Generated\GeneratedTechDocs.cs" />
     <Compile Include="Generated\GeneratedTicketAutomationActions.cs" />
@@ -816,6 +819,7 @@
     <Compile Include="Proxies\TaskEmailPostHistoryProxy.cs" />
     <Compile Include="Proxies\TaskEmailPostsProxy.cs" />
     <Compile Include="Proxies\TaskLogsProxy.cs" />
+    <Compile Include="Proxies\TasksProxy.cs" />
     <Compile Include="Proxies\TasksViewProxy.cs" />
     <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />
     <Compile Include="Proxies\TicketTypesViewProxy.cs" />
