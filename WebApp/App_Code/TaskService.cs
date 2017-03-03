@@ -253,12 +253,36 @@ namespace TSWebServices
             return us.DateTimeFormat.ShortDatePattern;
         }
 
+        private Reminder CreateReminder(LoginUser loginUser, string taskName, DateTime? reminderDate, bool isDismissed)
+        {
+            Reminders reminderHelper = new Reminders(loginUser);
+            Reminder reminder = reminderHelper.AddNewReminder();
+
+            reminder.DateCreated = DateTime.UtcNow;
+            reminder.Description = taskName;
+            reminder.DueDate = reminderDate;
+            reminder.IsDismissed = isDismissed;
+            reminder.RefType = ReferenceType.Tasks;
+            reminder.RefID = -1;
+            reminder.HasEmailSent = false;
+
+            reminderHelper.Save();
+
+            return reminder;
+        }
+
         [WebMethod]
         public TaskProxy NewTask(string data)
         {
             TaskJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskJsonInfo>(data);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
+
             Task newTask = (new Tasks(loginUser)).AddNewTask();
+
+            if (info.ReminderDate != null) {
+                Reminder reminder = CreateReminder(loginUser, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.ReminderDate), info.IsDismissed);
+                if (reminder != null) newTask.ReminderID = reminder.ReminderID;
+            }
 
             newTask.ParentID = info.ParentID;
             newTask.OrganizationID = TSAuthentication.OrganizationID;
@@ -274,17 +298,6 @@ namespace TSWebServices
             {
                 newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
             }
-
-            if (info.DueDate != null)
-            {
-                newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
-            }
-
-            //This is all related to reminders!!!!
-            //newTask.IsDismissed = info.IsDismissed;
-            //newTask.RefType = ReferenceType.Tasks;
-            //newTask.RefID = -1;
-            //newTask.HasEmailSent = false;
 
             newTask.Collection.Save();
 
@@ -321,10 +334,10 @@ namespace TSWebServices
             string description = String.Format("{0} created task.", TSAuthentication.GetUser(loginUser).FirstLastName);
             TaskLogs.AddTaskLog(loginUser, newTask.TaskID, description);
 
-            //if (newTask.UserID != null && loginUser.UserID != newTask.UserID)
-            //{
-            //    SendAssignedNotification(loginUser.UserID, newTask.ReminderID);
-            //}
+            if (newTask.UserID != null && loginUser.UserID != newTask.UserID)
+            {
+                SendAssignedNotification(loginUser.UserID, newTask.TaskID);
+            }
 
             return newTask.GetProxy();
         }
@@ -347,10 +360,10 @@ namespace TSWebServices
             }
         }
 
-        private void SendAssignedNotification(int creatorID, int reminderID)
+        private void SendAssignedNotification(int creatorID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderID(reminderID);
+            existingPosts.LoadByReminderID(taskID);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -359,7 +372,7 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = reminderID;
+                post.ReminderID = taskID;
                 posts.Save();
             }
         }
@@ -744,7 +757,7 @@ namespace TSWebServices
         [DataMember]
         public bool IsDismissed { get; set; }
         [DataMember]
-        public DateTime? ReminderDueDate { get; set; }
+        public DateTime? ReminderDate { get; set; }
         [DataMember]
         public List<int> Tickets { get; set; }
         [DataMember]

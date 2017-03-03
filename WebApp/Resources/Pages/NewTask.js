@@ -651,7 +651,7 @@ $(document).ready(function () {
         taskInfo.IsComplete = $("#cbComplete").prop('checked');
         taskInfo.DueDate = $("#DueDate").val();
         taskInfo.IsDismissed = !$("#cbReminder").prop('checked');
-        //taskInfo.DueDate = $("#ReminderDate").val();
+        taskInfo.ReminderDate = $("#ReminderDate").val();
 
         taskInfo.Tickets = new Array();
         $('#commentatt:first').find('.ticket-queue').find('.ticket-removable-item').each(function () {
