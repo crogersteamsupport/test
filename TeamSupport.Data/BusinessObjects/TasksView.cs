@@ -13,13 +13,13 @@ namespace TeamSupport.Data
   
   public partial class TasksView
   {
-    public void LoadByParentID(int TaskParentID)
+    public void LoadByParentID(int ParentID)
     {
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = "SELECT * FROM TasksView WHERE TaskParentID = @TaskParentID ORDER BY DueDate";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TaskParentID", TaskParentID);
+        command.Parameters.AddWithValue("@ParentID", ParentID);
         Fill(command);
       }
     }
