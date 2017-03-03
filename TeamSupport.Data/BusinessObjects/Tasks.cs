@@ -9,6 +9,29 @@ namespace TeamSupport.Data
 {
     public partial class Task
     {
+        public bool IsDismissed
+        {
+            get
+            {
+                if (Row.Table.Columns.Contains("IsDismissed") && Row["IsDismissed"] != DBNull.Value)
+                {
+                    return (bool)Row["IsDismissed"];
+                }
+                else return false;
+            }
+        }
+
+        public DateTime? ReminderDueDate
+        {
+            get
+            {
+                if (Row.Table.Columns.Contains("ReminderDueDate") && Row["ReminderDueDate"] != DBNull.Value)
+                {
+                    return (DateTime)Row["ReminderDueDate"];
+                }
+                else return null;
+            }
+        }
     }
 
     public partial class Tasks
@@ -23,17 +46,19 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
                         ELSE ST.Name END AS Name,
-                    ST.UserID
+                    ST.UserID,
+                    ST.ModifierID,
+					ST.DateModified,
+                    R.ReminderID
                 FROM
                     Tasks ST
                     LEFT JOIN Tasks C
@@ -62,17 +87,19 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
                         ELSE ST.Name END AS Name,
-                    ST.UserID
+                    ST.UserID,
+                    ST.ModifierID,
+					ST.DateModified,
+                    R.ReminderID
                 FROM
                     Tasks ST
                     LEFT JOIN Tasks T 
@@ -90,13 +117,12 @@ namespace TeamSupport.Data
                 q AS ({0}),
                 r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DateCompleted DESC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
             SELECT
-                ReminderID
+                TaskID
                 , OrganizationID
                 , Description
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
                 , CreatorID
                 , DateCreated
                 , Name
@@ -104,6 +130,9 @@ namespace TeamSupport.Data
                 , IsComplete
                 , DateCompleted
                 , ParentID
+                , ModifierID
+                , DateModified
+                , ReminderID
             FROM 
                 r
             WHERE
@@ -131,12 +160,11 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    R.DueDate as ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
@@ -167,7 +195,6 @@ namespace TeamSupport.Data
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
                 , CreatorID
                 , DateCreated
                 , Name
@@ -206,17 +233,19 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
                         ELSE ST.Name END AS Name,
-                    ST.UserID
+                    ST.UserID,
+                    ST.ModifierID,
+					ST.DateModified,
+                    R.ReminderID
                 FROM
                     Tasks ST
                     LEFT JOIN Tasks T 
@@ -236,20 +265,22 @@ namespace TeamSupport.Data
                 q AS ({0}),
                 r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete ASC, DateCompleted DESC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
             SELECT
-                ReminderID
+                TaskID
                 , OrganizationID
                 , Description
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
                 , CreatorID
                 , DateCreated
-                , TaskName
-                , TaskDueDate
-                , TaskIsComplete
-                , TaskDateCompleted
-                , TaskParentID
+                , Name
+                , ReminderDueDate
+                , IsComplete
+                , DateCompleted
+                , ParentID
+                , ModifierID
+                , DateModified
+                , ReminderID
             FROM 
                 r
             WHERE
@@ -301,17 +332,19 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
                         ELSE ST.Name END AS Name,
-                    ST.UserID
+                    ST.UserID,
+                    ST.ModifierID,
+					ST.DateModified,
+                    R.ReminderID
                 FROM
                     Tasks ST
                     LEFT JOIN Tasks T 
@@ -328,24 +361,26 @@ namespace TeamSupport.Data
             string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
+                t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
             SELECT
-                ReminderID
+                TaskID
                 , OrganizationID
                 , Description
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
                 , CreatorID
                 , DateCreated
-                , TaskName
-                , TaskDueDate
-                , TaskIsComplete
-                , TaskDateCompleted
-                , TaskParentID
+                , Name
+                , ReminderDueDate
+                , IsComplete
+                , DateCompleted
+                , ParentID
+                , ModifierID
+                , DateModified
+                , ReminderID
             FROM 
-                r";
+                t";
             //WHERE
             //    RowNum BETWEEN @From AND @To";
 
@@ -374,17 +409,19 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
                         ELSE ST.Name END AS Name,
-                    ST.UserID
+                    ST.UserID,
+                    ST.ModifierID,
+					ST.DateModified,
+                    R.ReminderID
                 FROM
                     Tasks ST
                     LEFT JOIN Tasks T 
@@ -401,24 +438,26 @@ namespace TeamSupport.Data
             string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
+                t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
             SELECT
-                ReminderID
+                TaskID
                 , OrganizationID
                 , Description
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
                 , CreatorID
                 , DateCreated
-                , TaskName
-                , TaskDueDate
-                , TaskIsComplete
-                , TaskDateCompleted
-                , TaskParentID
+                , Name
+                , ReminderDueDate
+                , IsComplete
+                , DateCompleted
+                , ParentID
+                , ModifierID
+                , DateModified
+                , ReminderID
             FROM 
-                r";
+                t";
             //WHERE
             //    RowNum BETWEEN @From AND @To;
 
@@ -447,17 +486,19 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
                         ELSE ST.Name END AS Name,
-                    ST.UserID
+                    ST.UserID,
+                    ST.ModifierID,
+					ST.DateModified,
+                    R.ReminderID
                 FROM
                     Tasks ST
                     LEFT JOIN Tasks T 
@@ -474,24 +515,26 @@ namespace TeamSupport.Data
             string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
+                t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
             SELECT
-                ReminderID
+                TaskID
                 , OrganizationID
                 , Description
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
                 , CreatorID
                 , DateCreated
-                , TaskName
-                , TaskDueDate
-                , TaskIsComplete
-                , TaskDateCompleted
-                , TaskParentID
+                , Name
+                , ReminderDueDate
+                , IsComplete
+                , DateCompleted
+                , ParentID
+                , ModifierID
+                , DateModified
+                , ReminderID
             FROM 
-                r";
+                t";
             //WHERE
             //    RowNum BETWEEN @From AND @To;
 
@@ -514,11 +557,16 @@ namespace TeamSupport.Data
         {
             string completeQuery = @"
             SELECT 
-                t.*
+                t.*,
+                r.IsDismissed,
+                r.DueDate AS 'ReminderDueDate'
             FROM
                 Tasks t
                 JOIN TaskAssociations ta
                     ON t.TaskID = ta.TaskID
+                LEFT JOIN Reminders r
+                    ON t.TaskID = r.RefID
+                    AND r.RefType = 61
             WHERE
                 t.IsComplete = 1
                 AND ta.RefType = 9
@@ -527,24 +575,26 @@ namespace TeamSupport.Data
             string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY DueDate, ReminderDueDate) AS 'RowNum' FROM q)
+                t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY DueDate, ReminderDueDate) AS 'RowNum' FROM q)
             SELECT
-                ReminderID
+                TaskID
                 , OrganizationID
                 , Description
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
                 , CreatorID
                 , DateCreated
-                , TaskName
-                , TaskDueDate
-                , TaskIsComplete
-                , TaskDateCompleted
-                , TaskParentID
+                , Name
+                , ReminderDueDate
+                , IsComplete
+                , DateCompleted
+                , ParentID
+                , ModifierID
+                , DateModified
+                , ReminderID
             FROM 
-                r
+                t
             WHERE
                 RowNum BETWEEN @From AND @To";
 
@@ -567,11 +617,16 @@ namespace TeamSupport.Data
         {
             string completeQuery = @"
             SELECT 
-                t.*
+                t.*,
+                r.IsDismissed,
+                r.DueDate AS 'ReminderDueDate'
             FROM
                 Tasks t
                 JOIN TaskAssociations ta
                     ON t.TaskID = ta.TaskID
+                LEFT JOIN Reminders r
+                    ON t.TaskID = r.RefID
+                    AND r.RefType = 61
             WHERE
                 (t.CreatorID = @UserID OR t.UserID = @UserID)
                 AND ta.RefType = 9
@@ -580,24 +635,26 @@ namespace TeamSupport.Data
             string pageQuery = @"
             WITH 
                 q AS ({0}),
-                r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY DueDate, ReminderDueDate) AS 'RowNum' FROM q)
+                t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY DueDate, ReminderDueDate) AS 'RowNum' FROM q)
             SELECT
-                ReminderID
+                TaskID
                 , OrganizationID
                 , Description
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
                 , CreatorID
                 , DateCreated
-                , TaskName
-                , TaskDueDate
-                , TaskIsComplete
-                , TaskDateCompleted
-                , TaskParentID
+                , Name
+                , ReminderDueDate
+                , IsComplete
+                , DateCompleted
+                , ParentID
+                , ModifierID
+                , DateModified
+                , ReminderID
             FROM 
-                r
+                t
             WHERE
                 RowNum BETWEEN @From AND @To";
 

@@ -27,6 +27,8 @@ namespace TeamSupport.Data
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int? ReminderID { get; set; }
+    [DataMember] public bool IsDismissed { get; set; }
+    [DataMember] public DateTime? ReminderDueDate { get; set; }
           
   }
   
@@ -35,6 +37,8 @@ namespace TeamSupport.Data
     public TaskProxy GetProxy()
     {
       TaskProxy result = new TaskProxy();
+      result.IsDismissed = this.IsDismissed;
+      result.ReminderDueDate = this.ReminderDueDate;
       result.ReminderID = this.ReminderID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
