@@ -745,17 +745,17 @@ namespace TeamSupport.Services
         TaskAssociations associations = new TaskAssociations(UserSession.LoginUser);
         associations.DeleteByReminderIDOnly(reminderID);
 
-        Reminders subtasks = new Reminders(UserSession.LoginUser);
+        Tasks subtasks = new Tasks(UserSession.LoginUser);
         subtasks.LoadIncompleteByParentID(reminderID);
-        foreach (Data.Reminder subtask in subtasks)
+        foreach (Task subtask in subtasks)
         {
-            DeleteTask(subtask.ReminderID);
+            DeleteTask(subtask.TaskID);
         }
 
-        Data.Reminder task = Reminders.GetReminder(UserSession.LoginUser, reminderID);
+        Task task = Tasks.GetTask(UserSession.LoginUser, taskID);
 
         string description = String.Format("{0} deleted task {1} ", UserSession.CurrentUser.FirstLastName, task.Description);
-        ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Tasks, reminderID, description);
+        ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Tasks, taskID, description);
         task.Delete();
         task.Collection.Save();
     }

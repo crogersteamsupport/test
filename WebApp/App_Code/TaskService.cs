@@ -35,7 +35,7 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-            Reminders results = new Reminders(loginUser);
+            Tasks results = new Tasks(loginUser);
             if (tab == pageTab.mytasks)
             {
                 results.LoadMyTasks(from, count, loginUser.UserID, true, false);
@@ -50,43 +50,42 @@ namespace TSWebServices
                 results.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
 
-            ReminderProxy[] reminderProxies = results.GetReminderProxies();
+            TaskProxy[] tasksProxies = results.GetTaskProxies();
 
-
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(tasksProxies, loginUser);
         }
 
         [WebMethod]
         public List<ClientTask> GetCustomerTasks(int from, int count, int organizationID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminders results = new Reminders(loginUser);
+            Tasks results = new Tasks(loginUser);
 
             results.LoadByCompany(from, count, organizationID);
 
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
         }
 
         [WebMethod]
         public List<ClientTask> GetContactTasks(int from, int count, int contactID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminders results = new Reminders(loginUser);
+            Tasks results = new Tasks(loginUser);
 
             results.LoadByContact(from, count, contactID);
 
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
         }
 
         [WebMethod]
         public List<ClientTask> GetUserTasks(int from, int count, int userID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminders results = new Reminders(loginUser);
+            Tasks results = new Tasks(loginUser);
 
             results.LoadByUser(from, count, userID);
 
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
 
         }
 
@@ -95,24 +94,24 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
 
-            Reminders results = new Reminders(loginUser);
+            Tasks results = new Tasks(loginUser);
             results.LoadByTicketID(ticketID);
 
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
         }
 
-        public List<ClientTask> convertToClientTasksList(ReminderProxy[] reminderProxies, LoginUser loginUser)
+        public List<ClientTask> convertToClientTasksList(TaskProxy[] taskProxies, LoginUser loginUser)
         {
             List<ClientTask> clientTasks = new List<ClientTask>();
 
-            if (reminderProxies.Any())
+            if (taskProxies.Any())
             {
-                for (int x = 0; x < reminderProxies.Length; x++)
+                for (int x = 0; x < taskProxies.Length; x++)
                 {
                     ClientTask task = new ClientTask();
                     task.SubTasks = new List<ClientTask>();
 
-                    //task.Task = reminderProxies[x];
+                    task.Task = taskProxies[x];
 
                     if (task.Task.UserID.HasValue)
                     {
@@ -125,7 +124,7 @@ namespace TSWebServices
                         }
                     }
 
-                    //task.Associations = LoadAssociations(task.Task.ReminderID);
+                    task.Associations = LoadAssociations(task.Task.TaskID);
 
                     clientTasks.Add(task);
                 }
@@ -209,10 +208,10 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public TaskAssociationsViewItemProxy[] LoadAssociations(int reminderID)
+        public TaskAssociationsViewItemProxy[] LoadAssociations(int taskID)
         {
             TaskAssociationsView taskAssociations = new TaskAssociationsView(TSAuthentication.GetLoginUser());
-            taskAssociations.LoadByReminderIDOnly(reminderID);
+            taskAssociations.LoadByTaskIDOnly(taskID);
             return taskAssociations.GetTaskAssociationsViewItemProxies();
         }
 
@@ -465,18 +464,18 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public TaskCompletionStatus SetTaskIsCompleted(int reminderID, bool value)
+        public TaskCompletionStatus SetTaskIsCompleted(int taskID, bool value)
         {
             TaskCompletionStatus result = new TaskCompletionStatus(false, value);
 
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Task task = Tasks.GetTask(loginUser, reminderID);
+            Task task = Tasks.GetTask(loginUser, taskID);
             task.IsComplete = value;
 
             //if a user is attempting to complete a task check for incomplete subtasks first
             if (value)
             {
-                if (GetIncompleteSubtasks(reminderID))
+                if (GetIncompleteSubtasks(taskID))
                 {
                     result.IncompleteSubtasks = true;
                     result.Value = !value;
@@ -493,7 +492,7 @@ namespace TSWebServices
 
             task.Collection.Save();
             string description = String.Format("{0} set task is complete to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            TaskLogs.AddTaskLog(loginUser, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, taskID, description);
 
             //if (task.IsComplete && (loginUser.UserID != task.CreatorID || (task.UserID != null && loginUser.UserID != task.UserID)))
             //{
@@ -508,11 +507,11 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool GetIncompleteSubtasks(int reminderID)
+        public bool GetIncompleteSubtasks(int taskID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminders incompleteSubtasks = new Reminders(loginUser);
-            incompleteSubtasks.LoadIncompleteByParentID(reminderID);
+            Tasks incompleteSubtasks = new Tasks(loginUser);
+            incompleteSubtasks.LoadIncompleteByParentID(taskID);
             bool result = false;
             if (incompleteSubtasks.Count > 0)
             {
