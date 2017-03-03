@@ -76,16 +76,16 @@ namespace TeamSupport.ServiceLibrary
             switch ((TaskEmailPostType)taskEmailPost.TaskEmailPostType)
             {
                 case TaskEmailPostType.Modified:
-                    ProcessTaskModified(taskEmailPost.ReminderID, taskEmailPost.CreatorID);
+                    ProcessTaskModified(taskEmailPost.TaskID, taskEmailPost.CreatorID);
                     break;
                 case TaskEmailPostType.Assigned:
-                    ProcessTaskAssigned(taskEmailPost.ReminderID, taskEmailPost.CreatorID);
+                    ProcessTaskAssigned(taskEmailPost.TaskID, taskEmailPost.CreatorID);
                     break;
                 case TaskEmailPostType.Complete:
-                    ProcessTaskComplete(taskEmailPost.ReminderID, taskEmailPost.CreatorID);
+                    ProcessTaskComplete(taskEmailPost.TaskID, taskEmailPost.CreatorID);
                     break;
                 case TaskEmailPostType.OldUser:
-                    ProcessOldUser(taskEmailPost.ReminderID, taskEmailPost.CreatorID, (int)taskEmailPost.OldUserID);
+                    ProcessOldUser(taskEmailPost.TaskID, taskEmailPost.CreatorID, (int)taskEmailPost.OldUserID);
                     break;
                 default:
                     break;
@@ -142,16 +142,16 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
-        private void ProcessTaskModified(int reminderID, int modifierID)
+        private void ProcessTaskModified(int taskID, int modifierID)
         {
-            TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, reminderID);
+            TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, taskID);
             try
             {
 
                 User modifier = Users.GetUser(LoginUser, modifierID);
                 if (task == null)
                 {
-                    Logs.WriteEvent("Unable to find Task, ReminderID: " + reminderID.ToString());
+                    Logs.WriteEvent("Unable to find Task, TaskID: " + taskID.ToString());
                     return;
                 }
 
@@ -186,8 +186,8 @@ namespace TeamSupport.ServiceLibrary
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
 
-                String description = String.Format("Task modified notification sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.ReminderID, description);
+                String description = String.Format("Task modified notification sent to {0} for Task {1}", message.To.ToString(), task.Name);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)task.UserID, description);
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
@@ -203,16 +203,16 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
-        private void ProcessTaskAssigned(int reminderID, int modifierID)
+        private void ProcessTaskAssigned(int taskID, int modifierID)
         {
-            TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, reminderID);
+            TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, taskID);
             try
             {
 
                 User modifier = Users.GetUser(LoginUser, modifierID);
                 if (task == null)
                 {
-                    Logs.WriteEvent("Unable to find Task, ReminderID: " + reminderID.ToString());
+                    Logs.WriteEvent("Unable to find Task, TaskID: " + taskID.ToString());
                     return;
                 }
 
@@ -247,8 +247,8 @@ namespace TeamSupport.ServiceLibrary
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
 
-                String description = String.Format("Task assigned notification sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.ReminderID, description);
+                String description = String.Format("Task assigned notification sent to {0} for Task {1}", message.To.ToString(), task.Name);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)task.UserID, description);
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
@@ -264,16 +264,16 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
-        private void ProcessTaskComplete(int reminderID, int modifierID)
+        private void ProcessTaskComplete(int taskID, int modifierID)
         {
-            TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, reminderID);
+            TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, taskID);
             try
             {
 
                 User modifier = Users.GetUser(LoginUser, modifierID);
                 if (task == null)
                 {
-                    Logs.WriteEvent("Unable to find Task, ReminderID: " + reminderID.ToString());
+                    Logs.WriteEvent("Unable to find Task, TaskID: " + taskID.ToString());
                     return;
                 }
 
@@ -312,8 +312,8 @@ namespace TeamSupport.ServiceLibrary
                 //message.Subject = message.Subject + " [pvt]";
                 //EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
 
-                String description = String.Format("Task complete notification sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.ReminderID, description);
+                String description = String.Format("Task complete notification sent to {0} for Task {1}", message.To.ToString(), task.Name);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)task.UserID, description);
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
@@ -329,16 +329,16 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
-        private void ProcessOldUser(int reminderID, int modifierID, int oldUserID)
+        private void ProcessOldUser(int taskID, int modifierID, int oldUserID)
         {
-            TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, reminderID);
+            TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, taskID);
             try
             {
 
                 User modifier = Users.GetUser(LoginUser, modifierID);
                 if (task == null)
                 {
-                    Logs.WriteEvent("Unable to find Task, ReminderID: " + reminderID.ToString());
+                    Logs.WriteEvent("Unable to find Task, TaskID: " + taskID.ToString());
                     return;
                 }
 
@@ -378,8 +378,8 @@ namespace TeamSupport.ServiceLibrary
                 //message.Subject = message.Subject + " [pvt]";
                 //EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
 
-                String description = String.Format("Task old user notification sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.ReminderID, description);
+                String description = String.Format("Task old user notification sent to {0} for Task {1}", message.To.ToString(), task.Name);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)task.UserID, description);
 
                 //string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
