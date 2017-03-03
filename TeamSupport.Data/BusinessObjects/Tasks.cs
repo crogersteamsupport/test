@@ -258,7 +258,7 @@ namespace TeamSupport.Data
                         ST.CreatorID = @UserID
                         OR ST.UserID = @UserID
                     )
-                    AND ST.IsComplete = 0";
+                    AND ST.IsComplete = 1";
 
             string pageQuery = @"
             WITH 

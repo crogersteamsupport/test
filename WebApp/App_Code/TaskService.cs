@@ -266,6 +266,10 @@ namespace TSWebServices
             newTask.Description = info.Description;
             newTask.UserID = info.UserID;
             newTask.IsComplete = info.IsComplete;
+
+            if (newTask.IsComplete) newTask.DateCompleted = DateTime.UtcNow;
+
+
             if (info.DueDate != null)
             {
                 newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
