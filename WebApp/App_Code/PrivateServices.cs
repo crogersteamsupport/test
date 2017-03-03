@@ -740,13 +740,13 @@ namespace TeamSupport.Services
     }
 
     [WebMethod(true)]
-    public void DeleteTask(int reminderID)
+    public void DeleteTask(int taskID)
     {
         TaskAssociations associations = new TaskAssociations(UserSession.LoginUser);
-        associations.DeleteByReminderIDOnly(reminderID);
+        associations.DeleteByReminderIDOnly(taskID);
 
         Tasks subtasks = new Tasks(UserSession.LoginUser);
-        subtasks.LoadIncompleteByParentID(reminderID);
+        subtasks.LoadIncompleteByParentID(taskID);
         foreach (Task subtask in subtasks)
         {
             DeleteTask(subtask.TaskID);

@@ -266,9 +266,9 @@ namespace TSWebServices
             newTask.Description = info.Description;
             newTask.UserID = info.UserID;
             newTask.IsComplete = info.IsComplete;
-            if (info.TaskDueDate != null)
+            if (info.DueDate != null)
             {
-                newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.TaskDueDate);
+                newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
             }
 
             if (info.DueDate != null)
@@ -736,11 +736,11 @@ namespace TSWebServices
         [DataMember]
         public bool IsComplete { get; set; }
         [DataMember]
-        public DateTime? TaskDueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         [DataMember]
         public bool IsDismissed { get; set; }
         [DataMember]
-        public DateTime? DueDate { get; set; }
+        public DateTime? ReminderDueDate { get; set; }
         [DataMember]
         public List<int> Tickets { get; set; }
         [DataMember]

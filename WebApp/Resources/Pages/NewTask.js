@@ -643,13 +643,13 @@ $(document).ready(function () {
 
         var taskInfo = new Object();
         taskInfo.TaskParentID = _taskParentID;
-        taskInfo.TaskName = $("#inputName").val();
+        taskInfo.Name = $("#inputName").val();
         taskInfo.Description = $("#Description").val();
         if ($("#ddlUser").val() != -1) {
             taskInfo.UserID = $("#ddlUser").val();
         }
-        taskInfo.TaskIsComplete = $("#cbComplete").prop('checked');
-        taskInfo.TaskDueDate = $("#DueDate").val();
+        taskInfo.IsComplete = $("#cbComplete").prop('checked');
+        taskInfo.DueDate = $("#DueDate").val();
         taskInfo.IsDismissed = !$("#cbReminder").prop('checked');
         taskInfo.DueDate = $("#ReminderDate").val();
 

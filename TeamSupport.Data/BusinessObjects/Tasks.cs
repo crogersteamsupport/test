@@ -136,12 +136,15 @@ namespace TeamSupport.Data
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
+                    R.DueDate as ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
                         ELSE ST.Name END AS Name,
-                    ST.UserID
+                    ST.UserID,
+                    ST.ModifierID,
+					ST.DateModified,
+                    R.ReminderID
                 FROM 
                     Tasks ST
                     LEFT JOIN Tasks T 
@@ -158,7 +161,7 @@ namespace TeamSupport.Data
                 q AS ({0}),
                 r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate ASC) AS 'RowNum' FROM q)
             SELECT
-                ReminderID
+                TaskID
                 , OrganizationID
                 , Description
                 , DueDate
@@ -170,8 +173,11 @@ namespace TeamSupport.Data
                 , Name
                 , DueDate
                 , IsComplete
-                , ReminderDateCompleted
+                , DateCompleted
                 , ParentID
+                , ReminderID
+                , ModifierID
+                , DateModified
             FROM 
                 r
             WHERE
