@@ -73,11 +73,11 @@
         </td>
         <td>
             <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
-                {{formatTaskName this.Task}}
+                {{Task.Name}}
             </a>
         </td>
-        <td>{{formatDate Task.TaskDueDate}}</</td>
-        <td>{{formatDate Task.DueDate}}</td>
+        <td>{{formatDate Task.DueDate}}</</td>
+        <td>Not implemented</td>
         <td>
             {{#Associations}}
             {{mapAssociation this}}
