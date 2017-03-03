@@ -9,6 +9,29 @@ namespace TeamSupport.Data
 {
     public partial class Task
     {
+        public bool IsDismissed
+        {
+            get
+            {
+                if (Row.Table.Columns.Contains("IsDismissed") && Row["IsDismissed"] != DBNull.Value)
+                {
+                    return (bool)Row["IsDismissed"];
+                }
+                else return false;
+            }
+        }
+
+        public DateTime? ReminderDueDate
+        {
+            get
+            {
+                if (Row.Table.Columns.Contains("ReminderDueDate") && Row["ReminderDueDate"] != DBNull.Value)
+                {
+                    return (DateTime)Row["ReminderDueDate"];
+                }
+                else return null;
+            }
+        }
     }
 
     public partial class Tasks
@@ -23,12 +46,11 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
@@ -62,12 +84,11 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
@@ -131,12 +152,11 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
@@ -200,12 +220,11 @@ namespace TeamSupport.Data
                     ST.DateCreated,
                     ST.Description,
                     ST.DueDate,
-                    R.HasEmailSent,
+                    R.DueDate AS 'ReminderDueDate',
                     R.IsDismissed,
                     ST.OrganizationID,
                     ST.TaskID,
                     ST.DateCompleted,
-                    ST.ReminderDueDate,
                     ST.IsComplete,
                     ST.ParentID,
                     CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
@@ -566,6 +585,9 @@ namespace TeamSupport.Data
                 Tasks t
                 JOIN TaskAssociations ta
                     ON t.TaskID = ta.TaskID
+                LEFT JOIN Reminders r
+                    ON t.TaskID = r.RefID
+                    AND r.RefType = 61
             WHERE
                 (t.CreatorID = @UserID OR t.UserID = @UserID)
                 AND ta.RefType = 9
@@ -582,14 +604,13 @@ namespace TeamSupport.Data
                 , DueDate
                 , UserID
                 , IsDismissed
-                , HasEmailSent
+                , ReminderDueDAte
                 , CreatorID
                 , DateCreated
-                , TaskName
-                , TaskDueDate
-                , TaskIsComplete
-                , TaskDateCompleted
-                , TaskParentID
+                , Name
+                , IsComplete
+                , DateCompleted
+                , ParentID
             FROM 
                 r
             WHERE
