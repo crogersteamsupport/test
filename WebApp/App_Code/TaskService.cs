@@ -342,10 +342,10 @@ namespace TSWebServices
             return newTask.GetProxy();
         }
 
-        private void SendOldUserNotification(int creatorID, int oldUserID, int reminderID)
+        private void SendOldUserNotification(int creatorID, int oldUserID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderIDAndPostType(reminderID, TaskEmailPostType.OldUser);
+            existingPosts.LoadByTaskIDIDAndPostType(taskID, TaskEmailPostType.OldUser);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -354,7 +354,7 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = reminderID;
+                post.TaskID = taskID;
                 post.OldUserID = oldUserID;
                 posts.Save();
             }
@@ -363,7 +363,7 @@ namespace TSWebServices
         private void SendAssignedNotification(int creatorID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderID(taskID);
+            existingPosts.LoadByTaskID(taskID);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -372,7 +372,7 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = taskID;
+                post.TaskID = taskID;
                 posts.Save();
             }
         }
@@ -396,10 +396,10 @@ namespace TSWebServices
             return value != "" ? value : "Empty";
         }
 
-        private void SendModifiedNotification(int creatorID, int reminderID)
+        private void SendModifiedNotification(int creatorID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderID(reminderID);
+            existingPosts.LoadByTaskID(taskID);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -408,7 +408,7 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = reminderID;
+                post.TaskID = taskID;
                 posts.Save();
             }
         }
@@ -463,10 +463,10 @@ namespace TSWebServices
             return value;
         }
 
-        private void SendCompletedNotification(int creatorID, int reminderID)
+        private void SendCompletedNotification(int creatorID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderID(reminderID);
+            existingPosts.LoadByTaskID(taskID);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -475,7 +475,7 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = reminderID;
+                post.TaskID = taskID;
                 posts.Save();
             }
         }
