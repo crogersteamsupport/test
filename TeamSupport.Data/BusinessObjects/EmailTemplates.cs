@@ -1083,16 +1083,16 @@ namespace TeamSupport.Data
             {
                 template.ReplaceParameter("TaskDateCompleted", "[None]");
             }
-            if (task.DueDate.HasValue)
+            if (task.ReminderDueDate.HasValue)
             {
-                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                DateTime dueDate = task.ReminderDueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
             }
             else
             {
                 template.ReplaceParameter("TaskReminderDate", "[None]");
             }
-
+            template.ReplaceAssociations(loginUser, task.TaskID);
             return template.GetMessage();
         }
 
