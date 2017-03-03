@@ -475,16 +475,16 @@ namespace TeamSupport.Data
             return TimeSpan.FromMinutes(minutes);
         }
 
-        public EmailTemplate ReplaceAssociations(LoginUser loginUser, int reminderID)
+        public EmailTemplate ReplaceAssociations(LoginUser loginUser, int taskID)
         {
             string associationsParameterName = "{{TaskAssociations}}";
             if (Subject.ToLower().Contains(associationsParameterName.ToLower()) || Body.ToLower().Contains(associationsParameterName.ToLower()))
             {
                 Attachments attachments = new Attachments(loginUser);
-                attachments.LoadByReference(ReferenceType.Tasks, reminderID);
+                attachments.LoadByReference(ReferenceType.Tasks, taskID);
 
                 TaskAssociationsView associations = new TaskAssociationsView(loginUser);
-                associations.LoadByReminderIDOnly(reminderID);
+                associations.LoadByTaskIDOnly(taskID);
 
                 StringBuilder result = new StringBuilder();
                 if (attachments.Count == 0)
@@ -1121,15 +1121,16 @@ namespace TeamSupport.Data
             {
                 template.ReplaceParameter("TaskDateCompleted", "[None]");
             }
-            if (task.DueDate.HasValue)
+            if (task.ReminderDueDate.HasValue)
             {
-                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                DateTime dueDate = task.ReminderDueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
             }
             else
             {
                 template.ReplaceParameter("TaskReminderDate", "[None]");
             }
+            template.ReplaceAssociations(loginUser, task.TaskID);
             return template.GetMessage();
         }
 
@@ -1158,15 +1159,16 @@ namespace TeamSupport.Data
             {
                 template.ReplaceParameter("TaskDateCompleted", "[None]");
             }
-            if (task.DueDate.HasValue)
+            if (task.ReminderDueDate.HasValue)
             {
-                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                DateTime dueDate = task.ReminderDueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
             }
             else
             {
                 template.ReplaceParameter("TaskReminderDate", "[None]");
             }
+            template.ReplaceAssociations(loginUser, task.TaskID);
             return template.GetMessage();
         }
 
@@ -1195,15 +1197,16 @@ namespace TeamSupport.Data
             {
                 template.ReplaceParameter("TaskDateCompleted", "[None]");
             }
-            if (task.DueDate.HasValue)
+            if (task.ReminderDueDate.HasValue)
             {
-                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                DateTime dueDate = task.ReminderDueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
             }
             else
             {
                 template.ReplaceParameter("TaskReminderDate", "[None]");
             }
+            template.ReplaceAssociations(loginUser, task.TaskID);
             return template.GetMessage();
         }
 
@@ -1232,15 +1235,16 @@ namespace TeamSupport.Data
             {
                 template.ReplaceParameter("TaskDateCompleted", "[None]");
             }
-            if (task.DueDate.HasValue)
+            if (task.ReminderDueDate.HasValue)
             {
-                DateTime dueDate = task.DueDate ?? DateTime.Now;
+                DateTime dueDate = task.ReminderDueDate ?? DateTime.Now;
                 template.ReplaceParameter("TaskReminderDate", dueDate.ToString("g", loginUser.OrganizationCulture));
             }
             else
             {
                 template.ReplaceParameter("TaskReminderDate", "[None]");
             }
+            template.ReplaceAssociations(loginUser, task.TaskID);
             return template.GetMessage();
         }
 

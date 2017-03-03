@@ -78,24 +78,24 @@ namespace TeamSupport.Data
                 return emails[0];
         }
 
-        public void LoadByReminderID(int reminderID)
+        public void LoadByTaskID(int taskID)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT * FROM TaskEmailPosts WHERE ReminderID = @ReminderID";
+                command.CommandText = "SELECT * FROM TaskEmailPosts WHERE TaskID = @TaskID";
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@ReminderID", reminderID);
+                command.Parameters.AddWithValue("@TaskID", taskID);
                 Fill(command);
             }
         }
 
-        public void LoadByReminderIDAndPostType(int reminderID, TaskEmailPostType postType)
+        public void LoadByTaskIDIDAndPostType(int taskID, TaskEmailPostType postType)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT * FROM TaskEmailPosts WHERE ReminderID = @ReminderID AND TaskEmailPostType = @PostType";
+                command.CommandText = "SELECT * FROM TaskEmailPosts WHERE TaskID = @TaskID AND TaskEmailPostType = @PostType";
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@ReminderID", reminderID);
+                command.Parameters.AddWithValue("@TaskID", taskID);
                 command.Parameters.AddWithValue("@PostType", postType);
                 Fill(command);
             }
