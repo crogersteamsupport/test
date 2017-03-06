@@ -1,520 +1,850 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID]
-  FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [DateCreated],
+    [ModifierID],
+    [DateModified]
+  FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
   @TaskID int,
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
   @CreatorID int,
-  @LockProcessID varchar(250),
-  @OldUserID int,
+  @DateCreated datetime,
+  @ModifierID int,
+  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskEmailPostHistory]
+  INSERT INTO [dbo].[TasksView]
   (
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID])
+    [DateCreated],
+    [ModifierID],
+    [DateModified])
   VALUES (
-    @TaskEmailPostID,
-    @TaskEmailPostType,
-    @HoldTime,
-    @DateCreated,
     @TaskID,
+    @OrganizationID,
+    @Name,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsComplete,
+    @DateCompleted,
+    @ParentID,
+    @IsDismissed,
+    @HasEmailSent,
+    @ReminderDueDate,
+    @TaskParentName,
+    @UserName,
+    @Creator,
     @CreatorID,
-    @LockProcessID,
-    @OldUserID)
+    @DateCreated,
+    @ModifierID,
+    @DateModified)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
   @TaskID int,
-  @LockProcessID varchar(250),
-  @OldUserID int
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
+  @ModifierID int,
+  @DateModified datetime
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskEmailPostHistory]
+  UPDATE [dbo].[TasksView]
   SET
-    [TaskEmailPostType] = @TaskEmailPostType,
-    [HoldTime] = @HoldTime,
-    [TaskID] = @TaskID,
-    [LockProcessID] = @LockProcessID,
-    [OldUserID] = @OldUserID
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsComplete] = @IsComplete,
+    [DateCompleted] = @DateCompleted,
+    [ParentID] = @ParentID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent,
+    [ReminderDueDate] = @ReminderDueDate,
+    [TaskParentName] = @TaskParentName,
+    [UserName] = @UserName,
+    [Creator] = @Creator,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+  DELETE FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID]
-  FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [DateCreated],
+    [ModifierID],
+    [DateModified]
+  FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
   @TaskID int,
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
   @CreatorID int,
-  @LockProcessID varchar(250),
-  @OldUserID int,
+  @DateCreated datetime,
+  @ModifierID int,
+  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskEmailPostHistory]
+  INSERT INTO [dbo].[TasksView]
   (
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID])
+    [DateCreated],
+    [ModifierID],
+    [DateModified])
   VALUES (
-    @TaskEmailPostID,
-    @TaskEmailPostType,
-    @HoldTime,
-    @DateCreated,
     @TaskID,
+    @OrganizationID,
+    @Name,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsComplete,
+    @DateCompleted,
+    @ParentID,
+    @IsDismissed,
+    @HasEmailSent,
+    @ReminderDueDate,
+    @TaskParentName,
+    @UserName,
+    @Creator,
     @CreatorID,
-    @LockProcessID,
-    @OldUserID)
+    @DateCreated,
+    @ModifierID,
+    @DateModified)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
   @TaskID int,
-  @LockProcessID varchar(250),
-  @OldUserID int
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
+  @ModifierID int,
+  @DateModified datetime
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskEmailPostHistory]
+  UPDATE [dbo].[TasksView]
   SET
-    [TaskEmailPostType] = @TaskEmailPostType,
-    [HoldTime] = @HoldTime,
-    [TaskID] = @TaskID,
-    [LockProcessID] = @LockProcessID,
-    [OldUserID] = @OldUserID
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsComplete] = @IsComplete,
+    [DateCompleted] = @DateCompleted,
+    [ParentID] = @ParentID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent,
+    [ReminderDueDate] = @ReminderDueDate,
+    [TaskParentName] = @TaskParentName,
+    [UserName] = @UserName,
+    [Creator] = @Creator,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+  DELETE FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID]
-  FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [DateCreated],
+    [ModifierID],
+    [DateModified]
+  FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
   @TaskID int,
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
   @CreatorID int,
-  @LockProcessID varchar(250),
-  @OldUserID int,
+  @DateCreated datetime,
+  @ModifierID int,
+  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskEmailPostHistory]
+  INSERT INTO [dbo].[TasksView]
   (
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID])
+    [DateCreated],
+    [ModifierID],
+    [DateModified])
   VALUES (
-    @TaskEmailPostID,
-    @TaskEmailPostType,
-    @HoldTime,
-    @DateCreated,
     @TaskID,
+    @OrganizationID,
+    @Name,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsComplete,
+    @DateCompleted,
+    @ParentID,
+    @IsDismissed,
+    @HasEmailSent,
+    @ReminderDueDate,
+    @TaskParentName,
+    @UserName,
+    @Creator,
     @CreatorID,
-    @LockProcessID,
-    @OldUserID)
+    @DateCreated,
+    @ModifierID,
+    @DateModified)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
   @TaskID int,
-  @LockProcessID varchar(250),
-  @OldUserID int
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
+  @ModifierID int,
+  @DateModified datetime
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskEmailPostHistory]
+  UPDATE [dbo].[TasksView]
   SET
-    [TaskEmailPostType] = @TaskEmailPostType,
-    [HoldTime] = @HoldTime,
-    [TaskID] = @TaskID,
-    [LockProcessID] = @LockProcessID,
-    [OldUserID] = @OldUserID
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsComplete] = @IsComplete,
+    [DateCompleted] = @DateCompleted,
+    [ParentID] = @ParentID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent,
+    [ReminderDueDate] = @ReminderDueDate,
+    [TaskParentName] = @TaskParentName,
+    [UserName] = @UserName,
+    [Creator] = @Creator,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+  DELETE FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID]
-  FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [DateCreated],
+    [ModifierID],
+    [DateModified]
+  FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
   @TaskID int,
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
   @CreatorID int,
-  @LockProcessID varchar(250),
-  @OldUserID int,
+  @DateCreated datetime,
+  @ModifierID int,
+  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskEmailPostHistory]
+  INSERT INTO [dbo].[TasksView]
   (
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID])
+    [DateCreated],
+    [ModifierID],
+    [DateModified])
   VALUES (
-    @TaskEmailPostID,
-    @TaskEmailPostType,
-    @HoldTime,
-    @DateCreated,
     @TaskID,
+    @OrganizationID,
+    @Name,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsComplete,
+    @DateCompleted,
+    @ParentID,
+    @IsDismissed,
+    @HasEmailSent,
+    @ReminderDueDate,
+    @TaskParentName,
+    @UserName,
+    @Creator,
     @CreatorID,
-    @LockProcessID,
-    @OldUserID)
+    @DateCreated,
+    @ModifierID,
+    @DateModified)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
   @TaskID int,
-  @LockProcessID varchar(250),
-  @OldUserID int
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
+  @ModifierID int,
+  @DateModified datetime
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskEmailPostHistory]
+  UPDATE [dbo].[TasksView]
   SET
-    [TaskEmailPostType] = @TaskEmailPostType,
-    [HoldTime] = @HoldTime,
-    [TaskID] = @TaskID,
-    [LockProcessID] = @LockProcessID,
-    [OldUserID] = @OldUserID
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsComplete] = @IsComplete,
+    [DateCompleted] = @DateCompleted,
+    [ParentID] = @ParentID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent,
+    [ReminderDueDate] = @ReminderDueDate,
+    [TaskParentName] = @TaskParentName,
+    [UserName] = @UserName,
+    [Creator] = @Creator,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+  DELETE FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID]
-  FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [DateCreated],
+    [ModifierID],
+    [DateModified]
+  FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
   @TaskID int,
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
   @CreatorID int,
-  @LockProcessID varchar(250),
-  @OldUserID int,
+  @DateCreated datetime,
+  @ModifierID int,
+  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TaskEmailPostHistory]
+  INSERT INTO [dbo].[TasksView]
   (
-    [TaskEmailPostID],
-    [TaskEmailPostType],
-    [HoldTime],
-    [DateCreated],
     [TaskID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsComplete],
+    [DateCompleted],
+    [ParentID],
+    [IsDismissed],
+    [HasEmailSent],
+    [ReminderDueDate],
+    [TaskParentName],
+    [UserName],
+    [Creator],
     [CreatorID],
-    [LockProcessID],
-    [OldUserID])
+    [DateCreated],
+    [ModifierID],
+    [DateModified])
   VALUES (
-    @TaskEmailPostID,
-    @TaskEmailPostType,
-    @HoldTime,
-    @DateCreated,
     @TaskID,
+    @OrganizationID,
+    @Name,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsComplete,
+    @DateCompleted,
+    @ParentID,
+    @IsDismissed,
+    @HasEmailSent,
+    @ReminderDueDate,
+    @TaskParentName,
+    @UserName,
+    @Creator,
     @CreatorID,
-    @LockProcessID,
-    @OldUserID)
+    @DateCreated,
+    @ModifierID,
+    @DateModified)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
 
 (
-  @TaskEmailPostID int,
-  @TaskEmailPostType int,
-  @HoldTime int,
   @TaskID int,
-  @LockProcessID varchar(250),
-  @OldUserID int
+  @OrganizationID int,
+  @Name nvarchar(1000),
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsComplete bit,
+  @DateCompleted datetime,
+  @ParentID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @ReminderDueDate datetime,
+  @TaskParentName nvarchar(1000),
+  @UserName nvarchar(201),
+  @Creator nvarchar(201),
+  @ModifierID int,
+  @DateModified datetime
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TaskEmailPostHistory]
+  UPDATE [dbo].[TasksView]
   SET
-    [TaskEmailPostType] = @TaskEmailPostType,
-    [HoldTime] = @HoldTime,
-    [TaskID] = @TaskID,
-    [LockProcessID] = @LockProcessID,
-    [OldUserID] = @OldUserID
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsComplete] = @IsComplete,
+    [DateCompleted] = @DateCompleted,
+    [ParentID] = @ParentID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent,
+    [ReminderDueDate] = @ReminderDueDate,
+    [TaskParentName] = @TaskParentName,
+    [UserName] = @UserName,
+    [Creator] = @Creator,
+    [ModifierID] = @ModifierID,
+    [DateModified] = @DateModified
+  WHERE ([TaskID] = @TaskID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTaskEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTaskEmailPostHistoryItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
 
 (
-  @TaskEmailPostID int
+  @TaskID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TaskEmailPostHistory]
-  WHERE ([TaskEmailPostID] = @TaskEmailPostID)
+  DELETE FROM [dbo].[TasksView]
+  WHERE ([TaskID] = @TaskID)
 GO
 
 

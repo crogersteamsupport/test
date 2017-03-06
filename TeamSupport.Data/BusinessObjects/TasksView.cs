@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM TasksView WHERE TaskParentID = @TaskParentID ORDER BY DueDate";
+        command.CommandText = "SELECT * FROM TasksView WHERE ParentID = @ParentID ORDER BY DueDate";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ParentID", ParentID);
         Fill(command);
