@@ -96,7 +96,7 @@ namespace TSWebServices
             List<string> resultItems = new List<string>();
 
             Tasks results = new Tasks(loginUser);
-            DataTable dt = results.LoadByTicketID(ticketID);
+            List<TaskDTO> tasks = results.LoadByTicketID(ticketID);
 
             return convertToClientTasksList(results.GetTaskProxies(), loginUser);
         }

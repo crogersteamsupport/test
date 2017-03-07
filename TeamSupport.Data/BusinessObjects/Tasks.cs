@@ -4,11 +4,56 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using AutoMapper;
+using Dapper;
+using System.Configuration;
+using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    public class TaskDTO
+    {
+        public TaskDTO() { }
+        [DataMember]
+        public int CreatorID { get; set; }
+        [DataMember]
+        public DateTime DateCreated { get; set; }
+        [DataMember]
+        public string Description { get; set; }
+        [DataMember]
+        public DateTime? DueDate { get; set; }
+        [DataMember]
+        public DateTime? ReminderDate { get; set; }
+        [DataMember]
+        public bool IsDismissed { get; set; }
+        [DataMember]
+        public int OrganizationID { get; set; }
+        [DataMember]
+        public int TaskID { get; set; }
+        [DataMember]
+        public DateTime? DateCompleted { get; set; }
+        [DataMember]
+        public bool IsComplete { get; set; }
+        [DataMember]
+        public int? ParentID { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public int? UserID { get; set; }
+        [DataMember]
+        public int ModifierID { get; set; }
+        [DataMember]
+        public DateTime DateModified { get; set; }
+        [DataMember]
+        public int? ReminderID { get; set; }
+    }
+
+
     public partial class Task
     {
+
+
         public bool IsDismissed
         {
             get
@@ -36,11 +81,11 @@ namespace TeamSupport.Data
 
     public partial class Tasks
     {
-        public DataTable LoadByTicketID(int ticketID)
+        public List<TaskDTO> LoadByTicketID(int ticketID)
         {
             ticketID = 3888454;
 
-            DataTable result = new DataTable();
+            List<TaskDTO> result = new List<TaskDTO>();
 
             string query = @"
                 SELECT
@@ -74,20 +119,9 @@ namespace TeamSupport.Data
                     TA.RefType = 17 
                     AND TA.RefID = @TicketID";
 
-            using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+            using (IDbConnection db = new SqlConnection(LoginUser.ConnectionString))
             {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.CommandType = CommandType.Text;
-
-                command.Parameters.AddWithValue("@TicketID", ticketID);
-
-                connection.Open();
-                using (SqlDataAdapter da = new SqlDataAdapter(command))
-                {
-                    da.Fill(result);
-                    connection.Close();
-                    da.Dispose();
-                }
+                result = (List<TaskDTO>)db.Query<TaskDTO>(query, new { @TicketID = ticketID });
             }
 
             return result;
