@@ -83,7 +83,6 @@ namespace TeamSupport.Data
     {
         public List<TaskDTO> LoadByTicketID(int ticketID)
         {
-            ticketID = 3888454;
 
             List<TaskDTO> result = new List<TaskDTO>();
 
@@ -170,8 +169,10 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadAssignedTasks(int from, int count, int userID, bool searchPending, bool searchComplete)
+        public List<TaskDTO> LoadAssignedTasks(int from, int count, int userID, bool searchPending, bool searchComplete)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
+
             string pendingQuery = @"
                 SELECT
                     ST.CreatorID,
@@ -232,19 +233,18 @@ namespace TeamSupport.Data
             StringBuilder query;
             query = new StringBuilder(string.Format(pageQuery, pendingQuery));
 
-            using (SqlCommand command = new SqlCommand())
+            using (IDbConnection db = new SqlConnection(LoginUser.ConnectionString))
             {
-                command.CommandText = query.ToString();
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@UserID", userID);
-                command.Parameters.AddWithValue("@From", from + 1);
-                command.Parameters.AddWithValue("@To", from + count);
-                Fill(command);
+                result = (List<TaskDTO>)db.Query<TaskDTO>(query.ToString(), new { @UserID = userID, @From = from + 1, @To = from + count });
             }
+
+            return result;
         }
 
-        public void LoadMyTasks(int from, int count, int userID, bool searchPending, bool searchComplete)
+        public List<TaskDTO> LoadMyTasks(int from, int count, int userID, bool searchPending, bool searchComplete)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
+
             string pendingQuery =
                 @"SELECT
                     ST.CreatorID,
@@ -302,22 +302,20 @@ namespace TeamSupport.Data
                 RowNum BETWEEN @From AND @To";
 
             StringBuilder query;
-
             query = new StringBuilder(string.Format(pageQuery, pendingQuery));
 
-            using (SqlCommand command = new SqlCommand())
+            using (IDbConnection db = new SqlConnection(LoginUser.ConnectionString))
             {
-                command.CommandText = query.ToString();
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@UserID", userID);
-                command.Parameters.AddWithValue("@From", from + 1);
-                command.Parameters.AddWithValue("@To", from + count);
-                Fill(command);
+                result = (List<TaskDTO>)db.Query<TaskDTO>(query.ToString(), new { @UserID = userID, @From = from + 1, @To = from + count });
             }
+
+            return result;
         }
 
-        public void LoadCompleted(int from, int count, int userID, bool searchPending, bool searchComplete)
+        public List<TaskDTO> LoadCompleted(int from, int count, int userID, bool searchPending, bool searchComplete)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
+
             string completeQuery =
                  @"SELECT
                     ST.CreatorID,
@@ -380,15 +378,12 @@ namespace TeamSupport.Data
             StringBuilder query;
             query = new StringBuilder(string.Format(pageQuery, completeQuery));
 
-            using (SqlCommand command = new SqlCommand())
+            using (IDbConnection db = new SqlConnection(LoginUser.ConnectionString))
             {
-                command.CommandText = query.ToString();
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@UserID", userID);
-                command.Parameters.AddWithValue("@From", from + 1);
-                command.Parameters.AddWithValue("@To", from + count);
-                Fill(command);
+                result = (List<TaskDTO>)db.Query<TaskDTO>(query.ToString(), new { @UserID = userID, @From = from + 1, @To = from + count });
             }
+
+            return result;
         }
 
         public void LoadByParentID(int parentID)
