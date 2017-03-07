@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Data;
 
 namespace TSWebServices
 {
@@ -95,7 +96,7 @@ namespace TSWebServices
             List<string> resultItems = new List<string>();
 
             Tasks results = new Tasks(loginUser);
-            results.LoadByTicketID(ticketID);
+            DataTable dt = results.LoadByTicketID(ticketID);
 
             return convertToClientTasksList(results.GetTaskProxies(), loginUser);
         }

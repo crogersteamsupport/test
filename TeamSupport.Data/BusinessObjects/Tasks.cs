@@ -36,7 +36,64 @@ namespace TeamSupport.Data
 
     public partial class Tasks
     {
-        public void LoadByTicketID(int ticketID)
+        public DataTable LoadByTicketID(int ticketID)
+        {
+            ticketID = 3888454;
+
+            DataTable result = new DataTable();
+
+            string query = @"
+                SELECT
+                    ST.CreatorID,
+                    ST.DateCreated,
+                    ST.Description,
+                    ST.DueDate,
+                    R.DueDate AS 'ReminderDueDate',
+                    R.IsDismissed,
+                    ST.OrganizationID,
+                    ST.TaskID,
+                    ST.DateCompleted,
+                    ST.IsComplete,
+                    ST.ParentID,
+                    CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
+                        ELSE ST.Name END AS Name,
+                    ST.UserID,
+                    ST.ModifierID,
+					ST.DateModified,
+                    R.ReminderID
+                FROM
+                    Tasks ST
+                    LEFT JOIN Tasks T
+                        ON ST.ParentID = T.TaskID
+                    JOIN TaskAssociations TA
+                        ON ST.TaskID = ta.TaskID
+                    LEFT JOIN Reminders R
+                        ON T.TaskID = R.RefID
+                        AND R.RefType = 61
+                WHERE
+                    TA.RefType = 17 
+                    AND TA.RefID = @TicketID";
+
+            using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                command.CommandType = CommandType.Text;
+
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+
+                connection.Open();
+                using (SqlDataAdapter da = new SqlDataAdapter(command))
+                {
+                    da.Fill(result);
+                    connection.Close();
+                    da.Dispose();
+                }
+            }
+
+            return result;
+        }
+
+        public void LoadByTicketID2(int ticketID)
         {
             using (SqlCommand command = new SqlCommand())
             {
