@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
-using AutoMapper;
 using Dapper;
 using System.Configuration;
 using System.Runtime.Serialization;
+
 
 namespace TeamSupport.Data
 {
