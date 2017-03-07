@@ -13,25 +13,25 @@ namespace TeamSupport.Data
     protected override void BuildFieldMap()
     {
       _fieldMap = new FieldMap();
-      _fieldMap.AddMap("ReminderID", "ReminderID", false, false, false);
+      _fieldMap.AddMap("TaskID", "TaskID", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
-      _fieldMap.AddMap("RefType", "RefType", false, false, false);
-      _fieldMap.AddMap("RefID", "RefID", false, false, false);
+      _fieldMap.AddMap("Name", "Name", false, false, false);
       _fieldMap.AddMap("Description", "Description", false, false, false);
       _fieldMap.AddMap("DueDate", "DueDate", false, false, false);
       _fieldMap.AddMap("UserID", "UserID", false, false, false);
+      _fieldMap.AddMap("IsComplete", "IsComplete", false, false, false);
+      _fieldMap.AddMap("DateCompleted", "DateCompleted", false, false, false);
+      _fieldMap.AddMap("ParentID", "ParentID", false, false, false);
       _fieldMap.AddMap("IsDismissed", "IsDismissed", false, false, false);
       _fieldMap.AddMap("HasEmailSent", "HasEmailSent", false, false, false);
-      _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
-      _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
-      _fieldMap.AddMap("TaskName", "TaskName", false, false, false);
-      _fieldMap.AddMap("TaskDueDate", "TaskDueDate", false, false, false);
-      _fieldMap.AddMap("TaskIsComplete", "TaskIsComplete", false, false, false);
-      _fieldMap.AddMap("TaskDateCompleted", "TaskDateCompleted", false, false, false);
-      _fieldMap.AddMap("TaskParentID", "TaskParentID", false, false, false);
+      _fieldMap.AddMap("ReminderDueDate", "ReminderDueDate", false, false, false);
       _fieldMap.AddMap("TaskParentName", "TaskParentName", false, false, false);
       _fieldMap.AddMap("UserName", "UserName", false, false, false);
       _fieldMap.AddMap("Creator", "Creator", false, false, false);
+      _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
+      _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
+      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
+      _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
             
     }
   }

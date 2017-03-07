@@ -39,22 +39,34 @@ namespace TeamSupport.Data
     
 
     
+    public string Description
+    {
+      get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
+      set { Row["Description"] = CheckValue("Description", value); }
+    }
+    
     public int? UserID
     {
       get { return Row["UserID"] != DBNull.Value ? (int?)Row["UserID"] : null; }
       set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
-    public string TaskName
+    public int? ParentID
     {
-      get { return Row["TaskName"] != DBNull.Value ? (string)Row["TaskName"] : null; }
-      set { Row["TaskName"] = CheckValue("TaskName", value); }
+      get { return Row["ParentID"] != DBNull.Value ? (int?)Row["ParentID"] : null; }
+      set { Row["ParentID"] = CheckValue("ParentID", value); }
     }
     
-    public int? TaskParentID
+    public bool? IsDismissed
     {
-      get { return Row["TaskParentID"] != DBNull.Value ? (int?)Row["TaskParentID"] : null; }
-      set { Row["TaskParentID"] = CheckValue("TaskParentID", value); }
+      get { return Row["IsDismissed"] != DBNull.Value ? (bool?)Row["IsDismissed"] : null; }
+      set { Row["IsDismissed"] = CheckValue("IsDismissed", value); }
+    }
+    
+    public bool? HasEmailSent
+    {
+      get { return Row["HasEmailSent"] != DBNull.Value ? (bool?)Row["HasEmailSent"] : null; }
+      set { Row["HasEmailSent"] = CheckValue("HasEmailSent", value); }
     }
     
     public string TaskParentName
@@ -65,10 +77,10 @@ namespace TeamSupport.Data
     
 
     
-    public bool TaskIsComplete
+    public int ModifierID
     {
-      get { return (bool)Row["TaskIsComplete"]; }
-      set { Row["TaskIsComplete"] = CheckValue("TaskIsComplete", value); }
+      get { return (int)Row["ModifierID"]; }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
@@ -77,34 +89,16 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
-    public bool HasEmailSent
+    public bool IsComplete
     {
-      get { return (bool)Row["HasEmailSent"]; }
-      set { Row["HasEmailSent"] = CheckValue("HasEmailSent", value); }
+      get { return (bool)Row["IsComplete"]; }
+      set { Row["IsComplete"] = CheckValue("IsComplete", value); }
     }
     
-    public bool IsDismissed
+    public string Name
     {
-      get { return (bool)Row["IsDismissed"]; }
-      set { Row["IsDismissed"] = CheckValue("IsDismissed", value); }
-    }
-    
-    public string Description
-    {
-      get { return (string)Row["Description"]; }
-      set { Row["Description"] = CheckValue("Description", value); }
-    }
-    
-    public int RefID
-    {
-      get { return (int)Row["RefID"]; }
-      set { Row["RefID"] = CheckValue("RefID", value); }
-    }
-    
-    public int RefType
-    {
-      get { return (int)Row["RefType"]; }
-      set { Row["RefType"] = CheckValue("RefType", value); }
+      get { return (string)Row["Name"]; }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
     public int OrganizationID
@@ -113,10 +107,10 @@ namespace TeamSupport.Data
       set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
-    public int ReminderID
+    public int TaskID
     {
-      get { return (int)Row["ReminderID"]; }
-      set { Row["ReminderID"] = CheckValue("ReminderID", value); }
+      get { return (int)Row["TaskID"]; }
+      set { Row["TaskID"] = CheckValue("TaskID", value); }
     }
     
 
@@ -137,29 +131,40 @@ namespace TeamSupport.Data
       get { return Row["DueDate"] != DBNull.Value ? (DateTime?)Row["DueDate"] : null; }
     }
     
-    public DateTime? TaskDueDate
+    public DateTime? DateCompleted
     {
-      get { return Row["TaskDueDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["TaskDueDate"]) : null; }
-      set { Row["TaskDueDate"] = CheckValue("TaskDueDate", value); }
+      get { return Row["DateCompleted"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateCompleted"]) : null; }
+      set { Row["DateCompleted"] = CheckValue("DateCompleted", value); }
     }
 
-    public DateTime? TaskDueDateUtc
+    public DateTime? DateCompletedUtc
     {
-      get { return Row["TaskDueDate"] != DBNull.Value ? (DateTime?)Row["TaskDueDate"] : null; }
+      get { return Row["DateCompleted"] != DBNull.Value ? (DateTime?)Row["DateCompleted"] : null; }
     }
     
-    public DateTime? TaskDateCompleted
+    public DateTime? ReminderDueDate
     {
-      get { return Row["TaskDateCompleted"] != DBNull.Value ? DateToLocal((DateTime?)Row["TaskDateCompleted"]) : null; }
-      set { Row["TaskDateCompleted"] = CheckValue("TaskDateCompleted", value); }
+      get { return Row["ReminderDueDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["ReminderDueDate"]) : null; }
+      set { Row["ReminderDueDate"] = CheckValue("ReminderDueDate", value); }
     }
 
-    public DateTime? TaskDateCompletedUtc
+    public DateTime? ReminderDueDateUtc
     {
-      get { return Row["TaskDateCompleted"] != DBNull.Value ? (DateTime?)Row["TaskDateCompleted"] : null; }
+      get { return Row["ReminderDueDate"] != DBNull.Value ? (DateTime?)Row["ReminderDueDate"] : null; }
     }
     
 
+    
+    public DateTime DateModified
+    {
+      get { return DateToLocal((DateTime)Row["DateModified"]); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
+    }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
     
     public DateTime DateCreated
     {
@@ -193,7 +198,7 @@ namespace TeamSupport.Data
     
     public override string PrimaryKeyFieldName
     {
-      get { return "ReminderID"; }
+      get { return "TaskID"; }
     }
 
 
@@ -212,11 +217,11 @@ namespace TeamSupport.Data
     partial void AfterRowInsert(TasksViewItem tasksViewItem);
     partial void BeforeRowEdit(TasksViewItem tasksViewItem);
     partial void AfterRowEdit(TasksViewItem tasksViewItem);
-    partial void BeforeRowDelete(int reminderID);
-    partial void AfterRowDelete(int reminderID);    
+    partial void BeforeRowDelete(int taskID);
+    partial void AfterRowDelete(int taskID);    
 
-    partial void BeforeDBDelete(int reminderID);
-    partial void AfterDBDelete(int reminderID);    
+    partial void BeforeDBDelete(int taskID);
+    partial void AfterDBDelete(int taskID);    
 
     #endregion
 
@@ -234,19 +239,19 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int reminderID)
+    public virtual void DeleteFromDB(int taskID)
     {
         SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TasksView] WHERE ([ReminderID] = @ReminderID);";
-        deleteCommand.Parameters.Add("ReminderID", SqlDbType.Int);
-        deleteCommand.Parameters["ReminderID"].Value = reminderID;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TasksView] WHERE ([TaskID] = @TaskID);";
+        deleteCommand.Parameters.Add("TaskID", SqlDbType.Int);
+        deleteCommand.Parameters["taskID"].Value = taskID;
 
-        BeforeDBDelete(reminderID);
-        BeforeRowDelete(reminderID);
+        BeforeDBDelete(taskID);
+        BeforeRowDelete(taskID);
         TryDeleteFromDB(deleteCommand);
-        AfterRowDelete(reminderID);
-        AfterDBDelete(reminderID);
+        AfterRowDelete(taskID);
+        AfterDBDelete(taskID);
 	}
 
     public override void Save(SqlConnection connection)    {
@@ -256,10 +261,10 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TasksView] SET     [OrganizationID] = @OrganizationID,    [RefType] = @RefType,    [RefID] = @RefID,    [Description] = @Description,    [DueDate] = @DueDate,    [UserID] = @UserID,    [IsDismissed] = @IsDismissed,    [HasEmailSent] = @HasEmailSent,    [TaskName] = @TaskName,    [TaskDueDate] = @TaskDueDate,    [TaskIsComplete] = @TaskIsComplete,    [TaskDateCompleted] = @TaskDateCompleted,    [TaskParentID] = @TaskParentID,    [TaskParentName] = @TaskParentName,    [UserName] = @UserName,    [Creator] = @Creator  WHERE ([ReminderID] = @ReminderID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TasksView] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [DueDate] = @DueDate,    [UserID] = @UserID,    [IsComplete] = @IsComplete,    [DateCompleted] = @DateCompleted,    [ParentID] = @ParentID,    [IsDismissed] = @IsDismissed,    [HasEmailSent] = @HasEmailSent,    [ReminderDueDate] = @ReminderDueDate,    [TaskParentName] = @TaskParentName,    [UserName] = @UserName,    [Creator] = @Creator,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified  WHERE ([TaskID] = @TaskID);";
 
 		
-		tempParameter = updateCommand.Parameters.Add("ReminderID", SqlDbType.Int, 4);
+		tempParameter = updateCommand.Parameters.Add("TaskID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -273,18 +278,11 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
+		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.NVarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("RefID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("Description", SqlDbType.NVarChar, 4000);
@@ -308,6 +306,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsComplete", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateCompleted", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ParentID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("IsDismissed", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -322,39 +341,11 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("TaskName", SqlDbType.NVarChar, 1000);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("TaskDueDate", SqlDbType.DateTime, 8);
+		tempParameter = updateCommand.Parameters.Add("ReminderDueDate", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 23;
 		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("TaskIsComplete", SqlDbType.Bit, 1);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("TaskDateCompleted", SqlDbType.DateTime, 8);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 23;
-		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("TaskParentID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("TaskParentName", SqlDbType.NVarChar, 1000);
@@ -378,13 +369,55 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TasksView] (    [ReminderID],    [OrganizationID],    [RefType],    [RefID],    [Description],    [DueDate],    [UserID],    [IsDismissed],    [HasEmailSent],    [CreatorID],    [DateCreated],    [TaskName],    [TaskDueDate],    [TaskIsComplete],    [TaskDateCompleted],    [TaskParentID],    [TaskParentName],    [UserName],    [Creator]) VALUES ( @ReminderID, @OrganizationID, @RefType, @RefID, @Description, @DueDate, @UserID, @IsDismissed, @HasEmailSent, @CreatorID, @DateCreated, @TaskName, @TaskDueDate, @TaskIsComplete, @TaskDateCompleted, @TaskParentID, @TaskParentName, @UserName, @Creator); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TasksView] (    [TaskID],    [OrganizationID],    [Name],    [Description],    [DueDate],    [UserID],    [IsComplete],    [DateCompleted],    [ParentID],    [IsDismissed],    [HasEmailSent],    [ReminderDueDate],    [TaskParentName],    [UserName],    [Creator],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified]) VALUES ( @TaskID, @OrganizationID, @Name, @Description, @DueDate, @UserID, @IsComplete, @DateCompleted, @ParentID, @IsDismissed, @HasEmailSent, @ReminderDueDate, @TaskParentName, @UserName, @Creator, @CreatorID, @DateCreated, @ModifierID, @DateModified); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("Creator", SqlDbType.NVarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -407,53 +440,11 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("TaskParentID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("TaskDateCompleted", SqlDbType.DateTime, 8);
+		tempParameter = insertCommand.Parameters.Add("ReminderDueDate", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 23;
 		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("TaskIsComplete", SqlDbType.Bit, 1);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("TaskDueDate", SqlDbType.DateTime, 8);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 23;
-		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("TaskName", SqlDbType.NVarChar, 1000);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 23;
-		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("HasEmailSent", SqlDbType.Bit, 1);
@@ -464,6 +455,27 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("IsDismissed", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ParentID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateCompleted", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsComplete", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -491,18 +503,11 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("RefID", SqlDbType.Int, 4);
+		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.NVarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -512,7 +517,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ReminderID", SqlDbType.Int, 4);
+		tempParameter = insertCommand.Parameters.Add("TaskID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -525,8 +530,8 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TasksView] WHERE ([ReminderID] = @ReminderID);";
-		deleteCommand.Parameters.Add("ReminderID", SqlDbType.Int);
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TasksView] WHERE ([TaskID] = @TaskID);";
+		deleteCommand.Parameters.Add("TaskID", SqlDbType.Int);
 
 		try
 		{
@@ -548,10 +553,10 @@ namespace TeamSupport.Data
 			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
 
 			  insertCommand.ExecuteNonQuery();
-			  Table.Columns["ReminderID"].AutoIncrement = false;
-			  Table.Columns["ReminderID"].ReadOnly = false;
+			  Table.Columns["TaskID"].AutoIncrement = false;
+			  Table.Columns["TaskID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				tasksViewItem.Row["ReminderID"] = (int)insertCommand.Parameters["Identity"].Value;
+				tasksViewItem.Row["TaskID"] = (int)insertCommand.Parameters["Identity"].Value;
 			  AfterRowInsert(tasksViewItem);
 			}
 			else if (tasksViewItem.Row.RowState == DataRowState.Modified)
@@ -570,8 +575,8 @@ namespace TeamSupport.Data
 			}
 			else if (tasksViewItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)tasksViewItem.Row["ReminderID", DataRowVersion.Original];
-			  deleteCommand.Parameters["ReminderID"].Value = id;
+			  int id = (int)tasksViewItem.Row["TaskID", DataRowVersion.Original];
+			  deleteCommand.Parameters["TaskID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
@@ -607,11 +612,11 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public TasksViewItem FindByReminderID(int reminderID)
+    public TasksViewItem FindByTaskID(int taskID)
     {
       foreach (TasksViewItem tasksViewItem in this)
       {
-        if (tasksViewItem.ReminderID == reminderID)
+        if (tasksViewItem.TaskID == taskID)
         {
           return tasksViewItem;
         }
@@ -627,21 +632,21 @@ namespace TeamSupport.Data
       return new TasksViewItem(row, this);
     }
     
-    public virtual void LoadByReminderID(int reminderID)
+    public virtual void LoadByTaskID(int taskID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReminderID], [OrganizationID], [RefType], [RefID], [Description], [DueDate], [UserID], [IsDismissed], [HasEmailSent], [CreatorID], [DateCreated], [TaskName], [TaskDueDate], [TaskIsComplete], [TaskDateCompleted], [TaskParentID], [TaskParentName], [UserName], [Creator] FROM [dbo].[TasksView] WHERE ([ReminderID] = @ReminderID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TaskID], [OrganizationID], [Name], [Description], [DueDate], [UserID], [IsComplete], [DateCompleted], [ParentID], [IsDismissed], [HasEmailSent], [ReminderDueDate], [TaskParentName], [UserName], [Creator], [CreatorID], [DateCreated], [ModifierID], [DateModified] FROM [dbo].[TasksView] WHERE ([TaskID] = @TaskID);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("ReminderID", reminderID);
+        command.Parameters.AddWithValue("taskID", taskID);
         Fill(command);
       }
     }
     
-    public static TasksViewItem GetTasksViewItem(LoginUser loginUser, int reminderID)
+    public static TasksViewItem GetTasksViewItem(LoginUser loginUser, int taskID)
     {
       TasksView tasksView = new TasksView(loginUser);
-      tasksView.LoadByReminderID(reminderID);
+      tasksView.LoadByTaskID(taskID);
       if (tasksView.IsEmpty)
         return null;
       else

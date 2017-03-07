@@ -17,7 +17,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TaskEmailPostType", "TaskEmailPostType", false, false, false);
       _fieldMap.AddMap("HoldTime", "HoldTime", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
-      _fieldMap.AddMap("ReminderID", "ReminderID", false, false, false);
+      _fieldMap.AddMap("TaskID", "TaskID", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("LockProcessID", "LockProcessID", false, false, false);
       _fieldMap.AddMap("OldUserID", "OldUserID", false, false, false);

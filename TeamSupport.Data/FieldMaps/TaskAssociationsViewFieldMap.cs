@@ -13,7 +13,7 @@ namespace TeamSupport.Data
     protected override void BuildFieldMap()
     {
       _fieldMap = new FieldMap();
-      _fieldMap.AddMap("ReminderID", "ReminderID", false, false, false);
+      _fieldMap.AddMap("TaskID", "TaskID", false, false, false);
       _fieldMap.AddMap("RefID", "RefID", false, false, false);
       _fieldMap.AddMap("RefType", "RefType", false, false, false);
       _fieldMap.AddMap("TicketNumber", "TicketNumber", false, false, false);

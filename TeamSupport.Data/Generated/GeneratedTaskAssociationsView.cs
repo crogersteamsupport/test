@@ -83,10 +83,10 @@ namespace TeamSupport.Data
       set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
-    public int ReminderID
+    public int TaskID
     {
-      get { return (int)Row["ReminderID"]; }
-      set { Row["ReminderID"] = CheckValue("ReminderID", value); }
+      get { return (int)Row["TaskID"]; }
+      set { Row["TaskID"] = CheckValue("TaskID", value); }
     }
     
 
@@ -119,7 +119,7 @@ namespace TeamSupport.Data
     
     public override string PrimaryKeyFieldName
     {
-      get { return "ReminderID"; }
+      get { return "TaskID"; }
     }
 
 
@@ -138,11 +138,11 @@ namespace TeamSupport.Data
     partial void AfterRowInsert(TaskAssociationsViewItem taskAssociationsViewItem);
     partial void BeforeRowEdit(TaskAssociationsViewItem taskAssociationsViewItem);
     partial void AfterRowEdit(TaskAssociationsViewItem taskAssociationsViewItem);
-    partial void BeforeRowDelete(int reminderID);
-    partial void AfterRowDelete(int reminderID);    
+    partial void BeforeRowDelete(int taskID);
+    partial void AfterRowDelete(int taskID);    
 
-    partial void BeforeDBDelete(int reminderID);
-    partial void AfterDBDelete(int reminderID);    
+    partial void BeforeDBDelete(int taskID);
+    partial void AfterDBDelete(int taskID);    
 
     #endregion
 
@@ -160,19 +160,19 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int reminderID)
+    public virtual void DeleteFromDB(int taskID)
     {
         SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TaskAssociationsView] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
-        deleteCommand.Parameters.Add("ReminderID", SqlDbType.Int);
-        deleteCommand.Parameters["ReminderID"].Value = reminderID;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TaskAssociationsView] WHERE ([TaskID] = @TaskID AND [RefID] = @RefID AND [RefType] = @RefType);";
+        deleteCommand.Parameters.Add("TaskID", SqlDbType.Int);
+        deleteCommand.Parameters["TaskID"].Value = taskID;
 
-        BeforeDBDelete(reminderID);
-        BeforeRowDelete(reminderID);
+        BeforeDBDelete(taskID);
+        BeforeRowDelete(taskID);
         TryDeleteFromDB(deleteCommand);
-        AfterRowDelete(reminderID);
-        AfterDBDelete(reminderID);
+        AfterRowDelete(taskID);
+        AfterDBDelete(taskID);
 	}
 
     public override void Save(SqlConnection connection)    {
@@ -182,10 +182,10 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TaskAssociationsView] SET     [TicketNumber] = @TicketNumber,    [TicketName] = @TicketName,    [User] = @User,    [Company] = @Company,    [Group] = @Group,    [Product] = @Product,    [Contact] = @Contact  WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TaskAssociationsView] SET     [TicketNumber] = @TicketNumber,    [TicketName] = @TicketName,    [User] = @User,    [Company] = @Company,    [Group] = @Group,    [Product] = @Product,    [Contact] = @Contact  WHERE ([TaskID] = @TaskID AND [RefID] = @RefID AND [RefType] = @RefType);";
 
 		
-		tempParameter = updateCommand.Parameters.Add("ReminderID", SqlDbType.Int, 4);
+		tempParameter = updateCommand.Parameters.Add("TaskID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -260,7 +260,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TaskAssociationsView] (    [ReminderID],    [RefID],    [RefType],    [TicketNumber],    [TicketName],    [User],    [Company],    [Group],    [Product],    [Contact]) VALUES ( @ReminderID, @RefID, @RefType, @TicketNumber, @TicketName, @User, @Company, @Group, @Product, @Contact); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TaskAssociationsView] (    [TaskID],    [RefID],    [RefType],    [TicketNumber],    [TicketName],    [User],    [Company],    [Group],    [Product],    [Contact]) VALUES ( @TaskID, @RefID, @RefType, @TicketNumber, @TicketName, @User, @Company, @Group, @Product, @Contact); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Contact", SqlDbType.NVarChar, 459);
@@ -326,7 +326,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ReminderID", SqlDbType.Int, 4);
+		tempParameter = insertCommand.Parameters.Add("TaskID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -339,8 +339,8 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TaskAssociationsView] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
-		deleteCommand.Parameters.Add("ReminderID", SqlDbType.Int);
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TaskAssociationsView] WHERE ([TaskID] = @TaskID AND [RefID] = @RefID AND [RefType] = @RefType);";
+		deleteCommand.Parameters.Add("TaskID", SqlDbType.Int);
 
 		try
 		{
@@ -362,10 +362,10 @@ namespace TeamSupport.Data
 			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
 
 			  insertCommand.ExecuteNonQuery();
-			  Table.Columns["ReminderID"].AutoIncrement = false;
-			  Table.Columns["ReminderID"].ReadOnly = false;
+			  Table.Columns["TaskID"].AutoIncrement = false;
+			  Table.Columns["TaskID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				taskAssociationsViewItem.Row["ReminderID"] = (int)insertCommand.Parameters["Identity"].Value;
+				taskAssociationsViewItem.Row["TaskID"] = (int)insertCommand.Parameters["Identity"].Value;
 			  AfterRowInsert(taskAssociationsViewItem);
 			}
 			else if (taskAssociationsViewItem.Row.RowState == DataRowState.Modified)
@@ -384,8 +384,8 @@ namespace TeamSupport.Data
 			}
 			else if (taskAssociationsViewItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)taskAssociationsViewItem.Row["ReminderID", DataRowVersion.Original];
-			  deleteCommand.Parameters["ReminderID"].Value = id;
+			  int id = (int)taskAssociationsViewItem.Row["TaskID", DataRowVersion.Original];
+			  deleteCommand.Parameters["TaskID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
@@ -421,11 +421,11 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public TaskAssociationsViewItem FindByReminderID(int reminderID)
+    public TaskAssociationsViewItem FindByTaskID(int taskID)
     {
       foreach (TaskAssociationsViewItem taskAssociationsViewItem in this)
       {
-        if (taskAssociationsViewItem.ReminderID == reminderID)
+        if (taskAssociationsViewItem.TaskID == taskID)
         {
           return taskAssociationsViewItem;
         }
@@ -441,21 +441,21 @@ namespace TeamSupport.Data
       return new TaskAssociationsViewItem(row, this);
     }
     
-    public virtual void LoadByReminderID(int reminderID)
+    public virtual void LoadByTaskID(int taskID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReminderID], [RefID], [RefType], [TicketNumber], [TicketName], [User], [Company], [Group], [Product], [Contact] FROM [dbo].[TaskAssociationsView] WHERE ([ReminderID] = @ReminderID AND [RefID] = @RefID AND [RefType] = @RefType);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TaskID], [RefID], [RefType], [TicketNumber], [TicketName], [User], [Company], [Group], [Product], [Contact] FROM [dbo].[TaskAssociationsView] WHERE ([TaskID] = @TaskID AND [RefID] = @RefID AND [RefType] = @RefType);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("ReminderID", reminderID);
+        command.Parameters.AddWithValue("TaskID", taskID);
         Fill(command);
       }
     }
     
-    public static TaskAssociationsViewItem GetTaskAssociationsViewItem(LoginUser loginUser, int reminderID)
+    public static TaskAssociationsViewItem GetTaskAssociationsViewItem(LoginUser loginUser, int taskID)
     {
       TaskAssociationsView taskAssociationsView = new TaskAssociationsView(loginUser);
-      taskAssociationsView.LoadByReminderID(reminderID);
+      taskAssociationsView.LoadByTaskID(taskID);
       if (taskAssociationsView.IsEmpty)
         return null;
       else

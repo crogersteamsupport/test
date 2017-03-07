@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Data;
 
 namespace TSWebServices
 {
@@ -34,8 +35,8 @@ namespace TSWebServices
         public List<ClientTask> GetTasks(int from, int count, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-
-            Reminders results = new Reminders(loginUser);
+            
+            Tasks results = new Tasks(loginUser);
             if (tab == pageTab.mytasks)
             {
                 results.LoadMyTasks(from, count, loginUser.UserID, true, false);
@@ -50,43 +51,42 @@ namespace TSWebServices
                 results.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
 
-            ReminderProxy[] reminderProxies = results.GetReminderProxies();
+            TaskProxy[] tasksProxies = results.GetTaskProxies();
 
-
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(tasksProxies, loginUser);
         }
 
         [WebMethod]
         public List<ClientTask> GetCustomerTasks(int from, int count, int organizationID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminders results = new Reminders(loginUser);
+            Tasks results = new Tasks(loginUser);
 
             results.LoadByCompany(from, count, organizationID);
 
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
         }
 
         [WebMethod]
         public List<ClientTask> GetContactTasks(int from, int count, int contactID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminders results = new Reminders(loginUser);
+            Tasks results = new Tasks(loginUser);
 
             results.LoadByContact(from, count, contactID);
 
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
         }
 
         [WebMethod]
         public List<ClientTask> GetUserTasks(int from, int count, int userID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminders results = new Reminders(loginUser);
+            Tasks results = new Tasks(loginUser);
 
             results.LoadByUser(from, count, userID);
 
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
 
         }
 
@@ -95,24 +95,24 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
 
-            Reminders results = new Reminders(loginUser);
-            results.LoadByTicketID(ticketID);
+            Tasks results = new Tasks(loginUser);
+            List<TaskDTO> tasks = results.LoadByTicketID(ticketID);
 
-            return convertToClientTasksList(results.GetReminderProxies(), loginUser);
+            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
         }
 
-        public List<ClientTask> convertToClientTasksList(ReminderProxy[] reminderProxies, LoginUser loginUser)
+        public List<ClientTask> convertToClientTasksList(TaskProxy[] taskProxies, LoginUser loginUser)
         {
             List<ClientTask> clientTasks = new List<ClientTask>();
 
-            if (reminderProxies.Any())
+            if (taskProxies.Any())
             {
-                for (int x = 0; x < reminderProxies.Length; x++)
+                for (int x = 0; x < taskProxies.Length; x++)
                 {
                     ClientTask task = new ClientTask();
-                    task.SubTasks = new List<ReminderProxy>();
+                    task.SubTasks = new List<ClientTask>();
 
-                    task.Task = reminderProxies[x];
+                    task.Task = taskProxies[x];
 
                     if (task.Task.UserID.HasValue)
                     {
@@ -125,7 +125,7 @@ namespace TSWebServices
                         }
                     }
 
-                    task.Associations = LoadAssociations(task.Task.ReminderID);
+                    task.Associations = LoadAssociations(task.Task.TaskID);
 
                     clientTasks.Add(task);
                 }
@@ -164,21 +164,21 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string GetShortNameFromID(int reminderID)
+        public string GetShortNameFromID(int taskID)
         {
-            Reminders tasks = new Reminders(TSAuthentication.GetLoginUser());
-            tasks.LoadByReminderID(reminderID);
+            Tasks tasks = new Tasks(TSAuthentication.GetLoginUser());
+            tasks.LoadByTaskID(taskID);
 
             if (tasks.IsEmpty) return "N/A";
 
             string result = tasks[0].ReminderID.ToString();
 
-            if (!String.IsNullOrEmpty(tasks[0].TaskName))
+            if (!String.IsNullOrEmpty(tasks[0].Name))
             {
-                if (tasks[0].TaskName.Length > 10)
-                    result = tasks[0].TaskName.Substring(0, 10).ToString() + "...";
+                if (tasks[0].Name.Length > 10)
+                    result = tasks[0].Name.Substring(0, 10).ToString() + "...";
                 else
-                    result = tasks[0].TaskName.ToString();
+                    result = tasks[0].Name.ToString();
             }
             else if (!String.IsNullOrEmpty(tasks[0].Description))
             {
@@ -193,9 +193,9 @@ namespace TSWebServices
 
 
         [WebMethod]
-        public TasksViewItemProxy GetTask(int reminderID)
+        public TasksViewItemProxy GetTask(int taksID)
         {
-            TasksViewItem task = TasksView.GetTasksViewItem(TSAuthentication.GetLoginUser(), reminderID);
+            TasksViewItem task = TasksView.GetTasksViewItem(TSAuthentication.GetLoginUser(), taksID);
             if (task.OrganizationID != TSAuthentication.OrganizationID) return null;
             return task.GetProxy();
         }
@@ -209,41 +209,41 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public TaskAssociationsViewItemProxy[] LoadAssociations(int reminderID)
+        public TaskAssociationsViewItemProxy[] LoadAssociations(int taskID)
         {
             TaskAssociationsView taskAssociations = new TaskAssociationsView(TSAuthentication.GetLoginUser());
-            taskAssociations.LoadByReminderIDOnly(reminderID);
+            taskAssociations.LoadByTaskIDOnly(taskID);
             return taskAssociations.GetTaskAssociationsViewItemProxies();
         }
 
         [WebMethod]
-        public TasksViewItemProxy[] LoadSubtasks(int reminderID)
+        public TasksViewItemProxy[] LoadSubtasks(int taskID)
         {
             TasksView subtasks = new TasksView(TSAuthentication.GetLoginUser());
-            subtasks.LoadByParentID(reminderID);
+            subtasks.LoadByParentID(taskID);
 
             return subtasks.GetTasksViewItemProxies();
         }
 
         [WebMethod]
-        public TaskLogProxy[] LoadHistory(int reminderID, int start)
+        public TaskLogProxy[] LoadHistory(int taskID, int start)
         {
             TaskLogs taskLogs = new TaskLogs(TSAuthentication.GetLoginUser());
-            taskLogs.LoadByReminderID(reminderID, start);
+            taskLogs.LoadByTaskID(taskID, start);
 
             return taskLogs.GetTaskLogProxies();
         }
 
         private int GetAssignedCount(LoginUser loginUser)
         {
-            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE UserID = @UserID");
+            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Tasks WHERE UserID = @UserID");
             command.Parameters.AddWithValue("UserID", loginUser.UserID);
             return (int)SqlExecutor.ExecuteScalar(loginUser, command);
         }
 
         private int GetCreatedCount(LoginUser loginUser)
         {
-            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Reminders WHERE CreatorID = @UserID AND UserID <> @UserID");
+            SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Tasks WHERE CreatorID = @UserID AND UserID <> @UserID");
             command.Parameters.AddWithValue("UserID", loginUser.UserID);
             return (int)SqlExecutor.ExecuteScalar(loginUser, command);
         }
@@ -254,80 +254,100 @@ namespace TSWebServices
             return us.DateTimeFormat.ShortDatePattern;
         }
 
+        private Reminder CreateReminder(LoginUser loginUser, int taskID, string taskName, DateTime? reminderDate, bool isDismissed)
+        {
+            Reminders reminderHelper = new Reminders(loginUser);
+            Reminder reminder = reminderHelper.AddNewReminder();
+
+            reminder.DateCreated = DateTime.UtcNow;
+            reminder.Description = taskName;
+            reminder.DueDate = reminderDate;
+            reminder.IsDismissed = isDismissed;
+            reminder.RefType = ReferenceType.Tasks;
+            reminder.RefID = taskID;
+            reminder.HasEmailSent = false;
+
+            reminderHelper.Save();
+
+            return reminder;
+        }
+
         [WebMethod]
-        public ReminderProxy NewTask(string data)
+        public TaskProxy NewTask(string data)
         {
             TaskJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskJsonInfo>(data);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder newTask = (new Reminders(loginUser)).AddNewReminder();
 
-            newTask.TaskParentID = info.TaskParentID;
+            Task newTask = (new Tasks(loginUser)).AddNewTask();
+
+            newTask.ParentID = info.ParentID;
             newTask.OrganizationID = TSAuthentication.OrganizationID;
-            newTask.TaskName = info.TaskName;
+            newTask.Name = info.Name;
             newTask.Description = info.Description;
             newTask.UserID = info.UserID;
-            newTask.TaskIsComplete = info.TaskIsComplete;
-            if (info.TaskDueDate != null)
-            {
-                newTask.TaskDueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.TaskDueDate);
-            }
-            newTask.IsDismissed = info.IsDismissed;
+            newTask.IsComplete = info.IsComplete;
+
+            if (newTask.IsComplete) newTask.DateCompleted = DateTime.UtcNow;
+
+
             if (info.DueDate != null)
             {
                 newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
             }
 
-            newTask.RefType = ReferenceType.Tasks;
-            newTask.RefID = -1;
-            newTask.HasEmailSent = false;
-
             newTask.Collection.Save();
+
+            if (info.ReminderDate != null)
+            {
+                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.ReminderDate), info.IsDismissed);
+                if (reminder != null) newTask.ReminderID = reminder.ReminderID;
+            }
 
             foreach (int ticketID in info.Tickets)
             {
-                AddAssociation(newTask.ReminderID, ticketID, ReferenceType.Tickets);
+                AddAssociation(newTask.TaskID, ticketID, ReferenceType.Tickets);
             }
 
             foreach (int productID in info.Products)
             {
-                AddAssociation(newTask.ReminderID, productID, ReferenceType.Products);
+                AddAssociation(newTask.TaskID, productID, ReferenceType.Products);
             }
 
             foreach (int CompanyID in info.Company)
             {
-                AddAssociation(newTask.ReminderID, CompanyID, ReferenceType.Organizations);
+                AddAssociation(newTask.TaskID, CompanyID, ReferenceType.Organizations);
             }
 
             foreach (int UserID in info.Contacts)
             {
-                AddAssociation(newTask.ReminderID, UserID, ReferenceType.Contacts);
+                AddAssociation(newTask.TaskID, UserID, ReferenceType.Contacts);
             }
 
             foreach (int groupID in info.Groups)
             {
-                AddAssociation(newTask.ReminderID, groupID, ReferenceType.Groups);
+                AddAssociation(newTask.TaskID, groupID, ReferenceType.Groups);
             }
 
             foreach (int UserID in info.User)
             {
-                AddAssociation(newTask.ReminderID, UserID, ReferenceType.Users);
+                AddAssociation(newTask.TaskID, UserID, ReferenceType.Users);
             }
 
             string description = String.Format("{0} created task.", TSAuthentication.GetUser(loginUser).FirstLastName);
-            TaskLogs.AddTaskLog(loginUser, newTask.ReminderID, description);
+            TaskLogs.AddTaskLog(loginUser, newTask.TaskID, description);
 
             if (newTask.UserID != null && loginUser.UserID != newTask.UserID)
             {
-                SendAssignedNotification(loginUser.UserID, newTask.ReminderID);
+                SendAssignedNotification(loginUser.UserID, newTask.TaskID);
             }
 
             return newTask.GetProxy();
         }
 
-        private void SendOldUserNotification(int creatorID, int oldUserID, int reminderID)
+        private void SendOldUserNotification(int creatorID, int oldUserID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderIDAndPostType(reminderID, TaskEmailPostType.OldUser);
+            existingPosts.LoadByTaskIDIDAndPostType(taskID, TaskEmailPostType.OldUser);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -336,16 +356,16 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = reminderID;
+                post.TaskID = taskID;
                 post.OldUserID = oldUserID;
                 posts.Save();
             }
         }
 
-        private void SendAssignedNotification(int creatorID, int reminderID)
+        private void SendAssignedNotification(int creatorID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderID(reminderID);
+            existingPosts.LoadByTaskID(taskID);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -354,33 +374,34 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = reminderID;
+                post.TaskID = taskID;
                 posts.Save();
             }
         }
 
         [WebMethod]
-        public string SetName(int reminderID, string value)
+        public string SetName(int taskID, string value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
-            task.TaskName = value;
+            Task task = Tasks.GetTask(loginUser, taskID);
+            task.Name = value;
+
             task.Collection.Save();
             string description = String.Format("{0} set task name to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            TaskLogs.AddTaskLog(loginUser, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, taskID, description);
 
-            if (task.UserID != null && loginUser.UserID != task.UserID)
-            {
-                SendModifiedNotification(loginUser.UserID, task.ReminderID);
-            }
+            //if (task.UserID != null && loginUser.UserID != task.UserID)
+            //{
+            //    SendModifiedNotification(loginUser.UserID, task.ReminderID);
+            //}
 
             return value != "" ? value : "Empty";
         }
 
-        private void SendModifiedNotification(int creatorID, int reminderID)
+        private void SendModifiedNotification(int creatorID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderID(reminderID);
+            existingPosts.LoadByTaskID(taskID);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -389,43 +410,43 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = reminderID;
+                post.TaskID = taskID;
                 posts.Save();
             }
         }
 
         [WebMethod]
-        public string SetDescription(int reminderID, string value)
+        public string SetDescription(int taskID, string value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            Task task = Tasks.GetTask(loginUser, taskID);
             task.Description = value;
             task.Collection.Save();
             string description = String.Format("{0} set task description to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            TaskLogs.AddTaskLog(loginUser, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, taskID, description);
 
             if (task.UserID != null && loginUser.UserID != task.UserID)
             {
-                SendModifiedNotification(loginUser.UserID, task.ReminderID);
+                SendModifiedNotification(loginUser.UserID, task.TaskID);
             }
 
             return value != "" ? value : "Empty";
         }
 
         [WebMethod]
-        public int SetUser(int reminderID, int value)
+        public int SetUser(int taskID, int value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            Task task = Tasks.GetTask(loginUser, taskID);
 
             if (task.UserID != null && loginUser.UserID != task.UserID && value != task.UserID)
             {
-                SendOldUserNotification(loginUser.UserID, (int)task.UserID, task.ReminderID);
+                SendOldUserNotification(loginUser.UserID, (int)task.UserID, task.TaskID);
             }
 
             if (value != -1 && loginUser.UserID != value && value != task.UserID)
             {
-                SendAssignedNotification(loginUser.UserID, task.ReminderID);
+                SendAssignedNotification(loginUser.UserID, task.TaskID);
             }
 
             if (value == -1)
@@ -439,15 +460,15 @@ namespace TSWebServices
             task.Collection.Save();
             User u = Users.GetUser(loginUser, value);
             string description = String.Format("{0} set task user to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
-            TaskLogs.AddTaskLog(loginUser, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, taskID, description);
 
             return value;
         }
 
-        private void SendCompletedNotification(int creatorID, int reminderID)
+        private void SendCompletedNotification(int creatorID, int taskID)
         {
             TaskEmailPosts existingPosts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
-            existingPosts.LoadByReminderID(reminderID);
+            existingPosts.LoadByTaskID(taskID);
             if (existingPosts.Count == 0)
             {
                 TaskEmailPosts posts = new TaskEmailPosts(TSAuthentication.GetLoginUser());
@@ -456,60 +477,60 @@ namespace TSWebServices
                 post.HoldTime = 120;
 
                 post.CreatorID = creatorID;
-                post.ReminderID = reminderID;
+                post.TaskID = taskID;
                 posts.Save();
             }
         }
 
         [WebMethod]
-        public TaskCompletionStatus SetTaskIsCompleted(int reminderID, bool value)
+        public TaskCompletionStatus SetTaskIsCompleted(int taskID, bool value)
         {
             TaskCompletionStatus result = new TaskCompletionStatus(false, value);
 
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
-            task.TaskIsComplete = value;
+            Task task = Tasks.GetTask(loginUser, taskID);
+            task.IsComplete = value;
 
             //if a user is attempting to complete a task check for incomplete subtasks first
             if (value)
             {
-                if (GetIncompleteSubtasks(reminderID))
+                if (GetIncompleteSubtasks(taskID))
                 {
                     result.IncompleteSubtasks = true;
                     result.Value = !value;
                     return result;
                 }
-                task.TaskDateCompleted = DateTime.UtcNow;
+                task.DateCompleted = DateTime.UtcNow;
             }
             else
             {
                 result.IncompleteSubtasks = false;
                 result.Value = value;
-                task.TaskDateCompleted = null;
+                task.DateCompleted = null;
             }
 
             task.Collection.Save();
             string description = String.Format("{0} set task is complete to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            TaskLogs.AddTaskLog(loginUser, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, taskID, description);
 
-            if (task.TaskIsComplete && (loginUser.UserID != task.CreatorID || (task.UserID != null && loginUser.UserID != task.UserID)))
-            {
-                SendCompletedNotification(loginUser.UserID, task.ReminderID);
-            }
-            else if (task.UserID != null && loginUser.UserID != task.UserID)
-            {
-                SendModifiedNotification(loginUser.UserID, task.ReminderID);
-            }
+            //if (task.IsComplete && (loginUser.UserID != task.CreatorID || (task.UserID != null && loginUser.UserID != task.UserID)))
+            //{
+            //    SendCompletedNotification(loginUser.UserID, task.TaskID);
+            //}
+            //else if (task.UserID != null && loginUser.UserID != task.UserID)
+            //{
+            //    SendModifiedNotification(loginUser.UserID, task.TaskID);
+            //}
 
             return result;
         }
 
         [WebMethod]
-        public bool GetIncompleteSubtasks(int reminderID)
+        public bool GetIncompleteSubtasks(int taskID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminders incompleteSubtasks = new Reminders(loginUser);
-            incompleteSubtasks.LoadIncompleteByParentID(reminderID);
+            Tasks incompleteSubtasks = new Tasks(loginUser);
+            incompleteSubtasks.LoadIncompleteByParentID(taskID);
             bool result = false;
             if (incompleteSubtasks.Count > 0)
             {
@@ -519,46 +540,46 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void ClearDueDate(int reminderID)
+        public void ClearDueDate(int taskID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            Task task = Tasks.GetTask(loginUser, taskID);
             StringBuilder description = new StringBuilder();
             description.Append("Changed Due Date to None.");
-            task.TaskDueDate = null;
+            task.DueDate = null;
             task.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
+            TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
 
-            if (task.UserID != null && loginUser.UserID != task.UserID)
-            {
-                SendModifiedNotification(loginUser.UserID, task.ReminderID);
-            }
+            //if (task.UserID != null && loginUser.UserID != task.UserID)
+            //{
+            //    SendModifiedNotification(loginUser.UserID, task.ReminderID);
+            //}
         }
 
         [WebMethod]
-        public string SetTaskDueDate(int reminderID, object value)
+        public string SetTaskDueDate(int taskID, object value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            Task task = Tasks.GetTask(loginUser, taskID);
             StringBuilder description = new StringBuilder();
-            if (task.TaskDueDate == null)
+            if (task.DueDate == null)
             {
                 description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
             }
             else
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.TaskDueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
             }
-            task.TaskDueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
+            task.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
             task.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
+            TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
 
-            if (task.UserID != null && loginUser.UserID != task.UserID)
-            {
-                SendModifiedNotification(loginUser.UserID, task.ReminderID);
-            }
+            //if (task.UserID != null && loginUser.UserID != task.UserID)
+            //{
+            //    SendModifiedNotification(loginUser.UserID, task.ReminderID);
+            //}
 
-            return value.ToString() != "" ? task.TaskDueDate.ToString() : null;
+            return value.ToString() != "" ? task.DueDate.ToString() : null;
         }
 
         [WebMethod]
@@ -624,25 +645,44 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool AddAssociation(int reminderID, int refID, ReferenceType refType)
+        public bool AddAssociation(int taskID, int refID, ReferenceType refType)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             try
             {
                 TaskAssociation taskAssociation = (new TaskAssociations(loginUser).AddNewTaskAssociation());
-                taskAssociation.ReminderID = reminderID;
+                taskAssociation.TaskID = taskID;
                 taskAssociation.RefID = refID;
                 taskAssociation.RefType = (int)refType;
                 taskAssociation.DateCreated = DateTime.UtcNow;
                 taskAssociation.CreatorID = loginUser.UserID;
                 taskAssociation.Collection.Save();
                 string description = String.Format("{0} added task association to {1}.", TSAuthentication.GetUser(loginUser).FirstLastName, Enum.GetName(typeof(ReferenceType), refType));
-                TaskLogs.AddTaskLog(loginUser, reminderID, description);
+                TaskLogs.AddTaskLog(loginUser, taskID, description);
 
-                Reminder task = Reminders.GetReminder(loginUser, reminderID);
+                Reminder task = Reminders.GetReminder(loginUser, taskID);
                 if (task.UserID != null && loginUser.UserID != task.UserID)
                 {
                     SendModifiedNotification(loginUser.UserID, task.ReminderID);
+                }
+
+                if (refType == ReferenceType.Contacts)
+                {
+                    TeamSupport.Data.User user = Users.GetUser(loginUser, refID);
+                    taskAssociation = (new TaskAssociations(loginUser).AddNewTaskAssociation());
+                    taskAssociation.TaskID = taskID;
+                    taskAssociation.RefID = user.OrganizationID;
+                    taskAssociation.RefType = (int)ReferenceType.Organizations;
+                    taskAssociation.DateCreated = DateTime.UtcNow;
+                    taskAssociation.CreatorID = loginUser.UserID;
+                    try
+                    {
+                        taskAssociation.Collection.Save();
+                    }
+                    catch (Exception e)
+                    {
+                        //TaskAssociation do not allow duplicates. This could happen when the company is already associated with the task.
+                    }
                 }
 
                 return true;
@@ -680,8 +720,9 @@ namespace TSWebServices
     [DataContract(Namespace = "http://teamsupport.com/")]
     public class ClientTask
     {
-        public ReminderProxy Task { get; set; }
-        public List<ReminderProxy> SubTasks { get; set; }
+        public TaskProxy Task { get; set; }
+        public ReminderProxy Reminder { get; set; }
+        public List<ClientTask> SubTasks { get; set; }
         public TaskAssociationsViewItemProxy[] Associations { get; set; }
         public string AssignedTo { get; set; }
     }
@@ -706,19 +747,19 @@ namespace TSWebServices
     {
         public TaskJsonInfo() { }
         [DataMember]
-        public string TaskName { get; set; }
+        public string Name { get; set; }
         [DataMember]
         public string Description { get; set; }
         [DataMember]
         public int? UserID { get; set; }
         [DataMember]
-        public bool TaskIsComplete { get; set; }
+        public bool IsComplete { get; set; }
         [DataMember]
-        public DateTime? TaskDueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         [DataMember]
         public bool IsDismissed { get; set; }
         [DataMember]
-        public DateTime? DueDate { get; set; }
+        public DateTime? ReminderDate { get; set; }
         [DataMember]
         public List<int> Tickets { get; set; }
         [DataMember]
@@ -732,7 +773,7 @@ namespace TSWebServices
         [DataMember]
         public List<int> User { get; set; }
         [DataMember]
-        public int? TaskParentID { get; set; }
+        public int? ParentID { get; set; }
     }
 
     public class TaskCompletionStatus

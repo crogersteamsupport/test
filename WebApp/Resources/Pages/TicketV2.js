@@ -3135,146 +3135,73 @@ function SetupRemindersSection() {
 
 function SetupTasksSection() {
     AddTasks(_ticketInfo.Tasks);
-    if ($('#ticket-reminder-who').length) {
-        $('#ticket-reminder-date').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
+    $('#ticket-task-span').on('click', '.change-task-status', function (e) {
+        var id = $(this).data('reminderid');
+        var checkbox = $(this);
+        var checked = $(this).prop("checked");
+        parent.Ts.System.logAction('Ticket Page - Change Task Status');
 
-        var $reminderSelect = $('#ticket-reminder-who').selectize({
-            valueField: 'id',
-            labelField: 'label',
-            searchField: 'label',
-            load: function (query, callback) {
-                this.clearOptions();        // clear the data
-                this.renderCache = {};      // clear the html template cache
-                window.parent.Ts.Services.TicketPage.SearchUsers(query, function (result) {
-                    callback(result);
-                });
-            },
-            score: function (search) {
-                return function (option) {
-                    return 1;
-                }
-            },
-            onDropdownClose: function ($dropdown) {
-                $($dropdown).prev().find('input').blur();
-            },
-            closeAfterSelect: true
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
+            if (data.IncompleteSubtasks) {
+                checkbox.prop("checked", false);
+                alert('There are subtasks pending completion, please finish them before completing the parent task.')
+            }
         });
+    });
 
-        var selectizeControl = $reminderSelect[0].selectize;
-        var currUserObj = { id: window.parent.Ts.System.User.UserID, label: userFullName };
-        selectizeControl.addOption(currUserObj);
-        selectizeControl.addItem(window.parent.Ts.System.User.UserID);
-
-        $('#RemindersModal').on('hidden.bs.modal', function () {
-            $('#ticket-reminder-title').val('');
-            $('#ticket-reminder-date').val('');
-            $('#reminderID').text('');
-        })
-
-        $('#ticket-reminder-save').click(function (e) {
-            var selectizeControl = $reminderSelect[0].selectize;
-            var date = window.parent.Ts.Utils.getMsDate($('#ticket-reminder-date').val());
-            var userid = selectizeControl.getValue();
-            if (userid == "") {
-                $('#ticket-reminder-who').parent().addClass('has-error').removeClass('has-success');
-            }
-            else {
-                $('#ticket-reminder-who').closest('.form-group').addClass('has-success').removeClass('has-error');
-            }
-            var title = $('#ticket-reminder-title').val();
-            if (title == "") {
-                $('#ticket-reminder-title').parent().addClass('has-error').removeClass('has-success');
-            }
-            else {
-                $('#ticket-reminder-title').parent().addClass('has-success').removeClass('has-error');
-            }
-
-            var reminderID = $('#reminderID').text();
-            if (reminderID == '') reminderID = null;
-            window.parent.Ts.Services.System.EditReminder(reminderID, window.parent.Ts.ReferenceTypes.Tickets, _ticketID, title, date, userid, function (result) {
-                $('#RemindersModal').modal('hide');
-                $('#reminderID').text('');
-                $('#ticket-reminder-title').val('');
-                $('#ticket-reminder-date').val('');
-                $('#reminder-error').hide();
-                selectizeControl.clear();
-                window.parent.Ts.Services.System.GetItemReminders(window.parent.Ts.ReferenceTypes.Tickets, _ticketID, window.parent.Ts.System.User.UserID, function (reminders) {
-                    AddReminders(reminders);
-                })
-            },
-            function () {
-                $('#reminder-error').show();
+    $('#ticket-task-span').on('click', 'span.tagRemove', function (e) {
+        var reminder = $(this).parent()[0];
+        reminderClose = true;
+        var currentUserID = $(reminder).data().tag.CreatorID;
+        if (reminder && currentUserID == window.parent.Ts.System.User.UserID) {
+            window.parent.Ts.Services.System.DismissReminder(reminder.id, function () {
+                $(reminder).remove();
+                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removereminder", userFullName);
+            }, function () {
+                alert('There was a problem removing the reminder from the ticket.');
             });
-        });
+        }
+        else {
+            if (currentUserID != window.parent.Ts.System.User.UserID)
+                alert('You do not have permission to delete this reminder');
+            else
+                alert('There was a problem removing the reminder from the ticket.');
+        }
+    });
 
-        $('#ticket-task-span').on('click', '.change-task-status', function (e) {
-            var id = $(this).data('reminderid');
-            var checkbox = $(this);
-            var checked = $(this).prop("checked");
-            parent.Ts.System.logAction('Ticket Page - Change Task Status');
+    $('.taskContainer').on('click', 'a.new-task', function (e) {
+        e.preventDefault();
+        parent.Ts.System.logAction('Tasks Page - New Task');
+        parent.Ts.MainPage.newTaskFromSource(17, _ticketID, _ticketInfo.Ticket.Name, _ticketInfo.Ticket.TicketNumber);
 
-            parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
-                if (data.IncompleteSubtasks) {
-                    checkbox.prop("checked", false);
-                    alert('There are subtasks pending completion, please finish them before completing the parent task.')
-                }
-            });
-        });
+    });
 
-        $('#ticket-task-span').on('click', 'span.tagRemove', function (e) {
-            var reminder = $(this).parent()[0];
-            reminderClose = true;
-            var currentUserID = $(reminder).data().tag.CreatorID;
-            if (reminder && currentUserID == window.parent.Ts.System.User.UserID) {
-                window.parent.Ts.Services.System.DismissReminder(reminder.id, function () {
-                    $(reminder).remove();
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removereminder", userFullName);
-                }, function () {
-                    alert('There was a problem removing the reminder from the ticket.');
-                });
-            }
-            else {
-                if (currentUserID != window.parent.Ts.System.User.UserID)
-                    alert('You do not have permission to delete this reminder');
-                else
-                    alert('There was a problem removing the reminder from the ticket.');
-            }
-        });
+    $('.taskContainer').on('click', 'a.tasklink', function (e) {
+        e.preventDefault();
+        var id = $(this).data('reminderid');
+        parent.Ts.System.logAction('Tasks Page - View Task');
+        parent.Ts.MainPage.openNewTask(id);
+    });
 
-        $('.taskContainer').on('click', 'a.new-task', function (e) {
-            e.preventDefault();
-            parent.Ts.System.logAction('Tasks Page - New Task');
-            parent.Ts.MainPage.newTaskFromSource(17, _ticketID, _ticketInfo.Ticket.Name, _ticketInfo.Ticket.TicketNumber);
+    $('#TaskList').on('click', '.change-task-status', function (e) {
+        var id = $(this).data('reminderid');
+        var checked = $(this).prop("checked");
+        parent.Ts.System.logAction('Tasks Page - Change Task Status');
 
-        });
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+    });
 
-        $('.taskContainer').on('click', 'a.tasklink', function (e) {
-            e.preventDefault();
-            var id = $(this).data('reminderid');
-            parent.Ts.System.logAction('Tasks Page - View Task');
-            parent.Ts.MainPage.openNewTask(id);
-        });
-
-        $('#TaskList').on('click', '.change-task-status', function (e) {
-            var id = $(this).data('reminderid');
-            var checked = $(this).prop("checked");
-            parent.Ts.System.logAction('Tasks Page - Change Task Status');
-
-            parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
-        });
-
-        //$('#ticket-task-span').on('click', '.tag-item', function (e) {
-        //    var reminder = $(this).data('tag');
-        //    $('#reminderID').text(reminder.ReminderID);
-        //    //var selectizeControl = $reminderSelect[0].selectize;
-        //    //selectizeControl.addItem(1839999);
-        //    $('#ticket-reminder-title').val(reminder.Description);
-        //    var date = reminder.DueDate == null ? null : window.parent.Ts.Utils.getMsDate(reminder.DueDate);
-        //    $('#ticket-reminder-date').val(date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
-        //    if (!reminderClose)
-        //        $('#RemindersModal').modal('show');
-        //});
-    }
+    //$('#ticket-task-span').on('click', '.tag-item', function (e) {
+    //    var reminder = $(this).data('tag');
+    //    $('#reminderID').text(reminder.ReminderID);
+    //    //var selectizeControl = $reminderSelect[0].selectize;
+    //    //selectizeControl.addItem(1839999);
+    //    $('#ticket-reminder-title').val(reminder.Description);
+    //    var date = reminder.DueDate == null ? null : window.parent.Ts.Utils.getMsDate(reminder.DueDate);
+    //    $('#ticket-reminder-date').val(date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
+    //    if (!reminderClose)
+    //        $('#RemindersModal').modal('show');
+    //});
 }
 
 function AddReminders(reminders) {
