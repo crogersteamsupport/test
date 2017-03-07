@@ -3074,6 +3074,11 @@ WHERE t.TicketID = @TicketID
                 item.Ticket1ID = ticketID1;
                 item.Ticket2ID = ticketID2;
                 item.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " related";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " related";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
             else if (isTicket1Parent == true) // parent
             {
@@ -3097,6 +3102,11 @@ WHERE t.TicketID = @TicketID
 
                 ticket2.ParentID = ticket1.TicketID;
                 ticket2.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " added as child";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " added as parent";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
             else // child
             {
@@ -3111,6 +3121,11 @@ WHERE t.TicketID = @TicketID
 
                 ticket1.ParentID = ticket2.TicketID;
                 ticket1.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " added as parent";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " added as child";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
             return GetRelatedTickets(ticket1.TicketID);
 
@@ -3176,18 +3191,33 @@ WHERE t.TicketID = @TicketID
             {
                 item.Delete();
                 item.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " relation removed";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " relation removed";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
 
             if (ticket1.ParentID != null && ticket1.ParentID == (int)ticketID2)
             {
                 ticket1.ParentID = null;
                 ticket1.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " removed as parent";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " removed as child";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
 
             if (ticket2.ParentID != null && ticket2.ParentID == (int)ticketID1)
             {
                 ticket2.ParentID = null;
                 ticket2.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " removed as child";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " removed as parent";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
 
             return true;
